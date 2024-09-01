@@ -1,1 +1,90 @@
-    ∇ RP6∆BENEFIT;A;B;C;D;DOVERD1;DOVERD2;E;F;G;H;∆C;∆D;BenType∆pp;IncType∆pp;Inc∆pp;End∆pp;Start∆pp;GP∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;Dec∆pp[1]   ⍝ ACTWIN.sf#5[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT PENSION 6[3]   ⍝[4]   ⍝ Limited Pension[5]   ⍝ Annuity Costing Factors[6]   DOVERD1←1⌊DX5XXA[XS]CDIV DX5[7]   DOVERD2←1⌊DX1XXA[XS]CDIV DX1[8]   A←0⌈RA6-DOVERD1×∆C←(xt↓RA6XXA[XS]),xt↑RA6XX[XS][9]   B←0⌈(LA10-DOVERD1×∆D←(xt↓LA10XXA[XS]),xt↑LA10XX[XS])×RA6≠0[10]  C←DOVERD2×∆C[11]  D←(DOVERD2×∆D)×RA6≠0[12]  ⍝[13]  ⍝ Total Pension[14]  E←A×PENNRAL←(+/[⎕io+1]+/[⎕io+2]TPENNRA)[⎕io+2;][15]  F←B×WARNRAL←(+/[⎕io+1]+/[⎕io+2]TWARNRA)[⎕io+2;][16]  G←C×PENSPAL←(+/[⎕io+1]+/[⎕io+2]TPENSPA)[⎕io+2;][17]  :if PreSPASplit[18]      (WARSPAL WARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]TWPENSPA)[⎕io+2;;][19]  :else[20]       WARSPAL                         ←(+/[⎕io+1]+/[⎕io+2]TWPENSPA)[⎕io+2; ][21]  :endif[22]  H←D×WARSPAL ⍝ This is the benefit on survival to SPA or on Ret if later[23]  [24]  GPENNRAL←(+/[⎕io+1]TPENNRA)[⎕io+2;⎕io;][25]  GWARNRAL←(+/[⎕io+1]TWARNRA)[⎕io+2;⎕io;][26]  GPENSPAL←(+/[⎕io+1]TPENSPA)[⎕io+2;⎕io;][27]  :if PreSPASplit[28]      (GWARSPAL GWARPRESPAL)←0 SpouseBens (+/[⎕io+1]TWPENSPA)[⎕io+2;⎕io;;][29]  :else[30]       GWARSPAL                          ←(+/[⎕io+1]TWPENSPA)[⎕io+2;⎕io; ][31]  :endif[32]  UL←(A×GPENNRAL)+(B×GWARNRAL)+(C×GPENSPAL)+D×GWARSPAL[33]  UFUNDCOMP←UFUNDCOMP+UL[34]  ⍝[35]  ⍝ Future Pension[36]  E←A×FPENNRAL←(+/[⎕io+2]TPENNRA)[⎕io+2;⎕io+2;][37]  F←B×FWARNRAL←(+/[⎕io+2]TWARNRA)[⎕io+2;⎕io+2;][38]  G←C×FPENSPAL←(+/[⎕io+2]TPENSPA)[⎕io+2;⎕io+2;][39]  :if PreSPASplit[40]      (FWARSPAL FWARPRESPAL)←0 SpouseBens (+/[⎕io+2]TWPENSPA)[⎕io+2;⎕io+2;;][41]  :else[42]       FWARSPAL                          ←(+/[⎕io+2]TWPENSPA)[⎕io+2;⎕io+2; ][43]  :endif[44]  H←D×FWARSPAL[45]  FGPENNRAL←TPENNRA[⎕io+2;⎕io+2;⎕io;][46]  FGWARNRAL←TWARNRA[⎕io+2;⎕io+2;⎕io;][47]  FGPENSPAL←TPENSPA[⎕io+2;⎕io+2;⎕io;][48]  :if PreSPASplit[49]      (FGWARSPAL FGWARPRESPAL)←0 SpouseBens TWPENSPA[⎕io+2;⎕io+2;⎕io;;][50]  :else[51]       FGWARSPAL                           ←TWPENSPA[⎕io+2;⎕io+2;⎕io; ][52]  :endif[53]  [54]  FUFUNDCOMP←FUFUNDCOMP+(A×FGPENNRAL)+(B×FGWARNRAL)+(C×FGPENSPAL)+D×FGWARSPAL[55]  ⍝[56]  BenType∆pp←'P' ⋄ IncType∆pp←'P3' ⋄ Inc∆pp←DYNINC3[57]  [58]  End∆pp←,SPA⌈Start∆pp←,Age∆pp ⋄ GP∆pp←NX⍴GPeriod[59]  [60]  Upin∆pp←0 ⍝ Not "underpinned"[61]  SL∆pp←,PENNRAL-GPENNRAL ⋄ FSL∆pp←,FPENNRAL-FGPENNRAL[62]  :if PreSPASplit ⋄ Dec∆pp←'R2' ⋄ Con∆pp← WARPRESPAL-GWARPRESPAL ⋄ FCon∆pp← FWARPRESPAL-FGWARPRESPAL[63]  :else           ⋄ Dec∆pp←'R'  ⋄ Con∆pp←,WARNRAL   -GWARNRAL    ⋄ FCon∆pp←,FWARNRAL   -FGWARNRAL[64]  :endif[65]  [66]  PP∆CreateInterface[67]  [68]  Upin∆pp←1 ⍝ "underpinned"[69]  SL∆pp←,        GPENNRAL ⋄ FSL∆pp←,         FGPENNRAL[70]  :if PreSPASplit               ⋄ Con∆pp←            GWARPRESPAL ⋄ FCon∆pp←             FGWARPRESPAL[71]  :else                         ⋄ Con∆pp←,           GWARNRAL    ⋄ FCon∆pp←,            FGWARNRAL[72]  :endif[73]  [74]  PP∆CreateInterface[75]  [76]  Dec∆pp←'R' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-Age∆pp[77]  [78]  Upin∆pp←0 ⍝ Not "underpinned"[79]  SL∆pp←,PENSPAL-GPENSPAL ⋄ FSL∆pp←,FPENSPAL-FGPENSPAL ⋄ Con∆pp←,WARSPAL-GWARSPAL ⋄ FCon∆pp←,FWARSPAL-FGWARSPAL[80]  [81]  PP∆CreateInterface[82]  [83]  Upin∆pp←1 ⍝ "underpinned"[84]  SL∆pp←,        GPENSPAL ⋄ FSL∆pp←,         FGPENSPAL ⋄ Con∆pp←,        GWARSPAL ⋄ FCon∆pp←,         FGWARSPAL[85]  [86]  PP∆CreateInterface[87]  [88]  :if 0≠LNX-SNX ⋄ RP6∆DAnra ⋄ :endif    ∇
+    ∇ RP6∆BENEFIT;A;B;C;D;DOVERD1;DOVERD2;E;F;G;H;∆C;∆D;BenType∆pp;IncType∆pp;Inc∆pp;End∆pp;Start∆pp;GP∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;Dec∆pp
+[1]   ⍝ ACTWIN.sf#5
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT PENSION 6
+[3]   ⍝
+[4]   ⍝ Limited Pension
+[5]   ⍝ Annuity Costing Factors
+[6]   DOVERD1←1⌊DX5XXA[XS]CDIV DX5
+[7]   DOVERD2←1⌊DX1XXA[XS]CDIV DX1
+[8]   A←0⌈RA6-DOVERD1×∆C←(xt↓RA6XXA[XS]),xt↑RA6XX[XS]
+[9]   B←0⌈(LA10-DOVERD1×∆D←(xt↓LA10XXA[XS]),xt↑LA10XX[XS])×RA6≠0
+[10]  C←DOVERD2×∆C
+[11]  D←(DOVERD2×∆D)×RA6≠0
+[12]  ⍝
+[13]  ⍝ Total Pension
+[14]  E←A×PENNRAL←(+/[⎕io+1]+/[⎕io+2]TPENNRA)[⎕io+2;]
+[15]  F←B×WARNRAL←(+/[⎕io+1]+/[⎕io+2]TWARNRA)[⎕io+2;]
+[16]  G←C×PENSPAL←(+/[⎕io+1]+/[⎕io+2]TPENSPA)[⎕io+2;]
+[17]  :if PreSPASplit
+[18]      (WARSPAL WARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]TWPENSPA)[⎕io+2;;]
+[19]  :else
+[20]       WARSPAL                         ←(+/[⎕io+1]+/[⎕io+2]TWPENSPA)[⎕io+2; ]
+[21]  :endif
+[22]  H←D×WARSPAL ⍝ This is the benefit on survival to SPA or on Ret if later
+[23]  
+[24]  GPENNRAL←(+/[⎕io+1]TPENNRA)[⎕io+2;⎕io;]
+[25]  GWARNRAL←(+/[⎕io+1]TWARNRA)[⎕io+2;⎕io;]
+[26]  GPENSPAL←(+/[⎕io+1]TPENSPA)[⎕io+2;⎕io;]
+[27]  :if PreSPASplit
+[28]      (GWARSPAL GWARPRESPAL)←0 SpouseBens (+/[⎕io+1]TWPENSPA)[⎕io+2;⎕io;;]
+[29]  :else
+[30]       GWARSPAL                          ←(+/[⎕io+1]TWPENSPA)[⎕io+2;⎕io; ]
+[31]  :endif
+[32]  UL←(A×GPENNRAL)+(B×GWARNRAL)+(C×GPENSPAL)+D×GWARSPAL
+[33]  UFUNDCOMP←UFUNDCOMP+UL
+[34]  ⍝
+[35]  ⍝ Future Pension
+[36]  E←A×FPENNRAL←(+/[⎕io+2]TPENNRA)[⎕io+2;⎕io+2;]
+[37]  F←B×FWARNRAL←(+/[⎕io+2]TWARNRA)[⎕io+2;⎕io+2;]
+[38]  G←C×FPENSPAL←(+/[⎕io+2]TPENSPA)[⎕io+2;⎕io+2;]
+[39]  :if PreSPASplit
+[40]      (FWARSPAL FWARPRESPAL)←0 SpouseBens (+/[⎕io+2]TWPENSPA)[⎕io+2;⎕io+2;;]
+[41]  :else
+[42]       FWARSPAL                          ←(+/[⎕io+2]TWPENSPA)[⎕io+2;⎕io+2; ]
+[43]  :endif
+[44]  H←D×FWARSPAL
+[45]  FGPENNRAL←TPENNRA[⎕io+2;⎕io+2;⎕io;]
+[46]  FGWARNRAL←TWARNRA[⎕io+2;⎕io+2;⎕io;]
+[47]  FGPENSPAL←TPENSPA[⎕io+2;⎕io+2;⎕io;]
+[48]  :if PreSPASplit
+[49]      (FGWARSPAL FGWARPRESPAL)←0 SpouseBens TWPENSPA[⎕io+2;⎕io+2;⎕io;;]
+[50]  :else
+[51]       FGWARSPAL                           ←TWPENSPA[⎕io+2;⎕io+2;⎕io; ]
+[52]  :endif
+[53]  
+[54]  FUFUNDCOMP←FUFUNDCOMP+(A×FGPENNRAL)+(B×FGWARNRAL)+(C×FGPENSPAL)+D×FGWARSPAL
+[55]  ⍝
+[56]  BenType∆pp←'P' ⋄ IncType∆pp←'P3' ⋄ Inc∆pp←DYNINC3
+[57]  
+[58]  End∆pp←,SPA⌈Start∆pp←,Age∆pp ⋄ GP∆pp←NX⍴GPeriod
+[59]  
+[60]  Upin∆pp←0 ⍝ Not "underpinned"
+[61]  SL∆pp←,PENNRAL-GPENNRAL ⋄ FSL∆pp←,FPENNRAL-FGPENNRAL
+[62]  :if PreSPASplit ⋄ Dec∆pp←'R2' ⋄ Con∆pp← WARPRESPAL-GWARPRESPAL ⋄ FCon∆pp← FWARPRESPAL-FGWARPRESPAL
+[63]  :else           ⋄ Dec∆pp←'R'  ⋄ Con∆pp←,WARNRAL   -GWARNRAL    ⋄ FCon∆pp←,FWARNRAL   -FGWARNRAL
+[64]  :endif
+[65]  
+[66]  PP∆CreateInterface
+[67]  
+[68]  Upin∆pp←1 ⍝ "underpinned"
+[69]  SL∆pp←,        GPENNRAL ⋄ FSL∆pp←,         FGPENNRAL
+[70]  :if PreSPASplit               ⋄ Con∆pp←            GWARPRESPAL ⋄ FCon∆pp←             FGWARPRESPAL
+[71]  :else                         ⋄ Con∆pp←,           GWARNRAL    ⋄ FCon∆pp←,            FGWARNRAL
+[72]  :endif
+[73]  
+[74]  PP∆CreateInterface
+[75]  
+[76]  Dec∆pp←'R' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-Age∆pp
+[77]  
+[78]  Upin∆pp←0 ⍝ Not "underpinned"
+[79]  SL∆pp←,PENSPAL-GPENSPAL ⋄ FSL∆pp←,FPENSPAL-FGPENSPAL ⋄ Con∆pp←,WARSPAL-GWARSPAL ⋄ FCon∆pp←,FWARSPAL-FGWARSPAL
+[80]  
+[81]  PP∆CreateInterface
+[82]  
+[83]  Upin∆pp←1 ⍝ "underpinned"
+[84]  SL∆pp←,        GPENSPAL ⋄ FSL∆pp←,         FGPENSPAL ⋄ Con∆pp←,        GWARSPAL ⋄ FCon∆pp←,         FGWARSPAL
+[85]  
+[86]  PP∆CreateInterface
+[87]  
+[88]  :if 0≠LNX-SNX ⋄ RP6∆DAnra ⋄ :endif
+    ∇

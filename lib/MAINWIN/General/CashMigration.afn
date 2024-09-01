@@ -1,0 +1,26 @@
+    ∇ CashMigration MembGroup;z
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Buck Cash Upgrade - Migrate Cash on Top parameters when required
+[3]   
+[4]   :if bBuck
+[5]       :select MembGroup
+[6]       :case 'Actives'
+[7]           :if 'O'=↑CONTOP
+[8]               (CashParm2 CTYPE2 COMACC2 COMSAL2 COMDAT2 COMMULT2 COMPER2 m_ERTABParmC f_ERTABParmC m_ERTABC m_ERTABFC m_ERTAB2C m_ERTAB2FC m_ERTABExactAgeC f_ERTABC f_ERTABFC f_ERTAB2C f_ERTAB2FC f_ERTABExactAgeC)←CashParm CTYPE COMACC COMSAL COMDAT COMMULT COMPER m_ERTABParm f_ERTABParm m_ERTAB m_ERTABF m_ERTAB2 m_ERTAB2F m_ERTABExactAge f_ERTAB f_ERTABF f_ERTAB2 f_ERTAB2F f_ERTABExactAge
+[9]               0 0⍴⍙VALUESdict ReadDictFile 'Actives_Basis' '' (⊃'CashParm' 'CTYPE' 'CONTOP' 'COMACC' 'COMSAL' 'COMDAT' 'COMMULT' 'COMPER')
+[10]          :endif
+[11]          :if 'O'=↑ICONTOP
+[12]              (ILLCashParm2  ILLCTYPE2 ILLCOMACC2 ILLCOMCASH2 ILLCOMDAT2 ILLCOMMULT2 ILLCOMPER2 COMMIND2 m_ILLTAB1C f_ILLTAB1C ILLTAB1CExactAge)←ILLCashParm ILLCTYPE ILLCOMACC ILLCOMCASH ILLCOMDAT ILLCOMMULT ILLCOMPER COMMIND m_ILLTAB1C0 f_ILLTAB1C0 ILLTAB1C0ExactAge
+[13]              :if z←mt m_ILLTAB1C ⋄ m_ILLTAB1C←m_ILLTAB1       ⋄ :endif
+[14]              :if   mt f_ILLTAB1C ⋄ f_ILLTAB1C←f_ILLTAB1 ⋄ z←1 ⋄ :endif
+[15]              :if z ⋄ ILLTAB1CExactAge←ILLTAB1ExactAge         ⋄ :endif
+[16]              0 0⍴⍙VALUESdict ReadDictFile 'Actives_Basis' '' (⊃'ILLCashParm' 'ILLCTYPE ' 'ICONTOP' 'ILLCOMACC' 'ILLCOMCASH' 'ILLCOMDAT' 'ILLCOMMULT' 'ILLCOMPER' 'COMMIND' 'm_ILLTAB1C0' 'f_ILLTAB1C0' 'ILLTAB1C0ExactAge')
+[17]          :endif
+[18]      :case 'Deferreds'
+[19]          :if 'O'=↑CASHIND
+[20]              (CashParm2 CTYPE2 COMMULT2 COMPER2 m_ERTABParmC f_ERTABParmC m_ERTABC m_ERTAB2C m_ERTABExactAgeC f_ERTABC f_ERTAB2C f_ERTABExactAgeC)←CashParm CTYPE COMMULT COMPER m_ERTABParm f_ERTABParm m_ERTAB m_ERTAB2 m_ERTABExactAge f_ERTAB f_ERTAB2 f_ERTABExactAge
+[21]              0 0⍴⍙VALUESdict ReadDictFile 'Deferreds_Basis' '' (⊃'CashParm' 'CTYPE' 'CASHIND' 'COMMULT' 'COMPER')
+[22]          :endif
+[23]      :endselect
+[24]  :endif
+    ∇

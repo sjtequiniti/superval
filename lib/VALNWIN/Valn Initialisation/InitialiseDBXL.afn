@@ -1,0 +1,24 @@
+    ∇ InitialiseDBXL ValMeth
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Initialise the Database and Excel
+[3]   
+[4]   'Preparing Excel Output/Database' Win∆ProgressBar2 'Open'
+[5]   
+[6]   CatIDwid←↑⍴CatID←⍕ScenarioID←ResultsCategoryID←0
+[7]   DBIDwid←⍴DBID←⍕DatabaseID←1000000×sqlschemeID
+[8]   
+[9]   :if ⍙dbopt
+[10]      :if XL_ValnInit 1 ⋄ :return ⋄ :endif
+[11]      0 0⍴ValnResultsDB ⍙DBCreateMainDB 1-2×sqlDatabase       ⍝ Create Database - will reset ⍙dbopt if database fails!
+[12]  :else
+[13]      basischanged←VFmissing←CFmissing←MItables←0
+[14]  :endif
+[15]  
+[16]  (⍙dbfundflds ⍙dbfundkeymask ⍙dbfundmask ⍙dbfundcols ⍙dbfundfmt ⍙dbfundprefix ⍙dbfundnokeys)←⍙DBTableVars 'ResultsData'
+[17]  ⍙dbfundres←((⍙dbfundmax←10000×1+4×~aosind∨neIND)            ,1+⍙dbfundnokeys)⍴⍙dbfundrow←0 ⋄ ⍙dbbenproj←(0 (1+⍙dbfundnokeys))⍴0 ⍝ Category Level variable
+[18]  :if inMemory ⋄ '⍙dbfund' ⍙DBCacheVars ⍙dbfundcols ⋄ :endif
+[19]  
+[20]  (xl_membflds xl_membkeymask xl_membmask xl_membcols xl_membfmt xl_membprefix xl_membnokeys)←⍙DBTableVars 'MemberResults'
+[21]  xl_membres←((xl_membmax← 2000×1+24×aggopt[0]∨csvind∨summopt),1+xl_membnokeys)⍴xl_membrow←0 ⋄ ⍙dbbenres ←(0    xl_membnokeys )⍴0 ⍝ Member Level variable
+[22]  :if inMemory ⋄ 'xl_memb' ⍙DBCacheVars xl_membcols ⋄ :endif
+    ∇

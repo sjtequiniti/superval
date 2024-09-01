@@ -1,1 +1,178 @@
-    ∇ CREATE∆DEMOGRAPH;SImpTbl;PImpTbl;Salpha;Sbeta;Pbeta;Palpha;Malpha;Mbeta;dxx;z;RXXbyRetAge;PIMPTBL;SIMPTBL;IMPTBL;rec;Age[1]   ⍝ DEFWIN.sf#2[2]   ⍝ Assign the Membership and Demographic parameters specified[3]   ReBasedIMPtab←MATRIX 'desc' 'ts' 'IMPtable'[4]   [5]   NRA←zwb NRA[6]   :if ppf[7]       NRA←⌈/NRA,PPFNRAALL←((NRA×0=PPFNRAALL)+PPFNRAALL←4↑MatrixZWB PPFNRAALL),PPFGMPNRA←zwb PPFGMPNRA[8]   :endif[9]   LatestAge←SPA⌈LatestRA←NRA∆G←lra←LRA←NRA ⋄ PHIEndAge←0[10]  :if IndPUPs[11]      z←×/¨⎕vi¨⎕split IndPayStart ⋄ LatestAge←⌈/LatestAge,(MatrixZWB z⌿IndPayStart),100×∨/~z[12]  :endif[13]  nrdind←('Exact Birthday' 'End of Month following Birthday' 'End of Year following Birthday')⍳⊂DLTB nrdind[14]  nrDATE←31 12 ⋄ servind←0[15]  erA←erS←99 ⋄ erSind←'S' ⋄ erSUM←999 ⋄ erDATE←'NRD' ⍝ Aust Early Retirement parameters[16]  LEAVING←StripText ,ConvertDates ↑⌽'Date' SwapRelFields lrLEAVING LEAVING[17]  [18]  projTerm←0 ⍝ Required for Length of Financial/MI Assumptions[19]  ⍝⍀⍝ Age←⍳120[20]  [21]  DXX←(LatestAge+1)↑[2=⍴⍴dxx]dxx←(0 0 0) Rate∆Create DXX[22]  [23]  RXXbyRetAge←^/'R'=UPPERCASE 2↑DLTB RXX[24]  RXX←(0 0 0) Rate∆Create RXX[25]  :if RXXbyRetAge ⋄ RXX←RXX[;NRA] ⋄ :endif[26]  RXX←lra↑[2=⍴⍴RXX]RXX[27]  IXX←LXX←lra⍴0 ⋄ TXX←TXX0←lra⍴1[28]  dECR∆IND←defind←0[29]  QXret←(0 0 1,⍳NRA) Rate∆Create QXret[30]  QY   ←(0 0 1,⍳120) Rate∆Create QYret[31]  [32]  PREMEMB  ←,'Def' DescToVariableUK PREMEMB[33]  PPOSTMEMB←,'Def' DescToVariableUK PPOSTMEMB[34]  SPOSTMEMB←,'Def' DescToVariableUK SPOSTMEMB[35]  [36]  ⍝⍝⍝ :if aosind ⋄ ivper←⌊0.5+(¯1↑vDATE)-¯1↑pvDATE ⋄ :endif[37]  [38]  ⍝ Pre Retirement Mortality Improvement[39]  ⍝⍝⍝ :if ¯1=↑Malpha←120 OVERTAKE (¯1 DEC∆CHECK ALPHA),1 ⋄ Malpha←120/1 ⋄ :endif[40]  :if ¯1=↑Malpha←120 OVERTAKE ¯1 DEC∆CHECK ALPHA ⋄ Malpha←120/1 ⋄ :endif[41]  ⍝⍝⍝ :if ¯1=↑Mbeta ←120 OVERTAKE (¯1 DEC∆CHECK BETA ),0 ⋄ Mbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes[42]  :if ¯1=↑Mbeta ←120 OVERTAKE ¯1 DEC∆CHECK BETA ⋄ Mbeta ←120/0 ⋄ :endif[43]  BASE←zwb BASE ⋄ BETAYRS←zwb BETAYRS ⋄ CMSL←zwb CMSL ⋄ SMSL←zwb SMSL[44]  PRERATE←(zwb RATEIMPR)×ZWB PRERATE ⋄ IMPORIG←zwb IMPORIG[45]  [46]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'Age DXX←'[47]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'MORTIMPR RATEIMPR PRERATE←'          ⍝ Common variables[48]  [49]  :select MORTIMPR←↑MORTIMPR[50]  :case 'N' ⋄ PreImp←,0[51]  :case 'A' ⋄ PreImp←PRERATE Malpha Mbeta BETAYRS BASE "¯1↑DOB"[52]  :case 'C' ⋄ PreImp←PRERATE Malpha Mbeta BETAYRS      CMSL[53]  :case 'S' ⋄ PreImp←PRERATE Malpha Mbeta BETAYRS BASE SMSL[54]  :case '2'[55]      :if MTmat IMPTBLrt[0;] ⋄ IMPTBL←READ2D IMPTBLcsv[56]      :elseif               ¯1≡IMPTBL←¯1 DEC∆CHECK IMPTBLrt ⋄ IMPTBL←120 120⍴0[57]      :endif[58]      (IMPTBL rec)←(1 PREORIG IMPORIG) ReBaseMortImp IMPTBL IMPTBLcsv IMPTBLrt lrIMPTBLrt1[59]      ReBasedIMPtab←ReBasedIMPtab OVER rec[60]  ⍝⍝⍝    :if aosind ⋄ AllPImpTbl←(1,size←⍴AllPImpTbl)⍴AllPImpTbl←(IMPORIG,pvDATE[2]) Adjust2D IMPTBL[61]  ⍝⍝⍝        :if 0<ivper[62]  ⍝⍝⍝            :for idx :in 1+⍳ivper[63]  ⍝⍝⍝                AllPImpTbl←AllPImpTbl⍪(1,size)⍴size↑(IMPORIG,pvDATE[2]+idx) Adjust2D IMPTBL[64]  ⍝⍝⍝            :endfor[65]  ⍝⍝⍝        :endif[66]  ⍝⍝⍝        AllPreImp←AllPImpTbl "X0" ' ' ' ' ' ' PRERATE[67]  ⍝⍝⍝    :else      ⋄[68]      PImpTbl←(IMPORIG,VDATE[2]) Adjust2D IMPTBL[69]      PreImp←PRERATE PImpTbl[70]  ⍝⍝⍝    :endif[71]  :endselect[72]  [73]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'ALPHA Malpha← BETA Mbeta←'            ⍝ CMI 10/17 Tables[74]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'BETAYRS← BASE← SMSL← CMSL←'           ⍝ CMI 10/17 Vars[75]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'IMPTBLcsv IMPTBLrt IMPORIG← IMPTBL←'  ⍝ Two D Table[76]  [77]  ⍝ Member Post Retirement Mortality Improvement[78]  ⍝⍝⍝ :if ¯1=↑Palpha←120 OVERTAKE (¯1 DEC∆CHECK PALPHA),1 ⋄ Palpha←120/1 ⋄ :endif[79]  :if ¯1=↑Palpha←120 OVERTAKE ¯1 DEC∆CHECK PALPHA ⋄ Palpha←120/1 ⋄ :endif[80]  ⍝⍝⍝ :if ¯1=↑Pbeta ←120 OVERTAKE (¯1 DEC∆CHECK PBETA ),0 ⋄ Pbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes[81]  :if ¯1=↑Pbeta ←120 OVERTAKE ¯1 DEC∆CHECK PBETA ⋄ Pbeta ←120/0 ⋄ :endif[82]  PBASE←zwb PBASE ⋄ PBETAYRS←zwb PBETAYRS ⋄ PCMSL←zwb PCMSL ⋄ PSMSL←zwb PSMSL[83]  PPOSTRATE←(zwb PRATEIMPR)×ZWB PPOSTRATE ⋄ PIMPORIG←zwb PIMPORIG[84]  [85]  ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'Age QXret←'[86]  ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'PMORTIMPR PRATEIMPR PPOSTRATE←'          ⍝ Common variables[87]  [88]  :select PMORTIMPR←↑PMORTIMPR[89]  :case 'N' ⋄ PostImpM←,0[90]  :case 'A' ⋄ PostImpM←PPOSTRATE Palpha Pbeta PBETAYRS PBASE "¯1↑DOB"[91]  :case 'C' ⋄ PostImpM←PPOSTRATE Palpha Pbeta PBETAYRS       PCMSL[92]  :case 'S' ⋄ PostImpM←PPOSTRATE Palpha Pbeta PBETAYRS PBASE PSMSL[93]  :case '2'[94]      :if MTmat PIMPTBLrt[0;] ⋄ PIMPTBL←READ2D PIMPTBLcsv[95]      :elseif                ¯1≡PIMPTBL←¯1 DEC∆CHECK PIMPTBLrt ⋄ PIMPTBL←120 120⍴0[96]      :endif[97]      (PIMPTBL rec)←(1 PPOSTORIG PIMPORIG) ReBaseMortImp PIMPTBL PIMPTBLcsv PIMPTBLrt lrPIMPTBLrt1[98]      ReBasedIMPtab←ReBasedIMPtab OVER rec[99]  ⍝⍝⍝    :if aosind ⋄ AllPImpTbl←(1,size←⍴AllPImpTbl)⍴AllPImpTbl←(PIMPORIG,pvDATE[2]) Adjust2D PIMPTBL[100] ⍝⍝⍝        :if 0<ivper[101] ⍝⍝⍝            :for idx :in 1+⍳ivper[102] ⍝⍝⍝                AllPImpTbl←AllPImpTbl⍪(1,size)⍴size↑(PIMPORIG,pvDATE[2]+idx) Adjust2D PIMPTBL[103] ⍝⍝⍝            :endfor[104] ⍝⍝⍝        :endif[105] ⍝⍝⍝        AllPostImpM←AllPImpTbl "X0" ' ' ' ' ' ' PPOSTRATE[106] ⍝⍝⍝    :else[107]     PImpTbl←(PIMPORIG,VDATE[2]) Adjust2D PIMPTBL[108]     PostImpM←PPOSTRATE PImpTbl[109] ⍝⍝⍝    :endif[110] :endselect[111] [112] ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'PALPHA Palpha← PBETA Pbeta←'              ⍝ CMI 10/17 Tables[113] ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'PBETAYRS← PBASE← PSMSL← PCMSL←'           ⍝ CMI 10/17 Vars[114] ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'PIMPTBLcsv PIMPTBLrt PIMPORIG← PIMPTBL←'  ⍝ Two D Table[115] [116] SPMethod←('ERD'=↑SPMethod)/¯1 0 1 ⍝ Spouse at Exit, Retirement or Death[117] :if mt PropMarr ⋄ HXX←(0 0 0) Rate∆Create HXX ⋄ HXX←120 OVERTAKE 100↑HXX ⍝⍝⍝ HXX←120↑HXX ⍝⍝⍝ UK Error - see also PRELIM (VALNWIN#3)[118] :else           ⋄ HXX←120⍴0.01×zwb PropMarr[119] :endif[120] HMPXX←(lra+(uk≠1)×nrdind=2)↑MID HXX[121] :if varyAge∆←∨/' '≠AGEDIFT ⋄ AGEDIF←120↑¯1 DEC∆CHECK AGEDIFT[122] :else                      ⋄ AGEDIF←ZWB AGEDIF[123] :endif[124] ⍝⍀⍝ 'Executing Basis Parameters' 'Demographics' FOURDIT 'Age HXX← AGEDIF←'[125] [126] ⍝ Spouse Post Retirement Mortality Improvement[127] ⍝⍝⍝ :if ¯1=↑Salpha←120 OVERTAKE (¯1 DEC∆CHECK SALPHA),1 ⋄ Salpha←120/1 ⋄ :endif[128] :if ¯1=↑Salpha←120 OVERTAKE ¯1 DEC∆CHECK SALPHA ⋄ Salpha←120/1 ⋄ :endif[129] ⍝⍝⍝ :if ¯1=↑Sbeta ←120 OVERTAKE (¯1 DEC∆CHECK SBETA ),0 ⋄ Sbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes[130] :if ¯1=↑Sbeta ←120 OVERTAKE ¯1 DEC∆CHECK SBETA ⋄ Sbeta ←120/0 ⋄ :endif[131] SBASE←zwb SBASE ⋄ SBETAYRS←zwb SBETAYRS ⋄ SCSC←zwb SCSC ⋄ SSSC←zwb SSSC ⋄ SCSSL←zwb SCSSL ⋄ SSSSL←zwb SSSSL[132] SPOSTRATE←(zwb SRATEIMPR)×ZWB SPOSTRATE ⋄ SIMPORIG←zwb SIMPORIG[133] [134] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'Age QY←'[135] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'SMORTIMPR SRATEIMPR SPOSTRATE←'          ⍝ Common variables[136] [137] :select SMORTIMPR←↑SMORTIMPR[138] :case 'N' ⋄ PostImpS←DisImp←DisImpDID←,0[139] :case 'A'[140]     :if varyAge∆ ⍝ Age related age difference[141]         PostImpS←DisImp ←SPOSTRATE Salpha Sbeta SBETAYRS SBASE "¯29+(⍳59)+¯1↑DOB"[142]         DisImpDID←       SPOSTRATE Salpha Sbeta SBETAYRS SBASE "AGEDIF[X0]+¯1↑DOB"[143]     :else[144]         PostImpS←DisImp ←SPOSTRATE Salpha Sbeta SBETAYRS SBASE "AGEDIF+¯1↑DOB"[145]         DisImpDID←,0[146]     :endif[147] :case 'C'[148]         PostImpS        ←SPOSTRATE Salpha Sbeta SBETAYRS       SCSC[149]         DisImpDID←DisImp←SPOSTRATE Salpha Sbeta SBETAYRS       SCSSL[150] :case 'S'[151]         PostImpS        ←SPOSTRATE Salpha Sbeta SBETAYRS SBASE SSSC[152]         DisImpDID←DisImp←SPOSTRATE Salpha Sbeta SBETAYRS SBASE SSSSL[153] :case '2'[154]     :if MTmat SIMPTBLrt[0;] ⋄ SIMPTBL←READ2D SIMPTBLcsv[155]     :elseif                ¯1≡SIMPTBL←¯1 DEC∆CHECK SIMPTBLrt ⋄ SIMPTBL←120 120⍴0[156]     :endif[157]     (SIMPTBL rec)←(1 SPOSTORIG SIMPORIG) ReBaseMortImp SIMPTBL SIMPTBLcsv SIMPTBLrt lrSIMPTBLrt1[158]     ReBasedIMPtab←ReBasedIMPtab OVER rec[159] ⍝⍝⍝    :if aosind ⋄ AllSImpTbl←(1,size←⍴AllSImpTbl)⍴AllSImpTbl←(SIMPORIG,pvDATE[2]) Adjust2D SIMPTBL[160] ⍝⍝⍝        :if 0<ivper[161] ⍝⍝⍝            :for idx :in 1+⍳ivper[162] ⍝⍝⍝                AllSImpTbl←AllSImpTbl⍪(1,size)⍴size↑(SIMPORIG,pvDATE[2]+idx) Adjust2D SIMPTBL[163] ⍝⍝⍝            :endfor[164] ⍝⍝⍝        :endif[165] ⍝⍝⍝        AllPostImpS←AllDisImp←AllSImpTbl "X0-AGEDIF" ' ' ' ' ' ' SPOSTRATE[166] ⍝⍝⍝    :else[167]     SImpTbl←(SIMPORIG,VDATE[2]) Adjust2D SIMPTBL[168]     PostImpS←DisImp←DisImpDID←SPOSTRATE SImpTbl[169] ⍝⍝⍝    :endif[170] :endselect[171] [172] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'SALPHA Salpha← SBETA Sbeta←'                ⍝ CMI 10/17 Tables[173] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'SBETAYRS← SBASE← SCSC← SCSSL← SSSC← SSSSL←' ⍝ CMI 10/17 Vars[174] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'SIMPTBLcsv SIMPTBLrt SIMPORIG← SIMPTBL←'    ⍝ Two D Table[175] [176] :if ppf ⋄ DXX∆PPF←dxx ⋄ :endif    ∇
+    ∇ CREATE∆DEMOGRAPH;SImpTbl;PImpTbl;Salpha;Sbeta;Pbeta;Palpha;Malpha;Mbeta;dxx;z;RXXbyRetAge;PIMPTBL;SIMPTBL;IMPTBL;rec;Age
+[1]   ⍝ DEFWIN.sf#2
+[2]   ⍝ Assign the Membership and Demographic parameters specified
+[3]   ReBasedIMPtab←MATRIX 'desc' 'ts' 'IMPtable'
+[4]   
+[5]   NRA←zwb NRA
+[6]   :if ppf
+[7]       NRA←⌈/NRA,PPFNRAALL←((NRA×0=PPFNRAALL)+PPFNRAALL←4↑MatrixZWB PPFNRAALL),PPFGMPNRA←zwb PPFGMPNRA
+[8]   :endif
+[9]   LatestAge←SPA⌈LatestRA←NRA∆G←lra←LRA←NRA ⋄ PHIEndAge←0
+[10]  :if IndPUPs
+[11]      z←×/¨⎕vi¨⎕split IndPayStart ⋄ LatestAge←⌈/LatestAge,(MatrixZWB z⌿IndPayStart),100×∨/~z
+[12]  :endif
+[13]  nrdind←('Exact Birthday' 'End of Month following Birthday' 'End of Year following Birthday')⍳⊂DLTB nrdind
+[14]  nrDATE←31 12 ⋄ servind←0
+[15]  erA←erS←99 ⋄ erSind←'S' ⋄ erSUM←999 ⋄ erDATE←'NRD' ⍝ Aust Early Retirement parameters
+[16]  LEAVING←StripText ,ConvertDates ↑⌽'Date' SwapRelFields lrLEAVING LEAVING
+[17]  
+[18]  projTerm←0 ⍝ Required for Length of Financial/MI Assumptions
+[19]  ⍝⍀⍝ Age←⍳120
+[20]  
+[21]  DXX←(LatestAge+1)↑[2=⍴⍴dxx]dxx←(0 0 0) Rate∆Create DXX
+[22]  
+[23]  RXXbyRetAge←^/'R'=UPPERCASE 2↑DLTB RXX
+[24]  RXX←(0 0 0) Rate∆Create RXX
+[25]  :if RXXbyRetAge ⋄ RXX←RXX[;NRA] ⋄ :endif
+[26]  RXX←lra↑[2=⍴⍴RXX]RXX
+[27]  IXX←LXX←lra⍴0 ⋄ TXX←TXX0←lra⍴1
+[28]  dECR∆IND←defind←0
+[29]  QXret←(0 0 1,⍳NRA) Rate∆Create QXret
+[30]  QY   ←(0 0 1,⍳120) Rate∆Create QYret
+[31]  
+[32]  PREMEMB  ←,'Def' DescToVariableUK PREMEMB
+[33]  PPOSTMEMB←,'Def' DescToVariableUK PPOSTMEMB
+[34]  SPOSTMEMB←,'Def' DescToVariableUK SPOSTMEMB
+[35]  
+[36]  ⍝⍝⍝ :if aosind ⋄ ivper←⌊0.5+(¯1↑vDATE)-¯1↑pvDATE ⋄ :endif
+[37]  
+[38]  ⍝ Pre Retirement Mortality Improvement
+[39]  ⍝⍝⍝ :if ¯1=↑Malpha←120 OVERTAKE (¯1 DEC∆CHECK ALPHA),1 ⋄ Malpha←120/1 ⋄ :endif
+[40]  :if ¯1=↑Malpha←120 OVERTAKE ¯1 DEC∆CHECK ALPHA ⋄ Malpha←120/1 ⋄ :endif
+[41]  ⍝⍝⍝ :if ¯1=↑Mbeta ←120 OVERTAKE (¯1 DEC∆CHECK BETA ),0 ⋄ Mbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes
+[42]  :if ¯1=↑Mbeta ←120 OVERTAKE ¯1 DEC∆CHECK BETA ⋄ Mbeta ←120/0 ⋄ :endif
+[43]  BASE←zwb BASE ⋄ BETAYRS←zwb BETAYRS ⋄ CMSL←zwb CMSL ⋄ SMSL←zwb SMSL
+[44]  PRERATE←(zwb RATEIMPR)×ZWB PRERATE ⋄ IMPORIG←zwb IMPORIG
+[45]  
+[46]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'Age DXX←'
+[47]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'MORTIMPR RATEIMPR PRERATE←'          ⍝ Common variables
+[48]  
+[49]  :select MORTIMPR←↑MORTIMPR
+[50]  :case 'N' ⋄ PreImp←,0
+[51]  :case 'A' ⋄ PreImp←PRERATE Malpha Mbeta BETAYRS BASE "¯1↑DOB"
+[52]  :case 'C' ⋄ PreImp←PRERATE Malpha Mbeta BETAYRS      CMSL
+[53]  :case 'S' ⋄ PreImp←PRERATE Malpha Mbeta BETAYRS BASE SMSL
+[54]  :case '2'
+[55]      :if MTmat IMPTBLrt[0;] ⋄ IMPTBL←READ2D IMPTBLcsv
+[56]      :elseif               ¯1≡IMPTBL←¯1 DEC∆CHECK IMPTBLrt ⋄ IMPTBL←120 120⍴0
+[57]      :endif
+[58]      (IMPTBL rec)←(1 PREORIG IMPORIG) ReBaseMortImp IMPTBL IMPTBLcsv IMPTBLrt lrIMPTBLrt1
+[59]      ReBasedIMPtab←ReBasedIMPtab OVER rec
+[60]  ⍝⍝⍝    :if aosind ⋄ AllPImpTbl←(1,size←⍴AllPImpTbl)⍴AllPImpTbl←(IMPORIG,pvDATE[2]) Adjust2D IMPTBL
+[61]  ⍝⍝⍝        :if 0<ivper
+[62]  ⍝⍝⍝            :for idx :in 1+⍳ivper
+[63]  ⍝⍝⍝                AllPImpTbl←AllPImpTbl⍪(1,size)⍴size↑(IMPORIG,pvDATE[2]+idx) Adjust2D IMPTBL
+[64]  ⍝⍝⍝            :endfor
+[65]  ⍝⍝⍝        :endif
+[66]  ⍝⍝⍝        AllPreImp←AllPImpTbl "X0" ' ' ' ' ' ' PRERATE
+[67]  ⍝⍝⍝    :else      ⋄
+[68]      PImpTbl←(IMPORIG,VDATE[2]) Adjust2D IMPTBL
+[69]      PreImp←PRERATE PImpTbl
+[70]  ⍝⍝⍝    :endif
+[71]  :endselect
+[72]  
+[73]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'ALPHA Malpha← BETA Mbeta←'            ⍝ CMI 10/17 Tables
+[74]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'BETAYRS← BASE← SMSL← CMSL←'           ⍝ CMI 10/17 Vars
+[75]  ⍝⍀⍝ "" "Members' Pre Mortality" FOURDIT 'IMPTBLcsv IMPTBLrt IMPORIG← IMPTBL←'  ⍝ Two D Table
+[76]  
+[77]  ⍝ Member Post Retirement Mortality Improvement
+[78]  ⍝⍝⍝ :if ¯1=↑Palpha←120 OVERTAKE (¯1 DEC∆CHECK PALPHA),1 ⋄ Palpha←120/1 ⋄ :endif
+[79]  :if ¯1=↑Palpha←120 OVERTAKE ¯1 DEC∆CHECK PALPHA ⋄ Palpha←120/1 ⋄ :endif
+[80]  ⍝⍝⍝ :if ¯1=↑Pbeta ←120 OVERTAKE (¯1 DEC∆CHECK PBETA ),0 ⋄ Pbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes
+[81]  :if ¯1=↑Pbeta ←120 OVERTAKE ¯1 DEC∆CHECK PBETA ⋄ Pbeta ←120/0 ⋄ :endif
+[82]  PBASE←zwb PBASE ⋄ PBETAYRS←zwb PBETAYRS ⋄ PCMSL←zwb PCMSL ⋄ PSMSL←zwb PSMSL
+[83]  PPOSTRATE←(zwb PRATEIMPR)×ZWB PPOSTRATE ⋄ PIMPORIG←zwb PIMPORIG
+[84]  
+[85]  ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'Age QXret←'
+[86]  ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'PMORTIMPR PRATEIMPR PPOSTRATE←'          ⍝ Common variables
+[87]  
+[88]  :select PMORTIMPR←↑PMORTIMPR
+[89]  :case 'N' ⋄ PostImpM←,0
+[90]  :case 'A' ⋄ PostImpM←PPOSTRATE Palpha Pbeta PBETAYRS PBASE "¯1↑DOB"
+[91]  :case 'C' ⋄ PostImpM←PPOSTRATE Palpha Pbeta PBETAYRS       PCMSL
+[92]  :case 'S' ⋄ PostImpM←PPOSTRATE Palpha Pbeta PBETAYRS PBASE PSMSL
+[93]  :case '2'
+[94]      :if MTmat PIMPTBLrt[0;] ⋄ PIMPTBL←READ2D PIMPTBLcsv
+[95]      :elseif                ¯1≡PIMPTBL←¯1 DEC∆CHECK PIMPTBLrt ⋄ PIMPTBL←120 120⍴0
+[96]      :endif
+[97]      (PIMPTBL rec)←(1 PPOSTORIG PIMPORIG) ReBaseMortImp PIMPTBL PIMPTBLcsv PIMPTBLrt lrPIMPTBLrt1
+[98]      ReBasedIMPtab←ReBasedIMPtab OVER rec
+[99]  ⍝⍝⍝    :if aosind ⋄ AllPImpTbl←(1,size←⍴AllPImpTbl)⍴AllPImpTbl←(PIMPORIG,pvDATE[2]) Adjust2D PIMPTBL
+[100] ⍝⍝⍝        :if 0<ivper
+[101] ⍝⍝⍝            :for idx :in 1+⍳ivper
+[102] ⍝⍝⍝                AllPImpTbl←AllPImpTbl⍪(1,size)⍴size↑(PIMPORIG,pvDATE[2]+idx) Adjust2D PIMPTBL
+[103] ⍝⍝⍝            :endfor
+[104] ⍝⍝⍝        :endif
+[105] ⍝⍝⍝        AllPostImpM←AllPImpTbl "X0" ' ' ' ' ' ' PPOSTRATE
+[106] ⍝⍝⍝    :else
+[107]     PImpTbl←(PIMPORIG,VDATE[2]) Adjust2D PIMPTBL
+[108]     PostImpM←PPOSTRATE PImpTbl
+[109] ⍝⍝⍝    :endif
+[110] :endselect
+[111] 
+[112] ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'PALPHA Palpha← PBETA Pbeta←'              ⍝ CMI 10/17 Tables
+[113] ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'PBETAYRS← PBASE← PSMSL← PCMSL←'           ⍝ CMI 10/17 Vars
+[114] ⍝⍀⍝ "" "Members' Post Mortality" FOURDIT 'PIMPTBLcsv PIMPTBLrt PIMPORIG← PIMPTBL←'  ⍝ Two D Table
+[115] 
+[116] SPMethod←('ERD'=↑SPMethod)/¯1 0 1 ⍝ Spouse at Exit, Retirement or Death
+[117] :if mt PropMarr ⋄ HXX←(0 0 0) Rate∆Create HXX ⋄ HXX←120 OVERTAKE 100↑HXX ⍝⍝⍝ HXX←120↑HXX ⍝⍝⍝ UK Error - see also PRELIM (VALNWIN#3)
+[118] :else           ⋄ HXX←120⍴0.01×zwb PropMarr
+[119] :endif
+[120] HMPXX←(lra+(uk≠1)×nrdind=2)↑MID HXX
+[121] :if varyAge∆←∨/' '≠AGEDIFT ⋄ AGEDIF←120↑¯1 DEC∆CHECK AGEDIFT
+[122] :else                      ⋄ AGEDIF←ZWB AGEDIF
+[123] :endif
+[124] ⍝⍀⍝ 'Executing Basis Parameters' 'Demographics' FOURDIT 'Age HXX← AGEDIF←'
+[125] 
+[126] ⍝ Spouse Post Retirement Mortality Improvement
+[127] ⍝⍝⍝ :if ¯1=↑Salpha←120 OVERTAKE (¯1 DEC∆CHECK SALPHA),1 ⋄ Salpha←120/1 ⋄ :endif
+[128] :if ¯1=↑Salpha←120 OVERTAKE ¯1 DEC∆CHECK SALPHA ⋄ Salpha←120/1 ⋄ :endif
+[129] ⍝⍝⍝ :if ¯1=↑Sbeta ←120 OVERTAKE (¯1 DEC∆CHECK SBETA ),0 ⋄ Sbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes
+[130] :if ¯1=↑Sbeta ←120 OVERTAKE ¯1 DEC∆CHECK SBETA ⋄ Sbeta ←120/0 ⋄ :endif
+[131] SBASE←zwb SBASE ⋄ SBETAYRS←zwb SBETAYRS ⋄ SCSC←zwb SCSC ⋄ SSSC←zwb SSSC ⋄ SCSSL←zwb SCSSL ⋄ SSSSL←zwb SSSSL
+[132] SPOSTRATE←(zwb SRATEIMPR)×ZWB SPOSTRATE ⋄ SIMPORIG←zwb SIMPORIG
+[133] 
+[134] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'Age QY←'
+[135] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'SMORTIMPR SRATEIMPR SPOSTRATE←'          ⍝ Common variables
+[136] 
+[137] :select SMORTIMPR←↑SMORTIMPR
+[138] :case 'N' ⋄ PostImpS←DisImp←DisImpDID←,0
+[139] :case 'A'
+[140]     :if varyAge∆ ⍝ Age related age difference
+[141]         PostImpS←DisImp ←SPOSTRATE Salpha Sbeta SBETAYRS SBASE "¯29+(⍳59)+¯1↑DOB"
+[142]         DisImpDID←       SPOSTRATE Salpha Sbeta SBETAYRS SBASE "AGEDIF[X0]+¯1↑DOB"
+[143]     :else
+[144]         PostImpS←DisImp ←SPOSTRATE Salpha Sbeta SBETAYRS SBASE "AGEDIF+¯1↑DOB"
+[145]         DisImpDID←,0
+[146]     :endif
+[147] :case 'C'
+[148]         PostImpS        ←SPOSTRATE Salpha Sbeta SBETAYRS       SCSC
+[149]         DisImpDID←DisImp←SPOSTRATE Salpha Sbeta SBETAYRS       SCSSL
+[150] :case 'S'
+[151]         PostImpS        ←SPOSTRATE Salpha Sbeta SBETAYRS SBASE SSSC
+[152]         DisImpDID←DisImp←SPOSTRATE Salpha Sbeta SBETAYRS SBASE SSSSL
+[153] :case '2'
+[154]     :if MTmat SIMPTBLrt[0;] ⋄ SIMPTBL←READ2D SIMPTBLcsv
+[155]     :elseif                ¯1≡SIMPTBL←¯1 DEC∆CHECK SIMPTBLrt ⋄ SIMPTBL←120 120⍴0
+[156]     :endif
+[157]     (SIMPTBL rec)←(1 SPOSTORIG SIMPORIG) ReBaseMortImp SIMPTBL SIMPTBLcsv SIMPTBLrt lrSIMPTBLrt1
+[158]     ReBasedIMPtab←ReBasedIMPtab OVER rec
+[159] ⍝⍝⍝    :if aosind ⋄ AllSImpTbl←(1,size←⍴AllSImpTbl)⍴AllSImpTbl←(SIMPORIG,pvDATE[2]) Adjust2D SIMPTBL
+[160] ⍝⍝⍝        :if 0<ivper
+[161] ⍝⍝⍝            :for idx :in 1+⍳ivper
+[162] ⍝⍝⍝                AllSImpTbl←AllSImpTbl⍪(1,size)⍴size↑(SIMPORIG,pvDATE[2]+idx) Adjust2D SIMPTBL
+[163] ⍝⍝⍝            :endfor
+[164] ⍝⍝⍝        :endif
+[165] ⍝⍝⍝        AllPostImpS←AllDisImp←AllSImpTbl "X0-AGEDIF" ' ' ' ' ' ' SPOSTRATE
+[166] ⍝⍝⍝    :else
+[167]     SImpTbl←(SIMPORIG,VDATE[2]) Adjust2D SIMPTBL
+[168]     PostImpS←DisImp←DisImpDID←SPOSTRATE SImpTbl
+[169] ⍝⍝⍝    :endif
+[170] :endselect
+[171] 
+[172] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'SALPHA Salpha← SBETA Sbeta←'                ⍝ CMI 10/17 Tables
+[173] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'SBETAYRS← SBASE← SCSC← SCSSL← SSSC← SSSSL←' ⍝ CMI 10/17 Vars
+[174] ⍝⍀⍝ "" "Spouses' Post Mortality" FOURDIT 'SIMPTBLcsv SIMPTBLrt SIMPORIG← SIMPTBL←'    ⍝ Two D Table
+[175] 
+[176] :if ppf ⋄ DXX∆PPF←dxx ⋄ :endif
+    ∇

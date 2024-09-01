@@ -1,0 +1,16 @@
+    ∇ res←exclude GetMDBFiles Dir
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a list of Access Database files
+[3]   
+[4]   res←0 0⍴''
+[5]   :if ~sqlDatabase
+[6]       res←m2n ⎕xlib Dir,'*.*DB'
+[7]       res←((UPPERCASE¨Win∆Child¨res)∊'MDB' 'ACCDB')/res
+[8]       :if 0≠⎕nc 'exclude' ⋄ :andif ~mt res
+[9]           exclude←~(UPPERCASE¨res)∊(⊂UPPERCASE exclude),¨'.MDB' '.ACCDB'
+[10]          res←exclude/res
+[11]      :endif
+[12]  :endif
+[13]  
+[14]  res←'Access Database Files' OVER ⊃res
+    ∇

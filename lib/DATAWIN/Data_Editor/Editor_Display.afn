@@ -1,1 +1,42 @@
-    ∇ Editor_Display parm;parent;z[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Dislay or Hide the Controls required for File Editing[3]   [4]   parent←'fmDataEdit.'[5]   [6]   (parent,'fFile.lOrigFile') ⎕wi 'visible' (¯1+2×parm)[7]   [8]   ⍝ Swap Edit/Quit and SaveAs/Save/Cancel Buttons (for editing)[9]   ((⊂parent,'bnData_Editor'),¨'Edit' 'Quit') MultiWI 'visible' (¯1+2×~parm)[10]  ((⊂parent,'bnData_Editor'),¨'DataNote' 'SaveAs' 'Save' 'Cancel') MultiWI 'visible' (¯1+2×parm)[11]  (parent,'bnData_EditorDataNote') ⎕wi 'enabled' (~0∊⍴DataNotes)[12]  (parent,'bnData_EditorQuit') ⎕wi 'style' (2×~parm)[13]  (parent,'bnData_EditorCancel') ⎕wi 'style' (2×parm)[14]  [15]  ⍝ Display Appropriate Menus[16]  ⍝⍝⍝ ((⊂parent,'mData_EditorFile.m'),¨'Edit' 'Quit') MultiWI 'visible' (~parm)[17]  ⍝⍝⍝ ((⊂parent,'mData_EditorFile.m'),¨'Save' 'Cancel') MultiWI 'visible' parm[18]  ⍝⍝⍝ (parent,'mData_EditorData') ⎕wi 'visible' parm[19]  [20]  :if parm ⍝ Update some "Stats" Labels[21]      (parent,'bnData_EditorSaveAs') ⎕wi 'enabled' 0[22]      :if 0=z←1↑WHERE ∨/'freq'⍷⊃⍙⍙FieldTypes[;1][23]          ((⊂parent,'fStats.'),¨'llfreq' 'cbfreq') MultiWI 'visible' ¯1[24]      :else[25]          :select Format[1+⍳3][26]          :case 'Act' ⋄ (parent,'fStats.llfreq') ⎕wi 'caption' 'Salary Frequency'[27]          :case 'Def'[28]              :if uk=1 ⋄ (parent,'fStats.llfreq') ⎕wi 'caption' ''[29]              :else    ⋄ (parent,'fStats.llfreq') ⎕wi 'caption' 'Pension Frequency'[30]              :endif[31]          :case 'Pen' ⋄ (parent,'fStats.llfreq') ⎕wi 'caption' 'Pension Frequency'[32]          :endselect[33]          ((⊂parent,'fStats.'),¨'llfreq' 'cbfreq') MultiWI 'visible' 1[34]          (parent,'fStats.cbfreq') ⎕wi 'value' (((parent,'fStats.cbfreq') ⎕wi 'list')[;1]⍳⍎⊃⍙⍙FieldTypes[z;1])[35]      :endif[36]  :endif[37]  [38]  ⍝ Hide/Unhide the Frames[39]  ((⊂parent),¨'fData' 'fStats') MultiWI 'visible' (¯1+2×parm)[40]  ((parent,'fFile.') 'cbFormat') Win∆SetRelated 'enabled' (~parm)    ∇
+    ∇ Editor_Display parm;parent;z
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Dislay or Hide the Controls required for File Editing
+[3]   
+[4]   parent←'fmDataEdit.'
+[5]   
+[6]   (parent,'fFile.lOrigFile') ⎕wi 'visible' (¯1+2×parm)
+[7]   
+[8]   ⍝ Swap Edit/Quit and SaveAs/Save/Cancel Buttons (for editing)
+[9]   ((⊂parent,'bnData_Editor'),¨'Edit' 'Quit') MultiWI 'visible' (¯1+2×~parm)
+[10]  ((⊂parent,'bnData_Editor'),¨'DataNote' 'SaveAs' 'Save' 'Cancel') MultiWI 'visible' (¯1+2×parm)
+[11]  (parent,'bnData_EditorDataNote') ⎕wi 'enabled' (~0∊⍴DataNotes)
+[12]  (parent,'bnData_EditorQuit') ⎕wi 'style' (2×~parm)
+[13]  (parent,'bnData_EditorCancel') ⎕wi 'style' (2×parm)
+[14]  
+[15]  ⍝ Display Appropriate Menus
+[16]  ⍝⍝⍝ ((⊂parent,'mData_EditorFile.m'),¨'Edit' 'Quit') MultiWI 'visible' (~parm)
+[17]  ⍝⍝⍝ ((⊂parent,'mData_EditorFile.m'),¨'Save' 'Cancel') MultiWI 'visible' parm
+[18]  ⍝⍝⍝ (parent,'mData_EditorData') ⎕wi 'visible' parm
+[19]  
+[20]  :if parm ⍝ Update some "Stats" Labels
+[21]      (parent,'bnData_EditorSaveAs') ⎕wi 'enabled' 0
+[22]      :if 0=z←1↑WHERE ∨/'freq'⍷⊃⍙⍙FieldTypes[;1]
+[23]          ((⊂parent,'fStats.'),¨'llfreq' 'cbfreq') MultiWI 'visible' ¯1
+[24]      :else
+[25]          :select Format[1+⍳3]
+[26]          :case 'Act' ⋄ (parent,'fStats.llfreq') ⎕wi 'caption' 'Salary Frequency'
+[27]          :case 'Def'
+[28]              :if uk=1 ⋄ (parent,'fStats.llfreq') ⎕wi 'caption' ''
+[29]              :else    ⋄ (parent,'fStats.llfreq') ⎕wi 'caption' 'Pension Frequency'
+[30]              :endif
+[31]          :case 'Pen' ⋄ (parent,'fStats.llfreq') ⎕wi 'caption' 'Pension Frequency'
+[32]          :endselect
+[33]          ((⊂parent,'fStats.'),¨'llfreq' 'cbfreq') MultiWI 'visible' 1
+[34]          (parent,'fStats.cbfreq') ⎕wi 'value' (((parent,'fStats.cbfreq') ⎕wi 'list')[;1]⍳⍎⊃⍙⍙FieldTypes[z;1])
+[35]      :endif
+[36]  :endif
+[37]  
+[38]  ⍝ Hide/Unhide the Frames
+[39]  ((⊂parent),¨'fData' 'fStats') MultiWI 'visible' (¯1+2×parm)
+[40]  ((parent,'fFile.') 'cbFormat') Win∆SetRelated 'enabled' (~parm)
+    ∇

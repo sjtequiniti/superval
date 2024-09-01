@@ -1,1 +1,56 @@
-    ∇ TagBlock_Colour;BlockCells;TaggedRecs;modified;rows;row;col;recnos[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Colour the tagged records or blocked cells red[3]   modified←hSS ⎕wi 'xModified'[4]   [5]   :if 0=⍴block[6]       BlockCells←⍳0[7]       :if 0=⍴Tagged[8]           ((⊂'fmDataEdit.fStats.'),¨'lfmark' 'llfrecs' 'edfrecs') MultiWI 'visible' ¯1[9]       :endif[10]  :else[11]      BlockCells←(999999,2⍴MaxRec)⌊3 OVERTAKE block[12]      ((⊂'fmDataEdit.fStats.'),¨'lfmark' 'llfrecs' 'edfrecs') MultiWI 'visible' 1[13]      'fmDataEdit.fStats.lfmark' ⎕wi 'caption' ('Blocked: ',DLTB NAMES[1↑block;])[14]      'fmDataEdit.fStats.edfrecs' ⎕wi 'text' ((,'CI8,<->,CI8' ⎕fmt MATRIX 1↓BlockCells)~' ')[15]      BlockCells←BlockCells[1],BlockCells[2]+0,⍳BlockCells[3]-BlockCells[2][16]  :endif[17]  [18]  :if 0=⍴Tagged[19]      TaggedRecs←⍳0[20]  :else[21]      TaggedRecs←MaxRec⌊2⍴Tagged[22]      ((⊂'fmDataEdit.fStats.'),¨'lfmark' 'llfrecs' 'edfrecs') MultiWI 'visible' 1[23]      'fmDataEdit.fStats.lfmark' ⎕wi 'caption' 'Tagged'[24]      'fmDataEdit.fStats.edfrecs' ⎕wi 'text' ((,'CI8,<->,CI8' ⎕fmt MATRIX Tagged)~' ')[25]      TaggedRecs←TaggedRecs[1]+0,⍳TaggedRecs[2]-TaggedRecs[1][26]  :endif[27]  [28]  (row col)←hSS ⎕wi 'GetActiveCell' 0 0[29]  hSS ⎕wi 'DoSelChange' 0[30]  hSS ⎕wi 'SetSelection' ¯1 ¯1 ¯1 ¯1 ⋄ hSS ⎕wi 'FontColor' 0[31]  hSS ⎕wi 'SetActiveCell' row col[32]  recnos←(+/(MDEpage-1)↑RecsPerPage)+⍳RecsPerPage[MDEpage][33]  [34]  :if 0≠⍴,rows←WHERE recnos∊1↓BlockCells[35]      col←1↑BlockCells[36]      :for row :in rows ⍝ Colour Block Mark (if any)[37]          hSS ⎕wi 'SetSelection' row col row col[38]          hSS ⎕wi 'FontColor' (256⊥0 0 255) ⍝ Red[39]      :endfor[40]  :endif[41]  [42]  :if 0≠⍴,rows←WHERE recnos∊TaggedRecs[43]      :for row :in rows ⍝ Colour Tagged Records (if any)[44]          hSS ⎕wi 'SetSelection' row ¯1 row ¯1[45]          hSS ⎕wi 'FontColor' (256⊥0 0 255) ⍝ Red[46]      :endfor[47]  :endif[48]  [49]  hSS ⎕wi 'SetSelection' xrow xcol xrow xcol[50]  hSS ⎕wi 'DoSelChange' 1[51]  [52]  ⍝ Note this colouring operation "modifies" the spreadsheet[53]  ⍝ Reset the modified condition after the colouring[54]  hSS ⎕wi 'xModified' modified    ∇
+    ∇ TagBlock_Colour;BlockCells;TaggedRecs;modified;rows;row;col;recnos
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Colour the tagged records or blocked cells red
+[3]   modified←hSS ⎕wi 'xModified'
+[4]   
+[5]   :if 0=⍴block
+[6]       BlockCells←⍳0
+[7]       :if 0=⍴Tagged
+[8]           ((⊂'fmDataEdit.fStats.'),¨'lfmark' 'llfrecs' 'edfrecs') MultiWI 'visible' ¯1
+[9]       :endif
+[10]  :else
+[11]      BlockCells←(999999,2⍴MaxRec)⌊3 OVERTAKE block
+[12]      ((⊂'fmDataEdit.fStats.'),¨'lfmark' 'llfrecs' 'edfrecs') MultiWI 'visible' 1
+[13]      'fmDataEdit.fStats.lfmark' ⎕wi 'caption' ('Blocked: ',DLTB NAMES[1↑block;])
+[14]      'fmDataEdit.fStats.edfrecs' ⎕wi 'text' ((,'CI8,<->,CI8' ⎕fmt MATRIX 1↓BlockCells)~' ')
+[15]      BlockCells←BlockCells[1],BlockCells[2]+0,⍳BlockCells[3]-BlockCells[2]
+[16]  :endif
+[17]  
+[18]  :if 0=⍴Tagged
+[19]      TaggedRecs←⍳0
+[20]  :else
+[21]      TaggedRecs←MaxRec⌊2⍴Tagged
+[22]      ((⊂'fmDataEdit.fStats.'),¨'lfmark' 'llfrecs' 'edfrecs') MultiWI 'visible' 1
+[23]      'fmDataEdit.fStats.lfmark' ⎕wi 'caption' 'Tagged'
+[24]      'fmDataEdit.fStats.edfrecs' ⎕wi 'text' ((,'CI8,<->,CI8' ⎕fmt MATRIX Tagged)~' ')
+[25]      TaggedRecs←TaggedRecs[1]+0,⍳TaggedRecs[2]-TaggedRecs[1]
+[26]  :endif
+[27]  
+[28]  (row col)←hSS ⎕wi 'GetActiveCell' 0 0
+[29]  hSS ⎕wi 'DoSelChange' 0
+[30]  hSS ⎕wi 'SetSelection' ¯1 ¯1 ¯1 ¯1 ⋄ hSS ⎕wi 'FontColor' 0
+[31]  hSS ⎕wi 'SetActiveCell' row col
+[32]  recnos←(+/(MDEpage-1)↑RecsPerPage)+⍳RecsPerPage[MDEpage]
+[33]  
+[34]  :if 0≠⍴,rows←WHERE recnos∊1↓BlockCells
+[35]      col←1↑BlockCells
+[36]      :for row :in rows ⍝ Colour Block Mark (if any)
+[37]          hSS ⎕wi 'SetSelection' row col row col
+[38]          hSS ⎕wi 'FontColor' (256⊥0 0 255) ⍝ Red
+[39]      :endfor
+[40]  :endif
+[41]  
+[42]  :if 0≠⍴,rows←WHERE recnos∊TaggedRecs
+[43]      :for row :in rows ⍝ Colour Tagged Records (if any)
+[44]          hSS ⎕wi 'SetSelection' row ¯1 row ¯1
+[45]          hSS ⎕wi 'FontColor' (256⊥0 0 255) ⍝ Red
+[46]      :endfor
+[47]  :endif
+[48]  
+[49]  hSS ⎕wi 'SetSelection' xrow xcol xrow xcol
+[50]  hSS ⎕wi 'DoSelChange' 1
+[51]  
+[52]  ⍝ Note this colouring operation "modifies" the spreadsheet
+[53]  ⍝ Reset the modified condition after the colouring
+[54]  hSS ⎕wi 'xModified' modified
+    ∇

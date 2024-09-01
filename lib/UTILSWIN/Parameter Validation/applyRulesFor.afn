@@ -1,0 +1,22 @@
+    ∇ status←upd applyRulesFor fields;props;values;∆
+[1]   ⍝ UTILSWIN.sf#5
+[2]   ⍝ Apply relevance rules and return dictionary of statuses by field
+[3]   ⍝ status is in the range ¯1 0 1; values have shape 3 or (n 3) for n-row tables
+[4]   ⍝ upd: [flag] update cached values; else just read
+[5]   ⍝ Premise -- ⍙CACHE contains all field values required
+[6]   ⍝ Caching evaluated properties (EPs) allows rules to refer to EPs
+[7]   ⍝ Reads: ⍙CACHE PROPERTIES
+[8]   ⍝ Sets: ⍙CACHE
+[9]   ⍝ Revn: sjt13jun14 sjt17apr15
+[10]  
+[11]  :if mt fields
+[12]      values←''
+[13]  :else
+[14]      props←fields∘.,'.',¨PROPERTIES                          ⍝ properties to evaluate
+[15]      ⍙CACHE←⍙CACHE remove upd/,props
+[16]      evaluateProperties ,props                               ⍝ RECURSES!
+[17]      values←⍉¨⊃¨⎕SPLIT ⍙CACHE at props                       ⍝ matrixes for table values
+[18]  :endif
+[19]  
+[20]  status←fields push values
+    ∇

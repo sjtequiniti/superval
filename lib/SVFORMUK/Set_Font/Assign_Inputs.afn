@@ -1,1 +1,38 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Set_Font" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Set_Font" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   no←1↑⍴PickList←SStoMAT ("fmSetFont.fFontStyle.opFontStyle_1" ⎕wi "∆lastoption") ⎕wi "∆options"[10]  value←¯1↑1,selection←PickList ExactTLU FontStyle[11]  :if 0∊⍴selection[12]      modified←⌈/modified,×value[13]  :endif[14]  :for nn :in ⍳no[15]      ("fmSetFont.fFontStyle.opFontStyle_",⍕nn) ⎕wi "value" (value=nn)[16]  :endfor[17]  no←1↑⍴PickList←SStoMAT ("fmSetFont.fFontSize.opFontSize_1" ⎕wi "∆lastoption") ⎕wi "∆options"[18]  value←¯1↑1,selection←PickList ExactTLU FontSize[19]  :if 0∊⍴selection[20]      modified←⌈/modified,×value[21]  :endif[22]  :for nn :in ⍳no[23]      ("fmSetFont.fFontSize.opFontSize_",⍕nn) ⎕wi "value" (value=nn)[24]  :endfor[25]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Set_Font[26]      :for var :in spin Comment_Set_Font at "variable" "row" ⋄ (var row)←var[27]          "Set_Font" ParmColor ((FormFields for "variable" var) at "control"),var row 1[28]      :endfor[29]  :endif[30]  :if ~0∊⍴,warnings[31]      MDISPLAY DLTMB warnings,⎕tcnl[32]      Win∆AssignVars "fmSetFont"[33]  :endif[34]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Set_Font" "" "Names"[35]      "fmSetFont" ⎕wi "modified" 0[36]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Set_Font" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Set_Font" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   no←1↑⍴PickList←SStoMAT ("fmSetFont.fFontStyle.opFontStyle_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[10]  value←¯1↑1,selection←PickList ExactTLU FontStyle
+[11]  :if 0∊⍴selection
+[12]      modified←⌈/modified,×value
+[13]  :endif
+[14]  :for nn :in ⍳no
+[15]      ("fmSetFont.fFontStyle.opFontStyle_",⍕nn) ⎕wi "value" (value=nn)
+[16]  :endfor
+[17]  no←1↑⍴PickList←SStoMAT ("fmSetFont.fFontSize.opFontSize_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[18]  value←¯1↑1,selection←PickList ExactTLU FontSize
+[19]  :if 0∊⍴selection
+[20]      modified←⌈/modified,×value
+[21]  :endif
+[22]  :for nn :in ⍳no
+[23]      ("fmSetFont.fFontSize.opFontSize_",⍕nn) ⎕wi "value" (value=nn)
+[24]  :endfor
+[25]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Set_Font
+[26]      :for var :in spin Comment_Set_Font at "variable" "row" ⋄ (var row)←var
+[27]          "Set_Font" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[28]      :endfor
+[29]  :endif
+[30]  :if ~0∊⍴,warnings
+[31]      MDISPLAY DLTMB warnings,⎕tcnl
+[32]      Win∆AssignVars "fmSetFont"
+[33]  :endif
+[34]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Set_Font" "" "Names"
+[35]      "fmSetFont" ⎕wi "modified" 0
+[36]  :endif
+    ∇

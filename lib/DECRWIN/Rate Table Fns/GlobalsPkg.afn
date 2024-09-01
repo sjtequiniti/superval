@@ -1,1 +1,32 @@
-    ∇ pkg←param GlobalsPkg GlobalsTab;labs;∆;tab;basis;global;mtype;field;Module;vars;var;control[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Create a package of Global variables[3]   ⍝ param contains the Module, current field with focus and the Membership group[4]   ⍝ GlobalsTab contains the Globals Migration Table (stored in 'SVMIGT',Win∆CountryCode)[5]   [6]   pkg←(0 0⍴'') makePkg '' ⍝ default response[7]   [8]   (Module field mtype)←param[9]   [10]  field←2↓control←Win∆Child field[11]  [12]  :if (⊂field)∊(GlobalsTab for 'Membership' mtype) at 'Parameter'                                  ⍝ Called from Global field[13]  :orif ~mt field←DLTB ↑((GlobalsTab for 'Membership' mtype) for 'Control' control) at 'Parameter' ⍝ Find relevant Global[14]      :if mt ⍎field[15]      :andif 0≠rowsIn tab←((GlobalsTab for 'Module' Module) for 'Parameter' field) for 'Membership' mtype[16]          ∆←tab at 'Basis Variable' 'Global Variable' 'Label'[17]          (basis global labs)←(~(⊂'n/a')≡¨↑∆)/¨∆ ⍝ Remove fields that are n/a[18]  [19]          (basis global)←(nub¨qtrim¨¨basis global),¨(⊂⊂'lr'),¨¨(('Y'=↑¨labs)/¨basis global)~¨¨⊂⊂'[;]'[20]  [21]          ⍝ Create Basis variables that have been renamed (should not be any is a basis saved in 9.10 or in 9.10 basis editor)[22]          :if ~mt vars←(lmt tab at 'Old Basis Variable')~'New' 'See Rule'[23]          :andif ∨/∆←∊2=⎕nc¨vars[24]              vars←∆/vars[25]              pdef ((tab for 'Old Basis Variable' vars) at 'Basis Variable') makePkg ⍎¨vars ⍝ pdef package to create variables[26]          :endif[27]  [28]          pkg←global makePkg ⍎¨basis[29]      :endif[30]  :endif    ∇
+    ∇ pkg←param GlobalsPkg GlobalsTab;labs;∆;tab;basis;global;mtype;field;Module;vars;var;control
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Create a package of Global variables
+[3]   ⍝ param contains the Module, current field with focus and the Membership group
+[4]   ⍝ GlobalsTab contains the Globals Migration Table (stored in 'SVMIGT',Win∆CountryCode)
+[5]   
+[6]   pkg←(0 0⍴'') makePkg '' ⍝ default response
+[7]   
+[8]   (Module field mtype)←param
+[9]   
+[10]  field←2↓control←Win∆Child field
+[11]  
+[12]  :if (⊂field)∊(GlobalsTab for 'Membership' mtype) at 'Parameter'                                  ⍝ Called from Global field
+[13]  :orif ~mt field←DLTB ↑((GlobalsTab for 'Membership' mtype) for 'Control' control) at 'Parameter' ⍝ Find relevant Global
+[14]      :if mt ⍎field
+[15]      :andif 0≠rowsIn tab←((GlobalsTab for 'Module' Module) for 'Parameter' field) for 'Membership' mtype
+[16]          ∆←tab at 'Basis Variable' 'Global Variable' 'Label'
+[17]          (basis global labs)←(~(⊂'n/a')≡¨↑∆)/¨∆ ⍝ Remove fields that are n/a
+[18]  
+[19]          (basis global)←(nub¨qtrim¨¨basis global),¨(⊂⊂'lr'),¨¨(('Y'=↑¨labs)/¨basis global)~¨¨⊂⊂'[;]'
+[20]  
+[21]          ⍝ Create Basis variables that have been renamed (should not be any is a basis saved in 9.10 or in 9.10 basis editor)
+[22]          :if ~mt vars←(lmt tab at 'Old Basis Variable')~'New' 'See Rule'
+[23]          :andif ∨/∆←∊2=⎕nc¨vars
+[24]              vars←∆/vars
+[25]              pdef ((tab for 'Old Basis Variable' vars) at 'Basis Variable') makePkg ⍎¨vars ⍝ pdef package to create variables
+[26]          :endif
+[27]  
+[28]          pkg←global makePkg ⍎¨basis
+[29]      :endif
+[30]  :endif
+    ∇

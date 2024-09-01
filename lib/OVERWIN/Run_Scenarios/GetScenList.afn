@@ -1,1 +1,27 @@
-    ∇ res←Module GetScenList SavedParm;PickList;NameList;sortorder;SortList;fulllist;sellist;z;not[1]   ⍝ OVERWIN.sf#29[2]   ⍝ Get the Parameters Descriptions[3]   [4]   (PickList NameList sortorder SortList)←Module GetParmDesc 'ClientFile'[5]   [6]   not←'~'=↑SavedParm ⋄ SavedParm←not↓SavedParm[7]   [8]   :if 0=⎕nc SavedParm[9]       PickList←0⌿PickList ⋄ SortList←0/SortList[10]  :else[11]      fulllist←'⍺',¨'⍺' join¨⎕split PickList[;3 4],¨' '[12]      :if mt ⍎SavedParm ⋄ sellist←0⍴''[13]      :else             ⋄ sellist←(DLTB¨(⎕split ⍎SavedParm) SSINDEX¨⊂ 1 2),¨' '[14]      :endif[15]      :if ~not ⋄ :andif ∨/~z←sellist∊fulllist[16]          ⍎SavedParm,'←z⌿',SavedParm[17]  ⍝⍝⍝        MDISPLAY warning about deletions[18]      :endif[19]      :if not ⋄ z←~fulllist∊sellist[20]      :else   ⋄ z← fulllist∊sellist[21]      :endif[22]      PickList←z⌿PickList ⋄ SortList←z/SortList[23]  :endif[24]  [25]  res←PickList NameList sortorder SortList    ∇
+    ∇ res←Module GetScenList SavedParm;PickList;NameList;sortorder;SortList;fulllist;sellist;z;not
+[1]   ⍝ OVERWIN.sf#29
+[2]   ⍝ Get the Parameters Descriptions
+[3]   
+[4]   (PickList NameList sortorder SortList)←Module GetParmDesc 'ClientFile'
+[5]   
+[6]   not←'~'=↑SavedParm ⋄ SavedParm←not↓SavedParm
+[7]   
+[8]   :if 0=⎕nc SavedParm
+[9]       PickList←0⌿PickList ⋄ SortList←0/SortList
+[10]  :else
+[11]      fulllist←'⍺',¨'⍺' join¨⎕split PickList[;3 4],¨' '
+[12]      :if mt ⍎SavedParm ⋄ sellist←0⍴''
+[13]      :else             ⋄ sellist←(DLTB¨(⎕split ⍎SavedParm) SSINDEX¨⊂ 1 2),¨' '
+[14]      :endif
+[15]      :if ~not ⋄ :andif ∨/~z←sellist∊fulllist
+[16]          ⍎SavedParm,'←z⌿',SavedParm
+[17]  ⍝⍝⍝        MDISPLAY warning about deletions
+[18]      :endif
+[19]      :if not ⋄ z←~fulllist∊sellist
+[20]      :else   ⋄ z← fulllist∊sellist
+[21]      :endif
+[22]      PickList←z⌿PickList ⋄ SortList←z/SortList
+[23]  :endif
+[24]  
+[25]  res←PickList NameList sortorder SortList
+    ∇

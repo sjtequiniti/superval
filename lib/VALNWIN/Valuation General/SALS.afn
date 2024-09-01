@@ -1,0 +1,107 @@
+    ∇ SALS;N;data;inc;S;sal;FAS0;DednSAL;DednFAS;MaxSAL;MaxFAS;DednSALMP;DednFASMP;MaxSALMP;MaxFASMP;Z;SALdedn∆l;SALmax∆l;last;LRinc;CARESALLY;DednCARELY;MaxCARELY;SalInd;rEVdate;fasperiod;x
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Sets up Variables necessary for the calculation of
+[3]   ⍝ SAL & SALMP,& FAS & FASMP, for each of the defined salaries.
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   last←NRD YDAYS ValDATE+0 0,NRA-X0 ⍝ Period from NRD to last anniversary of Valn Date
+[7]   
+[8]   ⍝ Execute Member Dependent Fields
+[9]   SALdata←,ZWB SalData ⋄ FASdata←,ZWB FasData ⋄ SALdedn←,ZWB SalDedn ⋄ SALmax←,ZWB SalMax
+[10]  
+[11]  :if PHI
+[12]      S←(X0+NX-SNX)⍴1 ⍝ Just get Salary increase factors
+[13]      data←×/term↑inc←(term+NX-SNX) OVERTAKE PHISalInc
+[14]      LRinc←inc←term↓inc
+[15]      SalInd←⍬⍴PHISalIncInd ⋄ rEVdate←PHISalRevD
+[16]  
+[17]      PHISALMP←PHISAL←PHIFAS←PHIFASMP←PHICARESALLY←(NX,⍴SALdata)⍴SALMP←SAL←FAS←FASMP←NX/0 ⋄ CARESALLY←(NX-SNX)/0
+[18]  
+[19]      :for N :in ⌽⍳⍴SALdata
+[20]          fasperiod←fASPERIOD[N]
+[21]          SALARIES
+[22]          :if fAScease[N] ⍝ Current or Prospective FAS  WHAT IS DONE IN PREV PROG??
+[23]              FAS  ←FAS  [ENX_1]⌊SAL
+[24]              FASMP←FASMP[ENX_1]⌊SALMP
+[25]          :endif
+[26]  
+[27]          PHISAL[;N]←NX↑SAL ⋄ PHISALMP[;N]←NX↑SALMP ⋄ PHICARESALLY[;N]←NX↑CARESALLY
+[28]          PHIFAS[;N]←NX↑FAS ⋄ PHIFASMP[;N]←NX↑FASMP
+[29]      :endfor
+[30]      PHICARESALMP←0⍪¯1↓[0]PHISALMP
+[31]  
+[32]      data←ZWB PHIOffset
+[33]      data←data××/term↑inc←(term+NX-SNX) OVERTAKE PHIOffInc
+[34]      LRinc←inc←term↓inc
+[35]      SalInd←⍬⍴PHIOffIncInd ⋄ rEVdate←PHIOffRevD ⋄ fasperiod←0
+[36]  
+[37]      SALARIES
+[38]      PHIOffSAL←NX↑SAL ⋄ PHIOffSALMP←NX↑SALMP
+[39]  :endif
+[40]  
+[41]  SALMPvec←SALvec←FASvec←FASMPvec←CARESALLYvec←(NX,⍴SALdata)⍴SALMP←SAL←FAS←FASMP←NX/0 ⋄ CARESALLY←(NX-SNX)/0
+[42]  
+[43]  :for N :in ⌽⍳⍴SALdata ⍝ Loop through Salaries in reverse order
+[44]      :if 0=sal←SALdata[N]×SALadj[N] ⋄ :continue ⋄ :endif ⍝ Zero Salary
+[45]  
+[46]      SalInd←salind[N] ⋄ rEVdate←RevDATE[N;] ⋄ fasperiod←fASPERIOD[N]
+[47]  
+[48]      S←(X0+NX-SNX)⍴1
+[49]      ⍝ Calculate Deductions
+[50]      :if 0≠DednFAS←DednFASMP←DednSAL←DednSALMP←DednCARELY←data←SALdedn[N]×SALdednadj[N]
+[51]          data←data××/term↑inc←(term+NX-SNX)↑saldednf[N;]
+[52]          LRinc←inc←term↓inc
+[53]          SALARIES
+[54]          DednSAL←SAL ⋄ DednSALMP←SALMP ⋄ DednFAS←FAS ⋄ DednFASMP←FASMP ⋄ DednCARELY←CARESALLY
+[55]      :endif
+[56]  
+[57]      ⍝ Calculate Maximums
+[58]      :if ~0∊⍴MaxFAS←MaxFASMP←MaxSAL←MaxSALMP←MaxCARELY←data←(N⊃SALmax)×SALmaxadj[N]
+[59]          data←data××/term↑inc←(term+NX-SNX)↑salmaxf[N;]
+[60]          LRinc←inc←term↓inc
+[61]          SALARIES
+[62]          MaxSAL←SAL ⋄ MaxSALMP←SALMP ⋄ MaxFAS←FAS ⋄ MaxFASMP←FASMP ⋄ MaxCARELY←CARESALLY
+[63]      :endif
+[64]  
+[65]      ⍝ Project "Normal" Salary
+[66]      :if ~ValMeth≡'UCM' ⋄ S←DecPS SAL∆SCALE X0 ⋄ :endif
+[67]      data←sal××/term↑inc←(term+NX-SNX)↑salinf[N;]
+[68]      LRinc←inc←term↓inc
+[69]      :if ~LRSalary ⋄ :andif 0≠LNX-SNX ⍝ NRA Salary projected to LRA at fixed rate
+[70]          LRinc←term↓     (term+NX-SNX)↑lrsalinc[N;]
+[71]      :endif
+[72]      SALARIES
+[73]  
+[74]      SAL      ←0⌈(SAL      ⌊NOM×MaxSAL   )-NOM×DednSAL ⍝ Apply Maximums and Deductions
+[75]      SALMP    ←0⌈(SALMP    ⌊NOM×MaxSALMP )-NOM×DednSALMP
+[76]      FAS      ←0⌈(FAS      ⌊NOM×MaxFAS   )-NOM×DednFAS
+[77]      FASMP    ←0⌈(FASMP    ⌊NOM×MaxFASMP )-NOM×DednFASMP
+[78]      CARESALLY←0⌈(CARESALLY⌊NOM×MaxCARELY)-NOM×DednCARELY
+[79]  
+[80]      :if 0<FAS0←FASdata[N] ⍝ Blend in Current FAS
+[81]          :if fasperiod=0
+[82]              FAS[0]←FAS0
+[83]          :elseif 0=LNX-SNX ⋄ :andif ~bGAD
+[84]              Z←fasperiod-↑FM
+[85]              FASMP←FASMP+(FAS0-FAS[0])×(0⌈Z+(-SNX)↓FMMP) ZDIV fasperiod
+[86]              FAS  ←FAS  +(FAS0-FAS[0])×(0⌈Z+(-SNX)↓FM  ) ZDIV fasperiod
+[87]          :else
+[88]              Z←fasperiod-NX_1-SNX
+[89]              FASMP←FASMP+(FAS0-FAS[0])×(0⌈(Z+⌽MID 0,⍳NX-SNX)-¯1        ↑FM) ZDIV fasperiod
+[90]  ⍝⍝⍝            FASMP←FASMP+(FAS0-FAS[0])×(0⌈(Z+⌽MID 0,⍳NX-SNX)-1↑(-SNX+1)↑FM) ZDIV fasperiod FIXME
+[91]              FAS  ←FAS  +(FAS0-FAS[0])×(0⌈ Z+⌽      ⍳NX-SNX)                ZDIV fasperiod
+[92]          :endif
+[93]      :endif
+[94]  
+[95]      :if fAScease[N] ⍝ Current or Prospective FAS  WHAT IS DONE IN PREV PROG??
+[96]                     FAS  ←FAS  [ENX_1]⌊SAL
+[97]          :if bGAD ⋄ FASMP←FAS  [ENX_1]⌊SALMP
+[98]          :else    ⋄ FASMP←FASMP[ENX_1]⌊SALMP
+[99]          :endif
+[100]     :endif
+[101] 
+[102]     SALvec[;N]←NX↑SAL ⋄ SALMPvec[;N]←NX↑SALMP
+[103]     FASvec[;N]←NX↑FAS ⋄ FASMPvec[;N]←NX↑FASMP ⋄ CARESALLYvec[;N]←NX↑CARESALLY
+[104] :endfor
+[105] CARESALMPvec←0⍪¯1↓[0]SALMPvec
+    ∇

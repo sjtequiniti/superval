@@ -1,0 +1,41 @@
+    ∇ xml←SchemeDetailsAsXml;parm;∆;label;relevant;name;value;⍙;fx;dx
+[1]   ⍝ MAINWIN.sf#15
+[2]   ⍝ represent scheme parameter in XML
+[3]   xml←''
+[4]   
+[5]   ⍝ dates
+[6]   dx←''
+[7]   dx←dx,⊂('valuation-date' xattr ('name' 'current')  ('label' 'Current Valuation Date') ) xtag SDATE  vDATE
+[8]   dx←dx,⊂('valuation-date' xattr ('name' 'previous') ('label' 'Previous Valuation Date')) xtag SDATE pvDATE
+[9]   xml←xml,'valuation-dates' xtag dx
+[10]  
+[11]  ⍝ folders
+[12]  fx←''
+[13]  fx←fx,⊂('folder' xattr ('name' 'scheme-folder')        ('label' 'Input Data Files')               ) xtag xmlEscape InputDir
+[14]  fx←fx,⊂('folder' xattr ('name' 'yield-folder')         ('label' 'Yield Curve Files')              ) xtag xmlEscape YieldDir
+[15]  fx←fx,⊂('folder' xattr ('name' 'output-folder')        ('label' 'Output Files')                   ) xtag xmlEscape OutputDir
+[16]  fx←fx,⊂('folder' xattr ('name' 'consolidation-folder') ('label' 'Consolidation Results Files')    ) xtag xmlEscape ConsolidDir
+[17]  fx←fx,⊂('folder' xattr ('name' 'mortimp-folder')       ('label' 'Mortality Improvement csv Files')) xtag xmlEscape MIcsvDir
+[18]  fx←fx,⊂('folder' xattr ('name' 'migration-folder')     ('label' 'Superval/21 Migration')          ) xtag xmlEscape MigFolder
+[19]  xml←xml,'folders' xtag fx
+[20]  
+[21]  ⍝ files
+[22]  fx←''
+[23]  ⍝⍝⍝ fx←fx,⊂InputDir filetag 'scheme-parameters' 'Scheme-level Parameters' clientFile
+[24]  fx←fx,⊂         filetag 'rate-tables' 'Rate Tables'       DECRFile
+[25]  fx←fx,⊂         filetag 'factors'     'Factors'           FactorFile
+[26]  fx←fx,⊂         filetag 'ppf'         'PPF Factors'       SVPPFFile
+[27]  ⍝⍝⍝ fx←fx,⊂         filetag 'globals'     'System Parameters' GlobalsFile
+[28]  xml←xml,'files' xtag fx
+[29]  
+[30]  ⍝ flags
+[31]  fx←''
+[32]  fx←fx,⊂('flag' xattr ('name' 'migration')            ('label' 'S21 Migration')                    ) xtag CheckTranslate S21Migrate
+[33]  fx←fx,⊂('flag' xattr ('name' 'ppf-calcs')            ('label' 'PPF Calculations')                 ) xtag CheckTranslate ⍕ppfenabled
+[34]  fx←fx,⊂('flag' xattr ('name' 'non-ppf-capped-calcs') ('label' 'Non-PPF Capped Calculations')      ) xtag CheckTranslate ⍕capenabled
+[35]  fx←fx,⊂('flag' xattr ('name' 'basis-identifier')     ('label' 'Single Character Basis Identifier')) xtag CheckTranslate ⍕useBasisCat
+[36]  fx←fx,⊂('flag' xattr ('name' 'aos-calcs')            ('label' 'Analysis of Surplus Calculations') ) xtag CheckTranslate ⍕aosenabled
+[37]  xml←xml,'flags' xtag fx
+[38]  
+[39]  xml←('scheme' xattr 'name' cLIENT) xtag xml
+    ∇

@@ -1,1 +1,50 @@
-    ∇ res←field Enter_Licence parm;parent;z;n;File[1]   ⍝ OVERWIN.sf#28[2]   ⍝ Function to allow user control on Entering Licence Key[3]   [4]   parent←'fmLicence.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Wait'[9]       parent ⎕wi 'style' 16[10]  [11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[12]      0 0⍴(SystemDir,'VersControl') ReadFile 'Licence'[13]  [14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[15]      parent ⎕wi '∆modified' 1[16]  [17]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[18]  [19]  :case 'Valid' ⍝ Routine specific validation[20]  [21]       parent ⎕wi '∆attempts' (1+parent ⎕wi '∆attempts')[22]       :if ↑z←LicenceString ApplyLicence LicenceKey ⍝ Valid Licence Key[23]           LicenceString←2⊃z[24]           :if ecflag[25]              0 0⍴ClientFile SaveToFile ('Licence',4↑version) '' (pack 'LicenceString') 1[26]              LocalLicence[27]              SchemeDetailsAsHtm File←InputDir,'scheme_details.htm'[28]              0 0⍴(FormName,'.webParmDisplay') ⎕wi 'XNavigate2' File[29]           :else[30]              0 0⍴(SystemDir,'VersControl') SaveToFile 'Licence' '' (pack 'LicenceString')[31]           :endif[32]       :else[33]           :if 3=n←parent ⎕wi '∆attempts'[34]               MDISPLAY res←'Licence Validation failed.  Exiting the System.'[35]               'Licence Validation failure' ExitSystem 'ForceLogoff'[36]               CRASH ⍝⍝⍝ Force ⎕SA[37]           :else[38]               res←(2⊃z),'.  You have ',(⍕3-n),' more chance',((n≠2)/'s'),' to enter a valid Licence Key'[39]               :return[40]           :endif[41]      :endif[42]  [43]  :case 'Run'[44]      res←'Quit'[45]  [46]  :case 'Quit' ⍝ Deleting "other" variables[47]  [48]  :endselect    ∇
+    ∇ res←field Enter_Licence parm;parent;z;n;File
+[1]   ⍝ OVERWIN.sf#28
+[2]   ⍝ Function to allow user control on Entering Licence Key
+[3]   
+[4]   parent←'fmLicence.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Wait'
+[9]       parent ⎕wi 'style' 16
+[10]  
+[11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[12]      0 0⍴(SystemDir,'VersControl') ReadFile 'Licence'
+[13]  
+[14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[15]      parent ⎕wi '∆modified' 1
+[16]  
+[17]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[18]  
+[19]  :case 'Valid' ⍝ Routine specific validation
+[20]  
+[21]       parent ⎕wi '∆attempts' (1+parent ⎕wi '∆attempts')
+[22]       :if ↑z←LicenceString ApplyLicence LicenceKey ⍝ Valid Licence Key
+[23]           LicenceString←2⊃z
+[24]           :if ecflag
+[25]              0 0⍴ClientFile SaveToFile ('Licence',4↑version) '' (pack 'LicenceString') 1
+[26]              LocalLicence
+[27]              SchemeDetailsAsHtm File←InputDir,'scheme_details.htm'
+[28]              0 0⍴(FormName,'.webParmDisplay') ⎕wi 'XNavigate2' File
+[29]           :else
+[30]              0 0⍴(SystemDir,'VersControl') SaveToFile 'Licence' '' (pack 'LicenceString')
+[31]           :endif
+[32]       :else
+[33]           :if 3=n←parent ⎕wi '∆attempts'
+[34]               MDISPLAY res←'Licence Validation failed.  Exiting the System.'
+[35]               'Licence Validation failure' ExitSystem 'ForceLogoff'
+[36]               CRASH ⍝⍝⍝ Force ⎕SA
+[37]           :else
+[38]               res←(2⊃z),'.  You have ',(⍕3-n),' more chance',((n≠2)/'s'),' to enter a valid Licence Key'
+[39]               :return
+[40]           :endif
+[41]      :endif
+[42]  
+[43]  :case 'Run'
+[44]      res←'Quit'
+[45]  
+[46]  :case 'Quit' ⍝ Deleting "other" variables
+[47]  
+[48]  :endselect
+    ∇

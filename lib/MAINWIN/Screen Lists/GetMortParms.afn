@@ -1,0 +1,22 @@
+    ∇ res←GetMortParms arg;index
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Create a list of Saved "Module" Mortality Descriptions
+[3]   ⍝  with "default" value of "None" at the top of the list
+[4]   res←0 0⍴''
+[5]   
+[6]   :if ~0∊⍴index←ClientFile ReadFile 'Index'
+[7]       res←⊃(index for '∆_Name' 'Mortality_Rate') at '∆_Description'
+[8]       :if arg≡'Select'
+[9]           res←res OVER ⊃(⊂'[Select] '),¨(index for '∆_Name' 'Mortality_Rate_Select') at '∆_Description'
+[10]      :endif
+[11]  :endif
+[12]  
+[13]  :if 0 ⍝⍝⍝ ~mt index←GlobalsFile ReadFile 'Index'
+[14]      res←res OVER ⊃(⊂'{Library} '),¨(index for '∆_Name' 'Mortality_Rate') at '∆_Description'
+[15]      :if arg≡'Select'
+[16]          res←res OVER ⊃(⊂'{Library} [Select] '),¨(index for '∆_Name' 'Mortality_Rate_Select') at '∆_Description'
+[17]      :endif
+[18]  :endif
+[19]  
+[20]  res←'Saved Parameters' OVER 'None' OVER res[⎕av⍋res;]
+    ∇

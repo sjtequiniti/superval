@@ -1,0 +1,31 @@
+    ∇ Z←fILENAME CREATE∆RES Z;File;tieno;FileList;NOS;HEAD
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Create Valuation Results Component File for Consolidation
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   tieno←TieNumber File←ConsolidDir,'VALRES.SF'
+[8]   
+[9]   ⍝ Check file already exists and create OR open
+[10]  :if FileExist File
+[11]      →(~File FTIE tieno)/⎕lc ⍝ Keep trying
+[12]  :else
+[13]      File ⎕xfcreate tieno ⋄ File ⎕xftie tieno
+[14]      ⍝ Append Header Record
+[15]      HEAD←MATRIX (,⊃'Val Method' ' Val Date' 'AB Ind' 'Default AB' 'AOS Ind' 'NE Ind' 'Cont Per.' 'Insure Ind' 'Target AB' 'COCR Ind' 'COCR' 'MFR Ind'),(,⊃ 'Scheme Name' 'Valuation Run Description' 'New Entrant Model Run Description' (80↑'Output Name')),,(,⊃ 'Valuation Run Time' (26↑'Valn/New Ents Unique Key')),112↑'Version     Reserved'
+[16]      0 0⍴(HEAD OVER 'File Created at ',RunTime) ⎕fappend tieno
+[17]      FileList←0 0⍴'' ⋄ NOS←⍳0 ⋄ 0 0⍴(FileList NOS) ⎕fappend tieno
+[18]  :endif
+[19]  
+[20]  (FileList NOS)←⎕FREAD tieno,2 ⍝ Get the FileList and Output Nos
+[21]  
+[22]  :if 0∊⍴N←(FileList ExactTLU fILENAME)-~⎕io
+[23]      FileList←FileList OVER fILENAME ⋄ N←(⍴,NOS←NOS,0)-~⎕io
+[24]  :else
+[25]      Z←Z⌈NOS[N]
+[26]  :endif
+[27]  NOS[N]←Z+1
+[28]  
+[29]  (FileList NOS) ⎕freplace tieno,2 ⋄ ⎕funtie tieno
+    ∇

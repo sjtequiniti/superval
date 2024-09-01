@@ -1,0 +1,13 @@
+    ∇ Z←type ⍙DBString str;QT
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ String in form for SQL syntax: quoted and with single quotes escaped by doubling
+[3]   ⍝ type 1 for single quote, 0 for # (dates in Access), 2 for double quote (pathnames that could includes spaces)
+[4]   ⍝ Vern: sjt27oct15
+[5]   ⍝ Tests:
+[6]   ⍝?⍝ "''" ≡1 ⍙DBString ""
+[7]   ⍝?⍝ "''''" ≡1 ⍙DBString "'"
+[8]   ⍝?⍝ "'abc'" ≡1 ⍙DBString 'abc'
+[9]   ⍝?⍝ "#22/01/2017 11:37 AM#" ≡0 ⍙DBString '22/01/2017 11:37 AM'
+[10]  ⍝?⍝ "'John''s pen'" ≡1 ⍙DBString "John's pen"
+[11]  Z←QT,((1+str=QT)/str),QT←"#'"""[⎕io+type]
+    ∇

@@ -1,1 +1,134 @@
-    ∇ res←field Financials parm;parent;row;col;SSlist;MaxRow;text;SSName;z;page;∆[1]   ⍝ PARMWIN.sf#28[2]   ⍝ Function to allow user control on Financial Assumptions module[3]   [4]   parent←'fmFinancials.sFinancials.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       :if 0≠⎕nc 'FinNumComment'[10]          FinNumDesc←FinNumComment ⋄ 0 0⍴⎕ex 'FinNumComment'[11]      :endif[12]      :if mod←bQSM ⋄ :andif mod←mt incGroup ⋄ :andif mod←mt groupName[13]          intGroup←(↑⍴intName)↑[1]intGroup[14]          infGroup←(↑⍴infName)↑[1]infGroup[15]          revGroup←(↑⍴revName)↑[1]revGroup[16]          groupName←⊃nub lmt m2n incGroup←incConsDyn[17]          groupDesc←(⍴groupName)⍴' '[18]      :endif[19]      :if ~bQSM[20]          FormFields←FormFields for ~(⊂'ssGroupings')≡¨FormFields at 'shortname'[21]      :endif[22]      QSMwarning←bQSM[23]  [24]  :case 'PostAssign'[25]          :if mod ⋄ parent ⎕wi 'modified' 1 ⋄ :endif[26]  [27]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[28]  [29]      Display∆Access basAccess[1 2][30]      (parent,'pgInterest.ssInterestAss'  ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0[31]      (parent,'pgInflation.ssInflationAss') ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0[32]      (parent,'pgRevaluation.ssRevalnAss' ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0[33]      (parent,'pgIncrease.ssIncreaseAss'  ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0[34]      (parent,'pgConstants.ssFinConst'    ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0[35]      :if ~bQSM ⍝ Hide Groupings information[36]          (parent,'pgGroupings') ⎕wi 'Delete'[37]          (parent,'pgInterest.ssInterestAss'  ) ⎕wi 'xColHidden' 5 1[38]          (parent,'pgInflation.ssInflationAss') ⎕wi 'xColHidden' 5 1[39]          (parent,'pgRevaluation.ssRevalnAss' ) ⎕wi 'xColHidden' 5 1[40]          (parent,'pgIncrease.ssIncreaseAss'  ) ⎕wi 'xColHidden' 6 1[41]      :else[42]          (parent,'pgGroupings.ssGroupings'   ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0[43]      :endif[44]  [45]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[46]  [47]      :repeat[48]          :select ↑field[49]          :case 'ssFinConst'[50]              :if Win∆F1SSFilled SSName←parent,'pgConstants.',↑field ⍝ Put "fc_" at the start if not already!![51]                  MaxRow←SSName ⎕wi 'xMaxRow'[52]                  text←((⊂' _') REPL¨SSName Win∆F1SSGetTextArray 1 1 MaxRow 1)[;1][53]                  z←(~(⊂'fc_')≡¨3↑¨text)^∨/¨' '≠¨text[54]                  text←DLTB¨(z\z/⊂'fc_'),¨text[55]                  SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,1) text[56]              :endif[57]          :endselect[58]          (↑field) Win∆FormValidation 'Change'[59]      :until mt field←1↓field[60]  [61]  :case 'PageChange'[62]  [63]      :select DLTMB ↑field[64]      :case 'pgInterest'    ⋄ ∆←intGroup[65]      :case 'pgInflation'   ⋄ ∆←infGroup[66]      :case 'pgRevaluation' ⋄ ∆←revGroup[67]      :case 'pgIncrease'    ⋄ ∆←incGroup[68]      :else                 ⋄ :return[69]      :endselect[70]  [71]      :if ~mt ∆←⊃nub (lmt m2n ∆)~m2n groupName[72]          :if mt groupName ⋄ groupName←               ∆ ⋄ groupDesc←               0/∆[73]          :else            ⋄ groupName←groupName OVER ∆ ⋄ groupDesc←groupDesc OVER 0/∆[74]          :endif[75]          Assign_Inputs 0[76]      :endif[77]  [78]  :case 'SSClick'[79]  [80]      (SSName row col)←field[81]      :if ∨/(⊂Win∆Child SSName)∊'ssInterestAss' 'ssInflationAss' 'ssRevalnAss' 'ssIncreaseAss'[82]      :andif row≠0 ⍝ Not the Header Row[83]          :if col=2 ⍝ Only the Yield Curve column[84]              YieldDir RunGetCSVFiles field[85]          :elseif col=5+(Win∆Child SSName)≡'ssIncreaseAss'[86]              RunGetGroupings field[87]          :endif[88]      :endif[89]  [90]  :case 'Valid' ⍝ Routine specific validation[91]  [92]      page←DLTMB ↑field[93]      :if ~page≡'All'[94]          :if ~mt res←((Win∆GetControlList parent,page) at 'variable') Win∆FormValidation 'Valid'[95]              :return[96]          :endif[97]      :elseif ∨/z←(∆←'GMP None' 'GMP Fixed' 'GMP Limited 5%')∊m2n groupName[98]          res←(' and' join z/∆),' is a Reserved Grouping Name.  Please specify a different name.'[99]          0 Win∆SetFocus parent,'pgGroupings.ssGroupings' ⋄ :return[100]     :elseif ∨/z←(lmt m2n intGroup)∊m2n infGroup OVER revGroup OVER incGroup[101]         res←'Interest Groupings cannot be used for other Financial assumptions.  Please change the name of the following Interest groupings:  ',', ' join '"' embrace¨nub z/lmt m2n intGroup[102]         :return[103]     :endif[104] [105]     SSlist←(⊂parent),¨'pgInterest.ssInterestAss' 'pgInflation.ssInflationAss' 'pgRevaluation.ssRevalnAss' 'pgIncrease.ssIncreaseAss' 'pgConstants.ssFinConst'[106]     :select page[107]     :case 'pgInterest'    ⋄ SSlist←SSlist[1][108]     :case 'pgInflation'   ⋄ SSlist←SSlist[2][109]     :case 'pgRevaluation' ⋄ SSlist←SSlist[3][110]     :case 'pgIncrease'    ⋄ SSlist←SSlist[4][111]     :case 'pgConstants'   ⋄ SSlist←SSlist[5][112]     :case 'pgGroupings'[113]     :else                 ⋄ 0 0⍴(⊂'ssFinConst') Financials 'Change'[114]     :endselect[115] [116]     :if ~mt res←Financials∆Valid SSlist[117]         :return[118]     :endif[119] [120]     :if QSMwarning ⋄ :andif mt lmt m2n intGroup OVER infGroup OVER revGroup OVER incGroup[121]         res←'Quick Scenario Modeller requires Groupings specified for any Financial assumptions you wish to adjust'[122]         QSMwarning←0 ⋄ :return[123]     :endif[124] :case 'Run'[125] [126]     res←'Quit'[127] [128] :case 'Quit' ⍝ Deleting "other" variables[129]     :if ~mt FinDefault ⋄ ⍙FinAssdict←GetFinList FinDefault ⋄ :endif[130]     0 0⍴⎕ex 'mod QSMwarning'[131] [132] :endselect    ∇
+    ∇ res←field Financials parm;parent;row;col;SSlist;MaxRow;text;SSName;z;page;∆
+[1]   ⍝ PARMWIN.sf#28
+[2]   ⍝ Function to allow user control on Financial Assumptions module
+[3]   
+[4]   parent←'fmFinancials.sFinancials.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if 0≠⎕nc 'FinNumComment'
+[10]          FinNumDesc←FinNumComment ⋄ 0 0⍴⎕ex 'FinNumComment'
+[11]      :endif
+[12]      :if mod←bQSM ⋄ :andif mod←mt incGroup ⋄ :andif mod←mt groupName
+[13]          intGroup←(↑⍴intName)↑[1]intGroup
+[14]          infGroup←(↑⍴infName)↑[1]infGroup
+[15]          revGroup←(↑⍴revName)↑[1]revGroup
+[16]          groupName←⊃nub lmt m2n incGroup←incConsDyn
+[17]          groupDesc←(⍴groupName)⍴' '
+[18]      :endif
+[19]      :if ~bQSM
+[20]          FormFields←FormFields for ~(⊂'ssGroupings')≡¨FormFields at 'shortname'
+[21]      :endif
+[22]      QSMwarning←bQSM
+[23]  
+[24]  :case 'PostAssign'
+[25]          :if mod ⋄ parent ⎕wi 'modified' 1 ⋄ :endif
+[26]  
+[27]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[28]  
+[29]      Display∆Access basAccess[1 2]
+[30]      (parent,'pgInterest.ssInterestAss'  ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0
+[31]      (parent,'pgInflation.ssInflationAss') ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0
+[32]      (parent,'pgRevaluation.ssRevalnAss' ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0
+[33]      (parent,'pgIncrease.ssIncreaseAss'  ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0
+[34]      (parent,'pgConstants.ssFinConst'    ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0
+[35]      :if ~bQSM ⍝ Hide Groupings information
+[36]          (parent,'pgGroupings') ⎕wi 'Delete'
+[37]          (parent,'pgInterest.ssInterestAss'  ) ⎕wi 'xColHidden' 5 1
+[38]          (parent,'pgInflation.ssInflationAss') ⎕wi 'xColHidden' 5 1
+[39]          (parent,'pgRevaluation.ssRevalnAss' ) ⎕wi 'xColHidden' 5 1
+[40]          (parent,'pgIncrease.ssIncreaseAss'  ) ⎕wi 'xColHidden' 6 1
+[41]      :else
+[42]          (parent,'pgGroupings.ssGroupings'   ) ⎕wi "SetColWidthAuto" ¯1 ¯1 ¯1 ¯1 0
+[43]      :endif
+[44]  
+[45]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[46]  
+[47]      :repeat
+[48]          :select ↑field
+[49]          :case 'ssFinConst'
+[50]              :if Win∆F1SSFilled SSName←parent,'pgConstants.',↑field ⍝ Put "fc_" at the start if not already!!
+[51]                  MaxRow←SSName ⎕wi 'xMaxRow'
+[52]                  text←((⊂' _') REPL¨SSName Win∆F1SSGetTextArray 1 1 MaxRow 1)[;1]
+[53]                  z←(~(⊂'fc_')≡¨3↑¨text)^∨/¨' '≠¨text
+[54]                  text←DLTB¨(z\z/⊂'fc_'),¨text
+[55]                  SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,1) text
+[56]              :endif
+[57]          :endselect
+[58]          (↑field) Win∆FormValidation 'Change'
+[59]      :until mt field←1↓field
+[60]  
+[61]  :case 'PageChange'
+[62]  
+[63]      :select DLTMB ↑field
+[64]      :case 'pgInterest'    ⋄ ∆←intGroup
+[65]      :case 'pgInflation'   ⋄ ∆←infGroup
+[66]      :case 'pgRevaluation' ⋄ ∆←revGroup
+[67]      :case 'pgIncrease'    ⋄ ∆←incGroup
+[68]      :else                 ⋄ :return
+[69]      :endselect
+[70]  
+[71]      :if ~mt ∆←⊃nub (lmt m2n ∆)~m2n groupName
+[72]          :if mt groupName ⋄ groupName←               ∆ ⋄ groupDesc←               0/∆
+[73]          :else            ⋄ groupName←groupName OVER ∆ ⋄ groupDesc←groupDesc OVER 0/∆
+[74]          :endif
+[75]          Assign_Inputs 0
+[76]      :endif
+[77]  
+[78]  :case 'SSClick'
+[79]  
+[80]      (SSName row col)←field
+[81]      :if ∨/(⊂Win∆Child SSName)∊'ssInterestAss' 'ssInflationAss' 'ssRevalnAss' 'ssIncreaseAss'
+[82]      :andif row≠0 ⍝ Not the Header Row
+[83]          :if col=2 ⍝ Only the Yield Curve column
+[84]              YieldDir RunGetCSVFiles field
+[85]          :elseif col=5+(Win∆Child SSName)≡'ssIncreaseAss'
+[86]              RunGetGroupings field
+[87]          :endif
+[88]      :endif
+[89]  
+[90]  :case 'Valid' ⍝ Routine specific validation
+[91]  
+[92]      page←DLTMB ↑field
+[93]      :if ~page≡'All'
+[94]          :if ~mt res←((Win∆GetControlList parent,page) at 'variable') Win∆FormValidation 'Valid'
+[95]              :return
+[96]          :endif
+[97]      :elseif ∨/z←(∆←'GMP None' 'GMP Fixed' 'GMP Limited 5%')∊m2n groupName
+[98]          res←(' and' join z/∆),' is a Reserved Grouping Name.  Please specify a different name.'
+[99]          0 Win∆SetFocus parent,'pgGroupings.ssGroupings' ⋄ :return
+[100]     :elseif ∨/z←(lmt m2n intGroup)∊m2n infGroup OVER revGroup OVER incGroup
+[101]         res←'Interest Groupings cannot be used for other Financial assumptions.  Please change the name of the following Interest groupings:  ',', ' join '"' embrace¨nub z/lmt m2n intGroup
+[102]         :return
+[103]     :endif
+[104] 
+[105]     SSlist←(⊂parent),¨'pgInterest.ssInterestAss' 'pgInflation.ssInflationAss' 'pgRevaluation.ssRevalnAss' 'pgIncrease.ssIncreaseAss' 'pgConstants.ssFinConst'
+[106]     :select page
+[107]     :case 'pgInterest'    ⋄ SSlist←SSlist[1]
+[108]     :case 'pgInflation'   ⋄ SSlist←SSlist[2]
+[109]     :case 'pgRevaluation' ⋄ SSlist←SSlist[3]
+[110]     :case 'pgIncrease'    ⋄ SSlist←SSlist[4]
+[111]     :case 'pgConstants'   ⋄ SSlist←SSlist[5]
+[112]     :case 'pgGroupings'
+[113]     :else                 ⋄ 0 0⍴(⊂'ssFinConst') Financials 'Change'
+[114]     :endselect
+[115] 
+[116]     :if ~mt res←Financials∆Valid SSlist
+[117]         :return
+[118]     :endif
+[119] 
+[120]     :if QSMwarning ⋄ :andif mt lmt m2n intGroup OVER infGroup OVER revGroup OVER incGroup
+[121]         res←'Quick Scenario Modeller requires Groupings specified for any Financial assumptions you wish to adjust'
+[122]         QSMwarning←0 ⋄ :return
+[123]     :endif
+[124] :case 'Run'
+[125] 
+[126]     res←'Quit'
+[127] 
+[128] :case 'Quit' ⍝ Deleting "other" variables
+[129]     :if ~mt FinDefault ⋄ ⍙FinAssdict←GetFinList FinDefault ⋄ :endif
+[130]     0 0⍴⎕ex 'mod QSMwarning'
+[131] 
+[132] :endselect
+    ∇

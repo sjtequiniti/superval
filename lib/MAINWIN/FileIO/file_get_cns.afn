@@ -1,0 +1,20 @@
+    ∇ Z←cns file_get_cns fpath;tno;drp;lst;⎕IO
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ return contents of a component file as an array
+[3]   ⍝ optional cns selects components
+[4]   ⎕IO←1
+[5]   :if ~(tno←TieNumber fpath)∊⎕xfnums,⎕fnums
+[6]       →(0≠fpath FSTIE (tno←TieNumber fpath),1)/⎕lc ⍝ Keeps trying until succeeds
+[7]   :endif
+[8]   :if 2≠⎕NC 'cns'
+[9]       (drp lst)←(2↑⎕FSIZE tno)-1
+[10]      cns←drp↓⍳lst
+[11]  :endif
+[12]  
+[13]  :if 0∊⍴cns ⍝ was "mt" but can be run before "mt" is present
+[14]      Z←''
+[15]  :else
+[16]      Z←⎕FREAD¨tno,¨cns ⋄ :if 0=⍴⍴cns ⋄ Z←↑Z ⋄ :endif
+[17]  :endif
+[18]  ⎕FUNTIE tno
+    ∇

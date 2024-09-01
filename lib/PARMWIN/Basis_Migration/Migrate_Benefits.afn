@@ -1,1 +1,61 @@
-    ∇ Migrate_Benefits;FNList;cn;list;QuadCR;z;vars[1]   ⍝ PARMWIN.sf#2[2]   ⍝ Migrate the DOS Benefits[3]   [4]   :select uk[5]   :case 0[6]       pdef ¨⎕fread ¨tieno,¨⍳5 ⍝ Read All Benefit Functions[7]   [8]       :if 0∊⍴Rform ⋄ Rform←18⍴'∆⍺⍺' ⋄ :endif ⍝ Set Defaults for Parameters[9]       :if 0∊⍴Mform ⋄ Mform←21⍴'∆⍺⍺' ⋄ :endif[10]      :if 0∊⍴Dform ⋄ Dform←21⍴'∆⍺⍺' ⋄ :endif[11]      :if 0∊⍴Wform ⋄ Wform←24⍴'∆⍺⍺' ⋄ :endif[12]      :if 0∊⍴Aform ⋄ Aform←21⍴'∆⍺⍺' ⋄ :endif[13]  [14]      FNList←            (3=⎕nc list)⌿list←pnames ⎕fread tieno,1 ⋄ cn←(1↑⍴FNList) OVERTAKE    1[15]      FNList←FNList OVER (3=⎕nc list)⌿list←pnames ⎕fread tieno,2 ⋄ cn←(1↑⍴FNList) OVERTAKE cn,2[16]      FNList←FNList OVER (3=⎕nc list)⌿list←pnames ⎕fread tieno,3 ⋄ cn←(1↑⍴FNList) OVERTAKE cn,3[17]      FNList←FNList OVER (3=⎕nc list)⌿list←pnames ⎕fread tieno,4 ⋄ cn←(1↑⍴FNList) OVERTAKE cn,4[18]      FNList←FNList OVER (3=⎕nc list)⌿list←pnames ⎕fread tieno,5 ⋄ cn←(1↑⍴FNList) OVERTAKE cn,5[19]  [20]      :for i :in ⍳1↑⍴FNList[21]          :if '←'∊QuadCR←,'ß',(⎕cr FNList[i;]),' '[22]              vars←z\(z←QuadCR∊'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ∆⍙_')/QuadCR[23]              :if ∨/z←' CR '⍷vars[24]                  :if (+/z)=+/'CR'⍷QuadCR[25]                      :if 'Y'='YN' ASK 'CRDetected' (DLTB '∆^' REPL FNList[i;])[26]                          0 0⍴⎕def SStoMAT '/CR/(0.01×CR)' TEXTREPL QuadCR[27]                      :endif[28]                  :else[29]                      MDISPLAY 'Variable CR Detected in ',(DLTB '∆^' REPL FNList[i;]),' but unable to apply "patch".'[30]                  :endif[31]              :endif[32]          :endif[33]      :endfor[34]  [35]  :case 1[36]      FNList←0 0⍴'' ⋄ cn←⍳0[37]  [38]  :case 2[39]      'RP5∆BENEFIT RF5∆BENEFIT' pdef ⎕fread tieno,25[40]      'DP5∆BENEFIT DF5∆BENEFIT' pdef ⎕fread tieno,26[41]      'IP5∆BENEFIT IF5∆BENEFIT' pdef ⎕fread tieno,27[42]      'LP5∆BENEFIT LF5∆BENEFIT' pdef ⎕fread tieno,28[43]  [44]      QuadCR←,'⍺',⎕cr 'LF5∆BENEFIT'[45]      QuadCR←'\→((~test)∨valind=2)/0\ ' TEXTREPL QuadCR[46]      QuadCR←'\⎕NUNTIE vtpr1\ ' TEXTREPL QuadCR[47]      0 0⍴⎕def SStoMAT QuadCR[48]  [49]      FNList←8 11⍴'RP5∆BENEFITRF5∆BENEFITDP5∆BENEFITDF5∆BENEFITIP5∆BENEFITIF5∆BENEFITLP5∆BENEFITLF5∆BENEFIT'[50]      cn←2/25 26 27 28[51]  [52]  :endselect[53]  [54]  :for i :in ⍳1↑⍴FNList[55]      :if '←'∊,⎕cr FNList[i;][56]      :andif 2≤1↑⍴⎕cr FNList[i;][57]          0 0⍴⎕defl (DLTMB FNList[i;]),'[0.5]⍝ Last Modified:  ',,1 DATESPELL 3↓⎕frdci tieno,cn[i][58]      :endif[59]  :endfor    ∇
+    ∇ Migrate_Benefits;FNList;cn;list;QuadCR;z;vars
+[1]   ⍝ PARMWIN.sf#2
+[2]   ⍝ Migrate the DOS Benefits
+[3]   
+[4]   :select uk
+[5]   :case 0
+[6]       pdef ¨⎕fread ¨tieno,¨⍳5 ⍝ Read All Benefit Functions
+[7]   
+[8]       :if 0∊⍴Rform ⋄ Rform←18⍴'∆⍺⍺' ⋄ :endif ⍝ Set Defaults for Parameters
+[9]       :if 0∊⍴Mform ⋄ Mform←21⍴'∆⍺⍺' ⋄ :endif
+[10]      :if 0∊⍴Dform ⋄ Dform←21⍴'∆⍺⍺' ⋄ :endif
+[11]      :if 0∊⍴Wform ⋄ Wform←24⍴'∆⍺⍺' ⋄ :endif
+[12]      :if 0∊⍴Aform ⋄ Aform←21⍴'∆⍺⍺' ⋄ :endif
+[13]  
+[14]      FNList←            (3=⎕nc list)⌿list←pnames ⎕fread tieno,1 ⋄ cn←(1↑⍴FNList) OVERTAKE    1
+[15]      FNList←FNList OVER (3=⎕nc list)⌿list←pnames ⎕fread tieno,2 ⋄ cn←(1↑⍴FNList) OVERTAKE cn,2
+[16]      FNList←FNList OVER (3=⎕nc list)⌿list←pnames ⎕fread tieno,3 ⋄ cn←(1↑⍴FNList) OVERTAKE cn,3
+[17]      FNList←FNList OVER (3=⎕nc list)⌿list←pnames ⎕fread tieno,4 ⋄ cn←(1↑⍴FNList) OVERTAKE cn,4
+[18]      FNList←FNList OVER (3=⎕nc list)⌿list←pnames ⎕fread tieno,5 ⋄ cn←(1↑⍴FNList) OVERTAKE cn,5
+[19]  
+[20]      :for i :in ⍳1↑⍴FNList
+[21]          :if '←'∊QuadCR←,'ß',(⎕cr FNList[i;]),' '
+[22]              vars←z\(z←QuadCR∊'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ∆⍙_')/QuadCR
+[23]              :if ∨/z←' CR '⍷vars
+[24]                  :if (+/z)=+/'CR'⍷QuadCR
+[25]                      :if 'Y'='YN' ASK 'CRDetected' (DLTB '∆^' REPL FNList[i;])
+[26]                          0 0⍴⎕def SStoMAT '/CR/(0.01×CR)' TEXTREPL QuadCR
+[27]                      :endif
+[28]                  :else
+[29]                      MDISPLAY 'Variable CR Detected in ',(DLTB '∆^' REPL FNList[i;]),' but unable to apply "patch".'
+[30]                  :endif
+[31]              :endif
+[32]          :endif
+[33]      :endfor
+[34]  
+[35]  :case 1
+[36]      FNList←0 0⍴'' ⋄ cn←⍳0
+[37]  
+[38]  :case 2
+[39]      'RP5∆BENEFIT RF5∆BENEFIT' pdef ⎕fread tieno,25
+[40]      'DP5∆BENEFIT DF5∆BENEFIT' pdef ⎕fread tieno,26
+[41]      'IP5∆BENEFIT IF5∆BENEFIT' pdef ⎕fread tieno,27
+[42]      'LP5∆BENEFIT LF5∆BENEFIT' pdef ⎕fread tieno,28
+[43]  
+[44]      QuadCR←,'⍺',⎕cr 'LF5∆BENEFIT'
+[45]      QuadCR←'\→((~test)∨valind=2)/0\ ' TEXTREPL QuadCR
+[46]      QuadCR←'\⎕NUNTIE vtpr1\ ' TEXTREPL QuadCR
+[47]      0 0⍴⎕def SStoMAT QuadCR
+[48]  
+[49]      FNList←8 11⍴'RP5∆BENEFITRF5∆BENEFITDP5∆BENEFITDF5∆BENEFITIP5∆BENEFITIF5∆BENEFITLP5∆BENEFITLF5∆BENEFIT'
+[50]      cn←2/25 26 27 28
+[51]  
+[52]  :endselect
+[53]  
+[54]  :for i :in ⍳1↑⍴FNList
+[55]      :if '←'∊,⎕cr FNList[i;]
+[56]      :andif 2≤1↑⍴⎕cr FNList[i;]
+[57]          0 0⍴⎕defl (DLTMB FNList[i;]),'[0.5]⍝ Last Modified:  ',,1 DATESPELL 3↓⎕frdci tieno,cn[i]
+[58]      :endif
+[59]  :endfor
+    ∇

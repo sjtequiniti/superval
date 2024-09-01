@@ -1,1 +1,26 @@
-    ∇ res←larg CSVFILE∆CHECK File;var;tieno;data;desc;errflag[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Checks the contents of a CSV file (mort improvement or yield curve)[3]   ⍝  FileList is a list of files in the applicable folder[4]   ⍝  arg has a description of the file and the (fully qualified) filename[5]   ⍝[6]   ⍝[7]   (desc errflag)←larg ⋄ res←'' ⍝ Default response[8]   [9]   :if ~mt var←'\' Win∆Child File[10]      :if ~FileExist File[11]          res←DLTB desc," CSV File '",File,"' no longer exists" ⋄ →end[12]      :elseif ~File NTIE tieno←'Native' TieNumber File[13]          res←"Unable to tie ",desc," CSV File '",var,"' - it may be in use by another process"[14]      :elseif 0=⍴data←'ASCII' Read∆DataFile tieno,¯1,0,(⎕nsize tieno),0[15]      :orif   0=↑(data⍳⎕tcnl)-⎕io[16]      :orif ^/' '=data←(⎕tclf,' ') REPL (⎕tcnl,' ') REPL data~⎕tcff,⎕tcht[17]          res←desc," CSV File '",var,"' is empty or contains no data"[18]      :elseif ~^/⎕vi DLTMB (SStoMAT ',',data),' '[19]          res←desc," CSV File '",var,"' contains non-numeric data"[20]      :endif[21]      ⎕nuntie tieno[22]  end:[23]      :if ~mt res ⋄ res←(errflag/'ERROR:  '),DLTB res ⋄ :endif[24]  :endif    ∇
+    ∇ res←larg CSVFILE∆CHECK File;var;tieno;data;desc;errflag
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Checks the contents of a CSV file (mort improvement or yield curve)
+[3]   ⍝  FileList is a list of files in the applicable folder
+[4]   ⍝  arg has a description of the file and the (fully qualified) filename
+[5]   ⍝
+[6]   ⍝
+[7]   (desc errflag)←larg ⋄ res←'' ⍝ Default response
+[8]   
+[9]   :if ~mt var←'\' Win∆Child File
+[10]      :if ~FileExist File
+[11]          res←DLTB desc," CSV File '",File,"' no longer exists" ⋄ →end
+[12]      :elseif ~File NTIE tieno←'Native' TieNumber File
+[13]          res←"Unable to tie ",desc," CSV File '",var,"' - it may be in use by another process"
+[14]      :elseif 0=⍴data←'ASCII' Read∆DataFile tieno,¯1,0,(⎕nsize tieno),0
+[15]      :orif   0=↑(data⍳⎕tcnl)-⎕io
+[16]      :orif ^/' '=data←(⎕tclf,' ') REPL (⎕tcnl,' ') REPL data~⎕tcff,⎕tcht
+[17]          res←desc," CSV File '",var,"' is empty or contains no data"
+[18]      :elseif ~^/⎕vi DLTMB (SStoMAT ',',data),' '
+[19]          res←desc," CSV File '",var,"' contains non-numeric data"
+[20]      :endif
+[21]      ⎕nuntie tieno
+[22]  end:
+[23]      :if ~mt res ⋄ res←(errflag/'ERROR:  '),DLTB res ⋄ :endif
+[24]  :endif
+    ∇

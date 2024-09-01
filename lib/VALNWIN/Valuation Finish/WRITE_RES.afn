@@ -1,0 +1,40 @@
+    ∇ WRITE∆RES;ROW;desc;z;xxx;cursor;lock
+[1]   ⍝ VALNWIN.sf#4
+[2]   ⍝ Writes the results to Database of VALRES file.
+[3]   ⍝ Writes basis description followed by the present value results, and
+[4]   ⍝ updates the description record (1st component).
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   
+[8]   (1 1 'Finalising') Win∆ProgressBar 'MemberUpdate'
+[9]   
+[10]  :if ⍙dbopt
+[11]      xxx←ValnResultsDB ⍙DBOpen ¯1
+[12]      0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'
+[13]      cursor←'ADOrst' ⎕wi 'adOpenStatic' ⋄ lock←'ADOrst' ⎕wi 'adLockOptimistic'
+[14]  
+[15]      :if aosind
+[16]          :if ClassID=4
+[17]              :for z :in ⍳↑⍴aos∆TOTS
+[18]                  aostype[z;] ⍙DBXL_AOSTables aos∆TOTS[z;;;]
+[19]              :endfor
+[20]          :else
+[21]              ⍙DBXL_AOSTables aos∆TOTS
+[22]          :endif
+[23]      :endif
+[24]      ⍙DBFinalise newrecsize
+[25]      :if excelOutput ⋄ :andif ~excelDelay
+[26]          0 0⍴XL_Finalise 1
+[27]      :endif
+[28]      0 0⍴'ADOrst' ⎕wi 'Delete'
+[29]      0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[30]      0 0⍴'ADOcon' ⎕wi 'XClose' ⋄ 0 0⍴'ADOcon' ⎕wi 'Delete'
+[31]  ⍝⍝⍝    :if BatchRow=TotalRuns
+[32]  ⍝⍝⍝        (5 6 'Compacting Access Database') Win∆ProgressBar2 'FileUpdate'
+[33]  ⍝⍝⍝        (1 1 'Compacting Access Database') Win∆ProgressBar2 'MemberUpdate'
+[34]  ⍝⍝⍝        1 ⍙DBCompactDatabase ⍙dbfilename
+[35]  ⍝⍝⍝    :endif
+[36]  :elseif KeepResult^(~XLCtl)^~test
+[37]      :return
+[38]  :endif
+    ∇

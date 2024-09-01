@@ -1,0 +1,85 @@
+    ∇ r←L ⍙DBSummarise R;worker;prefix;tiein;keycol;valcol;summflag;tieout;∆;CACHEDVALS_NAME;CACHESIZE_NAME;SUMKEYS_NAME;SUMVALS_NAME;CACHEDKEYS_NAME;c;keys;data;xxx;cachenames;recs;N;values;size;newkeys;newvalues;lRECL;chunks;z;keysize;NN;zip
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Summarise Database records to "accumulate" duplicates
+[3]   ⍝ Can be done 3 ways:
+[4]   ⍝   raw records are summarised in ws on the fly (inMemory)
+[5]   ⍝   raw records are summarised by a worker process (parallel)
+[6]   ⍝   raw records are read from Native File
+[7]   
+[8]   (worker prefix)←L ⋄ (tiein keycol valcol summflag zip tieout)←6⍴R ⍝ Use same tie for in and out if not specified
+[9]   prefix←sqlDatabase/∊prefix
+[10]  
+[11]  ⍝ Update cached summary with any unsummarised records still cached; write to file; erase caches
+[12]  ⍝ Revn: sjt16aug16 * using in-memory cache rather than CSV
+[13]  ⍝       sjt20aug16 * indexed insertion; keep char and floats in separate arrays
+[14]  :if inMemory
+[15]      :if 0∊⎕nc ⊃cachenames←(⊂worker),¨'SumKeys' 'SumVals' 'CachedKeys' 'CachedVals' 'CacheSize'
+[16]          →Filemethod
+[17]      :endif
+[18]      (SUMKEYS_NAME SUMVALS_NAME CACHEDKEYS_NAME CACHEDVALS_NAME CACHESIZE_NAME)←cachenames
+[19]  
+[20]      :if ×⍎CACHESIZE_NAME                                                                        ⍝ unsummarised records in cache?
+[21]          SUMKEYS_NAME SUMVALS_NAME ⍙DBSummariseMem CACHEDKEYS_NAME CACHEDVALS_NAME CACHESIZE_NAME ⍝ summarise them
+[22]      :endif
+[23]  
+[24]      (r c)←⍴keys←⊃⍎SUMKEYS_NAME                                                                  ⍝ number and width of cached keys
+[25]      data←((⍕c),'A1,E17.10,<',⎕TCNL,⎕TCLF,'>') ⎕FMT ( keys ; r⍴⍎SUMVALS_NAME )                   ⍝ discard unused elements of sums
+[26]      ∆←c+⎕io+0 13                                                                                ⍝ columns with high minus signs
+[27]      data[;∆]←'¯-' REPL data[;∆]
+[28]  
+[29]      xxx←⎕EX⊃cachenames                                                                          ⍝ erase caches
+[30]      'empty file' ASSERT "0=⎕NSIZE tieout"
+[31]  
+[32]  :elseif parallel ⍝ Summarise records in worker process
+[33]      :if summflag
+[34]          summflag←~worker ⍙DBSummariseCOM tiein
+[35]      :endif
+[36]      →Filemethod                                     ⍝ Use File method (if summarising failed) and add any prefix required
+[37]  
+[38]  :else ⍝ Summarise Database records contained in an ASCII file (format "keyvalue⎕tcnl⎕tclf")
+[39]  
+[40]  Filemethod:
+[41]      size←⎕nsize tiein
+[42]      lRECL←2++/keycol valcol
+[43]      :if summflag
+[44]          valcol←keycol+⍳valcol ⋄ keycol←⍳keycol
+[45]  
+[46]          keys←0⍴'' ⋄ values←⍳0 ⋄ N←0 ⋄ NN←⌊size÷lRECL
+[47]  
+[48]          :while 0≠z←↑⍴recs←'ASCII' Read∆DataFile tiein,size,lRECL,NN⌊N+3000000 0 ⍝ 3,000,000 Record chunks - Optimise this!!
+[49]              N←N+z
+[50]              keys←keys,newkeys←⎕split recs[;keycol]
+[51]              keysize←⍴keys←((keys⍳keys)=⍳⍴keys)/keys
+[52]              values←keysize↑values
+[53]              newkeys←keys⍳newkeys
+[54]              newvalues←⎕fi ,recs[;valcol],' '
+[55]              values←values+keysize ⍙DBCrossTab newkeys,[⎕io+0.5]newvalues
+[56]          :endwhile
+[57]          values←('E17.10,<',⎕tcnl,⎕tclf,'>') ⎕fmt values ⍝ Use Exponential notation to retain (spurious!) accuracy
+[58]          values[;⎕io+0 13]←'¯-' REPL values[;⎕io+0 13]   ⍝ but replacing APL high minuses
+[59]          data←(⊃keys),values
+[60]      :elseif ~mt prefix ⋄ :orif zip
+[61]          data←'ASCII' Read∆DataFile tiein ¯1 lRECL (-size÷lRECL) 0 ⍝ Just read File
+[62]      :else
+[63]          r←⌊size÷lRECL
+[64]          ⎕nuntie tiein ⋄ :return
+[65]      :endif
+[66]      :if tiein≠tieout ⋄ NERASE tiein
+[67]      :else            ⋄ 0 ⎕nresize tiein
+[68]      :endif
+[69]  :endif
+[70]  
+[71]  r←↑⍴data
+[72]  :if ~mt prefix ⍝ Add any "prefix" to the data
+[73]      data←(r⌿MATRIX prefix),data
+[74]  :endif
+[75]  data←,data
+[76]  
+[77]  :if zip
+[78]      data←'deflate best_compression no_header memory_level=9 wrapl=0' ⎕dr data
+[79]  ⍝⍝⍝    data←'inflate no_header wrapl=0' ⎕dr data
+[80]  :endif
+[81]  
+[82]  data ⎕nappend tieout
+[83]  :if tiein=tieout ⋄ ⎕nuntie tieout ⋄ :endif
+    ∇

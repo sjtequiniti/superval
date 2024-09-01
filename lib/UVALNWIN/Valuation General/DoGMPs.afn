@@ -1,1 +1,72 @@
-    ∇ DoGMPs arg;GMP;GMPR;GMPNRA;MAXREV;P;REV;REVNRA;i;p;rpi;s21;ReValMeth;LRF;escfactB88;escfactA88;PRESPAGMPR;PRE88;TaxTerm;Xexit;∆;⍙[1]   ⍝ UVALNWIN.sf#3[2]   ⍝ Function to calculates all GMP elements at once.[3]   ⍝ arg[0]: GMP revaluation type: 0-None, 1-Fixed, 2-Limited, 3-S21[4]   ⍝ arg[1]: S21 Order Rate[5]   ⍝[6]   ⍝ First find out if its worth doing the calculations[7]   PreGMP←PreGMPR←PostGMP←PostGMPR←PreGMPNRA←PostGMPNRA←PreGMPSPA←PostGMPSPA←NX⍴0[8]   PrePRESPAGMPR←PostPRESPAGMPR←(NX,NX)⍴FPreGMP←FPreGMPR←FPostGMP←FPostGMPR←NX⍴0[9]   s21∆NDF←201⍴1 ⍝ Stop crash if there are no GMPs ⍝⍝⍝ Set s21∆NDF in INIT∆GMP ⍝⍝⍝ FIXME[10]  →(^/0=GMP0,GMPE0)/0[11]  ReValMeth←arg[0] ⍝ The first term is the GMP revaluation type[12]  s21∆NDF←s21←1↓arg[13]  ⍝[14]  ⍝ Then do a few dates[15]  NextTaxDate←6 4,VDATE[2]+(VDATE[1]>4)+(VDATE[1]=4)×VDATE[0]>5[16]  MAXREV←0⌈⌊NextTaxDate YDAYS SRD[17]  :if IsDeferred ⋄ REVNRA←1+¯1⌈⌊(NextTaxDate YDAYS NRD)+⍳1+LNX[18]  :else          ⋄ REVNRA←1+¯1⌈⌊ NextTaxDate YDAYS (-1+LNX)↑[0]LDATE[19]  :endif[20]  TaxTerm←PRE88-⌊PRE88←VDATE YDAYS COD2[21]  ⍝ Now define a few variables[22]  :select ReValMeth[23]  :case 0 ⋄ i←201⍴1[24]  :case 1[25]      i←1↓GMPFixedRates[26]      :if IsAccrued ⋄ p←0⌈LeaveTerms+⌈PRE88[27]      :else         ⋄ p←0⌈LeaveTerms+⌊PRE88+0.5≤TaxTerm[28]      :endif[29]      p←DIFF 0,((NX-SNX)⌊p),NX[30]  :case 2 ⋄ i←1.05*0.5×⍳201[31]  :case 3 ⋄ i←s21[32]  :endselect[33]  ⍝[34]  ⍝ Accrued GMP Projection (as B06)[35]  P←TaxTerm×~IsAccrued[36]  GMP←s21[2×MAXREV⌊REV←(((P<0.5)-P=0)+⍳ENX_1),REVNRA][37]  PRESPAGMPR←((⍳NX)∘.≥⍳NX)×(X∘.<X⌈SPA)×(NX,NX)⍴GMP[38]  [39]  :if ReValMeth=1[40]      GMPR  ←GMP×(p/i)*        MAXREV -MAXREV⌊REV[41]      GMPNRA←GMP×(p/i)*(¯1↑REV⌊MAXREV)-MAXREV⌊REV ⍝ Wanted for Public Sector[42]      PRESPAGMPR←PRESPAGMPR×((NX,NX)⍴(p/i))*(X∘.<1+X⌈SPA)×((NX,NX)⍴MAXREV-MAXREV⌊REV)⌊0⌈(⍳NX)∘.-⍳NX[43]  :else[44]      GMPR  ←GMP×1⌈i[⎕io+2×MAXREV] CDIV i[⎕io+2×REV][45]      GMPNRA←GMP×1⌈i[⎕io+2×¯1↑REV] CDIV i[⎕io+2×REV][46]      PRESPAGMPR←PRESPAGMPR×1⌈i[⎕io+2×(⍳NX)⌊MAXREV]∘.÷i[⎕io+2×REV][47]  :endif[48]  :if PubSect ⋄ :andif IsDeferred ⍝ Members have already left and so LRF is never required[49]      LRF←1[50]  :else[51]      ⍝ This is LRF to point of decrement and so still required for Public Sector Actives Leavers[52]  ⍝⍝⍝    LRF←1+0.0745×0⌈(DEF>7÷52.18)×DEF←0⌈((Xe+(0.5×~IsAccrued)+⍳ENX_1),(NRA⌈LRA⌊X0⌈Xe,LNX/X0)+⍳1+LNX)-(SPA⌈1↑Xe)[53]      Xexit←(Xe+(0.5×~IsAccrued)+⍳ENX_1),(NRA⌈Xe,LNX/X0)+⍳1+LNX[54]      ∆←(0⌈Xe   -SPA)>⍙←7÷52.18[55]      ⍙←(0⌈Xexit-SPA)>⍙ ⍝⍝⍝ ⌈Xe taken out as first 7 weeks counts from SPA[56]      LRF←(1+0.0745×⍙×0⌈Xexit-SPA) CDIV 1+0.0745×∆×0⌈Xe-SPA[57]  :endif[58]  PreGMPSPA←0.52×⌊0.5+GMPR×GMP0÷0.52 ⍝ Wanted for Public Sector[59]  PostGMPSPA←0.52×⌊0.5+GMPR×GMPE0÷0.52[60]  GMP←GMP×LRF ⋄ GMPR←GMPR×LRF[61]  escfactB88←1⌈DYNRATB88[⎕io+2×term+REV] CDIV DYNRATB88[⎕io+2×term+MAXREV+1][62]  PreGMP ←0.52×⌊0.5+GMP ×escfactB88×GMP0÷0.52[63]  PreGMPR←0.52×⌊0.5+GMPR×escfactB88×GMP0÷0.52[64]  PrePRESPAGMPR←0.52×⌊0.5+PRESPAGMPR×GMP0÷0.52[65]  escfactA88←1⌈DYNRATA88[⎕io+2×term+REV] CDIV DYNRATA88[⎕io+2×term+MAXREV+1][66]  PostGMP ←0.52×⌊0.5+GMP ×escfactA88×GMPE0÷0.52[67]  PostGMPR←0.52×⌊0.5+GMPR×escfactA88×GMPE0÷0.52[68]  PostPRESPAGMPR←0.52×⌊0.5+PRESPAGMPR×GMPE0÷0.52[69]  PreGMPNRA ←0.52×⌊0.5+GMPNRA×GMP0 ÷0.52[70]  PostGMPNRA←0.52×⌊0.5+GMPNRA×GMPE0÷0.52 ⍝ Only used if LRA<SPA    ∇
+    ∇ DoGMPs arg;GMP;GMPR;GMPNRA;MAXREV;P;REV;REVNRA;i;p;rpi;s21;ReValMeth;LRF;escfactB88;escfactA88;PRESPAGMPR;PRE88;TaxTerm;Xexit;∆;⍙
+[1]   ⍝ UVALNWIN.sf#3
+[2]   ⍝ Function to calculates all GMP elements at once.
+[3]   ⍝ arg[0]: GMP revaluation type: 0-None, 1-Fixed, 2-Limited, 3-S21
+[4]   ⍝ arg[1]: S21 Order Rate
+[5]   ⍝
+[6]   ⍝ First find out if its worth doing the calculations
+[7]   PreGMP←PreGMPR←PostGMP←PostGMPR←PreGMPNRA←PostGMPNRA←PreGMPSPA←PostGMPSPA←NX⍴0
+[8]   PrePRESPAGMPR←PostPRESPAGMPR←(NX,NX)⍴FPreGMP←FPreGMPR←FPostGMP←FPostGMPR←NX⍴0
+[9]   s21∆NDF←201⍴1 ⍝ Stop crash if there are no GMPs ⍝⍝⍝ Set s21∆NDF in INIT∆GMP ⍝⍝⍝ FIXME
+[10]  →(^/0=GMP0,GMPE0)/0
+[11]  ReValMeth←arg[0] ⍝ The first term is the GMP revaluation type
+[12]  s21∆NDF←s21←1↓arg
+[13]  ⍝
+[14]  ⍝ Then do a few dates
+[15]  NextTaxDate←6 4,VDATE[2]+(VDATE[1]>4)+(VDATE[1]=4)×VDATE[0]>5
+[16]  MAXREV←0⌈⌊NextTaxDate YDAYS SRD
+[17]  :if IsDeferred ⋄ REVNRA←1+¯1⌈⌊(NextTaxDate YDAYS NRD)+⍳1+LNX
+[18]  :else          ⋄ REVNRA←1+¯1⌈⌊ NextTaxDate YDAYS (-1+LNX)↑[0]LDATE
+[19]  :endif
+[20]  TaxTerm←PRE88-⌊PRE88←VDATE YDAYS COD2
+[21]  ⍝ Now define a few variables
+[22]  :select ReValMeth
+[23]  :case 0 ⋄ i←201⍴1
+[24]  :case 1
+[25]      i←1↓GMPFixedRates
+[26]      :if IsAccrued ⋄ p←0⌈LeaveTerms+⌈PRE88
+[27]      :else         ⋄ p←0⌈LeaveTerms+⌊PRE88+0.5≤TaxTerm
+[28]      :endif
+[29]      p←DIFF 0,((NX-SNX)⌊p),NX
+[30]  :case 2 ⋄ i←1.05*0.5×⍳201
+[31]  :case 3 ⋄ i←s21
+[32]  :endselect
+[33]  ⍝
+[34]  ⍝ Accrued GMP Projection (as B06)
+[35]  P←TaxTerm×~IsAccrued
+[36]  GMP←s21[2×MAXREV⌊REV←(((P<0.5)-P=0)+⍳ENX_1),REVNRA]
+[37]  PRESPAGMPR←((⍳NX)∘.≥⍳NX)×(X∘.<X⌈SPA)×(NX,NX)⍴GMP
+[38]  
+[39]  :if ReValMeth=1
+[40]      GMPR  ←GMP×(p/i)*        MAXREV -MAXREV⌊REV
+[41]      GMPNRA←GMP×(p/i)*(¯1↑REV⌊MAXREV)-MAXREV⌊REV ⍝ Wanted for Public Sector
+[42]      PRESPAGMPR←PRESPAGMPR×((NX,NX)⍴(p/i))*(X∘.<1+X⌈SPA)×((NX,NX)⍴MAXREV-MAXREV⌊REV)⌊0⌈(⍳NX)∘.-⍳NX
+[43]  :else
+[44]      GMPR  ←GMP×1⌈i[⎕io+2×MAXREV] CDIV i[⎕io+2×REV]
+[45]      GMPNRA←GMP×1⌈i[⎕io+2×¯1↑REV] CDIV i[⎕io+2×REV]
+[46]      PRESPAGMPR←PRESPAGMPR×1⌈i[⎕io+2×(⍳NX)⌊MAXREV]∘.÷i[⎕io+2×REV]
+[47]  :endif
+[48]  :if PubSect ⋄ :andif IsDeferred ⍝ Members have already left and so LRF is never required
+[49]      LRF←1
+[50]  :else
+[51]      ⍝ This is LRF to point of decrement and so still required for Public Sector Actives Leavers
+[52]  ⍝⍝⍝    LRF←1+0.0745×0⌈(DEF>7÷52.18)×DEF←0⌈((Xe+(0.5×~IsAccrued)+⍳ENX_1),(NRA⌈LRA⌊X0⌈Xe,LNX/X0)+⍳1+LNX)-(SPA⌈1↑Xe)
+[53]      Xexit←(Xe+(0.5×~IsAccrued)+⍳ENX_1),(NRA⌈Xe,LNX/X0)+⍳1+LNX
+[54]      ∆←(0⌈Xe   -SPA)>⍙←7÷52.18
+[55]      ⍙←(0⌈Xexit-SPA)>⍙ ⍝⍝⍝ ⌈Xe taken out as first 7 weeks counts from SPA
+[56]      LRF←(1+0.0745×⍙×0⌈Xexit-SPA) CDIV 1+0.0745×∆×0⌈Xe-SPA
+[57]  :endif
+[58]  PreGMPSPA←0.52×⌊0.5+GMPR×GMP0÷0.52 ⍝ Wanted for Public Sector
+[59]  PostGMPSPA←0.52×⌊0.5+GMPR×GMPE0÷0.52
+[60]  GMP←GMP×LRF ⋄ GMPR←GMPR×LRF
+[61]  escfactB88←1⌈DYNRATB88[⎕io+2×term+REV] CDIV DYNRATB88[⎕io+2×term+MAXREV+1]
+[62]  PreGMP ←0.52×⌊0.5+GMP ×escfactB88×GMP0÷0.52
+[63]  PreGMPR←0.52×⌊0.5+GMPR×escfactB88×GMP0÷0.52
+[64]  PrePRESPAGMPR←0.52×⌊0.5+PRESPAGMPR×GMP0÷0.52
+[65]  escfactA88←1⌈DYNRATA88[⎕io+2×term+REV] CDIV DYNRATA88[⎕io+2×term+MAXREV+1]
+[66]  PostGMP ←0.52×⌊0.5+GMP ×escfactA88×GMPE0÷0.52
+[67]  PostGMPR←0.52×⌊0.5+GMPR×escfactA88×GMPE0÷0.52
+[68]  PostPRESPAGMPR←0.52×⌊0.5+PRESPAGMPR×GMPE0÷0.52
+[69]  PreGMPNRA ←0.52×⌊0.5+GMPNRA×GMP0 ÷0.52
+[70]  PostGMPNRA←0.52×⌊0.5+GMPNRA×GMPE0÷0.52 ⍝ Only used if LRA<SPA
+    ∇

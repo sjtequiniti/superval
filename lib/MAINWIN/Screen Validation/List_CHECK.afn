@@ -1,1 +1,18 @@
-    ∇ Error←FormValid List∆CHECK FullName;Family;mandatory[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Check that Selection has been made on a "mandatory" List or Listview[3]   [4]   ⎕wself←FullName ⋄ Error←0⍴''[5]   Family←(⊂Win∆Parent ⊃Family[1]),Family←(⊂Win∆Parent ⊃Family),Family←⊂FullName[6]   :if ∨/0=Family MultiWI 'enabled' ⍝ Only process if enabled AND visible[7]   :orif 1>⎕wi 'visible'[8]       :return[9]   :endif[10]  [11]  :if 0∊⍴,⎕wi 'value' ⍝ No Selection[12]  :andif 0≠mandatory←⎕wi '∆mandatory' ⍝ Mandatory Fields Entries[13]  :andif FormValid≥mandatory[14]      Error←'SelectionReq'[15]      :if ~FormValid ⋄ Win∆LabelRed FullName ⋄ :endif[16]  :endif    ∇
+    ∇ Error←FormValid List∆CHECK FullName;Family;mandatory
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Check that Selection has been made on a "mandatory" List or Listview
+[3]   
+[4]   ⎕wself←FullName ⋄ Error←0⍴''
+[5]   Family←(⊂Win∆Parent ⊃Family[1]),Family←(⊂Win∆Parent ⊃Family),Family←⊂FullName
+[6]   :if ∨/0=Family MultiWI 'enabled' ⍝ Only process if enabled AND visible
+[7]   :orif 1>⎕wi 'visible'
+[8]       :return
+[9]   :endif
+[10]  
+[11]  :if 0∊⍴,⎕wi 'value' ⍝ No Selection
+[12]  :andif 0≠mandatory←⎕wi '∆mandatory' ⍝ Mandatory Fields Entries
+[13]  :andif FormValid≥mandatory
+[14]      Error←'SelectionReq'
+[15]      :if ~FormValid ⋄ Win∆LabelRed FullName ⋄ :endif
+[16]  :endif
+    ∇

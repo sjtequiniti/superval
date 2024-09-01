@@ -1,1 +1,43 @@
-    ∇ LiabView←LiabGraph;bb;data;class;tab;∆;tbl;msk;ppt[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Graph the Liabilities[3]   [4]   :if mt LiabView←(parent,currentpage,'picGraph') ⎕wi 'self'[5]       :return ⍝ Graph Control doesn't exist yet!![6]   :endif[7]   psWipe parent,currentpage,'picGraph'[8]   [9]   tab←(restab for classsel) append amorttab for 'ClassName' (incexp/'Expenses') ⍝ Restrict to chosen classes[10]  [11]  data←2 0⍴0[12]  :for class :in 'Pensioner' 'Deferred' 'Active' 'Active New Entrant' 'Expenses' 'Additional Liability'[13]      tbl←tab for 'ClassName' class[14]      :if ~(⊂class)∊'Active New Entrant' 'Expenses'[15]          data←data,∊+/¨(tbl for (∊1=tbl at 'PastService')) at 'LiabilityValue' 'NewLiabilityValue'[16]      :endif[17]      :if (⊂class)∊'Active' 'Active New Entrant' 'Expenses'[18]          data←data,∊+/¨(tbl for (∊0=tbl at 'PastService')) at 'LiabilityValue' 'NewLiabilityValue'[19]      :endif[20]  :endfor[21]  [22]  msk←∨⌿0≠data[23]  [24]  chSet 'QFmt' ("<",pound,">,CLI20")[25]  chSet 'HMargin' 60 36[26]  chSet 'Heading' ('Total Liabilities',(0=rfperiod)/VDATEtxt)[27]  chSet 'HFont' 'tii,12,blue'[28]  chSet 'Style' 'stacked,boxed,ForceZero,Values,lines,nomarkers'[29]  chSet 'YRange' (⌊/0,+/data),⌈/0,1.1 1×+/data[30]  chSet 'Patterns' 16[31]  chSet 'Colour' (',' join msk/'BL' 'bl' 'CY' 'cy' 'or' 'PU' 'ma')[32]  chSet 'XLab'  ('Original Liability',((0≠rfperiod)/';',VDATEtxt),',New Liability',((0≠rfperiod)/';',RFDatetxt))[33]  chSet 'Key' (',' join msk/'Pensioners' 'Deferreds' 'Actives Past Service' 'Actives Future Service' 'Active New Entrant' 'Future Expenses' 'Additional Liability')[34]  chSet 'KFont' 'he,7'[35]  chBar  msk/data[36]  [37]  :if ~mt LiabView←chClose[38]      bb←psReadHeader LiabView '%%BoundingBox:' ⍝ Bounding Box[39]      ppt←.5+.×(((parent,currentpage,'picGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point[40]      ps_exec LiabView (parent,currentpage,'picGraph') ppt ps∆cmap 1[41]  :endif    ∇
+    ∇ LiabView←LiabGraph;bb;data;class;tab;∆;tbl;msk;ppt
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Graph the Liabilities
+[3]   
+[4]   :if mt LiabView←(parent,currentpage,'picGraph') ⎕wi 'self'
+[5]       :return ⍝ Graph Control doesn't exist yet!!
+[6]   :endif
+[7]   psWipe parent,currentpage,'picGraph'
+[8]   
+[9]   tab←(restab for classsel) append amorttab for 'ClassName' (incexp/'Expenses') ⍝ Restrict to chosen classes
+[10]  
+[11]  data←2 0⍴0
+[12]  :for class :in 'Pensioner' 'Deferred' 'Active' 'Active New Entrant' 'Expenses' 'Additional Liability'
+[13]      tbl←tab for 'ClassName' class
+[14]      :if ~(⊂class)∊'Active New Entrant' 'Expenses'
+[15]          data←data,∊+/¨(tbl for (∊1=tbl at 'PastService')) at 'LiabilityValue' 'NewLiabilityValue'
+[16]      :endif
+[17]      :if (⊂class)∊'Active' 'Active New Entrant' 'Expenses'
+[18]          data←data,∊+/¨(tbl for (∊0=tbl at 'PastService')) at 'LiabilityValue' 'NewLiabilityValue'
+[19]      :endif
+[20]  :endfor
+[21]  
+[22]  msk←∨⌿0≠data
+[23]  
+[24]  chSet 'QFmt' ("<",pound,">,CLI20")
+[25]  chSet 'HMargin' 60 36
+[26]  chSet 'Heading' ('Total Liabilities',(0=rfperiod)/VDATEtxt)
+[27]  chSet 'HFont' 'tii,12,blue'
+[28]  chSet 'Style' 'stacked,boxed,ForceZero,Values,lines,nomarkers'
+[29]  chSet 'YRange' (⌊/0,+/data),⌈/0,1.1 1×+/data
+[30]  chSet 'Patterns' 16
+[31]  chSet 'Colour' (',' join msk/'BL' 'bl' 'CY' 'cy' 'or' 'PU' 'ma')
+[32]  chSet 'XLab'  ('Original Liability',((0≠rfperiod)/';',VDATEtxt),',New Liability',((0≠rfperiod)/';',RFDatetxt))
+[33]  chSet 'Key' (',' join msk/'Pensioners' 'Deferreds' 'Actives Past Service' 'Actives Future Service' 'Active New Entrant' 'Future Expenses' 'Additional Liability')
+[34]  chSet 'KFont' 'he,7'
+[35]  chBar  msk/data
+[36]  
+[37]  :if ~mt LiabView←chClose
+[38]      bb←psReadHeader LiabView '%%BoundingBox:' ⍝ Bounding Box
+[39]      ppt←.5+.×(((parent,currentpage,'picGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+[40]      ps_exec LiabView (parent,currentpage,'picGraph') ppt ps∆cmap 1
+[41]  :endif
+    ∇

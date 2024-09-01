@@ -1,1 +1,75 @@
-    ∇ res←Conts∆CALC2;lRECL;tieno;FV1;FV5;FV6;size;NUMRECS;REC;NN;fmt;tpr1;RunTime;valid;NO;Error;RECL;values;EXIT;ps[1]   ⍝ DATAWIN.sf#8[2]   ⍝ Main function which displays a screen to show the progress of the[3]   ⍝ job, and calls BROWSE to let the user look at his creation.[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   res←''[8]   ('Reading Input File:' 'Writing Output File:') Win∆ProgressBar 'SetLabels'[9]   'Running Contributions Calculator' Win∆ProgressBar 'Open'[10]  [11]  :if FileExist InputDir,FILE[12]  :orif 0=tieno←NCREATE InputDir,FILE[13]      MDISPLAY 'InvFileName' FILE ⋄ res←parent,'fFiles.edFILE' ⋄ →END[14]  :endif[15]  [16]  ⍝ Tie file and Calculate number of records[17]  :if 0=(InputDir,fILENAME) NTIE tpr1←'Native' TieNumber ''[18]      Error←'FileNotFound' ⋄ →ERR[19]  :endif[20]  [21]  fV5←1+COLS fV5 ⋄ dfV5←DLTMB dfV5 ⋄ fV6←1+COLS fV6 ⋄ dfV6←DLTMB dfV6[22]  fV1←1+COLS fV1 ⋄ RECL←recl+2 ⋄ lRECL←(¯3+RECL)⌈1+⌈/FV←1+COLS FV[23]  EDATE←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrEDATE EDATE[24]  servrnd←servrnd[;1] ⋄ VestTab←100↑DEC∆CHECK VestTab[25]  [26]  fmt←'M<->',('IF'[1+×fmt]),(⍕⍴FV),(×fmt)/'.',⍕fmt←zwb DecP[27]  [28]  NN←⌊(size←⎕NSIZE tpr1)÷RECL ⋄ NO←0[29]  RunTime←DLTMB 1 DATESPELL ⎕ts[30]  [31]  READ:NUMRECS←↑⍴REC←0 ¯2↓'ASCII' Read∆DataFile tpr1 size RECL (NN-NO) NO[32]  [33]  ((NO←NO+NUMRECS) NN fILENAME) Win∆ProgressBar 'FileUpdate'[34]  REC←((NUMRECS,lRECL)↑ 0 ¯1 ↓REC),(NUMRECS,¯1)↑REC[35]  [36]  :if ∨/~valid←⎕VI ,(FV1←REC[;fV1]),' ' ⍝ Numbers must be valid[37]  :orif (⍴valid)≠1↑⍴(∨/' '≠FV1)⌿FV1     ⍝ and scalar![38]      Error←'InvFileNum' ⋄ →ERR[39]  :endif[40]  FV1←MatrixZWB FV1[41]  :if ∨/~DATECHECK FV5←MATRIX dfV5 DATEEXP REC[;fV5] ⍝ Dates must be valid[42]      Error←'InvFileDate' ⋄ →ERR[43]  :endif[44]  :if 0≠⍴fV6 ⍝ Dates must be valid if specified[45]      :if ∨/~1 DATECHECK FV6←MATRIX dfV6 DATEEXP REC[;fV6][46]          Error←'InvFileDate' ⋄ →ERR[47]      :endif[48]  :else[49]      FV6←0×FV5 ⍝ Defualt Exit Dates[50]  :endif[51]  EXIT←(⍴FV5)⍴3/~∨/0=FV6 ⋄ FV6←((~EXIT)×(⍴FV5)⍴EDATE)+EXIT×EDATE DATEMIN FV6[52]  [53]  values←FV1 CDIV (VestTab[⎕io+⌊ps]×1-1∣ps)+VestTab[⎕io+1+⌊ps]×1∣ps←servrnd DURN FV5,FV6[54]  [55]  :if NUMRECS≠⍴,values ⍝ Error - wrong no. of results[56]  :orif ∨/'*'=,values←fmt ⎕FMT values ⍝ Error if doesn't fit in field[57]      Error←'InvEntry' 'Invalid numeric result calculated'[58]      res←parent,'fOutput.edFormula' ⋄ →ERR1[59]  :endif[60]  [61]  REC[;FV]←values ⋄ REC APPEND tieno[62]  (NO NN FILE) Win∆ProgressBar 'MemberUpdate'[63]  :if NO<NN ⋄ →READ ⋄ :endif[64]  FormName ⎕wi 'Focus'[65]  ('Contributions Calculation at ',RunTime) BROWSE tieno ⋄ →END[66]  [67]  ERR: ⍝ on Error processing[68]       res←parent,'fFiles.edfILENAME' ⋄ Error←Error fILENAME[69]  ERR1:MDISPLAY Error ⋄ (InputDir,FILE) NERASE tieno[70]  [71]  END:0 0⍴⎕ex 'fV1 fV5 fV6 FV'[72]  Win∆AssignVars ControlName ⍝ Reset to screen values if an error[73]  ⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'    ∇
+    ∇ res←Conts∆CALC2;lRECL;tieno;FV1;FV5;FV6;size;NUMRECS;REC;NN;fmt;tpr1;RunTime;valid;NO;Error;RECL;values;EXIT;ps
+[1]   ⍝ DATAWIN.sf#8
+[2]   ⍝ Main function which displays a screen to show the progress of the
+[3]   ⍝ job, and calls BROWSE to let the user look at his creation.
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   res←''
+[8]   ('Reading Input File:' 'Writing Output File:') Win∆ProgressBar 'SetLabels'
+[9]   'Running Contributions Calculator' Win∆ProgressBar 'Open'
+[10]  
+[11]  :if FileExist InputDir,FILE
+[12]  :orif 0=tieno←NCREATE InputDir,FILE
+[13]      MDISPLAY 'InvFileName' FILE ⋄ res←parent,'fFiles.edFILE' ⋄ →END
+[14]  :endif
+[15]  
+[16]  ⍝ Tie file and Calculate number of records
+[17]  :if 0=(InputDir,fILENAME) NTIE tpr1←'Native' TieNumber ''
+[18]      Error←'FileNotFound' ⋄ →ERR
+[19]  :endif
+[20]  
+[21]  fV5←1+COLS fV5 ⋄ dfV5←DLTMB dfV5 ⋄ fV6←1+COLS fV6 ⋄ dfV6←DLTMB dfV6
+[22]  fV1←1+COLS fV1 ⋄ RECL←recl+2 ⋄ lRECL←(¯3+RECL)⌈1+⌈/FV←1+COLS FV
+[23]  EDATE←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrEDATE EDATE
+[24]  servrnd←servrnd[;1] ⋄ VestTab←100↑DEC∆CHECK VestTab
+[25]  
+[26]  fmt←'M<->',('IF'[1+×fmt]),(⍕⍴FV),(×fmt)/'.',⍕fmt←zwb DecP
+[27]  
+[28]  NN←⌊(size←⎕NSIZE tpr1)÷RECL ⋄ NO←0
+[29]  RunTime←DLTMB 1 DATESPELL ⎕ts
+[30]  
+[31]  READ:NUMRECS←↑⍴REC←0 ¯2↓'ASCII' Read∆DataFile tpr1 size RECL (NN-NO) NO
+[32]  
+[33]  ((NO←NO+NUMRECS) NN fILENAME) Win∆ProgressBar 'FileUpdate'
+[34]  REC←((NUMRECS,lRECL)↑ 0 ¯1 ↓REC),(NUMRECS,¯1)↑REC
+[35]  
+[36]  :if ∨/~valid←⎕VI ,(FV1←REC[;fV1]),' ' ⍝ Numbers must be valid
+[37]  :orif (⍴valid)≠1↑⍴(∨/' '≠FV1)⌿FV1     ⍝ and scalar!
+[38]      Error←'InvFileNum' ⋄ →ERR
+[39]  :endif
+[40]  FV1←MatrixZWB FV1
+[41]  :if ∨/~DATECHECK FV5←MATRIX dfV5 DATEEXP REC[;fV5] ⍝ Dates must be valid
+[42]      Error←'InvFileDate' ⋄ →ERR
+[43]  :endif
+[44]  :if 0≠⍴fV6 ⍝ Dates must be valid if specified
+[45]      :if ∨/~1 DATECHECK FV6←MATRIX dfV6 DATEEXP REC[;fV6]
+[46]          Error←'InvFileDate' ⋄ →ERR
+[47]      :endif
+[48]  :else
+[49]      FV6←0×FV5 ⍝ Defualt Exit Dates
+[50]  :endif
+[51]  EXIT←(⍴FV5)⍴3/~∨/0=FV6 ⋄ FV6←((~EXIT)×(⍴FV5)⍴EDATE)+EXIT×EDATE DATEMIN FV6
+[52]  
+[53]  values←FV1 CDIV (VestTab[⎕io+⌊ps]×1-1∣ps)+VestTab[⎕io+1+⌊ps]×1∣ps←servrnd DURN FV5,FV6
+[54]  
+[55]  :if NUMRECS≠⍴,values ⍝ Error - wrong no. of results
+[56]  :orif ∨/'*'=,values←fmt ⎕FMT values ⍝ Error if doesn't fit in field
+[57]      Error←'InvEntry' 'Invalid numeric result calculated'
+[58]      res←parent,'fOutput.edFormula' ⋄ →ERR1
+[59]  :endif
+[60]  
+[61]  REC[;FV]←values ⋄ REC APPEND tieno
+[62]  (NO NN FILE) Win∆ProgressBar 'MemberUpdate'
+[63]  :if NO<NN ⋄ →READ ⋄ :endif
+[64]  FormName ⎕wi 'Focus'
+[65]  ('Contributions Calculation at ',RunTime) BROWSE tieno ⋄ →END
+[66]  
+[67]  ERR: ⍝ on Error processing
+[68]       res←parent,'fFiles.edfILENAME' ⋄ Error←Error fILENAME
+[69]  ERR1:MDISPLAY Error ⋄ (InputDir,FILE) NERASE tieno
+[70]  
+[71]  END:0 0⍴⎕ex 'fV1 fV5 fV6 FV'
+[72]  Win∆AssignVars ControlName ⍝ Reset to screen values if an error
+[73]  ⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'
+    ∇

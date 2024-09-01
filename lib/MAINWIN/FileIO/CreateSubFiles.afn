@@ -1,0 +1,75 @@
+    ∇ res←parm CreateSubFiles file;tieno;cols;Entries;i;ext;File;tpr1;recs;size;CAT;FILES;z;Error;list;use;totrecs;accumrecs;cat
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Create Sex/Cat Subfiles from file using list of selections
+[3]   
+[4]   res←0 0⍴'' ⋄ (list use)←parm
+[5]   :if 0=file NTIE tieno←'Native' TieNumber file ⋄ →END ⋄ :endif
+[6]   
+[7]   :if uk=1 ⋄ :orif FormatType≡'Act'
+[8]       cols←(use[⎕io]/fSEX),(use[1+⎕io]/fCAT)
+[9]   :else
+[10]      cols←(use[⎕io]/fPSEX),(use[1+⎕io]/fPCAT)
+[11]  :endif
+[12]  
+[13]  :if 0∊⍴cols←⎕io+cols ⋄ ⎕nuntie tieno ⋄ →END ⋄ :endif ⍝ No selections
+[14]  
+[15]  Entries←(0,⍴cols)⍴' '
+[16]  recs←RECL×⌊FileChunk CDIV RECL ⍝ Take Chunks!!
+[17]  recs←,((⌊size÷recs)⍴recs),recs∣size←⎕nsize tieno
+[18]  0 0⍴⎕nread tieno,82,0,0 ⍝ Get to Start of file
+[19]  
+[20]  ('Reading Main Data File:' 'Current Record:') Win∆ProgressBar2 'SetLabels'
+[21]  'Creating Sex/Category Sub-Files' Win∆ProgressBar2 'Open'
+[22]  (0 2 ('\' Win∆Child file)) Win∆ProgressBar2 'FileUpdate'
+[23]  :for i :in ⍳⍴,recs
+[24]     Entries←Entries⍪(((⌊recs[i]÷RECL),RECL)⍴⎕NREAD tieno,82,recs[i])[;cols]
+[25]     ((⌊+/(i+~⎕io)↑recs÷RECL) (⌊size÷RECL)) Win∆ProgressBar2 'MemberUpdate'
+[26]  :endfor
+[27]  
+[28]  ext←DLTB '.',Win∆Child file←file,(~'.'∊'\' Win∆Child file)/'.' ⋄ tpr1←'Native' TieNumber ''
+[29]  
+[30]  ('Writing Sub-File:' 'Current Record:') Win∆ProgressBar2 'SetLabels'
+[31]  FILES←0 0⍴''
+[32]  :for CAT :in ⎕split list
+[33]      cat←CreateCat CAT←⊃CAT ⍝ Fix Lower Case Category
+[34]  ⍝⍝⍝    dash←(∨/(CAT←⊃CAT)∊⎕av[97+⍳26])/'_' ⍝ Lower Case Category
+[35]  ⍝⍝⍝    File←UPPERCASE (DLTB (' ~' REPL CAT),dash,Win∆Parent '\' Win∆Child file),ext
+[36]      File←UPPERCASE (DLTB cat,Win∆Parent '\' Win∆Child file),ext
+[37]      ((list TLU CAT) (1↑⍴list) File) Win∆ProgressBar2 'FileUpdate'
+[38]      (0 1 'Checking Existing File') Win∆ProgressBar2 'MemberUpdate'
+[39]      :if ∨/InputDir FileExist File (DTDot File) ⍝ Cope with no extension
+[40]          z←'YN'[⎕io+'1'=UseSubs] ⍝ "z" is the "default" response to Delete without confirm
+[41]          :if '0'=UseSubs ⍝ Use Subs not Checked
+[42]          :andif 1<1↑⍴list ⍝ More than one Category
+[43]          :andif '0'=DeleteSubs ⍝ Delete Subs not Checked
+[44]          :andif 'C'=z←'YNC' ASK 'Delete' (InputDir,File)
+[45]              →END
+[46]          :endif
+[47]  
+[48]          →(0=(InputDir,File) NTIE tpr1)/END
+[49]          :if z='N' ⍝ Use existing file but check it is a valid file
+[50]              :if ~0∊⍴Error←(0⍴'') VALID∆FILE tpr1
+[51]              :orif ~0∊⍴Error←Format Format∆CHECK ((MATRIX InputDir,File) '')
+[52]                  MDISPLAY Error
+[53]                  :if 'N'='YN' ASK 'Delete' (InputDir,File) ⋄ →END ⋄ :endif
+[54]                  →(0=(InputDir,File) NTIE tpr1)/END ⍝ Retie File
+[55]              :else
+[56]                  →next
+[57]              :endif
+[58]          :endif
+[59]          (InputDir,File) ⎕xnerase tpr1
+[60]      :endif
+[61]      (InputDir,File) ⎕xncreate tpr1
+[62]      recs←(⌊FileChunk÷RECL) CONCISE Entries TLU CAT ⍝ Returns pairs of start rec no, no of recs
+[63]      totrecs←¯1↑accumrecs←+\recs[;⎕io+1]
+[64]      :for i :in ⍳↑⍴recs
+[65]           (⎕nread tieno,82,(RECL×recs[i;⎕io+1]),RECL×recs[i;⎕io]-1) ⎕nappend tpr1
+[66]           ((accumrecs[i]) (totrecs)) Win∆ProgressBar2 'MemberUpdate'
+[67]      :endfor
+[68]      ⎕nuntie tpr1
+[69]  next:FILES←FILES OVER File
+[70]  :endfor
+[71]  
+[72]  res←¯1↓DLTB FILES,','
+[73]  END:⎕nuntie tieno ⋄ Win∆ProgressBar2 'Hide'
+    ∇

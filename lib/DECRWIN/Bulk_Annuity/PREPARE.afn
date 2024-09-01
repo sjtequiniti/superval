@@ -1,1 +1,139 @@
-    ∇ PREPARE;Alpha;Beta;BETAYRS;CMSL;SMSL;BASE;POSTRATE;ImpTbl;IMPTBL;⍙[1]   ⍝ DECRWIN.sf#8[2]   ⍝ Create the variables required for Annuity Calculator[3]   [4]   InsertAGES←(X←zwb BAGE),zwb EAGE ⋄ ∆←ZWB SAgeDiff[5]   REV←0.01×zwb rev ⋄ REVdef←zwb revdef ⋄ REVterm←'T'=↑revterm ⋄ REVind←zwb revind[6]   GP←zwb gp ⋄ Disc←~GPOlap←zwb gpOlap ⋄ penfreq←(↑PenFreq[0;]) ('In Advance'≡DLTB PenFreq[1;])[7]   def←zwb defage ⋄ TOP←zwb top[8]   [9]   :if mt PropMarr ⋄ HXX←121 OVERTAKE DEC∆CHECK H[10]  :else           ⋄ HXX←121⍴0.01×zwb PropMarr[11]  :endif[12]  :if uk=1[13]      QXdef←100↑DEC∆CHECK P_DDEFTABXX ⋄ QX←(DTZ DEC∆CHECK P_DPENTABXX),1[14]      QYdef←100↑DEC∆CHECK S_DDEFTABXX ⋄ QY←(DTZ DEC∆CHECK S_DPENTABXX),1[15]  :else[16]      QXdef←100↑DEC∆CHECK PMdef ⋄ QX←120 OVERTAKE (DTZ DEC∆CHECK PM),1[17]      QYdef←100↑DEC∆CHECK SMdef ⋄ QY←120 OVERTAKE (DTZ DEC∆CHECK SM),1[18]  :endif[19]  [20]  :select uk[21]  :case 0[22]      MIX←1-120↑DEC∆CHECK miX ⋄ MIY←1-120↑DEC∆CHECK miY ⋄ MIBase←zwb miBase[23]  :case 1[24]      CalcYr←zwb CalcYr[25]      :if (↑P_miDPENMORTIMPR)∊'SCA'[26]          Alpha←120 OVERTAKE (DEC∆CHECK P_miDPENALPHA),1[27]          Beta ←120 OVERTAKE (DEC∆CHECK P_miDPENBETA ),0[28]          BETAYRS←zwb P_miDPENBETAYRS ⋄ CMSL←zwb P_miDPENCMSL ⋄ SMSL←zwb P_miDPENSMSL ⋄ BASE←zwb P_miDPENBASE[29]      :endif[30]      POSTRATE←(zwb P_miDPENRATEIMPR)×ZWB P_DPENTABXX[1;][31]      :select ↑P_miDPENMORTIMPR[32]      :case 'N' ⋄ PostImpP←''[33]      :case 'A' ⋄ PostImpP←POSTRATE Alpha Beta BETAYRS BASE "CalcYr-X"[34]      :case 'C' ⋄ PostImpP←POSTRATE Alpha Beta BETAYRS      CMSL[35]      :case 'S' ⋄ PostImpP←POSTRATE Alpha Beta BETAYRS BASE SMSL[36]      :case '2'[37]          :if MTmat P_miDPENIMPTBL[0;] ⋄ IMPTBL←READ2D MIcsvDir,P_miDPENIMPTBLcsv[38]          :elseif                     ¯1≡IMPTBL←¯1 DEC∆CHECK P_miDPENIMPTBL ⋄ IMPTBL←120 120⍴0[39]          :endif[40]          IMPTBL←↑(0 P_DPENORIG (zwb P_miDPENIMPORIG)) ReBaseMortImp IMPTBL P_miDPENIMPTBLcsv P_miDPENIMPTBL ''[41]          ImpTbl←((zwb P_miDPENIMPORIG),CalcYr) Adjust2D IMPTBL[42]          PostImpP←POSTRATE ImpTbl[43]      :endselect[44]  [45]      :if (↑S_miDPENMORTIMPR)∊'SCA'[46]          Alpha←120 OVERTAKE (DEC∆CHECK S_miDPENALPHA),1[47]          Beta ←120 OVERTAKE (DEC∆CHECK S_miDPENBETA ),0[48]          BETAYRS←zwb S_miDPENBETAYRS ⋄ CMSL←zwb S_miDPENCMSL ⋄ SMSL←zwb S_miDPENSMSL ⋄ BASE←zwb S_miDPENBASE[49]      :endif[50]      POSTRATE←(zwb S_miDPENRATEIMPR)×ZWB S_DPENTABXX[1;][51]      :select ↑S_miDPENMORTIMPR[52]      :case 'N' ⋄ PostImpS←''[53]      :case 'A' ⋄ PostImpS←POSTRATE Alpha Beta BETAYRS BASE "CalcYr-X-∆"[54]      :case 'C' ⋄ PostImpS←POSTRATE Alpha Beta BETAYRS      CMSL[55]      :case 'S' ⋄ PostImpS←POSTRATE Alpha Beta BETAYRS BASE SMSL[56]      :case '2'[57]          :if MTmat S_miDPENIMPTBL[0;] ⋄ IMPTBL←READ2D MIcsvDir,S_miDPENIMPTBLcsv[58]          :elseif                     ¯1≡IMPTBL←¯1 DEC∆CHECK S_miDPENIMPTBL ⋄ IMPTBL←120 120⍴0[59]          :endif[60]          IMPTBL←↑(0 S_DPENORIG (zwb S_miDPENIMPORIG)) ReBaseMortImp IMPTBL S_miDPENIMPTBLcsv S_miDPENIMPTBL ''[61]          ImpTbl←((zwb S_miDPENIMPORIG),CalcYr) Adjust2D IMPTBL[62]          PostImpS←POSTRATE ImpTbl[63]      :endselect[64]  [65]      :if (↑P_miDDEFMORTIMPR)∊'SCA'[66]          Alpha←120 OVERTAKE (DEC∆CHECK P_miDDEFALPHA),1[67]          Beta ←120 OVERTAKE (DEC∆CHECK P_miDDEFBETA ),0[68]          BETAYRS←zwb P_miDDEFBETAYRS ⋄ CMSL←zwb P_miDDEFCMSL ⋄ SMSL←zwb P_miDDEFSMSL ⋄ BASE←zwb P_miDDEFBASE[69]      :endif[70]      POSTRATE←(zwb P_miDDEFRATEIMPR)×ZWB P_DDEFTABXX[1;][71]      :select ↑P_miDDEFMORTIMPR[72]      :case 'N' ⋄ PreImpP←''[73]      :case 'A' ⋄ PreImpP←POSTRATE Alpha Beta BETAYRS BASE "CalcYr-X"[74]      :case 'C' ⋄ PreImpP←POSTRATE Alpha Beta BETAYRS      CMSL[75]      :case 'S' ⋄ PreImpP←POSTRATE Alpha Beta BETAYRS BASE SMSL[76]      :case '2'[77]          :if MTmat P_miDDEFIMPTBL[0;] ⋄ IMPTBL←READ2D MIcsvDir,P_miDDEFIMPTBLcsv[78]          :elseif                     ¯1≡IMPTBL←¯1 DEC∆CHECK P_miDDEFIMPTBL ⋄ IMPTBL←120 120⍴0[79]          :endif[80]          IMPTBL←↑(0 P_DDEFORIG (zwb P_miDDEFIMPORIG)) ReBaseMortImp IMPTBL P_miDDEFIMPTBLcsv P_miDDEFIMPTBL ''[81]          ImpTbl←((zwb P_miDDEFIMPORIG),CalcYr) Adjust2D IMPTBL[82]          PreImpP←POSTRATE ImpTbl[83]      :endselect[84]  [85]      :if (↑S_miDDEFMORTIMPR)∊'SCA'[86]          Alpha←120 OVERTAKE (DEC∆CHECK S_miDDEFALPHA),1[87]          Beta ←120 OVERTAKE (DEC∆CHECK S_miDDEFBETA ),0[88]          BETAYRS←zwb S_miDDEFBETAYRS ⋄ CMSL←zwb S_miDDEFCMSL ⋄ SMSL←zwb S_miDDEFSMSL ⋄ BASE←zwb S_miDDEFBASE[89]      :endif[90]      POSTRATE←(zwb S_miDDEFRATEIMPR)×ZWB S_DDEFTABXX[1;][91]      :select ↑S_miDDEFMORTIMPR[92]      :case 'N' ⋄ PreImpS←''[93]      :case 'A' ⋄ PreImpS←POSTRATE Alpha Beta BETAYRS BASE "CalcYr-X-∆"[94]      :case 'C' ⋄ PreImpS←POSTRATE Alpha Beta BETAYRS      CMSL[95]      :case 'S' ⋄ PreImpS←POSTRATE Alpha Beta BETAYRS BASE SMSL[96]      :case '2'[97]          :if MTmat S_miDDEFIMPTBL[0;] ⋄ IMPTBL←READ2D MIcsvDir,S_miDDEFIMPTBLcsv[98]          :elseif                     ¯1≡IMPTBL←¯1 DEC∆CHECK S_miDDEFIMPTBL ⋄ IMPTBL←120 120⍴0[99]          :endif[100]         IMPTBL←↑(0 S_DDEFORIG (zwb S_miDDEFIMPORIG)) ReBaseMortImp IMPTBL S_miDDEFIMPTBLcsv S_miDDEFIMPTBL ''[101]         ImpTbl←((zwb S_miDDEFIMPORIG),CalcYr) Adjust2D IMPTBL[102]         PreImpS←POSTRATE ImpTbl[103]     :endselect[104] :case 2[105]     :if 'N'≠1↑ImpMeth[106]         Malpha←120 OVERTAKE (DEC∆CHECK malpha),1[107]         Falpha←120 OVERTAKE (DEC∆CHECK falpha),1[108]         :if 'C'=1↑ImpMeth[109]             MBase←zwb MB[2;] ⋄ FBase←zwb FB[2;][110]         :else[111]             MBase←(⍳120)+(1900∣zwb MB[0;])-1900∣zwb MB[1;][112]             FBase←(⍳120)+(1900∣zwb FB[0;])-1900∣zwb FB[1;][113]         :endif[114]         Mbeta←-(⍟1-0.01×zwb mbeta)CDIV zwb myears[115]         Fbeta←-(⍟1-0.01×zwb fbeta)CDIV zwb fyears[116]     :else[117]         Malpha←Falpha←120/1 ⋄ Mbeta←Fbeta←MBase←FBase←0[118]     :endif[119] :endselect[120] [121] :if uk=1[122]     Disc←zwb DISC[123]     :if ∨/' '≠lrIR     ⋄ (IR     lrIR)    ←2↑FinConvert IR     lrIR     ⋄ :endif[124]     :if ∨/' '≠lrdefi   ⋄ (defi   lrdefi)  ←2↑FinConvert defi   lrdefi   ⋄ :endif[125]     :if ∨/' '≠lrPVMdef ⋄ (PVMdef lrPVMdef)←2↑FinConvert PVMdef lrPVMdef ⋄ :endif[126]     :if ∨/' '≠lrPVM    ⋄ (PVM    lrPVM   )←2↑FinConvert PVM    lrPVM    ⋄ :endif[127]     pi←i←1+0.01×ExecuteRates IR ''[128]     :if zwb piind ⋄ :andif ∨/defi≠' ' ⋄ pi←1+0.01×ExecuteRates defi '' ⋄ :endif[129]     :if ∨/PVMdef≠' ' ⋄ pvmdef←1+0.01×ExecuteRates PVMdef '' ⋄ :else ⋄ pvmdef←1 ⋄ :endif[130]     :if ∨/PVM   ≠' ' ⋄ pvm   ←1+0.01×ExecuteRates PVM    '' ⋄ :else ⋄ pvm   ←1 ⋄ :endif[131] :else[132]     pi←i←1+0.01×,EXECUTE IR[133]     :if zwb piind ⋄ :andif ∨/defi≠' ' ⋄ pi←1+0.01×,EXECUTE defi ⋄ :endif[134]     :if ∨/PVMdef≠' ' ⋄ pvmdef←1+0.01×,EXECUTE PVMdef ⋄ :else ⋄ pvmdef←1 ⋄ :endif[135]     :if ∨/PVM   ≠' ' ⋄ pvm   ←1+0.01×,EXECUTE PVM    ⋄ :else ⋄ pvm   ←1 ⋄ :endif[136] :endif[137] pvmind←zwb PVMind    ∇
+    ∇ PREPARE;Alpha;Beta;BETAYRS;CMSL;SMSL;BASE;POSTRATE;ImpTbl;IMPTBL;⍙
+[1]   ⍝ DECRWIN.sf#8
+[2]   ⍝ Create the variables required for Annuity Calculator
+[3]   
+[4]   InsertAGES←(X←zwb BAGE),zwb EAGE ⋄ ∆←ZWB SAgeDiff
+[5]   REV←0.01×zwb rev ⋄ REVdef←zwb revdef ⋄ REVterm←'T'=↑revterm ⋄ REVind←zwb revind
+[6]   GP←zwb gp ⋄ Disc←~GPOlap←zwb gpOlap ⋄ penfreq←(↑PenFreq[0;]) ('In Advance'≡DLTB PenFreq[1;])
+[7]   def←zwb defage ⋄ TOP←zwb top
+[8]   
+[9]   :if mt PropMarr ⋄ HXX←121 OVERTAKE DEC∆CHECK H
+[10]  :else           ⋄ HXX←121⍴0.01×zwb PropMarr
+[11]  :endif
+[12]  :if uk=1
+[13]      QXdef←100↑DEC∆CHECK P_DDEFTABXX ⋄ QX←(DTZ DEC∆CHECK P_DPENTABXX),1
+[14]      QYdef←100↑DEC∆CHECK S_DDEFTABXX ⋄ QY←(DTZ DEC∆CHECK S_DPENTABXX),1
+[15]  :else
+[16]      QXdef←100↑DEC∆CHECK PMdef ⋄ QX←120 OVERTAKE (DTZ DEC∆CHECK PM),1
+[17]      QYdef←100↑DEC∆CHECK SMdef ⋄ QY←120 OVERTAKE (DTZ DEC∆CHECK SM),1
+[18]  :endif
+[19]  
+[20]  :select uk
+[21]  :case 0
+[22]      MIX←1-120↑DEC∆CHECK miX ⋄ MIY←1-120↑DEC∆CHECK miY ⋄ MIBase←zwb miBase
+[23]  :case 1
+[24]      CalcYr←zwb CalcYr
+[25]      :if (↑P_miDPENMORTIMPR)∊'SCA'
+[26]          Alpha←120 OVERTAKE (DEC∆CHECK P_miDPENALPHA),1
+[27]          Beta ←120 OVERTAKE (DEC∆CHECK P_miDPENBETA ),0
+[28]          BETAYRS←zwb P_miDPENBETAYRS ⋄ CMSL←zwb P_miDPENCMSL ⋄ SMSL←zwb P_miDPENSMSL ⋄ BASE←zwb P_miDPENBASE
+[29]      :endif
+[30]      POSTRATE←(zwb P_miDPENRATEIMPR)×ZWB P_DPENTABXX[1;]
+[31]      :select ↑P_miDPENMORTIMPR
+[32]      :case 'N' ⋄ PostImpP←''
+[33]      :case 'A' ⋄ PostImpP←POSTRATE Alpha Beta BETAYRS BASE "CalcYr-X"
+[34]      :case 'C' ⋄ PostImpP←POSTRATE Alpha Beta BETAYRS      CMSL
+[35]      :case 'S' ⋄ PostImpP←POSTRATE Alpha Beta BETAYRS BASE SMSL
+[36]      :case '2'
+[37]          :if MTmat P_miDPENIMPTBL[0;] ⋄ IMPTBL←READ2D MIcsvDir,P_miDPENIMPTBLcsv
+[38]          :elseif                     ¯1≡IMPTBL←¯1 DEC∆CHECK P_miDPENIMPTBL ⋄ IMPTBL←120 120⍴0
+[39]          :endif
+[40]          IMPTBL←↑(0 P_DPENORIG (zwb P_miDPENIMPORIG)) ReBaseMortImp IMPTBL P_miDPENIMPTBLcsv P_miDPENIMPTBL ''
+[41]          ImpTbl←((zwb P_miDPENIMPORIG),CalcYr) Adjust2D IMPTBL
+[42]          PostImpP←POSTRATE ImpTbl
+[43]      :endselect
+[44]  
+[45]      :if (↑S_miDPENMORTIMPR)∊'SCA'
+[46]          Alpha←120 OVERTAKE (DEC∆CHECK S_miDPENALPHA),1
+[47]          Beta ←120 OVERTAKE (DEC∆CHECK S_miDPENBETA ),0
+[48]          BETAYRS←zwb S_miDPENBETAYRS ⋄ CMSL←zwb S_miDPENCMSL ⋄ SMSL←zwb S_miDPENSMSL ⋄ BASE←zwb S_miDPENBASE
+[49]      :endif
+[50]      POSTRATE←(zwb S_miDPENRATEIMPR)×ZWB S_DPENTABXX[1;]
+[51]      :select ↑S_miDPENMORTIMPR
+[52]      :case 'N' ⋄ PostImpS←''
+[53]      :case 'A' ⋄ PostImpS←POSTRATE Alpha Beta BETAYRS BASE "CalcYr-X-∆"
+[54]      :case 'C' ⋄ PostImpS←POSTRATE Alpha Beta BETAYRS      CMSL
+[55]      :case 'S' ⋄ PostImpS←POSTRATE Alpha Beta BETAYRS BASE SMSL
+[56]      :case '2'
+[57]          :if MTmat S_miDPENIMPTBL[0;] ⋄ IMPTBL←READ2D MIcsvDir,S_miDPENIMPTBLcsv
+[58]          :elseif                     ¯1≡IMPTBL←¯1 DEC∆CHECK S_miDPENIMPTBL ⋄ IMPTBL←120 120⍴0
+[59]          :endif
+[60]          IMPTBL←↑(0 S_DPENORIG (zwb S_miDPENIMPORIG)) ReBaseMortImp IMPTBL S_miDPENIMPTBLcsv S_miDPENIMPTBL ''
+[61]          ImpTbl←((zwb S_miDPENIMPORIG),CalcYr) Adjust2D IMPTBL
+[62]          PostImpS←POSTRATE ImpTbl
+[63]      :endselect
+[64]  
+[65]      :if (↑P_miDDEFMORTIMPR)∊'SCA'
+[66]          Alpha←120 OVERTAKE (DEC∆CHECK P_miDDEFALPHA),1
+[67]          Beta ←120 OVERTAKE (DEC∆CHECK P_miDDEFBETA ),0
+[68]          BETAYRS←zwb P_miDDEFBETAYRS ⋄ CMSL←zwb P_miDDEFCMSL ⋄ SMSL←zwb P_miDDEFSMSL ⋄ BASE←zwb P_miDDEFBASE
+[69]      :endif
+[70]      POSTRATE←(zwb P_miDDEFRATEIMPR)×ZWB P_DDEFTABXX[1;]
+[71]      :select ↑P_miDDEFMORTIMPR
+[72]      :case 'N' ⋄ PreImpP←''
+[73]      :case 'A' ⋄ PreImpP←POSTRATE Alpha Beta BETAYRS BASE "CalcYr-X"
+[74]      :case 'C' ⋄ PreImpP←POSTRATE Alpha Beta BETAYRS      CMSL
+[75]      :case 'S' ⋄ PreImpP←POSTRATE Alpha Beta BETAYRS BASE SMSL
+[76]      :case '2'
+[77]          :if MTmat P_miDDEFIMPTBL[0;] ⋄ IMPTBL←READ2D MIcsvDir,P_miDDEFIMPTBLcsv
+[78]          :elseif                     ¯1≡IMPTBL←¯1 DEC∆CHECK P_miDDEFIMPTBL ⋄ IMPTBL←120 120⍴0
+[79]          :endif
+[80]          IMPTBL←↑(0 P_DDEFORIG (zwb P_miDDEFIMPORIG)) ReBaseMortImp IMPTBL P_miDDEFIMPTBLcsv P_miDDEFIMPTBL ''
+[81]          ImpTbl←((zwb P_miDDEFIMPORIG),CalcYr) Adjust2D IMPTBL
+[82]          PreImpP←POSTRATE ImpTbl
+[83]      :endselect
+[84]  
+[85]      :if (↑S_miDDEFMORTIMPR)∊'SCA'
+[86]          Alpha←120 OVERTAKE (DEC∆CHECK S_miDDEFALPHA),1
+[87]          Beta ←120 OVERTAKE (DEC∆CHECK S_miDDEFBETA ),0
+[88]          BETAYRS←zwb S_miDDEFBETAYRS ⋄ CMSL←zwb S_miDDEFCMSL ⋄ SMSL←zwb S_miDDEFSMSL ⋄ BASE←zwb S_miDDEFBASE
+[89]      :endif
+[90]      POSTRATE←(zwb S_miDDEFRATEIMPR)×ZWB S_DDEFTABXX[1;]
+[91]      :select ↑S_miDDEFMORTIMPR
+[92]      :case 'N' ⋄ PreImpS←''
+[93]      :case 'A' ⋄ PreImpS←POSTRATE Alpha Beta BETAYRS BASE "CalcYr-X-∆"
+[94]      :case 'C' ⋄ PreImpS←POSTRATE Alpha Beta BETAYRS      CMSL
+[95]      :case 'S' ⋄ PreImpS←POSTRATE Alpha Beta BETAYRS BASE SMSL
+[96]      :case '2'
+[97]          :if MTmat S_miDDEFIMPTBL[0;] ⋄ IMPTBL←READ2D MIcsvDir,S_miDDEFIMPTBLcsv
+[98]          :elseif                     ¯1≡IMPTBL←¯1 DEC∆CHECK S_miDDEFIMPTBL ⋄ IMPTBL←120 120⍴0
+[99]          :endif
+[100]         IMPTBL←↑(0 S_DDEFORIG (zwb S_miDDEFIMPORIG)) ReBaseMortImp IMPTBL S_miDDEFIMPTBLcsv S_miDDEFIMPTBL ''
+[101]         ImpTbl←((zwb S_miDDEFIMPORIG),CalcYr) Adjust2D IMPTBL
+[102]         PreImpS←POSTRATE ImpTbl
+[103]     :endselect
+[104] :case 2
+[105]     :if 'N'≠1↑ImpMeth
+[106]         Malpha←120 OVERTAKE (DEC∆CHECK malpha),1
+[107]         Falpha←120 OVERTAKE (DEC∆CHECK falpha),1
+[108]         :if 'C'=1↑ImpMeth
+[109]             MBase←zwb MB[2;] ⋄ FBase←zwb FB[2;]
+[110]         :else
+[111]             MBase←(⍳120)+(1900∣zwb MB[0;])-1900∣zwb MB[1;]
+[112]             FBase←(⍳120)+(1900∣zwb FB[0;])-1900∣zwb FB[1;]
+[113]         :endif
+[114]         Mbeta←-(⍟1-0.01×zwb mbeta)CDIV zwb myears
+[115]         Fbeta←-(⍟1-0.01×zwb fbeta)CDIV zwb fyears
+[116]     :else
+[117]         Malpha←Falpha←120/1 ⋄ Mbeta←Fbeta←MBase←FBase←0
+[118]     :endif
+[119] :endselect
+[120] 
+[121] :if uk=1
+[122]     Disc←zwb DISC
+[123]     :if ∨/' '≠lrIR     ⋄ (IR     lrIR)    ←2↑FinConvert IR     lrIR     ⋄ :endif
+[124]     :if ∨/' '≠lrdefi   ⋄ (defi   lrdefi)  ←2↑FinConvert defi   lrdefi   ⋄ :endif
+[125]     :if ∨/' '≠lrPVMdef ⋄ (PVMdef lrPVMdef)←2↑FinConvert PVMdef lrPVMdef ⋄ :endif
+[126]     :if ∨/' '≠lrPVM    ⋄ (PVM    lrPVM   )←2↑FinConvert PVM    lrPVM    ⋄ :endif
+[127]     pi←i←1+0.01×ExecuteRates IR ''
+[128]     :if zwb piind ⋄ :andif ∨/defi≠' ' ⋄ pi←1+0.01×ExecuteRates defi '' ⋄ :endif
+[129]     :if ∨/PVMdef≠' ' ⋄ pvmdef←1+0.01×ExecuteRates PVMdef '' ⋄ :else ⋄ pvmdef←1 ⋄ :endif
+[130]     :if ∨/PVM   ≠' ' ⋄ pvm   ←1+0.01×ExecuteRates PVM    '' ⋄ :else ⋄ pvm   ←1 ⋄ :endif
+[131] :else
+[132]     pi←i←1+0.01×,EXECUTE IR
+[133]     :if zwb piind ⋄ :andif ∨/defi≠' ' ⋄ pi←1+0.01×,EXECUTE defi ⋄ :endif
+[134]     :if ∨/PVMdef≠' ' ⋄ pvmdef←1+0.01×,EXECUTE PVMdef ⋄ :else ⋄ pvmdef←1 ⋄ :endif
+[135]     :if ∨/PVM   ≠' ' ⋄ pvm   ←1+0.01×,EXECUTE PVM    ⋄ :else ⋄ pvm   ←1 ⋄ :endif
+[136] :endif
+[137] pvmind←zwb PVMind
+    ∇

@@ -1,1 +1,66 @@
-    ∇ inerror←PREPARE[1]   ⍝ DEFWIN.sf#2[2]   ⍝ Initialises variables and sets up total variables, opens the print[3]   ⍝ file and spools the run description and decrements listing.[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   [8]   CREATE∆AOS[9]   [10]  jvDATE←JUL VDATE←¯3↑pvDATE,vDATEind/vDATE ⋄ bDATE←JUL pvDATE[11]  [12]  SelectSexParms SelSex ⋄ Male←SelSex='M'[13]  [14]  rUNDESC←1 HyphenSwap DefVal_RunDesc ⍝ Valuation Run Description[15]  [16]  SET∆GLOBALS[17]  [18]  CREATE∆MAIN[19]  [20]  CREATE∆DEMOGRAPH ⍝ Create the Demographic variables[21]  [22]  CREATE∆Financial[23]  [24]  CREATE∆Legislation[25]  [26]  CREATE∆TRANSFERS[27]  [28]  CREATE∆PUPS[29]  [30]  CREATE∆BENS[31]  [32]  :if inerror←∨/∊('ERROR:' 'WARNING:' 'NOTE:')⍷¨⊂,VALN∆Errors ⋄ :return ⋄ :endif[33]  [34]  :if IFbasischanged ⋄ :andif ×termAdjFin ⋄ ⍙DBInterRateTables ⋄ :endif[35]  [36]  ⍝ OVERTAKE i to allow for sliding-scale vectors[37]  ⍝ Discounter allowing for Reinvestment removed in V8.40[38]  V←×\1,(÷4/(LatestAge+newent×projTerm)OVERTAKE i)*0.25 ⍝ Set up discounter vectors[39]  VMP0←VMP←((⍴V)⍴ 0 0 1 0)/V ⍝  At t=0.5, 1.5, 2.5,...[40]  VQ←((⍴V)⍴ 0 1 0 0)/V ⍝   At t=0.25, 1.25, 2.25,...[41]  V←((⍴V)⍴ 1 0 0 0)/V ⍝    At t=0, 1, 2,...[42]  [43]  PREPARE∆ndf[44]  [45]  ⍝ Pension Projector variables[46]  :if aggopt[0][47]      Sum∆Ongoing←Sum∆Accrued←(⊂"Key"),PP∆InterfaceHeader 'Ind'[48]      Memb∆All←PP∆InterfaceHeader 'Memb' ⋄ Memb∆All←Memb∆All⍪(120 0⌈⍴Memb∆All)⍴0[49]  ⍝⍝⍝    Conts∆All←PP∆InterfaceHeader 'Conts' ⋄ Conts∆All←Conts∆All⍪(120 0⌈⍴Conts∆All)⍴0[50]      :if transfers[51]          Memb∆TransAll←PP∆InterfaceHeader 'Memb' ⋄ Memb∆TransAll←Memb∆TransAll⍪(120 0⌈⍴Memb∆TransAll)⍴0[52]      :endif[53]  :endif[54]  [55]  :if transfers[56]      Cat∆Transfers←1 PREPARE_CatAPP i TVi TVpi 2 INCIND INCDAT GPOverlap DISC FREQ MODE TVSPMethod TVHXX TVcapind IncTiming[57]  :endif[58]      Cat∆Output   ←0 PREPARE_CatAPP i   i   pi 1 INCIND INCDAT GPOverlap DISC FREQ MODE   SPMethod   HXX   capind IncTiming[59]  [60]  WaitPeriod∆pp←Upin∆pp←0 ⍝ Not "underpinned"[61]  FSL∆pp←FCon∆pp←ProRate∆pp←⍬ ⍝ No future service benefit[62]  PPFRatio∆pp←(1+99×ppf)⍴1 ⍝ "Default" PPF ratio[63]  Identifier∆pp←''[64]  Comment∆pp←'' ⍝ No comment    ∇
+    ∇ inerror←PREPARE
+[1]   ⍝ DEFWIN.sf#2
+[2]   ⍝ Initialises variables and sets up total variables, opens the print
+[3]   ⍝ file and spools the run description and decrements listing.
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   
+[8]   CREATE∆AOS
+[9]   
+[10]  jvDATE←JUL VDATE←¯3↑pvDATE,vDATEind/vDATE ⋄ bDATE←JUL pvDATE
+[11]  
+[12]  SelectSexParms SelSex ⋄ Male←SelSex='M'
+[13]  
+[14]  rUNDESC←1 HyphenSwap DefVal_RunDesc ⍝ Valuation Run Description
+[15]  
+[16]  SET∆GLOBALS
+[17]  
+[18]  CREATE∆MAIN
+[19]  
+[20]  CREATE∆DEMOGRAPH ⍝ Create the Demographic variables
+[21]  
+[22]  CREATE∆Financial
+[23]  
+[24]  CREATE∆Legislation
+[25]  
+[26]  CREATE∆TRANSFERS
+[27]  
+[28]  CREATE∆PUPS
+[29]  
+[30]  CREATE∆BENS
+[31]  
+[32]  :if inerror←∨/∊('ERROR:' 'WARNING:' 'NOTE:')⍷¨⊂,VALN∆Errors ⋄ :return ⋄ :endif
+[33]  
+[34]  :if IFbasischanged ⋄ :andif ×termAdjFin ⋄ ⍙DBInterRateTables ⋄ :endif
+[35]  
+[36]  ⍝ OVERTAKE i to allow for sliding-scale vectors
+[37]  ⍝ Discounter allowing for Reinvestment removed in V8.40
+[38]  V←×\1,(÷4/(LatestAge+newent×projTerm)OVERTAKE i)*0.25 ⍝ Set up discounter vectors
+[39]  VMP0←VMP←((⍴V)⍴ 0 0 1 0)/V ⍝  At t=0.5, 1.5, 2.5,...
+[40]  VQ←((⍴V)⍴ 0 1 0 0)/V ⍝   At t=0.25, 1.25, 2.25,...
+[41]  V←((⍴V)⍴ 1 0 0 0)/V ⍝    At t=0, 1, 2,...
+[42]  
+[43]  PREPARE∆ndf
+[44]  
+[45]  ⍝ Pension Projector variables
+[46]  :if aggopt[0]
+[47]      Sum∆Ongoing←Sum∆Accrued←(⊂"Key"),PP∆InterfaceHeader 'Ind'
+[48]      Memb∆All←PP∆InterfaceHeader 'Memb' ⋄ Memb∆All←Memb∆All⍪(120 0⌈⍴Memb∆All)⍴0
+[49]  ⍝⍝⍝    Conts∆All←PP∆InterfaceHeader 'Conts' ⋄ Conts∆All←Conts∆All⍪(120 0⌈⍴Conts∆All)⍴0
+[50]      :if transfers
+[51]          Memb∆TransAll←PP∆InterfaceHeader 'Memb' ⋄ Memb∆TransAll←Memb∆TransAll⍪(120 0⌈⍴Memb∆TransAll)⍴0
+[52]      :endif
+[53]  :endif
+[54]  
+[55]  :if transfers
+[56]      Cat∆Transfers←1 PREPARE_CatAPP i TVi TVpi 2 INCIND INCDAT GPOverlap DISC FREQ MODE TVSPMethod TVHXX TVcapind IncTiming
+[57]  :endif
+[58]      Cat∆Output   ←0 PREPARE_CatAPP i   i   pi 1 INCIND INCDAT GPOverlap DISC FREQ MODE   SPMethod   HXX   capind IncTiming
+[59]  
+[60]  WaitPeriod∆pp←Upin∆pp←0 ⍝ Not "underpinned"
+[61]  FSL∆pp←FCon∆pp←ProRate∆pp←⍬ ⍝ No future service benefit
+[62]  PPFRatio∆pp←(1+99×ppf)⍴1 ⍝ "Default" PPF ratio
+[63]  Identifier∆pp←''
+[64]  Comment∆pp←'' ⍝ No comment
+    ∇

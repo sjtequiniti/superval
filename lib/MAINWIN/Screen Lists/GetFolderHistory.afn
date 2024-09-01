@@ -1,0 +1,22 @@
+    ∇ res←GetFolderHistory user;i;Folder
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a list of previously opened Folders by this User
+[3]   
+[4]   res←0 0⍴''
+[5]   :for i :in ⍳10 ⍝ Get last 10
+[6]       res←res OVER DLTB INIString user ('Open',⍕i) '' PrefINI
+[7]   :endfor
+[8]   
+[9]   :if uk=1 ⋄ :andif 10<+/∨/' '≠res ⋄ :andif ∨/' '≠user ⍝ Get last 4 Superval/21 Client Folders
+[10]      :for i :in ⍳4
+[11]          :if ~0∊⍴,Folder←DLTB INIString 'ClientHistory' ('Folder',⍕i) '' (UserProfDir,INIFile)
+[12]              Folder←UPPERCASE FullFolder Folder
+[13]              :if 0∊⍴res ExactTLU Folder
+[14]                  res←res OVER Folder
+[15]              :endif
+[16]          :endif
+[17]      :endfor
+[18]  :endif
+[19]  
+[20]  res←'Previous Client Folders' OVER (~^/' '=res)⌿res
+    ∇

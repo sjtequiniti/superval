@@ -1,0 +1,34 @@
+    ∇ LiabID ⍙DBAddScenData cfs;values;keys;n;FSvalues;t;⍙dbdata;rows;z;ContID;pp∆texit;pp∆tprestart
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Add the Data for the LDI/ALM/Scenario
+[3]   
+[4]   ⍙dbdata←0⌿⍙dbscendata
+[5]   ⍝⍝⍝ :if SpouseCF ⋄ ContID←↑   ContingencyID
+[6]   ⍝⍝⍝ :else        ⋄ ContID←↑¯1↑ContingencyID,(ContingencyID=7 12 13 14 22 27)/1 2 4 5 21 26
+[7]   ⍝⍝⍝ :endif
+[8]   ContID←↑SpouseCF⊃memberContID ContingencyID
+[9]   pp∆texit←HLDII⊃¯1 (pp∆Texit×bQSM∨ClassID∊1 2)
+[10]  
+[11]  :for n :in ⍳⍴cfs
+[12]      :if ∨/z←×∣values←n⊃cfs
+[13]          :if bQSM ⋄ :andif ClassID=4 ⋄ pp∆tprestart←(,z)⍳1
+[14]          :else                       ⋄ pp∆tprestart←pp∆Tprestart
+[15]          :endif
+[16]          t←ALMLDIterm[n]
+[17]          :if ×pp∆cash ⋄ ⍙dbdata←⍙dbdata⍪BenefitTypeID,ContID,LiabID,t,(1+pp∆texit,pp∆tprestart,pp∆Tstart),values
+[18]          :else        ⋄ ⍙dbdata←⍙dbdata⍪BenefitTypeID,ContID,LiabID,t,(1+pp∆texit,pp∆tprestart,[0.5],z/term+pp∆benyear+⍳pp∆size),z/values
+[19]          :endif
+[20]      :endif
+[21]  :endfor
+[22]  
+[23]  :if z←⍙dbscenmax<⍙dbscenrow+rows←↑⍴⍙dbdata ⍝ Exceeding extent of "results" variable
+[24]      :if z←~neIND ⍝ For Current Members, make it just big enough  and then "store"
+[25]          ⍙dbscendata←(⍙dbscenrow+rows)↑[0]⍙dbscendata
+[26]      :else ⍝ For New Entrants, keep making "results" variable bigger
+[27]          ⍙dbscendata←(⍙dbscenmax←⍙dbscenmax+10000)↑[0]⍙dbscendata
+[28]      :endif
+[29]  :endif
+[30]  
+[31]  ⍙dbscendata[⍙dbscenrow+⍳rows;]←⍙dbdata ⋄ ⍙dbscenrow←⍙dbscenrow+rows
+[32]  :if z ⋄ XL_StoreScen ⋄ :endif
+    ∇

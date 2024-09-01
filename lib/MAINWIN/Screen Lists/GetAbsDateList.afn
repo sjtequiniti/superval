@@ -1,0 +1,19 @@
+    ∇ res←arg GetAbsDateList level;tab
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get List of "Standard" Date Variables absolute values and descriptions
+[3]   ⍝ arg of 1 indicates not Scheme Valuation Dates
+[4]   
+[5]   :select level
+[6]   :case 'Fund'
+[7]       :if arg ⋄ tab←AbsDict for (~(AbsDict at 'Module')∊⊂'Client') ⍝ Remove Valuation Dates
+[8]       :else   ⋄ tab←AbsDict
+[9]       :endif
+[10]      tab←tab for (~(tab at 'Module')∊⊂'Data') ⍝ Remove Data Fields
+[11]      res←'Date Constants' OVER ⊃(tab for 'Type' 'Date') at 'List'
+[12]  
+[13]  :case 'Cat' ⍝ Append Category Variables as well - only relevant within Basis definition!!
+[14]      AbsDict←AbsDict UpdateAbsDict 'Basis'
+[15]      res←arg GetAbsDateList 'Fund'
+[16]  
+[17]  :endselect
+    ∇

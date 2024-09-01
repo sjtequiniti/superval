@@ -1,1 +1,35 @@
-    ∇ code AuditFactors file;fILENAME;tie1;i;list;row;SaveCN[1]   ⍝ DECRWIN.sf#10[2]   ⍝ Write Audit information about changes to Factors "code" in Factors "file"[3]   ⍝   code is the Factor code[4]   ⍝   file is the path and name of the Factor file (usually FactorFile)[5]   ⍝ Relies on the globals:[6]   ⍝   ChangeType - Type of Change - Add, Edit, Delete[7]   ⍝   OldDesc - Description of Old Table (blank for Add)[8]   ⍝   NewDesc - Description of New Table (blank for Delete)[9]   ⍝   OldDates - Dates of Old Table (⍬ for Add)[10]  ⍝   OldRates - Rates of Old Table (⍬ for Add)[11]  ⍝   NewDates - Dates of New Table (⍬ for Delete)[12]  ⍝   NewRates - Rates of New Table (⍬ for Delete)[13]  ⍝   TimeStamp - Timestamp of Change (Index ∆_TSModified for change)[14]  [15]  tie1←TieNumber fILENAME←LibraryDir,'SVFFAudit.sf'[16]  :if ~FileExist fILENAME[17]      →(0=CreateFile fILENAME 'Factors Audit File')/⎕lc[18]  :endif[19]  [20]  :for i :in ⍳100[21]      :if fILENAME FTIE tie1 ⋄ :leave[22]      :elseif i=100[23]          MDISPLAY 'Unable to tie the Factors Audit File' ⋄ :return[24]      :endif[25]      0 0⍴⎕dl 0.01[26]  :endfor[27]  [28]  row←code,'⍺',ChangeType,'⍺',OldDesc,'⍺',NewDesc[29]  [30]  list←⊃'ChangeType' 'OldDesc' 'NewDesc' 'OldDates' 'OldRates' 'NewDates' 'NewRates' 'TimeStamp'[31]  [32]  SaveCN←fILENAME AddToFile ('\' Win∆Child file) row[33]  0 0⍴fILENAME SaveToFile SaveCN '' (pack list) 0    ∇
+    ∇ code AuditFactors file;fILENAME;tie1;i;list;row;SaveCN
+[1]   ⍝ DECRWIN.sf#10
+[2]   ⍝ Write Audit information about changes to Factors "code" in Factors "file"
+[3]   ⍝   code is the Factor code
+[4]   ⍝   file is the path and name of the Factor file (usually FactorFile)
+[5]   ⍝ Relies on the globals:
+[6]   ⍝   ChangeType - Type of Change - Add, Edit, Delete
+[7]   ⍝   OldDesc - Description of Old Table (blank for Add)
+[8]   ⍝   NewDesc - Description of New Table (blank for Delete)
+[9]   ⍝   OldDates - Dates of Old Table (⍬ for Add)
+[10]  ⍝   OldRates - Rates of Old Table (⍬ for Add)
+[11]  ⍝   NewDates - Dates of New Table (⍬ for Delete)
+[12]  ⍝   NewRates - Rates of New Table (⍬ for Delete)
+[13]  ⍝   TimeStamp - Timestamp of Change (Index ∆_TSModified for change)
+[14]  
+[15]  tie1←TieNumber fILENAME←LibraryDir,'SVFFAudit.sf'
+[16]  :if ~FileExist fILENAME
+[17]      →(0=CreateFile fILENAME 'Factors Audit File')/⎕lc
+[18]  :endif
+[19]  
+[20]  :for i :in ⍳100
+[21]      :if fILENAME FTIE tie1 ⋄ :leave
+[22]      :elseif i=100
+[23]          MDISPLAY 'Unable to tie the Factors Audit File' ⋄ :return
+[24]      :endif
+[25]      0 0⍴⎕dl 0.01
+[26]  :endfor
+[27]  
+[28]  row←code,'⍺',ChangeType,'⍺',OldDesc,'⍺',NewDesc
+[29]  
+[30]  list←⊃'ChangeType' 'OldDesc' 'NewDesc' 'OldDates' 'OldRates' 'NewDates' 'NewRates' 'TimeStamp'
+[31]  
+[32]  SaveCN←fILENAME AddToFile ('\' Win∆Child file) row
+[33]  0 0⍴fILENAME SaveToFile SaveCN '' (pack list) 0
+    ∇

@@ -1,0 +1,24 @@
+    ∇ CONV∆DD;PRate;PRateMP;A
+[1]   ⍝ VALNWIN.sf#8
+[2]   →(~Conv∆DD)/0
+[3]   ⍝ Convert Funded Death Benefits to Insured
+[4]   →(^/0=MTC)/L2 ⋄ →(0≠⍴,MFC)/L1 ⋄ MFC←MTC×1-ps[0]CDIV ¯1↑psmp
+[5]   L1:PRateMP←(MID PRate),¯1↑PRate←ProRation[1;0;]
+[6]   A←MFC×1-PRateMP CDIV ¯1↑PRate ⋄ IMC←IMC+A ⋄ MTC←MTC-A ⋄ MFC←MFC-A
+[7]   L2:→(^/0=MP1)/L4 ⋄ →(0≠⍴,MF1)/L3 ⋄ MF1←MP1×1-ps[0]CDIV ¯1↑psmp
+[8]   L3:PRateMP←(MID PRate),¯1↑PRate←ProRation[1;1;]
+[9]   A←MF1×1-PRateMP CDIV ¯1↑PRate ⋄ IMC←IMC+A×MA1 ⋄ MP1←MP1-A ⋄ MF1←MF1-A
+[10]  L4:→(^/0=MP2)/LAB ⋄ →(0≠⍴,MF2)/L5 ⋄ MF2←MP2×1-ps[0]CDIV ¯1↑psmp
+[11]  L5:PRateMP←(MID PRate),¯1↑PRate←ProRation[1;2;]
+[12]  A←MF2×1-PRateMP CDIV ¯1↑PRate ⋄ IMC←IMC+A×MA2 ⋄ MP2←MP2-A ⋄ MF2←MF2-A
+[13]  ⍝ Convert Funded Disablement Benefits to Insured
+[14]  LAB:→(^/0=DTC)/F2 ⋄ →(0≠⍴,DFC)/F1 ⋄ DFC←DTC×1-ps[0]CDIV ¯1↑psmp
+[15]  F1:PRateMP←(MID PRate),¯1↑PRate←ProRation[2;0;]
+[16]  A←DFC×1-PRateMP CDIV ¯1↑PRate ⋄ IDC←IDC+A ⋄ DTC←DTC-A ⋄ DFC←DFC-A
+[17]  F2:→(^/0=DP1)/F4 ⋄ →(0≠⍴,DF1)/F3 ⋄ DF1←DP1×1-ps[0]CDIV ¯1↑psmp
+[18]  F3:PRateMP←(MID PRate),¯1↑PRate←ProRation[2;1;]
+[19]  A←DF1×1-PRateMP CDIV ¯1↑PRate ⋄ IDC←IDC+A×DA1 ⋄ DP1←DP1-A ⋄ DF1←DF1-A
+[20]  F4:→(^/0=DP2)/0 ⋄ →(0≠⍴,DF2)/F5 ⋄ DF2←DP2×1-ps[0]CDIV ¯1↑psmp
+[21]  F5:PRateMP←(MID PRate),¯1↑PRate←ProRation[2;2;]
+[22]  A←DF2×1-PRateMP CDIV ¯1↑PRate ⋄ IDC←IDC+A×DA2 ⋄ DP2←DP2-A ⋄ DF2←DF2-A
+    ∇

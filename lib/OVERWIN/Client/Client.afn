@@ -1,1 +1,265 @@
-    ∇ res←field Client parm;parent;list;Dir;page;SSName;MaxRow;text;z;PickList;schemes;value;arg[1]   ⍝ OVERWIN.sf#10[2]   ⍝ Function to allow user control on Client Details[3]   [4]   parent←'fmClient.sClient.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   :case 'Prepare'[8]       ListviewDict←MATRIX 'Module' 'Control' 'Parameters' 'Sort'[9]   [10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[11]        inputDir←InputDir[12]        :if ¯1=bHPC ⋄ bHPC←bHPC×0<(⌽3↑⎕ts) DAYS bHPCexpiry ⋄ :endif ⍝ Check for expiry of HPC[13]  ⍝⍝⍝      HPCWarning←∣bHPC[14]        :if 0≠⎕nc 'newyieldDir' ⋄ yieldDir←newyieldDir ⋄ 0 0⍴⎕ex 'newyieldDir'[15]        :elseif mt     yieldDir ⋄ yieldDir←YieldFolder[16]        :endif[17]        :if 0≠⎕nc 'newoutputDir' ⋄ outputDir←newoutputDir ⋄ 0 0⍴⎕ex 'newoutputDir'[18]        :elseif mt    outputDir  ⋄ outputDir←OutputFolder[19]        :endif[20]        :if 0≠⎕nc 'newconsolidDir' ⋄ consolidDir←newconsolidDir ⋄ 0 0⍴⎕ex 'newconsolidDir'[21]        :elseif mt    consolidDir  ⋄ consolidDir←ConsolFolder[22]        :endif[23]        MIcsvDir←MIcsvFolder[24]  [25]        clientFile←UPPERCASE DLTB INIString 'SV Parameter Files' 'ClientFile' '' (InputDir,'svscheme.ini')[26]        Client_Vars[27]  [28]        :if uk=1 ⋄ :andif ~zwb migrated ⋄ :andif mt DLTB MigFolder[29]            UKClientMigration[30]        :endif[31]  [32]        :if ~mt ClientFile[33]        :andif ^/2=⎕nc list←'DateComment DateName DateValue NumComment NumName NumValue'[34]            :if ~mt ClientFile ReadFile 'Constants' '' 'NAMES'[35]                :if uk≠1[36]                   :if ~mt DateName ⋄ DateName←⊃(⊂'sc_'),¨m2n DateName ⋄ :endif[37]                   :if ~mt  NumName ⋄  NumName←⊃(⊂'sc_'),¨m2n  NumName ⋄ :endif[38]                :endif[39]                0 0⍴ClientFile SaveToFile 'Constants' 'Scheme Constants' (pack list) 0[40]                0 0⍴⎕ex list[41]            :endif[42]            list←⍙VALUESdict ReadDictFile 'Client' '' 'Names'[43]            0 0⍴ClientFile SaveToFile 'Client' '' (pack list) 0[44]        :endif[45]        :if 9=zwb IncIndivVF   ⋄ IncIndivVF  ←⍕~bAON ⋄ :endif[46]        :if 9=zwb SplitCombyPI ⋄ SplitCombyPI←⍕ bAON ⋄ :endif[47]  [48]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[49]  [50]        parent ⎕wi '∆parm' 1[51]        :if uk=1[52]            (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'enabled' 0[53]            :if 'DECR.SF'≡UPPERCASE DecrFile ⋄ DecrFile←'SVDECR.SF' ⋄ :endif[54]        :else[55]            :select ⍬⍴1↑⍴(parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'list'[56]            :case 0 ⍝ No Client Files[57]            :case 1 ⍝ Just the one Client File - use it![58]                (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'value' 1[59]                (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'enabled' 0[60]            :else ⍝ More than 1 Client File - select one[61]                (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'style' (((parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'style') BinAdd 2)[62]            :endselect[63]            (parent,'pgFiles.fFiles.cbbasisFile') ⎕wi 'enabled' (1<1↑⍴(parent,'pgFiles.fFiles.cbbasisFile') ⎕wi 'list')[64]            'fmClient.bnClientMigrate' ⎕wi 'enabled' (~(zwb migrated)∨genAccess[2]>accesslevel)[65]        :endif[66]  [67]        ⍝ Disable Formats with no options[68]        :for field :in 'cbFormatA' 'cbFormatD' 'cbFormatP'[69]            ((parent,'pgData.fFiles.') field) Win∆SetRelated 'enabled' (~^/' '=,(parent,'pgData.fFiles.',field) ⎕wi 'list')[70]        :endfor[71]  [72]        list←(parent,'pgFiles.fFiles.cbDecrFile') ⎕wi 'list'[73]        :if mt list ExactTLU DecrFile[74]            MDISPLAY 'Scheme Rate Table File used in previous session "',LibraryDir,DecrFile,'" not found or is corrupt'[75]        :elseif DecrFilets>(LibraryDir,DecrFile) ReadFile 1 '' 'FRDCI'[76]            MDISPLAY 'More recent Scheme Rate Table File "',LibraryDir,DecrFile,'" used in previous session'[77]        :endif[78]        list←(parent,'pgFiles.fFiles.cbfactorFile') ⎕wi 'list'[79]        :if mt list ExactTLU factorFile[80]            MDISPLAY 'Factor Table File used in previous session "',LibraryDir,factorFile,'" not found or is corrupt'[81]        :elseif FactorFilets>(LibraryDir,factorFile) ReadFile 1 '' 'FRDCI'[82]            MDISPLAY 'More recent Factor Table File "',LibraryDir,factorFile,'" used in previous session'[83]        :endif[84]  [85]        :if uk=1[86]            :if ~mt ClientFile ReadFile 'PPF_Details' '' (⊃'ppfFile' 'PPFFilets')[87]            :andif ~mt ppfFile[88]                :if 82=⎕dr PPFFilets ⋄ PPFFilets←0 ⋄ :endif[89]                list←GetPPFFiles[90]                :if mt list ExactTLU ppfFile[91]                    MDISPLAY 'PPF Factor File used in previous session "',LibraryDir,ppfFile,'" not found or is corrupt'[92]                :elseif PPFFilets>(LibraryDir,ppfFile) ReadFile 1 '' 'FRDCI'[93]                    MDISPLAY 'More recent PPF Factor File "',LibraryDir,ppfFile,'" used in previous session'[94]                :endif[95]            :endif[96]            0 0⍴⎕ex 'ppfFile PPFFilets'[97]        :endif[98]        ControlName ⎕wi '∆haserrors' (~CallingModule≡'SchemeDetails')[99]        ControlName ⎕wi 'modified' (~CallingModule≡'SchemeDetails')[100] [101] :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[102] [103]     :repeat[104]         :select ↑field[105]         :case 'edClientName'[106]             :if ⎕wevent≡'Exit'[107]             :andif ^/' '=(parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'text'[108] ⍝⍝⍝                (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'text' (20↑((parent,'pgFiles.edClientName') ⎕wi 'text')~'\/:*?"<>∣|.`')[109]                 (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'text' (20↑((parent,'pgFiles.edClientName') ⎕wi 'text')~illegals,'".')[110]             :endif[111]         :case 'edMigFolder'[112]             :if ^/' '=(parent,'pgFiles.edClientName') ⎕wi 'text'[113]             :orif ^/' '=(parent,'pgData.fDates.edvDATE') ⎕wi 'text'[114]                 :if              (parent,'pgFiles.fFolders.edMigFolder') ⎕wi 'enabled'[115]                 :andif ∨/' '≠Dir←(parent,'pgFiles.fFolders.edMigFolder') ⎕wi 'text'[116]                     UKClientDetails FullFolder Dir[117]                 :endif[118]             :endif[119]         :case 'cbcsvType'[120]             :if 'Scheme'≡6↑text←(parent,'pgFiles.fFolders.cbcsvType') ⎕wi 'text'[121]                 (parent,'pgFiles.fFolders.edmicsvDir') ⎕wi 'text' InputDir[122]             :else[123]                 (parent,'pgFiles.fFolders.edmicsvDir') ⎕wi 'text' LibraryDir[124]             :endif[125]         :case 'edmicsvDir'[126]             text←DLTB (parent,'pgFiles.fFolders.edmicsvDir') ⎕wi 'text'[127]             (parent,'pgFiles.fFolders.cbcsvType') ⎕wi 'enabled' ((mt text)∨(⊂text)∊InputDir LibraryDir)[128]         :case 'ckPPFenabled'[129]             :if (parent,'pgValnOptions.fDefaults.ckPPFenabled') ⎕wi 'value'[130]                 (parent,'pgValnOptions.fDefaults.ckCAPenabled') ⎕wi 'value' 1[131]             :endif[132]         :case 'ckSQLDatabase'[133]             :if sqlDatabase←(parent,'pgSQLDatabase.fConfig.ckSQLDatabase') ⎕wi 'value'[134]                 :if 0=⎕nc 'sql_properties'[135]                     :if mt sqlConName ⋄ :orif mt ConfigFile ReadFile 'Configure_SQL' sqlConName ⋄ :orif accesslevel<zwb SQLAccess[136]                         (parent,'pgSQLDatabase.fConfig.ckSQLDatabase') ⎕wi 'value' 0[137]                         (parent,'pgSQLDatabase.fConfig.fAddNew.bnClientAdd') ⎕wi 'enabled' 0[138]                         MDISPLAY 'SQL Server Connection properties not specified.',⎕tcnl,'Refer to your Site Administrator to update your User details (Tools/Administration/Manage Users)'[139]                         :return[140]                     :endif[141]                 :endif[142]                 :if mt (parent,'pgSQLDatabase.fConfig.edInputDirUNC') ⎕wi 'text'[143]                     (parent,'pgSQLDatabase.fConfig.edInputDirUNC') ⎕wi 'text' (FolderToUNC inputDir)[144]                 :endif[145]             :else[146]                 (parent,'pgSQLDatabase.fConfig.ckSQLsetUNC') ⎕wi 'value' 0[147]             :endif[148]             (parent,'pgSQLDatabase.fConfig.fAddNew.bnClientAdd') ⎕wi 'enabled' (sqlDatabase^sqlSchemeAccess≤accesslevel)[149]         :case 'cbSQLDBName'[150]             PickList←↑arg←GetSQLSchemes SQLDBName←(parent,'pgSQLDatabase.fConfig.cbSQLDBName') ⎕wi 'text'[151]             ((parent,'pgSQLDatabase.fConfig.lvSQLDBScheme') 'Client') Win∆UpdateListview arg[152]             :if ~mt PickList[153]                 (parent,'pgSQLDatabase.fConfig.lvSQLDBScheme') ⎕wi 'value' (,⊃((⎕split 0 2↓PickList)∊⊂m2n SStoMAT SQLDBScheme)/PickList[;1])[154]             :endif[155]         :case 'ckSQLlocalUNC'[156]             :if (parent,'pgSQLDatabase.fConfig.ckSQLlocalUNC') ⎕wi 'value'[157]                 (parent,'pgSQLDatabase.fConfig.edInputDirUNC') ⎕wi 'text' inputDir[158]             :endif[159]         :case 'ckSQLsetUNC'[160]             :if (parent,'pgSQLDatabase.fConfig.ckSQLsetUNC') ⎕wi 'value'[161]                 (parent,'pgSQLDatabase.fConfig.edInputDirUNC') ⎕wi 'text' (FolderToUNC inputDir)[162]             :endif[163]         :caselist 'ssNumConst' 'ssDateConst'[164]             :if Win∆F1SSFilled SSName←parent,'pgConstants.',↑field[165]                 MaxRow←SSName ⎕wi 'xMaxRow'[166]                 text←((⊂' _') REPL¨SSName Win∆F1SSGetTextArray 1 1 MaxRow 1)[;1][167]                 z←(~(⊂'sc_')≡¨3↑¨text)^∨/¨' '≠¨text[168]                 text←DLTB¨(z\z/⊂'sc_'),¨text[169]                 SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,1) text[170]             :endif[171]         :endselect[172]         (↑field) Win∆FormValidation 'Change'[173]     :until mt field←1↓field[174] [175] :case 'Valid' ⍝ Routine specific validation[176] [177]     :repeat[178]         page←DLTMB ↑field[179]         :if (⊂page)∊'pgFiles' 'pgData' 'pgSQLDatabase' 'pgConstants'[180]             :if ~mt res←((Win∆GetControlList parent,page) at 'variable') Win∆FormValidation 'Valid' ⋄ :return ⋄ :endif ⍝ fields on this form[181]         :endif[182]         Win∆AssignVars ControlName[183]         :if ~mt res←(~page≡'All')↓1 Client_Valid ⊂page ⋄ :return ⋄ :endif[184]     :until mt field←1↓field[185] [186] [187] :case 'Run'[188] [189]     0 0⍴ReadModule 'Client' 'None' ⍝ Read DEFAULTS for Conversion Purposes[190]     0 0⍴ClientFile ReadFile 'Client'[191]     Client_Vars ⍝ Fix some Client variables[192] [193]     AbsDict←UpdateAbsDict 'Client'[194]     ⍙FinAssdict←GetFinList '' ⍝ Create Financials Dictionary[195]     ⍙MortAssdict←GetMortList 'Init'[196] [197]     cLIENT←DLTB ClientName[198]     vDATE←'DD/MM/YYYY' DATEEXP vDATE[199]     pvDATE←'DD/MM/YYYY' DATEEXP pvDATE[200]     aosenabled←AOSCtl^zwb AOSenabled[201]     :if uk=1[202]         ppfenabled←zwb PPFenabled[203]         capenabled←ppfenabled∨zwb CAPenabled[204]         useBasisCat←zwb UseBasisCat[205]         sepComCot←zwb SepComCot[206]         valuePre88MS←zwb ValuePre88MS[207]         :if 9=incIndivVF   ←zwb IncIndivVF  ⋄ incIndivVF  ←~bAON ⋄ :endif[208]         :if 9=splitCombyPI←zwb SplitCombyPI ⋄ splitCombyPI← bAON ⋄ :endif[209]     :endif[210] [211]     HLDII←zwb hldii ⋄ SpouseCF←zwb spousecf[212]     :if ~CPbreakdown←zwb cpbreakdown ⋄ ALMLDIterm←0,(⍎fsbreakdown),99 ⋄ :endif[213] [214]     sqlDatabase←bSQLServer^zwb SQLDatabase[215]     ValnResultsDB←(⎕io+sqlDatabase)⊃'SVResultsDB' SQLDBName[216]     :if sqlDatabase[217]     :andif ~mt ConfigFile ReadFile SQLDBName                           ⍝ Get list of "registered Schemes"[218]         sqlschemeID←(⎕split 0 1↓schemes)⍳⊂m2n SStoMAT SQLDBScheme[219]         sqlschemeID←↑↑sqlschemeID⊃schemes[;⎕io],0[220]         :if 0=⎕nc 'sql_properties'[221]             0 0⍴ConfigFile ReadFile 'Configure_SQL' sqlConName[222]             sql_properties←⊃spin m2n¨property propvalue[223]             sqlTimeout←zwb SQLTimeout[224]         :endif[225]         :if zwb SQLlocalUNC[226]             InputDirUNC←inputDir[227]         :elseif zwb SQLsetUNC[228]             InputDirUNC←FullFolder InputDirUNC[229]         :else[230]             InputDirUNC←FolderToUNC inputDir[231]         :endif[232]     :else[233]         InputDirUNC←inputDir[234]         sqlDatabase←sqlschemeID←sqlTimeout←0[235]     :endif[236] [237]     :if mt factorFile ⋄ FactorFile←LibraryDir,'SVFactors'[238]     :else             ⋄ FactorFile←LibraryDir,Win∆Parent factorFile[239]     :endif[240]     :if uk=1[241]         :if mt ClientFile ReadFile 'PPF_Details' '' 'ppfFile'[242]         :orif mt ppfFile ⋄ SVPPFFile←LibraryDir,'SVPPFFile'[243]         :else            ⋄ SVPPFFile←LibraryDir,Win∆Parent ppfFile[244]         :endif[245]     :endif[246]     :if mt globalsFile ⋄ GlobalsFile←LibraryDir,'SVGlobals'[247]     :else              ⋄ GlobalsFile←LibraryDir,globalsFile[248]     :endif[249]     LibraryFile←'' ⍝⍝⍝ '{Library}'[250]     :if 0=⎕nc 'ListviewDict' ⋄ ListviewDict←MATRIX 'Module' 'Control' 'Parameters' 'Sort' ⋄ :endif[251] [252]     :if ~bGAD ⋄ :andif zwb SpMortCheck[253]         BlankSpMort[254]     :endif[255] [256]     res←'CreateVars'[257] [258] :case 'Quit' ⍝ Deleting "other" variables[259]     :if uk=1 ⋄ :andif ~mt ClientFile ⋄ :andif 0≠⎕nc 'OutputDir' ⋄ 'Client' UpdateParametersIndex 1 ⋄ :endif[260]     0 0⍴⎕ex 'ClientName DecrFile FormatType newyieldDir newoutputDir newconsolidDir',(~sqlDatabase)/' sql_properties sqlTimeout' ⍝⍝⍝ HPCWarning[261]     0 0⍴DeleteVars 'Configure_SQL'[262] [263] :endselect    ∇
+    ∇ res←field Client parm;parent;list;Dir;page;SSName;MaxRow;text;z;PickList;schemes;value;arg
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ Function to allow user control on Client Details
+[3]   
+[4]   parent←'fmClient.sClient.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]       ListviewDict←MATRIX 'Module' 'Control' 'Parameters' 'Sort'
+[9]   
+[10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[11]        inputDir←InputDir
+[12]        :if ¯1=bHPC ⋄ bHPC←bHPC×0<(⌽3↑⎕ts) DAYS bHPCexpiry ⋄ :endif ⍝ Check for expiry of HPC
+[13]  ⍝⍝⍝      HPCWarning←∣bHPC
+[14]        :if 0≠⎕nc 'newyieldDir' ⋄ yieldDir←newyieldDir ⋄ 0 0⍴⎕ex 'newyieldDir'
+[15]        :elseif mt     yieldDir ⋄ yieldDir←YieldFolder
+[16]        :endif
+[17]        :if 0≠⎕nc 'newoutputDir' ⋄ outputDir←newoutputDir ⋄ 0 0⍴⎕ex 'newoutputDir'
+[18]        :elseif mt    outputDir  ⋄ outputDir←OutputFolder
+[19]        :endif
+[20]        :if 0≠⎕nc 'newconsolidDir' ⋄ consolidDir←newconsolidDir ⋄ 0 0⍴⎕ex 'newconsolidDir'
+[21]        :elseif mt    consolidDir  ⋄ consolidDir←ConsolFolder
+[22]        :endif
+[23]        MIcsvDir←MIcsvFolder
+[24]  
+[25]        clientFile←UPPERCASE DLTB INIString 'SV Parameter Files' 'ClientFile' '' (InputDir,'svscheme.ini')
+[26]        Client_Vars
+[27]  
+[28]        :if uk=1 ⋄ :andif ~zwb migrated ⋄ :andif mt DLTB MigFolder
+[29]            UKClientMigration
+[30]        :endif
+[31]  
+[32]        :if ~mt ClientFile
+[33]        :andif ^/2=⎕nc list←'DateComment DateName DateValue NumComment NumName NumValue'
+[34]            :if ~mt ClientFile ReadFile 'Constants' '' 'NAMES'
+[35]                :if uk≠1
+[36]                   :if ~mt DateName ⋄ DateName←⊃(⊂'sc_'),¨m2n DateName ⋄ :endif
+[37]                   :if ~mt  NumName ⋄  NumName←⊃(⊂'sc_'),¨m2n  NumName ⋄ :endif
+[38]                :endif
+[39]                0 0⍴ClientFile SaveToFile 'Constants' 'Scheme Constants' (pack list) 0
+[40]                0 0⍴⎕ex list
+[41]            :endif
+[42]            list←⍙VALUESdict ReadDictFile 'Client' '' 'Names'
+[43]            0 0⍴ClientFile SaveToFile 'Client' '' (pack list) 0
+[44]        :endif
+[45]        :if 9=zwb IncIndivVF   ⋄ IncIndivVF  ←⍕~bAON ⋄ :endif
+[46]        :if 9=zwb SplitCombyPI ⋄ SplitCombyPI←⍕ bAON ⋄ :endif
+[47]  
+[48]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[49]  
+[50]        parent ⎕wi '∆parm' 1
+[51]        :if uk=1
+[52]            (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'enabled' 0
+[53]            :if 'DECR.SF'≡UPPERCASE DecrFile ⋄ DecrFile←'SVDECR.SF' ⋄ :endif
+[54]        :else
+[55]            :select ⍬⍴1↑⍴(parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'list'
+[56]            :case 0 ⍝ No Client Files
+[57]            :case 1 ⍝ Just the one Client File - use it!
+[58]                (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'value' 1
+[59]                (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'enabled' 0
+[60]            :else ⍝ More than 1 Client File - select one
+[61]                (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'style' (((parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'style') BinAdd 2)
+[62]            :endselect
+[63]            (parent,'pgFiles.fFiles.cbbasisFile') ⎕wi 'enabled' (1<1↑⍴(parent,'pgFiles.fFiles.cbbasisFile') ⎕wi 'list')
+[64]            'fmClient.bnClientMigrate' ⎕wi 'enabled' (~(zwb migrated)∨genAccess[2]>accesslevel)
+[65]        :endif
+[66]  
+[67]        ⍝ Disable Formats with no options
+[68]        :for field :in 'cbFormatA' 'cbFormatD' 'cbFormatP'
+[69]            ((parent,'pgData.fFiles.') field) Win∆SetRelated 'enabled' (~^/' '=,(parent,'pgData.fFiles.',field) ⎕wi 'list')
+[70]        :endfor
+[71]  
+[72]        list←(parent,'pgFiles.fFiles.cbDecrFile') ⎕wi 'list'
+[73]        :if mt list ExactTLU DecrFile
+[74]            MDISPLAY 'Scheme Rate Table File used in previous session "',LibraryDir,DecrFile,'" not found or is corrupt'
+[75]        :elseif DecrFilets>(LibraryDir,DecrFile) ReadFile 1 '' 'FRDCI'
+[76]            MDISPLAY 'More recent Scheme Rate Table File "',LibraryDir,DecrFile,'" used in previous session'
+[77]        :endif
+[78]        list←(parent,'pgFiles.fFiles.cbfactorFile') ⎕wi 'list'
+[79]        :if mt list ExactTLU factorFile
+[80]            MDISPLAY 'Factor Table File used in previous session "',LibraryDir,factorFile,'" not found or is corrupt'
+[81]        :elseif FactorFilets>(LibraryDir,factorFile) ReadFile 1 '' 'FRDCI'
+[82]            MDISPLAY 'More recent Factor Table File "',LibraryDir,factorFile,'" used in previous session'
+[83]        :endif
+[84]  
+[85]        :if uk=1
+[86]            :if ~mt ClientFile ReadFile 'PPF_Details' '' (⊃'ppfFile' 'PPFFilets')
+[87]            :andif ~mt ppfFile
+[88]                :if 82=⎕dr PPFFilets ⋄ PPFFilets←0 ⋄ :endif
+[89]                list←GetPPFFiles
+[90]                :if mt list ExactTLU ppfFile
+[91]                    MDISPLAY 'PPF Factor File used in previous session "',LibraryDir,ppfFile,'" not found or is corrupt'
+[92]                :elseif PPFFilets>(LibraryDir,ppfFile) ReadFile 1 '' 'FRDCI'
+[93]                    MDISPLAY 'More recent PPF Factor File "',LibraryDir,ppfFile,'" used in previous session'
+[94]                :endif
+[95]            :endif
+[96]            0 0⍴⎕ex 'ppfFile PPFFilets'
+[97]        :endif
+[98]        ControlName ⎕wi '∆haserrors' (~CallingModule≡'SchemeDetails')
+[99]        ControlName ⎕wi 'modified' (~CallingModule≡'SchemeDetails')
+[100] 
+[101] :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[102] 
+[103]     :repeat
+[104]         :select ↑field
+[105]         :case 'edClientName'
+[106]             :if ⎕wevent≡'Exit'
+[107]             :andif ^/' '=(parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'text'
+[108] ⍝⍝⍝                (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'text' (20↑((parent,'pgFiles.edClientName') ⎕wi 'text')~'\/:*?"<>∣|.`')
+[109]                 (parent,'pgFiles.fFiles.cbclientFile') ⎕wi 'text' (20↑((parent,'pgFiles.edClientName') ⎕wi 'text')~illegals,'".')
+[110]             :endif
+[111]         :case 'edMigFolder'
+[112]             :if ^/' '=(parent,'pgFiles.edClientName') ⎕wi 'text'
+[113]             :orif ^/' '=(parent,'pgData.fDates.edvDATE') ⎕wi 'text'
+[114]                 :if              (parent,'pgFiles.fFolders.edMigFolder') ⎕wi 'enabled'
+[115]                 :andif ∨/' '≠Dir←(parent,'pgFiles.fFolders.edMigFolder') ⎕wi 'text'
+[116]                     UKClientDetails FullFolder Dir
+[117]                 :endif
+[118]             :endif
+[119]         :case 'cbcsvType'
+[120]             :if 'Scheme'≡6↑text←(parent,'pgFiles.fFolders.cbcsvType') ⎕wi 'text'
+[121]                 (parent,'pgFiles.fFolders.edmicsvDir') ⎕wi 'text' InputDir
+[122]             :else
+[123]                 (parent,'pgFiles.fFolders.edmicsvDir') ⎕wi 'text' LibraryDir
+[124]             :endif
+[125]         :case 'edmicsvDir'
+[126]             text←DLTB (parent,'pgFiles.fFolders.edmicsvDir') ⎕wi 'text'
+[127]             (parent,'pgFiles.fFolders.cbcsvType') ⎕wi 'enabled' ((mt text)∨(⊂text)∊InputDir LibraryDir)
+[128]         :case 'ckPPFenabled'
+[129]             :if (parent,'pgValnOptions.fDefaults.ckPPFenabled') ⎕wi 'value'
+[130]                 (parent,'pgValnOptions.fDefaults.ckCAPenabled') ⎕wi 'value' 1
+[131]             :endif
+[132]         :case 'ckSQLDatabase'
+[133]             :if sqlDatabase←(parent,'pgSQLDatabase.fConfig.ckSQLDatabase') ⎕wi 'value'
+[134]                 :if 0=⎕nc 'sql_properties'
+[135]                     :if mt sqlConName ⋄ :orif mt ConfigFile ReadFile 'Configure_SQL' sqlConName ⋄ :orif accesslevel<zwb SQLAccess
+[136]                         (parent,'pgSQLDatabase.fConfig.ckSQLDatabase') ⎕wi 'value' 0
+[137]                         (parent,'pgSQLDatabase.fConfig.fAddNew.bnClientAdd') ⎕wi 'enabled' 0
+[138]                         MDISPLAY 'SQL Server Connection properties not specified.',⎕tcnl,'Refer to your Site Administrator to update your User details (Tools/Administration/Manage Users)'
+[139]                         :return
+[140]                     :endif
+[141]                 :endif
+[142]                 :if mt (parent,'pgSQLDatabase.fConfig.edInputDirUNC') ⎕wi 'text'
+[143]                     (parent,'pgSQLDatabase.fConfig.edInputDirUNC') ⎕wi 'text' (FolderToUNC inputDir)
+[144]                 :endif
+[145]             :else
+[146]                 (parent,'pgSQLDatabase.fConfig.ckSQLsetUNC') ⎕wi 'value' 0
+[147]             :endif
+[148]             (parent,'pgSQLDatabase.fConfig.fAddNew.bnClientAdd') ⎕wi 'enabled' (sqlDatabase^sqlSchemeAccess≤accesslevel)
+[149]         :case 'cbSQLDBName'
+[150]             PickList←↑arg←GetSQLSchemes SQLDBName←(parent,'pgSQLDatabase.fConfig.cbSQLDBName') ⎕wi 'text'
+[151]             ((parent,'pgSQLDatabase.fConfig.lvSQLDBScheme') 'Client') Win∆UpdateListview arg
+[152]             :if ~mt PickList
+[153]                 (parent,'pgSQLDatabase.fConfig.lvSQLDBScheme') ⎕wi 'value' (,⊃((⎕split 0 2↓PickList)∊⊂m2n SStoMAT SQLDBScheme)/PickList[;1])
+[154]             :endif
+[155]         :case 'ckSQLlocalUNC'
+[156]             :if (parent,'pgSQLDatabase.fConfig.ckSQLlocalUNC') ⎕wi 'value'
+[157]                 (parent,'pgSQLDatabase.fConfig.edInputDirUNC') ⎕wi 'text' inputDir
+[158]             :endif
+[159]         :case 'ckSQLsetUNC'
+[160]             :if (parent,'pgSQLDatabase.fConfig.ckSQLsetUNC') ⎕wi 'value'
+[161]                 (parent,'pgSQLDatabase.fConfig.edInputDirUNC') ⎕wi 'text' (FolderToUNC inputDir)
+[162]             :endif
+[163]         :caselist 'ssNumConst' 'ssDateConst'
+[164]             :if Win∆F1SSFilled SSName←parent,'pgConstants.',↑field
+[165]                 MaxRow←SSName ⎕wi 'xMaxRow'
+[166]                 text←((⊂' _') REPL¨SSName Win∆F1SSGetTextArray 1 1 MaxRow 1)[;1]
+[167]                 z←(~(⊂'sc_')≡¨3↑¨text)^∨/¨' '≠¨text
+[168]                 text←DLTB¨(z\z/⊂'sc_'),¨text
+[169]                 SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,1) text
+[170]             :endif
+[171]         :endselect
+[172]         (↑field) Win∆FormValidation 'Change'
+[173]     :until mt field←1↓field
+[174] 
+[175] :case 'Valid' ⍝ Routine specific validation
+[176] 
+[177]     :repeat
+[178]         page←DLTMB ↑field
+[179]         :if (⊂page)∊'pgFiles' 'pgData' 'pgSQLDatabase' 'pgConstants'
+[180]             :if ~mt res←((Win∆GetControlList parent,page) at 'variable') Win∆FormValidation 'Valid' ⋄ :return ⋄ :endif ⍝ fields on this form
+[181]         :endif
+[182]         Win∆AssignVars ControlName
+[183]         :if ~mt res←(~page≡'All')↓1 Client_Valid ⊂page ⋄ :return ⋄ :endif
+[184]     :until mt field←1↓field
+[185] 
+[186] 
+[187] :case 'Run'
+[188] 
+[189]     0 0⍴ReadModule 'Client' 'None' ⍝ Read DEFAULTS for Conversion Purposes
+[190]     0 0⍴ClientFile ReadFile 'Client'
+[191]     Client_Vars ⍝ Fix some Client variables
+[192] 
+[193]     AbsDict←UpdateAbsDict 'Client'
+[194]     ⍙FinAssdict←GetFinList '' ⍝ Create Financials Dictionary
+[195]     ⍙MortAssdict←GetMortList 'Init'
+[196] 
+[197]     cLIENT←DLTB ClientName
+[198]     vDATE←'DD/MM/YYYY' DATEEXP vDATE
+[199]     pvDATE←'DD/MM/YYYY' DATEEXP pvDATE
+[200]     aosenabled←AOSCtl^zwb AOSenabled
+[201]     :if uk=1
+[202]         ppfenabled←zwb PPFenabled
+[203]         capenabled←ppfenabled∨zwb CAPenabled
+[204]         useBasisCat←zwb UseBasisCat
+[205]         sepComCot←zwb SepComCot
+[206]         valuePre88MS←zwb ValuePre88MS
+[207]         :if 9=incIndivVF   ←zwb IncIndivVF  ⋄ incIndivVF  ←~bAON ⋄ :endif
+[208]         :if 9=splitCombyPI←zwb SplitCombyPI ⋄ splitCombyPI← bAON ⋄ :endif
+[209]     :endif
+[210] 
+[211]     HLDII←zwb hldii ⋄ SpouseCF←zwb spousecf
+[212]     :if ~CPbreakdown←zwb cpbreakdown ⋄ ALMLDIterm←0,(⍎fsbreakdown),99 ⋄ :endif
+[213] 
+[214]     sqlDatabase←bSQLServer^zwb SQLDatabase
+[215]     ValnResultsDB←(⎕io+sqlDatabase)⊃'SVResultsDB' SQLDBName
+[216]     :if sqlDatabase
+[217]     :andif ~mt ConfigFile ReadFile SQLDBName                           ⍝ Get list of "registered Schemes"
+[218]         sqlschemeID←(⎕split 0 1↓schemes)⍳⊂m2n SStoMAT SQLDBScheme
+[219]         sqlschemeID←↑↑sqlschemeID⊃schemes[;⎕io],0
+[220]         :if 0=⎕nc 'sql_properties'
+[221]             0 0⍴ConfigFile ReadFile 'Configure_SQL' sqlConName
+[222]             sql_properties←⊃spin m2n¨property propvalue
+[223]             sqlTimeout←zwb SQLTimeout
+[224]         :endif
+[225]         :if zwb SQLlocalUNC
+[226]             InputDirUNC←inputDir
+[227]         :elseif zwb SQLsetUNC
+[228]             InputDirUNC←FullFolder InputDirUNC
+[229]         :else
+[230]             InputDirUNC←FolderToUNC inputDir
+[231]         :endif
+[232]     :else
+[233]         InputDirUNC←inputDir
+[234]         sqlDatabase←sqlschemeID←sqlTimeout←0
+[235]     :endif
+[236] 
+[237]     :if mt factorFile ⋄ FactorFile←LibraryDir,'SVFactors'
+[238]     :else             ⋄ FactorFile←LibraryDir,Win∆Parent factorFile
+[239]     :endif
+[240]     :if uk=1
+[241]         :if mt ClientFile ReadFile 'PPF_Details' '' 'ppfFile'
+[242]         :orif mt ppfFile ⋄ SVPPFFile←LibraryDir,'SVPPFFile'
+[243]         :else            ⋄ SVPPFFile←LibraryDir,Win∆Parent ppfFile
+[244]         :endif
+[245]     :endif
+[246]     :if mt globalsFile ⋄ GlobalsFile←LibraryDir,'SVGlobals'
+[247]     :else              ⋄ GlobalsFile←LibraryDir,globalsFile
+[248]     :endif
+[249]     LibraryFile←'' ⍝⍝⍝ '{Library}'
+[250]     :if 0=⎕nc 'ListviewDict' ⋄ ListviewDict←MATRIX 'Module' 'Control' 'Parameters' 'Sort' ⋄ :endif
+[251] 
+[252]     :if ~bGAD ⋄ :andif zwb SpMortCheck
+[253]         BlankSpMort
+[254]     :endif
+[255] 
+[256]     res←'CreateVars'
+[257] 
+[258] :case 'Quit' ⍝ Deleting "other" variables
+[259]     :if uk=1 ⋄ :andif ~mt ClientFile ⋄ :andif 0≠⎕nc 'OutputDir' ⋄ 'Client' UpdateParametersIndex 1 ⋄ :endif
+[260]     0 0⍴⎕ex 'ClientName DecrFile FormatType newyieldDir newoutputDir newconsolidDir',(~sqlDatabase)/' sql_properties sqlTimeout' ⍝⍝⍝ HPCWarning
+[261]     0 0⍴DeleteVars 'Configure_SQL'
+[262] 
+[263] :endselect
+    ∇

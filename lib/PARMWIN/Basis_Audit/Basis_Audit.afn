@@ -1,1 +1,59 @@
-    ∇ res←field Basis_Audit parm;parent;form;File;cn;list;AuditCN;AuditLog;∆;Desc[1]   ⍝ PARMWIN.sf#25[2]   ⍝ Function to allow user control on Basis Audit[3]   [4]   parent←'fmBasisAudit.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[11]      htmfile←'' ⍝ Default response if cancelled[12]  [13]      :if BasisType≡'Financials_Display'[14]          parent ⎕wi 'visible' ¯1[15]          list←(parent,'lvSavedParms') ⎕wi 'list'[16]          (parent,'lvSavedParms') ⎕wi 'value' (list[;1])[17]          (parent,'fAuditAction.opAuditAction_1') ⎕wi 'value' 1[18]          (parent,'ckNextCheck') ⎕wi 'value' 0[19]          0 0⍴Basis_Audit 'Run'[20]          res←'Abort'[21]      :endif[22]      :if basAccess[1]>accesslevel[23]          (parent,'fAuditAction.opAuditAction_1') ⎕wi 'value' 1[24]          (parent,'fAuditAction') ⎕wi 'enabled' 0[25]      :endif[26]  [27]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[28]  [29]      :repeat[30]          :select ↑field[31]          :caselist 'opAuditAction_1' 'opAuditAction_2'[32]              (parent,'ckNextCheck') ⎕wi 'enabled' ((parent,'fAuditAction.opAuditAction_1') ⎕wi 'value')[33]          :endselect[34]      :until mt field←1↓field[35]  [36]  :case 'Valid'[37]  [38]  :case 'Run'[39]      (form cn)←(parent,'lvSavedParms') ⎕wi 'Ref' 'list' 'value'[40]      File←(⊂InputDir),¨⎕split ⊃(form[;1]) (form[;3]) map cn[41]      Desc←(form[;1]) (form[;4]) map cn[42]      cn←1E6∣cn[43]      :if 1=(parent,'fAuditAction.opAuditAction_1') ⎕wi 'value'[44]          htmfile←(zwb NextCheck) ReportParmAudit File pr ¨cn[45]          res←(~mt htmfile)/'Quit'[46]      :else[47]          AuditLog←'Checkpoint'[48]          :for ∆ :in spin File cn Desc ⋄ (File cn Desc)←∆[49]              AuditCN←File AddToFile ('⊂',(⍕cn),'⊃') Desc[50]              0 0⍴File SaveToFile AuditCN Desc (pack 'AuditLog') 0[51]          :endfor[52]          res←'Quit'[53]      :endif[54]  [55]  :case 'Quit' ⍝ Deleting "other" variables[56]  [57]  :endselect    ∇
+    ∇ res←field Basis_Audit parm;parent;form;File;cn;list;AuditCN;AuditLog;∆;Desc
+[1]   ⍝ PARMWIN.sf#25
+[2]   ⍝ Function to allow user control on Basis Audit
+[3]   
+[4]   parent←'fmBasisAudit.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]      htmfile←'' ⍝ Default response if cancelled
+[12]  
+[13]      :if BasisType≡'Financials_Display'
+[14]          parent ⎕wi 'visible' ¯1
+[15]          list←(parent,'lvSavedParms') ⎕wi 'list'
+[16]          (parent,'lvSavedParms') ⎕wi 'value' (list[;1])
+[17]          (parent,'fAuditAction.opAuditAction_1') ⎕wi 'value' 1
+[18]          (parent,'ckNextCheck') ⎕wi 'value' 0
+[19]          0 0⍴Basis_Audit 'Run'
+[20]          res←'Abort'
+[21]      :endif
+[22]      :if basAccess[1]>accesslevel
+[23]          (parent,'fAuditAction.opAuditAction_1') ⎕wi 'value' 1
+[24]          (parent,'fAuditAction') ⎕wi 'enabled' 0
+[25]      :endif
+[26]  
+[27]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[28]  
+[29]      :repeat
+[30]          :select ↑field
+[31]          :caselist 'opAuditAction_1' 'opAuditAction_2'
+[32]              (parent,'ckNextCheck') ⎕wi 'enabled' ((parent,'fAuditAction.opAuditAction_1') ⎕wi 'value')
+[33]          :endselect
+[34]      :until mt field←1↓field
+[35]  
+[36]  :case 'Valid'
+[37]  
+[38]  :case 'Run'
+[39]      (form cn)←(parent,'lvSavedParms') ⎕wi 'Ref' 'list' 'value'
+[40]      File←(⊂InputDir),¨⎕split ⊃(form[;1]) (form[;3]) map cn
+[41]      Desc←(form[;1]) (form[;4]) map cn
+[42]      cn←1E6∣cn
+[43]      :if 1=(parent,'fAuditAction.opAuditAction_1') ⎕wi 'value'
+[44]          htmfile←(zwb NextCheck) ReportParmAudit File pr ¨cn
+[45]          res←(~mt htmfile)/'Quit'
+[46]      :else
+[47]          AuditLog←'Checkpoint'
+[48]          :for ∆ :in spin File cn Desc ⋄ (File cn Desc)←∆
+[49]              AuditCN←File AddToFile ('⊂',(⍕cn),'⊃') Desc
+[50]              0 0⍴File SaveToFile AuditCN Desc (pack 'AuditLog') 0
+[51]          :endfor
+[52]          res←'Quit'
+[53]      :endif
+[54]  
+[55]  :case 'Quit' ⍝ Deleting "other" variables
+[56]  
+[57]  :endselect
+    ∇

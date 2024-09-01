@@ -1,1 +1,21 @@
-    ∇ hwnd←WhwndOwner;⎕elx[1]   ⍝ MAINWIN.sf#2[2]   ⍝∇hwnd←WhwndOwner -- Find the owner of the current form[3]   ⍝∇The owner of the current form is defined either by[4]   ⍝∇ the Hwnd of the form pointed to by ⎕WSELF or containing the[5]   ⍝∇  control pointed to by ⎕WSELF.[6]   ⍝∇Otherwise the owner is undefined[7]   [8]   :IF 0∊⍴⎕wself[9]       hwnd←0 ⍝ Maybe APLFrame ???[10]  :ELSE[11]      ⎕elx←'→lab' ⍝ Menus and Formula 1 don't have a 'hnwd' property[12]      :if ×hwnd←('.' StripText ⎕wself) ⎕wi 'hwnd' ⋄ :return ⋄ :endif[13]  :ENDIF[14]  [15]  lab:⎕elx←'→l1' ⍝ May not have a Module open yet![16]  :if ×hwnd←ControlName ⎕wi 'hwnd' ⋄ :return ⋄ :endif[17]  [18]  l1:⎕elx←'→hwnd←0' ⍝ Main Form may not be open yet![19]  hwnd←FormName ⎕wi 'hwnd'    ∇
+    ∇ hwnd←WhwndOwner;⎕elx
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝∇hwnd←WhwndOwner -- Find the owner of the current form
+[3]   ⍝∇The owner of the current form is defined either by
+[4]   ⍝∇ the Hwnd of the form pointed to by ⎕WSELF or containing the
+[5]   ⍝∇  control pointed to by ⎕WSELF.
+[6]   ⍝∇Otherwise the owner is undefined
+[7]   
+[8]   :IF 0∊⍴⎕wself
+[9]       hwnd←0 ⍝ Maybe APLFrame ???
+[10]  :ELSE
+[11]      ⎕elx←'→lab' ⍝ Menus and Formula 1 don't have a 'hnwd' property
+[12]      :if ×hwnd←('.' StripText ⎕wself) ⎕wi 'hwnd' ⋄ :return ⋄ :endif
+[13]  :ENDIF
+[14]  
+[15]  lab:⎕elx←'→l1' ⍝ May not have a Module open yet!
+[16]  :if ×hwnd←ControlName ⎕wi 'hwnd' ⋄ :return ⋄ :endif
+[17]  
+[18]  l1:⎕elx←'→hwnd←0' ⍝ Main Form may not be open yet!
+[19]  hwnd←FormName ⎕wi 'hwnd'
+    ∇

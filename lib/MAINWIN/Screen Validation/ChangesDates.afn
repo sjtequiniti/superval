@@ -1,1 +1,47 @@
-    ∇ field ChangesDates arg;⎕elx;date;∆;z;limit[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Quick Date Changes[3]   ⍝  Y and R for start and end of YeaR, M and H for start and end of MontH, F and L for previous/next of FinanciaL year, + to add 1 day[4]   [5]   :if ~ecflag ⋄ ⎕elx←'→0' ⋄ :endif ⍝ Abort if any error[6]   [7]   :if (arg←↑¯1↑arg)∊89 82 70 76 77 72 187 107 ⍝ Y R F L M H + (both = and number pad) in ⎕io 0[8]       :if ~z←DATECHECK date←'DD/MM/YYYY' DATEEXP DLTB field ⎕wi 'text'[9]           :if 'Combo'≡field ⎕wi 'class'[10]          :andif ×field ⎕wi 'value'[11]              z←DATECHECK date←'DD/MM/YYYY' DATEEXP (field ⎕wi '∆rightlabel') ⎕wi 'caption'[12]          :endif[13]      :endif[14]      :if z[15]          :select arg[16]          :case 89 ⋄ date← 1  1,2↓date[17]          :case 82 ⋄ date←31 12,2↓date[18]          :case 70[19]              :if     ↑1↓date<taxdate,0 ⋄ date←taxdate,2↓date-1[20]              :elseif ↑1↓date>taxdate,0 ⋄ date←taxdate,2↓date[21]              :elseif ↑  date>taxdate,0 ⋄ date←taxdate,2↓date[22]              :else                     ⋄ date←taxdate,2↓date-1[23]              :endif[24]          :case 76[25]              :if     ↑1↓date<taxdate,0 ⋄ date←taxdate,2↓date[26]              :elseif ↑1↓date>taxdate,0 ⋄ date←taxdate,2↓date+1[27]              :elseif ↑  date≥taxdate,0 ⋄ date←taxdate,2↓date+1[28]              :else                     ⋄ date←taxdate,2↓date[29]              :endif[30]          :case 77 ⋄ date← 1,1↓date[31]          :case 72 ⋄ date←31,1↓date[32]              :while ~DATECHECK date ⋄ date←date-1 0 0[33]              :endwhile[34]          :caselist 107 187 ⋄ date←1 0 0+date[35]              :if ~DATECHECK date[36]                  :if 12=∆←↑1↓date ⋄ date←1 1,1+2↓date[37]                  :else            ⋄ date←1,(1+∆),2↓date[38]                  :endif[39]              :endif[40]          :endselect[41]          date←'DD/MM/YYYY' DATE∆FMT date[42]          :if 0≠limit←field ⎕wi 'limit' ⋄ date←limit↑date ⋄ :endif[43]          field ⎕wi 'text' date[44]      :endif[45]  :endif    ∇
+    ∇ field ChangesDates arg;⎕elx;date;∆;z;limit
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Quick Date Changes
+[3]   ⍝  Y and R for start and end of YeaR, M and H for start and end of MontH, F and L for previous/next of FinanciaL year, + to add 1 day
+[4]   
+[5]   :if ~ecflag ⋄ ⎕elx←'→0' ⋄ :endif ⍝ Abort if any error
+[6]   
+[7]   :if (arg←↑¯1↑arg)∊89 82 70 76 77 72 187 107 ⍝ Y R F L M H + (both = and number pad) in ⎕io 0
+[8]       :if ~z←DATECHECK date←'DD/MM/YYYY' DATEEXP DLTB field ⎕wi 'text'
+[9]           :if 'Combo'≡field ⎕wi 'class'
+[10]          :andif ×field ⎕wi 'value'
+[11]              z←DATECHECK date←'DD/MM/YYYY' DATEEXP (field ⎕wi '∆rightlabel') ⎕wi 'caption'
+[12]          :endif
+[13]      :endif
+[14]      :if z
+[15]          :select arg
+[16]          :case 89 ⋄ date← 1  1,2↓date
+[17]          :case 82 ⋄ date←31 12,2↓date
+[18]          :case 70
+[19]              :if     ↑1↓date<taxdate,0 ⋄ date←taxdate,2↓date-1
+[20]              :elseif ↑1↓date>taxdate,0 ⋄ date←taxdate,2↓date
+[21]              :elseif ↑  date>taxdate,0 ⋄ date←taxdate,2↓date
+[22]              :else                     ⋄ date←taxdate,2↓date-1
+[23]              :endif
+[24]          :case 76
+[25]              :if     ↑1↓date<taxdate,0 ⋄ date←taxdate,2↓date
+[26]              :elseif ↑1↓date>taxdate,0 ⋄ date←taxdate,2↓date+1
+[27]              :elseif ↑  date≥taxdate,0 ⋄ date←taxdate,2↓date+1
+[28]              :else                     ⋄ date←taxdate,2↓date
+[29]              :endif
+[30]          :case 77 ⋄ date← 1,1↓date
+[31]          :case 72 ⋄ date←31,1↓date
+[32]              :while ~DATECHECK date ⋄ date←date-1 0 0
+[33]              :endwhile
+[34]          :caselist 107 187 ⋄ date←1 0 0+date
+[35]              :if ~DATECHECK date
+[36]                  :if 12=∆←↑1↓date ⋄ date←1 1,1+2↓date
+[37]                  :else            ⋄ date←1,(1+∆),2↓date
+[38]                  :endif
+[39]              :endif
+[40]          :endselect
+[41]          date←'DD/MM/YYYY' DATE∆FMT date
+[42]          :if 0≠limit←field ⎕wi 'limit' ⋄ date←limit↑date ⋄ :endif
+[43]          field ⎕wi 'text' date
+[44]      :endif
+[45]  :endif
+    ∇

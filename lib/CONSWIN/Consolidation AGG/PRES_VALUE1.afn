@@ -1,1 +1,19 @@
-    ∇ PRES∆VALUE1;NBL;v;SUMMREC[1]   ⍝ CONSWIN.sf#5[2]   ⍝[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   ⍝ Value of Past Serv Conts with Discounter at t=0.5, 1.5, 2.5,...[8]   PSC←(+/(SIZE↑PSC)×((⍴v)⍴ 0 1)/v←×\1,(÷2/SIZE OVERTAKE amorti)*0.5)÷SFAC[9]   SUMMREC←' ' OVER(off↑'Net Company Liability -'),,'CM<->I12' ⎕FMT NBL←(+/PVTOT[5;6],PTOT,LTOT)-ASSETS[1]÷SFAC[10]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[11]  SUMMREC←' ' OVER off↑'Past Service Liability Contributions (net of Company Contribution Expenses (*)',((uk=0)/'and Tax (**)'),') -'[12]  SUMMREC←SUMMREC OVER off↑DLTMB(,'<For >,I2,< years, a Company Contribution of >' ⎕FMT TERMPC),('¯-' REPL ⍕SALPC),'% of ',(,(2 7 ⍴'All    Current')[1+salind[3];]),' Members'' Salaries'[13]  SUMMREC←SUMMREC OVER(off↑DLTMB(,'<For >,I2,< years, a Company Contribution of £>' ⎕FMT TERMDA),('¯-' REPL ⍕DA),' per annum -'),,'CM<->I12' ⎕FMT PSC[14]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[15]  SUMMREC←' ' OVER(off↑'Present Value of Total Company Contributions -'),,'CM<->I12' ⎕FMT PSC+PVTOT[5;12][16]  SUMMREC←(SUMMREC⍪' ')OVER(off↑'Surplus(+)/Deficit(-) on Current Conts -'),,'CM<->I12' ⎕FMT PSC+PVTOT[5;12]-NBL[17]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line    ∇
+    ∇ PRES∆VALUE1;NBL;v;SUMMREC
+[1]   ⍝ CONSWIN.sf#5
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⍝ Value of Past Serv Conts with Discounter at t=0.5, 1.5, 2.5,...
+[8]   PSC←(+/(SIZE↑PSC)×((⍴v)⍴ 0 1)/v←×\1,(÷2/SIZE OVERTAKE amorti)*0.5)÷SFAC
+[9]   SUMMREC←' ' OVER(off↑'Net Company Liability -'),,'CM<->I12' ⎕FMT NBL←(+/PVTOT[5;6],PTOT,LTOT)-ASSETS[1]÷SFAC
+[10]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[11]  SUMMREC←' ' OVER off↑'Past Service Liability Contributions (net of Company Contribution Expenses (*)',((uk=0)/'and Tax (**)'),') -'
+[12]  SUMMREC←SUMMREC OVER off↑DLTMB(,'<For >,I2,< years, a Company Contribution of >' ⎕FMT TERMPC),('¯-' REPL ⍕SALPC),'% of ',(,(2 7 ⍴'All    Current')[1+salind[3];]),' Members'' Salaries'
+[13]  SUMMREC←SUMMREC OVER(off↑DLTMB(,'<For >,I2,< years, a Company Contribution of £>' ⎕FMT TERMDA),('¯-' REPL ⍕DA),' per annum -'),,'CM<->I12' ⎕FMT PSC
+[14]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[15]  SUMMREC←' ' OVER(off↑'Present Value of Total Company Contributions -'),,'CM<->I12' ⎕FMT PSC+PVTOT[5;12]
+[16]  SUMMREC←(SUMMREC⍪' ')OVER(off↑'Surplus(+)/Deficit(-) on Current Conts -'),,'CM<->I12' ⎕FMT PSC+PVTOT[5;12]-NBL
+[17]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+    ∇

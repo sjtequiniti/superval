@@ -1,1 +1,43 @@
-    ∇ httpno ModifyReq_Broker defn;httpIPADDR;httpPORT;httpMAXPROC;httpFOLDER;msk;httpRESPLIMIT;httpWSSIZE;httpABANDON;httpCHECK;httpSHUTDOWN;httpNAME;desc[1]   ⍝ HPCWIN.sf#2[2]   ⍝ Add a new or edit an existing HTTP Request Broker using "defn"[3]   [4]   (httpIPADDR httpPORT httpMAXPROC httpFOLDER httpRESPLIMIT httpWSSIZE httpABANDON httpCHECK httpSHUTDOWN httpNAME)←defn[5]   [6]   :repeat[7]       0 0⍴PrefFile ReadFile 'Config_MultiProc'[8]   :until 82=⎕dr 'EditMultiProc' ⋄ :orif 0=EditMultiProc ⋄ :orif 60<1E¯6×(TIMEBASE ⎕ts)-EditMultiProc ⋄ :orif 0=⎕dl 0.25[9]   EditMultiProc←TIMEBASE ⎕ts[10]  0 0⍴PrefFile SaveToFile 'Config_MultiProc' '' (pack 'EditMultiProc') 1[11]  [12]  :if 0=⎕nc 'httpno'[13]      :if (⊂httpNAME)∊'My Machine Only' 'My Machine'     ⋄ desc←'My Machine'[14]      :elseif ∨/msk←('Local IP Address'⍷HTTPnames)[;⎕io] ⋄ desc←'Local IP Address ',⍕1+⌈/∊⎕fi ¨'0',¨m2n '(' StripText 16↓[⎕io+1]msk⌿HTTPnames[15]      :else                                              ⋄ desc←'Local IP Address 1'[16]      :endif[17]  [18]      HTTPipaddr   ←HTTPipaddr    OVER httpIPADDR[19]      HTTPport     ←HTTPport      OVER httpPORT[20]      HTTPresplimit←HTTPresplimit OVER httpRESPLIMIT[21]      HTTPmaxproc  ←HTTPmaxproc   OVER httpMAXPROC[22]      HTTPfolder   ←HTTPfolder    OVER httpFOLDER[23]      HTTPwssize   ←HTTPwssize    OVER httpWSSIZE[24]      HTTPabandon  ←HTTPabandon   OVER httpABANDON[25]      HTTPcheck    ←HTTPcheck     OVER httpCHECK[26]      HTTPshutdown ←HTTPshutdown  OVER httpSHUTDOWN[27]      HTTPeditable ←HTTPeditable  OVER '0'[28]      HTTPactive   ←HTTPactive    OVER '0'[29]  [30]      HTTPnames←HTTPnames OVER desc,' ','()' embrace httpIPADDR,':',httpPORT,'{}' embrace httpMAXPROC[31]  :else[32]      httpFOLDER    ASSIGN∆Dict 'HTTPfolder[',(⍕httpno),';]'[33]      httpRESPLIMIT ASSIGN∆Dict 'HTTPresplimit[',(⍕httpno),';]'[34]      httpWSSIZE    ASSIGN∆Dict 'HTTPwssize[',(⍕httpno),';]'[35]      httpABANDON   ASSIGN∆Dict 'HTTPabandon[',(⍕httpno),';]'[36]      httpCHECK     ASSIGN∆Dict 'HTTPcheck[',(⍕httpno),';]'[37]      httpSHUTDOWN  ASSIGN∆Dict 'HTTPshutdown[',(⍕httpno),';]'[38]  :endif[39]  [40]  EditMultiProc←0[41]  0 0⍴PrefFile SaveToFile 'Config_MultiProc' '' (pack ⍙VALUESdict ReadDictFile 'Config_MultiProc' '' 'names')    ∇
+    ∇ httpno ModifyReq_Broker defn;httpIPADDR;httpPORT;httpMAXPROC;httpFOLDER;msk;httpRESPLIMIT;httpWSSIZE;httpABANDON;httpCHECK;httpSHUTDOWN;httpNAME;desc
+[1]   ⍝ HPCWIN.sf#2
+[2]   ⍝ Add a new or edit an existing HTTP Request Broker using "defn"
+[3]   
+[4]   (httpIPADDR httpPORT httpMAXPROC httpFOLDER httpRESPLIMIT httpWSSIZE httpABANDON httpCHECK httpSHUTDOWN httpNAME)←defn
+[5]   
+[6]   :repeat
+[7]       0 0⍴PrefFile ReadFile 'Config_MultiProc'
+[8]   :until 82=⎕dr 'EditMultiProc' ⋄ :orif 0=EditMultiProc ⋄ :orif 60<1E¯6×(TIMEBASE ⎕ts)-EditMultiProc ⋄ :orif 0=⎕dl 0.25
+[9]   EditMultiProc←TIMEBASE ⎕ts
+[10]  0 0⍴PrefFile SaveToFile 'Config_MultiProc' '' (pack 'EditMultiProc') 1
+[11]  
+[12]  :if 0=⎕nc 'httpno'
+[13]      :if (⊂httpNAME)∊'My Machine Only' 'My Machine'     ⋄ desc←'My Machine'
+[14]      :elseif ∨/msk←('Local IP Address'⍷HTTPnames)[;⎕io] ⋄ desc←'Local IP Address ',⍕1+⌈/∊⎕fi ¨'0',¨m2n '(' StripText 16↓[⎕io+1]msk⌿HTTPnames
+[15]      :else                                              ⋄ desc←'Local IP Address 1'
+[16]      :endif
+[17]  
+[18]      HTTPipaddr   ←HTTPipaddr    OVER httpIPADDR
+[19]      HTTPport     ←HTTPport      OVER httpPORT
+[20]      HTTPresplimit←HTTPresplimit OVER httpRESPLIMIT
+[21]      HTTPmaxproc  ←HTTPmaxproc   OVER httpMAXPROC
+[22]      HTTPfolder   ←HTTPfolder    OVER httpFOLDER
+[23]      HTTPwssize   ←HTTPwssize    OVER httpWSSIZE
+[24]      HTTPabandon  ←HTTPabandon   OVER httpABANDON
+[25]      HTTPcheck    ←HTTPcheck     OVER httpCHECK
+[26]      HTTPshutdown ←HTTPshutdown  OVER httpSHUTDOWN
+[27]      HTTPeditable ←HTTPeditable  OVER '0'
+[28]      HTTPactive   ←HTTPactive    OVER '0'
+[29]  
+[30]      HTTPnames←HTTPnames OVER desc,' ','()' embrace httpIPADDR,':',httpPORT,'{}' embrace httpMAXPROC
+[31]  :else
+[32]      httpFOLDER    ASSIGN∆Dict 'HTTPfolder[',(⍕httpno),';]'
+[33]      httpRESPLIMIT ASSIGN∆Dict 'HTTPresplimit[',(⍕httpno),';]'
+[34]      httpWSSIZE    ASSIGN∆Dict 'HTTPwssize[',(⍕httpno),';]'
+[35]      httpABANDON   ASSIGN∆Dict 'HTTPabandon[',(⍕httpno),';]'
+[36]      httpCHECK     ASSIGN∆Dict 'HTTPcheck[',(⍕httpno),';]'
+[37]      httpSHUTDOWN  ASSIGN∆Dict 'HTTPshutdown[',(⍕httpno),';]'
+[38]  :endif
+[39]  
+[40]  EditMultiProc←0
+[41]  0 0⍴PrefFile SaveToFile 'Config_MultiProc' '' (pack ⍙VALUESdict ReadDictFile 'Config_MultiProc' '' 'names')
+    ∇

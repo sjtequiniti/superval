@@ -1,1 +1,30 @@
-    ∇ BEN←PENS PUP_Franking dr;escfact;pennra;warnra;frankp;frankw;upennra;uwarnra;ufrankp;ufrankw;penspa;warspa;upenspa;uwarspa[1]   ⍝ DEFWIN.sf#4[2]   ⍝ Franking Calculations[3]   [4]   escfact←1⌈dr[;2×0⌈,XS-↑X] CDIV dr[;2×0⌈,XMP-↑X]                                 ⍝ escalation factors [IX][5]   [6]    pennra←+/PENS[;↑iWho;↑iPen;↑iRet;;]                                           ⍝ [IX] all PPF periods[7]    warnra←+/PENS[;↑iWho;↑iPen;↑iDar;;]                                           ⍝ [IX] all PPF period[8]    frankp←  PENS[;↑iWho;↑iPen;↑iRet;;↑iPre]                                      ⍝ [IX] pre-88 only[9]    frankw←  PENS[;↑iWho;↑iPen;↑iDar;;↑iPre]                                      ⍝ [IX] pre-88 only[10]  [11]  upennra←+/PENS[;↑iUnd;↑iPen;↑iRet;;]                                           ⍝ [IX] all PPF periods[12]  uwarnra←+/PENS[;↑iUnd;↑iPen;↑iDar;;]                                           ⍝ [IX] all PPF period[13]  ufrankp←  PENS[;↑iUnd;↑iPen;↑iRet;;↑iPre]                                      ⍝ [IX] pre-88 only[14]  ufrankw←  PENS[;↑iUnd;↑iPen;↑iDar;;↑iPre]                                      ⍝ [IX] pre-88 only[15]  [16]  ⍝ revalue to SPA according to OFFCOD ...........................................[17]   penspa←escfact  frankp  pennra mpreIND mpostIND F∆PUPS     (      PreGMPR GNPre     ) (       PostGMPR GNPost)[18]   warspa←escfact  frankp  warnra mpreIND mpostIND F∆PUPS 0.5×(      PreGMPR GNPre×Male) (       PostGMPR GNPost)[19]  ⍝ 'accurate' treatment of underpin resumed here                                 ⍝ SV5000317[20]  upenspa←escfact ufrankp upennra mpreIND mpostIND F∆PUPS     (fUpre×PreGMPR GNPre     ) (fUpost×PostGMPR GNPost)[21]  uwarspa←escfact ufrankp uwarnra mpreIND mpostIND F∆PUPS 0.5×(fUpre×PreGMPR GNPre×Male) (fUpost×PostGMPR GNPost)[22]  [23]  [24]  ⍝ tabulate benefits, label indexes .............................................[25]  BEN← ⊃⊃⊃((pennra penspa)(upennra upenspa))((warnra warspa)(uwarnra uwarspa))[26]  [27]  BEN[;iUnd;;;]←BEN[;iUnd;;;]⌊0⌈BEN[;iWho;;;]                                     ⍝ underpin may not exceed whole (allowing for -ve benefits)[28]  BEN←BEN,[aUND]-/[aUND]BEN                                                       ⍝ dif←whole-underpin    ∇
+    ∇ BEN←PENS PUP_Franking dr;escfact;pennra;warnra;frankp;frankw;upennra;uwarnra;ufrankp;ufrankw;penspa;warspa;upenspa;uwarspa
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ Franking Calculations
+[3]   
+[4]   escfact←1⌈dr[;2×0⌈,XS-↑X] CDIV dr[;2×0⌈,XMP-↑X]                                 ⍝ escalation factors [IX]
+[5]   
+[6]    pennra←+/PENS[;↑iWho;↑iPen;↑iRet;;]                                           ⍝ [IX] all PPF periods
+[7]    warnra←+/PENS[;↑iWho;↑iPen;↑iDar;;]                                           ⍝ [IX] all PPF period
+[8]    frankp←  PENS[;↑iWho;↑iPen;↑iRet;;↑iPre]                                      ⍝ [IX] pre-88 only
+[9]    frankw←  PENS[;↑iWho;↑iPen;↑iDar;;↑iPre]                                      ⍝ [IX] pre-88 only
+[10]  
+[11]  upennra←+/PENS[;↑iUnd;↑iPen;↑iRet;;]                                           ⍝ [IX] all PPF periods
+[12]  uwarnra←+/PENS[;↑iUnd;↑iPen;↑iDar;;]                                           ⍝ [IX] all PPF period
+[13]  ufrankp←  PENS[;↑iUnd;↑iPen;↑iRet;;↑iPre]                                      ⍝ [IX] pre-88 only
+[14]  ufrankw←  PENS[;↑iUnd;↑iPen;↑iDar;;↑iPre]                                      ⍝ [IX] pre-88 only
+[15]  
+[16]  ⍝ revalue to SPA according to OFFCOD ...........................................
+[17]   penspa←escfact  frankp  pennra mpreIND mpostIND F∆PUPS     (      PreGMPR GNPre     ) (       PostGMPR GNPost)
+[18]   warspa←escfact  frankp  warnra mpreIND mpostIND F∆PUPS 0.5×(      PreGMPR GNPre×Male) (       PostGMPR GNPost)
+[19]  ⍝ 'accurate' treatment of underpin resumed here                                 ⍝ SV5000317
+[20]  upenspa←escfact ufrankp upennra mpreIND mpostIND F∆PUPS     (fUpre×PreGMPR GNPre     ) (fUpost×PostGMPR GNPost)
+[21]  uwarspa←escfact ufrankp uwarnra mpreIND mpostIND F∆PUPS 0.5×(fUpre×PreGMPR GNPre×Male) (fUpost×PostGMPR GNPost)
+[22]  
+[23]  
+[24]  ⍝ tabulate benefits, label indexes .............................................
+[25]  BEN← ⊃⊃⊃((pennra penspa)(upennra upenspa))((warnra warspa)(uwarnra uwarspa))
+[26]  
+[27]  BEN[;iUnd;;;]←BEN[;iUnd;;;]⌊0⌈BEN[;iWho;;;]                                     ⍝ underpin may not exceed whole (allowing for -ve benefits)
+[28]  BEN←BEN,[aUND]-/[aUND]BEN                                                       ⍝ dif←whole-underpin
+    ∇

@@ -1,1 +1,144 @@
-    ∇ CASH∆FLOW;N;SUMMREC;v;vMP;PVTOT;GMAT;Z;EXP;TAX;PSC;PSC1;SUBTOTS;PVCONTS1pc;TOT;MAT;PTOT;SFAC;AVTOT;ABep;GLPrem;off;NORMC;AVTOT;TOTind;line[1]   ⍝ CONSWIN.sf#4[2]   ⍝[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   vMP←((⍴v)⍴ 0 1)/v←×\1,(÷2/150 OVERTAKE i)*0.5 ⋄ v←(300⍴ 1 0)/¯1↓v[8]   ⍝ Initialize totals - Accrued Bens, Demographics, Cash Flows and V1%[9]   SIZE←1⌈TERMPC ⋄ ABTOT←(SIZE,2+7×PROPT)⍴0 ⋄ FUNDTOT←(SIZE,16)⍴0[10]  ⍝ Expand GTOTS for Expenses/Taxes[11]  GTOTS←(SIZE,17)↑GMAT←(SIZE,0)⍴0 ⋄ EXP←TAX←⍳0 ⋄ TOTind←1[12]  PVTOT←(0,(8+No∆Bens),18)⍴0[13]  ⍝ Read actives cash flow results and update grand totals[14]  (1,COCR)BEN∆CALCS runsA ⋄ PVCONTS1pc←GTOTS[;,16],0[15]  ⍝ Read New Entrants cash flow results and update grand totals[16]  (0,COCRN)BEN∆CALCS runsNE ⋄ GLPrem←+/EXP[17]  GTOTS[;10]←GTOTS[;10]+GTOTS[;12] ⍝ Move Death in Defer to Withdrawal[18]  GTOTS[; 4 7]←GTOTS[; 4 7]+insind×GTOTS[; 6 9] ⍝ Add Insured Benefits[19]  ⍝ Add Other Liabilities to Matrices[20]  GTOTS←GTOTS,+/GTOTS[;(⍳5), 7 8 10 11] ⍝ Append Grand Total of Benefits (col 18)[21]  GTOTS←GTOTS,0 ⍝ Append Column for Pensioner Benefits (col 19)[22]  ⍝ Calculate the expenses cash flows[23]  GTOTS[;17]←GTOTS[;17]+Z←(SIZE↑EXPSF)××+/GMAT←((SIZE,0)⌈⍴GMAT)↑GMAT[24]  GTOTS[;14]←GTOTS[;14]+(valind>2)×Z[25]  GMAT←+⌿(⍉(⌽⍴GMAT)⍴(SIZE⌊contper)↑EXPSF×vMP)×GMAT CDIV⍉(⌽⍴GMAT)⍴+/GMAT←((contper,1000)⌊⍴GMAT)↑GMAT[26]  NORMC←GTOTS[;14]CDIV GTOTS[;16] ⍝ Co Normal Cost as a % of Salaries[27]  ⍝ Average Normal Cost during Control Period in UK[28]  ⍎((uk=1)^valind∊4 5)/'GTOTS[⍳contper;14]←GTOTS[⍳contper;16]×(+/GTOTS[⍳contper;14]) CDIV +/GTOTS[⍳contper;16]'[29]  →(valind≠1)/F1[30]  GTOTS[;14]←GTOTS[;14]+PSC←(SIZE↑TERMDA OVERTAKE DA)+SIZE↑(TERMPC OVERTAKE SALPC)×TERMPC↑+/PVCONTS1pc[;,⍳1+~salind[3]][31]  GTOTS[;17]←GTOTS[;17]+PSC×EXPCC+SIZE↑TaxRates ⍝ Calc the Tax cash flows[32]  PSC←PSC×1-EXPCC+SIZE↑TaxRates ⍝ Net Past Service Conts[33]  F1:→(csh∨MFR)/L0[34]  ABTOT[1;1]←ABTOT[1;1]++/LTOT ⋄ GTOTS[1;1 18]←GTOTS[1;1 18]++/LTOT[35]  ABep←ABTOT[;1][36]  PENCALC runsP,runsD ⍝ Read pensioner cash flow results from file[37]  L0:off←-(3 8 ⍴ 93 95 95 109 109 101 93 93, 93 91 91 110 110 93 93 93, 93 95 95 109 109 93 93 93)[1+uk;valind][38]  PRES∆VALUE ⍝ Go off and do Present Value Calculations[39]  →(valind=1)/F2 ⋄ →MFR/0[40]  amort∆exp←0 ⋄ AMORT∆CALC ⍝ Amortise PSLIAB[41]  F2:ASSCALC ⍝ Build up the assets[42]  →csh/L5[43]  L5:sfac←⌈⌈/0,(10⍟(0.01⌈,((20⌊SIZE),5)↑GTOTS[; 18 19 13 14],ABTOT[;2])÷1000000)÷3[44]  GTOTS←GTOTS÷10*3×sfac ⋄ ABTOT←ABTOT÷10*3×sfac ⍝ THEN Reorder GTOTS[45]  GTOTS←GTOTS[;(⍳5), 7 8 10 11 18 19 13 14 17 20 21 16 15 6 9 12][46]  →csh/F0[47]  →SKIP/L1 ⍝ Skip if No Printout[48]  F0:→(~csh)/F4 ⋄ DISC∆OUTPUT 0 ⍝ Contributions Schedule Output[49]  F4:PRES∆VALUE1 ⋄ →csh/0[50]  PRINT∆TOTALS ⍝ Split of Past Service and Benefits[51]  MEMBPROJ ⍝ Fund Demographics[52]  CREATE∆AOS aosind ⍝ Consolidated Analysis of Surplus Results[53]  0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' Cashflow'[54]  H2←((¯1↑⍴H2) WRITE∆HEAD 'CASH FLOW SUMMARY LISTING') OVER H2[55]  H2[8;5+⍳5]←5↑SDATE,VDATE[56]  →(~valind∊ 4 5)/F3 ⋄ H2[6;124+⍳8]←'PUC(PBO)'[57]  →(valind=4)/F3 ⋄ H2[6;124+⍳5]←' UC(A'[58]  F3:H2[3;110+⍳20]←20↑'¯-' REPL DLTMB 10 2⍕100×i-1 ⋄ H2[4;80+⍳19]←scale[sfac+1;][59]  ⍝ DAB Special Output[60]  :if valind=6 ⋄ :andif uk=1 ⍝⍝⍝[61]      DISC∆OUTPUT 1 2[62]  :endif[63]  ⍝ Create matrix to be written to file[64]  N←'I3,I6' ⎕FMT N,VDATE[3]+N←⍉MATRIX ¯1+⍳1+SIZE ⋄ →(valind>3)/L2[65]  SUMMREC←N,'2M<->I8,M<->I7,M<->I8,M<->I7,M<->I8,M<->I7,M<->I8,M<->I7,M<->I9,M<->I7,2M<->I8,2M<->I7,M<->I9' ⎕FMT(GTOTS[;⍳15];GTOTS[;16],¯1↑ASSETS÷10*3×sfac) ⋄ →L3[66]  L2:SUMMREC←N,'9M<->I7,M<->I8,5M<->I7,M<->I8,M<->I9' ⎕FMT(GTOTS[;⍳15];GTOTS[;16],¯1↑ASSETS÷10*3×sfac;+/ABTOT[;1,2+abNO])[67]  L3:PPAGE←1↑H2 OUTPUT tpr1,PPAGE[68]  L1:ACCRES[69]  [70]  →0[71]  [72]  CASH∆FLOW;N;n;SUMMREC;RECN;v;vMP;PVTOT;GMAT;Z;EXP;TAX;PSC;PSC1;SUBTOTS;PVCONTS1pc;TOT;MAT;PTOT;SFAC;AVTOT;ABep;GLPrem;off;NORMC;AVTOT;TOTind[73]  ⍝ 18 CONSOVL.SF#3[74]  ⍝[75]  ⍝[76]  ⍝[77]  ⍝ V2.50u RE 1/11/93 Standardised[78]  →ppf/L0 ⍝ Skip cash flow stuff for PPF[79]  [80]  vMP←((⍴v)⍴ 0 1)/v←×\1,(÷2/201 OVERTAKE i)*0.5 ⋄ v←(402⍴ 1 0)/¯1↓v[81]  ⍝ Initialize totals - Accrued Bens, Demographics, Cash Flows and V1%[82]  SIZE←1⌈TERMPC ⋄ ABTOT←(SIZE,2+7×PROPT)⍴0 ⋄ FUNDTOT←(SIZE,14)⍴0[83]  ⍝ Expand GTOTS for Expenses/Taxes[84]  GTOTS←(SIZE,17)↑GMAT←(SIZE,0)⍴0 ⋄ EXP←TAX←⍳0 ⋄ TOTind←1[85]  PVTOT←(0,(8+No∆Pens),18)⍴0[86]  ⍝ Read actives cash flow results and update grand totals[87]  (1,COCR)BEN∆CALCS runsA ⋄ PVCONTS1pc←GTOTS[;,16],0[88]  ⍝ Read New Entrants cash flow results and update grand totals[89]  (0,COCRN)BEN∆CALCS runsNE ⋄ size←SIZE[90]  GLPrem←+/EXP[91]  [92]  GTOTS[;10]←GTOTS[;10]+GTOTS[;12] ⍝ Move Death in Defer to Withdrawal[93]  GTOTS[; 4 7]←GTOTS[; 4 7]+insind×GTOTS[; 6 9] ⍝ Add Insured Benefits[94]  ⍝ Add Other Liabilities to Matrices[95]  GTOTS←GTOTS,+/GTOTS[;(⍳5), 7 8 10 11] ⍝ Append Grand Total of Benefits (col 18)[96]  GTOTS←GTOTS,0 ⍝ Append Column for Pensioner Benefits (col 19)[97]  ⍝ Calculate the expenses cash flows[98]  GTOTS[;17]←GTOTS[;17]+Z←(SIZE↑EXPSF)××+/GMAT←((SIZE,0)⌈⍴GMAT)↑GMAT[99]  GTOTS[;14]←GTOTS[;14]+(valind>2)×Z[100] GMAT←+⌿(⍉(⌽⍴GMAT)⍴(SIZE⌊contper)↑EXPSF×150↑vMP)×GMAT CDIV⍉(⌽⍴GMAT)⍴+/GMAT←((contper,1000)⌊⍴GMAT)↑GMAT[101] NORMC←GTOTS[;14]CDIV GTOTS[;16] ⍝ Co Normal Cost as a % of Salaries[102] ⍝ Average Normal Cost during Control Period in UK[103] ⍎((uk=1)^valind∊4 5)/'GTOTS[⍳contper;14]←GTOTS[⍳contper;16]×(+/GTOTS[⍳contper;14]) CDIV +/GTOTS[⍳contper;16]'[104] [105] →(valind≠1)/F1[106] GTOTS[;14]←GTOTS[;14]+PSC←(SIZE↑TERMDA OVERTAKE DA)+SIZE↑SALPC×TERMPC↑+/PVCONTS1pc[;,⍳1+salind][107] GTOTS[;17]←GTOTS[;17]+PSC×EXPCC+SIZE↑COCTax ⍝ Calc the Tax cash flows[108] PSC←PSC×1-EXPCC+SIZE↑COCTax ⍝ Net Past Service Conts[109] [110] F1:ABTOT[1;1]←ABTOT[1;1]++/LTOT ⋄ GTOTS[1;1 18]←GTOTS[1;1 18]++/LTOT[111] [112] NewDefCALC runsND ⍝ Read New Deferred cash flow results from file[113] PENCALC runsP,runsD ⍝ Read pensioner cash flow results from file[114] L0:off←-(3 9 ⍴ 93 95 95 109 109 93 93 93, 93 91 91 110 110 93 93 93, 93 95 95 109 109 93 93 93 93 93 93)[1+uk;valind][115] PRES∆VALUE ⍝ Go off and do Present Value Calculations[116] →(valind=1)/F2 ⋄ →ppf/0[117] amort∆exp←0 ⋄ AMORT∆CALC ⍝ Amortise PSLIAB[118] F2:ASSCALC ⍝ Build up the assets[119] sfac←⌈⌈/0,(10⍟(0.01⌈,((20⌊SIZE),5)↑GTOTS[; 18 19 13 14],ABTOT[;2])÷1000000)÷3[120] GTOTS←GTOTS÷10*3×sfac ⋄ ABTOT←ABTOT÷10*3×sfac ⍝ THEN Reorder GTOTS[121] GTOTS←GTOTS[;(⍳5), 7 8 10 11 18 19 13 14 17 20 21 16 15 6 9 12][122] →SKIP/L1 ⍝ Skip if No Printout[123] PRES∆VALUE1[124] ⍝ Split of Past Service and Benefits[125] PRINT∆TOTALS[126] MEMBPROJ ⍝ Fund Demographics[127] 0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' Cashflow'[128] H2←(1 WRITE∆HEAD 'CASH FLOW SUMMARY LISTING') OVER H2[129] H2[8;5+⍳5]←5↑SDATE,VDATE[130] →(~valind∊ 4 5)/F3 ⋄ H2[6;124+⍳8]←'PUC(PBO)'[131] →(valind=4)/F3 ⋄ H2[6;124+⍳5]←' UC(A'[132] F3:H2[3;110+⍳20]←20↑5 2⍕100×i-1 ⋄ H2[4;80+⍳19]←scale[sfac+1;][133] ⍝ DAB Special Output[134] ⍎(valind=6)/'DISC∆OUTPUT 1 2'[135] ⍝ Create matrix to be written to file[136] N←'I3,I6' ⎕FMT N,VDATE[3]+N←⍉MATRIX ¯1+⍳1+SIZE ⋄ →(valind=4 5 6)/L2,L2,L3[137] SUMMREC←N,'2M<->I8,M<->I7,M<->I8,M<->I7,M<->I8,M<->I7,M<->I8,M<->I7,M<->I9,M<->I7,2M<->I8,2M<->I7,M<->I9' ⎕FMT(GTOTS[;⍳15];ASSETS÷10*3×sfac) ⋄ →L4[138] L2:SUMMREC←N,'9M<->I7,M<->I8,5M<->I7,M<->I8,M<->I9' ⎕FMT(GTOTS[;⍳15];ASSETS÷10*3×sfac;+/ABTOT[;1,2+3×abNO]) ⋄ →L4[139] L3:n←'I3,I6' ⎕FMT n,VDATE[3]+n←⍉MATRIX ¯1+⍳1+SIZE⌊contper[140] SUMMREC←n,'9M<->I7,M<->I8,5M<->I7,M<->I8,M<->I9' ⎕FMT(GTOTS[⍳SIZE⌊contper;⍳15];(1+SIZE⌊contper)↑ASSETS÷10*3×sfac;+/ABTOT[⍳SIZE⌊contper+1;1,2+3×abNO])[141] L4:RECN←page ⋄ PPAGE←H2 OUTPUT tpr1,PPAGE[142] L1:ACCRES    ∇
+    ∇ CASH∆FLOW;N;SUMMREC;v;vMP;PVTOT;GMAT;Z;EXP;TAX;PSC;PSC1;SUBTOTS;PVCONTS1pc;TOT;MAT;PTOT;SFAC;AVTOT;ABep;GLPrem;off;NORMC;AVTOT;TOTind;line
+[1]   ⍝ CONSWIN.sf#4
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   vMP←((⍴v)⍴ 0 1)/v←×\1,(÷2/150 OVERTAKE i)*0.5 ⋄ v←(300⍴ 1 0)/¯1↓v
+[8]   ⍝ Initialize totals - Accrued Bens, Demographics, Cash Flows and V1%
+[9]   SIZE←1⌈TERMPC ⋄ ABTOT←(SIZE,2+7×PROPT)⍴0 ⋄ FUNDTOT←(SIZE,16)⍴0
+[10]  ⍝ Expand GTOTS for Expenses/Taxes
+[11]  GTOTS←(SIZE,17)↑GMAT←(SIZE,0)⍴0 ⋄ EXP←TAX←⍳0 ⋄ TOTind←1
+[12]  PVTOT←(0,(8+No∆Bens),18)⍴0
+[13]  ⍝ Read actives cash flow results and update grand totals
+[14]  (1,COCR)BEN∆CALCS runsA ⋄ PVCONTS1pc←GTOTS[;,16],0
+[15]  ⍝ Read New Entrants cash flow results and update grand totals
+[16]  (0,COCRN)BEN∆CALCS runsNE ⋄ GLPrem←+/EXP
+[17]  GTOTS[;10]←GTOTS[;10]+GTOTS[;12] ⍝ Move Death in Defer to Withdrawal
+[18]  GTOTS[; 4 7]←GTOTS[; 4 7]+insind×GTOTS[; 6 9] ⍝ Add Insured Benefits
+[19]  ⍝ Add Other Liabilities to Matrices
+[20]  GTOTS←GTOTS,+/GTOTS[;(⍳5), 7 8 10 11] ⍝ Append Grand Total of Benefits (col 18)
+[21]  GTOTS←GTOTS,0 ⍝ Append Column for Pensioner Benefits (col 19)
+[22]  ⍝ Calculate the expenses cash flows
+[23]  GTOTS[;17]←GTOTS[;17]+Z←(SIZE↑EXPSF)××+/GMAT←((SIZE,0)⌈⍴GMAT)↑GMAT
+[24]  GTOTS[;14]←GTOTS[;14]+(valind>2)×Z
+[25]  GMAT←+⌿(⍉(⌽⍴GMAT)⍴(SIZE⌊contper)↑EXPSF×vMP)×GMAT CDIV⍉(⌽⍴GMAT)⍴+/GMAT←((contper,1000)⌊⍴GMAT)↑GMAT
+[26]  NORMC←GTOTS[;14]CDIV GTOTS[;16] ⍝ Co Normal Cost as a % of Salaries
+[27]  ⍝ Average Normal Cost during Control Period in UK
+[28]  ⍎((uk=1)^valind∊4 5)/'GTOTS[⍳contper;14]←GTOTS[⍳contper;16]×(+/GTOTS[⍳contper;14]) CDIV +/GTOTS[⍳contper;16]'
+[29]  →(valind≠1)/F1
+[30]  GTOTS[;14]←GTOTS[;14]+PSC←(SIZE↑TERMDA OVERTAKE DA)+SIZE↑(TERMPC OVERTAKE SALPC)×TERMPC↑+/PVCONTS1pc[;,⍳1+~salind[3]]
+[31]  GTOTS[;17]←GTOTS[;17]+PSC×EXPCC+SIZE↑TaxRates ⍝ Calc the Tax cash flows
+[32]  PSC←PSC×1-EXPCC+SIZE↑TaxRates ⍝ Net Past Service Conts
+[33]  F1:→(csh∨MFR)/L0
+[34]  ABTOT[1;1]←ABTOT[1;1]++/LTOT ⋄ GTOTS[1;1 18]←GTOTS[1;1 18]++/LTOT
+[35]  ABep←ABTOT[;1]
+[36]  PENCALC runsP,runsD ⍝ Read pensioner cash flow results from file
+[37]  L0:off←-(3 8 ⍴ 93 95 95 109 109 101 93 93, 93 91 91 110 110 93 93 93, 93 95 95 109 109 93 93 93)[1+uk;valind]
+[38]  PRES∆VALUE ⍝ Go off and do Present Value Calculations
+[39]  →(valind=1)/F2 ⋄ →MFR/0
+[40]  amort∆exp←0 ⋄ AMORT∆CALC ⍝ Amortise PSLIAB
+[41]  F2:ASSCALC ⍝ Build up the assets
+[42]  →csh/L5
+[43]  L5:sfac←⌈⌈/0,(10⍟(0.01⌈,((20⌊SIZE),5)↑GTOTS[; 18 19 13 14],ABTOT[;2])÷1000000)÷3
+[44]  GTOTS←GTOTS÷10*3×sfac ⋄ ABTOT←ABTOT÷10*3×sfac ⍝ THEN Reorder GTOTS
+[45]  GTOTS←GTOTS[;(⍳5), 7 8 10 11 18 19 13 14 17 20 21 16 15 6 9 12]
+[46]  →csh/F0
+[47]  →SKIP/L1 ⍝ Skip if No Printout
+[48]  F0:→(~csh)/F4 ⋄ DISC∆OUTPUT 0 ⍝ Contributions Schedule Output
+[49]  F4:PRES∆VALUE1 ⋄ →csh/0
+[50]  PRINT∆TOTALS ⍝ Split of Past Service and Benefits
+[51]  MEMBPROJ ⍝ Fund Demographics
+[52]  CREATE∆AOS aosind ⍝ Consolidated Analysis of Surplus Results
+[53]  0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' Cashflow'
+[54]  H2←((¯1↑⍴H2) WRITE∆HEAD 'CASH FLOW SUMMARY LISTING') OVER H2
+[55]  H2[8;5+⍳5]←5↑SDATE,VDATE
+[56]  →(~valind∊ 4 5)/F3 ⋄ H2[6;124+⍳8]←'PUC(PBO)'
+[57]  →(valind=4)/F3 ⋄ H2[6;124+⍳5]←' UC(A'
+[58]  F3:H2[3;110+⍳20]←20↑'¯-' REPL DLTMB 10 2⍕100×i-1 ⋄ H2[4;80+⍳19]←scale[sfac+1;]
+[59]  ⍝ DAB Special Output
+[60]  :if valind=6 ⋄ :andif uk=1 ⍝⍝⍝
+[61]      DISC∆OUTPUT 1 2
+[62]  :endif
+[63]  ⍝ Create matrix to be written to file
+[64]  N←'I3,I6' ⎕FMT N,VDATE[3]+N←⍉MATRIX ¯1+⍳1+SIZE ⋄ →(valind>3)/L2
+[65]  SUMMREC←N,'2M<->I8,M<->I7,M<->I8,M<->I7,M<->I8,M<->I7,M<->I8,M<->I7,M<->I9,M<->I7,2M<->I8,2M<->I7,M<->I9' ⎕FMT(GTOTS[;⍳15];GTOTS[;16],¯1↑ASSETS÷10*3×sfac) ⋄ →L3
+[66]  L2:SUMMREC←N,'9M<->I7,M<->I8,5M<->I7,M<->I8,M<->I9' ⎕FMT(GTOTS[;⍳15];GTOTS[;16],¯1↑ASSETS÷10*3×sfac;+/ABTOT[;1,2+abNO])
+[67]  L3:PPAGE←1↑H2 OUTPUT tpr1,PPAGE
+[68]  L1:ACCRES
+[69]  
+[70]  →0
+[71]  
+[72]  CASH∆FLOW;N;n;SUMMREC;RECN;v;vMP;PVTOT;GMAT;Z;EXP;TAX;PSC;PSC1;SUBTOTS;PVCONTS1pc;TOT;MAT;PTOT;SFAC;AVTOT;ABep;GLPrem;off;NORMC;AVTOT;TOTind
+[73]  ⍝ 18 CONSOVL.SF#3
+[74]  ⍝
+[75]  ⍝
+[76]  ⍝
+[77]  ⍝ V2.50u RE 1/11/93 Standardised
+[78]  →ppf/L0 ⍝ Skip cash flow stuff for PPF
+[79]  
+[80]  vMP←((⍴v)⍴ 0 1)/v←×\1,(÷2/201 OVERTAKE i)*0.5 ⋄ v←(402⍴ 1 0)/¯1↓v
+[81]  ⍝ Initialize totals - Accrued Bens, Demographics, Cash Flows and V1%
+[82]  SIZE←1⌈TERMPC ⋄ ABTOT←(SIZE,2+7×PROPT)⍴0 ⋄ FUNDTOT←(SIZE,14)⍴0
+[83]  ⍝ Expand GTOTS for Expenses/Taxes
+[84]  GTOTS←(SIZE,17)↑GMAT←(SIZE,0)⍴0 ⋄ EXP←TAX←⍳0 ⋄ TOTind←1
+[85]  PVTOT←(0,(8+No∆Pens),18)⍴0
+[86]  ⍝ Read actives cash flow results and update grand totals
+[87]  (1,COCR)BEN∆CALCS runsA ⋄ PVCONTS1pc←GTOTS[;,16],0
+[88]  ⍝ Read New Entrants cash flow results and update grand totals
+[89]  (0,COCRN)BEN∆CALCS runsNE ⋄ size←SIZE
+[90]  GLPrem←+/EXP
+[91]  
+[92]  GTOTS[;10]←GTOTS[;10]+GTOTS[;12] ⍝ Move Death in Defer to Withdrawal
+[93]  GTOTS[; 4 7]←GTOTS[; 4 7]+insind×GTOTS[; 6 9] ⍝ Add Insured Benefits
+[94]  ⍝ Add Other Liabilities to Matrices
+[95]  GTOTS←GTOTS,+/GTOTS[;(⍳5), 7 8 10 11] ⍝ Append Grand Total of Benefits (col 18)
+[96]  GTOTS←GTOTS,0 ⍝ Append Column for Pensioner Benefits (col 19)
+[97]  ⍝ Calculate the expenses cash flows
+[98]  GTOTS[;17]←GTOTS[;17]+Z←(SIZE↑EXPSF)××+/GMAT←((SIZE,0)⌈⍴GMAT)↑GMAT
+[99]  GTOTS[;14]←GTOTS[;14]+(valind>2)×Z
+[100] GMAT←+⌿(⍉(⌽⍴GMAT)⍴(SIZE⌊contper)↑EXPSF×150↑vMP)×GMAT CDIV⍉(⌽⍴GMAT)⍴+/GMAT←((contper,1000)⌊⍴GMAT)↑GMAT
+[101] NORMC←GTOTS[;14]CDIV GTOTS[;16] ⍝ Co Normal Cost as a % of Salaries
+[102] ⍝ Average Normal Cost during Control Period in UK
+[103] ⍎((uk=1)^valind∊4 5)/'GTOTS[⍳contper;14]←GTOTS[⍳contper;16]×(+/GTOTS[⍳contper;14]) CDIV +/GTOTS[⍳contper;16]'
+[104] 
+[105] →(valind≠1)/F1
+[106] GTOTS[;14]←GTOTS[;14]+PSC←(SIZE↑TERMDA OVERTAKE DA)+SIZE↑SALPC×TERMPC↑+/PVCONTS1pc[;,⍳1+salind]
+[107] GTOTS[;17]←GTOTS[;17]+PSC×EXPCC+SIZE↑COCTax ⍝ Calc the Tax cash flows
+[108] PSC←PSC×1-EXPCC+SIZE↑COCTax ⍝ Net Past Service Conts
+[109] 
+[110] F1:ABTOT[1;1]←ABTOT[1;1]++/LTOT ⋄ GTOTS[1;1 18]←GTOTS[1;1 18]++/LTOT
+[111] 
+[112] NewDefCALC runsND ⍝ Read New Deferred cash flow results from file
+[113] PENCALC runsP,runsD ⍝ Read pensioner cash flow results from file
+[114] L0:off←-(3 9 ⍴ 93 95 95 109 109 93 93 93, 93 91 91 110 110 93 93 93, 93 95 95 109 109 93 93 93 93 93 93)[1+uk;valind]
+[115] PRES∆VALUE ⍝ Go off and do Present Value Calculations
+[116] →(valind=1)/F2 ⋄ →ppf/0
+[117] amort∆exp←0 ⋄ AMORT∆CALC ⍝ Amortise PSLIAB
+[118] F2:ASSCALC ⍝ Build up the assets
+[119] sfac←⌈⌈/0,(10⍟(0.01⌈,((20⌊SIZE),5)↑GTOTS[; 18 19 13 14],ABTOT[;2])÷1000000)÷3
+[120] GTOTS←GTOTS÷10*3×sfac ⋄ ABTOT←ABTOT÷10*3×sfac ⍝ THEN Reorder GTOTS
+[121] GTOTS←GTOTS[;(⍳5), 7 8 10 11 18 19 13 14 17 20 21 16 15 6 9 12]
+[122] →SKIP/L1 ⍝ Skip if No Printout
+[123] PRES∆VALUE1
+[124] ⍝ Split of Past Service and Benefits
+[125] PRINT∆TOTALS
+[126] MEMBPROJ ⍝ Fund Demographics
+[127] 0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' Cashflow'
+[128] H2←(1 WRITE∆HEAD 'CASH FLOW SUMMARY LISTING') OVER H2
+[129] H2[8;5+⍳5]←5↑SDATE,VDATE
+[130] →(~valind∊ 4 5)/F3 ⋄ H2[6;124+⍳8]←'PUC(PBO)'
+[131] →(valind=4)/F3 ⋄ H2[6;124+⍳5]←' UC(A'
+[132] F3:H2[3;110+⍳20]←20↑5 2⍕100×i-1 ⋄ H2[4;80+⍳19]←scale[sfac+1;]
+[133] ⍝ DAB Special Output
+[134] ⍎(valind=6)/'DISC∆OUTPUT 1 2'
+[135] ⍝ Create matrix to be written to file
+[136] N←'I3,I6' ⎕FMT N,VDATE[3]+N←⍉MATRIX ¯1+⍳1+SIZE ⋄ →(valind=4 5 6)/L2,L2,L3
+[137] SUMMREC←N,'2M<->I8,M<->I7,M<->I8,M<->I7,M<->I8,M<->I7,M<->I8,M<->I7,M<->I9,M<->I7,2M<->I8,2M<->I7,M<->I9' ⎕FMT(GTOTS[;⍳15];ASSETS÷10*3×sfac) ⋄ →L4
+[138] L2:SUMMREC←N,'9M<->I7,M<->I8,5M<->I7,M<->I8,M<->I9' ⎕FMT(GTOTS[;⍳15];ASSETS÷10*3×sfac;+/ABTOT[;1,2+3×abNO]) ⋄ →L4
+[139] L3:n←'I3,I6' ⎕FMT n,VDATE[3]+n←⍉MATRIX ¯1+⍳1+SIZE⌊contper
+[140] SUMMREC←n,'9M<->I7,M<->I8,5M<->I7,M<->I8,M<->I9' ⎕FMT(GTOTS[⍳SIZE⌊contper;⍳15];(1+SIZE⌊contper)↑ASSETS÷10*3×sfac;+/ABTOT[⍳SIZE⌊contper+1;1,2+3×abNO])
+[141] L4:RECN←page ⋄ PPAGE←H2 OUTPUT tpr1,PPAGE
+[142] L1:ACCRES
+    ∇

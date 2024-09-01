@@ -1,0 +1,23 @@
+    ∇ htmpath←N FileIOTests fldr;∆;test_fn;tno;file;title;body;css
+[1]   ⍝ UTILSWIN.sf#7
+[2]   ⍝ Run test suite in empty folder
+[3]   ⍝ N: (int>0) # times to run tests; defaults 100
+[4]   ⍝ fldr: (str) empty working folder, to which user has write access
+[5]   ⍝ htmpath: (str) filepath of report
+[6]   ⍝ Vern: sjt14jan16
+[7]   
+[8]   title←xmlEscape 'SuperVal file subsystem tests in ',fldr
+[9]   body←⊂'h1' xtag title
+[10]  
+[11]  ∆←⎕MIX ('Site' cOMPANY) ('Install Folder' SystemDir) ('User' uSER) ('Test folder' fldr) ('Test time' (,0 DATESPELL ⎕TS))
+[12]  body←body,('div' xattr 'id' 'envt') xtag 'table' xtag (⊂'tr')xtag¨,/ (⊂'td')xtag¨∆
+[13]  
+[14]  ∆←('Native files' 'test_nfiles')('Component files' 'test_cfiles')('Windows calls' 'test_wcalls')
+[15]  :for ∆ :in ∆ ⋄ (title test_fn)←∆
+[16]      body←body,title tableAsHtml (fldr N title) test_harness test_fn
+[17]  :endfor
+[18]  
+[19]  htmpath←LibraryDir,'fileiotest',((-⍳6) tsIM ⎕TS),'.htm' ⍝ requires write access to Install Folder
+[20]  css←StyleDir,'fileiotest.css'
+[21]  (body title css) writeHtmlFile htmpath
+    ∇

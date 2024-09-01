@@ -1,0 +1,92 @@
+    ∇ res←PP∆Payment;n;z;OSGPay;GPay;LXstart;LXben;Delay;pp∆wait
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Determine variables for payment period (ie from Start)
+[3]   ⍝ All variables stretch back to Exit but usually with zeroes.
+[4]   
+[5]   ⍝ Post-retirement Interest rates beyond payment start
+[6]   :if pp∆midstart ⋄ pp∆discpost←pp∆startpad,((MID pp∆vMPPostAdj[pp∆Tstart],pp∆vPost[pp∆Tstart+1]),(pp∆Tstart+1)↓pp∆vMPPostAdj)÷pp∆vMPPost[pp∆Tstart]
+[7]   :else           ⋄ pp∆discpost←pp∆startpad,                                                      (pp∆Tstart   ↓pp∆vMPPostAdj)÷pp∆vPost  [pp∆Tstart]
+[8]   :endif
+[9]   
+[10]  :if uk=1 ⍝ For UK, assume pension increases from pension commencement (not retirement age)
+[11]      :if ¯1=pp∆IncTiming
+[12]          :if pp∆midstart ⋄ pp∆SIncpost←pp∆startpad,((MID pp∆postIncMP[pp∆Tstart],pp∆postInc[pp∆Tstart+1]),(pp∆Tstart+1)↓pp∆postIncMP)÷pp∆postIncMP[pp∆Tstart]
+[13]          :else           ⋄ pp∆SIncpost←pp∆startpad,                                                       (pp∆Tstart   ↓pp∆postIncMP)÷pp∆postInc  [pp∆Tstart]
+[14]          :endif
+[15]      :else
+[16]          :if pp∆midstart
+[17]              pp∆SIncpost←                           ((1-pp∆incadjMP×pp∆incprop) PP∆FreqAdjust pp∆postInc[pp∆Tstart+0 1  ])÷pp∆postInc[pp∆Tstart    ]
+[18]              pp∆SIncpost←            pp∆SIncpost,(  ((1-pp∆incadjMP           ) PP∆FreqAdjust pp∆postInc[pp∆Tstart+0 1  ])÷pp∆postInc[pp∆Tstart    ])×((1-pp∆incadjMP[1]×pp∆incprop),1) PP∆FreqAdjust pp∆postInc[pp∆Tstart+1 2]÷pp∆postInc[pp∆Tstart+1]
+[19]              pp∆SIncpost←pp∆startpad,pp∆SIncpost,(×/((1-pp∆incadjMP,1         ) PP∆FreqAdjust pp∆postInc[pp∆Tstart+0 1 2])÷pp∆postInc[pp∆Tstart+0 1])×((pp∆Tstart+2)↓pp∆postIncMP)÷pp∆postInc[pp∆Tstart+2]
+[20]          :else
+[21]              pp∆SIncpost←                           ((1-pp∆incadj  ×pp∆incprop) PP∆FreqAdjust pp∆postInc[pp∆Tstart+0 1  ])÷pp∆postInc[pp∆Tstart    ]
+[22]              pp∆SIncpost←pp∆startpad,pp∆SIncpost,(  ((1-pp∆incadj             ) PP∆FreqAdjust pp∆postInc[pp∆Tstart+0 1  ])÷pp∆postInc[pp∆Tstart    ])×((pp∆Tstart+1)↓pp∆postIncMP)÷pp∆postInc[pp∆Tstart+1]
+[23]          :endif
+[24]      :endif
+[25]  :else ⍝ For rest, assume pension increases from retirement age
+[26]      :if pp∆midstart ⋄ pp∆SIncpost←(MID pp∆postIncMP[pp∆Tstart],pp∆postInc[pp∆Tstart+1]),(pp∆Tstart+1)↓pp∆postIncMP
+[27]      :else           ⋄ pp∆SIncpost←                                                       pp∆Tstart   ↓pp∆postIncMP
+[28]      :endif
+[29]      :if pp∆midprestart ⋄ pp∆SIncpost←pp∆startpad,pp∆SIncpost÷pp∆postIncMP[pp∆Tprestart]
+[30]      :else              ⋄ pp∆SIncpost←pp∆startpad,pp∆SIncpost÷pp∆postInc  [pp∆Tprestart]
+[31]      :endif
+[32]  :endif
+[33]  
+[34]  ⍝ Delayed Pension Increases in Payment for Member
+[35]  :if 0≠Delay←↑pp∆DelayPI[pp∆row;] ⋄ :andif 0<Delay←⌈Delay-pp∆xexit ⋄ pp∆MIncpost←(×Delay↑pp∆SIncpost),Delay↓pp∆SIncpost
+[36]  :else                                                             ⋄ pp∆MIncpost←                           pp∆SIncpost
+[37]  :endif
+[38]  
+[39]  ⍝ Payment Period in first year
+[40]  pp∆PropFY←pp∆size OVERTAKE pp∆startpad,(pp∆midstart/0.5),1
+[41]  :if 0≠pp∆wait←pp∆WaitPeriod[pp∆row;pp∆year] ⋄ pp∆PropFY←0⌈pp∆PropFY⌊(+\pp∆PropFY)-pp∆wait ⋄ :endif
+[42]  
+[43]  LXben←pp∆midstart⍴pp∆lx[pp∆xstart] ⍝ 1st pp∆lx if mid-year start
+[44]  LXben←LXben,(⌈pp∆Xstart)↓pp∆LX ⍝ Subsequent Anniversaries
+[45]  LXben←LXben ZDIV LXstart←1↑LXben
+[46]  
+[47]  ⍝ pp∆lx's adjusted for Term Annuities
+[48]  pp∆top←(pp∆top+150×0=pp∆top)⌊¯1+(⍴pp∆LX)
+[49]  LXben←(⌊z←0⌈1+pp∆top-pp∆xstart)↑LXben
+[50]  LXben←LXben,(×1∣z)/pp∆lx[⌊pp∆top] CDIV LXstart ⍝ last pp∆lx if mid-year end
+[51]  pp∆QX←¯1↓LXben×1-(1↓LXben,0) CDIV LXben ⍝ Adjusted Primary Death Probabilities
+[52]  :if ClassID=4 ⋄ :andif KnownExit>0
+[53]      pp∆QX←(⍴pp∆QX) OVERTAKE ((⌊KnownExit)↑pp∆QX),1 0
+[54]  :endif
+[55]  
+[56]  ⍝ pp∆lx's adjusted for payment frequency
+[57]  :if res←0∊⍴pp∆lxAdj←pp∆FreqAdj PP∆FreqAdjust LXben ⋄ :return ⋄ :endif
+[58]  
+[59]  ⍝ pp∆lx's adjustment for Remaining Guarantee Period
+[60]  :if 0≠pp∆RGP
+[61]      OSGPay←(1-pp∆FreqAdj) PP∆FreqAdjust ⌽+\⌽GPay←GPay⌊DIFF pp∆RGP⌊0,+\GPay←(pp∆midstart/0.5),(⌊1+pp∆RGP+0.5×~pp∆midstart)/1
+[62]      :if ~pp∆GPOverlap ⍝ Members are immortal during pp∆RGP!!
+[63]          pp∆LXgpadd←(1-(1,×1↓GPay) PP∆FreqAdjust (⍴GPay) OVERTAKE pp∆lxAdj,¯1↑LXben)×(¯1+⍴GPay)↑1,1↓GPay
+[64]          ⍝⍝⍝ pp∆LXgpadd←MID 0,+\(⍴OSGPay)↑pp∆QX
+[65]          pp∆LYgpmult←pp∆startpad,1-1,1↓GPay
+[66]      :else ⍝ LS of Remaining Payments
+[67]          pp∆LXgpadd←0 ¯1↓0⌈(pp∆LXgpadd,0)-0,pp∆LXgpadd←0⌈OSGPay∘.-0⌈pp∆RGP-+\DTZ GPay
+[68]          n←⍴z←(bGAD×term)+(pp∆Tstart-bGAD×pp∆Texit)+⍳1↑⍴pp∆LXgpadd
+[69]  ⍝⍝⍝        n←⍴z←pp∆Tstart+⍳1↑⍴pp∆LXgpadd ⍝ UK Error
+[70]  ⍝⍝⍝⍝        pp∆LXgpadd←((pp∆MIncpost[z-pp∆Texit]×[1]pp∆LXgpadd)÷[0]pp∆MIncpost[z-pp∆Texit])-pp∆LXgpadd×pp∆Inconly ⍝ Increases
+[71]          :if pp∆DISC ⍝ Remaining Payments are discounted
+[72]              ⍝⍝⍝ Future Increases are only granted to "discounted" LS????
+[73]              pp∆LXgpadd←((pp∆MIncpost[z-term]×[1]pp∆LXgpadd)÷[0]pp∆MIncpost[z-term])-pp∆LXgpadd×pp∆Inconly
+[74]  ⍝⍝⍝            pp∆LXgpadd←((pp∆MIncpost[z-pp∆Texit]×[1]pp∆LXgpadd)÷[0]pp∆MIncpost[z-pp∆Texit])-pp∆LXgpadd×pp∆Inconly ⍝⍝⍝ UK Error
+[75]              pp∆LXgpadd←(pp∆vMPPostAdj[z-bGAD×term]×[1]pp∆LXgpadd)÷[0]pp∆vMPPost[z-bGAD×term]
+[76]          :endif
+[77]          pp∆LXgpadd←(n↑pp∆QX)×+/pp∆LXgpadd
+[78]          pp∆LYgpmult←1 ⍝ As overlap, spouse reversion not affected
+[79]      :endif
+[80]      pp∆LXgpadd←pp∆size↑pp∆startpad,pp∆LXgpadd
+[81]  :else
+[82]      pp∆LXgpadd←0 ⋄ pp∆LYgpmult←1 ⍝ No pp∆RGP so no overlap or reversion affect
+[83]  :endif
+[84]  
+[85]  pp∆MIncpost←pp∆MIncpost-pp∆Inconly ⍝ Adjust if valuing pension increases only
+[86]  pp∆SIncpost←pp∆SIncpost-pp∆Inconly ⍝ Adjust if valuing pension increases only
+[87]  pp∆QX←pp∆size↑pp∆startpad,pp∆QX ⋄ pp∆lxAdj←pp∆size↑pp∆startpad,pp∆lxAdj ⍝ Pad out with zeroes
+[88]  
+[89]  ⍝⍀⍝ 'M' PP∆TestUpdate 'pp∆PropFY←' 'pp∆top←' 'pp∆MIncpost←' 'pp∆lxAdj←' 'pp∆LXgpadd←' 'pp∆LYgpmult←' 'pp∆discpost←'
+[90]  ⍝⍀⍝ 'S' PP∆TestUpdate 'pp∆SIncpost←' 'pp∆QX←'
+    ∇

@@ -1,1 +1,46 @@
-    ∇ Def_Buttons parm;caption[1]   ⍝ PARMWIN.sf#14[2]   ⍝ Set up variables in various processes[3]   [4]   :select parm[5]   :case 'Init'[6]       'fmDefBenefit.edFormula' ⎕wi 'style' (('fmDefBenefit.edFormula' ⎕wi 'style') BinAdd 1024)[7]       'fmDefBenefit.llFormula' ⎕wi 'caption' (('∆' StripText FN),' equals')[8]       BENno←1[9]   [10]  :case 'Back'[11]      BENno←1⌈BENno-1[12]      fncode←fncode[⍳0⌈¯1+¯1↑WHERE ^/' '=fncode;][13]      'ALLparms[BENno]' SSASSIGN NEWparms SSINDEX BENno[14]      NEWparms←'ß' StripText NEWparms[15]  [16]  :case 'Next'[17]      :if ControlName ValidateParms 'Define_Benefit' ⋄ :return ⋄ :endif[18]      ⍎'("ABCDEGKLMOPQRSUWYZ"[BENno]) ARG',BENnos[BENno;],' "Write"'[19]      BENno←BENno+1[20]  [21]  :case 'Cancel' ⍝ User Cancelled[22]      fncode←0 0⍴'' ⋄ BENno←0[23]  [24]  :endselect[25]  [26]  :if BENno≤⍴BENpos ⋄ :andif BENno>0[27]      :if BENno=⍴BENpos ⋄ caption←'Finish'[28]      :else             ⋄ caption←'Next'[29]      :endif[30]      'fmDefBenefit.bnDefine_BenefitSave' ⎕wi 'caption' caption[31]      'fmDefBenefit.bnDefine_BenefitSave' ⎕wi 'imageindex' 0[32]      'fmDefBenefit.bnDefine_BenefitBack' ⎕wi 'enabled' (BENno≠1)[33]      ⍎'ARG',BENnos[BENno;],' "Vars"'[34]      Assign_Inputs 1[35]      'fmDefBenefit.edNotrick' ⎕wi 'text' (BENnos[BENno;])[36]      0 0⍴(⊂'edNotrick') Define_Benefit 'Change'[37]      'fmDefBenefit.edFormula' ⎕wi 'selection' (BENpos[BENno],5)[38]      :if (⊂,BENnos[BENno;])∊'05' '06'[39]          MDISPLAY ('No Parameters required!',⎕tcnl,'Press ',((BENno≠1)/'Back or '),caption,' to continue.')[40]      :endif[41]  :else[42]      'fmDefBenefit' ⎕wi '∆modified' (×BENno)[43]      'Quit' EndModule 'Define_Benefit'[44]  :endif    ∇
+    ∇ Def_Buttons parm;caption
+[1]   ⍝ PARMWIN.sf#14
+[2]   ⍝ Set up variables in various processes
+[3]   
+[4]   :select parm
+[5]   :case 'Init'
+[6]       'fmDefBenefit.edFormula' ⎕wi 'style' (('fmDefBenefit.edFormula' ⎕wi 'style') BinAdd 1024)
+[7]       'fmDefBenefit.llFormula' ⎕wi 'caption' (('∆' StripText FN),' equals')
+[8]       BENno←1
+[9]   
+[10]  :case 'Back'
+[11]      BENno←1⌈BENno-1
+[12]      fncode←fncode[⍳0⌈¯1+¯1↑WHERE ^/' '=fncode;]
+[13]      'ALLparms[BENno]' SSASSIGN NEWparms SSINDEX BENno
+[14]      NEWparms←'ß' StripText NEWparms
+[15]  
+[16]  :case 'Next'
+[17]      :if ControlName ValidateParms 'Define_Benefit' ⋄ :return ⋄ :endif
+[18]      ⍎'("ABCDEGKLMOPQRSUWYZ"[BENno]) ARG',BENnos[BENno;],' "Write"'
+[19]      BENno←BENno+1
+[20]  
+[21]  :case 'Cancel' ⍝ User Cancelled
+[22]      fncode←0 0⍴'' ⋄ BENno←0
+[23]  
+[24]  :endselect
+[25]  
+[26]  :if BENno≤⍴BENpos ⋄ :andif BENno>0
+[27]      :if BENno=⍴BENpos ⋄ caption←'Finish'
+[28]      :else             ⋄ caption←'Next'
+[29]      :endif
+[30]      'fmDefBenefit.bnDefine_BenefitSave' ⎕wi 'caption' caption
+[31]      'fmDefBenefit.bnDefine_BenefitSave' ⎕wi 'imageindex' 0
+[32]      'fmDefBenefit.bnDefine_BenefitBack' ⎕wi 'enabled' (BENno≠1)
+[33]      ⍎'ARG',BENnos[BENno;],' "Vars"'
+[34]      Assign_Inputs 1
+[35]      'fmDefBenefit.edNotrick' ⎕wi 'text' (BENnos[BENno;])
+[36]      0 0⍴(⊂'edNotrick') Define_Benefit 'Change'
+[37]      'fmDefBenefit.edFormula' ⎕wi 'selection' (BENpos[BENno],5)
+[38]      :if (⊂,BENnos[BENno;])∊'05' '06'
+[39]          MDISPLAY ('No Parameters required!',⎕tcnl,'Press ',((BENno≠1)/'Back or '),caption,' to continue.')
+[40]      :endif
+[41]  :else
+[42]      'fmDefBenefit' ⎕wi '∆modified' (×BENno)
+[43]      'Quit' EndModule 'Define_Benefit'
+[44]  :endif
+    ∇

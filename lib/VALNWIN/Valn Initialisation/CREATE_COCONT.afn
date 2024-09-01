@@ -1,0 +1,72 @@
+    ∇ CREATE∆COCONT;var;V1pcfn;fn;F;COCR;ContMult
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Fn to create the Company Conts Variables
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   
+[8]   →IsDeferred/0 ⍝ Not needed for Enhanced Deferreds
+[9]   
+[10]  :if V1pcDEF≡'Ratio of Member Contributions'
+[11]      V1pcSAL←contsSAL
+[12]  :else
+[13]      V1pcSAL←↑¯1+SALdesc ExactTLU V1pcSAL
+[14]  :endif
+[15]  V1pcflag←zwb V1pcflag
+[16]  
+[17]  →(~(uk=2)∨aosind)/0 ⍝ Rest Required for SA or AOS only
+[18]  
+[19]  :if uk=2 ⋄ jcc←,1+0.01×,ExecuteRates jcc sCEN_jcc ⋄ :endif
+[20]  ContMult←1 ⋄ COCR←(COCRccd←zwb COCRccd)+COCRcci←zwb COCRcci
+[21]  
+[22]  TOP:
+[23]  var←(zwb V1pcCease),(↑V1pcCeaseDate)='FS'[×uk]
+[24]  :if 0∊⍴DLTB V1pcAdditCR←DescToVariableUK V1pcAdditCR ⋄ V1pcAdditCR←'0' ⋄ :endif
+[25]  
+[26]  :select V1pcDEF
+[27]  :caselist '' 'None'
+[28]      ccr←0,1 ⋄ ccl←var ⋄ V1pcfn←1
+[29]  
+[30]  :case 'Fixed Percentage of Salary'
+[31]      ccr←(0.01×(ContMult×zwb V1pcCR)-COCR),1 ⋄ ccl←var ⋄ V1pcfn←1
+[32]  
+[33]  :case 'Differing Percentages on up to 10 Salary Bands'
+[34]      ccl←var ⋄ ccr←(10↑0.01×(ContMult×MatrixZWB V1pcBandCR)-COCR),('B'=↑V1pcBandmeth),1 ⋄ V1pcfn←2
+[35]      ⍝ 9 Band Limits (and infinity)
+[36]      V1pclimits←10 OVERTAKE (1↓MatrixZWB V1pcBand),1E20
+[37]      ⍝ Apply Inflation Vector for Limits to create Limits Array
+[38]      FinAdjTable←FinAdjTable OVER 'V1pcF' 'V1pcF' (V1pcF←termAdjFin BlendRates (~ValMeth≡'UCM')/¨V1pcF sCEN_V1pcF)
+[39]      V1pclimits←V1pclimits∘.×(×\F)÷(F←(LatestRA+newent×projTerm) OVERTAKE V1pcF)*0.5
+[40]  
+[41]  :case 'Varying Percentage of Salary based on Attained Age'
+[42]      ccr←var,1 ⋄ V1pcfn←3
+[43]      ccl←100↑0.01×(ContMult×¯1 DEC∆CHECK V1pcAgeTab)-COCR
+[44]  
+[45]  :case 'Varying Percentage of Salary based on Age at Entry'
+[46]      ccr←((↑V1pcEntryDate)='FS'[×uk]),var,1 ⋄ V1pcfn←4
+[47]      ccl←100↑0.01×(ContMult×¯1 DEC∆CHECK V1pcAgeTab)-COCR
+[48]  
+[49]  :case 'Varying Percentage of Salary based on Duration from Valn Date'
+[50]      contsr←var,0 ⋄ V1pcfn←5
+[51]      contsl←100↑0.01×(ContMult×¯1 DEC∆CHECK V1pcDurnTab)-COCR
+[52]  
+[53]  :case 'Salary Bands Table with Differing Percentages'
+[54]      ccr←('B'=↑V1pcBandmeth),(VDATE[2]-zwb V1pcSalBase),var,1,0.01×(ContMult×MatrixZWB V1pcBandCR)-COCR ⋄ V1pcfn←8
+[55]      :if ^/0=1↑[0]ccl←⊃(LatestAge+newent×projTerm) OVERTAKE¨1 MID¨DTZ¨⎕split ¯1 DEC∆CHECK V1pcSalTab
+[56]          ccl←1↓[0]ccl
+[57]      :endif
+[58]      ccl←ccl⍪1E20
+[59]  
+[60]  :case 'Ratio of Member Contributions' ⍝ Reset variables to Member ones
+[61]      V1pcDEF←contsDEF ⋄ V1pcCR←contsCR ⋄ V1pcAdditCR←contsAdditCR
+[62]      V1pcBandmeth←contsBandmeth ⋄ V1pcBand←contsBand ⋄ V1pcBandCR←contsBandCR ⋄ V1pcF←contsF
+[63]      V1pcAgeTab←contsAgeTab ⋄ V1pcDurnTab←contsDurnTab ⋄ V1pcEntryDate←contsEntryDate
+[64]      V1pcSalTab←contsSalTab ⋄ V1pcSalBase←contsSalBase ⋄ V1pcCease←contsCease ⋄ V1pcCeaseDate←contsCeaseDate
+[65]      ContMult←+/ZWB¨sCEN_V1pcRatio V1pcRatio ⋄ →TOP
+[66]  
+[67]  :endselect
+[68]  
+[69]  fn←⍎,'<CONT>,ZI2' ⎕FMT V1pcfn ⋄ fn[0;12+⍳4]←'COMP'
+[70]  0 0⍴⎕DEF SStoMAT '/⍺/V1pc' TEXTREPL '⍵',fn
+    ∇

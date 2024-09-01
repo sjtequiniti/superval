@@ -1,1 +1,43 @@
-    ∇ res←ScenarioMImp parm;SSName;z;row;col;MESS[1]   ⍝ PARMWIN.sf#24[2]   ⍝ Update the Mortality Improvement Scenario Parameters[3]   [4]   res←0⍴'' ⋄ SSName←(DTDot parent),'.pgMortImprovement.fMortImp.ssMortImp'[5]   [6]   :select parm[7]   :case 'Prepare'[8]       MImpGlobs←0 Uniquelist ⊃(LocalGlobals for 'Type' 'ParmsI') at 'value' ⍝ Currently used Globals[9]   [10]  :case 'Vars'[11]      (MESS MImpDesc MImpScenDesc)←⊃¨((⊂'None'),(CIndex for '∆_Name' 'Mort_Improvement') at '∆_Description') AdjustPointers m2n¨MImpGlobs MImpDesc MImpScenDesc[12]      :if mt MESS ⋄ res←0 0⍴' '[13]      :else       ⋄ res←⊃(⊂'Mortality Improvement Parameters: "'),¨⎕split MESS[14]      :endif[15]  [16]  :case 'Init'[17]      SSName ⎕wi 'onXStartEdit' '0 0⍴ScenarioMImp "Edit"'[18]      SSName ⎕wi 'xShowRowHeading' 0 ⍝ Hide Row Headings[19]      SSName Win∆F1SSProtectCells (⊂¯1 1 ¯1 1) ⍝ Lock first column[20]  [21]  :case 'Edit'[22]      (row col)←SSName ⎕wi 'GetActiveCell' 0 0[23]      :if col=2[24]          0 Win∆F1SSRowMenu ('Scenarios' SSName)[25]          ⎕warg[1]←SSName Win∆F1SSGetTextArray row col 1 1[26]          SSName ⎕wi 'AllowArrows' 1 ⋄ row Win∆ValidF1SSCell col ⋄ 0 0⍴⎕ex 'F1SSEvent'[27]      :else[28]          SSName ⎕wi 'AllowArrows' 1[29]      :endif[30]  [31]  :case 'Change'[32]      SSName ⎕wi "SetColWidthAuto" ¯1 1 (SSName ⎕wi 'MaxRow') 2 0[33]  [34]  :case 'Valid'[35]      :if ~unchanged ⋄ :andif ∨/' '≠,MImpDesc ⋄ :andif ∨/z←(m2n MImpDesc)≡¨m2n MImpScenDesc[36]          unchanged←1 ⋄ z←↑WHERE z[37]          Win∆SetFocus SSName ⋄ SSName Win∆F1SSSetSelection 4⍴z 2[38]          res←'Unchanged Global assumptions do not need to be specified' ⋄ :return[39]      :endif[40]  [41]  :endselect    ∇
+    ∇ res←ScenarioMImp parm;SSName;z;row;col;MESS
+[1]   ⍝ PARMWIN.sf#24
+[2]   ⍝ Update the Mortality Improvement Scenario Parameters
+[3]   
+[4]   res←0⍴'' ⋄ SSName←(DTDot parent),'.pgMortImprovement.fMortImp.ssMortImp'
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]       MImpGlobs←0 Uniquelist ⊃(LocalGlobals for 'Type' 'ParmsI') at 'value' ⍝ Currently used Globals
+[9]   
+[10]  :case 'Vars'
+[11]      (MESS MImpDesc MImpScenDesc)←⊃¨((⊂'None'),(CIndex for '∆_Name' 'Mort_Improvement') at '∆_Description') AdjustPointers m2n¨MImpGlobs MImpDesc MImpScenDesc
+[12]      :if mt MESS ⋄ res←0 0⍴' '
+[13]      :else       ⋄ res←⊃(⊂'Mortality Improvement Parameters: "'),¨⎕split MESS
+[14]      :endif
+[15]  
+[16]  :case 'Init'
+[17]      SSName ⎕wi 'onXStartEdit' '0 0⍴ScenarioMImp "Edit"'
+[18]      SSName ⎕wi 'xShowRowHeading' 0 ⍝ Hide Row Headings
+[19]      SSName Win∆F1SSProtectCells (⊂¯1 1 ¯1 1) ⍝ Lock first column
+[20]  
+[21]  :case 'Edit'
+[22]      (row col)←SSName ⎕wi 'GetActiveCell' 0 0
+[23]      :if col=2
+[24]          0 Win∆F1SSRowMenu ('Scenarios' SSName)
+[25]          ⎕warg[1]←SSName Win∆F1SSGetTextArray row col 1 1
+[26]          SSName ⎕wi 'AllowArrows' 1 ⋄ row Win∆ValidF1SSCell col ⋄ 0 0⍴⎕ex 'F1SSEvent'
+[27]      :else
+[28]          SSName ⎕wi 'AllowArrows' 1
+[29]      :endif
+[30]  
+[31]  :case 'Change'
+[32]      SSName ⎕wi "SetColWidthAuto" ¯1 1 (SSName ⎕wi 'MaxRow') 2 0
+[33]  
+[34]  :case 'Valid'
+[35]      :if ~unchanged ⋄ :andif ∨/' '≠,MImpDesc ⋄ :andif ∨/z←(m2n MImpDesc)≡¨m2n MImpScenDesc
+[36]          unchanged←1 ⋄ z←↑WHERE z
+[37]          Win∆SetFocus SSName ⋄ SSName Win∆F1SSSetSelection 4⍴z 2
+[38]          res←'Unchanged Global assumptions do not need to be specified' ⋄ :return
+[39]      :endif
+[40]  
+[41]  :endselect
+    ∇

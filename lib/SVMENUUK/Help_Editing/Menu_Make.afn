@@ -1,1 +1,43 @@
-    ∇ visible Menu_Make Form;⎕wself;ObjectName;parent;childlist;list;HelpObject[1]   childlist←0 0⍴""[2]   ObjectName←Form,".mHelp_EditingFile"[3]   ⎕wself←ObjectName ⎕wi "New" "Menu"[4]   childlist←childlist OVER ObjectName[5]   ⎕wi "visible" visible[6]   ⎕wi "enabled" 0[7]   ⎕wi "caption" "&File"[8]   ⎕wi "prompt" "Help Editing"[9]   [10]  ObjectName←Form,".mHelp_EditingFile.mEdit"[11]  ⎕wself←ObjectName ⎕wi "New" "Menu"[12]  ⎕wi "caption" "&Edit"[13]  ⎕wi "shortcut" 'E' 2[14]  ⎕wi "prompt" "Edit Help Text"[15]  ⎕wi "onClick" "EditHelp"[16]  [17]  ObjectName←Form,".mHelp_EditingFile.mQuit"[18]  ⎕wself←ObjectName ⎕wi "New" "Menu"[19]  ⎕wi "caption" "&Quit"[20]  ⎕wi "shortcut" 115 2[21]  ⎕wi "prompt" "Quit and Return"[22]  ⎕wi "onClick" "'Quit' EndModule 'Help_Editing'"[23]  [24]  ObjectName←Form,".mHelp_EditingFile.Browser"[25]  ⎕wself←ObjectName ⎕wi "New" "Menu"[26]  ⎕wi "visible" 0[27]  ⎕wi "shortcut" "B" 3[28]  ⎕wi "onClick" "BROWSE '' "[29]  ObjectName←Form,".mHelp_EditingFile.Excel"[30]  ⎕wself←ObjectName ⎕wi "New" "Menu"[31]  ⎕wi "visible" 0[32]  ⎕wi "shortcut" "O" 3[33]  ⎕wi "onClick" "XL_Browse"[34]  :if Form≡"fmSV"[35]      "fmSV" ⎕wi "∆childlist" (("fmSV" ⎕wi "∆childlist"),⊂childlist)[36]  :else[37]      list←"fmSV" ⎕wi "∆childlist"[38]      childlist←(⊃¯1↑list) OVER childlist[39]      list[⍴list]←⊂childlist[40]      "fmSV" ⎕wi "∆childlist" list[41]  :endif    ∇
+    ∇ visible Menu_Make Form;⎕wself;ObjectName;parent;childlist;list;HelpObject
+[1]   childlist←0 0⍴""
+[2]   ObjectName←Form,".mHelp_EditingFile"
+[3]   ⎕wself←ObjectName ⎕wi "New" "Menu"
+[4]   childlist←childlist OVER ObjectName
+[5]   ⎕wi "visible" visible
+[6]   ⎕wi "enabled" 0
+[7]   ⎕wi "caption" "&File"
+[8]   ⎕wi "prompt" "Help Editing"
+[9]   
+[10]  ObjectName←Form,".mHelp_EditingFile.mEdit"
+[11]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[12]  ⎕wi "caption" "&Edit"
+[13]  ⎕wi "shortcut" 'E' 2
+[14]  ⎕wi "prompt" "Edit Help Text"
+[15]  ⎕wi "onClick" "EditHelp"
+[16]  
+[17]  ObjectName←Form,".mHelp_EditingFile.mQuit"
+[18]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[19]  ⎕wi "caption" "&Quit"
+[20]  ⎕wi "shortcut" 115 2
+[21]  ⎕wi "prompt" "Quit and Return"
+[22]  ⎕wi "onClick" "'Quit' EndModule 'Help_Editing'"
+[23]  
+[24]  ObjectName←Form,".mHelp_EditingFile.Browser"
+[25]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[26]  ⎕wi "visible" 0
+[27]  ⎕wi "shortcut" "B" 3
+[28]  ⎕wi "onClick" "BROWSE '' "
+[29]  ObjectName←Form,".mHelp_EditingFile.Excel"
+[30]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[31]  ⎕wi "visible" 0
+[32]  ⎕wi "shortcut" "O" 3
+[33]  ⎕wi "onClick" "XL_Browse"
+[34]  :if Form≡"fmSV"
+[35]      "fmSV" ⎕wi "∆childlist" (("fmSV" ⎕wi "∆childlist"),⊂childlist)
+[36]  :else
+[37]      list←"fmSV" ⎕wi "∆childlist"
+[38]      childlist←(⊃¯1↑list) OVER childlist
+[39]      list[⍴list]←⊂childlist
+[40]      "fmSV" ⎕wi "∆childlist" list
+[41]  :endif
+    ∇

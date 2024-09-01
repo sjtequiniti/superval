@@ -1,1 +1,189 @@
-    ∇ CREATE∆TRANSFERS;dxx;Malpha;Mbeta;IMPTBL;rec;PImpTbl;Palpha;Pbeta;PIMPTBL;Salpha;Sbeta;SIMPTBL;SImpTbl;TOXXbyRetAge[1]   ⍝ DEFWIN.sf#2[2]   ⍝ Create the variables required for Transfer Values[3]   [4]   :if transfers←bTVs[5]       TVcapind←'C'=↑TVcapind ⍝ Capitalising[6]   [7]       ⍝ Transfer Decrements[8]       TOXXbyRetAge←'TR'≡UPPERCASE 2↑DLTB TOXX[9]       :if ¯1≡TOXX←(0 0 0) Rate∆Create TOXX[10]          TOXX←120⍴0[11]      :else[12]          :if TOXXbyRetAge  ⋄ TOXX←TOXX[;NRA] ⋄ :endif[13]          :if (NRA+1)≥⍴TOXX ⋄ TOXX←120 OVERTAKE (NRA+1)↑TOXX[14]          :else             ⋄ TOXX←120↑TOXX[15]          :endif[16]      :endif[17]      :if ¯1≡TPXX←(0 0 0) Rate∆Create TPXX[18]          TPXX←100⍴0[19]      :else[20]          :if (NRA+1)≥⍴TPXX ⋄ TPXX←100 OVERTAKE (NRA+1)↑TPXX[21]          :else             ⋄ TPXX←100↑TPXX[22]          :endif[23]      :endif[24]      :if transfers←∨/0≠TOXX,TPXX ⍝ Indicator of whether non-zero Transfers[25]          :if TVIntSame←zwb TVIntSame ⍝ Financials[26]              TVi←i ⋄ TVpi←pi[27]          :else[28]              ⍝⍀⍝ '' 'TV Discount' FOURDIT 'sCEN_TVIR TVIR sCEN_TVpi TVpi'[29]              FinAdjTable←FinAdjTable OVER 'TVi'  'TVIR' ( TVi←termAdjFin BlendRates TVIR sCEN_TVIR)[30]              FinAdjTable←FinAdjTable OVER 'TVpi' 'TVpi' (TVpi←termAdjFin BlendRates TVpi sCEN_TVpi)[31]          :endif[32]          ⍝⍀⍝ '' '' FOURDIT 'TVi← TVpi←'[33]  [34]          ⍝⍝⍝ :if TVRevSame←zwb TVRevSame[35]          ⍝⍝⍝    TVREVN←REVN ⋄ TVGMPREV1←GMPREV1 ⋄ TVPRESPAREV←PRESPAREV[36]          ⍝⍝⍝ :else[37]          ⍝⍝⍝    FinAdjTable←FinAdjTable OVER 'TVREVN' 'TVREVN' (TVREVN←termAdjFin BlendRates TVREVN sCEN_TVREVN)[38]          ⍝⍝⍝    FinAdjTable←FinAdjTable OVER 'TVGMPREV1' 'TVGMPREV1' (TVGMPREV1←termAdjFin BlendRates TVGMPREV1 sCEN_TVGMPREV1)[39]          ⍝⍝⍝    :if ~mt TVPRESPAREV ⍝ Keep shape of 0 if doesn't exist[40]          ⍝⍝⍝        FinAdjTable←FinAdjTable OVER 'TVPRESPAREV' 'TVPRESPAREV' (TVPRESPAREV←termAdjFin BlendRates TVPRESPAREV sCEN_TVPRESPAREV)[41]          ⍝⍝⍝    :endif[42]          ⍝⍝⍝ :endif[43]  [44]          :if TVEscSame←zwb TVEscSame[45]              TVB88GMPINC←B88GMPINC ⋄ TVA88GMPINC←A88GMPINC ⋄ sCEN_TVB88GMPINC←sCEN_B88GMPINC ⋄ sCEN_TVA88GMPINC←sCEN_A88GMPINC[46]              TVDYNRATB88←DYNRATB88 ⋄ TVDYNRATA88←DYNRATA88[47]              TVDYNINC←DYNINC ⋄ TVNDYNINC←NDYNINC ⋄ TVDYNINC3←DYNINC3 ⋄ TVDYNINC4←DYNINC4[48]              sCEN_TVDYNINC←sCEN_DYNINC ⋄ sCEN_TVNDYNINC←sCEN_NDYNINC ⋄ sCEN_TVDYNINC3←sCEN_DYNINC3 ⋄ sCEN_TVDYNINC4←sCEN_DYNINC4[49]              TVDYNRAT1←DYNRAT1 ⋄ TVDYNRAT2←DYNRAT2 ⋄ TVDYNRAT3←DYNRAT3 ⋄ TVDYNRAT4←DYNRAT4[50]          :else[51]              ⍝⍀⍝ '' 'TV Pension Increases' FOURDIT 'TVB88GMPINC sCEN_TVB88GMPINC TVA88GMPINC sCEN_TVA88GMPINC'[52]              FinAdjTable←FinAdjTable OVER 'TVB88GMPINC' 'TVB88GMPINC' (TVB88GMPINC←termAdjFin BlendRates TVB88GMPINC sCEN_TVB88GMPINC)[53]              FinAdjTable←FinAdjTable OVER 'TVA88GMPINC' 'TVA88GMPINC' (TVA88GMPINC←termAdjFin BlendRates TVA88GMPINC sCEN_TVA88GMPINC)[54]              TVDYNRATB88←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVB88GMPINC)*0.5[55]              TVDYNRATA88←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVA88GMPINC)*0.5[56]  [57]              ⍝⍀⍝ '' 'TV Pension Increases' FOURDIT 'TVDYNINC sCEN_TVDYNINC TVNDYNINC sCEN_TVNDYNINC TVDYNINC3 sCEN_TVDYNINC3 TVDYNINC4 sCEN_TVDYNINC4'[58]              FinAdjTable←FinAdjTable OVER 'TVDYNINC'  'TVDYNINC'  (TVDYNINC ←termAdjFin BlendRates TVDYNINC  sCEN_TVDYNINC )[59]              FinAdjTable←FinAdjTable OVER 'TVNDYNINC' 'TVNDYNINC' (TVNDYNINC←termAdjFin BlendRates TVNDYNINC sCEN_TVNDYNINC)[60]              FinAdjTable←FinAdjTable OVER 'TVDYNINC3' 'TVDYNINC3' (TVDYNINC3←termAdjFin BlendRates TVDYNINC3 sCEN_TVDYNINC3)[61]              FinAdjTable←FinAdjTable OVER 'TVDYNINC4' 'TVDYNINC4' (TVDYNINC4←termAdjFin BlendRates TVDYNINC4 sCEN_TVDYNINC4)[62]              TVDYNRAT1←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVDYNINC )*0.5[63]              TVDYNRAT2←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVNDYNINC)*0.5[64]              TVDYNRAT3←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVDYNINC3)*0.5[65]              TVDYNRAT4←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVDYNINC4)*0.5[66]          :endif[67]          ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'TVB88GMPINC← TVA88GMPINC←'[68]          ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'TVDYNINC← TVNDYNINC← TVDYNINC3← TVDYNINC4←'[69]  [70]          :if TVSpouseSame←zwb TVSpouseSame[71]              TVSPMethod←SPMethod ⋄ TVHXX←HXX ⋄ TVHMPXX←HMPXX ⋄ TVvaryAge∆←varyAge∆ ⋄ TVAGEDIF←AGEDIF[72]          :else[73]              TVSPMethod←('ERD'=↑TVSPMethod)/¯1 0 1 ⍝ Spouse at Exit, Retirement or Death[74]              :if mt TVPropMarr ⋄ TVHXX←(0 0 0) Rate∆Create TVHXX ⋄ TVHXX←120 OVERTAKE 100↑TVHXX ⍝⍝⍝ TVHXX←120↑TVHXX ⍝⍝⍝ UK Error - see also PRELIM (VALNWIN#3)[75]              :else             ⋄ TVHXX←120⍴0.01×zwb TVPropMarr[76]              :endif[77]              TVHMPXX←(lra+(uk≠1)×nrdind=2)↑MID TVHXX[78]              :if TVvaryAge∆←∨/' '≠TVAGEDIFT ⋄ TVAGEDIF←120↑¯1 DEC∆CHECK TVAGEDIFT[79]              :else                          ⋄ TVAGEDIF←ZWB TVAGEDIF[80]              :endif[81]          :endif[82]  [83]          :if ~TVIgnoreDiD←zwb TVIgnoreDiD[84]              :if ~TVDPreSame←zwb TVDPreSame[85]                  TVDXX←(LatestAge+1)↑[2=⍴⍴dxx]dxx←(0 0 0) Rate∆Create TVDXX[86]                  TVPREMEMB  ←,'Def' DescToVariableUK TVPREMEMB[87]                  ⍝ Pre Retirement Mortality Improvement[88]                  ⍝⍝⍝ :if ¯1=↑Malpha←120 OVERTAKE (¯1 DEC∆CHECK TVALPHA),1 ⋄ Malpha←120/1 ⋄ :endif[89]                  :if ¯1=↑Malpha←120 OVERTAKE ¯1 DEC∆CHECK TVALPHA ⋄ Malpha←120/1 ⋄ :endif[90]                  ⍝⍝⍝ :if ¯1=↑Mbeta ←120 OVERTAKE (¯1 DEC∆CHECK TVBETA ),0 ⋄ Mbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes[91]                  :if ¯1=↑Mbeta ←120 OVERTAKE ¯1 DEC∆CHECK TVBETA ⋄ Mbeta ←120/0 ⋄ :endif[92]                  TVBASE←zwb TVBASE ⋄ TVBETAYRS←zwb TVBETAYRS ⋄ TVCMSL←zwb TVCMSL ⋄ TVSMSL←zwb TVSMSL[93]                  TVPRERATE←(zwb TVRATEIMPR)×ZWB TVPRERATE ⋄ TVIMPORIG←zwb TVIMPORIG[94]  [95]                  :select TVMORTIMPR←↑TVMORTIMPR[96]                  :case 'N' ⋄ TVPreImp←,0[97]                  :case 'A' ⋄ TVPreImp←TVPRERATE Malpha Mbeta TVBETAYRS TVBASE "¯1↑DOB"[98]                  :case 'C' ⋄ TVPreImp←TVPRERATE Malpha Mbeta TVBETAYRS        TVCMSL[99]                  :case 'S' ⋄ TVPreImp←TVPRERATE Malpha Mbeta TVBETAYRS TVBASE TVSMSL[100]                 :case '2'[101]                     :if MTmat TVIMPTBLrt[0;] ⋄ IMPTBL←READ2D TVIMPTBLcsv[102]                     :elseif                 ¯1≡IMPTBL←¯1 DEC∆CHECK TVIMPTBLrt ⋄ IMPTBL←120 120⍴0[103]                     :endif[104]                     (IMPTBL rec)←(1 TVPREORIG TVIMPORIG) ReBaseMortImp IMPTBL TVIMPTBLcsv TVIMPTBLrt lrTVIMPTBLrt1[105]                     ReBasedIMPtab←ReBasedIMPtab OVER rec[106]                     PImpTbl←(TVIMPORIG,VDATE[2]) Adjust2D IMPTBL[107]                     TVPreImp←TVPRERATE PImpTbl[108]                 :endselect[109]             :else[110]                 TVDXX←DXX ⋄ TVPREMEMB←PREMEMB ⋄ TVMORTIMPR←MORTIMPR ⋄ TVPreImp←PreImp[111]             :endif[112]         :endif[113] [114]         :if ~TVDPostSame←zwb TVDPostSame[115]             TVQXret←(0 0 1,⍳NRA) Rate∆Create TVQXret[116]             TVPPOSTMEMB←,'Def' DescToVariableUK TVPPOSTMEMB[117] [118]             ⍝ Member Post Retirement Mortality Improvement[119]             ⍝⍝⍝ :if ¯1=↑Palpha←120 OVERTAKE (¯1 DEC∆CHECK TVPALPHA),1 ⋄ Palpha←120/1 ⋄ :endif[120]             :if ¯1=↑Palpha←120 OVERTAKE ¯1 DEC∆CHECK TVPALPHA ⋄ Palpha←120/1 ⋄ :endif[121]             ⍝⍝⍝ :if ¯1=↑Pbeta ←120 OVERTAKE (¯1 DEC∆CHECK TVPBETA ),0 ⋄ Pbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes[122]             :if ¯1=↑Pbeta ←120 OVERTAKE ¯1 DEC∆CHECK TVPBETA ⋄ Pbeta ←120/0 ⋄ :endif[123]             TVPBASE←zwb TVPBASE ⋄ TVPBETAYRS←zwb TVPBETAYRS ⋄ TVPCMSL←zwb TVPCMSL ⋄ TVPSMSL←zwb TVPSMSL[124]             TVPPOSTRATE←(zwb TVPRATEIMPR)×ZWB TVPPOSTRATE ⋄ TVPIMPORIG←zwb TVPIMPORIG[125] [126]             :select TVPMORTIMPR←↑TVPMORTIMPR[127]             :case 'N' ⋄ TVPostImpM←,0[128]             :case 'A' ⋄ TVPostImpM←TVPPOSTRATE Palpha Pbeta TVPBETAYRS TVPBASE "¯1↑DOB"[129]             :case 'C' ⋄ TVPostImpM←TVPPOSTRATE Palpha Pbeta TVPBETAYRS         TVPCMSL[130]             :case 'S' ⋄ TVPostImpM←TVPPOSTRATE Palpha Pbeta TVPBETAYRS TVPBASE TVPSMSL[131]             :case '2'[132]                 :if MTmat TVPIMPTBLrt[0;] ⋄ PIMPTBL←READ2D TVPIMPTBLcsv[133]                 :elseif                  ¯1≡PIMPTBL←¯1 DEC∆CHECK TVPIMPTBLrt ⋄ PIMPTBL←120 120⍴0[134]                 :endif[135]                 (PIMPTBL rec)←(1 TVPPOSTORIG TVPIMPORIG) ReBaseMortImp PIMPTBL TVPIMPTBLcsv TVPIMPTBLrt lrTVPIMPTBLrt1[136]                 ReBasedIMPtab←ReBasedIMPtab OVER rec[137]                 PImpTbl←(TVPIMPORIG,VDATE[2]) Adjust2D PIMPTBL[138]                 TVPostImpM←TVPPOSTRATE PImpTbl[139]             :endselect[140]         :else[141]             TVQXret←QXret ⋄ TVPPOSTMEMB←PPOSTMEMB ⋄ TVPMORTIMPR←PMORTIMPR ⋄ TVPostImpM←PostImpM[142]         :endif[143] [144]         :if ~TVSDPostSame←zwb TVSDPostSame[145]             TVQY   ←(0 0 1,⍳120) Rate∆Create TVQYret[146]             TVSPOSTMEMB←,'Def' DescToVariableUK TVSPOSTMEMB[147] [148]             ⍝ Spouse Post Retirement Mortality Improvement[149]             ⍝⍝⍝ :if ¯1=↑Salpha←120 OVERTAKE (¯1 DEC∆CHECK TVSALPHA),1 ⋄ Salpha←120/1 ⋄ :endif[150]             :if ¯1=↑Salpha←120 OVERTAKE ¯1 DEC∆CHECK TVSALPHA ⋄ Salpha←120/1 ⋄ :endif[151]             ⍝⍝⍝ :if ¯1=↑Sbeta ←120 OVERTAKE (¯1 DEC∆CHECK TVSBETA ),0 ⋄ Sbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes[152]             :if ¯1=↑Sbeta ←120 OVERTAKE ¯1 DEC∆CHECK TVSBETA ⋄ Sbeta ←120/0 ⋄ :endif[153]             TVSBASE←zwb TVSBASE ⋄ TVSBETAYRS←zwb TVSBETAYRS ⋄ TVSCSC←zwb TVSCSC ⋄ TVSSSC←zwb TVSSSC ⋄ TVSCSSL←zwb TVSCSSL ⋄ TVSSSSL←zwb TVSSSSL[154]             TVSPOSTRATE←(zwb TVSRATEIMPR)×ZWB TVSPOSTRATE ⋄ TVSIMPORIG←zwb TVSIMPORIG[155] [156]             :select TVSMORTIMPR←↑TVSMORTIMPR[157]             :case 'N' ⋄ TVPostImpS←TVDisImpDID←,0[158]             :case 'A'[159]                 :if TVvaryAge∆ ⍝ Age related age difference[160]                     TVPostImpS← TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE "¯29+(⍳59)+¯1↑DOB"[161]                     TVDisImpDID←TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE "TVAGEDIF[X0]+¯1↑DOB"[162]                 :else[163]                     TVPostImpS← TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE "TVAGEDIF+¯1↑DOB"[164]                     TVDisImpDID←,0[165]                 :endif[166]             :case 'C'[167]                     TVPostImpS← TVSPOSTRATE Salpha Sbeta TVSBETAYRS         TVSCSC[168]                     TVDisImpDID←TVSPOSTRATE Salpha Sbeta TVSBETAYRS         TVSCSSL[169]             :case 'S'[170]                     TVPostImpS← TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE TVSSSC[171]                     TVDisImpDID←TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE TVSSSSL[172]             :case '2'[173]                 :if MTmat TVSIMPTBLrt[0;] ⋄ SIMPTBL←READ2D TVSIMPTBLcsv[174]                 :elseif                  ¯1≡SIMPTBL←¯1 DEC∆CHECK TVSIMPTBLrt ⋄ SIMPTBL←120 120⍴0[175]                 :endif[176]                 (SIMPTBL rec)←(1 TVSPOSTORIG TVSIMPORIG) ReBaseMortImp SIMPTBL TVSIMPTBLcsv TVSIMPTBLrt lrTVSIMPTBLrt1[177]                 ReBasedIMPtab←ReBasedIMPtab OVER rec[178]                 SImpTbl←(TVSIMPORIG,VDATE[2]) Adjust2D SIMPTBL[179]                 TVPostImpS←TVDisImpDID←TVSPOSTRATE SImpTbl[180]             :endselect[181]         :else[182]             TVQY←QY ⋄ TVSPOSTMEMB←SPOSTMEMB ⋄ TVSMORTIMPR←SMORTIMPR ⋄ TVPostImpS←PostImpS ⋄ TVDisImpDID←DisImpDID[183]         :endif[184]     :endif[185] :else[186]     TOXX←TPXX←120⍴0[187] :endif    ∇
+    ∇ CREATE∆TRANSFERS;dxx;Malpha;Mbeta;IMPTBL;rec;PImpTbl;Palpha;Pbeta;PIMPTBL;Salpha;Sbeta;SIMPTBL;SImpTbl;TOXXbyRetAge
+[1]   ⍝ DEFWIN.sf#2
+[2]   ⍝ Create the variables required for Transfer Values
+[3]   
+[4]   :if transfers←bTVs
+[5]       TVcapind←'C'=↑TVcapind ⍝ Capitalising
+[6]   
+[7]       ⍝ Transfer Decrements
+[8]       TOXXbyRetAge←'TR'≡UPPERCASE 2↑DLTB TOXX
+[9]       :if ¯1≡TOXX←(0 0 0) Rate∆Create TOXX
+[10]          TOXX←120⍴0
+[11]      :else
+[12]          :if TOXXbyRetAge  ⋄ TOXX←TOXX[;NRA] ⋄ :endif
+[13]          :if (NRA+1)≥⍴TOXX ⋄ TOXX←120 OVERTAKE (NRA+1)↑TOXX
+[14]          :else             ⋄ TOXX←120↑TOXX
+[15]          :endif
+[16]      :endif
+[17]      :if ¯1≡TPXX←(0 0 0) Rate∆Create TPXX
+[18]          TPXX←100⍴0
+[19]      :else
+[20]          :if (NRA+1)≥⍴TPXX ⋄ TPXX←100 OVERTAKE (NRA+1)↑TPXX
+[21]          :else             ⋄ TPXX←100↑TPXX
+[22]          :endif
+[23]      :endif
+[24]      :if transfers←∨/0≠TOXX,TPXX ⍝ Indicator of whether non-zero Transfers
+[25]          :if TVIntSame←zwb TVIntSame ⍝ Financials
+[26]              TVi←i ⋄ TVpi←pi
+[27]          :else
+[28]              ⍝⍀⍝ '' 'TV Discount' FOURDIT 'sCEN_TVIR TVIR sCEN_TVpi TVpi'
+[29]              FinAdjTable←FinAdjTable OVER 'TVi'  'TVIR' ( TVi←termAdjFin BlendRates TVIR sCEN_TVIR)
+[30]              FinAdjTable←FinAdjTable OVER 'TVpi' 'TVpi' (TVpi←termAdjFin BlendRates TVpi sCEN_TVpi)
+[31]          :endif
+[32]          ⍝⍀⍝ '' '' FOURDIT 'TVi← TVpi←'
+[33]  
+[34]          ⍝⍝⍝ :if TVRevSame←zwb TVRevSame
+[35]          ⍝⍝⍝    TVREVN←REVN ⋄ TVGMPREV1←GMPREV1 ⋄ TVPRESPAREV←PRESPAREV
+[36]          ⍝⍝⍝ :else
+[37]          ⍝⍝⍝    FinAdjTable←FinAdjTable OVER 'TVREVN' 'TVREVN' (TVREVN←termAdjFin BlendRates TVREVN sCEN_TVREVN)
+[38]          ⍝⍝⍝    FinAdjTable←FinAdjTable OVER 'TVGMPREV1' 'TVGMPREV1' (TVGMPREV1←termAdjFin BlendRates TVGMPREV1 sCEN_TVGMPREV1)
+[39]          ⍝⍝⍝    :if ~mt TVPRESPAREV ⍝ Keep shape of 0 if doesn't exist
+[40]          ⍝⍝⍝        FinAdjTable←FinAdjTable OVER 'TVPRESPAREV' 'TVPRESPAREV' (TVPRESPAREV←termAdjFin BlendRates TVPRESPAREV sCEN_TVPRESPAREV)
+[41]          ⍝⍝⍝    :endif
+[42]          ⍝⍝⍝ :endif
+[43]  
+[44]          :if TVEscSame←zwb TVEscSame
+[45]              TVB88GMPINC←B88GMPINC ⋄ TVA88GMPINC←A88GMPINC ⋄ sCEN_TVB88GMPINC←sCEN_B88GMPINC ⋄ sCEN_TVA88GMPINC←sCEN_A88GMPINC
+[46]              TVDYNRATB88←DYNRATB88 ⋄ TVDYNRATA88←DYNRATA88
+[47]              TVDYNINC←DYNINC ⋄ TVNDYNINC←NDYNINC ⋄ TVDYNINC3←DYNINC3 ⋄ TVDYNINC4←DYNINC4
+[48]              sCEN_TVDYNINC←sCEN_DYNINC ⋄ sCEN_TVNDYNINC←sCEN_NDYNINC ⋄ sCEN_TVDYNINC3←sCEN_DYNINC3 ⋄ sCEN_TVDYNINC4←sCEN_DYNINC4
+[49]              TVDYNRAT1←DYNRAT1 ⋄ TVDYNRAT2←DYNRAT2 ⋄ TVDYNRAT3←DYNRAT3 ⋄ TVDYNRAT4←DYNRAT4
+[50]          :else
+[51]              ⍝⍀⍝ '' 'TV Pension Increases' FOURDIT 'TVB88GMPINC sCEN_TVB88GMPINC TVA88GMPINC sCEN_TVA88GMPINC'
+[52]              FinAdjTable←FinAdjTable OVER 'TVB88GMPINC' 'TVB88GMPINC' (TVB88GMPINC←termAdjFin BlendRates TVB88GMPINC sCEN_TVB88GMPINC)
+[53]              FinAdjTable←FinAdjTable OVER 'TVA88GMPINC' 'TVA88GMPINC' (TVA88GMPINC←termAdjFin BlendRates TVA88GMPINC sCEN_TVA88GMPINC)
+[54]              TVDYNRATB88←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVB88GMPINC)*0.5
+[55]              TVDYNRATA88←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVA88GMPINC)*0.5
+[56]  
+[57]              ⍝⍀⍝ '' 'TV Pension Increases' FOURDIT 'TVDYNINC sCEN_TVDYNINC TVNDYNINC sCEN_TVNDYNINC TVDYNINC3 sCEN_TVDYNINC3 TVDYNINC4 sCEN_TVDYNINC4'
+[58]              FinAdjTable←FinAdjTable OVER 'TVDYNINC'  'TVDYNINC'  (TVDYNINC ←termAdjFin BlendRates TVDYNINC  sCEN_TVDYNINC )
+[59]              FinAdjTable←FinAdjTable OVER 'TVNDYNINC' 'TVNDYNINC' (TVNDYNINC←termAdjFin BlendRates TVNDYNINC sCEN_TVNDYNINC)
+[60]              FinAdjTable←FinAdjTable OVER 'TVDYNINC3' 'TVDYNINC3' (TVDYNINC3←termAdjFin BlendRates TVDYNINC3 sCEN_TVDYNINC3)
+[61]              FinAdjTable←FinAdjTable OVER 'TVDYNINC4' 'TVDYNINC4' (TVDYNINC4←termAdjFin BlendRates TVDYNINC4 sCEN_TVDYNINC4)
+[62]              TVDYNRAT1←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVDYNINC )*0.5
+[63]              TVDYNRAT2←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVNDYNINC)*0.5
+[64]              TVDYNRAT3←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVDYNINC3)*0.5
+[65]              TVDYNRAT4←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE TVDYNINC4)*0.5
+[66]          :endif
+[67]          ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'TVB88GMPINC← TVA88GMPINC←'
+[68]          ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'TVDYNINC← TVNDYNINC← TVDYNINC3← TVDYNINC4←'
+[69]  
+[70]          :if TVSpouseSame←zwb TVSpouseSame
+[71]              TVSPMethod←SPMethod ⋄ TVHXX←HXX ⋄ TVHMPXX←HMPXX ⋄ TVvaryAge∆←varyAge∆ ⋄ TVAGEDIF←AGEDIF
+[72]          :else
+[73]              TVSPMethod←('ERD'=↑TVSPMethod)/¯1 0 1 ⍝ Spouse at Exit, Retirement or Death
+[74]              :if mt TVPropMarr ⋄ TVHXX←(0 0 0) Rate∆Create TVHXX ⋄ TVHXX←120 OVERTAKE 100↑TVHXX ⍝⍝⍝ TVHXX←120↑TVHXX ⍝⍝⍝ UK Error - see also PRELIM (VALNWIN#3)
+[75]              :else             ⋄ TVHXX←120⍴0.01×zwb TVPropMarr
+[76]              :endif
+[77]              TVHMPXX←(lra+(uk≠1)×nrdind=2)↑MID TVHXX
+[78]              :if TVvaryAge∆←∨/' '≠TVAGEDIFT ⋄ TVAGEDIF←120↑¯1 DEC∆CHECK TVAGEDIFT
+[79]              :else                          ⋄ TVAGEDIF←ZWB TVAGEDIF
+[80]              :endif
+[81]          :endif
+[82]  
+[83]          :if ~TVIgnoreDiD←zwb TVIgnoreDiD
+[84]              :if ~TVDPreSame←zwb TVDPreSame
+[85]                  TVDXX←(LatestAge+1)↑[2=⍴⍴dxx]dxx←(0 0 0) Rate∆Create TVDXX
+[86]                  TVPREMEMB  ←,'Def' DescToVariableUK TVPREMEMB
+[87]                  ⍝ Pre Retirement Mortality Improvement
+[88]                  ⍝⍝⍝ :if ¯1=↑Malpha←120 OVERTAKE (¯1 DEC∆CHECK TVALPHA),1 ⋄ Malpha←120/1 ⋄ :endif
+[89]                  :if ¯1=↑Malpha←120 OVERTAKE ¯1 DEC∆CHECK TVALPHA ⋄ Malpha←120/1 ⋄ :endif
+[90]                  ⍝⍝⍝ :if ¯1=↑Mbeta ←120 OVERTAKE (¯1 DEC∆CHECK TVBETA ),0 ⋄ Mbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes
+[91]                  :if ¯1=↑Mbeta ←120 OVERTAKE ¯1 DEC∆CHECK TVBETA ⋄ Mbeta ←120/0 ⋄ :endif
+[92]                  TVBASE←zwb TVBASE ⋄ TVBETAYRS←zwb TVBETAYRS ⋄ TVCMSL←zwb TVCMSL ⋄ TVSMSL←zwb TVSMSL
+[93]                  TVPRERATE←(zwb TVRATEIMPR)×ZWB TVPRERATE ⋄ TVIMPORIG←zwb TVIMPORIG
+[94]  
+[95]                  :select TVMORTIMPR←↑TVMORTIMPR
+[96]                  :case 'N' ⋄ TVPreImp←,0
+[97]                  :case 'A' ⋄ TVPreImp←TVPRERATE Malpha Mbeta TVBETAYRS TVBASE "¯1↑DOB"
+[98]                  :case 'C' ⋄ TVPreImp←TVPRERATE Malpha Mbeta TVBETAYRS        TVCMSL
+[99]                  :case 'S' ⋄ TVPreImp←TVPRERATE Malpha Mbeta TVBETAYRS TVBASE TVSMSL
+[100]                 :case '2'
+[101]                     :if MTmat TVIMPTBLrt[0;] ⋄ IMPTBL←READ2D TVIMPTBLcsv
+[102]                     :elseif                 ¯1≡IMPTBL←¯1 DEC∆CHECK TVIMPTBLrt ⋄ IMPTBL←120 120⍴0
+[103]                     :endif
+[104]                     (IMPTBL rec)←(1 TVPREORIG TVIMPORIG) ReBaseMortImp IMPTBL TVIMPTBLcsv TVIMPTBLrt lrTVIMPTBLrt1
+[105]                     ReBasedIMPtab←ReBasedIMPtab OVER rec
+[106]                     PImpTbl←(TVIMPORIG,VDATE[2]) Adjust2D IMPTBL
+[107]                     TVPreImp←TVPRERATE PImpTbl
+[108]                 :endselect
+[109]             :else
+[110]                 TVDXX←DXX ⋄ TVPREMEMB←PREMEMB ⋄ TVMORTIMPR←MORTIMPR ⋄ TVPreImp←PreImp
+[111]             :endif
+[112]         :endif
+[113] 
+[114]         :if ~TVDPostSame←zwb TVDPostSame
+[115]             TVQXret←(0 0 1,⍳NRA) Rate∆Create TVQXret
+[116]             TVPPOSTMEMB←,'Def' DescToVariableUK TVPPOSTMEMB
+[117] 
+[118]             ⍝ Member Post Retirement Mortality Improvement
+[119]             ⍝⍝⍝ :if ¯1=↑Palpha←120 OVERTAKE (¯1 DEC∆CHECK TVPALPHA),1 ⋄ Palpha←120/1 ⋄ :endif
+[120]             :if ¯1=↑Palpha←120 OVERTAKE ¯1 DEC∆CHECK TVPALPHA ⋄ Palpha←120/1 ⋄ :endif
+[121]             ⍝⍝⍝ :if ¯1=↑Pbeta ←120 OVERTAKE (¯1 DEC∆CHECK TVPBETA ),0 ⋄ Pbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes
+[122]             :if ¯1=↑Pbeta ←120 OVERTAKE ¯1 DEC∆CHECK TVPBETA ⋄ Pbeta ←120/0 ⋄ :endif
+[123]             TVPBASE←zwb TVPBASE ⋄ TVPBETAYRS←zwb TVPBETAYRS ⋄ TVPCMSL←zwb TVPCMSL ⋄ TVPSMSL←zwb TVPSMSL
+[124]             TVPPOSTRATE←(zwb TVPRATEIMPR)×ZWB TVPPOSTRATE ⋄ TVPIMPORIG←zwb TVPIMPORIG
+[125] 
+[126]             :select TVPMORTIMPR←↑TVPMORTIMPR
+[127]             :case 'N' ⋄ TVPostImpM←,0
+[128]             :case 'A' ⋄ TVPostImpM←TVPPOSTRATE Palpha Pbeta TVPBETAYRS TVPBASE "¯1↑DOB"
+[129]             :case 'C' ⋄ TVPostImpM←TVPPOSTRATE Palpha Pbeta TVPBETAYRS         TVPCMSL
+[130]             :case 'S' ⋄ TVPostImpM←TVPPOSTRATE Palpha Pbeta TVPBETAYRS TVPBASE TVPSMSL
+[131]             :case '2'
+[132]                 :if MTmat TVPIMPTBLrt[0;] ⋄ PIMPTBL←READ2D TVPIMPTBLcsv
+[133]                 :elseif                  ¯1≡PIMPTBL←¯1 DEC∆CHECK TVPIMPTBLrt ⋄ PIMPTBL←120 120⍴0
+[134]                 :endif
+[135]                 (PIMPTBL rec)←(1 TVPPOSTORIG TVPIMPORIG) ReBaseMortImp PIMPTBL TVPIMPTBLcsv TVPIMPTBLrt lrTVPIMPTBLrt1
+[136]                 ReBasedIMPtab←ReBasedIMPtab OVER rec
+[137]                 PImpTbl←(TVPIMPORIG,VDATE[2]) Adjust2D PIMPTBL
+[138]                 TVPostImpM←TVPPOSTRATE PImpTbl
+[139]             :endselect
+[140]         :else
+[141]             TVQXret←QXret ⋄ TVPPOSTMEMB←PPOSTMEMB ⋄ TVPMORTIMPR←PMORTIMPR ⋄ TVPostImpM←PostImpM
+[142]         :endif
+[143] 
+[144]         :if ~TVSDPostSame←zwb TVSDPostSame
+[145]             TVQY   ←(0 0 1,⍳120) Rate∆Create TVQYret
+[146]             TVSPOSTMEMB←,'Def' DescToVariableUK TVSPOSTMEMB
+[147] 
+[148]             ⍝ Spouse Post Retirement Mortality Improvement
+[149]             ⍝⍝⍝ :if ¯1=↑Salpha←120 OVERTAKE (¯1 DEC∆CHECK TVSALPHA),1 ⋄ Salpha←120/1 ⋄ :endif
+[150]             :if ¯1=↑Salpha←120 OVERTAKE ¯1 DEC∆CHECK TVSALPHA ⋄ Salpha←120/1 ⋄ :endif
+[151]             ⍝⍝⍝ :if ¯1=↑Sbeta ←120 OVERTAKE (¯1 DEC∆CHECK TVSBETA ),0 ⋄ Sbeta ←120/0 ⋄ :endif ⍝⍝⍝ UK error Padded with zeroes
+[152]             :if ¯1=↑Sbeta ←120 OVERTAKE ¯1 DEC∆CHECK TVSBETA ⋄ Sbeta ←120/0 ⋄ :endif
+[153]             TVSBASE←zwb TVSBASE ⋄ TVSBETAYRS←zwb TVSBETAYRS ⋄ TVSCSC←zwb TVSCSC ⋄ TVSSSC←zwb TVSSSC ⋄ TVSCSSL←zwb TVSCSSL ⋄ TVSSSSL←zwb TVSSSSL
+[154]             TVSPOSTRATE←(zwb TVSRATEIMPR)×ZWB TVSPOSTRATE ⋄ TVSIMPORIG←zwb TVSIMPORIG
+[155] 
+[156]             :select TVSMORTIMPR←↑TVSMORTIMPR
+[157]             :case 'N' ⋄ TVPostImpS←TVDisImpDID←,0
+[158]             :case 'A'
+[159]                 :if TVvaryAge∆ ⍝ Age related age difference
+[160]                     TVPostImpS← TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE "¯29+(⍳59)+¯1↑DOB"
+[161]                     TVDisImpDID←TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE "TVAGEDIF[X0]+¯1↑DOB"
+[162]                 :else
+[163]                     TVPostImpS← TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE "TVAGEDIF+¯1↑DOB"
+[164]                     TVDisImpDID←,0
+[165]                 :endif
+[166]             :case 'C'
+[167]                     TVPostImpS← TVSPOSTRATE Salpha Sbeta TVSBETAYRS         TVSCSC
+[168]                     TVDisImpDID←TVSPOSTRATE Salpha Sbeta TVSBETAYRS         TVSCSSL
+[169]             :case 'S'
+[170]                     TVPostImpS← TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE TVSSSC
+[171]                     TVDisImpDID←TVSPOSTRATE Salpha Sbeta TVSBETAYRS TVSBASE TVSSSSL
+[172]             :case '2'
+[173]                 :if MTmat TVSIMPTBLrt[0;] ⋄ SIMPTBL←READ2D TVSIMPTBLcsv
+[174]                 :elseif                  ¯1≡SIMPTBL←¯1 DEC∆CHECK TVSIMPTBLrt ⋄ SIMPTBL←120 120⍴0
+[175]                 :endif
+[176]                 (SIMPTBL rec)←(1 TVSPOSTORIG TVSIMPORIG) ReBaseMortImp SIMPTBL TVSIMPTBLcsv TVSIMPTBLrt lrTVSIMPTBLrt1
+[177]                 ReBasedIMPtab←ReBasedIMPtab OVER rec
+[178]                 SImpTbl←(TVSIMPORIG,VDATE[2]) Adjust2D SIMPTBL
+[179]                 TVPostImpS←TVDisImpDID←TVSPOSTRATE SImpTbl
+[180]             :endselect
+[181]         :else
+[182]             TVQY←QY ⋄ TVSPOSTMEMB←SPOSTMEMB ⋄ TVSMORTIMPR←SMORTIMPR ⋄ TVPostImpS←PostImpS ⋄ TVDisImpDID←DisImpDID
+[183]         :endif
+[184]     :endif
+[185] :else
+[186]     TOXX←TPXX←120⍴0
+[187] :endif
+    ∇

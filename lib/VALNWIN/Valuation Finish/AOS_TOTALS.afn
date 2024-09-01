@@ -1,0 +1,30 @@
+    ∇ AOS∆TOTALS;SUMMREC;TOTS;NN;N
+[1]   ⍝ VALNWIN.sf#4
+[2]   ⍝ Print out results of Analysis of Surplus
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   →(~summopt)/END ⋄ N←¯1 ⋄ NN←1↑⍴TOTS←STOTS_summary ⋄ SRECN←pAGE
+[7]   LOOP:→(NN=N←N+1)/END ⋄ →(^/0=TOTS[N;])/⎕LC
+[8]   :if IsDeferred
+[9]       SUMMREC←' '⍪'I3,CI8,BCM<->I20,3BCM<->I24' ⎕FMT(N+16),TOTS[,N;2×⍳5]
+[10]      SUMMREC←SUMMREC⍪'CI19,3BCM<->I24,12< >' ⎕FMT MATRIX TOTS[,N;1+2×⍳4]
+[11]  :else
+[12]      SUMMREC←' '⍪'I3,CI8,BCM<->I16,3BCM<->I18,2BCM<->I16,BCM<->I17,10< >' ⎕FMT(N+16),TOTS[,N;2×⍳8]
+[13]      SUMMREC←SUMMREC⍪'CI19,BCM<->I17,2BCM<->I18,BCM<->I17,BCM<->I16,BCM<->I17,BCM<->I18' ⎕FMT MATRIX TOTS[,N;1+2×⍳8]
+[14]  :endif
+[15]  ⍎(N=NN-1)/'SUMMREC[0;⍳3]←''I2,<+>'' ⎕FMT N+16'
+[16]  SUMMREC←UNSTAGGER SUMMREC ⋄ (PPAGE SRECN)←H8 OUTPUT tpS,PPAGE,SRECN ⋄ →LOOP
+[17]  
+[18]  END:
+[19]  :if IsDeferred
+[20]      SUMMREC←' '⍪'Q< Members>CLI14,CM<->I17,3CM<->I24' ⎕FMT MATRIX STOTS[2×⍳5]
+[21]      SUMMREC←SUMMREC⍪'CI19,3CM<->I24,12< >' ⎕FMT MATRIX STOTS[1+2×⍳4]
+[22]  :else
+[23]      SUMMREC←' '⍪'Q< Members>CLI14,CM<->I13,3CM<->I18,2CM<->I16,CM<->I17,10< >' ⎕FMT MATRIX STOTS[2×⍳8]
+[24]      SUMMREC←SUMMREC⍪'CI19,CM<->I17,2CM<->I18,CM<->I17,CM<->I16,CM<->I17,CM<->I18' ⎕FMT MATRIX STOTS[1+2×⍳8]
+[25]  :endif
+[26]  SUMMREC←UNSTAGGER SUMMREC
+[27]  (PPAGE SRECN)←H8 OUTPUT tpS,PPAGE,SRECN
+[28]  NTRANSFER tpS ⍝ Create just one print file
+    ∇

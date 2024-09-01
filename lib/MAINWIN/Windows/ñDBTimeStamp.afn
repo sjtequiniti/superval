@@ -1,1 +1,34 @@
-    ∇ res←larg ⍙DBTimeStamp res;B;C;D;E[1]   ⍝ MAINWIN.sf#2[2]   ⍝ Change a date or a ⎕ts to a format suitable for Database storage[3]   ⍝ larg (existing) indicates a dd/mm/yyyy format else a yyyy/mm/dd format[4]   ⍝⍝⍝ larg should use the "short date" format for the machine[5]   [6]   :if 1=⍴,res ⍝ Convert ⎕frdci number into ⎕ts[7]       res←⌊(res-D←86400000000∣res)÷86400000000[8]       E←res+693902 ⋄ E←E-(E-B←146097∣E)÷146097 ⋄ B←(×B)-×C←36524∣E[9]       E←E+(E-C)÷36524 ⋄ B←B+×C←1461∣E ⋄ E←365∣res←58+E-(E-C)÷1461[10]      C←365⍴0 ⋄ C[⎕io+0 31 59 90 120 151 181 212 243 273 304 334]←1 ⋄ C←(+\C)[⎕io+E][11]      B←C,[¯0.5+⎕io+⍴⍴C]E- 0 ¯2 29 57 88 118 149 179 210 241 271 302 332 [⎕io+C]+B[12]      E←((res-E)÷365),B[13]      E←E,⍉ 0 60 60 ⊤⍉⌊(D-res←1000000∣D)÷1000000 ⋄ res←E,0[14]  :endif[15]  [16]  :if 0=⎕nc 'larg'[17]      :select ⍬⍴⍴,res[18]      :case 3 ⍝ Date[19]          res←,'ZI4,</>,ZI2,</>,ZI2' ⎕fmt MATRIX ⌽res[20]      :case 7 ⍝ ⎕ts[21]          res←,'ZI4,</>,ZI2,</>,ZI2,I3,<:>,ZI2,<:>,ZI2' ⎕fmt MATRIX res[⍳5],59⌊+/1 .001×res[⎕io+5 6][22]      :else ⍝ Not Recognised[23]      :endselect[24]  :else ⍝⍝⍝ Need to determine the "short date" format??[25]      :select ⍬⍴⍴,res[26]      :case 3 ⍝ Date[27]          res←,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX res[28]      :case 7 ⍝ ⎕ts[29]          res←,'ZI2,</>,ZI2,</>,ZI4,< >,ZI2,<:>,ZI2,<:>,ZI2' ⎕fmt MATRIX res[⎕io+2 1 0 3 4],59⌊+/1 .001×res[⎕io+5 6][30]      :else ⍝ Not Recognised[31]      :endselect[32]  :endif    ∇
+    ∇ res←larg ⍙DBTimeStamp res;B;C;D;E
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝ Change a date or a ⎕ts to a format suitable for Database storage
+[3]   ⍝ larg (existing) indicates a dd/mm/yyyy format else a yyyy/mm/dd format
+[4]   ⍝⍝⍝ larg should use the "short date" format for the machine
+[5]   
+[6]   :if 1=⍴,res ⍝ Convert ⎕frdci number into ⎕ts
+[7]       res←⌊(res-D←86400000000∣res)÷86400000000
+[8]       E←res+693902 ⋄ E←E-(E-B←146097∣E)÷146097 ⋄ B←(×B)-×C←36524∣E
+[9]       E←E+(E-C)÷36524 ⋄ B←B+×C←1461∣E ⋄ E←365∣res←58+E-(E-C)÷1461
+[10]      C←365⍴0 ⋄ C[⎕io+0 31 59 90 120 151 181 212 243 273 304 334]←1 ⋄ C←(+\C)[⎕io+E]
+[11]      B←C,[¯0.5+⎕io+⍴⍴C]E- 0 ¯2 29 57 88 118 149 179 210 241 271 302 332 [⎕io+C]+B
+[12]      E←((res-E)÷365),B
+[13]      E←E,⍉ 0 60 60 ⊤⍉⌊(D-res←1000000∣D)÷1000000 ⋄ res←E,0
+[14]  :endif
+[15]  
+[16]  :if 0=⎕nc 'larg'
+[17]      :select ⍬⍴⍴,res
+[18]      :case 3 ⍝ Date
+[19]          res←,'ZI4,</>,ZI2,</>,ZI2' ⎕fmt MATRIX ⌽res
+[20]      :case 7 ⍝ ⎕ts
+[21]          res←,'ZI4,</>,ZI2,</>,ZI2,I3,<:>,ZI2,<:>,ZI2' ⎕fmt MATRIX res[⍳5],59⌊+/1 .001×res[⎕io+5 6]
+[22]      :else ⍝ Not Recognised
+[23]      :endselect
+[24]  :else ⍝⍝⍝ Need to determine the "short date" format??
+[25]      :select ⍬⍴⍴,res
+[26]      :case 3 ⍝ Date
+[27]          res←,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX res
+[28]      :case 7 ⍝ ⎕ts
+[29]          res←,'ZI2,</>,ZI2,</>,ZI4,< >,ZI2,<:>,ZI2,<:>,ZI2' ⎕fmt MATRIX res[⎕io+2 1 0 3 4],59⌊+/1 .001×res[⎕io+5 6]
+[30]      :else ⍝ Not Recognised
+[31]      :endselect
+[32]  :endif
+    ∇

@@ -1,1 +1,106 @@
-    ∇ DBW_scan_bdy;csv_tn;csv_sz;fileptr;eof;lines;tof;empty;err;wrn;pts;tbl;rows;catcol;∆;msg;scf;buffer;nums;linesread;bad;nolastcol;File;txt;NOM;bynom[1]   ⍝ DATAWIN.sf#21[2]   ⍝ Writes summary data into frm.cbCSV.data[3]   ⍝ Creates error messages and warnings[4]   ⍝ Reads ext vars CHUNK_SZ DLMT InputDir SGLCHARFLDS[5]   [6]   err←wrn←msg←''[7]   nums←('N'=↑¨fmts)/⍳⍴fmts                                                        ⍝ index to numeric columns[8]   bynom←('N'=↑¨fmts)/byNOM[9]   wids←∆+(↑¨⍴¨fmts)×~∆←(↑¨fmts)∊¨⊂'CN'                                            ⍝ min col widths[10]  catcol←nams⍳⊂'CAT'[11]  [12]  :if CSVimp[13]      :if 0=File NTIE csv_tn←'Native' TieNumber File←InputDir,FILE[14]          err←,⊂'Unable to tie ',(DLTB FILE),'.  It may be in use by another program.' ⋄ →end[15]      :endif[16]      csv_sz←⎕NSIZE csv_tn[17]  :endif[18]  [19]  (buffer fileptr linesread nolastcol cats)←'' 0 0 ⍬ (0 0⍴' ')[20]  :repeat[21]      :if CSVimp ⋄ lines←(⎕tcnl,⎕tclf) part buffer,⎕NREAD csv_tn 82 CHUNK_SZ fileptr[22]      :else      ⋄ lines←(⊂',') join¨⎕split ↑fmts DBW_excel_data (1+fileptr) 1 (XLrows⌊fileptr+⌊CHUNK_SZ÷100×XLcols) XLcols[23]      :endif[24]  [25]      :if tof←fileptr=0 ⋄ lines←(linesread←2-nofmtrow)↓lines ⋄ :endif             ⍝ top of file, drop header(s)[26]  [27]      :if CSVimp[28]          :if eof←csv_sz≤fileptr←fileptr+CHUNK_SZ                                 ⍝ end of file?[29]              lines←(1-(⌽×∊⍴¨lines~¨⊂DLMT,' ')⍳1)↓lines                           ⍝ lose trailing empty line/s[30]          :else[31]              (lines buffer)←(¯1↓lines)(↑⌽lines)                                  ⍝ else buffer last line fragment[32]          :endif[33]      :elseif eof←XLrows≤fileptr←fileptr+⍴lines                                   ⍝ end of file?[34]          lines←(1-(⌽×∊⍴¨lines~¨⊂DLMT,' ')⍳1)↓lines                               ⍝ lose trailing empty line/s[35]      :endif[36]  [37]      :if ^/empty←0=∊⍴¨lines~¨⊂DLMT,' ' ⋄ :andif tof ⋄ :andif eof[38]          err←err,⊂'No data rows'[39]      :elseif ∨/empty[40]          wrn←wrn,⊂'Empty row/s: ',DBW_list linesread+empty/⍳⍴empty[41]      :endif[42]      :if ∨/~empty[43]          rows←linesread+(~empty)/⍳⍴lines[44]          pts←DLMT partq¨(~empty)/lines[45]          tbl←(1-(⌽¨tbl≠' ')⍳¨1)↓¨tbl←included/⊃(↑⍴included)↑¨pts                       ⍝ right-trim cells[46]          tbl[;nums]←tbl[;nums]~¨⊂IGNORENUMERICS[47]          :if ∨/bynom[48]              NOM←1⌈zwb¨tbl[;nams⍳⊂'NOM'][49]              tbl[;bynom/nums]←⍕¨NOM×[⎕io]zwb¨tbl[;,bynom/nums][50]          :endif[51]          ∆←↑¨⍴¨tbl[52]          wids←wids⌈⌈⌿∆[53]          nolastcol←nolastcol,(0=∆[;2⊃⍴∆])/rows[54]          cats←1 Uniquelist cats OVER ⊃tbl[;catcol]                               ⍝ unique categories[55]          (err wrn)←err wrn,¨nams fmts DBW_check_fmts tbl rows                    ⍝ validation[56]  [57]      :endif ⍝ no errors[58]      linesread←linesread+↑⍴lines[59]  :until eof ⋄ :orif ×⍴err[60]  [61]  :if CSVimp ⋄ ⎕NUNTIE csv_tn ⋄ :endif[62]  [63]  :if ×⍴nolastcol ⋄ :andif ~nolastcol≡(2-nofmtrow)↓⍳linesread[64]      wrn←wrn,⊂'Last column missing in rows ',DBW_list nolastcol[65]  :endif[66]  [67]  :if ∨/∆←nams∊⊂'CAT' ⋄ :andif 10<∆/wids[68]      wrn←wrn,⊂'Category field will be truncated to 10 characters'[69]      (∆/wids)←10 ⋄ cats←10↑[2]cats[70]  :endif[71]  [72]  :if ∨/bad←wids[scf←nams⍳(SGLCHARFLDS∊nams)/SGLCHARFLDS]>1                       ⍝ over-wide fields[73]      :if (⊂'SEX')∊bad/nams[scf][74]          wrn←wrn,⊂'Sex Field will be truncated to single character'[75]          ((nams∊⊂'SEX')/wids)←1[76]      :endif[77]      :if (⊂'MEMORSP')∊bad/nams[scf][78]          wrn←wrn,⊂'Member or Spouse Field will be truncated to single character'[79]          ((nams∊⊂'MEMORSP')/wids)←1[80]      :endif[81]      :if (⊂'MS')∊bad/nams[scf][82]          wrn←wrn,⊂'Marital Status Field will be truncated to single character'[83]          ((nams∊⊂'MS')/wids)←1[84]      :endif[85]      :if (⊂LASTCOLPN)∊bad/nams[scf][86]          wrn←wrn,⊂'Last Column will be truncated to single character'[87]          ((nams∊⊂LASTCOLPN)/wids)←1[88]      :endif[89]  :endif[90]  [91]  msg←⊂DLTMB 'CI12,< Records scanned>' ⎕FMT linesread[92]  msg←msg,⊂'.   ',(⍕↑⍴cats),' Categories found'[93]  msg←msg,⊂'.   ',(⍕⍴err),' Errors found'[94]  msg←msg,⊂'.   ',(⍕⍴wrn),' Warnings'[95]  [96]  end:[97]  txt←         (0≠⍴msg)⌿(⊃msg) OVER ' '[98]  txt←txt OVER (0≠⍴err)⌿'ERRORS'   OVER (⊃err) OVER ' '[99]  txt←txt OVER (0≠⍴wrn)⌿'Warnings' OVER  ⊃wrn[100] (parent,'fReport.edResults') ⎕wi 'text' (,txt,⎕tcnl)[101] [102] (parent,'fReport.picError')    ⎕wi 'visible' (¯1+2×  ×⍴err)[103] (parent,'fReport.picWarn')     ⎕wi 'visible' (¯1+2×(0=⍴err)^×⍴wrn)[104] (parent,'fReport.picStandard') ⎕wi 'visible' (¯1+2× 0=⍴err,wrn)    ∇
+    ∇ DBW_scan_bdy;csv_tn;csv_sz;fileptr;eof;lines;tof;empty;err;wrn;pts;tbl;rows;catcol;∆;msg;scf;buffer;nums;linesread;bad;nolastcol;File;txt;NOM;bynom
+[1]   ⍝ DATAWIN.sf#21
+[2]   ⍝ Writes summary data into frm.cbCSV.data
+[3]   ⍝ Creates error messages and warnings
+[4]   ⍝ Reads ext vars CHUNK_SZ DLMT InputDir SGLCHARFLDS
+[5]   
+[6]   err←wrn←msg←''
+[7]   nums←('N'=↑¨fmts)/⍳⍴fmts                                                        ⍝ index to numeric columns
+[8]   bynom←('N'=↑¨fmts)/byNOM
+[9]   wids←∆+(↑¨⍴¨fmts)×~∆←(↑¨fmts)∊¨⊂'CN'                                            ⍝ min col widths
+[10]  catcol←nams⍳⊂'CAT'
+[11]  
+[12]  :if CSVimp
+[13]      :if 0=File NTIE csv_tn←'Native' TieNumber File←InputDir,FILE
+[14]          err←,⊂'Unable to tie ',(DLTB FILE),'.  It may be in use by another program.' ⋄ →end
+[15]      :endif
+[16]      csv_sz←⎕NSIZE csv_tn
+[17]  :endif
+[18]  
+[19]  (buffer fileptr linesread nolastcol cats)←'' 0 0 ⍬ (0 0⍴' ')
+[20]  :repeat
+[21]      :if CSVimp ⋄ lines←(⎕tcnl,⎕tclf) part buffer,⎕NREAD csv_tn 82 CHUNK_SZ fileptr
+[22]      :else      ⋄ lines←(⊂',') join¨⎕split ↑fmts DBW_excel_data (1+fileptr) 1 (XLrows⌊fileptr+⌊CHUNK_SZ÷100×XLcols) XLcols
+[23]      :endif
+[24]  
+[25]      :if tof←fileptr=0 ⋄ lines←(linesread←2-nofmtrow)↓lines ⋄ :endif             ⍝ top of file, drop header(s)
+[26]  
+[27]      :if CSVimp
+[28]          :if eof←csv_sz≤fileptr←fileptr+CHUNK_SZ                                 ⍝ end of file?
+[29]              lines←(1-(⌽×∊⍴¨lines~¨⊂DLMT,' ')⍳1)↓lines                           ⍝ lose trailing empty line/s
+[30]          :else
+[31]              (lines buffer)←(¯1↓lines)(↑⌽lines)                                  ⍝ else buffer last line fragment
+[32]          :endif
+[33]      :elseif eof←XLrows≤fileptr←fileptr+⍴lines                                   ⍝ end of file?
+[34]          lines←(1-(⌽×∊⍴¨lines~¨⊂DLMT,' ')⍳1)↓lines                               ⍝ lose trailing empty line/s
+[35]      :endif
+[36]  
+[37]      :if ^/empty←0=∊⍴¨lines~¨⊂DLMT,' ' ⋄ :andif tof ⋄ :andif eof
+[38]          err←err,⊂'No data rows'
+[39]      :elseif ∨/empty
+[40]          wrn←wrn,⊂'Empty row/s: ',DBW_list linesread+empty/⍳⍴empty
+[41]      :endif
+[42]      :if ∨/~empty
+[43]          rows←linesread+(~empty)/⍳⍴lines
+[44]          pts←DLMT partq¨(~empty)/lines
+[45]          tbl←(1-(⌽¨tbl≠' ')⍳¨1)↓¨tbl←included/⊃(↑⍴included)↑¨pts                       ⍝ right-trim cells
+[46]          tbl[;nums]←tbl[;nums]~¨⊂IGNORENUMERICS
+[47]          :if ∨/bynom
+[48]              NOM←1⌈zwb¨tbl[;nams⍳⊂'NOM']
+[49]              tbl[;bynom/nums]←⍕¨NOM×[⎕io]zwb¨tbl[;,bynom/nums]
+[50]          :endif
+[51]          ∆←↑¨⍴¨tbl
+[52]          wids←wids⌈⌈⌿∆
+[53]          nolastcol←nolastcol,(0=∆[;2⊃⍴∆])/rows
+[54]          cats←1 Uniquelist cats OVER ⊃tbl[;catcol]                               ⍝ unique categories
+[55]          (err wrn)←err wrn,¨nams fmts DBW_check_fmts tbl rows                    ⍝ validation
+[56]  
+[57]      :endif ⍝ no errors
+[58]      linesread←linesread+↑⍴lines
+[59]  :until eof ⋄ :orif ×⍴err
+[60]  
+[61]  :if CSVimp ⋄ ⎕NUNTIE csv_tn ⋄ :endif
+[62]  
+[63]  :if ×⍴nolastcol ⋄ :andif ~nolastcol≡(2-nofmtrow)↓⍳linesread
+[64]      wrn←wrn,⊂'Last column missing in rows ',DBW_list nolastcol
+[65]  :endif
+[66]  
+[67]  :if ∨/∆←nams∊⊂'CAT' ⋄ :andif 10<∆/wids
+[68]      wrn←wrn,⊂'Category field will be truncated to 10 characters'
+[69]      (∆/wids)←10 ⋄ cats←10↑[2]cats
+[70]  :endif
+[71]  
+[72]  :if ∨/bad←wids[scf←nams⍳(SGLCHARFLDS∊nams)/SGLCHARFLDS]>1                       ⍝ over-wide fields
+[73]      :if (⊂'SEX')∊bad/nams[scf]
+[74]          wrn←wrn,⊂'Sex Field will be truncated to single character'
+[75]          ((nams∊⊂'SEX')/wids)←1
+[76]      :endif
+[77]      :if (⊂'MEMORSP')∊bad/nams[scf]
+[78]          wrn←wrn,⊂'Member or Spouse Field will be truncated to single character'
+[79]          ((nams∊⊂'MEMORSP')/wids)←1
+[80]      :endif
+[81]      :if (⊂'MS')∊bad/nams[scf]
+[82]          wrn←wrn,⊂'Marital Status Field will be truncated to single character'
+[83]          ((nams∊⊂'MS')/wids)←1
+[84]      :endif
+[85]      :if (⊂LASTCOLPN)∊bad/nams[scf]
+[86]          wrn←wrn,⊂'Last Column will be truncated to single character'
+[87]          ((nams∊⊂LASTCOLPN)/wids)←1
+[88]      :endif
+[89]  :endif
+[90]  
+[91]  msg←⊂DLTMB 'CI12,< Records scanned>' ⎕FMT linesread
+[92]  msg←msg,⊂'.   ',(⍕↑⍴cats),' Categories found'
+[93]  msg←msg,⊂'.   ',(⍕⍴err),' Errors found'
+[94]  msg←msg,⊂'.   ',(⍕⍴wrn),' Warnings'
+[95]  
+[96]  end:
+[97]  txt←         (0≠⍴msg)⌿(⊃msg) OVER ' '
+[98]  txt←txt OVER (0≠⍴err)⌿'ERRORS'   OVER (⊃err) OVER ' '
+[99]  txt←txt OVER (0≠⍴wrn)⌿'Warnings' OVER  ⊃wrn
+[100] (parent,'fReport.edResults') ⎕wi 'text' (,txt,⎕tcnl)
+[101] 
+[102] (parent,'fReport.picError')    ⎕wi 'visible' (¯1+2×  ×⍴err)
+[103] (parent,'fReport.picWarn')     ⎕wi 'visible' (¯1+2×(0=⍴err)^×⍴wrn)
+[104] (parent,'fReport.picStandard') ⎕wi 'visible' (¯1+2× 0=⍴err,wrn)
+    ∇

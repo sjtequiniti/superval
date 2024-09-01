@@ -1,1 +1,39 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Log_On" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Log_On" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmLogOn.cbuser" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB user[11]  :if mt selection[12]          "fmLogOn.cbuser" ⎕wi "text" (DLTB user)[13]  :else[14]      "fmLogOn.cbuser" ⎕wi "value" selection[15]  :endif[16]  "fmLogOn.edpassword" ⎕wi "text" (DLTB password)[17]  PickList←"fmLogOn.cbFolder" ⎕wi "list"[18]  selection←PickList ExactTLU DLTB Folder[19]  :if mt selection[20]      :if ~mt DLTB Folder[21]          warnings←warnings OVER "Previous Selection for 'Scheme Folder' is no longer available"[22]      :endif[23]      modified←⌈/modified,1[24]  :endif[25]  "fmLogOn.cbFolder" ⎕wi "value" (¯1↑1,selection)[26]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Log_On[27]      :for var :in spin Comment_Log_On at "variable" "row" ⋄ (var row)←var[28]          "Log_On" ParmColor ((FormFields for "variable" var) at "control"),var row 1[29]      :endfor[30]  :endif[31]  :if ~0∊⍴,warnings[32]      MDISPLAY DLTMB warnings,⎕tcnl[33]      Win∆AssignVars "fmLogOn"[34]  :endif[35]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Log_On" "" "Names"[36]      "fmLogOn" ⎕wi "modified" 0[37]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Log_On" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Log_On" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmLogOn.cbuser" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB user
+[11]  :if mt selection
+[12]          "fmLogOn.cbuser" ⎕wi "text" (DLTB user)
+[13]  :else
+[14]      "fmLogOn.cbuser" ⎕wi "value" selection
+[15]  :endif
+[16]  "fmLogOn.edpassword" ⎕wi "text" (DLTB password)
+[17]  PickList←"fmLogOn.cbFolder" ⎕wi "list"
+[18]  selection←PickList ExactTLU DLTB Folder
+[19]  :if mt selection
+[20]      :if ~mt DLTB Folder
+[21]          warnings←warnings OVER "Previous Selection for 'Scheme Folder' is no longer available"
+[22]      :endif
+[23]      modified←⌈/modified,1
+[24]  :endif
+[25]  "fmLogOn.cbFolder" ⎕wi "value" (¯1↑1,selection)
+[26]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Log_On
+[27]      :for var :in spin Comment_Log_On at "variable" "row" ⋄ (var row)←var
+[28]          "Log_On" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[29]      :endfor
+[30]  :endif
+[31]  :if ~0∊⍴,warnings
+[32]      MDISPLAY DLTMB warnings,⎕tcnl
+[33]      Win∆AssignVars "fmLogOn"
+[34]  :endif
+[35]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Log_On" "" "Names"
+[36]      "fmLogOn" ⎕wi "modified" 0
+[37]  :endif
+    ∇

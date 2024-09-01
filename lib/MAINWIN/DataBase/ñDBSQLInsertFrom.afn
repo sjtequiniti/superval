@@ -1,0 +1,50 @@
+    ∇ err←table ⍙DBSQLInsertFrom datafile;∆;xxx;tno;schema;errors;file;server;login;tab;cmd;tie
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Bulk insert into table summarised records from file tied to tno;
+[3]   ⍝  erase file
+[4]   ⍝ table: (str) name of database table
+[5]   ⍝ file: (str) full file path of summarised temporary CSV
+[6]   ⍝ Vern: sjt26oct15
+[7]   tno←'Native' TieNumber ''
+[8]   datafile←InputDirUNC,'\' Win∆Child datafile ⍝ Use UNC path for SQL Server
+[9]   
+[10]  (schema errors)←(⊂datafile) asExt¨'xml' 'log' ⍝ see ⍙DBSQLMakeSchemaFiles
+[11]  
+[12]  ⍝ erase earlier error files FIXME: rename with timestamp?
+[13]  :if errors NTIE tno ⋄ errors NERASE tno ⋄ :endif
+[14]  
+[15]  ⍝⍝⍝ ⍝ Using SQL BULK INSERT Transction - has trouble with large files across network
+[16]  ⍝⍝⍝ xxx←0 ⍙DBadoCONCommand ScriptFollowing
+[17]  ⍝⍝⍝ ⍝ BULK INSERT {table} FROM {1 ⍙DBString datafile}
+[18]  ⍝⍝⍝ ⍝ WITH (
+[19]  ⍝⍝⍝ ⍝   CHECK_CONSTRAINTS,
+[20]  ⍝⍝⍝ ⍝   FORMATFILE = {1 ⍙DBString schema},
+[21]  ⍝⍝⍝ ⍝   ERRORFILE  = {1 ⍙DBString errors}
+[22]  ⍝⍝⍝ ⍝ );
+[23]  tab←'property' 'propvalue' OVER sql_properties
+[24]  server←↑(tab for 'property' 'Server') at 'propvalue'
+[25]  :if (⊂'User ID')∊tab at 'property'
+[26]      login←'-U ',↑(tab for 'property' 'User ID') at 'propvalue'
+[27]      login←login,' -P ',↑(tab for 'property' 'Password' 'Pwd') at 'propvalue'
+[28]  :else
+[29]      login←'-T'
+[30]  :endif
+[31]  
+[32]  cmd←ScriptFollowing
+[33]  ⍝ bcp {table} in {2 ⍙DBString datafile} -f {2 ⍙DBString schema} -S {2 ⍙DBString server} -d {2 ⍙DBString ValnResultsDB} -a 32576 -h "CHECK_CONSTRAINTS" -h "TABLOCK" -e {2 ⍙DBString errors} {login}
+[34]  
+[35]  tie←NCREATE file←InputDir,'bcp_load.bat'
+[36]  cmd ⎕nappend tie ⋄ ⎕nuntie tie
+[37]  
+[38]  (↑1+2×~ecflag) ⎕cmd '"',InputDir,'bcp_load"'
+[39]  
+[40]  err←''
+[41]  :if datafile NTIE tno ⋄ datafile NERASE tno ⋄ :endif
+[42]  :if     file NTIE tno ⋄     file NERASE tno ⋄ :endif
+[43]  :if   errors NTIE tno
+[44]      :if 0=⎕nsize tno ⋄ errors NERASE tno
+[45]      :else            ⋄ (file←InputDir,('\' Win∆Child Win∆Parent errors),' ',((⍙DBTimeStamp ⎕ts)~'/:'),'.log') ⎕xnrename tno
+[46]                         ⎕nuntie tno ⋄ err←'Refer to SQL Server Bulk Load errors in ',file
+[47]      :endif
+[48]  :endif
+    ∇

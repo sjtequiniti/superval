@@ -1,0 +1,34 @@
+    ∇ nested←ParametersIndex;Index;File;∆
+[1]   ⍝ MAINWIN.sf#15
+[2]   ⍝ nested contains the Parameters information in a form suitable for a tree
+[3]   
+[4]   ⎕io←1
+[5]   :if 0=⎕nc 'ClientFile' ⋄ nested←0 7⍴0 '' '' '' '' 0 '' ⋄ :return
+[6]   :else
+[7]       ∆←('' ParametersAdd ClientFile ReadFile 'Index'),⊂'ClientFile'
+[8]       nested←(2 ('Scheme Parameter File - ','\' Win∆Child ClientFile) '' '' '' 0 '')⍪∆
+[9]   :endif
+[10]  
+[11]  :if 0 ⍝⍝⍝ ≠⎕nc 'GlobalsFile'
+[12]  :andif ~mt ∆←'{Library} ' ParametersAdd GlobalsFile ReadFile 'Index'
+[13]      ∆←∆,⊂'GlobalsFile'
+[14]      nested←nested⍪(2 ('Library Parameter File - ','\' Win∆Child GlobalsFile) '' '' '' 0 '')⍪∆
+[15]  :endif
+[16]  
+[17]  :for File :in m2n 1 0↓'BasisFile' GetParmFiles 1
+[18]      Index←(InputDir,File) ReadFile 'Index'
+[19]      :if uk=1 ⋄ :andif bExactVal∨ClntCode≠3
+[20]          Index←Index for 1,∊ClntCode=1↓Index at '∆_Code'
+[21]      :endif
+[22]      ∆←('' ParametersAdd Index),⊂InputDir,File
+[23]      nested←nested⍪(2 ('Basis Parameter File - ',File,' <',(↑Index at '∆_Description'),'>') '' '' '' 0 '')⍪∆
+[24]  :endfor
+[25]  
+[26]  :for File :in m2n 1 0↓'QSMFile' GetParmFiles 1
+[27]      :if FileExist ConsolidDir,File,'.sf'
+[28]          Index←(ConsolidDir,File) ReadFile 'Index'
+[29]          ∆←('' ParametersAdd Index),⊂ConsolidDir,File
+[30]          nested←nested⍪(2 ('Quick Scenario Results File - ',File,' <',(↑Index at '∆_Description'),'>') '' '' '' 0 '')⍪∆
+[31]      :endif
+[32]  :endfor
+    ∇

@@ -1,0 +1,41 @@
+    ∇ ⍙DBFixMainDB;ResID;OResID;BasID;OBasID
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Change any OldResID's in the Database to ResultsCategoryID
+[3]   ⍝   and change any OldBasisID's in the Database to BasisCategoryID
+[4]   
+[5]   :if ~¯1∊ResultsCategoryID,BasisCategoryID
+[6]       :if (ResID←ResultsCategoryID)≠OResID←OldResID ⋄ :andif 0≠OldResID ⋄ :andif ClassID≠2
+[7]           :if DatabaseID≠0 ⋄ :andif DatabaseID>ResultsCategoryID
+[8]               ResID←DatabaseID+ResultsCategoryID ⋄ OResID←DatabaseID+OldResID
+[9]           :endif
+[10]          0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsCategory SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[11]          0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsCategory SET ActResultsID     =",(⍕ResID)," WHERE ActResultsID     =",⍕OResID
+[12]          0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsData     SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[13]          0 0⍴0 ⍙DBadoCONCommand "UPDATE MemberResults   SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[14]          0 0⍴0 ⍙DBadoCONCommand "UPDATE AltScenData     SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[15]          0 0⍴0 ⍙DBadoCONCommand "UPDATE NumMemberData   SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[16]          0 0⍴0 ⍙DBadoCONCommand "UPDATE CharMemberData  SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[17]          :if AOSCtl
+[18]              0 0⍴0 ⍙DBadoCONCommand "UPDATE AOSResults  SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[19]              0 0⍴0 ⍙DBadoCONCommand "UPDATE AOSMember   SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[20]          :endif
+[21]          :if uk≠1
+[22]              0 0⍴0 ⍙DBadoCONCommand "UPDATE BasisData        SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[23]              0 0⍴0 ⍙DBadoCONCommand "UPDATE TableNames       SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[24]              0 0⍴0 ⍙DBadoCONCommand "UPDATE FinancialsGroups SET ResultsCategoryID=",(⍕ResID)," WHERE ResultsCategoryID=",⍕OResID
+[25]          :endif
+[26]          OldResID←ResultsCategoryID
+[27]      :endif
+[28]  
+[29]      :if uk=1 ⋄ :andif (BasID←BasisCategoryID)≠OBasID←OldBasisID
+[30]          :if DatabaseID≠0 ⋄ :andif DatabaseID>BasisCategoryID
+[31]              BasID←DatabaseID+BasisCategoryID ⋄ OBasID←DatabaseID+OldBasisID
+[32]          :endif
+[33]          0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsCategory  SET BasisCategoryID=",(⍕BasID)," WHERE BasisCategoryID=",⍕OBasID
+[34]          0 0⍴0 ⍙DBadoCONCommand "UPDATE BasisData        SET BasisCategoryID=",(⍕BasID)," WHERE BasisCategoryID=",⍕OBasID
+[35]          0 0⍴0 ⍙DBadoCONCommand "UPDATE TableNames       SET BasisCategoryID=",(⍕BasID)," WHERE BasisCategoryID=",⍕OBasID
+[36]          0 0⍴0 ⍙DBadoCONCommand "UPDATE FinancialsGroups SET BasisCategoryID=",(⍕BasID)," WHERE BasisCategoryID=",⍕OBasID
+[37]          OldBasisID←BasisCategoryID
+[38]      :endif
+[39]  :endif
+    ∇

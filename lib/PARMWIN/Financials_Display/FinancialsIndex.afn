@@ -1,1 +1,42 @@
-    ∇ nested←FinancialsIndex;cn;incConsDyn;incDesc;incName;incValue;infDesc;infName;infValue;intDesc;intName;intValue;revDesc;revName;revValue;intGroup;infGroup;revGroup;incGroup;intCap;infCap;revCap;incCap;intCollar;infCollar;revCollar;incCollar;z;FinNumName;FinNumValue;FinNumComment;FinNumDesc;Comment_Financials;index;groupName;groupDesc[1]   ⍝ PARMWIN.sf#29[2]   ⍝ nested contains the Financials information in a form suitable for a tree[3]   [4]   ⎕io←1 ⋄ nested←0 2⍴0[5]   [6]   :for cn :in ClientFile ReadFile 'Financials'[7]       0 0⍴⍙VALUESdict ReadDictFile 'Financials'[8]       0 0⍴ClientFile ReadFile cn[9]       :if 0≠⎕nc 'FinNumComment' ⋄ FinNumDesc←FinNumComment ⋄ 0 0⍴⎕ex 'FinNumComment' ⋄ :endif[10]      z←⊃(Index at '∆_CompNo' '∆_Description') map cn[11]      z←z,' [Last Saved by ',⊃(Index at '∆_CompNo' '∆_UserModified') map cn[12]      z←z,' on ',DLTB (⊃(Index at '∆_CompNo' '∆_TSModified') map cn),']'[13]      nested←nested⍪2,⊂z[14]  [15]  ⍝⍝⍝    :select ParmsSort[16]  ⍝⍝⍝    :case 'Alpha'[17]  ⍝⍝⍝        cns←cns[⎕av⍋⊃(Index for '∆_Name' Module) at '∆_Description'][18]  ⍝⍝⍝    :case 'Modified'[19]  ⍝⍝⍝        cns←cns[⍋⊃(Index for '∆_Name' Module) at '∆_TimeModified'][20]  ⍝⍝⍝    :case 'Created' ⍝ Should already be in this order[21]  ⍝⍝⍝    :endselect[22]  [23]  [24]      nested←FinancialsTree nested[25]  :endfor[26]  [27]  :if 0 ⍝⍝⍝[28]  index←GlobalsFile ReadFile 'Index'[29]  [30]  :for cn :in GlobalsFile ReadFile 'Financials'[31]      0 0⍴⍙VALUESdict ReadDictFile 'Financials'[32]      0 0⍴GlobalsFile ReadFile cn[33]      z←'{Library} ',⊃(index at '∆_CompNo' '∆_Description') map cn[34]      z←z,' [Last Saved by ',⊃(index at '∆_CompNo' '∆_UserModified') map cn[35]      z←z,' on ',DLTB (⊃(index at '∆_CompNo' '∆_TSModified') map cn),']'[36]      nested←nested⍪2,⊂z[37]  [38]      nested←FinancialsTree nested[39]  :endfor[40]  :endif ⍝⍝⍝    ∇
+    ∇ nested←FinancialsIndex;cn;incConsDyn;incDesc;incName;incValue;infDesc;infName;infValue;intDesc;intName;intValue;revDesc;revName;revValue;intGroup;infGroup;revGroup;incGroup;intCap;infCap;revCap;incCap;intCollar;infCollar;revCollar;incCollar;z;FinNumName;FinNumValue;FinNumComment;FinNumDesc;Comment_Financials;index;groupName;groupDesc
+[1]   ⍝ PARMWIN.sf#29
+[2]   ⍝ nested contains the Financials information in a form suitable for a tree
+[3]   
+[4]   ⎕io←1 ⋄ nested←0 2⍴0
+[5]   
+[6]   :for cn :in ClientFile ReadFile 'Financials'
+[7]       0 0⍴⍙VALUESdict ReadDictFile 'Financials'
+[8]       0 0⍴ClientFile ReadFile cn
+[9]       :if 0≠⎕nc 'FinNumComment' ⋄ FinNumDesc←FinNumComment ⋄ 0 0⍴⎕ex 'FinNumComment' ⋄ :endif
+[10]      z←⊃(Index at '∆_CompNo' '∆_Description') map cn
+[11]      z←z,' [Last Saved by ',⊃(Index at '∆_CompNo' '∆_UserModified') map cn
+[12]      z←z,' on ',DLTB (⊃(Index at '∆_CompNo' '∆_TSModified') map cn),']'
+[13]      nested←nested⍪2,⊂z
+[14]  
+[15]  ⍝⍝⍝    :select ParmsSort
+[16]  ⍝⍝⍝    :case 'Alpha'
+[17]  ⍝⍝⍝        cns←cns[⎕av⍋⊃(Index for '∆_Name' Module) at '∆_Description']
+[18]  ⍝⍝⍝    :case 'Modified'
+[19]  ⍝⍝⍝        cns←cns[⍋⊃(Index for '∆_Name' Module) at '∆_TimeModified']
+[20]  ⍝⍝⍝    :case 'Created' ⍝ Should already be in this order
+[21]  ⍝⍝⍝    :endselect
+[22]  
+[23]  
+[24]      nested←FinancialsTree nested
+[25]  :endfor
+[26]  
+[27]  :if 0 ⍝⍝⍝
+[28]  index←GlobalsFile ReadFile 'Index'
+[29]  
+[30]  :for cn :in GlobalsFile ReadFile 'Financials'
+[31]      0 0⍴⍙VALUESdict ReadDictFile 'Financials'
+[32]      0 0⍴GlobalsFile ReadFile cn
+[33]      z←'{Library} ',⊃(index at '∆_CompNo' '∆_Description') map cn
+[34]      z←z,' [Last Saved by ',⊃(index at '∆_CompNo' '∆_UserModified') map cn
+[35]      z←z,' on ',DLTB (⊃(index at '∆_CompNo' '∆_TSModified') map cn),']'
+[36]      nested←nested⍪2,⊂z
+[37]  
+[38]      nested←FinancialsTree nested
+[39]  :endfor
+[40]  :endif ⍝⍝⍝
+    ∇

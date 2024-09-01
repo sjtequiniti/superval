@@ -1,0 +1,24 @@
+    ∇ res←heading PRINT∆SPLIT MAT;⎕IO;N;LABEL
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Print out Split of Benefits
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕IO←0 ⋄ res← 0 0 ⍴'' ⋄ →(^/0=,MAT)/0
+[8]   
+[9]   :if uk=1 ⋄ :andif IsDeferred ⍝ Enhanced Deferreds Output
+[10]      LABEL←9 27↑SStoMAT '/Lump Sum/GMP/Main/Special/PenInc3/PenInc4/Underpin/NS PUPs/Total ',heading
+[11]      res←LABEL,'CM<->I15' ⎕FMT MAT[0 1 2 3 4 5 6 7 9;0 1 5]
+[12]      res←' '⍪((32↑heading,' of:'),'Retirement          Death          Total')⍪res
+[13]  :else
+[14]      res←' '⍪MATRIX (18⍴' '),(,RJUSTIFY 5 18↑BenNames),¯24↑DLTMB heading
+[15]      res←res⍪(18↑BenTypes[0;]),,'5CM<->I18,CM<->I24' ⎕FMT MAT[,0;] ⋄ N←1
+[16]  
+[17]  LP: res←res⍪(18↑BenTypes[N;]),,'4CM<->I18,BCM<->I18,CM<->I24' ⎕FMT MAT[,N;]
+[18]      →((1+No∆Bens)>N←N+1)/LP
+[19]      ⍝ Only print out Insured in UK when required
+[20]      →((N=1+No∆Bens)^(uk=0)∨insind^1∊⎕VI heading)/LP
+[21]      res←(res⍪' ')⍪(22↑heading),,'CM<->I14,4CM<->I18,CM<->I24' ⎕FMT MAT[,2+No∆Bens;]
+[22]  :endif
+    ∇

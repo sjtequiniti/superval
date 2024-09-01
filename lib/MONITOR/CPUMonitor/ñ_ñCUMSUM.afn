@@ -1,1 +1,28 @@
-    ∇ o←⍙_⍙CUMSUM;o1;o2;o3;o4;o5;o6;o7;⎕IO;⎕PP[1]   ⍝ MONITOR.sf#2[2]   ⍝∇report←⍙_⍙CUMSUM fnlist -- Return report of time spent in a set of functions[3]   [4]   ⎕IO←1 ⋄ ⎕PP←14[5]   o←0 7⍴⊂''[6]   →(0∊⍴o3←(^/0>0 ¯1↓⎕idloc ∊' ',o3)⌿o3←⎕nl 3)/0[7]   o←((1↑⍴o3),6)⍴0[8]   :for o2 :in ⍳↑⍴o3[9]      o7←⎕MF o3[o2;][10]     o[o2;1]←+/o7[;2]    ⍝ total time used directly by fn[11]     o[o2;4]←⌈/o7[;3],0  ⍝ max iteration count[12]     o[o2;2]←1↑⍴o7       ⍝ # of lines in fn[13]     o[o2;5]←↑o7[;3]     ⍝ # of times called[14]     o[o2;6]←(⎕SIZE o3[o2;])-8×⌈(12×1↑⍴o7)÷8[15]  :endfor[16]  o←((⊂[2]o3)~¨' '),o[17]  [18]  o[;2]←o[;2]×⍙_⍙MFRESOLUTION ⍝ convert ⎕MF data to seconds[19]  [20]  o←((1000<o[;6])∨0.01<o[;2] CDIV o[;6])⌿o ⍝ Only functions called more than 100 times or that register more than 0.01 seconds per call[21]  [22]  o[;4]←100×o[;2]÷+/o[;2]     ⍝ percent of grand total time[23]  o←o[o5←⍒o[;2];]             ⍝ sort by time[24]  o[;2]←3⍕¨o[;2][25]  o[;3 5 6 7]←⍕¨o[;3 5 6 7][26]  o[;4]←2⍕¨o[;4]    ∇
+    ∇ o←⍙_⍙CUMSUM;o1;o2;o3;o4;o5;o6;o7;⎕IO;⎕PP
+[1]   ⍝ MONITOR.sf#2
+[2]   ⍝∇report←⍙_⍙CUMSUM fnlist -- Return report of time spent in a set of functions
+[3]   
+[4]   ⎕IO←1 ⋄ ⎕PP←14
+[5]   o←0 7⍴⊂''
+[6]   →(0∊⍴o3←(^/0>0 ¯1↓⎕idloc ∊' ',o3)⌿o3←⎕nl 3)/0
+[7]   o←((1↑⍴o3),6)⍴0
+[8]   :for o2 :in ⍳↑⍴o3
+[9]      o7←⎕MF o3[o2;]
+[10]     o[o2;1]←+/o7[;2]    ⍝ total time used directly by fn
+[11]     o[o2;4]←⌈/o7[;3],0  ⍝ max iteration count
+[12]     o[o2;2]←1↑⍴o7       ⍝ # of lines in fn
+[13]     o[o2;5]←↑o7[;3]     ⍝ # of times called
+[14]     o[o2;6]←(⎕SIZE o3[o2;])-8×⌈(12×1↑⍴o7)÷8
+[15]  :endfor
+[16]  o←((⊂[2]o3)~¨' '),o
+[17]  
+[18]  o[;2]←o[;2]×⍙_⍙MFRESOLUTION ⍝ convert ⎕MF data to seconds
+[19]  
+[20]  o←((1000<o[;6])∨0.01<o[;2] CDIV o[;6])⌿o ⍝ Only functions called more than 100 times or that register more than 0.01 seconds per call
+[21]  
+[22]  o[;4]←100×o[;2]÷+/o[;2]     ⍝ percent of grand total time
+[23]  o←o[o5←⍒o[;2];]             ⍝ sort by time
+[24]  o[;2]←3⍕¨o[;2]
+[25]  o[;3 5 6 7]←⍕¨o[;3 5 6 7]
+[26]  o[;4]←2⍕¨o[;4]
+    ∇

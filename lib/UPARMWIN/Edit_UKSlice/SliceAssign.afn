@@ -1,0 +1,358 @@
+    ∇ SliceAssign;SSName;∆
+[1]   ⍝ UPARMWIN.sf#4
+[2]   ⍝ Assign "temporary" Slice variables back into the "permanent" Slice variables
+[3]   
+[4]   ⍝ Adjust variables to required type
+[5]   servindm←CheckTranslate servindm
+[6]   irind←CheckTranslate irind
+[7]   upinslind←CheckTranslate upinslind
+[8]   careinc←CheckTranslate careinc
+[9]   tier2defined←CheckTranslate tier2defined
+[10]  tier3defined←CheckTranslate tier3defined
+[11]  DEDUCTTIER1←CheckTranslate DEDUCTTIER1
+[12]  DEDUCTTIER2←CheckTranslate DEDUCTTIER2
+[13]  
+[14]  :if 'Alt'≡slicetype
+[15]      :if Sliceput=0 ⋄ :orif Sliceget≠Sliceput ⍝ Add/Insert Slice
+[16]          SSName←'fmSV.sActives_Basis.pgAltSlices.fAltSlices.ssAltSlices'
+[17]          SSName ⎕wi 'MaxCol' (∆←1+SSName ⎕wi 'MaxCol')
+[18]          SSName ⎕wi 'xSetSelection' 1 1 1 1
+[19]          :if Sliceput=0 ⋄ Sliceput←∆
+[20]          :else          ⋄ Sliceput←⌈Sliceput
+[21]              ∆←∆⍴1 ⋄ ∆[Sliceput]←0
+[22]              AltSliceDesc← ∆⍀AltSliceDesc
+[23]              AltSTDATE←    ∆⍀AltSTDATE
+[24]              lrAltSTDATE←  ∆⍀lrAltSTDATE
+[25]              AltMINSDAT←   ∆⍀AltMINSDAT
+[26]              AltFNDATE←    ∆⍀AltFNDATE
+[27]              lrAltFNDATE←  ∆⍀lrAltFNDATE
+[28]              AltMAXFDAT←   ∆⍀AltMAXFDAT
+[29]              AltSERVRND←   ∆⍀AltSERVRND
+[30]              AltADDYRS←    ∆⍀AltADDYRS
+[31]              AltSERVINDM←  ∆⍀AltSERVINDM
+[32]              AltREVDEFIND← ∆⍀AltREVDEFIND
+[33]              AltDYNIND←    ∆⍀AltDYNIND
+[34]              AltIRIND←     ∆⍀AltIRIND
+[35]              AltUPINSLIND← ∆⍀AltUPINSLIND
+[36]              AltACCBASIS←  ∆⍀AltACCBASIS
+[37]              AltBARBIND←   ∆⍀AltBARBIND
+[38]              AltCAREInc←   ∆⍀AltCAREInc
+[39]              AltWARFRAC2←  ∆⍀AltWARFRAC2
+[40]              AltTier2Defined←∆⍀AltTier2Defined
+[41]              AltTier3Defined←∆⍀AltTier3Defined
+[42]              m_AltPPFNRA←  ∆⍀m_AltPPFNRA
+[43]              f_AltPPFNRA←  ∆⍀f_AltPPFNRA
+[44]              AltPPFPAYINCA←∆⍀AltPPFPAYINCA
+[45]  
+[46]              AltSALCOD1←   ∆⍀AltSALCOD1
+[47]              AltACCMLT1←   ∆⍀AltACCMLT1
+[48]              AltACCDIV1←   ∆⍀AltACCDIV1
+[49]              AltACCDATA1←  ∆⍀AltACCDATA1
+[50]              AltASTAB1←    ∆⍀AltASTAB1
+[51]              AltARTAB1←    ∆⍀AltARTAB1
+[52]              AltSRATAB1←   ∆⍀AltSRATAB1
+[53]              AltFIXPEN1←   ∆⍀AltFIXPEN1
+[54]              AltMINPEN1←   ∆⍀AltMINPEN1
+[55]              AltMAXPEN1←   ∆⍀AltMAXPEN1
+[56]              AltPENADJ1←   ∆⍀AltPENADJ1
+[57]              lrAltPENADJ1← ∆⍀lrAltPENADJ1
+[58]      ⍝⍝⍝        AltDeductTier11←∆⍀AltDeductTier11
+[59]      ⍝⍝⍝        AltDeductTier21←∆⍀AltDeductTier21
+[60]              m_AltPPFADJ1← ∆⍀m_AltPPFADJ1
+[61]              lrm_AltPPFADJ1←∆⍀lrm_AltPPFADJ1
+[62]              f_AltPPFADJ1← ∆⍀f_AltPPFADJ1
+[63]              lrf_AltPPFADJ1←∆⍀lrf_AltPPFADJ1
+[64]  
+[65]              AltSALCOD2←   ∆⍀AltSALCOD2
+[66]              AltACCMLT2←   ∆⍀AltACCMLT2
+[67]              AltACCDIV2←   ∆⍀AltACCDIV2
+[68]              AltACCDATA2←  ∆⍀AltACCDATA2
+[69]              AltASTAB2←    ∆⍀AltASTAB2
+[70]              AltARTAB2←    ∆⍀AltARTAB2
+[71]              AltSRATAB2←   ∆⍀AltSRATAB2
+[72]              AltFIXPEN2←   ∆⍀AltFIXPEN2
+[73]              AltMINPEN2←   ∆⍀AltMINPEN2
+[74]              AltMAXPEN2←   ∆⍀AltMAXPEN2
+[75]              AltPENADJ2←   ∆⍀AltPENADJ2
+[76]              lrAltPENADJ2← ∆⍀lrAltPENADJ2
+[77]              AltDeductTier12←∆⍀AltDeductTier12
+[78]      ⍝⍝⍝        AltDeductTier22←∆⍀AltDeductTier22
+[79]              m_AltPPFADJ2← ∆⍀m_AltPPFADJ2
+[80]              lrm_AltPPFADJ2←∆⍀lrm_AltPPFADJ2
+[81]              f_AltPPFADJ2← ∆⍀f_AltPPFADJ2
+[82]              lrf_AltPPFADJ2←∆⍀lrf_AltPPFADJ2
+[83]  
+[84]              AltSALCOD3←   ∆⍀AltSALCOD3
+[85]              AltACCMLT3←   ∆⍀AltACCMLT3
+[86]              AltACCDIV3←   ∆⍀AltACCDIV3
+[87]              AltACCDATA3←  ∆⍀AltACCDATA3
+[88]              AltASTAB3←    ∆⍀AltASTAB3
+[89]              AltARTAB3←    ∆⍀AltARTAB3
+[90]              AltSRATAB3←   ∆⍀AltSRATAB3
+[91]              AltFIXPEN3←   ∆⍀AltFIXPEN3
+[92]              AltMINPEN3←   ∆⍀AltMINPEN3
+[93]              AltMAXPEN3←   ∆⍀AltMAXPEN3
+[94]              AltPENADJ3←   ∆⍀AltPENADJ3
+[95]              lrAltPENADJ3← ∆⍀lrAltPENADJ3
+[96]              AltDeductTier13←∆⍀AltDeductTier13
+[97]              AltDeductTier23←∆⍀AltDeductTier23
+[98]              m_AltPPFADJ3← ∆⍀m_AltPPFADJ3
+[99]              lrm_AltPPFADJ3←∆⍀lrm_AltPPFADJ3
+[100]             f_AltPPFADJ3← ∆⍀f_AltPPFADJ3
+[101]             lrf_AltPPFADJ3←∆⍀lrf_AltPPFADJ3
+[102]         :endif
+[103]     :endif
+[104] 
+[105]     SLICEDESC      ASSIGN∆Dict 'AltSliceDesc[Sliceput;]'
+[106]     stdate         ASSIGN∆Dict 'AltSTDATE[Sliceput;]'
+[107]     lrstdate       ASSIGN∆Dict 'lrAltSTDATE[Sliceput;]'
+[108]     minsdat        ASSIGN∆Dict 'AltMINSDAT[Sliceput;]'
+[109]     fndate         ASSIGN∆Dict 'AltFNDATE[Sliceput;]'
+[110]     lrfndate       ASSIGN∆Dict 'lrAltFNDATE[Sliceput;]'
+[111]     maxfdat        ASSIGN∆Dict 'AltMAXFDAT[Sliceput;]'
+[112]     sERVrND        ASSIGN∆Dict 'AltSERVRND[Sliceput;]'
+[113]     addyrs         ASSIGN∆Dict 'AltADDYRS[Sliceput;]'
+[114]     servindm       ASSIGN∆Dict 'AltSERVINDM[Sliceput;]'
+[115]     revdefind      ASSIGN∆Dict 'AltREVDEFIND[Sliceput;]'
+[116]     dynind         ASSIGN∆Dict 'AltDYNIND[Sliceput;]'
+[117]     irind          ASSIGN∆Dict 'AltIRIND[Sliceput;]'
+[118]     upinslind      ASSIGN∆Dict 'AltUPINSLIND[Sliceput;]'
+[119]     accbasis       ASSIGN∆Dict 'AltACCBASIS[Sliceput;]'
+[120]     barbind        ASSIGN∆Dict 'AltBARBIND[Sliceput;]'
+[121]     careinc        ASSIGN∆Dict 'AltCAREInc[Sliceput;]'
+[122]     warfrac2       ASSIGN∆Dict 'AltWARFRAC2[Sliceput;]'
+[123]     tier2defined   ASSIGN∆Dict 'AltTier2Defined[Sliceput;]'
+[124]     tier3defined   ASSIGN∆Dict 'AltTier3Defined[Sliceput;]'
+[125]     m_ppfnra       ASSIGN∆Dict 'm_AltPPFNRA[Sliceput;]'
+[126]     f_ppfnra       ASSIGN∆Dict 'f_AltPPFNRA[Sliceput;]'
+[127]     ppfpayinca     ASSIGN∆Dict 'AltPPFPAYINCA[Sliceput;]'
+[128] 
+[129]     TIERSAL[1;]    ASSIGN∆Dict 'AltSALCOD1[Sliceput;]'
+[130]     accmlt[1;]     ASSIGN∆Dict 'AltACCMLT1[Sliceput;]'
+[131]     accdiv[1;]     ASSIGN∆Dict 'AltACCDIV1[Sliceput;]'
+[132]     accdata[1;]    ASSIGN∆Dict 'AltACCDATA1[Sliceput;]'
+[133]     ((DLTB SERVICETAB[1;]),(∨/SERVICETAB[1;]≠' ')/' - ',DLTB lrSERVICETAB1) ASSIGN∆Dict 'AltASTAB1[Sliceput;]'
+[134]     ((DLTB ACCRUALTAB[1;]),(∨/ACCRUALTAB[1;]≠' ')/' - ',DLTB lrACCRUALTAB1) ASSIGN∆Dict 'AltARTAB1[Sliceput;]'
+[135]     ((DLTB sratab[1;]    ),(∨/sratab[1;]    ≠' ')/' - ',DLTB lrsratab1    ) ASSIGN∆Dict 'AltSRATAB1[Sliceput;]'
+[136]     FIXED[1;]      ASSIGN∆Dict 'AltFIXPEN1[Sliceput;]'
+[137]     minpen[1;]     ASSIGN∆Dict 'AltMINPEN1[Sliceput;]'
+[138]     maxpen[1;]     ASSIGN∆Dict 'AltMAXPEN1[Sliceput;]'
+[139]     penadj[1;]     ASSIGN∆Dict 'AltPENADJ1[Sliceput;]'
+[140]     lrpenadj1      ASSIGN∆Dict 'lrAltPENADJ1[Sliceput;]'
+[141] ⍝⍝⍝    DEDUCTTIER1[1;] ASSIGN∆Dict 'AltDeductTier11[Sliceput;]'
+[142] ⍝⍝⍝    DEDUCTTIER2[1;] ASSIGN∆Dict 'AltDeductTier21[Sliceput;]'
+[143]     m_ppfadj[1;]   ASSIGN∆Dict 'm_AltPPFADJ1[Sliceput;]'
+[144]     lrm_ppfadj1    ASSIGN∆Dict 'lrm_AltPPFADJ1[Sliceput;]'
+[145]     f_ppfadj[1;]   ASSIGN∆Dict 'f_AltPPFADJ1[Sliceput;]'
+[146]     lrf_ppfadj1    ASSIGN∆Dict 'lrf_AltPPFADJ1[Sliceput;]'
+[147] 
+[148]     TIERSAL[2;]    ASSIGN∆Dict 'AltSALCOD2[Sliceput;]'
+[149]     accmlt[2;]     ASSIGN∆Dict 'AltACCMLT2[Sliceput;]'
+[150]     accdiv[2;]     ASSIGN∆Dict 'AltACCDIV2[Sliceput;]'
+[151]     accdata[2;]    ASSIGN∆Dict 'AltACCDATA2[Sliceput;]'
+[152]     ((DLTB SERVICETAB[2;]),(∨/SERVICETAB[2;]≠' ')/' - ',DLTB lrSERVICETAB2) ASSIGN∆Dict 'AltASTAB2[Sliceput;]'
+[153]     ((DLTB ACCRUALTAB[2;]),(∨/ACCRUALTAB[2;]≠' ')/' - ',DLTB lrACCRUALTAB2) ASSIGN∆Dict 'AltARTAB2[Sliceput;]'
+[154]     ((DLTB sratab[2;]    ),(∨/sratab[2;]    ≠' ')/' - ',DLTB lrsratab2    ) ASSIGN∆Dict 'AltSRATAB2[Sliceput;]'
+[155]     FIXED[2;]      ASSIGN∆Dict 'AltFIXPEN2[Sliceput;]'
+[156]     minpen[2;]     ASSIGN∆Dict 'AltMINPEN2[Sliceput;]'
+[157]     maxpen[2;]     ASSIGN∆Dict 'AltMAXPEN2[Sliceput;]'
+[158]     penadj[2;]     ASSIGN∆Dict 'AltPENADJ2[Sliceput;]'
+[159]     lrpenadj2      ASSIGN∆Dict 'lrAltPENADJ2[Sliceput;]'
+[160]     DEDUCTTIER1[2;]ASSIGN∆Dict 'AltDeductTier12[Sliceput;]'
+[161] ⍝⍝⍝    DEDUCTTIER2[2;] ASSIGN∆Dict 'AltDeductTier22[Sliceput;]'
+[162]     m_ppfadj[2;]   ASSIGN∆Dict 'm_AltPPFADJ2[Sliceput;]'
+[163]     lrm_ppfadj2    ASSIGN∆Dict 'lrm_AltPPFADJ2[Sliceput;]'
+[164]     f_ppfadj[2;]   ASSIGN∆Dict 'f_AltPPFADJ2[Sliceput;]'
+[165]     lrf_ppfadj2    ASSIGN∆Dict 'lrf_AltPPFADJ2[Sliceput;]'
+[166] 
+[167]     TIERSAL[3;]    ASSIGN∆Dict 'AltSALCOD3[Sliceput;]'
+[168]     accmlt[3;]     ASSIGN∆Dict 'AltACCMLT3[Sliceput;]'
+[169]     accdiv[3;]     ASSIGN∆Dict 'AltACCDIV3[Sliceput;]'
+[170]     accdata[3;]    ASSIGN∆Dict 'AltACCDATA3[Sliceput;]'
+[171]     ((DLTB SERVICETAB[3;]),(∨/SERVICETAB[3;]≠' ')/' - ',DLTB lrSERVICETAB3) ASSIGN∆Dict 'AltASTAB3[Sliceput;]'
+[172]     ((DLTB ACCRUALTAB[3;]),(∨/ACCRUALTAB[3;]≠' ')/' - ',DLTB lrACCRUALTAB3) ASSIGN∆Dict 'AltARTAB3[Sliceput;]'
+[173]     ((DLTB sratab[3;]    ),(∨/sratab[3;]    ≠' ')/' - ',DLTB lrsratab3    ) ASSIGN∆Dict 'AltSRATAB3[Sliceput;]'
+[174]     FIXED[3;]      ASSIGN∆Dict 'AltFIXPEN3[Sliceput;]'
+[175]     minpen[3;]     ASSIGN∆Dict 'AltMINPEN3[Sliceput;]'
+[176]     maxpen[3;]     ASSIGN∆Dict 'AltMAXPEN3[Sliceput;]'
+[177]     penadj[3;]     ASSIGN∆Dict 'AltPENADJ3[Sliceput;]'
+[178]     lrpenadj3      ASSIGN∆Dict 'lrAltPENADJ3[Sliceput;]'
+[179]     DEDUCTTIER1[3;]ASSIGN∆Dict 'AltDeductTier13[Sliceput;]'
+[180]     DEDUCTTIER2[3;]ASSIGN∆Dict 'AltDeductTier23[Sliceput;]'
+[181]     m_ppfadj[3;]   ASSIGN∆Dict 'm_AltPPFADJ3[Sliceput;]'
+[182]     lrm_ppfadj3    ASSIGN∆Dict 'lrm_AltPPFADJ3[Sliceput;]'
+[183]     f_ppfadj[3;]   ASSIGN∆Dict 'f_AltPPFADJ3[Sliceput;]'
+[184]     lrf_ppfadj3    ASSIGN∆Dict 'lrf_AltPPFADJ3[Sliceput;]'
+[185] :else
+[186]     :if Sliceput=0 ⋄ :orif Sliceget≠Sliceput ⍝ Add/Insert Slice
+[187]         SSName←'fmSV.sActives_Basis.pgSlices.fSlices.ssSlices'
+[188]         SSName ⎕wi 'MaxCol' (∆←1+SSName ⎕wi 'MaxCol')
+[189]         SSName ⎕wi 'xSetSelection' 1 1 1 1
+[190]         :if Sliceput=0 ⋄ Sliceput←∆
+[191]         :else        ⋄ Sliceput←⌈Sliceput
+[192]             ∆←∆⍴1 ⋄ ∆[Sliceput]←0
+[193]             SliceDesc← ∆⍀SliceDesc
+[194]             STDATE←    ∆⍀STDATE
+[195]             lrSTDATE←  ∆⍀lrSTDATE
+[196]             MINSDAT←   ∆⍀MINSDAT
+[197]             FNDATE←    ∆⍀FNDATE
+[198]             lrFNDATE←  ∆⍀lrFNDATE
+[199]             MAXFDAT←   ∆⍀MAXFDAT
+[200]             SERVRND←   ∆⍀SERVRND
+[201]             ADDYRS←    ∆⍀ADDYRS
+[202]             SERVINDM←  ∆⍀SERVINDM
+[203]             REVDEFIND← ∆⍀REVDEFIND
+[204]             DYNIND←    ∆⍀DYNIND
+[205]             IRIND←     ∆⍀IRIND
+[206]             UPINSLIND← ∆⍀UPINSLIND
+[207]             ACCBASIS←  ∆⍀ACCBASIS
+[208]             BARBIND←   ∆⍀BARBIND
+[209]             CAREInc←   ∆⍀CAREInc
+[210]             WARFRAC2←  ∆⍀WARFRAC2
+[211]             Tier2Defined←  ∆⍀Tier2Defined
+[212]             Tier3Defined←  ∆⍀Tier3Defined
+[213]             m_PPFNRA←  ∆⍀m_PPFNRA
+[214]             f_PPFNRA←  ∆⍀f_PPFNRA
+[215]             PPFPAYINCA←∆⍀PPFPAYINCA
+[216] 
+[217]             SALCOD1←   ∆⍀SALCOD1
+[218]             ACCMLT1←   ∆⍀ACCMLT1
+[219]             ACCDIV1←   ∆⍀ACCDIV1
+[220]             ACCDATA1←  ∆⍀ACCDATA1
+[221]             ASTAB1←    ∆⍀ASTAB1
+[222]             ARTAB1←    ∆⍀ARTAB1
+[223]             SRATAB1←   ∆⍀SRATAB1
+[224]             FIXPEN1←   ∆⍀FIXPEN1
+[225]             MINPEN1←   ∆⍀MINPEN1
+[226]             MAXPEN1←   ∆⍀MAXPEN1
+[227]             PENADJ1←   ∆⍀PENADJ1
+[228]             lrPENADJ1← ∆⍀lrPENADJ1
+[229]     ⍝⍝⍝        DeductTier11←∆⍀DeductTier11
+[230]     ⍝⍝⍝        DeductTier21←∆⍀DeductTier21
+[231]             m_PPFADJ1← ∆⍀m_PPFADJ1
+[232]             lrm_PPFADJ1←∆⍀lrm_PPFADJ1
+[233]             f_PPFADJ1← ∆⍀f_PPFADJ1
+[234]             lrf_PPFADJ1←∆⍀lrf_PPFADJ1
+[235] 
+[236]             SALCOD2←   ∆⍀SALCOD2
+[237]             ACCMLT2←   ∆⍀ACCMLT2
+[238]             ACCDIV2←   ∆⍀ACCDIV2
+[239]             ACCDATA2←  ∆⍀ACCDATA2
+[240]             ASTAB2←    ∆⍀ASTAB2
+[241]             ARTAB2←    ∆⍀ARTAB2
+[242]             SRATAB2←   ∆⍀SRATAB2
+[243]             FIXPEN2←   ∆⍀FIXPEN2
+[244]             MINPEN2←   ∆⍀MINPEN2
+[245]             MAXPEN2←   ∆⍀MAXPEN2
+[246]             PENADJ2←   ∆⍀PENADJ2
+[247]             lrPENADJ2← ∆⍀lrPENADJ2
+[248]             DeductTier12←∆⍀DeductTier12
+[249]     ⍝⍝⍝        DeductTier22←∆⍀DeductTier22
+[250]             m_PPFADJ2← ∆⍀m_PPFADJ2
+[251]             lrm_PPFADJ2←∆⍀lrm_PPFADJ2
+[252]             f_PPFADJ2← ∆⍀f_PPFADJ2
+[253]             lrf_PPFADJ2←∆⍀lrf_PPFADJ2
+[254] 
+[255]             SALCOD3←   ∆⍀SALCOD3
+[256]             ACCMLT3←   ∆⍀ACCMLT3
+[257]             ACCDIV3←   ∆⍀ACCDIV3
+[258]             ACCDATA3←  ∆⍀ACCDATA3
+[259]             ASTAB3←    ∆⍀ASTAB3
+[260]             ARTAB3←    ∆⍀ARTAB3
+[261]             SRATAB3←   ∆⍀SRATAB3
+[262]             FIXPEN3←   ∆⍀FIXPEN3
+[263]             MINPEN3←   ∆⍀MINPEN3
+[264]             MAXPEN3←   ∆⍀MAXPEN3
+[265]             PENADJ3←   ∆⍀PENADJ3
+[266]             lrPENADJ3← ∆⍀lrPENADJ3
+[267]             DeductTier13←∆⍀DeductTier13
+[268]             DeductTier23←∆⍀DeductTier23
+[269]             m_PPFADJ3← ∆⍀m_PPFADJ3
+[270]             lrm_PPFADJ3←∆⍀lrm_PPFADJ3
+[271]             f_PPFADJ3← ∆⍀f_PPFADJ3
+[272]             lrf_PPFADJ3←∆⍀lrf_PPFADJ3
+[273]         :endif
+[274]     :endif
+[275] 
+[276]     SLICEDESC      ASSIGN∆Dict 'SliceDesc[Sliceput;]'
+[277]     stdate         ASSIGN∆Dict 'STDATE[Sliceput;]'
+[278]     lrstdate       ASSIGN∆Dict 'lrSTDATE[Sliceput;]'
+[279]     minsdat        ASSIGN∆Dict 'MINSDAT[Sliceput;]'
+[280]     fndate         ASSIGN∆Dict 'FNDATE[Sliceput;]'
+[281]     lrfndate       ASSIGN∆Dict 'lrFNDATE[Sliceput;]'
+[282]     maxfdat        ASSIGN∆Dict 'MAXFDAT[Sliceput;]'
+[283]     sERVrND        ASSIGN∆Dict 'SERVRND[Sliceput;]'
+[284]     addyrs         ASSIGN∆Dict 'ADDYRS[Sliceput;]'
+[285]     servindm       ASSIGN∆Dict 'SERVINDM[Sliceput;]'
+[286]     revdefind      ASSIGN∆Dict 'REVDEFIND[Sliceput;]'
+[287]     dynind         ASSIGN∆Dict 'DYNIND[Sliceput;]'
+[288]     irind          ASSIGN∆Dict 'IRIND[Sliceput;]'
+[289]     upinslind      ASSIGN∆Dict 'UPINSLIND[Sliceput;]'
+[290]     accbasis       ASSIGN∆Dict 'ACCBASIS[Sliceput;]'
+[291]     barbind        ASSIGN∆Dict 'BARBIND[Sliceput;]'
+[292]     careinc        ASSIGN∆Dict 'CAREInc[Sliceput;]'
+[293]     warfrac2       ASSIGN∆Dict 'WARFRAC2[Sliceput;]'
+[294]     tier2defined   ASSIGN∆Dict 'Tier2Defined[Sliceput;]'
+[295]     tier3defined   ASSIGN∆Dict 'Tier3Defined[Sliceput;]'
+[296]     m_ppfnra       ASSIGN∆Dict 'm_PPFNRA[Sliceput;]'
+[297]     f_ppfnra       ASSIGN∆Dict 'f_PPFNRA[Sliceput;]'
+[298]     ppfpayinca     ASSIGN∆Dict 'PPFPAYINCA[Sliceput;]'
+[299] 
+[300]     TIERSAL[1;]    ASSIGN∆Dict 'SALCOD1[Sliceput;]'
+[301]     accmlt[1;]     ASSIGN∆Dict 'ACCMLT1[Sliceput;]'
+[302]     accdiv[1;]     ASSIGN∆Dict 'ACCDIV1[Sliceput;]'
+[303]     accdata[1;]    ASSIGN∆Dict 'ACCDATA1[Sliceput;]'
+[304]     ((DLTB SERVICETAB[1;]),(∨/SERVICETAB[1;]≠' ')/' - ',DLTB lrSERVICETAB1) ASSIGN∆Dict 'ASTAB1[Sliceput;]'
+[305]     ((DLTB ACCRUALTAB[1;]),(∨/ACCRUALTAB[1;]≠' ')/' - ',DLTB lrACCRUALTAB1) ASSIGN∆Dict 'ARTAB1[Sliceput;]'
+[306]     ((DLTB sratab[1;]    ),(∨/sratab[1;]    ≠' ')/' - ',DLTB lrsratab1    ) ASSIGN∆Dict 'SRATAB1[Sliceput;]'
+[307]     FIXED[1;]      ASSIGN∆Dict 'FIXPEN1[Sliceput;]'
+[308]     minpen[1;]     ASSIGN∆Dict 'MINPEN1[Sliceput;]'
+[309]     maxpen[1;]     ASSIGN∆Dict 'MAXPEN1[Sliceput;]'
+[310]     penadj[1;]     ASSIGN∆Dict 'PENADJ1[Sliceput;]'
+[311]     lrpenadj1      ASSIGN∆Dict 'lrPENADJ1[Sliceput;]'
+[312] ⍝⍝⍝    DEDUCTTIER1[1;] ASSIGN∆Dict 'DeductTier11[Sliceput;]'
+[313] ⍝⍝⍝    DEDUCTTIER2[1;] ASSIGN∆Dict 'DeductTier21[Sliceput;]'
+[314]     m_ppfadj[1;]   ASSIGN∆Dict 'm_PPFADJ1[Sliceput;]'
+[315]     lrm_ppfadj1    ASSIGN∆Dict 'lrm_PPFADJ1[Sliceput;]'
+[316]     f_ppfadj[1;]   ASSIGN∆Dict 'f_PPFADJ1[Sliceput;]'
+[317]     lrf_ppfadj1    ASSIGN∆Dict 'lrf_PPFADJ1[Sliceput;]'
+[318] 
+[319]     TIERSAL[2;]    ASSIGN∆Dict 'SALCOD2[Sliceput;]'
+[320]     accmlt[2;]     ASSIGN∆Dict 'ACCMLT2[Sliceput;]'
+[321]     accdiv[2;]     ASSIGN∆Dict 'ACCDIV2[Sliceput;]'
+[322]     accdata[2;]    ASSIGN∆Dict 'ACCDATA2[Sliceput;]'
+[323]     ((DLTB SERVICETAB[2;]),(∨/SERVICETAB[2;]≠' ')/' - ',DLTB lrSERVICETAB2) ASSIGN∆Dict 'ASTAB2[Sliceput;]'
+[324]     ((DLTB ACCRUALTAB[2;]),(∨/ACCRUALTAB[2;]≠' ')/' - ',DLTB lrACCRUALTAB2) ASSIGN∆Dict 'ARTAB2[Sliceput;]'
+[325]     ((DLTB sratab[2;]    ),(∨/sratab[2;]    ≠' ')/' - ',DLTB lrsratab2    ) ASSIGN∆Dict 'SRATAB2[Sliceput;]'
+[326]     FIXED[2;]      ASSIGN∆Dict 'FIXPEN2[Sliceput;]'
+[327]     minpen[2;]     ASSIGN∆Dict 'MINPEN2[Sliceput;]'
+[328]     maxpen[2;]     ASSIGN∆Dict 'MAXPEN2[Sliceput;]'
+[329]     penadj[2;]     ASSIGN∆Dict 'PENADJ2[Sliceput;]'
+[330]     lrpenadj2      ASSIGN∆Dict 'lrPENADJ2[Sliceput;]'
+[331]     DEDUCTTIER1[2;]ASSIGN∆Dict 'DeductTier12[Sliceput;]'
+[332] ⍝⍝⍝    DEDUCTTIER2[2;] ASSIGN∆Dict 'DeductTier22[Sliceput;]'
+[333]     m_ppfadj[2;]   ASSIGN∆Dict 'm_PPFADJ2[Sliceput;]'
+[334]     lrm_ppfadj2    ASSIGN∆Dict 'lrm_PPFADJ2[Sliceput;]'
+[335]     f_ppfadj[2;]   ASSIGN∆Dict 'f_PPFADJ2[Sliceput;]'
+[336]     lrf_ppfadj2    ASSIGN∆Dict 'lrf_PPFADJ2[Sliceput;]'
+[337] 
+[338]     TIERSAL[3;]    ASSIGN∆Dict 'SALCOD3[Sliceput;]'
+[339]     accmlt[3;]     ASSIGN∆Dict 'ACCMLT3[Sliceput;]'
+[340]     accdiv[3;]     ASSIGN∆Dict 'ACCDIV3[Sliceput;]'
+[341]     accdata[3;]    ASSIGN∆Dict 'ACCDATA3[Sliceput;]'
+[342]     ((DLTB SERVICETAB[3;]),(∨/SERVICETAB[3;]≠' ')/' - ',DLTB lrSERVICETAB3) ASSIGN∆Dict 'ASTAB3[Sliceput;]'
+[343]     ((DLTB ACCRUALTAB[3;]),(∨/ACCRUALTAB[3;]≠' ')/' - ',DLTB lrACCRUALTAB3) ASSIGN∆Dict 'ARTAB3[Sliceput;]'
+[344]     ((DLTB sratab[3;]    ),(∨/sratab[3;]    ≠' ')/' - ',DLTB lrsratab3    ) ASSIGN∆Dict 'SRATAB3[Sliceput;]'
+[345]     FIXED[3;]      ASSIGN∆Dict 'FIXPEN3[Sliceput;]'
+[346]     minpen[3;]     ASSIGN∆Dict 'MINPEN3[Sliceput;]'
+[347]     maxpen[3;]     ASSIGN∆Dict 'MAXPEN3[Sliceput;]'
+[348]     penadj[3;]     ASSIGN∆Dict 'PENADJ3[Sliceput;]'
+[349]     lrpenadj3      ASSIGN∆Dict 'lrPENADJ3[Sliceput;]'
+[350]     DEDUCTTIER1[3;]ASSIGN∆Dict 'DeductTier13[Sliceput;]'
+[351]     DEDUCTTIER2[3;]ASSIGN∆Dict 'DeductTier23[Sliceput;]'
+[352]     m_ppfadj[3;]   ASSIGN∆Dict 'm_PPFADJ3[Sliceput;]'
+[353]     lrm_ppfadj3    ASSIGN∆Dict 'lrm_PPFADJ3[Sliceput;]'
+[354]     f_ppfadj[3;]   ASSIGN∆Dict 'f_PPFADJ3[Sliceput;]'
+[355]     lrf_ppfadj3    ASSIGN∆Dict 'lrf_PPFADJ3[Sliceput;]'
+[356] :endif
+    ∇

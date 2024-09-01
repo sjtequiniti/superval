@@ -1,1 +1,75 @@
-    ∇ ⍙⍙msk←HPC_HTTPMonitor ⍙⍙allmsk;⍙⍙recn;⍙⍙CurrentRec;⍙⍙rundesc;ClassID;SelSex;basisDesc;ScenarioDesc;⍙⍙tid;⍙⍙tab;⍙⍙END;⍙⍙TotMemb;⍙⍙Memb;⍙⍙currentRec;⍙⍙START;⍙⍙drop;⍙⍙response;⍙⍙wid;∆;completed[1]   ⍝ HPCWIN.sf#5[2]   ⍝ Process the Finalisation of sub-process Valuation run in APL COM Object[3]   [4]   ⍙⍙TotMemb←+/(⍙⍙SubProcTab at 'EndRec')-¯1+⍙⍙SubProcTab at 'StartRec'[5]   [6]   :repeat[7]       :for ⍙⍙msk :in ⍙⍙allmsk[8]           (⍙⍙rundesc ⍙⍙tid)←(⍙⍙SubProcTab for ⍙⍙msk) at 'RunDesc' 'HTTPtid'[9]   ⍝⍝⍝        (⍙⍙CurrentRec ⍙⍙repeats)←⍙⍙SubProcTab at 'CurrentRec' 'Repeats'[10]          ⍙⍙CurrentRec←⍙⍙SubProcTab at 'CurrentRec'[11]  [12]          :repeat[13]          :until ~mt ⍙⍙drop←WHERE ∨/¨(⊂'TID,RCVD,WID')⍷¨⍙⍙response←eis 5 BrokerRequest 'sta?tid=',' ' join ⍙⍙tid[14]          ⍙⍙tab←⊃',' partition¨⍙⍙drop↓⍙⍙response[15]          ⍙⍙tab←(⍙⍙tab for (⍙⍙tab at 'TID')∊⍙⍙tid) sortedBy 'TID'[16]          ⍙⍙wid←zwb¨⍙⍙tab at 'WID'[17]          ⍙⍙recn←zwb¨⍙⍙tab at 'NREC'[18]          ⍙⍙START←DLTB¨⍙⍙tab at 'STARTTS'[19]          ⍙⍙END←DLTB¨⍙⍙tab at 'ENDTS'[20]  ⍝⍝⍝        ⍙⍙headTID←zwb¨⍙⍙tab at 'HEADTID'[21]  ⍝⍝⍝        ⍙⍙PRIMARY←(⍙⍙Split=1)^1<+/ResultsCategoryID=⍙⍙SubProcTab at 'ResCatID'[22]  [23]          ⍙⍙currentRec←⍙⍙CurrentRec ⋄ (⍙⍙msk/⍙⍙CurrentRec)←⍙⍙recn[24]          ⍙⍙SubProcTab←⍙⍙SubProcTab amend 'CurrentRec' ⍙⍙CurrentRec[25]          ⍙⍙Memb←+/0⌈⍙⍙CurrentRec-¯1+⍙⍙SubProcTab at 'StartRec'[26]          (⍙⍙Memb ⍙⍙TotMemb) Win∆ProgressBar 'MemberUpdate'[27]  [28]  ⍝⍝⍝        :if ⍙⍙Split>1                                                                 ⍝ Secondary runs of a split[29]  ⍝⍝⍝            :if ~mt ⍙⍙END ⋄ :andif ⍙⍙headTID=0                                        ⍝ Split run that has been blended[30]  ⍝⍝⍝                :return[31]  ⍝⍝⍝            :else[32]  ⍝⍝⍝                :continue[33]  ⍝⍝⍝            :endif[34]  ⍝⍝⍝        :elseif ^/mt¨⍙⍙START                                                          ⍝ ⍙⍙START is empty when unstarted[35]          :if ^/mt¨⍙⍙START                                                                 ⍝ ⍙⍙START is empty when unstarted[36]              :continue[37]          :elseif ^/~mt¨⍙⍙END                                                              ⍝ ⍙⍙END is non-empty when finished[38]              0 HPC_Finalisation ⍙⍙SubProcTab for ⍙⍙msk[39]              :return[40]          :elseif ∨/⍙⍙wid=1[41]  ⍝⍝⍝        :andif ∨/3=(⍙⍙msk/⍙⍙repeats)←((⍙⍙recn≠0)^⍙⍙recn=⍙⍙msk/⍙⍙currentRec)×1+⍙⍙msk/⍙⍙repeats ⍝ Increment ⍙⍙repeats by 1 if ⍙⍙recn has not changed (3 and run has failed)[42]  ⍝⍝⍝        :andif ~⍙⍙PRIMARY[43]  ⍝⍝⍝            VALN∆Errors←MATRIX ↑⍙⍙worker ⎕wi 'xVariable' 'VALN∆Errors'[44]  ⍝⍝⍝            :if ⍙⍙recn=0[45]  ⍝⍝⍝                (⍙⍙worker ⎕wi 'xVariable' 'errmsg') VALN∆LOG 'Error'[46]  ⍝⍝⍝            :endif[47]              (ClassID SelSex basisDesc ScenarioDesc)←(⍙⍙SubProcTab for ⍙⍙msk) at 'ClassID' 'SelSex' 'basisDesc' 'ScenarioDesc'[48]              :if ↑completed←^\∆←⍙⍙recn=zwb¨⍙⍙tab at 'R2'[49]                  1 HPC_Finalisation ⍙⍙SubProcTab for ⍙⍙msk×∆[50]              :else[51]                  VALN∆Errors←                 (MATRIX 'Valuation Error Report')⍪'='[52]  ⍝⍝⍝                VALN∆Errors←VALN∆Errors OVER 'Valuation Method:      ',ValName[53]  ⍝⍝⍝                VALN∆Errors←VALN∆Errors OVER 'Valuation File:        ',basisFile[54]                  VALN∆Errors←VALN∆Errors OVER 'Valuation Group:       ',↑⍙⍙rundesc[55]  ⍝⍝⍝                :if scenario[56]  ⍝⍝⍝                    VALN∆Errors←VALN∆Errors OVER 'Scenario Description:  ',ScenarioDesc[57]  ⍝⍝⍝                :endif[58]  ⍝⍝⍝                VALN∆Errors←VALN∆Errors OVER 'Valuation Sex:         ',SelSex[59]                  VALN∆Errors←VALN∆Errors OVER 'Valuation Run Time:    ',26↑DLTMB 1 DATESPELL ⎕ts[60]                  VALN∆Errors←VALN∆Errors⍪' '[61]              :endif[62]              ⍙⍙recn←↑(+/completed)↓⍙⍙recn[63]              ('ERROR:  Sub-Process Valuation Task for "',(↑⍙⍙rundesc),'" crashed during processing on Record Number ',⍕⍙⍙recn) VALN∆LOG 'Add'[64]              ∆←respace '∣%26∣&' TEXTREPL '∣%3d∣=' TEXTREPL ('∣/n∣',⎕tcnl) TEXTREPL ⎕tcnl join lmt ↑,/ ⍙⍙tab at 'ERROR1' 'ERROR2' 'ERROR3'[65]              ('ERROR:  Sub-Process Valuation Task errors for "',(↑⍙⍙rundesc),'" ',∆) VALN∆LOG 'Add'[66]  ⍝⍝⍝            (⍙⍙worker ⎕wi 'SysCall' '⎕dm') VALN∆LOG 'Add'[67]              AbortedRuns←AbortedRuns OVER (↑¨ClassID SelSex basisDesc ScenarioDesc),⊂'Valuation crashed in sub-Process'[68]              inerror←1[69]              :return[70]          :endif[71]      :endfor[72]      0 0⍴⎕dl 3                                                               ⍝ Delay before checking again[73]  :endrepeat    ∇
+    ∇ ⍙⍙msk←HPC_HTTPMonitor ⍙⍙allmsk;⍙⍙recn;⍙⍙CurrentRec;⍙⍙rundesc;ClassID;SelSex;basisDesc;ScenarioDesc;⍙⍙tid;⍙⍙tab;⍙⍙END;⍙⍙TotMemb;⍙⍙Memb;⍙⍙currentRec;⍙⍙START;⍙⍙drop;⍙⍙response;⍙⍙wid;∆;completed
+[1]   ⍝ HPCWIN.sf#5
+[2]   ⍝ Process the Finalisation of sub-process Valuation run in APL COM Object
+[3]   
+[4]   ⍙⍙TotMemb←+/(⍙⍙SubProcTab at 'EndRec')-¯1+⍙⍙SubProcTab at 'StartRec'
+[5]   
+[6]   :repeat
+[7]       :for ⍙⍙msk :in ⍙⍙allmsk
+[8]           (⍙⍙rundesc ⍙⍙tid)←(⍙⍙SubProcTab for ⍙⍙msk) at 'RunDesc' 'HTTPtid'
+[9]   ⍝⍝⍝        (⍙⍙CurrentRec ⍙⍙repeats)←⍙⍙SubProcTab at 'CurrentRec' 'Repeats'
+[10]          ⍙⍙CurrentRec←⍙⍙SubProcTab at 'CurrentRec'
+[11]  
+[12]          :repeat
+[13]          :until ~mt ⍙⍙drop←WHERE ∨/¨(⊂'TID,RCVD,WID')⍷¨⍙⍙response←eis 5 BrokerRequest 'sta?tid=',' ' join ⍙⍙tid
+[14]          ⍙⍙tab←⊃',' partition¨⍙⍙drop↓⍙⍙response
+[15]          ⍙⍙tab←(⍙⍙tab for (⍙⍙tab at 'TID')∊⍙⍙tid) sortedBy 'TID'
+[16]          ⍙⍙wid←zwb¨⍙⍙tab at 'WID'
+[17]          ⍙⍙recn←zwb¨⍙⍙tab at 'NREC'
+[18]          ⍙⍙START←DLTB¨⍙⍙tab at 'STARTTS'
+[19]          ⍙⍙END←DLTB¨⍙⍙tab at 'ENDTS'
+[20]  ⍝⍝⍝        ⍙⍙headTID←zwb¨⍙⍙tab at 'HEADTID'
+[21]  ⍝⍝⍝        ⍙⍙PRIMARY←(⍙⍙Split=1)^1<+/ResultsCategoryID=⍙⍙SubProcTab at 'ResCatID'
+[22]  
+[23]          ⍙⍙currentRec←⍙⍙CurrentRec ⋄ (⍙⍙msk/⍙⍙CurrentRec)←⍙⍙recn
+[24]          ⍙⍙SubProcTab←⍙⍙SubProcTab amend 'CurrentRec' ⍙⍙CurrentRec
+[25]          ⍙⍙Memb←+/0⌈⍙⍙CurrentRec-¯1+⍙⍙SubProcTab at 'StartRec'
+[26]          (⍙⍙Memb ⍙⍙TotMemb) Win∆ProgressBar 'MemberUpdate'
+[27]  
+[28]  ⍝⍝⍝        :if ⍙⍙Split>1                                                                 ⍝ Secondary runs of a split
+[29]  ⍝⍝⍝            :if ~mt ⍙⍙END ⋄ :andif ⍙⍙headTID=0                                        ⍝ Split run that has been blended
+[30]  ⍝⍝⍝                :return
+[31]  ⍝⍝⍝            :else
+[32]  ⍝⍝⍝                :continue
+[33]  ⍝⍝⍝            :endif
+[34]  ⍝⍝⍝        :elseif ^/mt¨⍙⍙START                                                          ⍝ ⍙⍙START is empty when unstarted
+[35]          :if ^/mt¨⍙⍙START                                                                 ⍝ ⍙⍙START is empty when unstarted
+[36]              :continue
+[37]          :elseif ^/~mt¨⍙⍙END                                                              ⍝ ⍙⍙END is non-empty when finished
+[38]              0 HPC_Finalisation ⍙⍙SubProcTab for ⍙⍙msk
+[39]              :return
+[40]          :elseif ∨/⍙⍙wid=1
+[41]  ⍝⍝⍝        :andif ∨/3=(⍙⍙msk/⍙⍙repeats)←((⍙⍙recn≠0)^⍙⍙recn=⍙⍙msk/⍙⍙currentRec)×1+⍙⍙msk/⍙⍙repeats ⍝ Increment ⍙⍙repeats by 1 if ⍙⍙recn has not changed (3 and run has failed)
+[42]  ⍝⍝⍝        :andif ~⍙⍙PRIMARY
+[43]  ⍝⍝⍝            VALN∆Errors←MATRIX ↑⍙⍙worker ⎕wi 'xVariable' 'VALN∆Errors'
+[44]  ⍝⍝⍝            :if ⍙⍙recn=0
+[45]  ⍝⍝⍝                (⍙⍙worker ⎕wi 'xVariable' 'errmsg') VALN∆LOG 'Error'
+[46]  ⍝⍝⍝            :endif
+[47]              (ClassID SelSex basisDesc ScenarioDesc)←(⍙⍙SubProcTab for ⍙⍙msk) at 'ClassID' 'SelSex' 'basisDesc' 'ScenarioDesc'
+[48]              :if ↑completed←^\∆←⍙⍙recn=zwb¨⍙⍙tab at 'R2'
+[49]                  1 HPC_Finalisation ⍙⍙SubProcTab for ⍙⍙msk×∆
+[50]              :else
+[51]                  VALN∆Errors←                 (MATRIX 'Valuation Error Report')⍪'='
+[52]  ⍝⍝⍝                VALN∆Errors←VALN∆Errors OVER 'Valuation Method:      ',ValName
+[53]  ⍝⍝⍝                VALN∆Errors←VALN∆Errors OVER 'Valuation File:        ',basisFile
+[54]                  VALN∆Errors←VALN∆Errors OVER 'Valuation Group:       ',↑⍙⍙rundesc
+[55]  ⍝⍝⍝                :if scenario
+[56]  ⍝⍝⍝                    VALN∆Errors←VALN∆Errors OVER 'Scenario Description:  ',ScenarioDesc
+[57]  ⍝⍝⍝                :endif
+[58]  ⍝⍝⍝                VALN∆Errors←VALN∆Errors OVER 'Valuation Sex:         ',SelSex
+[59]                  VALN∆Errors←VALN∆Errors OVER 'Valuation Run Time:    ',26↑DLTMB 1 DATESPELL ⎕ts
+[60]                  VALN∆Errors←VALN∆Errors⍪' '
+[61]              :endif
+[62]              ⍙⍙recn←↑(+/completed)↓⍙⍙recn
+[63]              ('ERROR:  Sub-Process Valuation Task for "',(↑⍙⍙rundesc),'" crashed during processing on Record Number ',⍕⍙⍙recn) VALN∆LOG 'Add'
+[64]              ∆←respace '∣%26∣&' TEXTREPL '∣%3d∣=' TEXTREPL ('∣/n∣',⎕tcnl) TEXTREPL ⎕tcnl join lmt ↑,/ ⍙⍙tab at 'ERROR1' 'ERROR2' 'ERROR3'
+[65]              ('ERROR:  Sub-Process Valuation Task errors for "',(↑⍙⍙rundesc),'" ',∆) VALN∆LOG 'Add'
+[66]  ⍝⍝⍝            (⍙⍙worker ⎕wi 'SysCall' '⎕dm') VALN∆LOG 'Add'
+[67]              AbortedRuns←AbortedRuns OVER (↑¨ClassID SelSex basisDesc ScenarioDesc),⊂'Valuation crashed in sub-Process'
+[68]              inerror←1
+[69]              :return
+[70]          :endif
+[71]      :endfor
+[72]      0 0⍴⎕dl 3                                                               ⍝ Delay before checking again
+[73]  :endrepeat
+    ∇

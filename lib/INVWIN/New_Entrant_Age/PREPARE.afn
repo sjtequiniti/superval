@@ -1,1 +1,56 @@
-    ∇ PREPARE;penind;Desc[1]   ⍝ INVWIN.sf#5[2]   ⍝ Prepare function - sets up required global variables, creates output[3]   ⍝  file and header[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   ('Current File:' 'Current Member Number:') Win∆ProgressBar 'SetLabels'[8]   'Running New Entrant Age Investigation' Win∆ProgressBar 'Open'[9]   [10]  tpr1←OPEN∆TPR∆FILE 'NEINV' ⍝ Open Output File[11]  0 0⍴(SystemDir,'HEADERS') ReadFile 'New_Entrant_Age' ⍝ Info in header[12]  H1←((¯1↑⍴H1) WRITE∆HEAD 'NEW ENTRANT AGE INVESTIGATION') OVER H1[13]  tieno←'Native' TieNumber ''[14]  [15]  RunTime←DLTMB 1 DATESPELL ⎕ts[16]  Format←1 HyphenSwap Format[17]  SUMMREC←3 0↓rUNDESC←ClientFile NEINV_RunDesc SaveCN[18]  DPAGE←1↑(¯4 0↓H1) OUTPUT tpr1,0[19]  [20]  Convert_Vars ⍝ Windows Data Conversion[21]  H1[3;5+⍳127]←127↑desc ⋄ H1[4;38+⍳22]←22↑'Date Joined ',servind[22]  H1[4;(81+⍳17),114+⍳17]←(17↑2 DATESPELL⌽BDATE),17↑2 DATESPELL⌽EDATE[23]  H1[5;22+⍳110]←110↑Desc←DecrDescription TABXX[24]  [25]  SUMMREC←(TABXX Desc) DecrPrint TABLE←DEC∆CHECK TABXX[26]  DPAGE←1↑(¯4 0↓H1) OUTPUT tpr1,DPAGE[27]  [28]  ⍝ Non-Standard Data Conversion[29]  servind←'FS'[×uk]=1↑servind ⋄ AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP[30]  TABLE←AGES↑BAGE↓TABLE ⋄ RESsave←zwb save[31]  desc←desc,DLTMB ' - New Entrants between ',(SDATE BDATE),' and ',SDATE EDATE[32]  BDATE←JUL BDATE ⋄ EDATE←JUL EDATE ⋄ Active←FormatType≡'Act'[33]  [34]  :if 'Act'≡FormatType ⍝ Use Active or Pensioner variables as requested[35]      DFDJF←(servind/dfDJF),(~servind)/dfDJS ⍝ Date joined Fund (Scheme) or Service (Company) as required[36]      FDJF←(servind/fDJF),(~servind)/fDJS ⋄ FNOM←fNOM ⋄ DFDOB←dfDOB ⋄ FDOB←fDOB[37]  [38]  :elseif uk=1 ⋄ :andif 'Def'≡FormatType[39]      H1[4;38+⍳22]←22↑'Leaving Service Date'[40]      DFDJF←dfLD ⋄ FDJF←fLD ⋄ FNOM←fNOM ⋄ DFDOB←dfDOB ⋄ FDOB←fDOB[41]  [42]  :elseif uk=1 ⋄ :andif 'Pen'≡FormatType[43]      H1[4;38+⍳22]←22↑'Date Pension Commenced'[44]      DFDJF←dfDPC ⋄ FDJF←fDPC ⋄ FNOM←fNOM ⋄ DFDOB←dfDOB ⋄ FDOB←fDOB[45]  [46]  :else[47]      penind←FormatType≡'Pen' ⍝ Use Deferred or Pensioner vars as requested[48]      FDJF←(penind/fDPC),(~penind)/fLD ⋄ DFDJF←(penind/dfDPC),(~penind)/dfLD[49]      H1[4;38+⍳22]←22↑(penind/'Date Pension Commenced'),'Leaving Service Date'[50]      FNOM←⍳0 ⋄ DFDOB←dfPDOB ⋄ FDOB←fPDOB[51]  [52]  :endif[53]  [54]  GMAT← 105 1 ⍴N←0 ⋄ SUMMREC←' '    ∇
+    ∇ PREPARE;penind;Desc
+[1]   ⍝ INVWIN.sf#5
+[2]   ⍝ Prepare function - sets up required global variables, creates output
+[3]   ⍝  file and header
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ('Current File:' 'Current Member Number:') Win∆ProgressBar 'SetLabels'
+[8]   'Running New Entrant Age Investigation' Win∆ProgressBar 'Open'
+[9]   
+[10]  tpr1←OPEN∆TPR∆FILE 'NEINV' ⍝ Open Output File
+[11]  0 0⍴(SystemDir,'HEADERS') ReadFile 'New_Entrant_Age' ⍝ Info in header
+[12]  H1←((¯1↑⍴H1) WRITE∆HEAD 'NEW ENTRANT AGE INVESTIGATION') OVER H1
+[13]  tieno←'Native' TieNumber ''
+[14]  
+[15]  RunTime←DLTMB 1 DATESPELL ⎕ts
+[16]  Format←1 HyphenSwap Format
+[17]  SUMMREC←3 0↓rUNDESC←ClientFile NEINV_RunDesc SaveCN
+[18]  DPAGE←1↑(¯4 0↓H1) OUTPUT tpr1,0
+[19]  
+[20]  Convert_Vars ⍝ Windows Data Conversion
+[21]  H1[3;5+⍳127]←127↑desc ⋄ H1[4;38+⍳22]←22↑'Date Joined ',servind
+[22]  H1[4;(81+⍳17),114+⍳17]←(17↑2 DATESPELL⌽BDATE),17↑2 DATESPELL⌽EDATE
+[23]  H1[5;22+⍳110]←110↑Desc←DecrDescription TABXX
+[24]  
+[25]  SUMMREC←(TABXX Desc) DecrPrint TABLE←DEC∆CHECK TABXX
+[26]  DPAGE←1↑(¯4 0↓H1) OUTPUT tpr1,DPAGE
+[27]  
+[28]  ⍝ Non-Standard Data Conversion
+[29]  servind←'FS'[×uk]=1↑servind ⋄ AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP
+[30]  TABLE←AGES↑BAGE↓TABLE ⋄ RESsave←zwb save
+[31]  desc←desc,DLTMB ' - New Entrants between ',(SDATE BDATE),' and ',SDATE EDATE
+[32]  BDATE←JUL BDATE ⋄ EDATE←JUL EDATE ⋄ Active←FormatType≡'Act'
+[33]  
+[34]  :if 'Act'≡FormatType ⍝ Use Active or Pensioner variables as requested
+[35]      DFDJF←(servind/dfDJF),(~servind)/dfDJS ⍝ Date joined Fund (Scheme) or Service (Company) as required
+[36]      FDJF←(servind/fDJF),(~servind)/fDJS ⋄ FNOM←fNOM ⋄ DFDOB←dfDOB ⋄ FDOB←fDOB
+[37]  
+[38]  :elseif uk=1 ⋄ :andif 'Def'≡FormatType
+[39]      H1[4;38+⍳22]←22↑'Leaving Service Date'
+[40]      DFDJF←dfLD ⋄ FDJF←fLD ⋄ FNOM←fNOM ⋄ DFDOB←dfDOB ⋄ FDOB←fDOB
+[41]  
+[42]  :elseif uk=1 ⋄ :andif 'Pen'≡FormatType
+[43]      H1[4;38+⍳22]←22↑'Date Pension Commenced'
+[44]      DFDJF←dfDPC ⋄ FDJF←fDPC ⋄ FNOM←fNOM ⋄ DFDOB←dfDOB ⋄ FDOB←fDOB
+[45]  
+[46]  :else
+[47]      penind←FormatType≡'Pen' ⍝ Use Deferred or Pensioner vars as requested
+[48]      FDJF←(penind/fDPC),(~penind)/fLD ⋄ DFDJF←(penind/dfDPC),(~penind)/dfLD
+[49]      H1[4;38+⍳22]←22↑(penind/'Date Pension Commenced'),'Leaving Service Date'
+[50]      FNOM←⍳0 ⋄ DFDOB←dfPDOB ⋄ FDOB←fPDOB
+[51]  
+[52]  :endif
+[53]  
+[54]  GMAT← 105 1 ⍴N←0 ⋄ SUMMREC←' '
+    ∇

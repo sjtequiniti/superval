@@ -1,1 +1,52 @@
-    ∇ res←Financials∆Valid SSlist;NameList;SSName;size;MaxRow;list;i;text;∆;rows[1]   ⍝ PARMWIN.sf#28[2]   ⍝ Validate the list of Grids[3]   [4]   NameList←0 0⍴res←0⍴''[5]   :for SSName :in SSlist[6]       :if Win∆F1SSFilled SSName[7]           size←↑⍴NameList[8]           MaxRow←SSName ⎕wi 'xMaxRow'[9]           NameList←NameList OVER list←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1[10]          :for i :in ⍳MaxRow ⍝ Check Variable Names are unique[11]              :if ~(,i+size)≡1↑NameList ExactTLU list[i;][12]                  res←MESS∆TRANS 'UniqueFinancial' (list[i;])[13]                  SSName ⎕wi 'xSetActiveCell' i 1[14]                  SSName ⎕wi 'xTopRow' i[15]                  Win∆SetFocus SSName ⋄ :return[16]              :endif[17]              :if 'ssFinConst'≡¯10↑SSName ⍝ Validation of Financial Constants in here[18]                  :if ~0∊⍴res←MESS∆TRANS VALID∆Variable DLTB list[i;] ⍝ Check Variable Names are valid!![19]                      SSName ⎕wi 'xSetActiveCell' i 1[20]                      Win∆SetFocus SSName ⋄ :return[21]                  :endif[22]              :else ⍝ Check for {} characters in the yield curve filename[23]                  text←⊃,SSName Win∆F1SSGetTextArray 1 2,MaxRow,1[24]                  :if ∨/i←∨/text∊'{}'[25]                      res←' Yield Curve filenames must not contain the "{}" characters'[26]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE i) 2[27]                      Win∆SetFocus SSName ⋄ :return[28]                  :elseif ∨/i←1<+/'.CSV'⍷UPPERCASE text[29]                      res←' Yield Curve filenames must not contain ".csv" (.csv extension only)'[30]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE i) 2[31]                      Win∆SetFocus SSName ⋄ :return[32]                  :elseif ∨/i←259<∊⍴¨(⊂YieldDir),¨m2n text[33]                      res←MESS∆TRANS 'FileNameTooLong' (';' join ↑m2n i⌿text)[34]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE i) 2[35]                      Win∆SetFocus SSName ⋄ :return[36]                  :elseif ∨/i←~^/¨⎕vi¨READTBL¨m2n text[37]                      res←' Yield Curve files must contain numeric values'[38]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE i) 2[39]                      Win∆SetFocus SSName ⋄ :return[40]                  :endif[41]                  :if ∨/rows←^/¨~mt¨¨text←⎕split SSName Win∆F1SSGetTextArray 1 3,MaxRow,2[42]                  :andif ∨/∆←</¨zwb¨¨rows/text[43]                      res←' Cap must be greater than Collar'[44]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE rows\∆) 3[45]                      Win∆SetFocus SSName ⋄ :return[46]                  :endif[47]              :endif[48]          :endfor[49]      :endif[50]  :endfor    ∇
+    ∇ res←Financials∆Valid SSlist;NameList;SSName;size;MaxRow;list;i;text;∆;rows
+[1]   ⍝ PARMWIN.sf#28
+[2]   ⍝ Validate the list of Grids
+[3]   
+[4]   NameList←0 0⍴res←0⍴''
+[5]   :for SSName :in SSlist
+[6]       :if Win∆F1SSFilled SSName
+[7]           size←↑⍴NameList
+[8]           MaxRow←SSName ⎕wi 'xMaxRow'
+[9]           NameList←NameList OVER list←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1
+[10]          :for i :in ⍳MaxRow ⍝ Check Variable Names are unique
+[11]              :if ~(,i+size)≡1↑NameList ExactTLU list[i;]
+[12]                  res←MESS∆TRANS 'UniqueFinancial' (list[i;])
+[13]                  SSName ⎕wi 'xSetActiveCell' i 1
+[14]                  SSName ⎕wi 'xTopRow' i
+[15]                  Win∆SetFocus SSName ⋄ :return
+[16]              :endif
+[17]              :if 'ssFinConst'≡¯10↑SSName ⍝ Validation of Financial Constants in here
+[18]                  :if ~0∊⍴res←MESS∆TRANS VALID∆Variable DLTB list[i;] ⍝ Check Variable Names are valid!!
+[19]                      SSName ⎕wi 'xSetActiveCell' i 1
+[20]                      Win∆SetFocus SSName ⋄ :return
+[21]                  :endif
+[22]              :else ⍝ Check for {} characters in the yield curve filename
+[23]                  text←⊃,SSName Win∆F1SSGetTextArray 1 2,MaxRow,1
+[24]                  :if ∨/i←∨/text∊'{}'
+[25]                      res←' Yield Curve filenames must not contain the "{}" characters'
+[26]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE i) 2
+[27]                      Win∆SetFocus SSName ⋄ :return
+[28]                  :elseif ∨/i←1<+/'.CSV'⍷UPPERCASE text
+[29]                      res←' Yield Curve filenames must not contain ".csv" (.csv extension only)'
+[30]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE i) 2
+[31]                      Win∆SetFocus SSName ⋄ :return
+[32]                  :elseif ∨/i←259<∊⍴¨(⊂YieldDir),¨m2n text
+[33]                      res←MESS∆TRANS 'FileNameTooLong' (';' join ↑m2n i⌿text)
+[34]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE i) 2
+[35]                      Win∆SetFocus SSName ⋄ :return
+[36]                  :elseif ∨/i←~^/¨⎕vi¨READTBL¨m2n text
+[37]                      res←' Yield Curve files must contain numeric values'
+[38]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE i) 2
+[39]                      Win∆SetFocus SSName ⋄ :return
+[40]                  :endif
+[41]                  :if ∨/rows←^/¨~mt¨¨text←⎕split SSName Win∆F1SSGetTextArray 1 3,MaxRow,2
+[42]                  :andif ∨/∆←</¨zwb¨¨rows/text
+[43]                      res←' Cap must be greater than Collar'
+[44]                      SSName ⎕wi 'xSetActiveCell' (↑WHERE rows\∆) 3
+[45]                      Win∆SetFocus SSName ⋄ :return
+[46]                  :endif
+[47]              :endif
+[48]          :endfor
+[49]      :endif
+[50]  :endfor
+    ∇

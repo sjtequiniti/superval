@@ -1,0 +1,28 @@
+    ∇ CFView←SVCF_Graph cashflows;bb;ppt;∆
+[1]   ⍝ QSMWIN.sf#7
+[2]   ⍝ Graph the Cash Flows
+[3]   
+[4]   (parent,'picCFGraph') ⎕wi 'visible' 1
+[5]   
+[6]   :if mt CFView←(parent,'picCFGraph') ⎕wi 'self'
+[7]       :return ⍝ Graph Control doesn't exist yet!!
+[8]   :endif
+[9]   psWipe parent,'picCFGraph'
+[10]  
+[11]  chSet 'HMargin' 60 36
+[12]  chSet 'Heading' 'Cash Flows'
+[13]  chSet 'HFont' 'tii,12,blue'
+[14]  chSet 'XCaption' 'Projection Year'
+[15]  chSet 'XLab' (⍕¨⍳maxyr)
+[16]  chSet 'YRange' (⌊/0,,cashflows),(⌈/0,1.1×,cashflows)
+[17]  chSet 'Style' 'lines,nomarkers'
+[18]  :for ∆ :in ⎕split cashflows
+[19]      chPlot ∆
+[20]  :endfor
+[21]  
+[22]  :if ~mt CFView←chClose
+[23]      bb←psReadHeader CFView '%%BoundingBox:' ⍝ Bounding Box
+[24]      ppt←.5+.×(((parent,'picCFGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+[25]      ps_exec CFView (parent,'picCFGraph') ppt ps∆cmap 1
+[26]  :endif
+    ∇

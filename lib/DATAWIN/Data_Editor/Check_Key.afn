@@ -1,1 +1,31 @@
-    ∇ Check_Key key;newpage;row;col[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Capture Keystrokes and "correct" movement[3]   ⍝⍝⍝ Up and Down Arrows don't seem to trigger the KeyDown event!![4]   [5]   (row col)←hSS ⎕wi 'GetActiveCell' 0 0[6]   [7]   :select key[8]   :case 40 0 ⍝ Down Arrow[9]       :if row≠RecsPerPage[MDEpage] ⋄ :return ⋄ :endif[10]      :if MaxPage<newpage←MDEpage+1 ⋄ newpage←1 ⋄ :endif[11]      row←1[12]  :case 38 0 ⍝ Up Arrow[13]      :if row≠1 ⋄ :return ⋄ :endif[14]      :if 0=newpage←MDEpage-1 ⋄ newpage←MaxPage ⋄ :endif[15]      row←999999[16]  :case 34 0 ⍝ Page Down[17]      :if MaxPage<newpage←MDEpage+1 ⋄ newpage←1 ⋄ :endif[18]  :case 33 0 ⍝ Page Up[19]      :if 0=newpage←MDEpage-1 ⋄ newpage←MaxPage ⋄ :endif[20]  :case 36 2 ⍝ Ctrl Home[21]      newpage←1 ⋄ row←1[22]  :case 35 2 ⍝ Ctrl End[23]      newpage←MaxPage ⋄ row←999999[24]  :else[25]      :return[26]  :endselect[27]  [28]  ⎕wres←0[29]  Data_Display newpage,row,col    ∇
+    ∇ Check_Key key;newpage;row;col
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Capture Keystrokes and "correct" movement
+[3]   ⍝⍝⍝ Up and Down Arrows don't seem to trigger the KeyDown event!!
+[4]   
+[5]   (row col)←hSS ⎕wi 'GetActiveCell' 0 0
+[6]   
+[7]   :select key
+[8]   :case 40 0 ⍝ Down Arrow
+[9]       :if row≠RecsPerPage[MDEpage] ⋄ :return ⋄ :endif
+[10]      :if MaxPage<newpage←MDEpage+1 ⋄ newpage←1 ⋄ :endif
+[11]      row←1
+[12]  :case 38 0 ⍝ Up Arrow
+[13]      :if row≠1 ⋄ :return ⋄ :endif
+[14]      :if 0=newpage←MDEpage-1 ⋄ newpage←MaxPage ⋄ :endif
+[15]      row←999999
+[16]  :case 34 0 ⍝ Page Down
+[17]      :if MaxPage<newpage←MDEpage+1 ⋄ newpage←1 ⋄ :endif
+[18]  :case 33 0 ⍝ Page Up
+[19]      :if 0=newpage←MDEpage-1 ⋄ newpage←MaxPage ⋄ :endif
+[20]  :case 36 2 ⍝ Ctrl Home
+[21]      newpage←1 ⋄ row←1
+[22]  :case 35 2 ⍝ Ctrl End
+[23]      newpage←MaxPage ⋄ row←999999
+[24]  :else
+[25]      :return
+[26]  :endselect
+[27]  
+[28]  ⎕wres←0
+[29]  Data_Display newpage,row,col
+    ∇

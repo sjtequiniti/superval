@@ -1,1 +1,71 @@
-    ∇ SRATAB∆Accrual;startterm;endterm;SERVNOMAX;termfrac;preterm;totterm;upLift;servstart;PREterm[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Calculate the Service Related Accrual[3]   [4]   testline←'d' ⋄ SERVNOMAX←999×~SERVINDM∆L[5]   startterm←0⌈'DN' DURN DOEQS,            STDATE∆L←STDATE∆L DATEMAX DOEQS[6]     endterm←0⌈'DN' DURN DOEQS,NRD DATEMIN FNDATE∆L←FNDATE∆L DATEMAX DOEQS[7]     totterm←0⌈'DN' DURN DOEQS,NRD DATEMIN           LDATE   DATEMAX DOEQS[8]   ⍝⍝⍝          capterm←↑startterm[9]   [10]  (IACC upLift)←IHSRVMAXMP SRATAB_Calc ITOTSRVM[11]  (IACC IACC_SRA_PSUniform)←IACC IACC_SRA_PSUniform+¨⊂upLift×IACC[12]  [13]  :if (DTOTSRVM DISSRVMAXMP)≡(ITOTSRVM IHSRVMAXMP)[14]      DACC←IACC ⋄ DACC_SRA_PSUniform←DACC_SRA_PSUniform+upLift×DACC÷1+upLift[15]  :else[16]      (DACC upLift)←DISSRVMAXMP SRATAB_Calc DTOTSRVM[17]      (DACC DACC_SRA_PSUniform)←DACC DACC_SRA_PSUniform+¨⊂upLift×DACC[18]  :endif[19]  [20]  :if (TOTSRVM SRVMAXMP)≡(DTOTSRVM DISSRVMAXMP)[21]      PreNRAACC←DACC ⋄ PreNRAACC_SRA_PSUniform←PreNRAACC_SRA_PSUniform+upLift×PreNRAACC÷1+upLift[22]  :else[23]      (PreNRAACC upLift)←SRVMAXMP SRATAB_Calc TOTSRVM[24]      (PreNRAACC PreNRAACC_SRA_PSUniform)←PreNRAACC PreNRAACC_SRA_PSUniform+¨⊂upLift×PreNRAACC[25]  :endif[26]  [27]  :if    (endterm←0⌈'DN' DURN DOEQS,FNDATE∆L)≡endterm[28]  :andif (totterm←0⌈'DN' DURN DOEQS,NRD DATEMIN LDATE DATEMAX DOEQS)≡totterm[29]      ACC←PreNRAACC ⋄ ACC_SRA_PSUniform←ACC_SRA_PSUniform+upLift×ACC÷1+upLift[30]  :else[31]      (ACC upLift)←((ENX_1↑SRVMAXMP),ENX↓SRVMAX) SRATAB_Calc TOTSRVM[32]      (ACC ACC_SRA_PSUniform)←ACC ACC_SRA_PSUniform+¨⊂upLift×ACC[33]  :endif[34]  [35]  :if slice=0[36]      :if AccMethod ⍝ Uniform Accrual[37]          ⍝ Subtract Past Service Uplift for Uniform Accrual from Future Service[38]               IACC←     IACC-     IACC_SRA_PSUniform ⋄ DACC←DACC-DACC_SRA_PSUniform[39]          PreNRAACC←PreNRAACC-PreNRAACC_SRA_PSUniform ⋄  ACC← ACC- ACC_SRA_PSUniform[40]      :elseif ~IsAccrued ⋄ :andif 1<NX-SNX ⍝ Non-Uniform Accrual of FS bit[41]          termfrac←startterm-⌊startterm←startterm⌊ TOTSRVM+SERVNOMAX[42]          servstart←(SRATAB∆L[⌊startterm]×1-termfrac)+termfrac×SRATAB∆L[⌈startterm][43]          termfrac←  preterm-⌊  preterm←  endterm⌊ TOTSRVM+SERVNOMAX[44]          termfrac←PREterm-⌊PREterm←(↑startterm),(MID ENX_1↑preterm),(1⌈ENX_1)↓preterm[45]  ⍝⍝⍝            :if ~AccMethod ⍝ Non-Uniform Accrual of FS bit[46]          ProRate∆l←(SRATAB∆L[⌊PREterm]×1-termfrac)+termfrac×SRATAB∆L[⌈PREterm][47]          ProRate∆l←ProRate∆l-(servstart-↑servstart) ⋄ ProRate∆l←ProRate∆l,(-(NX)≠1)↑ProRate∆l ⍝⍝⍝ -SNX???[48]          ProRate∆pp←0⌈(((ENX_1↑MID ProRate∆l),¯1↓ENX_1↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0][49]  ⍝⍝⍝            :elseif ~CapAccrual[50]  ⍝⍝⍝                ProRate∆l←preterm-(startterm-↑startterm) ⋄ ProRate∆l←ProRate∆l,(-(NX)≠1)↑ProRate∆l[51]  ⍝⍝⍝                ProRate∆pp←0⌈(((ENX_1↑MID ProRate∆l),¯1↓ENX_1↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0][52]  ⍝⍝⍝                ProRate∆l←capterm,(-(NX)≠1)↑capterm←(↑capterm),(MID 1↓ENX↑capterm),ENX↓capterm ⍝⍝⍝ -SNX???[53]  ⍝⍝⍝                ProRate∆pp←0⌈(((ENX_1↑MID ProRate∆l),¯1↓ENX_1↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)[54]  ⍝⍝⍝                ProRate∆pp←ProRate∆pp⌊[1]SRVMAXMP,¯1↑SRVMAXMP[55]  ⍝⍝⍝                ProRate∆pp←ProRate∆pp-ProRate∆pp[0;0][56]  ⍝⍝⍝            :endif[57]          :if ~AltFlag[58]              ProRate∆RServ←ProRate∆pp[59]              :if 0=LNX-SNX[60]                  ProRate∆IServ←ProRate∆DServ←ProRate∆pp[61]              :else[62]                  termfrac←PREterm-⌊PREterm←(↑startterm),(MID (ENX_1↑preterm),MID ENX_1↓(NX-SNX)↑preterm),(1⌈NX_1-SNX)↓preterm[63]                  ProRate∆l←(SRATAB∆L[⌊PREterm]×1-termfrac)+termfrac×SRATAB∆L[⌈PREterm][64]                  ProRate∆l←ProRate∆l-(servstart-↑servstart) ⋄ ProRate∆l←ProRate∆l,(-(NX)≠1)↑ProRate∆l ⍝⍝⍝ -SNX???[65]                  ProRate∆IServ←ProRate∆DServ←0⌈(((NX_1↑MID ProRate∆l),NX↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0][66]              :endif[67]          :endif[68]      :endif[69]  :endif    ∇
+    ∇ SRATAB∆Accrual;startterm;endterm;SERVNOMAX;termfrac;preterm;totterm;upLift;servstart;PREterm
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Calculate the Service Related Accrual
+[3]   
+[4]   testline←'d' ⋄ SERVNOMAX←999×~SERVINDM∆L
+[5]   startterm←0⌈'DN' DURN DOEQS,            STDATE∆L←STDATE∆L DATEMAX DOEQS
+[6]     endterm←0⌈'DN' DURN DOEQS,NRD DATEMIN FNDATE∆L←FNDATE∆L DATEMAX DOEQS
+[7]     totterm←0⌈'DN' DURN DOEQS,NRD DATEMIN           LDATE   DATEMAX DOEQS
+[8]   ⍝⍝⍝          capterm←↑startterm
+[9]   
+[10]  (IACC upLift)←IHSRVMAXMP SRATAB_Calc ITOTSRVM
+[11]  (IACC IACC_SRA_PSUniform)←IACC IACC_SRA_PSUniform+¨⊂upLift×IACC
+[12]  
+[13]  :if (DTOTSRVM DISSRVMAXMP)≡(ITOTSRVM IHSRVMAXMP)
+[14]      DACC←IACC ⋄ DACC_SRA_PSUniform←DACC_SRA_PSUniform+upLift×DACC÷1+upLift
+[15]  :else
+[16]      (DACC upLift)←DISSRVMAXMP SRATAB_Calc DTOTSRVM
+[17]      (DACC DACC_SRA_PSUniform)←DACC DACC_SRA_PSUniform+¨⊂upLift×DACC
+[18]  :endif
+[19]  
+[20]  :if (TOTSRVM SRVMAXMP)≡(DTOTSRVM DISSRVMAXMP)
+[21]      PreNRAACC←DACC ⋄ PreNRAACC_SRA_PSUniform←PreNRAACC_SRA_PSUniform+upLift×PreNRAACC÷1+upLift
+[22]  :else
+[23]      (PreNRAACC upLift)←SRVMAXMP SRATAB_Calc TOTSRVM
+[24]      (PreNRAACC PreNRAACC_SRA_PSUniform)←PreNRAACC PreNRAACC_SRA_PSUniform+¨⊂upLift×PreNRAACC
+[25]  :endif
+[26]  
+[27]  :if    (endterm←0⌈'DN' DURN DOEQS,FNDATE∆L)≡endterm
+[28]  :andif (totterm←0⌈'DN' DURN DOEQS,NRD DATEMIN LDATE DATEMAX DOEQS)≡totterm
+[29]      ACC←PreNRAACC ⋄ ACC_SRA_PSUniform←ACC_SRA_PSUniform+upLift×ACC÷1+upLift
+[30]  :else
+[31]      (ACC upLift)←((ENX_1↑SRVMAXMP),ENX↓SRVMAX) SRATAB_Calc TOTSRVM
+[32]      (ACC ACC_SRA_PSUniform)←ACC ACC_SRA_PSUniform+¨⊂upLift×ACC
+[33]  :endif
+[34]  
+[35]  :if slice=0
+[36]      :if AccMethod ⍝ Uniform Accrual
+[37]          ⍝ Subtract Past Service Uplift for Uniform Accrual from Future Service
+[38]               IACC←     IACC-     IACC_SRA_PSUniform ⋄ DACC←DACC-DACC_SRA_PSUniform
+[39]          PreNRAACC←PreNRAACC-PreNRAACC_SRA_PSUniform ⋄  ACC← ACC- ACC_SRA_PSUniform
+[40]      :elseif ~IsAccrued ⋄ :andif 1<NX-SNX ⍝ Non-Uniform Accrual of FS bit
+[41]          termfrac←startterm-⌊startterm←startterm⌊ TOTSRVM+SERVNOMAX
+[42]          servstart←(SRATAB∆L[⌊startterm]×1-termfrac)+termfrac×SRATAB∆L[⌈startterm]
+[43]          termfrac←  preterm-⌊  preterm←  endterm⌊ TOTSRVM+SERVNOMAX
+[44]          termfrac←PREterm-⌊PREterm←(↑startterm),(MID ENX_1↑preterm),(1⌈ENX_1)↓preterm
+[45]  ⍝⍝⍝            :if ~AccMethod ⍝ Non-Uniform Accrual of FS bit
+[46]          ProRate∆l←(SRATAB∆L[⌊PREterm]×1-termfrac)+termfrac×SRATAB∆L[⌈PREterm]
+[47]          ProRate∆l←ProRate∆l-(servstart-↑servstart) ⋄ ProRate∆l←ProRate∆l,(-(NX)≠1)↑ProRate∆l ⍝⍝⍝ -SNX???
+[48]          ProRate∆pp←0⌈(((ENX_1↑MID ProRate∆l),¯1↓ENX_1↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[49]  ⍝⍝⍝            :elseif ~CapAccrual
+[50]  ⍝⍝⍝                ProRate∆l←preterm-(startterm-↑startterm) ⋄ ProRate∆l←ProRate∆l,(-(NX)≠1)↑ProRate∆l
+[51]  ⍝⍝⍝                ProRate∆pp←0⌈(((ENX_1↑MID ProRate∆l),¯1↓ENX_1↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[52]  ⍝⍝⍝                ProRate∆l←capterm,(-(NX)≠1)↑capterm←(↑capterm),(MID 1↓ENX↑capterm),ENX↓capterm ⍝⍝⍝ -SNX???
+[53]  ⍝⍝⍝                ProRate∆pp←0⌈(((ENX_1↑MID ProRate∆l),¯1↓ENX_1↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)
+[54]  ⍝⍝⍝                ProRate∆pp←ProRate∆pp⌊[1]SRVMAXMP,¯1↑SRVMAXMP
+[55]  ⍝⍝⍝                ProRate∆pp←ProRate∆pp-ProRate∆pp[0;0]
+[56]  ⍝⍝⍝            :endif
+[57]          :if ~AltFlag
+[58]              ProRate∆RServ←ProRate∆pp
+[59]              :if 0=LNX-SNX
+[60]                  ProRate∆IServ←ProRate∆DServ←ProRate∆pp
+[61]              :else
+[62]                  termfrac←PREterm-⌊PREterm←(↑startterm),(MID (ENX_1↑preterm),MID ENX_1↓(NX-SNX)↑preterm),(1⌈NX_1-SNX)↓preterm
+[63]                  ProRate∆l←(SRATAB∆L[⌊PREterm]×1-termfrac)+termfrac×SRATAB∆L[⌈PREterm]
+[64]                  ProRate∆l←ProRate∆l-(servstart-↑servstart) ⋄ ProRate∆l←ProRate∆l,(-(NX)≠1)↑ProRate∆l ⍝⍝⍝ -SNX???
+[65]                  ProRate∆IServ←ProRate∆DServ←0⌈(((NX_1↑MID ProRate∆l),NX↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[66]              :endif
+[67]          :endif
+[68]      :endif
+[69]  :endif
+    ∇

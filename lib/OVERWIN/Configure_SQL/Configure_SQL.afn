@@ -1,1 +1,55 @@
-    ∇ res←field Configure_SQL parm;parent;SSName[1]   ⍝ OVERWIN.sf#30[2]   ⍝ Function to allow user control on SQL Server properties[3]   [4]   parent←'fmConfigSQL.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       :if mt property ⋄ property←'DSN' OVER 'Server' ⋄ propvalue←2 1⍴' ' ⋄ :endif[10]  [11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[12]      0 0⍴Configure_SQL 'Lock'[13]      ⍝ Make Apply button only active when Parameters saved[14]      parent ⎕wi 'onModified' ((parent ⎕wi 'onModified')," ⋄ ('Configure_SQL' 'fmConfigSQL.bnConfigure_SQLApply') Win∆SaveEnabled (0=⎕warg[1])")[15]  [16]  :case 'Lock'[17]      :if ~mt SSName←(parent,'ssSQLTable') ⎕wi 'self'[18]          SSName Win∆F1SSProtectCells (⊂1 1 2 1)[19]          SSName ⎕wi '∆fixed' (1 2)[20]      :endif[21]  [22]  :case 'Unlock'[23]      :if ~mt SSName←(parent,'ssSQLTable') ⎕wi 'self'[24]          SSName Win∆F1SSProtectCells 'Unlock'[25]      :endif[26]  [27]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[28]  [29]      :repeat[30]          :select ↑field[31]          :case 'cbSQLconnect'[32]              :select SQLconnect←DLTB (parent,'cbSQLconnect') ⎕wi 'text'[33]              :case 'Data Source Name'[34]                  :if ~'DSN'     ≡DLTB property[1;] ⋄ property←'DSN'      OVER 1 0↓property ⋄ propvalue←' '           OVER 1 0↓propvalue ⋄ :endif[35]              :case 'ODBC Driver'[36]                  :if ~'Driver'  ≡DLTB property[1;] ⋄ property←'Driver'   OVER 1 0↓property ⋄ propvalue←'MSODBCSQL13' OVER 1 0↓propvalue ⋄ :endif[37]              :case 'OLE DB Provider'[38]                  :if ~'Provider'≡DLTB property[1;] ⋄ property←'Provider' OVER 1 0↓property ⋄ propvalue←'SQLNCLI11'   OVER 1 0↓propvalue ⋄ :endif[39]              :endselect[40]              (parent,'cbSQLconnect') ⎕wi 'suppress' 1[41]              Assign_Inputs 1[42]              (parent,'cbSQLconnect') ⎕wi 'suppress' 0[43]          :endselect[44]      :until mt field←1↓field[45]  [46]  :case 'Valid' ⍝ Routine specific validation[47]  [48]  :case 'Run'[49]  [50]  :case 'Quit' ⍝ Deleting "other" variables[51]      0 0⍴⎕ex 'Users_tab'[52]  [53]  :endselect    ∇
+    ∇ res←field Configure_SQL parm;parent;SSName
+[1]   ⍝ OVERWIN.sf#30
+[2]   ⍝ Function to allow user control on SQL Server properties
+[3]   
+[4]   parent←'fmConfigSQL.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if mt property ⋄ property←'DSN' OVER 'Server' ⋄ propvalue←2 1⍴' ' ⋄ :endif
+[10]  
+[11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[12]      0 0⍴Configure_SQL 'Lock'
+[13]      ⍝ Make Apply button only active when Parameters saved
+[14]      parent ⎕wi 'onModified' ((parent ⎕wi 'onModified')," ⋄ ('Configure_SQL' 'fmConfigSQL.bnConfigure_SQLApply') Win∆SaveEnabled (0=⎕warg[1])")
+[15]  
+[16]  :case 'Lock'
+[17]      :if ~mt SSName←(parent,'ssSQLTable') ⎕wi 'self'
+[18]          SSName Win∆F1SSProtectCells (⊂1 1 2 1)
+[19]          SSName ⎕wi '∆fixed' (1 2)
+[20]      :endif
+[21]  
+[22]  :case 'Unlock'
+[23]      :if ~mt SSName←(parent,'ssSQLTable') ⎕wi 'self'
+[24]          SSName Win∆F1SSProtectCells 'Unlock'
+[25]      :endif
+[26]  
+[27]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[28]  
+[29]      :repeat
+[30]          :select ↑field
+[31]          :case 'cbSQLconnect'
+[32]              :select SQLconnect←DLTB (parent,'cbSQLconnect') ⎕wi 'text'
+[33]              :case 'Data Source Name'
+[34]                  :if ~'DSN'     ≡DLTB property[1;] ⋄ property←'DSN'      OVER 1 0↓property ⋄ propvalue←' '           OVER 1 0↓propvalue ⋄ :endif
+[35]              :case 'ODBC Driver'
+[36]                  :if ~'Driver'  ≡DLTB property[1;] ⋄ property←'Driver'   OVER 1 0↓property ⋄ propvalue←'MSODBCSQL13' OVER 1 0↓propvalue ⋄ :endif
+[37]              :case 'OLE DB Provider'
+[38]                  :if ~'Provider'≡DLTB property[1;] ⋄ property←'Provider' OVER 1 0↓property ⋄ propvalue←'SQLNCLI11'   OVER 1 0↓propvalue ⋄ :endif
+[39]              :endselect
+[40]              (parent,'cbSQLconnect') ⎕wi 'suppress' 1
+[41]              Assign_Inputs 1
+[42]              (parent,'cbSQLconnect') ⎕wi 'suppress' 0
+[43]          :endselect
+[44]      :until mt field←1↓field
+[45]  
+[46]  :case 'Valid' ⍝ Routine specific validation
+[47]  
+[48]  :case 'Run'
+[49]  
+[50]  :case 'Quit' ⍝ Deleting "other" variables
+[51]      0 0⍴⎕ex 'Users_tab'
+[52]  
+[53]  :endselect
+    ∇

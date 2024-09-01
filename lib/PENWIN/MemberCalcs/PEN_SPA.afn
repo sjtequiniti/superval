@@ -1,1 +1,27 @@
-    ∇ PEN∆SPA;ct;def;gmpSPA;netpup;Age;defVD[1]   ⍝ PENWIN.sf#3[2]   ⍝ Only calculates values for those Pensions that are to be adjusted[3]   [4]   defVD←DEF⌈BAGE-X0 ⋄ gmpSPA←(⍴gmpVD)⍴0 ⋄ netpup←(1,No∆Pens)⍴0[5]   [6]   :for ct :in ⍳No∆Pens[7]       :if ~GMPADJ[ct] ⋄ :orif REVind[ct] ⋄ :orif 0=ANP[ct] ⋄ :continue ⋄ :endif[8]   [9]       gmpSPA[;ct]←gmpVD[;ct]×0<def←defVD[ct] ⍝ GMP and Balance may have different revaluation if deferment[10]  [11]      netpup[;ct]←(ANP[ct]×ADJ[ct])-+/gmpSPA[;ct][12]          memtot[ToSPA;ct]←                         netpup[;ct] ×     allpvmdefSY[def;ct]                                              ×              allpvmSY [ToSPA;ct] CDIV allpvmSY[def;ct][13]           sptot[     ;ct]←                 REV[ct]×netpup[;ct] ×(def↑allpvmdef  [   ;ct]),((def↓ToSPA↑allpvm[;ct]),allpvmSY[ToSPA;ct])×(1+ToSPA-def)⍴allpvmdefSY[def;ct] CDIV allpvmSY[def;ct][14]  [15]      :if 0≠+/gmpSPA[;ct][16]          memtot[ToSPA;ct]←memtot[ToSPA;ct]+        (+/gmpSPA[;ct])×     gmprevdefSY[def   ]                                              ×              allpvmSY [ToSPA;ct] CDIV allpvmSY[def;ct][17]           sptot[     ;ct]← sptot[     ;ct]+REV[ct]×(+/gmpSPA[;ct])×(def↑gmprevdef          ),((def↓ToSPA↑allpvm[;ct]),allpvmSY[ToSPA;ct])×(1+ToSPA-def)⍴gmprevdefSY[def   ] CDIV allpvmSY[def;ct][18]      :endif[19]  :endfor[20]  [21]  ⍝⍀⍝ Age←X0+⍳1+ToSPA[22]  ⍝⍀⍝ '' 'Calculated PUP at Start Age' FOURDIT 'Age GMPADJ REVind DEF BAGE X0 defVD'[23]  ⍝⍀⍝ '' 'Calculated PUP at Start Age'FOURDIT  'gmpVD gmpSPA← ANP ADJ netpup← allpvmdefSY[⍳1+ToSPA;] allpvmdef[⍳1+ToSPA;] allpvmSY[⍳1+ToSPA;] allpvm[⍳1+ToSPA;] gmprevdefSY[⍳1+⌈/defVD] gmprevdef[⍳1+⌈/defVD] memtot← REV sptot←'[24]  ⍝⍀⍝ flds←flds,⊂'Total Members before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd +/memtot[25]  ⍝⍀⍝ flds←flds,⊂'Total Spouses before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd +/sptot    ∇
+    ∇ PEN∆SPA;ct;def;gmpSPA;netpup;Age;defVD
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ Only calculates values for those Pensions that are to be adjusted
+[3]   
+[4]   defVD←DEF⌈BAGE-X0 ⋄ gmpSPA←(⍴gmpVD)⍴0 ⋄ netpup←(1,No∆Pens)⍴0
+[5]   
+[6]   :for ct :in ⍳No∆Pens
+[7]       :if ~GMPADJ[ct] ⋄ :orif REVind[ct] ⋄ :orif 0=ANP[ct] ⋄ :continue ⋄ :endif
+[8]   
+[9]       gmpSPA[;ct]←gmpVD[;ct]×0<def←defVD[ct] ⍝ GMP and Balance may have different revaluation if deferment
+[10]  
+[11]      netpup[;ct]←(ANP[ct]×ADJ[ct])-+/gmpSPA[;ct]
+[12]          memtot[ToSPA;ct]←                         netpup[;ct] ×     allpvmdefSY[def;ct]                                              ×              allpvmSY [ToSPA;ct] CDIV allpvmSY[def;ct]
+[13]           sptot[     ;ct]←                 REV[ct]×netpup[;ct] ×(def↑allpvmdef  [   ;ct]),((def↓ToSPA↑allpvm[;ct]),allpvmSY[ToSPA;ct])×(1+ToSPA-def)⍴allpvmdefSY[def;ct] CDIV allpvmSY[def;ct]
+[14]  
+[15]      :if 0≠+/gmpSPA[;ct]
+[16]          memtot[ToSPA;ct]←memtot[ToSPA;ct]+        (+/gmpSPA[;ct])×     gmprevdefSY[def   ]                                              ×              allpvmSY [ToSPA;ct] CDIV allpvmSY[def;ct]
+[17]           sptot[     ;ct]← sptot[     ;ct]+REV[ct]×(+/gmpSPA[;ct])×(def↑gmprevdef          ),((def↓ToSPA↑allpvm[;ct]),allpvmSY[ToSPA;ct])×(1+ToSPA-def)⍴gmprevdefSY[def   ] CDIV allpvmSY[def;ct]
+[18]      :endif
+[19]  :endfor
+[20]  
+[21]  ⍝⍀⍝ Age←X0+⍳1+ToSPA
+[22]  ⍝⍀⍝ '' 'Calculated PUP at Start Age' FOURDIT 'Age GMPADJ REVind DEF BAGE X0 defVD'
+[23]  ⍝⍀⍝ '' 'Calculated PUP at Start Age'FOURDIT  'gmpVD gmpSPA← ANP ADJ netpup← allpvmdefSY[⍳1+ToSPA;] allpvmdef[⍳1+ToSPA;] allpvmSY[⍳1+ToSPA;] allpvm[⍳1+ToSPA;] gmprevdefSY[⍳1+⌈/defVD] gmprevdef[⍳1+⌈/defVD] memtot← REV sptot←'
+[24]  ⍝⍀⍝ flds←flds,⊂'Total Members before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd +/memtot
+[25]  ⍝⍀⍝ flds←flds,⊂'Total Spouses before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd +/sptot
+    ∇

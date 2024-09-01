@@ -1,0 +1,70 @@
+    ∇ Openevent OpenParameters Module;INPUTSFile;INPUTSType;SaveCN;MESS;saveVersion;parmlist;success
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Read a set of parameters for Module.  "Openevent" can be either:
+[3]   ⍝  New - Read the Defaults and assign to screen controls
+[4]   ⍝  Init - Read Parameter File and
+[5]   ⍝     if no stored parameters, use the Defaults
+[6]   ⍝     if one stored parameters, use those
+[7]   ⍝     else ask for selection via Open Dialog
+[8]   ⍝  "blank" - Ask for Selection via the Open Dialog
+[9]   
+[10]  openParameters←1 ⍝ Flag for Win∆FormValidation
+[11]  
+[12]  :if 0=⎕nc 'Openevent' ⋄ Openevent←'' ⋄ :endif ⍝ If not New or Init
+[13]  
+[14]  :if ~(⊂Module)∊'Open' 'SaveAs' ⍝ Skip for Open/SaveAs
+[15]      :if 'Cancel'≡Openevent Win∆Open Module ControlName
+[16]          CancelledEntry←Openevent≡'Init'
+[17]          openParameters←0 ⍝ Flag for Win∆FormValidation
+[18]          :return
+[19]      :endif
+[20]      :if Openevent≡'Init'
+[21]          0 0⍴⍎Module,' "TabOrder"' ⍝ Set Basis Tab Order (if required)
+[22]      :endif
+[23]  :endif
+[24]  
+[25]  ⍝ Get "updated" values of INPUTSFile and SaveCN
+[26]  SaveCN←ControlName ⎕wi '∆savecn'
+[27]  :if ~0∊⍴,INPUTSFile←INPUTSType←DLTMB ControlName ⎕wi '∆inputstype'
+[28]      :if 0=⎕nc INPUTSType ⋄ INPUTSFile←'' ⋄ ⍎INPUTSType,"←''" ⍝ Cope with removal of BasisFile variable
+[29]      :else                ⋄ INPUTSFile←⍎INPUTSType
+[30]      :endif
+[31]  :endif
+[32]  :if INPUTSType≡'QSMFile' ⋄ :andif ~FileExist INPUTSFile,'.sf' ⋄ INPUTSFile←'' ⋄ :endif
+[33]  
+[34]  SaveButtonTooltip INPUTSFile ⍝ Adjust the Save Button Tooltip
+[35]  
+[36]  (success MESS saveVersion)←INPUTSFile ReadModule Module ((↑SaveCN)~0)
+[37]  :if ~mt MESS ⋄ MDISPLAY ¯1↓,(⊃MESS[;3]),⎕tcnl ⋄ :endif
+[38]  :if Module≡'Client' ⋄ :andif 0=⎕nc 'ListviewDict' ⋄ ListviewDict←MATRIX 'Module' 'Control' 'Parameters' 'Sort' ⋄ :endif
+[39]  
+[40]  0 0⍴⍎Module,' "Pre-Audit"' ⍝ Make pre Audit "adjustments" to Variables eg S21 Migration
+[41]  
+[42]  :if ControlName ⎕wi '∆audit' ⍝ Produce Audit Record
+[43]      :if 0∊⍴,SaveCN
+[44]      :orif ~success ⋄ parmlist←⍙VALUESdict ReadDictFile Module '' 'NAMES' ⍝ based on Defaults
+[45]      :else          ⋄ parmlist←INPUTSFile  ReadFile     SaveCN '' 'NAMES' ⍝ else based on existing Saved Parameters
+[46]      :endif
+[47]      parmlist←(0≠⎕nc parmlist)⌿parmlist ⍝ Remove Deleted Variables (that have changed names)
+[48]      ControlName ⎕wi '∆savedparms' (pack parmlist)
+[49]  :endif
+[50]  :if 0≠saveVersion ⋄ :andif 9.03>saveVersion
+[51]      FixFinFields Module
+[52]  :endif
+[53]  
+[54]  :if 1=ControlName ⎕wi '∆relrules'
+[55]      Module Win∆FormValidation 'Init' ⍝ Initialise Parameter Relevance
+[56]  :endif
+[57]  0 0⍴⍎Module,' "Vars"' ⍝ Make "adjustments" to Variables
+[58]  
+[59]  Assign_Inputs 0 ⍝ Put New Variables to screen
+[60]  
+[61]  0 0⍴⍎Module,' "PostAssign"' ⍝ Make "adjustments" to flexible Grids
+[62]  ControlName ⎕wi 'visible' 1
+[63]  
+[64]  :if ×ControlName ⎕wi '∆relrules'
+[65]      Module Win∆FormValidation 'SetRelevance' ⍝ Set Parameter Relevance
+[66]  :endif
+[67]  
+[68]  openParameters←Module≡'Open' ⍝ Flag for Win∆FormValidation
+    ∇

@@ -1,1 +1,19 @@
-    ∇ res←desc Win∆DecrCheck vars;⎕io;z;label;parm;∆;errflag[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Called by Win∆CheckDecr or directly if global ∆decrdesc and ∆decrlist exist[3]   ⍝ Check Decrement Description has not changed[4]   [5]   ⎕io←1 ⋄ res←0 0⍴'' ⋄ (parm label errflag)←3↑vars,0[6]   [7]   :for ∆ :in spin m2n¨parm label desc ⋄ (parm label desc)←∆[8]       :if ~mt parm[9]           :if 0∊⍴z←∆decrlist TLU ¯5↑parm[10]              res←res OVER (errflag/'ERROR:  '),desc,' - ',MESS∆TRANS 'NoRateFound' parm[11]          :elseif ~mt label[12]          :andif  ~label≡DLTB ∆decrdesc[z;][13]          :andif  ~(∨/'000'⍷parm)^(DLTMB label)≡DLTMB ∆decrdesc[z;] ⍝ Allow single space for "000" tables[14]              res←res OVER (errflag/'ERROR:  '),desc,' - Description of Rate Table ',parm,' has been changed.'[15]          :endif[16]      :endif[17]  :endfor    ∇
+    ∇ res←desc Win∆DecrCheck vars;⎕io;z;label;parm;∆;errflag
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Called by Win∆CheckDecr or directly if global ∆decrdesc and ∆decrlist exist
+[3]   ⍝ Check Decrement Description has not changed
+[4]   
+[5]   ⎕io←1 ⋄ res←0 0⍴'' ⋄ (parm label errflag)←3↑vars,0
+[6]   
+[7]   :for ∆ :in spin m2n¨parm label desc ⋄ (parm label desc)←∆
+[8]       :if ~mt parm
+[9]           :if 0∊⍴z←∆decrlist TLU ¯5↑parm
+[10]              res←res OVER (errflag/'ERROR:  '),desc,' - ',MESS∆TRANS 'NoRateFound' parm
+[11]          :elseif ~mt label
+[12]          :andif  ~label≡DLTB ∆decrdesc[z;]
+[13]          :andif  ~(∨/'000'⍷parm)^(DLTMB label)≡DLTMB ∆decrdesc[z;] ⍝ Allow single space for "000" tables
+[14]              res←res OVER (errflag/'ERROR:  '),desc,' - Description of Rate Table ',parm,' has been changed.'
+[15]          :endif
+[16]      :endif
+[17]  :endfor
+    ∇

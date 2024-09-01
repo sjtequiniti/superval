@@ -1,1 +1,79 @@
-    ∇ res←field ActFormat parm;parent[1]   ⍝ DATAWIN.sf#3[2]   ⍝ Function to allow user control on Actives Format[3]   [4]   parent←'fmSV.sActFormat.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   :case 'Prepare'  ⍝ Preparatory Routines[8]       prevind←uk≠bar_ok←0 ⍝ Only Aus does not have Previous Data Format Tab[9]   [10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[11]      0 0⍴⍙VALUESdict ReadDictFile 'ActFormat' '' (SStoMAT '⍺CharStandNames⍺CharStandVars⍺DateStandNames⍺DateStandVars⍺FixNumStandNames⍺FixNumStandVars⍺VarNumStandNames⍺VarNumStandVars')[12]  [13]      FixNumFields←'ActFormat' MakeFieldList FixNumStandVars[14]      VarNumFields←'ActFormat' MakeFieldList VarNumStandVars[15]      CharFields←'ActFormat' MakeFieldList CharStandVars[16]      DateFields←'ActFormat' MakeFieldList DateStandVars[17]      FormatFields←'ActFormat' MakeFieldList 'd',⊃DateFields[1][18]      0 0⍴ActFormat 'Lock' ⍝ Lock Spreadsheet Cells[19]  [20]  :case 'PostAssign'[21]      (⊂((3+2 0 0)[1+uk]) (parent,'pgValidation.ssValidation')) Format∆ValidParms¨'SetUp' 'Write'[22]  [23]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[24]      Act_Init[25]  [26]  :case 'Lock'[27]      :if prevind[28]      :andif ~aosenabled[29]      :andif ~0∊⍴(parent,'pgNon_Standard') ⎕wi 'self'[30]          (parent,'pgNon_Standard.ssTotNumNonS') Win∆F1SSProtectCells (⊂¯1 4 ¯1 5)[31]          (parent,'pgNon_Standard.ssAvNumNonS') Win∆F1SSProtectCells (⊂¯1 4 ¯1 5)[32]      :endif[33]      :if ~0∊⍴(parent,'pgValidation') ⎕wi 'self'[34]          (parent,'pgValidation.ssValidation') Win∆F1SSProtectCells (⊂1 1 1 1)[35]      :endif[36]  [37]  :case 'Unlock'[38]      :if ~0∊⍴(parent,'pgNon_Standard') ⎕wi 'self'[39]          (parent,'pgNon_Standard.ssTotNumNonS') Win∆F1SSProtectCells 'Unlock'[40]          (parent,'pgNon_Standard.ssAvNumNonS') Win∆F1SSProtectCells 'Unlock'[41]      :endif[42]      :if ~0∊⍴(parent,'pgValidation') ⎕wi 'self'[43]          (parent,'pgValidation.ssValidation') Win∆F1SSProtectCells 'Unlock'[44]      :endif[45]  [46]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[47]  [48]      :repeat[49]          Act_Change DLTMB ↑field[50]      :until mt field←1↓field[51]  [52]  :case 'PageChange'[53]  [54]      :repeat[55]          Act_PageChange DLTMB ↑field[56]      :until mt field←1↓field[57]  [58]  :case 'Valid' ⍝ Routine specific validation[59]  [60]      :repeat[61]          :if 0≠⍴,res←Act_Valid DLTMB ↑field ⋄ :return ⋄ :endif[62]      :until mt field←1↓field[63]  [64]  :case 'Run'[65]  [66]      res←'Quit'[67]  [68]  :case 'Quit' ⍝ Deleting "other" variables[69]  [70]      :if bar_ok[71]          (2↑'fmSV.barMemberDisplay' ⎕wi 'floatwhere') INIString uSER 'Disp_floatwhere' PrefINI[72]          0 0⍴'fmSV.barMemberDisplay' ⎕wi 'Delete'[73]      :endif[74]      0 0⍴⎕ex 'recl prevind bar_ok'[75]      0 0⍴⎕ex 'FixNumFields VarNumFields CharFields DateFields FormatFields'[76]  [77]  :endselect    ∇
+    ∇ res←field ActFormat parm;parent
+[1]   ⍝ DATAWIN.sf#3
+[2]   ⍝ Function to allow user control on Actives Format
+[3]   
+[4]   parent←'fmSV.sActFormat.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'  ⍝ Preparatory Routines
+[8]       prevind←uk≠bar_ok←0 ⍝ Only Aus does not have Previous Data Format Tab
+[9]   
+[10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[11]      0 0⍴⍙VALUESdict ReadDictFile 'ActFormat' '' (SStoMAT '⍺CharStandNames⍺CharStandVars⍺DateStandNames⍺DateStandVars⍺FixNumStandNames⍺FixNumStandVars⍺VarNumStandNames⍺VarNumStandVars')
+[12]  
+[13]      FixNumFields←'ActFormat' MakeFieldList FixNumStandVars
+[14]      VarNumFields←'ActFormat' MakeFieldList VarNumStandVars
+[15]      CharFields←'ActFormat' MakeFieldList CharStandVars
+[16]      DateFields←'ActFormat' MakeFieldList DateStandVars
+[17]      FormatFields←'ActFormat' MakeFieldList 'd',⊃DateFields[1]
+[18]      0 0⍴ActFormat 'Lock' ⍝ Lock Spreadsheet Cells
+[19]  
+[20]  :case 'PostAssign'
+[21]      (⊂((3+2 0 0)[1+uk]) (parent,'pgValidation.ssValidation')) Format∆ValidParms¨'SetUp' 'Write'
+[22]  
+[23]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[24]      Act_Init
+[25]  
+[26]  :case 'Lock'
+[27]      :if prevind
+[28]      :andif ~aosenabled
+[29]      :andif ~0∊⍴(parent,'pgNon_Standard') ⎕wi 'self'
+[30]          (parent,'pgNon_Standard.ssTotNumNonS') Win∆F1SSProtectCells (⊂¯1 4 ¯1 5)
+[31]          (parent,'pgNon_Standard.ssAvNumNonS') Win∆F1SSProtectCells (⊂¯1 4 ¯1 5)
+[32]      :endif
+[33]      :if ~0∊⍴(parent,'pgValidation') ⎕wi 'self'
+[34]          (parent,'pgValidation.ssValidation') Win∆F1SSProtectCells (⊂1 1 1 1)
+[35]      :endif
+[36]  
+[37]  :case 'Unlock'
+[38]      :if ~0∊⍴(parent,'pgNon_Standard') ⎕wi 'self'
+[39]          (parent,'pgNon_Standard.ssTotNumNonS') Win∆F1SSProtectCells 'Unlock'
+[40]          (parent,'pgNon_Standard.ssAvNumNonS') Win∆F1SSProtectCells 'Unlock'
+[41]      :endif
+[42]      :if ~0∊⍴(parent,'pgValidation') ⎕wi 'self'
+[43]          (parent,'pgValidation.ssValidation') Win∆F1SSProtectCells 'Unlock'
+[44]      :endif
+[45]  
+[46]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[47]  
+[48]      :repeat
+[49]          Act_Change DLTMB ↑field
+[50]      :until mt field←1↓field
+[51]  
+[52]  :case 'PageChange'
+[53]  
+[54]      :repeat
+[55]          Act_PageChange DLTMB ↑field
+[56]      :until mt field←1↓field
+[57]  
+[58]  :case 'Valid' ⍝ Routine specific validation
+[59]  
+[60]      :repeat
+[61]          :if 0≠⍴,res←Act_Valid DLTMB ↑field ⋄ :return ⋄ :endif
+[62]      :until mt field←1↓field
+[63]  
+[64]  :case 'Run'
+[65]  
+[66]      res←'Quit'
+[67]  
+[68]  :case 'Quit' ⍝ Deleting "other" variables
+[69]  
+[70]      :if bar_ok
+[71]          (2↑'fmSV.barMemberDisplay' ⎕wi 'floatwhere') INIString uSER 'Disp_floatwhere' PrefINI
+[72]          0 0⍴'fmSV.barMemberDisplay' ⎕wi 'Delete'
+[73]      :endif
+[74]      0 0⍴⎕ex 'recl prevind bar_ok'
+[75]      0 0⍴⎕ex 'FixNumFields VarNumFields CharFields DateFields FormatFields'
+[76]  
+[77]  :endselect
+    ∇

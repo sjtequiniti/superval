@@ -1,0 +1,193 @@
+    ∇ ⍙DBFinalise newrecsize;sql;keys;file;tie;⍙dbname;MESS;MemberAge;flds;fileflds;prefix;LiabIDs;filename
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Finalisation Process
+[3]   ⍝ Reads: aggopt aosind CatID ClassID csvind fscopt HLDII InputDir neIND OutPutFile summopt
+[4]   ⍝        ⍙dbscenrow ⍙dbfundtie ⍙dbfundfile
+[5]   ⍝        ⍙dbaosfile ⍙dbaostie xl_cdatafile xl_ndatafile xl_maosfile xl_maostie
+[6]   ⍝        xl_cdatatie xl_ndatatie xl_membtie xl_membfile ⍙dbscenfile ⍙dbscentie
+[7]   ⍝ Revn: sjt01sep15
+[8]   ⍝ Revn: sjt26oct15 * SQL Server syntax; ScriptFollowing
+[9]   ⍝       sjt17may16 * catch failed worker summaries
+[10]  
+[11]  ⍝⍝⍝ 1 ⎕MF '⍙DBSummariseCOM' ⍝ DEBUG
+[12]  
+[13]  ⍙DBCompressDatabase newrecsize
+[14]  
+[15]  ⍙DBAddValnTabs
+[16]  
+[17]  tie←'Native' TieNumber ''
+[18]  ((6+2×aosind) (10+4×aosind) 'Populating ResultsData Table') Win∆ProgressBar2 'MemberUpdate'
+[19]  :if sqlDatabase
+[20]      :if ~mt MESS←'ResultsData' ⍙DBSQLInsertFrom ⍙dbfundfile
+[21]          MESS VALN∆LOG 'Error'
+[22]      :endif
+[23]  :else
+[24]      :if ~mt prefix←⍙dbfundprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[25]      flds←'()' embrace ', ' join ⍙dbfundmask/⍙dbfundflds
+[26]      fileflds←', ' join prefix,(⍙dbfundmask^∨\⍙dbfundkeymask)/⍙dbfundflds
+[27]  ⍝⍝⍝    :if hpcenabled ⋄ csvFile←⍙dbfundfile
+[28]  ⍝⍝⍝    :else          ⋄ csvFile←'\' Win∆Child ⍙dbfundfile
+[29]  ⍝⍝⍝    :endif
+[30]      sql←"INSERT INTO ResultsData",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbname,";] SELECT ",fileflds," FROM ",'\' Win∆Child ⍙dbfundfile
+[31]      0 0⍴0 ⍙DBadoCSVCommand sql
+[32]      :if ⍙dbfundfile NTIE tie ⋄ ⍙dbfundfile NERASE tie ⋄ :endif
+[33]  :endif
+[34]  
+[35]  :if ~neIND
+[36]      ((7+2×aosind) (10+4×aosind) 'Populating MemberResults Table') Win∆ProgressBar2 'MemberUpdate'
+[37]      :if sqlDatabase
+[38]          :if ~mt MESS←'MemberResults' ⍙DBSQLInsertFrom xl_membfile ⍝ 20oct15
+[39]              MESS VALN∆LOG 'Error'
+[40]          :endif
+[41]      :else
+[42]          :if ~mt prefix←xl_membprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[43]          flds←'()' embrace ', ' join xl_membmask/xl_membflds
+[44]          fileflds←', ' join prefix,(xl_membmask^∨\xl_membkeymask)/xl_membflds
+[45]  ⍝⍝⍝        :if hpcenabled ⋄ csvFile←xl_membfile
+[46]  ⍝⍝⍝        :else          ⋄ csvFile←'\' Win∆Child xl_membfile
+[47]  ⍝⍝⍝        :endif
+[48]          sql←"INSERT INTO MemberResults",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbname,";] SELECT ",fileflds," FROM ",'\' Win∆Child xl_membfile
+[49]          0 0⍴0 ⍙DBadoCSVCommand sql
+[50]          :if xl_membfile NTIE tie ⋄ xl_membfile NERASE tie ⋄ :endif
+[51]      :endif
+[52]  
+[53]      ((8+2×aosind) (10+4×aosind) 'Populating MemberData Tables') Win∆ProgressBar2 'MemberUpdate'
+[54]      :if sqlDatabase
+[55]          :if ~mt MESS←'NumMemberData' ⍙DBSQLInsertFrom xl_ndatafile ⍝ 20oct15
+[56]              MESS VALN∆LOG 'Error'
+[57]          :endif
+[58]          :if ~mt MESS←'CharMemberData' ⍙DBSQLInsertFrom xl_cdatafile ⍝ 20oct15
+[59]              MESS VALN∆LOG 'Error'
+[60]          :endif
+[61]      :else
+[62]          :if ~mt prefix←xl_ndataprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[63]          flds←'()' embrace ', ' join xl_ndatamask/xl_ndataflds
+[64]          fileflds←', ' join prefix,(xl_ndatamask^∨\xl_ndatakeymask)/xl_ndataflds
+[65]  ⍝⍝⍝        :if hpcenabled ⋄ csvFile←xl_ndatafile
+[66]  ⍝⍝⍝        :else          ⋄ csvFile←'\' Win∆Child xl_ndatafile
+[67]  ⍝⍝⍝        :endif
+[68]          sql←"INSERT INTO NumMemberData",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbname,";] SELECT ",fileflds," FROM ",'\' Win∆Child xl_ndatafile
+[69]          0 0⍴0 ⍙DBadoCSVCommand sql
+[70]          :if xl_ndatafile NTIE tie ⋄ xl_ndatafile NERASE tie ⋄ :endif
+[71]  
+[72]          :if ~mt prefix←xl_cdataprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[73]          flds←'()' embrace ', ' join xl_cdatamask/xl_cdataflds
+[74]          fileflds←', ' join prefix,(xl_cdatamask^∨\xl_cdatakeymask)/xl_cdataflds
+[75]  ⍝⍝⍝        :if hpcenabled ⋄ csvFile←xl_cdatafile
+[76]  ⍝⍝⍝        :else          ⋄ csvFile←'\' Win∆Child xl_cdatafile
+[77]  ⍝⍝⍝        :endif
+[78]          sql←"INSERT INTO CharMemberData",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbname,";] SELECT ",fileflds," FROM ",'\' Win∆Child xl_cdatafile
+[79]          0 0⍴0 ⍙DBadoCSVCommand sql
+[80]          :if xl_cdatafile NTIE tie ⋄ xl_cdatafile NERASE tie ⋄ :endif
+[81]      :endif
+[82]  
+[83]      :if aosind
+[84]          (11 14 'Populating AOSMember Table') Win∆ProgressBar2 'MemberUpdate'
+[85]          :if sqlDatabase
+[86]              :if ~mt MESS←'AOSMember' ⍙DBSQLInsertFrom xl_maosfile ⍝ 20oct15
+[87]                  MESS VALN∆LOG 'Error'
+[88]              :endif
+[89]          :else
+[90]              :if ~mt prefix←xl_maosprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[91]              flds←'()' embrace ', ' join xl_maosmask/xl_maosflds
+[92]              fileflds←', ' join prefix,(xl_maosmask^∨\xl_maoskeymask)/xl_maosflds
+[93]  ⍝⍝⍝            :if hpcenabled ⋄ csvFile←xl_maosfile
+[94]  ⍝⍝⍝            :else          ⋄ csvFile←'\' Win∆Child xl_maosfile
+[95]  ⍝⍝⍝            :endif
+[96]              sql←"INSERT INTO AOSMember",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbname,";] SELECT ",fileflds," FROM ",'\' Win∆Child xl_maosfile
+[97]              0 0⍴0 ⍙DBadoCSVCommand sql
+[98]              :if xl_maosfile NTIE tie ⋄ xl_maosfile NERASE tie ⋄ :endif
+[99]          :endif
+[100] 
+[101]         (12 14 'Populating AOSResults Table') Win∆ProgressBar2 'MemberUpdate'
+[102]         :if sqlDatabase
+[103]             :if ~mt MESS←'AOSResults' ⍙DBSQLInsertFrom ⍙dbaosfile ⍝ 20oct15
+[104]                 MESS VALN∆LOG 'Error'
+[105]             :endif
+[106]         :else
+[107]             :if ~mt prefix←⍙dbaosprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[108]             flds←'()' embrace ', ' join ⍙dbaosmask/⍙dbaosflds
+[109]             fileflds←', ' join prefix,(⍙dbaosmask^∨\⍙dbaoskeymask)/⍙dbaosflds
+[110] ⍝⍝⍝            :if hpcenabled ⋄ csvFile←⍙dbaosfile
+[111] ⍝⍝⍝            :else          ⋄ csvFile←'\' Win∆Child ⍙dbaosfile
+[112] ⍝⍝⍝            :endif
+[113]             sql←"INSERT INTO AOSResults",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbname,";] SELECT ",fileflds," FROM ",'\' Win∆Child ⍙dbaosfile
+[114]             0 0⍴0 ⍙DBadoCSVCommand sql
+[115]             :if ⍙dbaosfile NTIE tie ⋄ ⍙dbaosfile NERASE tie ⋄ :endif
+[116]         :endif
+[117]     :endif
+[118] 
+[119]     ((9+4×aosind) (10+4×aosind) 'Transferring Individual Member Results to ResultsData Table') Win∆ProgressBar2 'MemberUpdate'
+[120]     ⍝ Transfer Individual Member Results to Category Results Table
+[121]     keys←', ' join ((⍙dbfundmask^⍙dbfundflds∊xl_membflds)/⍙dbfundflds),⊂' '
+[122]     :if AgeInterp ⋄ MemberAge←"ROUND(MemberAge,0),"
+[123]     :else         ⋄ MemberAge←"MemberAge,"
+[124]     :endif
+[125]     sql←"INSERT INTO ResultsData(",keys,"SVAge,SVYear,SVValue) SELECT ",keys,MemberAge,"MemberYear,SUM(MemberValue) FROM MemberResults "
+[126]     sql←sql,"WHERE (ResultsCategoryID = ",CatID,") AND %1 GROUP BY ",keys,MemberAge,"MemberYear"
+[127]     0 0⍴0 ⍙DBadoCONCommand "⊂%1⊂(DataItemID=13) AND (MemberYear=0)" TEXTREPL sql ⍝ Liabilities
+[128]     0 0⍴0 ⍙DBadoCONCommand "⊂%1⊂(DataItemID=14) AND (MemberYear=0)" TEXTREPL sql ⍝ Accrueds
+[129]     0 0⍴0 ⍙DBadoCONCommand "⊂%1⊂(LiabilityTypeID=7) AND (DataItemID IN (9, 10, 41)) AND (MemberYear=0)" TEXTREPL sql ⍝ Pensioners Pensions
+[130]     0 0⍴0 ⍙DBadoCONCommand "⊂%1⊂(BenefitTypeID=0) AND (LiabilityTypeID=7) AND (DataItemID<=10) AND (MemberYear=0)" TEXTREPL sql ⍝ Other Data Items
+[131] 
+[132]     :if IndCashFlow ⍝ Transfer Individual (Total) Cash Flows to Scheme level
+[133]         keys←', ' join ((⍙dbfundmask^⍙dbfundflds∊xl_membflds)/⍙dbfundflds),⊂' '
+[134]         sql←"INSERT INTO ResultsData(",keys,"SVAge,SVYear,SVValue) SELECT ",keys,"MemberAge,MemberYear,SUM(MemberValue) FROM MemberResults "
+[135]         sql←sql,"WHERE (ResultsCategoryID = ",CatID,") AND LiabilityTypeID=8 GROUP BY ",keys,"MemberAge,MemberYear"
+[136]         0 0⍴0 ⍙DBadoCONCommand sql
+[137]     :endif
+[138] 
+[139]     :if suppressText ⋄ filename←'No Text Output'
+[140]     :else            ⋄ filename←"\" Win∆Child OutPutFile
+[141]     :endif
+[142]     0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsCategory SET OutputFilename=",(1 ⍙DBString filename)," WHERE ResultsCategoryID=",CatID
+[143] :endif
+[144] 
+[145] :if fscopt
+[146]     ((10+4×aosind) (10+4×aosind) 'Populating AltScenData Table') Win∆ProgressBar2 'MemberUpdate'
+[147]     :if sqlDatabase
+[148]         :if ~mt MESS←'AltScenData' ⍙DBSQLInsertFrom ⍙dbscenfile ⍝ 20oct15
+[149]             MESS VALN∆LOG 'Error'
+[150]         :endif
+[151]     :else
+[152]         :if ~mt prefix←⍙dbscenprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[153]         flds←'()' embrace ', ' join ⍙dbscenmask/⍙dbscenflds
+[154]         fileflds←', ' join prefix,(⍙dbscenmask^∨\⍙dbscenkeymask)/⍙dbscenflds
+[155] ⍝⍝⍝        :if hpcenabled ⋄ csvFile←⍙dbscenfile
+[156] ⍝⍝⍝        :else          ⋄ csvFile←'\' Win∆Child ⍙dbscenfile
+[157] ⍝⍝⍝        :endif
+[158]         sql←"INSERT INTO AltScenData",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbname,";] SELECT ",fileflds," FROM ",'\' Win∆Child ⍙dbscenfile
+[159]         0 0⍴0 ⍙DBadoCSVCommand sql
+[160]         :if ⍙dbscenfile NTIE tie ⋄ ⍙dbscenfile NERASE tie ⋄ :endif
+[161]     :endif
+[162]     :if ClassID=4 ⋄ :andif ~mt LiabIDs←HLDII/5
+[163]         sql←    "INSERT INTO AltScenData(",(', ' join ⍙dbscenmask/⍙dbscenflds),") "
+[164]         sql←sql,"SELECT ",(', ' join ⍙dbscenmask/((^\⍙dbscenflds∊⍙dbfundflds)/⍙dbscenflds),'0' '1' '1' 'SVYear' ' '),"SUM(SVValue) FROM ResultsData "
+[165]         sql←sql,"WHERE (ResultsCategoryID = ",CatID,") AND (LiabilityTypeID IN (",(0 ⍙DBNumList LiabIDs),")) "
+[166]         sql←sql,"GROUP BY ",', ' join (⍙dbscenmask^(⌽∨\⌽⍙dbscenkeymask)^⍙dbscenflds∊⍙dbfundflds)/⍙dbscenflds
+[167] 
+[168]         0 0⍴0 ⍙DBadoCONCommand sql
+[169]         0 0⍴⎕dl 0.5 ⋄ 0 0⍴0 ⍙DBadoCONCommand "DELETE FROM AltScenData WHERE ResultsCategoryID=0" ⍝ Hope to overcome intermittent 'locking' error
+[170]     :endif
+[171] :endif
+[172] 0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsCategory SET Finalised=1 WHERE ResultsCategoryID=",CatID ⍝ Finalised Flag
+[173] ⍝⍝⍝ 0 0⍴'ADOcsvcmd' ⎕wi 'Delete'
+[174] 
+[175] ⍝ Clean up
+[176] :if sqlDatabase
+[177]     :for file :in (⊂InputDir),¨schemafiles,schemafiles asExt 'log'
+[178]         :if file NTIE tie ⋄ file NERASE tie ⋄ :endif
+[179]     :endfor
+[180] :else
+[181]     :if schemafiles NTIE tie ⋄ schemafiles NERASE tie ⋄ :endif
+[182] :endif
+[183] 
+[184] :if ecflag ⋄ :andif ~sqlDatabase
+[185]     ('Access Database size after inserting records was ',DLTB 'CI20,< bytes>' ⎕fmt WGetFileSize ⍙dbname) VALN∆LOG 'Add'
+[186] :endif
+[187] 
+[188] ⍝ DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[189] ⍝⍝⍝ :if 2≠⎕NC 'mf_DBSummarize' ⋄ mf_DBSummarize←0 ⋄ :endif
+[190] ⍝⍝⍝ mf_DBSummarize←mf_DBSummarize+⎕MF '⍙DBSummariseCOM' ⍝ DEBUG
+[191] ⍝ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ∇

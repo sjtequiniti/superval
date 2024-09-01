@@ -1,1 +1,37 @@
-    ∇ allserv←SRATAB SUM∆SERV SLICELOOP;slice;FNDATE∆L;STDATE∆L;SERV;SERVNOMAX;TOTSRVM[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Sums Service for Spreading of Service Related Accrual[3]   ⍝  SRATAB passed as an argument as it is Slice-Type dependent[4]   ⍝[5]   allserv←(4,NX)⍴TOTSRVM←0[6]   :while 0≠⍴SLICELOOP[7]       slice←↑SLICELOOP[8]       :if AltFlag ⋄ wREAD∆AltSLICE∆VARS 1[9]       :else       ⋄ wREAD∆SLICE∆VARS 1[10]      :endif[11]      :if ⍬≡STDATE∆L[12]          FNDATE∆L←STDATE∆L←(NX,3)⍴100 0 0[13]          SERVNOMAX←SERV←NX⍴ADDYRS∆L[14]      :else[15]          STDATE∆L←(NX,3)⍴STDATE∆L ⋄ FNDATE∆L←(NX,3)⍴FNDATE∆L[16]          :if ~100∊MINSDAT∆L ⋄ STDATE∆L←STDATE∆L DATEMAX (NX,3)⍴MINSDAT∆L ⋄ :endif[17]          :if ~100∊MAXFDAT∆L ⋄ FNDATE∆L←FNDATE∆L DATEMIN (NX,3)⍴MAXFDAT∆L ⋄ :endif[18]          :if slice=0 ⋄ FNDATE∆L← FNDATE∆L DATEMIN LDATE ⋄ :endif[19]          :if ∨/~0=∊⍴¨SRATAB[slice;][20]              SERVNOMAX←SERV←0⌈'DN' DURN (STDATE∆L DATEMAX DOEQS),FNDATE∆L DATEMAX DOEQS[21]          :else[22]              SERVNOMAX←SERV←0⌈SERVRND∆L DURN STDATE∆L,FNDATE∆L[23]          :endif[24]      :endif[25]      :if SERVINDM∆L ⋄ :andif ∨/0≠SRVMAXMP[26]          TOTSRVM←TOTSRVM+SERV←(0⌈((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)-TOTSRVM)⌊SERV[27]      :endif[28]      :if ∨/~0=∊⍴¨SRATAB[slice;][29]  ⍝⍝⍝    crash Fix for Uniform Accrual/Non-Uniform Cap[30]          :if AccMethod ⋄ :andif CapAccrual ⋄ allserv[sliceup;]←allserv[sliceup;]+SERVNOMAX[31]          :else                             ⋄ allserv[sliceup;]←allserv[sliceup;]+SERV[32]          :endif[33]      :endif[34]      SLICELOOP←1↓SLICELOOP[35]  :endwhile    ∇
+    ∇ allserv←SRATAB SUM∆SERV SLICELOOP;slice;FNDATE∆L;STDATE∆L;SERV;SERVNOMAX;TOTSRVM
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Sums Service for Spreading of Service Related Accrual
+[3]   ⍝  SRATAB passed as an argument as it is Slice-Type dependent
+[4]   ⍝
+[5]   allserv←(4,NX)⍴TOTSRVM←0
+[6]   :while 0≠⍴SLICELOOP
+[7]       slice←↑SLICELOOP
+[8]       :if AltFlag ⋄ wREAD∆AltSLICE∆VARS 1
+[9]       :else       ⋄ wREAD∆SLICE∆VARS 1
+[10]      :endif
+[11]      :if ⍬≡STDATE∆L
+[12]          FNDATE∆L←STDATE∆L←(NX,3)⍴100 0 0
+[13]          SERVNOMAX←SERV←NX⍴ADDYRS∆L
+[14]      :else
+[15]          STDATE∆L←(NX,3)⍴STDATE∆L ⋄ FNDATE∆L←(NX,3)⍴FNDATE∆L
+[16]          :if ~100∊MINSDAT∆L ⋄ STDATE∆L←STDATE∆L DATEMAX (NX,3)⍴MINSDAT∆L ⋄ :endif
+[17]          :if ~100∊MAXFDAT∆L ⋄ FNDATE∆L←FNDATE∆L DATEMIN (NX,3)⍴MAXFDAT∆L ⋄ :endif
+[18]          :if slice=0 ⋄ FNDATE∆L← FNDATE∆L DATEMIN LDATE ⋄ :endif
+[19]          :if ∨/~0=∊⍴¨SRATAB[slice;]
+[20]              SERVNOMAX←SERV←0⌈'DN' DURN (STDATE∆L DATEMAX DOEQS),FNDATE∆L DATEMAX DOEQS
+[21]          :else
+[22]              SERVNOMAX←SERV←0⌈SERVRND∆L DURN STDATE∆L,FNDATE∆L
+[23]          :endif
+[24]      :endif
+[25]      :if SERVINDM∆L ⋄ :andif ∨/0≠SRVMAXMP
+[26]          TOTSRVM←TOTSRVM+SERV←(0⌈((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)-TOTSRVM)⌊SERV
+[27]      :endif
+[28]      :if ∨/~0=∊⍴¨SRATAB[slice;]
+[29]  ⍝⍝⍝    crash Fix for Uniform Accrual/Non-Uniform Cap
+[30]          :if AccMethod ⋄ :andif CapAccrual ⋄ allserv[sliceup;]←allserv[sliceup;]+SERVNOMAX
+[31]          :else                             ⋄ allserv[sliceup;]←allserv[sliceup;]+SERV
+[32]          :endif
+[33]      :endif
+[34]      SLICELOOP←1↓SLICELOOP
+[35]  :endwhile
+    ∇

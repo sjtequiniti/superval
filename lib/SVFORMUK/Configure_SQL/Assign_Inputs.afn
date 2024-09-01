@@ -1,1 +1,56 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Configure_SQL" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Configure_SQL" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmConfigSQL.cbSQLconnect" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB SQLconnect[11]  :if mt selection[12]      :if ~mt DLTB SQLconnect[13]          warnings←warnings OVER "Previous Selection for 'SQL Server Connection Type' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmConfigSQL.cbSQLconnect" ⎕wi "value" (¯1↑1,selection)[18]  PickList←"fmConfigSQL.cbSQLAccess" ⎕wi "list"[19]  selection←PickList ExactTLU DLTB SQLAccess[20]  :if mt selection[21]      :if ~mt DLTB SQLAccess[22]          warnings←warnings OVER "Previous Selection for 'User Access Level required to use these Connection properties' is no longer available"[23]      :endif[24]      modified←⌈/modified,1[25]  :endif[26]  "fmConfigSQL.cbSQLAccess" ⎕wi "value" (¯1↑1,selection)[27]  "fmConfigSQL.edSQLTimeout" ⎕wi "text" (DLTB SQLTimeout)[28]  "fmConfigSQL.ssSQLTable" ⎕wi "XClearRange" 1 1 ("fmConfigSQL.ssSQLTable" ⎕wi "MaxRow") ("fmConfigSQL.ssSQLTable" ⎕wi "MaxCol") 3[29]  MaxRow←MaxCol←1[30]  value←(1 100⌈⍴value)↑value←MATRIX property[31]  MaxCol←"fmConfigSQL.ssSQLTable" ⎕wi "MaxCol"[32]  "fmConfigSQL.ssSQLTable" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[33]  "fmConfigSQL.ssSQLTable" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)[34]  value←(1 100⌈⍴value)↑value←MATRIX propvalue[35]  MaxCol←"fmConfigSQL.ssSQLTable" ⎕wi "MaxCol"[36]  "fmConfigSQL.ssSQLTable" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[37]  "fmConfigSQL.ssSQLTable" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)[38]  "fmConfigSQL.ssSQLTable" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[39]  (MaxRow MaxCol)←"fmConfigSQL.ssSQLTable" ⎕wi "xGetActiveCell" 0 0[40]  "fmConfigSQL.ssSQLTable" ⎕wi "xSetActiveCell" (MaxRow⌊"fmConfigSQL.ssSQLTable" ⎕wi "xMaxRow") (MaxCol⌊"fmConfigSQL.ssSQLTable" ⎕wi "xMaxCol")[41]  "fmConfigSQL.ssSQLTable" ⎕wi "xmodified" 0[42]  "fmConfigSQL.ssSQLTable" ⎕wi "onXModified" "('fmConfigSQL.' (Win∆Parent 'fmConfigSQL.')) MultiWI 'modified' ('fmConfigSQL.ssSQLTable' ⎕wi 'xmodified')"[43]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Configure_SQL[44]      :for var :in spin Comment_Configure_SQL at "variable" "row" ⋄ (var row)←var[45]          "Configure_SQL" ParmColor ((FormFields for "variable" var) at "control"),var row 1[46]      :endfor[47]  :endif[48]  :if ~0∊⍴,warnings[49]      MDISPLAY DLTMB warnings,⎕tcnl[50]      Win∆AssignVars "fmConfigSQL"[51]  :endif[52]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Configure_SQL" "" "Names"[53]      "fmConfigSQL" ⎕wi "modified" 0[54]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Configure_SQL" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Configure_SQL" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmConfigSQL.cbSQLconnect" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB SQLconnect
+[11]  :if mt selection
+[12]      :if ~mt DLTB SQLconnect
+[13]          warnings←warnings OVER "Previous Selection for 'SQL Server Connection Type' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmConfigSQL.cbSQLconnect" ⎕wi "value" (¯1↑1,selection)
+[18]  PickList←"fmConfigSQL.cbSQLAccess" ⎕wi "list"
+[19]  selection←PickList ExactTLU DLTB SQLAccess
+[20]  :if mt selection
+[21]      :if ~mt DLTB SQLAccess
+[22]          warnings←warnings OVER "Previous Selection for 'User Access Level required to use these Connection properties' is no longer available"
+[23]      :endif
+[24]      modified←⌈/modified,1
+[25]  :endif
+[26]  "fmConfigSQL.cbSQLAccess" ⎕wi "value" (¯1↑1,selection)
+[27]  "fmConfigSQL.edSQLTimeout" ⎕wi "text" (DLTB SQLTimeout)
+[28]  "fmConfigSQL.ssSQLTable" ⎕wi "XClearRange" 1 1 ("fmConfigSQL.ssSQLTable" ⎕wi "MaxRow") ("fmConfigSQL.ssSQLTable" ⎕wi "MaxCol") 3
+[29]  MaxRow←MaxCol←1
+[30]  value←(1 100⌈⍴value)↑value←MATRIX property
+[31]  MaxCol←"fmConfigSQL.ssSQLTable" ⎕wi "MaxCol"
+[32]  "fmConfigSQL.ssSQLTable" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[33]  "fmConfigSQL.ssSQLTable" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)
+[34]  value←(1 100⌈⍴value)↑value←MATRIX propvalue
+[35]  MaxCol←"fmConfigSQL.ssSQLTable" ⎕wi "MaxCol"
+[36]  "fmConfigSQL.ssSQLTable" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[37]  "fmConfigSQL.ssSQLTable" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)
+[38]  "fmConfigSQL.ssSQLTable" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[39]  (MaxRow MaxCol)←"fmConfigSQL.ssSQLTable" ⎕wi "xGetActiveCell" 0 0
+[40]  "fmConfigSQL.ssSQLTable" ⎕wi "xSetActiveCell" (MaxRow⌊"fmConfigSQL.ssSQLTable" ⎕wi "xMaxRow") (MaxCol⌊"fmConfigSQL.ssSQLTable" ⎕wi "xMaxCol")
+[41]  "fmConfigSQL.ssSQLTable" ⎕wi "xmodified" 0
+[42]  "fmConfigSQL.ssSQLTable" ⎕wi "onXModified" "('fmConfigSQL.' (Win∆Parent 'fmConfigSQL.')) MultiWI 'modified' ('fmConfigSQL.ssSQLTable' ⎕wi 'xmodified')"
+[43]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Configure_SQL
+[44]      :for var :in spin Comment_Configure_SQL at "variable" "row" ⋄ (var row)←var
+[45]          "Configure_SQL" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[46]      :endfor
+[47]  :endif
+[48]  :if ~0∊⍴,warnings
+[49]      MDISPLAY DLTMB warnings,⎕tcnl
+[50]      Win∆AssignVars "fmConfigSQL"
+[51]  :endif
+[52]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Configure_SQL" "" "Names"
+[53]      "fmConfigSQL" ⎕wi "modified" 0
+[54]  :endif
+    ∇

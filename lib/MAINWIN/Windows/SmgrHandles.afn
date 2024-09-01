@@ -1,1 +1,16 @@
-    ∇ list←SmgrHandles;h;hc[1]   ⍝ MAINWIN.sf#2[2]   ⍝∇hndls←SmgrHandles -- Return handles for all session manager edit windows[3]   ⍝∇These handles can be used as arguments in calls to ⎕wcall to get (or[4]   ⍝∇change) the text, selected text, cursor position, etc., in the various[5]   ⍝∇editor windows.[6]   list←⍳0[7]   h←APLFrame[8]   h←⎕wcall 'GetWindow' h 'GW_CHILD' ⍝ Intermediate MDI window[9]   h←⎕wcall 'GetWindow' h 'GW_CHILD' ⍝ First editing window[10]  :WHILE h≠0[11]    hc←⎕wcall 'GetWindow' h 'GW_CHILD' ⍝ Eliminate icon windows[12]    :IF hc≠0 ⋄ list←list,h ⋄ :END[13]    h←⎕wcall 'GetWindow' h 'GW_HWNDNEXT'[14]  :END    ∇
+    ∇ list←SmgrHandles;h;hc
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝∇hndls←SmgrHandles -- Return handles for all session manager edit windows
+[3]   ⍝∇These handles can be used as arguments in calls to ⎕wcall to get (or
+[4]   ⍝∇change) the text, selected text, cursor position, etc., in the various
+[5]   ⍝∇editor windows.
+[6]   list←⍳0
+[7]   h←APLFrame
+[8]   h←⎕wcall 'GetWindow' h 'GW_CHILD' ⍝ Intermediate MDI window
+[9]   h←⎕wcall 'GetWindow' h 'GW_CHILD' ⍝ First editing window
+[10]  :WHILE h≠0
+[11]    hc←⎕wcall 'GetWindow' h 'GW_CHILD' ⍝ Eliminate icon windows
+[12]    :IF hc≠0 ⋄ list←list,h ⋄ :END
+[13]    h←⎕wcall 'GetWindow' h 'GW_HWNDNEXT'
+[14]  :END
+    ∇

@@ -1,1 +1,22 @@
-    ∇ ACCRES;TOTS;col;SUMMREC[1]   ⍝ CONSWIN.sf#4[2]   ⍝[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   col←(^⌿0=ABTOT[;2+⍳7×PROPT])/2+⍳7×PROPT[8]   ABTOT[;,1+⍳1+7×PROPT]←ABTOT[;,1+⍳1+7×PROPT]+(1+7×PROPT)/penind×ABTOT[;,1][9]   →(SKIP∨~PROPT)/0 ⍝ Exit if No Accrued Benefits Listing[10]  ABTOT[;col]←0 ⍝ Read Headers and add relevant details[11]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Consolid AccSumm'[12]  H4←((¯1↑⍴H4) WRITE∆HEAD 'PROJECTED ACCRUED BENEFITS SUMMARY LISTING') OVER H4[13]  H4[8;5+⍳5]←5↑SDATE,VDATE[14]  H4[3;110+⍳20]←20↑'¯-' REPL DLTMB ↑5 2⍕100×i-1 ⋄ H4[4;80+⍳19]←scale[sfac+1;][15]  TOTS←(SIZE,17)↑GTOTS[;,16]-ABTOT[;,1]×~penind[16]  TOTS[;2×⍳8]←ABTOT[⍳SIZE;1+⍳8][17]  TOTS[;1+2×⍳8]←100×(8/TOTS[;,1])ZDIV TOTS[;2×⍳8][18]  ⍝ Create matrix to be written to file[19]  SUMMREC←(¯1 0 ↓N),'M<->I10,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6' ⎕FMT TOTS[20]  PPAGE←1↑H4 OUTPUT tpr1,PPAGE    ∇
+    ∇ ACCRES;TOTS;col;SUMMREC
+[1]   ⍝ CONSWIN.sf#4
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   col←(^⌿0=ABTOT[;2+⍳7×PROPT])/2+⍳7×PROPT
+[8]   ABTOT[;,1+⍳1+7×PROPT]←ABTOT[;,1+⍳1+7×PROPT]+(1+7×PROPT)/penind×ABTOT[;,1]
+[9]   →(SKIP∨~PROPT)/0 ⍝ Exit if No Accrued Benefits Listing
+[10]  ABTOT[;col]←0 ⍝ Read Headers and add relevant details
+[11]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Consolid AccSumm'
+[12]  H4←((¯1↑⍴H4) WRITE∆HEAD 'PROJECTED ACCRUED BENEFITS SUMMARY LISTING') OVER H4
+[13]  H4[8;5+⍳5]←5↑SDATE,VDATE
+[14]  H4[3;110+⍳20]←20↑'¯-' REPL DLTMB ↑5 2⍕100×i-1 ⋄ H4[4;80+⍳19]←scale[sfac+1;]
+[15]  TOTS←(SIZE,17)↑GTOTS[;,16]-ABTOT[;,1]×~penind
+[16]  TOTS[;2×⍳8]←ABTOT[⍳SIZE;1+⍳8]
+[17]  TOTS[;1+2×⍳8]←100×(8/TOTS[;,1])ZDIV TOTS[;2×⍳8]
+[18]  ⍝ Create matrix to be written to file
+[19]  SUMMREC←(¯1 0 ↓N),'M<->I10,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6,M<->I7,⊂ ⊃,M<->I6' ⎕FMT TOTS
+[20]  PPAGE←1↑H4 OUTPUT tpr1,PPAGE
+    ∇

@@ -1,1 +1,22 @@
-    ∇ larg Win∆UpdateListview arg;PickList;NameList;sortorder;SortList;desc;field;Module;namelist[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Update the contents of a Litview[3]   [4]   (field Module)←larg[5]   (PickList NameList sortorder SortList)←4↑arg[6]   [7]   :if mt PickList ⋄ :orif ~^/(⎕split PickList)∊⎕split field ⎕wi 'list' ⍝ List has changed (other than sort order)[8]       namelist←field ⎕wi 'columndisplay'[9]       namelist[;1]←(DLTB¨namelist[;1])~¨⊂'<>'[10]      :if ~(⍴namelist)≡⍴NameList[11]      :orif ~^/1 0 1 1 1 1 1/^⌿namelist≡¨NameList[12]          field ⎕wi 'columndisplay' NameList[13]      :endif[14]      field ⎕wi 'list' PickList[15]      :if ~mt sortorder ⋄ field ⎕wi '∆sortorder' sortorder ⋄ :endif[16]      :if ~mt SortList  ⋄ field ⎕wi '∆sortlist'  SortList  ⋄ :endif[17]      field ⎕wi 'AutoFit' 'header' 'all'[18]      :if 0≡desc←ControlName ⎕wi '∆savedesc' ⋄ desc←'' ⋄ :endif[19]      larg Win∆SortListview DLTB ↑(((listviewDict append ListviewDict) for "Control" field) for 'Parameters' desc) at "Sort"[20]  :endif    ∇
+    ∇ larg Win∆UpdateListview arg;PickList;NameList;sortorder;SortList;desc;field;Module;namelist
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Update the contents of a Litview
+[3]   
+[4]   (field Module)←larg
+[5]   (PickList NameList sortorder SortList)←4↑arg
+[6]   
+[7]   :if mt PickList ⋄ :orif ~^/(⎕split PickList)∊⎕split field ⎕wi 'list' ⍝ List has changed (other than sort order)
+[8]       namelist←field ⎕wi 'columndisplay'
+[9]       namelist[;1]←(DLTB¨namelist[;1])~¨⊂'<>'
+[10]      :if ~(⍴namelist)≡⍴NameList
+[11]      :orif ~^/1 0 1 1 1 1 1/^⌿namelist≡¨NameList
+[12]          field ⎕wi 'columndisplay' NameList
+[13]      :endif
+[14]      field ⎕wi 'list' PickList
+[15]      :if ~mt sortorder ⋄ field ⎕wi '∆sortorder' sortorder ⋄ :endif
+[16]      :if ~mt SortList  ⋄ field ⎕wi '∆sortlist'  SortList  ⋄ :endif
+[17]      field ⎕wi 'AutoFit' 'header' 'all'
+[18]      :if 0≡desc←ControlName ⎕wi '∆savedesc' ⋄ desc←'' ⋄ :endif
+[19]      larg Win∆SortListview DLTB ↑(((listviewDict append ListviewDict) for "Control" field) for 'Parameters' desc) at "Sort"
+[20]  :endif
+    ∇

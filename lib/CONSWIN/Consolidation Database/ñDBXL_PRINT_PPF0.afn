@@ -1,1 +1,79 @@
-    ∇ ⍙DBXL_PRINT∆PPF0;N;tab;sql;table;runslist[1]   ⍝ CONSWIN.sf#11[2]   ⍝[3]   ⍝[4]   ⍝[5]   ⍝[6]   1 XL_ActivateWorksheet 'PPFBens'[7]   table←'ResultsData_NoIndex'[8]   [9]   :if 0≠1↑ASSETS ⋄ 0 0⍴(1↑ASSETS) XL_Data RCtoA1 23 10[10]  :else          ⋄ 'U' XL_RangeDelete 23 ⍬ 25 ⍬[11]  :endif[12]  [13]  ⍝ Pensioners[14]  :select N←⍬⍴⍴,runsP[15]  :case 0 ⋄ 'U' XL_RangeDelete 4⍴19 ⍬ ⋄ →Def[16]  :case 1 ⋄[17]  :else   ⋄ 'D↑' XL_RangeInsert 19 ⍬ (19+N-2) ⍬ ⋄ ((19+N-1) ⍬) XL_PasteAll 19 ⍬ (19+N-2) ⍬[18]  :endselect[19]  [20]  runslist←0 ⍙DBNumList runsP[21]  tab←0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"[22]  tab[;⎕io]←DLTB¨tab[;⎕io] ⋄ 0 0⍴tab XL_Data RCtoA1 19 4 (18+N) 4[23]  [24]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 9 10)[25]  tab←0 1↓runsP XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 19 5 (18+N) 6[26]  [27]  sql←⍙DBPivot "SUM" "SVValue" table ("DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)[28]  tab←-0 1↓runsP XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 19 7 (18+N) 9[29]  [30]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=6 AND DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)[31]  tab←-0 1↓runsP XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 19 11 (18+N) 13[32]  [33]  Def:[34]  :select N←⍬⍴⍴,runsD[35]  :case 0 ⋄ 'U' XL_RangeDelete 4⍴16 ⍬ ⋄ →Act[36]  :case 1 ⋄[37]  :else   ⋄ 'D↑' XL_RangeInsert 16 ⍬ (16+N-2) ⍬ ⋄ ((16+N-1) ⍬) XL_PasteAll 16 ⍬ (16+N-2) ⍬[38]  :endselect[39]  [40]  runslist←0 ⍙DBNumList runsD[41]  tab←0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"[42]  tab[;⎕io]←DLTB¨tab[;⎕io] ⋄ 0 0⍴tab XL_Data RCtoA1 16 4 (15+N) 4[43]  [44]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 25)[45]  tab←0 1↓runsD XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 16 5 (15+N) 6[46]  [47]  sql←⍙DBPivot "SUM" "SVValue" table ("DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)[48]  tab←-0 1↓runsD XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 16 7 (15+N) 9[49]  [50]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=6 AND DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)[51]  tab←-0 1↓runsD XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 16 11 (15+N) 13[52]  [53]  Act:[54]  :select N←⍬⍴⍴,runsA[55]  :case 0 ⋄ 'U' XL_RangeDelete 4⍴13 ⍬ ⋄ →end[56]  :case 1 ⋄[57]  :else   ⋄ 'D↑' XL_RangeInsert 13 ⍬ (13+N-2) ⍬ ⋄ ((13+N-1) ⍬) XL_PasteAll 13 ⍬ (13+N-2) ⍬[58]  :endselect[59]  [60]  runslist←0 ⍙DBNumList runsA[61]  tab←0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"[62]  tab[;⎕io]←DLTB¨tab[;⎕io] ⋄ 0 0⍴tab XL_Data RCtoA1 13 4 (12+N) 4[63]  [64]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 5)[65]  tab←0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 13 5 (12+N) 6[66]  [67]  sql←⍙DBPivot "SUM" "SVValue" table ("DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)[68]  tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 13 7 (12+N) 9[69]  [70]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=6 AND DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)[71]  tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 13 11 (12+N) 13[72]  [73]  end:[74]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on[75]  XL_AutoFit 9 6 (22+⍴runs) 14[76]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off[77]  'PPFBens' XL_ProtectSheet 1    ∇
+    ∇ ⍙DBXL_PRINT∆PPF0;N;tab;sql;table;runslist
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   1 XL_ActivateWorksheet 'PPFBens'
+[7]   table←'ResultsData_NoIndex'
+[8]   
+[9]   :if 0≠1↑ASSETS ⋄ 0 0⍴(1↑ASSETS) XL_Data RCtoA1 23 10
+[10]  :else          ⋄ 'U' XL_RangeDelete 23 ⍬ 25 ⍬
+[11]  :endif
+[12]  
+[13]  ⍝ Pensioners
+[14]  :select N←⍬⍴⍴,runsP
+[15]  :case 0 ⋄ 'U' XL_RangeDelete 4⍴19 ⍬ ⋄ →Def
+[16]  :case 1 ⋄
+[17]  :else   ⋄ 'D↑' XL_RangeInsert 19 ⍬ (19+N-2) ⍬ ⋄ ((19+N-1) ⍬) XL_PasteAll 19 ⍬ (19+N-2) ⍬
+[18]  :endselect
+[19]  
+[20]  runslist←0 ⍙DBNumList runsP
+[21]  tab←0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"
+[22]  tab[;⎕io]←DLTB¨tab[;⎕io] ⋄ 0 0⍴tab XL_Data RCtoA1 19 4 (18+N) 4
+[23]  
+[24]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 9 10)
+[25]  tab←0 1↓runsP XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 19 5 (18+N) 6
+[26]  
+[27]  sql←⍙DBPivot "SUM" "SVValue" table ("DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)
+[28]  tab←-0 1↓runsP XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 19 7 (18+N) 9
+[29]  
+[30]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=6 AND DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)
+[31]  tab←-0 1↓runsP XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 19 11 (18+N) 13
+[32]  
+[33]  Def:
+[34]  :select N←⍬⍴⍴,runsD
+[35]  :case 0 ⋄ 'U' XL_RangeDelete 4⍴16 ⍬ ⋄ →Act
+[36]  :case 1 ⋄
+[37]  :else   ⋄ 'D↑' XL_RangeInsert 16 ⍬ (16+N-2) ⍬ ⋄ ((16+N-1) ⍬) XL_PasteAll 16 ⍬ (16+N-2) ⍬
+[38]  :endselect
+[39]  
+[40]  runslist←0 ⍙DBNumList runsD
+[41]  tab←0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"
+[42]  tab[;⎕io]←DLTB¨tab[;⎕io] ⋄ 0 0⍴tab XL_Data RCtoA1 16 4 (15+N) 4
+[43]  
+[44]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 25)
+[45]  tab←0 1↓runsD XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 16 5 (15+N) 6
+[46]  
+[47]  sql←⍙DBPivot "SUM" "SVValue" table ("DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)
+[48]  tab←-0 1↓runsD XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 16 7 (15+N) 9
+[49]  
+[50]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=6 AND DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)
+[51]  tab←-0 1↓runsD XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 16 11 (15+N) 13
+[52]  
+[53]  Act:
+[54]  :select N←⍬⍴⍴,runsA
+[55]  :case 0 ⋄ 'U' XL_RangeDelete 4⍴13 ⍬ ⋄ →end
+[56]  :case 1 ⋄
+[57]  :else   ⋄ 'D↑' XL_RangeInsert 13 ⍬ (13+N-2) ⍬ ⋄ ((13+N-1) ⍬) XL_PasteAll 13 ⍬ (13+N-2) ⍬
+[58]  :endselect
+[59]  
+[60]  runslist←0 ⍙DBNumList runsA
+[61]  tab←0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"
+[62]  tab[;⎕io]←DLTB¨tab[;⎕io] ⋄ 0 0⍴tab XL_Data RCtoA1 13 4 (12+N) 4
+[63]  
+[64]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 5)
+[65]  tab←0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 13 5 (12+N) 6
+[66]  
+[67]  sql←⍙DBPivot "SUM" "SVValue" table ("DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)
+[68]  tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 13 7 (12+N) 9
+[69]  
+[70]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=6 AND DataItemID=14 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (12 13 34 38 39 40)
+[71]  tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 13 11 (12+N) 13
+[72]  
+[73]  end:
+[74]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+[75]  XL_AutoFit 9 6 (22+⍴runs) 14
+[76]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[77]  'PPFBens' XL_ProtectSheet 1
+    ∇

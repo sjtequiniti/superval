@@ -1,1 +1,94 @@
-    ∇ res←BulkAnn_RunDesc SaveCN;⎕io;CHeader;PickList;desc[1]   ⍝ DECRWIN.sf#8[2]   ⎕io←1[3]   res←0 2⍴""[4]   [5]   res←res OVER "Parameter File" (DLTB ClientFile)[6]   CHeader←ClientFile ReadFile "Index"[7]   res←res OVER ("Parameter File Description") (↑(CHeader for 1=⍳rowsIn CHeader) at "∆_Description")[8]   res←res OVER ("Run Description") (desc←↑(CHeader for '∆_CompNo' (↑SaveCN)) at '∆_Description')[9]   res←res OVER ParametersSaved 'Bulk_Annuity' desc[10]  res←res OVER ("Decrements File Name") (DLTB DECRFile)[11]  res←res OVER "" ""[12]  res←res OVER ("Payment") ""[13]  res←res OVER ("=======") ""[14]  res←res OVER ("Payment Parameters") ""[15]  res←res OVER ("    ","Primary Annuitant:  Start Age (x)") (DLTB BAGE," years")[16]  res←res OVER ("    ","End Age") (DLTB EAGE," years")[17]  res←res OVER ("    ","Guarantee Period") (DLTB gp," years")[18]  res←res OVER ("    ","Overlap on Death in Guarantee Period") (DLTB CheckTranslate gpOlap)[19]  res←res OVER ("    ","Discounted LS on Death in Guarantee Period") (DLTB CheckTranslate DISC)[20]  res←res OVER ("    ","Deferment Age") (DLTB defage," years")[21]  res←res OVER ("    ","Ceasing Age") (DLTB top," years")[22]  res←res OVER ("    ","Payment Frequency") (DLTB PenFreq[1;])[23]  res←res OVER ("    ","Payment Mode") (DLTB PenFreq[2;])[24]  res←res OVER ("Reversion Parameters") ""[25]  res←res OVER ("    ","Proportions Married Table") (DLTB DecrDescription H)[26]  res←res OVER ("    ","Proportions Married") (' %' embrace PropMarr)[27]  res←res OVER ("    ","Spouse's Age Difference (x-y)") (DLTB SAgeDiff," years")[28]  res←res OVER ("    ","Spouse's Reversion") (DLTB rev,"%")[29]  res←res OVER ("    ","Reversion payable to Spouse on Death in Deferment") (DLTB CheckTranslate revdef)[30]  res←res OVER ("    ","Term of Reversion") (DLTB revterm)[31]  res←res OVER ("    ","Value Spouse's Reversion only") (DLTB CheckTranslate revind)[32]  res←res OVER ("Financial Assumptions") ""[33]  res←res OVER ("    ","Interest Rate (% p.a.)") (IR ConcatLabel lrIR ConcatScen 0 '')[34]  res←res OVER ("    ","Specify a Different Rate of Return on Reinvestment while in Deferment") (DLTB CheckTranslate piind)[35]  res←res OVER ("    ","Reinvestment Rate in Deferment (% p.a.)") (defi ConcatLabel lrdefi ConcatScen 0 '')[36]  res←res OVER ("    ","Revaluation in Deferment (% p.a.)") (PVMdef ConcatLabel lrPVMdef ConcatScen 0 '')[37]  res←res OVER ("    ","Pension Increases in Payment (% p.a.)") (PVM ConcatLabel lrPVM ConcatScen 0 '')[38]  res←res OVER ("    ","Value Pension Increases only") (DLTB CheckTranslate PVMind)[39]  res←res OVER ("    ","") ""[40]  res←res OVER "Mortality" ""[41]  res←res OVER "=========" ""[42]  res←res OVER "Mortality in Deferment" ""[43]  res←res OVER ("    ","Primary Annuitant Mortality in Deferment Parameters") (DLTB P_DDEF)[44]  :if ~'None'≡4↑P_DDEF[45]      res←res OVER ParametersSaved 'Mortality_Rate' P_DDEF[46]      res←res OVER ("    ","    ","Primary Annuitant Mortality in Deferment Table") (DecrDescription P_DDEFTABXX)[47]      res←res OVER ("    ","    ","Base Year of Primary Annuitant Mortality in Deferment Table") (DLTB P_DDEFORIG)[48]  :endif[49]  res←res OVER ("    ","Primary Annuitant Mortality Improvement in Deferment Parameters") (DLTB P_miDDEF)[50]  :if ~'None'≡4↑P_miDDEF[51]      res←res OVER ParametersSaved 'Mort_Improvement' P_miDDEF[52]      res←res OVER ("    ","    ") MI_RunDesc 'P_miDDEF' (0 0)[53]  :endif[54]  res←res OVER ("    ","Spouse Mortality in Deferment Parameters") (DLTB S_DDEF)[55]  :if ~'None'≡4↑S_DDEF[56]      res←res OVER ParametersSaved 'Mortality_Rate' S_DDEF[57]      res←res OVER ("    ","    ","Spouse Mortality in Deferment Table") (DecrDescription S_DDEFTABXX)[58]      res←res OVER ("    ","    ","Base Year of Spouse Mortality in Deferment Table") (DLTB S_DDEFORIG)[59]  :endif[60]  res←res OVER ("    ","Spouse Mortality Improvement in Deferment Parameters") (DLTB S_miDDEF)[61]  :if ~'None'≡4↑S_miDDEF[62]      res←res OVER ParametersSaved 'Mort_Improvement' S_miDDEF[63]      res←res OVER ("    ","    ") MI_RunDesc 'S_miDDEF' (0 0)[64]  :endif[65]  res←res OVER ("Mortality on Pension") ""[66]  res←res OVER ("    ","Primary Annuitant Mortality on Pension Parameters") (DLTB P_DPEN)[67]  :if ~'None'≡4↑P_DPEN[68]      res←res OVER ParametersSaved 'Mortality_Rate' P_DPEN[69]      res←res OVER ("    ","    ","Primary Annuitant Mortality on Pension Table") (DecrDescription P_DPENTABXX)[70]      res←res OVER ("    ","    ","Base Year of Primary Annuitant Mortality on Pension Table") (DLTB P_DPENORIG)[71]  :endif[72]  res←res OVER ("    ","Primary Annuitant Mortality Improvement on Pension Parameters") (DLTB P_miDPEN)[73]  :if ~'None'≡4↑P_miDPEN[74]      res←res OVER ParametersSaved 'Mort_Improvement' P_miDPEN[75]      res←res OVER ("    ","    ") MI_RunDesc 'P_miDPEN' (0 0)[76]  :endif[77]  res←res OVER ("    ","Spouse Mortality on Pension Parameters") (DLTB S_DPEN)[78]  :if ~'None'≡4↑S_DPEN[79]      res←res OVER ParametersSaved 'Mortality_Rate' S_DPEN[80]      res←res OVER ("    ","    ","Spouse Mortality on Pension Table") (DecrDescription S_DPENTABXX)[81]      res←res OVER ("    ","    ","Base Year of Spouse Mortality on Pension Table") (DLTB S_DPENORIG)[82]  :endif[83]  res←res OVER ("    ","Spouse Mortality Improvement on Pension Parameters") (DLTB S_miDPEN)[84]  :if ~'None'≡4↑S_miDPEN[85]      res←res OVER ParametersSaved 'Mort_Improvement' S_miDPEN[86]      res←res OVER ("    ","    ") MI_RunDesc 'S_miDPEN' (0 0)[87]  :endif[88]  res←res OVER ("Calculation Year") ""[89]  res←res OVER ("    ","Calculation Year") (DLTB CalcYr," (for some Mortality Improvement definitions)")[90]  [91]  CHeader←(CHeader," "),(∨/" "≠(CHeader←⊃res[;1]),⊃res[;2])\":"[92]  res←CHeader," ",⊃res[;2]    ∇
+    ∇ res←BulkAnn_RunDesc SaveCN;⎕io;CHeader;PickList;desc
+[1]   ⍝ DECRWIN.sf#8
+[2]   ⎕io←1
+[3]   res←0 2⍴""
+[4]   
+[5]   res←res OVER "Parameter File" (DLTB ClientFile)
+[6]   CHeader←ClientFile ReadFile "Index"
+[7]   res←res OVER ("Parameter File Description") (↑(CHeader for 1=⍳rowsIn CHeader) at "∆_Description")
+[8]   res←res OVER ("Run Description") (desc←↑(CHeader for '∆_CompNo' (↑SaveCN)) at '∆_Description')
+[9]   res←res OVER ParametersSaved 'Bulk_Annuity' desc
+[10]  res←res OVER ("Decrements File Name") (DLTB DECRFile)
+[11]  res←res OVER "" ""
+[12]  res←res OVER ("Payment") ""
+[13]  res←res OVER ("=======") ""
+[14]  res←res OVER ("Payment Parameters") ""
+[15]  res←res OVER ("    ","Primary Annuitant:  Start Age (x)") (DLTB BAGE," years")
+[16]  res←res OVER ("    ","End Age") (DLTB EAGE," years")
+[17]  res←res OVER ("    ","Guarantee Period") (DLTB gp," years")
+[18]  res←res OVER ("    ","Overlap on Death in Guarantee Period") (DLTB CheckTranslate gpOlap)
+[19]  res←res OVER ("    ","Discounted LS on Death in Guarantee Period") (DLTB CheckTranslate DISC)
+[20]  res←res OVER ("    ","Deferment Age") (DLTB defage," years")
+[21]  res←res OVER ("    ","Ceasing Age") (DLTB top," years")
+[22]  res←res OVER ("    ","Payment Frequency") (DLTB PenFreq[1;])
+[23]  res←res OVER ("    ","Payment Mode") (DLTB PenFreq[2;])
+[24]  res←res OVER ("Reversion Parameters") ""
+[25]  res←res OVER ("    ","Proportions Married Table") (DLTB DecrDescription H)
+[26]  res←res OVER ("    ","Proportions Married") (' %' embrace PropMarr)
+[27]  res←res OVER ("    ","Spouse's Age Difference (x-y)") (DLTB SAgeDiff," years")
+[28]  res←res OVER ("    ","Spouse's Reversion") (DLTB rev,"%")
+[29]  res←res OVER ("    ","Reversion payable to Spouse on Death in Deferment") (DLTB CheckTranslate revdef)
+[30]  res←res OVER ("    ","Term of Reversion") (DLTB revterm)
+[31]  res←res OVER ("    ","Value Spouse's Reversion only") (DLTB CheckTranslate revind)
+[32]  res←res OVER ("Financial Assumptions") ""
+[33]  res←res OVER ("    ","Interest Rate (% p.a.)") (IR ConcatLabel lrIR ConcatScen 0 '')
+[34]  res←res OVER ("    ","Specify a Different Rate of Return on Reinvestment while in Deferment") (DLTB CheckTranslate piind)
+[35]  res←res OVER ("    ","Reinvestment Rate in Deferment (% p.a.)") (defi ConcatLabel lrdefi ConcatScen 0 '')
+[36]  res←res OVER ("    ","Revaluation in Deferment (% p.a.)") (PVMdef ConcatLabel lrPVMdef ConcatScen 0 '')
+[37]  res←res OVER ("    ","Pension Increases in Payment (% p.a.)") (PVM ConcatLabel lrPVM ConcatScen 0 '')
+[38]  res←res OVER ("    ","Value Pension Increases only") (DLTB CheckTranslate PVMind)
+[39]  res←res OVER ("    ","") ""
+[40]  res←res OVER "Mortality" ""
+[41]  res←res OVER "=========" ""
+[42]  res←res OVER "Mortality in Deferment" ""
+[43]  res←res OVER ("    ","Primary Annuitant Mortality in Deferment Parameters") (DLTB P_DDEF)
+[44]  :if ~'None'≡4↑P_DDEF
+[45]      res←res OVER ParametersSaved 'Mortality_Rate' P_DDEF
+[46]      res←res OVER ("    ","    ","Primary Annuitant Mortality in Deferment Table") (DecrDescription P_DDEFTABXX)
+[47]      res←res OVER ("    ","    ","Base Year of Primary Annuitant Mortality in Deferment Table") (DLTB P_DDEFORIG)
+[48]  :endif
+[49]  res←res OVER ("    ","Primary Annuitant Mortality Improvement in Deferment Parameters") (DLTB P_miDDEF)
+[50]  :if ~'None'≡4↑P_miDDEF
+[51]      res←res OVER ParametersSaved 'Mort_Improvement' P_miDDEF
+[52]      res←res OVER ("    ","    ") MI_RunDesc 'P_miDDEF' (0 0)
+[53]  :endif
+[54]  res←res OVER ("    ","Spouse Mortality in Deferment Parameters") (DLTB S_DDEF)
+[55]  :if ~'None'≡4↑S_DDEF
+[56]      res←res OVER ParametersSaved 'Mortality_Rate' S_DDEF
+[57]      res←res OVER ("    ","    ","Spouse Mortality in Deferment Table") (DecrDescription S_DDEFTABXX)
+[58]      res←res OVER ("    ","    ","Base Year of Spouse Mortality in Deferment Table") (DLTB S_DDEFORIG)
+[59]  :endif
+[60]  res←res OVER ("    ","Spouse Mortality Improvement in Deferment Parameters") (DLTB S_miDDEF)
+[61]  :if ~'None'≡4↑S_miDDEF
+[62]      res←res OVER ParametersSaved 'Mort_Improvement' S_miDDEF
+[63]      res←res OVER ("    ","    ") MI_RunDesc 'S_miDDEF' (0 0)
+[64]  :endif
+[65]  res←res OVER ("Mortality on Pension") ""
+[66]  res←res OVER ("    ","Primary Annuitant Mortality on Pension Parameters") (DLTB P_DPEN)
+[67]  :if ~'None'≡4↑P_DPEN
+[68]      res←res OVER ParametersSaved 'Mortality_Rate' P_DPEN
+[69]      res←res OVER ("    ","    ","Primary Annuitant Mortality on Pension Table") (DecrDescription P_DPENTABXX)
+[70]      res←res OVER ("    ","    ","Base Year of Primary Annuitant Mortality on Pension Table") (DLTB P_DPENORIG)
+[71]  :endif
+[72]  res←res OVER ("    ","Primary Annuitant Mortality Improvement on Pension Parameters") (DLTB P_miDPEN)
+[73]  :if ~'None'≡4↑P_miDPEN
+[74]      res←res OVER ParametersSaved 'Mort_Improvement' P_miDPEN
+[75]      res←res OVER ("    ","    ") MI_RunDesc 'P_miDPEN' (0 0)
+[76]  :endif
+[77]  res←res OVER ("    ","Spouse Mortality on Pension Parameters") (DLTB S_DPEN)
+[78]  :if ~'None'≡4↑S_DPEN
+[79]      res←res OVER ParametersSaved 'Mortality_Rate' S_DPEN
+[80]      res←res OVER ("    ","    ","Spouse Mortality on Pension Table") (DecrDescription S_DPENTABXX)
+[81]      res←res OVER ("    ","    ","Base Year of Spouse Mortality on Pension Table") (DLTB S_DPENORIG)
+[82]  :endif
+[83]  res←res OVER ("    ","Spouse Mortality Improvement on Pension Parameters") (DLTB S_miDPEN)
+[84]  :if ~'None'≡4↑S_miDPEN
+[85]      res←res OVER ParametersSaved 'Mort_Improvement' S_miDPEN
+[86]      res←res OVER ("    ","    ") MI_RunDesc 'S_miDPEN' (0 0)
+[87]  :endif
+[88]  res←res OVER ("Calculation Year") ""
+[89]  res←res OVER ("    ","Calculation Year") (DLTB CalcYr," (for some Mortality Improvement definitions)")
+[90]  
+[91]  CHeader←(CHeader," "),(∨/" "≠(CHeader←⊃res[;1]),⊃res[;2])\":"
+[92]  res←CHeader," ",⊃res[;2]
+    ∇

@@ -1,0 +1,46 @@
+    ∇ ⍙DBFinAssumptions;ts;ID;index;new;recs;scents;scenflag;ASMsql;rows;msk
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Output the Financial Assumptons to the Database
+[3]   
+[4]   index←ClientFile ReadFile 'Index'
+[5]       ts←↑((index for '∆_Name' 'Financials') for '∆_Description' FinDefault) at '∆_TSModified'
+[6]   scents←↑((index for '∆_Name' 'Scenarios') for '∆_Description' ScenarioDesc) at '∆_TSModified'
+[7]   scenflag←bASM^ScenAbs∨ScenRel
+[8]   ASMsql←bASM/¨(" AND ScenarioSavedDesc = ",(1 ⍙DBString ScenarioDesc)) (scenflag/" AND ScenarioTimeStamp = ",sqlDatabase ⍙DBString scents)
+[9]   
+[10]  :if mt ,1 ⍙DBadoCONCommand "SELECT FinancialsID FROM FinancialsGroups WHERE BasisCategoryID = ",(⍕∣DatabaseID+BasisCategoryID)," AND FinancialsSavedDesc = ",(1 ⍙DBString FinDefault)," AND FinancialsTimeStamp = ",(sqlDatabase ⍙DBString ts),'' join ASMsql
+[11]      :if ¯1≠BasisCategoryID ⍝ Clean Up of "Tables" Tables
+[12]          :if ~mt ID←,1 ⍙DBadoCONCommand "SELECT FinancialsID FROM FinancialsGroups WHERE BasisCategoryID = ",(⍕DatabaseID+BasisCategoryID),↑ASMsql
+[13]          :andif 1=,1 ⍙DBadoCONCommand "SELECT COUNT(BasisCategoryID) FROM FinancialsGroups WHERE FinancialsID = ",⍕ID
+[14]              0 0⍴0 ⍙DBadoCONCommand "DELETE FROM FinancialsValues WHERE FinancialsID = ",⍕ID
+[15]          :endif
+[16]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM FinancialsGroups WHERE BasisCategoryID = ",⍕DatabaseID+BasisCategoryID
+[17]      :endif
+[18]  
+[19]      :if new←mt DLTB ID←↑1 ⍙DBadoCONCommand "SELECT FinancialsID FROM FinancialsGroups WHERE FinancialsSavedDesc = ",(1 ⍙DBString FinDefault)," AND FinancialsTimeStamp = ",(sqlDatabase ⍙DBString ts),↑ASMsql
+[20]          ID←1 ⍙DBNextID 'FinancialsID'
+[21]      :endif
+[22]  
+[23]      'ADOrst' ⎕wi 'XOpen' 'FinancialsGroups' ('ADOcon' ⎕wi 'obj') cursor lock
+[24]      ⍙DBInsertData (~sqlDatabase)↓(DatabaseID+0,BasisCategoryID),ID FinDefault ts,bASM/ScenarioDesc (scenflag/scents)
+[25]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[26]  
+[27]      :if new ⍝ Add Values to FinancialsValues table
+[28]          recs←⊃spin ⍙FinAssdict at (6 1 1/1 bQSM 1)/'Key' 'Name' 'Value' 'Cap' 'Collar' 'ConsDyn' 'Group' 'Desc'
+[29]          recs[;0]←(('Int' 'Inf' 'Rev' 'Inc') ('Interest' 'Inflation' 'Revaluation' 'Increase')) mapp recs[;0]
+[30]          :if bASM ⋄ recs←DLTB¨((3 1,4+bQSM)/1 0 1)\recs ⋄ :endif ⍝ Blank for Scenario Value
+[31]          recs←recs OVER (⊂'Constant'),DLTB¨((2 (3+bASM+bQSM) 1)/1 0 1)\⊃spin (AbsDict for 'Module' 'Financials') at 'Variable' 'Parameter' 'Description'
+[32]          :if ~'Primary Basis'≡ScenarioDesc
+[33]              :if scenflag ⋄ msk←~(↑⍴recs)=rows←recs[;1]⍳m2n '-' StripText 1 HyphenSwap FinDesc
+[34]                  rows←msk/rows
+[35]                  :if     ScenAbs ⋄ recs[rows;3]←msk/m2n FinScenAbs ⋄ recs[rows;2]←(~×⍴¨recs[rows;3]) sel¨recs[rows;2]
+[36]                  :elseif ScenRel ⋄ recs[rows;3]←msk/m2n FinScenRel
+[37]                  :endif
+[38]              :endif
+[39]          :endif
+[40]          'ADOrst' ⎕wi 'XOpen' 'FinancialsValues' ('ADOcon' ⎕wi 'obj') cursor lock
+[41]          ⍙DBInsertData ID,recs
+[42]          0 0⍴'ADOrst' ⎕wi 'XClose'
+[43]      :endif
+[44]  :endif
+    ∇

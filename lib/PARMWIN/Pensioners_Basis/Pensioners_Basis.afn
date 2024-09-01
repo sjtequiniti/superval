@@ -1,1 +1,86 @@
-    ∇ res←field Pensioners_Basis parm;parent;page;no[1]   ⍝ PARMWIN.sf#12[2]   ⍝ Function to allow user control on Editing Pensioner Basis[3]   [4]   parent←'fmSV.sPenBasis.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       :if ∨/0≠⎕fi ,BAGE,' '[10]          MDISPLAY 'Under the Pensioner Valuation Method, all Pensions are assumed to commence immediately.  Benefit Commencment Age has been removed and Benefit Commencement Age migrated from DOS SuperVal is now Guarantee Period Commencement Age.  If the Pension is Deferred to a particular Age, use the Deferred Pensioner option.'[11]          BAGE←(No∆Pens,1)⍴'0'[12]      :endif[13]      Format←HyphenSwap Format[14]      FixRelFields 'Pensioners'[15]      pENSIONS←No∆Pens/0[16]      0 0⍴Pensioners_Basis 'Lock' ⍝ Lock Spreadsheet Cells[17]      penind←LJUSTIFY penind,no⍀(no←~∨/' '≠penind)⌿(No∆Pens,7)⍴'Pension'[18]      Benefits_Vars[19]      comment_var←'Comment_Pensioners_Basis'[20]  [21]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[22]      :for no :in ⍳No∆Pens[23]          (parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'ColText' no ('Benefit ',⍕no)[24]      :endfor[25]      0 0⍴(⊂'cbFormat') Pensioners_Basis 'Change'[26]      Display∆Access basAccess[1 2][27]  [28]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[29]  [30]      :repeat[31]          :select ↑field[32]          :caselist 'edFILES' 'edfILENAME' 'ckFileSelections' 'ckUseSex' 'ckUseCat' 'lsCatSels' 'ckUseSubs'[33]              (parent,'pgMain.fData.') Win∆FileChanges ↑field[34]          :case 'cbFormat'[35]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format[36]              Format←(parent,'pgMain.fData.cbFormat') ⎕wi 'text'[37]              (parent,'pgMain.fData.') Win∆FileChanges ↑field[38]              :if 0≠⎕nc 'fANP1'[39]                  :for no :in ⍳No∆Pens[40]                      pENSIONS[no]←×⍴⍎'fANP',⍕no[41]                      (parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'SetColHidden' no no (0=⍴⍎'fANP',⍕no)[42]                  :endfor[43]              :endif[44]          :case 'ckMortImp'[45]              (1↓(parent,'pgDemographic.fImprove') ⎕wi 'children') MultiWI 'enabled' ((parent,'pgDemographic.fImprove.ckMortImp') ⎕wi 'value')[46]          :endselect[47]      :until mt field←1↓field[48]  [49]  :case 'Lock'[50]      :if ~0∊⍴(SSName←parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'self'[51]          SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1)[52]      :endif[53]  [54]  :case 'Unlock'[55]      :if ~0∊⍴(SSName←parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'self'[56]          SSName Win∆F1SSProtectCells 'Unlock'[57]      :endif[58]  [59]  :case 'PageChange'[60]  [61]      :select page←DLTMB ↑field[62]      :caselist ' ' ' '[63]  [64]      :endselect[65]  [66]  :case 'Valid' ⍝ Routine specific validation[67]  [68]      :repeat[69]          :select DLTMB ↑field[70]          :case 'All'[71]              res←('pgMain' 'pgDemographic' 'pgBenefits') Pensioners_Basis 'Valid'[72]          :caselist ' ' ' '[73]              page←DLTMB ↑field[74]  [75]          :endselect[76]      :until mt field←1↓field[77]  [78]  :case 'Run'[79]      res←'Quit'[80]  [81]  :case 'Quit' ⍝ Deleting "other" variables[82]      0 0⍴⎕ex 'FormatType Filesettings BasisFile comment_var'[83]  [84]  :endselect    ∇
+    ∇ res←field Pensioners_Basis parm;parent;page;no
+[1]   ⍝ PARMWIN.sf#12
+[2]   ⍝ Function to allow user control on Editing Pensioner Basis
+[3]   
+[4]   parent←'fmSV.sPenBasis.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if ∨/0≠⎕fi ,BAGE,' '
+[10]          MDISPLAY 'Under the Pensioner Valuation Method, all Pensions are assumed to commence immediately.  Benefit Commencment Age has been removed and Benefit Commencement Age migrated from DOS SuperVal is now Guarantee Period Commencement Age.  If the Pension is Deferred to a particular Age, use the Deferred Pensioner option.'
+[11]          BAGE←(No∆Pens,1)⍴'0'
+[12]      :endif
+[13]      Format←HyphenSwap Format
+[14]      FixRelFields 'Pensioners'
+[15]      pENSIONS←No∆Pens/0
+[16]      0 0⍴Pensioners_Basis 'Lock' ⍝ Lock Spreadsheet Cells
+[17]      penind←LJUSTIFY penind,no⍀(no←~∨/' '≠penind)⌿(No∆Pens,7)⍴'Pension'
+[18]      Benefits_Vars
+[19]      comment_var←'Comment_Pensioners_Basis'
+[20]  
+[21]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[22]      :for no :in ⍳No∆Pens
+[23]          (parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'ColText' no ('Benefit ',⍕no)
+[24]      :endfor
+[25]      0 0⍴(⊂'cbFormat') Pensioners_Basis 'Change'
+[26]      Display∆Access basAccess[1 2]
+[27]  
+[28]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[29]  
+[30]      :repeat
+[31]          :select ↑field
+[32]          :caselist 'edFILES' 'edfILENAME' 'ckFileSelections' 'ckUseSex' 'ckUseCat' 'lsCatSels' 'ckUseSubs'
+[33]              (parent,'pgMain.fData.') Win∆FileChanges ↑field
+[34]          :case 'cbFormat'
+[35]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[36]              Format←(parent,'pgMain.fData.cbFormat') ⎕wi 'text'
+[37]              (parent,'pgMain.fData.') Win∆FileChanges ↑field
+[38]              :if 0≠⎕nc 'fANP1'
+[39]                  :for no :in ⍳No∆Pens
+[40]                      pENSIONS[no]←×⍴⍎'fANP',⍕no
+[41]                      (parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'SetColHidden' no no (0=⍴⍎'fANP',⍕no)
+[42]                  :endfor
+[43]              :endif
+[44]          :case 'ckMortImp'
+[45]              (1↓(parent,'pgDemographic.fImprove') ⎕wi 'children') MultiWI 'enabled' ((parent,'pgDemographic.fImprove.ckMortImp') ⎕wi 'value')
+[46]          :endselect
+[47]      :until mt field←1↓field
+[48]  
+[49]  :case 'Lock'
+[50]      :if ~0∊⍴(SSName←parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'self'
+[51]          SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1)
+[52]      :endif
+[53]  
+[54]  :case 'Unlock'
+[55]      :if ~0∊⍴(SSName←parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'self'
+[56]          SSName Win∆F1SSProtectCells 'Unlock'
+[57]      :endif
+[58]  
+[59]  :case 'PageChange'
+[60]  
+[61]      :select page←DLTMB ↑field
+[62]      :caselist ' ' ' '
+[63]  
+[64]      :endselect
+[65]  
+[66]  :case 'Valid' ⍝ Routine specific validation
+[67]  
+[68]      :repeat
+[69]          :select DLTMB ↑field
+[70]          :case 'All'
+[71]              res←('pgMain' 'pgDemographic' 'pgBenefits') Pensioners_Basis 'Valid'
+[72]          :caselist ' ' ' '
+[73]              page←DLTMB ↑field
+[74]  
+[75]          :endselect
+[76]      :until mt field←1↓field
+[77]  
+[78]  :case 'Run'
+[79]      res←'Quit'
+[80]  
+[81]  :case 'Quit' ⍝ Deleting "other" variables
+[82]      0 0⍴⎕ex 'FormatType Filesettings BasisFile comment_var'
+[83]  
+[84]  :endselect
+    ∇

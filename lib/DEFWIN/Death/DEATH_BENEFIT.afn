@@ -1,1 +1,24 @@
-    ∇ DEATH∆BENEFIT;Dec∆pp;RetAge∆pp;ExitProbs∆pp;tPostx;Qpost;Start∆pp;Age∆pp;VFYear∆pp[1]   ⍝ DEFWIN.sf#6[2]   ⍝ Function to run all the DEATH Functions[3]   [4]   ⍝ Pension Projector Variables[5]   :if IsAccrued[6]       Dec∆pp←'DD'[7]       :if ∨/0>KnownExit[8]           ExitProbs∆pp←(NX,NX)↑MATRIX PROBS[;1] ⍝ Probability of Death[9]           Age∆pp←Start∆pp←RetAge∆pp←NX⍴X0[10]      :else[11]          tPostx←1,×\1-Qpost←NX_1↑X0↓DXX∆l[12]          ExitProbs∆pp←((⍳NX)∘.≤⍳NX)×(tPx÷tPostx)∘.×tPostx×Qpost,0 ⍝ ExitProbs∆pp for DID Bens[13]          Age∆pp←Start∆pp←RetAge∆pp←,X0⌈NRA⌊X+0.5[14]      :endif[15]  :else[16]      Dec∆pp←'D'[17]      ExitProbs∆pp←PROBS[;1] ⍝ Probability of Death[18]      Age∆pp←Start∆pp←RetAge∆pp←,X0⌈XMP ⍝ RetAge for Accrued set here[19]  :endif[20]  VFYear∆pp←PROBS[;1] PP∆AverageTerm XMP-X0[21]  [22]  DP1∆BENEFIT ⋄ wCOST∆DP5 ⋄ DTU∆BENEFIT 'D',IsAccrued/'D'    ∇
+    ∇ DEATH∆BENEFIT;Dec∆pp;RetAge∆pp;ExitProbs∆pp;tPostx;Qpost;Start∆pp;Age∆pp;VFYear∆pp
+[1]   ⍝ DEFWIN.sf#6
+[2]   ⍝ Function to run all the DEATH Functions
+[3]   
+[4]   ⍝ Pension Projector Variables
+[5]   :if IsAccrued
+[6]       Dec∆pp←'DD'
+[7]       :if ∨/0>KnownExit
+[8]           ExitProbs∆pp←(NX,NX)↑MATRIX PROBS[;1] ⍝ Probability of Death
+[9]           Age∆pp←Start∆pp←RetAge∆pp←NX⍴X0
+[10]      :else
+[11]          tPostx←1,×\1-Qpost←NX_1↑X0↓DXX∆l
+[12]          ExitProbs∆pp←((⍳NX)∘.≤⍳NX)×(tPx÷tPostx)∘.×tPostx×Qpost,0 ⍝ ExitProbs∆pp for DID Bens
+[13]          Age∆pp←Start∆pp←RetAge∆pp←,X0⌈NRA⌊X+0.5
+[14]      :endif
+[15]  :else
+[16]      Dec∆pp←'D'
+[17]      ExitProbs∆pp←PROBS[;1] ⍝ Probability of Death
+[18]      Age∆pp←Start∆pp←RetAge∆pp←,X0⌈XMP ⍝ RetAge for Accrued set here
+[19]  :endif
+[20]  VFYear∆pp←PROBS[;1] PP∆AverageTerm XMP-X0
+[21]  
+[22]  DP1∆BENEFIT ⋄ wCOST∆DP5 ⋄ DTU∆BENEFIT 'D',IsAccrued/'D'
+    ∇

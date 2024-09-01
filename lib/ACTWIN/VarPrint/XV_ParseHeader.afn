@@ -1,1 +1,22 @@
-    ∇ Z←XV_ParseHeader lines;∆;vdate;client;section;runtime;user;runtime∆;xxx;abbr;vern;MTH;vdate∆[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Parse 2nd lines of a page header; return client, section, timestamp. SJT 22feb10[3]   ⍝ eg[4]   ⍝                                             Claybrook Computing Limited 8.40     Valuation Date 31 December 2006                                            Page    1[5]   ⍝Client:  SOR27                                                     GROUP  SUMMARY LISTING                                                     18 December 2009 12:48 PM[6]   [7]   (user vern vdate∆)←cOMPANY version (2 DATESPELL⌽vDATE)[8]   (client section runtime∆)←XV_ParseHeader2 2⊃lines[9]   [10]  ⍝xxx←⎕FX⊃'Z←abbr R' '∆←(+\∆=" ")⊂∆←" ",R' '(2⊃∆)←4↑2⊃∆' 'Z←1↓↑,/∆'               ⍝ abbreviate month[11]  MTH←⊂[2]12 3⍴'JanFebMarAprMayJunJulAugSepOctNovDec'[12]  ∆←  ⊂'Z←abbr R;∆;sep'[13]  ∆←∆,⊂'∆←1↓¨(+\∆=" ")⊂∆←" ",R'[14]  ∆←∆,⊂'(2⊃∆)←⍕MTH⍳⊂3↑2⊃∆'[15]  ∆←∆,⊂'sep←(⍴∆)↑1 2 2/"" "/" " "'[16]  ∆←∆,⊂'Z←↑,/sep,¨∆'[17]  xxx←⎕FX⊃∆                                                                       ⍝ abbreviate month[18]  (vdate runtime)←abbr¨vdate∆ runtime∆[19]  [20]  Z←user vdate client vern section runtime    ∇
+    ∇ Z←XV_ParseHeader lines;∆;vdate;client;section;runtime;user;runtime∆;xxx;abbr;vern;MTH;vdate∆
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Parse 2nd lines of a page header; return client, section, timestamp. SJT 22feb10
+[3]   ⍝ eg
+[4]   ⍝                                             Claybrook Computing Limited 8.40     Valuation Date 31 December 2006                                            Page    1
+[5]   ⍝Client:  SOR27                                                     GROUP  SUMMARY LISTING                                                     18 December 2009 12:48 PM
+[6]   
+[7]   (user vern vdate∆)←cOMPANY version (2 DATESPELL⌽vDATE)
+[8]   (client section runtime∆)←XV_ParseHeader2 2⊃lines
+[9]   
+[10]  ⍝xxx←⎕FX⊃'Z←abbr R' '∆←(+\∆=" ")⊂∆←" ",R' '(2⊃∆)←4↑2⊃∆' 'Z←1↓↑,/∆'               ⍝ abbreviate month
+[11]  MTH←⊂[2]12 3⍴'JanFebMarAprMayJunJulAugSepOctNovDec'
+[12]  ∆←  ⊂'Z←abbr R;∆;sep'
+[13]  ∆←∆,⊂'∆←1↓¨(+\∆=" ")⊂∆←" ",R'
+[14]  ∆←∆,⊂'(2⊃∆)←⍕MTH⍳⊂3↑2⊃∆'
+[15]  ∆←∆,⊂'sep←(⍴∆)↑1 2 2/"" "/" " "'
+[16]  ∆←∆,⊂'Z←↑,/sep,¨∆'
+[17]  xxx←⎕FX⊃∆                                                                       ⍝ abbreviate month
+[18]  (vdate runtime)←abbr¨vdate∆ runtime∆
+[19]  
+[20]  Z←user vdate client vern section runtime
+    ∇

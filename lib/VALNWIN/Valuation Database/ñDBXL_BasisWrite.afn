@@ -1,0 +1,42 @@
+    ∇ col←Cat ⍙DBXL_BasisWrite ID;newbasis;⍙dbXLbasis;Cats;BasisCategoryID;BasisDesc;z;comments;row;sql;DataID
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Insert the basis into Excel, if required
+[3]   
+[4]   col←⍬⍴A1toRC 'M' ⋄ Cats←0 1⍴''
+[5]   :if 0≠NoBases
+[6]       Cats←MATRIX ⊃XL_Data RCtoA1 10 col 10 (col+NoBases-1)
+[7]       :if ~0∊⍴Cats TLU ⊃Cat ⋄ col←0 ⋄ :return ⋄ :endif ⍝ Basis does not need updating
+[8]   :endif
+[9]   
+[10]  ⍙dbXLbasis←'excel' XL_BasisDetails ClassID ⍝ Columns ItemID and Excel required
+[11]  
+[12]  (BasisCategoryID BasisDesc)←DLTB¨,1 ⍙DBadoCONCommand "SELECT BasisCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID=",⍕∣ID
+[13]  newbasis←1 ⍙DBadoCONCommand "SELECT BasisItemID, BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") ORDER BY BasisItemID"
+[14]  newbasis[;⎕io+1]←DLTB¨newbasis[;⎕io+1]
+[15]  
+[16]  z←1000000≤newbasis[;⎕io] ⋄ comments←z⌿newbasis ⋄ newbasis←(~z)⌿newbasis ⍝ Separate out comments
+[17]  
+[18]  newbasis←(⊃spin ⍙dbXLbasis at 'ItemID' 'Excel'),(newbasis[;⎕io+1],⊂' ')[newbasis[;⎕io]⍳⍙dbXLbasis at 'ItemID']
+[19]  comments[;⎕io]←newbasis[;⎕io]⍳¯1000000+comments[;⎕io]
+[20]  
+[21]  newbasis←⍉MATRIX BasisDesc Cat,newbasis[;⎕io+2]
+[22]  
+[23]  :if 0>ID ⋄ Cats←Cats OVER ⊃Cat ⋄ col←⍬⍴¯1+col+Cats TLU ⊃Cat
+[24]  :else    ⋄ Cats←Cats OVER ⊃Cat ⋄ col←⍬⍴¯1+col+Cats[⎕av⍋RJUSTIFY Cats;] TLU ⊃Cat
+[25]  :endif
+[26]  
+[27]  (('XL' ⎕wi 'xActiveSheet') ⎕wi 'xName') XL_ProtectSheet 0
+[28]  
+[29]  'R←' XL_RangeInsert 4⍴⍬ col
+[30]  0 0⍴newbasis XL_Data RCtoA1 9 col (8+↑⍴newbasis) col
+[31]  
+[32]  :if ~mt comments ⍝ Add Tooltips to cells
+[33]      :for z :in ⍳↑⍴comments
+[34]          row←11+comments[z;⎕io]
+[35]          'XL' ⎕wi 'Range>.Rng'  (RCtoA1 4⍴row col)
+[36]          'XL.Rng' ⎕wi 'XClearComments'
+[37]          0 0⍴'XL.Rng' ⎕wi 'XAddComment' (↑comments[z;⎕io+1])
+[38]  ⍝⍝⍝        0 0⍴'XL.Rng' ⎕wi 'Delete'
+[39]      :endfor
+[40]  :endif
+    ∇

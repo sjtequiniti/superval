@@ -1,1 +1,96 @@
-    ∇ PHIRP2∆BENEFIT;BenType∆pp;Start∆pp;End∆pp;IncType∆pp;Inc∆pp;GP∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;Dec∆pp;PHIWARPRESPAD;PHIGWARPRESPAD;PHIGWARSPAD;PHIGPENSPAD;PHIGWARNRAD;PHIGPENNRAD;PHIFGPENNRAD;PHIFGWARNRAD;PHIFGPENSPAD;PHIFGWARSPAD;PHIFGWARPRESPAD;PHIFWARPRESPAD;PHIPENNRAD;PHIWARNRAD;PHIPENSPAD;PHIWARSPAD;PHIFPENNRAD;PHIFWARNRAD;PHIFPENSPAD;PHIFWARSPAD[1]   ⍝ ACTWIN.sf#8[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PHI RETIREMENT PENSION[3]   ⍝[4]   ⍝ Main Pension[5]   ⍝ Total Pension[6]   PHIPENNRAD←NX↑(+/[⎕io+1]+/[⎕io+2]PHITPENNRA)[⎕io+1;][7]   PHIPENSPAD←NX↑(+/[⎕io+1]+/[⎕io+2]PHITPENSPA)[⎕io+1;][8]   :if PreSPASplit[9]       (PHIWARSPAD PHIWARPRESPAD)←1 SpouseBens (+/[⎕io+1]+/[⎕io+2]PHITWPENSPA)[⎕io+1;;][10]  :else[11]       PHIWARNRAD                         ←NX↑(+/[⎕io+1]+/[⎕io+2]PHITWARNRA )[⎕io+1; ][12]       PHIWARSPAD                         ←NX↑(+/[⎕io+1]+/[⎕io+2]PHITWPENSPA)[⎕io+1; ][13]  :endif[14]  ⍝[15]  PHIGPENNRAD←NX↑(+/[⎕io+1]        PHITPENNRA)[⎕io+1;⎕io;][16]  PHIGPENSPAD←NX↑(+/[⎕io+1]        PHITPENSPA)[⎕io+1;⎕io;][17]  :if PreSPASplit[18]      (PHIGWARSPAD PHIGWARPRESPAD)←1 SpouseBens (+/[⎕io+1]PHITWPENSPA)[⎕io+1;⎕io;;][19]  :else[20]       PHIGWARNRAD                          ←NX↑(+/[⎕io+1]PHITWARNRA )[⎕io+1;⎕io; ][21]       PHIGWARSPAD                          ←NX↑(+/[⎕io+1]PHITWPENSPA)[⎕io+1;⎕io; ][22]  :endif[23]  ⍝[24]  ⍝ Future Pension[25]  PHIFPENNRAD←NX↑(        +/[⎕io+2]PHITPENNRA)[⎕io+1;⎕io+2;][26]  PHIFPENSPAD←NX↑(        +/[⎕io+2]PHITPENSPA)[⎕io+1;⎕io+2;][27]  :if PreSPASplit[28]      (PHIFWARSPAD PHIFWARPRESPAD)←1 SpouseBens (+/[⎕io+2]PHITWPENSPA)[⎕io+1;⎕io+2;;][29]  :else[30]       PHIFWARNRAD                          ←NX↑(+/[⎕io+2]PHITWARNRA )[⎕io+1;⎕io+2; ][31]       PHIFWARSPAD                          ←NX↑(+/[⎕io+2]PHITWPENSPA)[⎕io+1;⎕io+2; ][32]  :endif[33]  ⍝[34]  PHIFGPENNRAD←NX↑                 PHITPENNRA[⎕io+1;⎕io+2;⎕io;][35]  PHIFGPENSPAD←NX↑                 PHITPENSPA[⎕io+1;⎕io+2;⎕io;][36]  :if PreSPASplit[37]      (PHIFGWARSPAD PHIFGWARPRESPAD)←1 SpouseBens PHITWPENSPA[⎕io+1;⎕io+2;⎕io;;][38]  :else[39]       PHIFGWARNRAD                           ←NX↑PHITWARNRA [⎕io+1;⎕io+2;⎕io; ][40]       PHIFGWARSPAD                           ←NX↑PHITWPENSPA[⎕io+1;⎕io+2;⎕io; ][41]  :endif[42]  ⍝[43]  BenType∆pp←'P' ⋄ IncType∆pp←'M' ⋄ Inc∆pp←DYNINC[44]  [45]  End∆pp←,SPA⌈Start∆pp←,NRA⌈Age∆pp ⋄ GP∆pp←NX⍴GPeriod[46]  [47]  Upin∆pp←0 ⍝ Not "underpinned"[48]  SL∆pp←,PHIPENNRAD-PHIGPENNRAD ⋄ FSL∆pp←,PHIFPENNRAD-PHIFGPENNRAD[49]  :if PreSPASplit ⋄ Dec∆pp←'P2' ⋄ Con∆pp← PHIWARPRESPAD-PHIGWARPRESPAD ⋄ FCon∆pp← PHIFWARPRESPAD-PHIFGWARPRESPAD ⍝⍝⍝ PreSPASplit[50]  :else           ⋄ Dec∆pp←'PR' ⋄ Con∆pp←,PHIWARNRAD   -PHIGWARNRAD    ⋄ FCon∆pp←,PHIFWARNRAD   -PHIFGWARNRAD[51]  :endif[52]  PP∆CreateInterface[53]  [54]  Upin∆pp←1 ⍝ "underpinned"[55]  SL∆pp←,PHIGPENNRAD ⋄ FSL∆pp←,PHIFGPENNRAD[56]  :if PreSPASplit ⋄ Dec∆pp←'P2' ⋄ Con∆pp←               PHIGWARPRESPAD ⋄ FCon∆pp←                PHIFGWARPRESPAD ⍝⍝⍝ PreSPASplit[57]  :else           ⋄ Dec∆pp←'PR' ⋄ Con∆pp←,              PHIGWARNRAD    ⋄ FCon∆pp←,               PHIFGWARNRAD[58]  :endif[59]  PP∆CreateInterface[60]  [61]  Dec∆pp←'PR' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-NRA⌈Age∆pp[62]  [63]  Upin∆pp←0 ⍝ Not "underpinned"[64]  SL∆pp←,PHIPENSPAD-PHIGPENSPAD ⋄ FSL∆pp←,PHIFPENSPAD-PHIFGPENSPAD ⋄ Con∆pp←,PHIWARSPAD-PHIGWARSPAD ⋄ FCon∆pp←,PHIFWARSPAD-PHIFGWARSPAD[65]  [66]  PP∆CreateInterface[67]  [68]  Upin∆pp←1 ⍝ "underpinned"[69]  SL∆pp←,           PHIGPENSPAD ⋄ FSL∆pp←,            PHIFGPENSPAD ⋄ Con∆pp←,           PHIGWARSPAD ⋄ FCon∆pp←,            PHIFGWARSPAD[70]  [71]  PP∆CreateInterface[72]  [73]  :if 0≠LNX-SNX ⋄ PHIRP2∆DAnra ⋄ :endif[74]  [75]  :if PHISelfCheck ⍝PHI⍝[76]        PHIPENNRAD PHICompareRB PENNRAD[ENX_1][77]       PHIGPENNRAD PHICompareRB GPENNRAD[ENX_1][78]       PHIFPENNRAD PHICompareRB FPENNRAD[ENX_1][79]      PHIFGPENNRAD PHICompareRB FGPENNRAD[ENX_1][80]        PHIPENSPAD PHICompareRB PENSPAD[ENX_1][81]       PHIGPENSPAD PHICompareRB GPENSPAD[ENX_1][82]       PHIFPENSPAD PHICompareRB FPENSPAD[ENX_1][83]      PHIFGPENSPAD PHICompareRB FGPENSPAD[ENX_1][84]        PHIWARSPAD PHICompareRB WARSPAD[ENX_1][85]       PHIGWARSPAD PHICompareRB GWARSPAD[ENX_1][86]       PHIFWARSPAD PHICompareRB FWARSPAD[ENX_1][87]      PHIFGWARSPAD PHICompareRB FGWARSPAD[ENX_1][88]      :if PreSPASplit[89]            PHIWARPRESPAD PHICompareRB (¯1↓WARPRESPAD[↑ENX_1;]),0[90]           PHIGWARPRESPAD PHICompareRB (¯1↓GWARPRESPAD[↑ENX_1;]),0[91]           PHIFWARPRESPAD PHICompareRB (¯1↓FWARPRESPAD[↑ENX_1;]),0[92]          PHIFGWARPRESPAD PHICompareRB (¯1↓FGWARPRESPAD[↑ENX_1;]),0[93]      :endif[94]  :endif    ∇
+    ∇ PHIRP2∆BENEFIT;BenType∆pp;Start∆pp;End∆pp;IncType∆pp;Inc∆pp;GP∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;Dec∆pp;PHIWARPRESPAD;PHIGWARPRESPAD;PHIGWARSPAD;PHIGPENSPAD;PHIGWARNRAD;PHIGPENNRAD;PHIFGPENNRAD;PHIFGWARNRAD;PHIFGPENSPAD;PHIFGWARSPAD;PHIFGWARPRESPAD;PHIFWARPRESPAD;PHIPENNRAD;PHIWARNRAD;PHIPENSPAD;PHIWARSPAD;PHIFPENNRAD;PHIFWARNRAD;PHIFPENSPAD;PHIFWARSPAD
+[1]   ⍝ ACTWIN.sf#8
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PHI RETIREMENT PENSION
+[3]   ⍝
+[4]   ⍝ Main Pension
+[5]   ⍝ Total Pension
+[6]   PHIPENNRAD←NX↑(+/[⎕io+1]+/[⎕io+2]PHITPENNRA)[⎕io+1;]
+[7]   PHIPENSPAD←NX↑(+/[⎕io+1]+/[⎕io+2]PHITPENSPA)[⎕io+1;]
+[8]   :if PreSPASplit
+[9]       (PHIWARSPAD PHIWARPRESPAD)←1 SpouseBens (+/[⎕io+1]+/[⎕io+2]PHITWPENSPA)[⎕io+1;;]
+[10]  :else
+[11]       PHIWARNRAD                         ←NX↑(+/[⎕io+1]+/[⎕io+2]PHITWARNRA )[⎕io+1; ]
+[12]       PHIWARSPAD                         ←NX↑(+/[⎕io+1]+/[⎕io+2]PHITWPENSPA)[⎕io+1; ]
+[13]  :endif
+[14]  ⍝
+[15]  PHIGPENNRAD←NX↑(+/[⎕io+1]        PHITPENNRA)[⎕io+1;⎕io;]
+[16]  PHIGPENSPAD←NX↑(+/[⎕io+1]        PHITPENSPA)[⎕io+1;⎕io;]
+[17]  :if PreSPASplit
+[18]      (PHIGWARSPAD PHIGWARPRESPAD)←1 SpouseBens (+/[⎕io+1]PHITWPENSPA)[⎕io+1;⎕io;;]
+[19]  :else
+[20]       PHIGWARNRAD                          ←NX↑(+/[⎕io+1]PHITWARNRA )[⎕io+1;⎕io; ]
+[21]       PHIGWARSPAD                          ←NX↑(+/[⎕io+1]PHITWPENSPA)[⎕io+1;⎕io; ]
+[22]  :endif
+[23]  ⍝
+[24]  ⍝ Future Pension
+[25]  PHIFPENNRAD←NX↑(        +/[⎕io+2]PHITPENNRA)[⎕io+1;⎕io+2;]
+[26]  PHIFPENSPAD←NX↑(        +/[⎕io+2]PHITPENSPA)[⎕io+1;⎕io+2;]
+[27]  :if PreSPASplit
+[28]      (PHIFWARSPAD PHIFWARPRESPAD)←1 SpouseBens (+/[⎕io+2]PHITWPENSPA)[⎕io+1;⎕io+2;;]
+[29]  :else
+[30]       PHIFWARNRAD                          ←NX↑(+/[⎕io+2]PHITWARNRA )[⎕io+1;⎕io+2; ]
+[31]       PHIFWARSPAD                          ←NX↑(+/[⎕io+2]PHITWPENSPA)[⎕io+1;⎕io+2; ]
+[32]  :endif
+[33]  ⍝
+[34]  PHIFGPENNRAD←NX↑                 PHITPENNRA[⎕io+1;⎕io+2;⎕io;]
+[35]  PHIFGPENSPAD←NX↑                 PHITPENSPA[⎕io+1;⎕io+2;⎕io;]
+[36]  :if PreSPASplit
+[37]      (PHIFGWARSPAD PHIFGWARPRESPAD)←1 SpouseBens PHITWPENSPA[⎕io+1;⎕io+2;⎕io;;]
+[38]  :else
+[39]       PHIFGWARNRAD                           ←NX↑PHITWARNRA [⎕io+1;⎕io+2;⎕io; ]
+[40]       PHIFGWARSPAD                           ←NX↑PHITWPENSPA[⎕io+1;⎕io+2;⎕io; ]
+[41]  :endif
+[42]  ⍝
+[43]  BenType∆pp←'P' ⋄ IncType∆pp←'M' ⋄ Inc∆pp←DYNINC
+[44]  
+[45]  End∆pp←,SPA⌈Start∆pp←,NRA⌈Age∆pp ⋄ GP∆pp←NX⍴GPeriod
+[46]  
+[47]  Upin∆pp←0 ⍝ Not "underpinned"
+[48]  SL∆pp←,PHIPENNRAD-PHIGPENNRAD ⋄ FSL∆pp←,PHIFPENNRAD-PHIFGPENNRAD
+[49]  :if PreSPASplit ⋄ Dec∆pp←'P2' ⋄ Con∆pp← PHIWARPRESPAD-PHIGWARPRESPAD ⋄ FCon∆pp← PHIFWARPRESPAD-PHIFGWARPRESPAD ⍝⍝⍝ PreSPASplit
+[50]  :else           ⋄ Dec∆pp←'PR' ⋄ Con∆pp←,PHIWARNRAD   -PHIGWARNRAD    ⋄ FCon∆pp←,PHIFWARNRAD   -PHIFGWARNRAD
+[51]  :endif
+[52]  PP∆CreateInterface
+[53]  
+[54]  Upin∆pp←1 ⍝ "underpinned"
+[55]  SL∆pp←,PHIGPENNRAD ⋄ FSL∆pp←,PHIFGPENNRAD
+[56]  :if PreSPASplit ⋄ Dec∆pp←'P2' ⋄ Con∆pp←               PHIGWARPRESPAD ⋄ FCon∆pp←                PHIFGWARPRESPAD ⍝⍝⍝ PreSPASplit
+[57]  :else           ⋄ Dec∆pp←'PR' ⋄ Con∆pp←,              PHIGWARNRAD    ⋄ FCon∆pp←,               PHIFGWARNRAD
+[58]  :endif
+[59]  PP∆CreateInterface
+[60]  
+[61]  Dec∆pp←'PR' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-NRA⌈Age∆pp
+[62]  
+[63]  Upin∆pp←0 ⍝ Not "underpinned"
+[64]  SL∆pp←,PHIPENSPAD-PHIGPENSPAD ⋄ FSL∆pp←,PHIFPENSPAD-PHIFGPENSPAD ⋄ Con∆pp←,PHIWARSPAD-PHIGWARSPAD ⋄ FCon∆pp←,PHIFWARSPAD-PHIFGWARSPAD
+[65]  
+[66]  PP∆CreateInterface
+[67]  
+[68]  Upin∆pp←1 ⍝ "underpinned"
+[69]  SL∆pp←,           PHIGPENSPAD ⋄ FSL∆pp←,            PHIFGPENSPAD ⋄ Con∆pp←,           PHIGWARSPAD ⋄ FCon∆pp←,            PHIFGWARSPAD
+[70]  
+[71]  PP∆CreateInterface
+[72]  
+[73]  :if 0≠LNX-SNX ⋄ PHIRP2∆DAnra ⋄ :endif
+[74]  
+[75]  :if PHISelfCheck ⍝PHI⍝
+[76]        PHIPENNRAD PHICompareRB PENNRAD[ENX_1]
+[77]       PHIGPENNRAD PHICompareRB GPENNRAD[ENX_1]
+[78]       PHIFPENNRAD PHICompareRB FPENNRAD[ENX_1]
+[79]      PHIFGPENNRAD PHICompareRB FGPENNRAD[ENX_1]
+[80]        PHIPENSPAD PHICompareRB PENSPAD[ENX_1]
+[81]       PHIGPENSPAD PHICompareRB GPENSPAD[ENX_1]
+[82]       PHIFPENSPAD PHICompareRB FPENSPAD[ENX_1]
+[83]      PHIFGPENSPAD PHICompareRB FGPENSPAD[ENX_1]
+[84]        PHIWARSPAD PHICompareRB WARSPAD[ENX_1]
+[85]       PHIGWARSPAD PHICompareRB GWARSPAD[ENX_1]
+[86]       PHIFWARSPAD PHICompareRB FWARSPAD[ENX_1]
+[87]      PHIFGWARSPAD PHICompareRB FGWARSPAD[ENX_1]
+[88]      :if PreSPASplit
+[89]            PHIWARPRESPAD PHICompareRB (¯1↓WARPRESPAD[↑ENX_1;]),0
+[90]           PHIGWARPRESPAD PHICompareRB (¯1↓GWARPRESPAD[↑ENX_1;]),0
+[91]           PHIFWARPRESPAD PHICompareRB (¯1↓FWARPRESPAD[↑ENX_1;]),0
+[92]          PHIFGWARPRESPAD PHICompareRB (¯1↓FGWARPRESPAD[↑ENX_1;]),0
+[93]      :endif
+[94]  :endif
+    ∇

@@ -1,1 +1,38 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Commutation_Tables" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Commutation_Tables" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmCommTable.fCommTCalc.ckgctCOMValBas" ⎕wi "value" (zwb gctCOMValBas)[10]  "fmCommTable.fCommTCalc.edgctCOMValpc" ⎕wi "text" (DLTB gctCOMValpc)[11]  0 0⍴GetDecrList "List"[12]  warnings←warnings OVER "Main Increase Commutation Table" Win∆CheckDecr (gctCOMTAB2) (lrgctCOMTAB2)[13]  "fmCommTable.fCommF.edgctCOMTAB2" ⎕wi "text" (DLTB gctCOMTAB2)[14]  0 0⍴GetDecrList "List"[15]  warnings←warnings OVER "Special Increase Commutation Table" Win∆CheckDecr (gctCOMTAB1) (lrgctCOMTAB1)[16]  "fmCommTable.fCommF.edgctCOMTAB1" ⎕wi "text" (DLTB gctCOMTAB1)[17]  0 0⍴GetDecrList "List"[18]  warnings←warnings OVER "PenInc3 Commutation Table" Win∆CheckDecr (gctCOMTAB3) (lrgctCOMTAB3)[19]  "fmCommTable.fCommF.edgctCOMTAB3" ⎕wi "text" (DLTB gctCOMTAB3)[20]  0 0⍴GetDecrList "List"[21]  warnings←warnings OVER "PenInc4 Commutation Table" Win∆CheckDecr (gctCOMTAB4) (lrgctCOMTAB4)[22]  "fmCommTable.fCommF.edgctCOMTAB4" ⎕wi "text" (DLTB gctCOMTAB4)[23]  "fmCommTable.fCommF.ckgctCOMTABExactAge" ⎕wi "value" (zwb gctCOMTABExactAge)[24]  "fmCommTable.fCommF.ckgctCOMAdjbyEx" ⎕wi "value" (zwb gctCOMAdjbyEx)[25]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Commutation_Tables[26]      :for var :in spin Comment_Commutation_Tables at "variable" "row" ⋄ (var row)←var[27]          "Commutation_Tables" ParmColor ((FormFields for "variable" var) at "control"),var row 1[28]      :endfor[29]  :endif[30]  :if ~0∊⍴,warnings[31]      MDISPLAY DLTMB warnings,⎕tcnl[32]      Win∆AssignVars "fmCommTable"[33]  :endif[34]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Commutation_Tables" "" "Names"[35]      "fmCommTable" ⎕wi "modified" 0[36]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Commutation_Tables" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Commutation_Tables" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmCommTable.fCommTCalc.ckgctCOMValBas" ⎕wi "value" (zwb gctCOMValBas)
+[10]  "fmCommTable.fCommTCalc.edgctCOMValpc" ⎕wi "text" (DLTB gctCOMValpc)
+[11]  0 0⍴GetDecrList "List"
+[12]  warnings←warnings OVER "Main Increase Commutation Table" Win∆CheckDecr (gctCOMTAB2) (lrgctCOMTAB2)
+[13]  "fmCommTable.fCommF.edgctCOMTAB2" ⎕wi "text" (DLTB gctCOMTAB2)
+[14]  0 0⍴GetDecrList "List"
+[15]  warnings←warnings OVER "Special Increase Commutation Table" Win∆CheckDecr (gctCOMTAB1) (lrgctCOMTAB1)
+[16]  "fmCommTable.fCommF.edgctCOMTAB1" ⎕wi "text" (DLTB gctCOMTAB1)
+[17]  0 0⍴GetDecrList "List"
+[18]  warnings←warnings OVER "PenInc3 Commutation Table" Win∆CheckDecr (gctCOMTAB3) (lrgctCOMTAB3)
+[19]  "fmCommTable.fCommF.edgctCOMTAB3" ⎕wi "text" (DLTB gctCOMTAB3)
+[20]  0 0⍴GetDecrList "List"
+[21]  warnings←warnings OVER "PenInc4 Commutation Table" Win∆CheckDecr (gctCOMTAB4) (lrgctCOMTAB4)
+[22]  "fmCommTable.fCommF.edgctCOMTAB4" ⎕wi "text" (DLTB gctCOMTAB4)
+[23]  "fmCommTable.fCommF.ckgctCOMTABExactAge" ⎕wi "value" (zwb gctCOMTABExactAge)
+[24]  "fmCommTable.fCommF.ckgctCOMAdjbyEx" ⎕wi "value" (zwb gctCOMAdjbyEx)
+[25]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Commutation_Tables
+[26]      :for var :in spin Comment_Commutation_Tables at "variable" "row" ⋄ (var row)←var
+[27]          "Commutation_Tables" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[28]      :endfor
+[29]  :endif
+[30]  :if ~0∊⍴,warnings
+[31]      MDISPLAY DLTMB warnings,⎕tcnl
+[32]      Win∆AssignVars "fmCommTable"
+[33]  :endif
+[34]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Commutation_Tables" "" "Names"
+[35]      "fmCommTable" ⎕wi "modified" 0
+[36]  :endif
+    ∇

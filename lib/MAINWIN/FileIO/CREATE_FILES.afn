@@ -1,0 +1,52 @@
+    ∇ res←errflag CREATE∆FILES FileSelections;File;tie;Error;tieno
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Create/Check Input and Output Files required for Valuation
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   
+[8]   tieno←'Native' TieNumber '' ⋄ Error←0⍴''
+[9]   :if FileSelections
+[10]      :if mt fILENAME ⋄ :orif 0=(InputDir,fILENAME) NTIE tieno
+[11]          Error←'FileNotFound' (InputDir,fILENAME) ⋄ tieno←⍳0 ⋄ →end
+[12]      :else ⍝ fILEANME specified must contain fixed length member records
+[13]          :if ~mt Error←(0⍴'') VALID∆FILE tieno
+[14]              ⎕nuntie tieno ⋄ →end
+[15]          :else
+[16]              (InputDir,fILENAME) MakeFileSelections 'ValCreate'
+[17]              ⎕nuntie tieno
+[18]              :if mt FILES
+[19]                  Error←'UserAbort' ValName ⋄ →end
+[20]              :endif
+[21]              :if 0=(InputDir,FILES) NTIE tieno
+[22]                  Error←'FileNotFound' (InputDir,FILES) ⋄ tieno←⍳0 ⋄ →end
+[23]              :endif
+[24]          :endif
+[25]      :endif
+[26]  :else
+[27]      :if mt FILES ⋄ :orif 0=(InputDir,FILES) NTIE tieno
+[28]          Error←'FileNotFound' (InputDir,FILES) ⋄ tieno←⍳0 ⋄ →end
+[29]      :endif
+[30]      ⍝ FILES specified contains fixed length member records
+[31]      :if ~mt Error←(0⍴'') VALID∆FILE tieno
+[32]          ⎕nuntie tieno ⋄ →end
+[33]      :endif
+[34]  :endif
+[35]  :if ~mt Error←Format Format∆CHECK ((MATRIX InputDir,FILES) '')
+[36]      tieno←((InputDir,FILES) NTIE FileSelections/tieno)/tieno ⋄ →end
+[37]  :endif
+[38]  0 0⍴(InputDir,FILES) NTIE tieno
+[39]  
+[40]  end:
+[41]  :if mt Error
+[42]      NUMRECS←⌊(filesize←⎕NSIZE tieno)÷RECL ⋄ recn←0
+[43]      (⍕NUMRECS) INIString 'Members' FILES (InputDir,'svscheme.ini')
+[44]  :else
+[45]      :if (↑tieno)∊⎕xnnums ⋄ NERASE tieno ⋄ :endif
+[46]      tieno←⍳0
+[47]      Error←(errflag/'ERROR:  '),MESS∆TRANS Error
+[48]  :endif
+[49]  
+[50]  res←tieno Error
+    ∇

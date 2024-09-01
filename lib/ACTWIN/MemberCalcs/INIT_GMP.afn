@@ -1,1 +1,36 @@
-    ∇ INIT∆GMP;LRF;SPAterm;idx[1]   ⍝ ACTWIN.sf#3[2]   ⍝ Initialise GMP variables[3]   [4]   DoGMPs GREV,s148 ⍝ Set X0 for late retirements[5]   ⍝[6]   ⍝ Members Total GMPs[7]   GMP←PostGMP+PreGMP[8]   WGMP←0.5×PostGMP+Male×PreGMP[9]   GMPR←PostGMPR+PreGMPR[10]  WGMPR←0.5×PostGMPR+Male×PreGMPR[11]   PrePRESPAWGMPR←0.5×Male× PrePRESPAGMPR[12]  PostPRESPAWGMPR←0.5×     PostPRESPAGMPR[13]  PRESPAWGMPR←PrePRESPAWGMPR+PostPRESPAWGMPR[14]  GMPNRA←PostGMPNRA+PreGMPNRA[15]  WGMPNRA←0.5×PostGMPNRA+Male×PreGMPNRA[16]  TOTWGMPR←PRESPAWGMPR  ⍝ Blend Pre-SPA and SPA figures[17]  SPAterm←NX_1⌊(SPA⌈X)-X0[18]  :for idx :in ⍳NX-SNX[19]      TOTWGMPR[SPAterm[idx];idx]←WGMPR[idx][20]  :endfor[21]  escfact5 ←1⌈DYNRATB88[⎕io+2×term+0⌈NRA∆G-↑X] CDIV DYNRATB88[⎕io+2×term+0⌈(SPA⌈XMP)-↑X][22]  escfact51←1⌈DYNRATA88[⎕io+2×term+0⌈NRA∆G-↑X] CDIV DYNRATA88[⎕io+2×term+0⌈(SPA⌈XMP)-↑X][23]  :if PubSect ⍝ Want additional figures to use for Withdrawals[24]      PubRGMPR←     (PreGMPR×escfact5     )+PostGMPR×escfact51[25]      PubRWGMPR←0.5×(PreGMPR×escfact5×Male)+PostGMPR×escfact51[26]  :endif[27]  escfact5 ←escfact5 ×LRF←(1+0.0745×0⌈NRA∆G-SPA)÷1+0.0745×0⌈XMP-SPA[28]  escfact51←escfact51×LRF[29]  ⍝[30]  RGMPR←     (PreGMPR×escfact5     )+PostGMPR×escfact51[31]  RWGMPR←0.5×(PreGMPR×escfact5×Male)+PostGMPR×escfact51[32]  ⍝[33]  ⍝⍝⍝ :if test ⋄ AUDIT'1000' ⋄ AUDIT'1010' ⋄ AUDIT'1020' ⋄ :endif[34]  ⍝⌿⍝ AUDIT'1000' ⋄ AUDIT'1010' ⋄ AUDIT'1020'    ∇
+    ∇ INIT∆GMP;LRF;SPAterm;idx
+[1]   ⍝ ACTWIN.sf#3
+[2]   ⍝ Initialise GMP variables
+[3]   
+[4]   DoGMPs GREV,s148 ⍝ Set X0 for late retirements
+[5]   ⍝
+[6]   ⍝ Members Total GMPs
+[7]   GMP←PostGMP+PreGMP
+[8]   WGMP←0.5×PostGMP+Male×PreGMP
+[9]   GMPR←PostGMPR+PreGMPR
+[10]  WGMPR←0.5×PostGMPR+Male×PreGMPR
+[11]   PrePRESPAWGMPR←0.5×Male× PrePRESPAGMPR
+[12]  PostPRESPAWGMPR←0.5×     PostPRESPAGMPR
+[13]  PRESPAWGMPR←PrePRESPAWGMPR+PostPRESPAWGMPR
+[14]  GMPNRA←PostGMPNRA+PreGMPNRA
+[15]  WGMPNRA←0.5×PostGMPNRA+Male×PreGMPNRA
+[16]  TOTWGMPR←PRESPAWGMPR  ⍝ Blend Pre-SPA and SPA figures
+[17]  SPAterm←NX_1⌊(SPA⌈X)-X0
+[18]  :for idx :in ⍳NX-SNX
+[19]      TOTWGMPR[SPAterm[idx];idx]←WGMPR[idx]
+[20]  :endfor
+[21]  escfact5 ←1⌈DYNRATB88[⎕io+2×term+0⌈NRA∆G-↑X] CDIV DYNRATB88[⎕io+2×term+0⌈(SPA⌈XMP)-↑X]
+[22]  escfact51←1⌈DYNRATA88[⎕io+2×term+0⌈NRA∆G-↑X] CDIV DYNRATA88[⎕io+2×term+0⌈(SPA⌈XMP)-↑X]
+[23]  :if PubSect ⍝ Want additional figures to use for Withdrawals
+[24]      PubRGMPR←     (PreGMPR×escfact5     )+PostGMPR×escfact51
+[25]      PubRWGMPR←0.5×(PreGMPR×escfact5×Male)+PostGMPR×escfact51
+[26]  :endif
+[27]  escfact5 ←escfact5 ×LRF←(1+0.0745×0⌈NRA∆G-SPA)÷1+0.0745×0⌈XMP-SPA
+[28]  escfact51←escfact51×LRF
+[29]  ⍝
+[30]  RGMPR←     (PreGMPR×escfact5     )+PostGMPR×escfact51
+[31]  RWGMPR←0.5×(PreGMPR×escfact5×Male)+PostGMPR×escfact51
+[32]  ⍝
+[33]  ⍝⍝⍝ :if test ⋄ AUDIT'1000' ⋄ AUDIT'1010' ⋄ AUDIT'1020' ⋄ :endif
+[34]  ⍝⌿⍝ AUDIT'1000' ⋄ AUDIT'1010' ⋄ AUDIT'1020'
+    ∇

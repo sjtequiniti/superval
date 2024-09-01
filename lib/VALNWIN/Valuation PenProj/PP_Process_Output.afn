@@ -1,0 +1,24 @@
+    ∇ pp∆ind PP∆Process∆Output pp∆file;n;pp∆var
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Process an "Output" (nested array) "pp∆file"
+[3]   :for n :in ⍳⍴pp∆file[0;]
+[4]       pp∆var←'pp∆',⊃pp∆file[0;n] ⍝ Create a Variable Name
+[5]       :if pp∆ind ⍝ "Once-only" Variables
+[6]           ⍎pp∆var,'←⊃pp∆file[1;n]' ⍝ Assign the Value
+[7]           :if 1=⍎'⍴,',pp∆var ⋄ ⍎pp∆var,'←⍬⍴',pp∆var ⋄ :endif ⍝ Ensure it is scalar
+[8]       :else ⍝ "Multi-occurring" Variables
+[9]           :if ∨/2=,⊃⍴¨⍴¨(1 0↓pp∆file)[;n]
+[10]              ⍎pp∆var,'←(1 0↓pp∆file)[;,n]'
+[11]          :else
+[12]              ⍎pp∆var,'←⊃(1 0↓pp∆file)[;n]' ⍝ Assign the Value
+[13]              :if 2≠⍎'⍴⍴',pp∆var ⋄ ⍎pp∆var,'←⍉MATRIX ',pp∆var ⋄ :endif ⍝ Ensure it Matrix
+[14]              :if 82≠⎕dr ⍎pp∆var ⋄ :andif ~pp∆var≡'pp∆PPFRatio'
+[15]                  :select ⍬⍴¯1↑⍴⍎pp∆var
+[16]                  :case 0 ⋄ ⍎pp∆var,'←((0,pp∆NX)⌈⍴',pp∆var,')↑',pp∆var
+[17]                  :case 1 ⋄ ⍎pp∆var,'←pp∆NX↑[1](pp∆NX-pp∆SNX)/',pp∆var
+[18]                  :endselect
+[19]              :endif
+[20]          :endif
+[21]      :endif
+[22]  :endfor
+    ∇

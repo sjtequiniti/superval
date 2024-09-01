@@ -1,1 +1,18 @@
-    ∇ PEN←ANP PEN∆PROJ gmpVD;N;penincs;gmpincs;pen;gmp[1]   ⍝ PENWIN.sf#3[2]   ⍝ GMP and Balance may have different revaluation if deferment[3]   ⍝[4]   pen←⍉⊃NX↑¨PEN←ANP×ADJ ⋄ gmp←(NX,⍴ANP)⍴0 ⋄ penincs←gmpincs←(NX,⍴ANP)⍴1[5]   [6]   :for N :in ⍳No∆Pens[7]       :if def[N]>0[8]                            pen[;N]←(PEN[N]-gmpVD[N])×penincs[;N]←NX↑(def[N]↑allpvmdef[;N]),allpvmdefSY[def[N];N][9]           :if 0≠gmpVD[N] ⋄ gmp[;N]←        gmpVD[N] ×gmpincs[;N]←NX↑(def[N]↑gmprevdef    ),gmprevdefSY[def[N]  ] ⋄ :endif[10]  [11]  ⍝⍀⍝         ⍙indmembres←⍙indmembres⍪(14+N),21,(⍳def[N]+1),[0.5](def[N]+1)↑penincs[;N] ⍝ Revaluation on Balance[12]      :endif[13]  :endfor[14]  [15]  PEN←pen+gmp[16]  ⍝⍀⍝         '' 'Revaluing Pensions' FOURDIT 'ANP ADJ gmpVD penincs← pen← gmpincs← gmp← PEN←'    ∇
+    ∇ PEN←ANP PEN∆PROJ gmpVD;N;penincs;gmpincs;pen;gmp
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ GMP and Balance may have different revaluation if deferment
+[3]   ⍝
+[4]   pen←⍉⊃NX↑¨PEN←ANP×ADJ ⋄ gmp←(NX,⍴ANP)⍴0 ⋄ penincs←gmpincs←(NX,⍴ANP)⍴1
+[5]   
+[6]   :for N :in ⍳No∆Pens
+[7]       :if def[N]>0
+[8]                            pen[;N]←(PEN[N]-gmpVD[N])×penincs[;N]←NX↑(def[N]↑allpvmdef[;N]),allpvmdefSY[def[N];N]
+[9]           :if 0≠gmpVD[N] ⋄ gmp[;N]←        gmpVD[N] ×gmpincs[;N]←NX↑(def[N]↑gmprevdef    ),gmprevdefSY[def[N]  ] ⋄ :endif
+[10]  
+[11]  ⍝⍀⍝         ⍙indmembres←⍙indmembres⍪(14+N),21,(⍳def[N]+1),[0.5](def[N]+1)↑penincs[;N] ⍝ Revaluation on Balance
+[12]      :endif
+[13]  :endfor
+[14]  
+[15]  PEN←pen+gmp
+[16]  ⍝⍀⍝         '' 'Revaluing Pensions' FOURDIT 'ANP ADJ gmpVD penincs← pen← gmpincs← gmp← PEN←'
+    ∇

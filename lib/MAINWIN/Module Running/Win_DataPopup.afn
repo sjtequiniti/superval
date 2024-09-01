@@ -1,1 +1,42 @@
-    ∇ field Win∆DataPopup parm;type;var;SelectionText;list;value;z;Vars[1]   ⍝ MAINWIN.sf#3[2]   ⍝ A Popup on Right Click on Data Format fields[3]   ⍝ Assumes input field with Data Format called "Format" on the Form[4]   [5]   :if ⎕warg[3]≠2 ⋄ :return ⋄ :endif ⍝ Check for Right Click[6]   [7]   Win∆AssignVars ControlName[8]   :if 0∊⍴DLTB Format ⋄ :return ⋄ :endif ⍝ Check Format specified[9]   CREATEDATADESC Format[10]  [11]  (type var)←parm ⍝ Type of field and variable name[12]  [13]  :select type[14]  :caselist 'Num' 'NumS'[15]      z←×,⊃⍴¨value←⍎¨⎕split SStoMAT FixNumStandVars,VarNumStandVars,DLTMB '⍺','f',TotNumVars[16]      list←z⌿SStoMAT FixNumStandNames,VarNumStandNames,DLTMB '⍺',TotNumDesc[17]      value←5 0⍕1+(⊃1↑¨z/value),⊃¯1↑¨z/value[18]  :case 'Date'[19]      z←×,⊃⍴¨value←⍎¨⎕split SStoMAT Vars←DateStandVars,DLTMB '⍺','f',DateVars[20]      list←z⌿SStoMAT DateStandNames,DLTMB '⍺',DateDesc[21]      value←(5 0⍕1+(⊃1↑¨z/value),⊃¯1↑¨z/value),' ',⊃⍎¨⎕split 'd',z⌿SStoMAT Vars[22]  :caselist 'Char' 'CharS' 'Upper'[23]      z←×,⊃⍴¨value←⍎¨⎕split SStoMAT CharStandVars,DLTMB '⍺','f',CharVars[24]      list←z⌿SStoMAT CharStandNames,DLTMB '⍺',CharDesc[25]      value←5 0⍕1+⊃1↑¨z/value[26]  :endselect[27]  [28]  :if ~0∊⍴SelectionText←Win∆SelectionBox value list[29]      SelectionText←SStoMAT ' ',DLTMB value[list TLU SelectionText;][30]      :select type[31]      :caselist 'Num' 'NumS' 'Char' 'CharS'[32]          ⍎var,'←SelectionText'[33]      :case 'Date'[34]          ⍎var,'←SelectionText[⍳2;]'[35]          ⍎'d',var,'←SelectionText[3;]'[36]      :endselect[37]  [38]      Assign_Inputs 1 ⍝ Display the revised input fields[39]  :endif[40]  0 Win∆SetFocus field    ∇
+    ∇ field Win∆DataPopup parm;type;var;SelectionText;list;value;z;Vars
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ A Popup on Right Click on Data Format fields
+[3]   ⍝ Assumes input field with Data Format called "Format" on the Form
+[4]   
+[5]   :if ⎕warg[3]≠2 ⋄ :return ⋄ :endif ⍝ Check for Right Click
+[6]   
+[7]   Win∆AssignVars ControlName
+[8]   :if 0∊⍴DLTB Format ⋄ :return ⋄ :endif ⍝ Check Format specified
+[9]   CREATEDATADESC Format
+[10]  
+[11]  (type var)←parm ⍝ Type of field and variable name
+[12]  
+[13]  :select type
+[14]  :caselist 'Num' 'NumS'
+[15]      z←×,⊃⍴¨value←⍎¨⎕split SStoMAT FixNumStandVars,VarNumStandVars,DLTMB '⍺','f',TotNumVars
+[16]      list←z⌿SStoMAT FixNumStandNames,VarNumStandNames,DLTMB '⍺',TotNumDesc
+[17]      value←5 0⍕1+(⊃1↑¨z/value),⊃¯1↑¨z/value
+[18]  :case 'Date'
+[19]      z←×,⊃⍴¨value←⍎¨⎕split SStoMAT Vars←DateStandVars,DLTMB '⍺','f',DateVars
+[20]      list←z⌿SStoMAT DateStandNames,DLTMB '⍺',DateDesc
+[21]      value←(5 0⍕1+(⊃1↑¨z/value),⊃¯1↑¨z/value),' ',⊃⍎¨⎕split 'd',z⌿SStoMAT Vars
+[22]  :caselist 'Char' 'CharS' 'Upper'
+[23]      z←×,⊃⍴¨value←⍎¨⎕split SStoMAT CharStandVars,DLTMB '⍺','f',CharVars
+[24]      list←z⌿SStoMAT CharStandNames,DLTMB '⍺',CharDesc
+[25]      value←5 0⍕1+⊃1↑¨z/value
+[26]  :endselect
+[27]  
+[28]  :if ~0∊⍴SelectionText←Win∆SelectionBox value list
+[29]      SelectionText←SStoMAT ' ',DLTMB value[list TLU SelectionText;]
+[30]      :select type
+[31]      :caselist 'Num' 'NumS' 'Char' 'CharS'
+[32]          ⍎var,'←SelectionText'
+[33]      :case 'Date'
+[34]          ⍎var,'←SelectionText[⍳2;]'
+[35]          ⍎'d',var,'←SelectionText[3;]'
+[36]      :endselect
+[37]  
+[38]      Assign_Inputs 1 ⍝ Display the revised input fields
+[39]  :endif
+[40]  0 Win∆SetFocus field
+    ∇

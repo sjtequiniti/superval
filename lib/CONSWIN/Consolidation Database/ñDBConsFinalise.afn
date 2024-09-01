@@ -1,1 +1,34 @@
-    ∇ ⍙DBConsFinalise;sql;⍙dbini;iniFile;tie;inMemory;parallel;schemafiles;File;err;files;tables;flds;fileflds;prefix[1]   ⍝ CONSWIN.sf#11[2]   ⍝ Consolidation Finalisation Process[3]   [4]   ⍝ Write any remaining records to Temp DB[5]   parallel←inMemory←0 ⋄ (⍙dbfundtie '') ⍙DBInsertTempData (⍙dbfundfmt ⎕fmt ⍙dbfundres[;⍳⍙dbfundnokeys]) (⍙dbfundres[;1+⍙dbfundnokeys])[6]   :if ~mt prefix←⍙dbfundprefix ⋄ prefix←⍎¨prefix ⋄ :endif[7]   0 0⍴('⍙dbfund' prefix) ⍙DBSummarise ⍙dbfundtie ⍙dbfundcols 17 1 0[8]   [9]   ⍝ Turn CSV file into a fixed length file with schema.ini[10]  files← (⊂'SVConsDB.csv'),fscopt/⊂'SVscenXL.csv'[11]  tables←(⊂'ResultsData_NoIndex' ),fscopt/⊂'AltScenData_NoIndex'[12]  [13]  :if sqlDatabase ⍝ Summarising Temporary Database records and inserting in Main[14]      schemafiles←files ⍙DBSQLMakeSchemaFiles tables[15]      :if ~mt err←'ResultsData_NoIndex' ⍙DBSQLInsertFrom ⍙dbfundfile[16]          MDISPLAY err[17]      :endif[18]      tie←'Native' TieNumber '' ⍝ Clean up[19]      :for File :in (⊂InputDir),¨schemafiles[20]          :if File NTIE tie ⋄ File NERASE tie ⋄ :endif[21]      :endfor[22]  :else ⍝ Turn CSV file into a fixed length file with schema.ini[23]      ⍙dbini←NCREATE iniFile←InputDir,'schema.ini'[24]      (↑OVER/files ⍙DBCreateSchemaINI ¨tables) APPEND ⍙dbini[25]      ⎕nuntie ⍙dbini[26]      flds←'()' embrace fileflds←', ' join ⍙dbfundmask/⍙dbfundflds[27]      sql←"INSERT INTO ResultsData_NoIndex",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbconsfile,";] SELECT ",fileflds," FROM ",'\' Win∆Child ⍙dbfundfile[28]      0 0⍴0 ⍙DBadoCSVCommand sql[29]      0 0⍴'ADOcsvcmd' ⎕wi 'Delete'[30]      :if ⍙dbfundfile NTIE tie←'Native' TieNumber ⍙dbfundfile ⋄ ⍙dbfundfile NERASE tie ⋄ :endif ⍝ Delete the temporary file[31]      :if iniFile     NTIE tie←'Native' TieNumber iniFile     ⋄ iniFile NERASE tie ⋄ :endif ⍝ Delete any "schema.ini"[32]  :endif    ∇
+    ∇ ⍙DBConsFinalise;sql;⍙dbini;iniFile;tie;inMemory;parallel;schemafiles;File;err;files;tables;flds;fileflds;prefix
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ Consolidation Finalisation Process
+[3]   
+[4]   ⍝ Write any remaining records to Temp DB
+[5]   parallel←inMemory←0 ⋄ (⍙dbfundtie '') ⍙DBInsertTempData (⍙dbfundfmt ⎕fmt ⍙dbfundres[;⍳⍙dbfundnokeys]) (⍙dbfundres[;1+⍙dbfundnokeys])
+[6]   :if ~mt prefix←⍙dbfundprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[7]   0 0⍴('⍙dbfund' prefix) ⍙DBSummarise ⍙dbfundtie ⍙dbfundcols 17 1 0
+[8]   
+[9]   ⍝ Turn CSV file into a fixed length file with schema.ini
+[10]  files← (⊂'SVConsDB.csv'),fscopt/⊂'SVscenXL.csv'
+[11]  tables←(⊂'ResultsData_NoIndex' ),fscopt/⊂'AltScenData_NoIndex'
+[12]  
+[13]  :if sqlDatabase ⍝ Summarising Temporary Database records and inserting in Main
+[14]      schemafiles←files ⍙DBSQLMakeSchemaFiles tables
+[15]      :if ~mt err←'ResultsData_NoIndex' ⍙DBSQLInsertFrom ⍙dbfundfile
+[16]          MDISPLAY err
+[17]      :endif
+[18]      tie←'Native' TieNumber '' ⍝ Clean up
+[19]      :for File :in (⊂InputDir),¨schemafiles
+[20]          :if File NTIE tie ⋄ File NERASE tie ⋄ :endif
+[21]      :endfor
+[22]  :else ⍝ Turn CSV file into a fixed length file with schema.ini
+[23]      ⍙dbini←NCREATE iniFile←InputDir,'schema.ini'
+[24]      (↑OVER/files ⍙DBCreateSchemaINI ¨tables) APPEND ⍙dbini
+[25]      ⎕nuntie ⍙dbini
+[26]      flds←'()' embrace fileflds←', ' join ⍙dbfundmask/⍙dbfundflds
+[27]      sql←"INSERT INTO ResultsData_NoIndex",flds," IN '' [MS Access;PWD=",⍙DBPassword,";DATABASE=",⍙dbconsfile,";] SELECT ",fileflds," FROM ",'\' Win∆Child ⍙dbfundfile
+[28]      0 0⍴0 ⍙DBadoCSVCommand sql
+[29]      0 0⍴'ADOcsvcmd' ⎕wi 'Delete'
+[30]      :if ⍙dbfundfile NTIE tie←'Native' TieNumber ⍙dbfundfile ⋄ ⍙dbfundfile NERASE tie ⋄ :endif ⍝ Delete the temporary file
+[31]      :if iniFile     NTIE tie←'Native' TieNumber iniFile     ⋄ iniFile NERASE tie ⋄ :endif ⍝ Delete any "schema.ini"
+[32]  :endif
+    ∇

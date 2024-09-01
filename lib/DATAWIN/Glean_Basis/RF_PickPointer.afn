@@ -1,1 +1,104 @@
-    ∇ Z←RF_PickPointer R;val;is2d;∆stop[1]   ⍝ DATAWIN.sf#24[2]   ⍝ Assigns Escalation/Revaluation/Increases[3]   ⍝ Revn dnp28dec17 * Fix for KS: if INDREV is mt, use REV[4]   ⍝ Revn dnp03jan18 * Remove <values> from financials that have been picked from multi variables.[5]   ⍝ Revn dnp22mar18 * fix for indpups- return fin pointer corresponding to the dynamism indicator[6]   [7]   [8]   val←↑tab at R                                          ⍝ tab is a row of the big Roll Forward Table[9]   ∆stop←1[10]  :if mt Z← dic at val[11]      Z←''                                               ⍝ Makes big & awkward empties into simple empties[12]  [13]  :elseif 1=⎕vi val                                      ⍝ deal w/ numeric entries in the Roll forward table (tab) first[14]  ⍝:andif (⊂R) ∊'AgeMale' 'AgeFemale' 'Increase'[15]      Z←val[16]  [17]  :else[18]  [19]      :if is2d←2=rank Z[20]          Z←DLTB Z[rn;][21]          Z←DLTB '<' StripText Z                         ⍝ Revn dnp03jan18[22]      :endif[23]  [24]      :if R≡'Timing' ⋄ :andif Z≡'Weighted' ⋄ Z←'Review Date' ⋄ :endif[25]  [26]      :if  ^/ ('Deferreds' ≡ BasisType)  (esctype≡'Excess over GMP')  (R ≡ 'Revaluation')[27]      :andif ~(dic at 'PASTREV') starts 'No'[28]          Z←'None'[29]      :endif[30]  [31]  [32]  :endif[33]  [34]  :select val[35]  :case 'BARBIND'[36]      :select Z[37]      :case 'Rate 1'[38]          Z←dic at 'REVRAT'[39]      :case 'Rate 2'[40]          Z←dic at 'AUXREVRAT'[41]      :case 'Rate 3'[42]          Z←dic at 'REVRAT3'[43]      :endselect[44]  [45]  :caselist 'REVDBR1' 'REVDBR2' 'REVDAR2' 'REVDAR2'[46]      :if mt  Z[47]          Z←dic at 'REVN'[48]      :endif[49]  [50]  :caselist 'DYNDBR1' 'DYNDBR2' 'DYNDAR1' 'DYNDAR2' 'DYNIND' 'IndDYNDBR1' 'IndDYNDBR2' 'IndDYNDAR1' 'IndDYNDAR2' 'IndDYNIND'[51]  ⍝        Z←  ((1↓ m2n ⍙POPUPSdict at 'EscRate')⍳dic at val)⊃ dic at 'DYNINC' 'NDYNINC' 'DYNINC3' 'DYNINC4'[52]       Z←  ((1↓ m2n ⍙POPUPSdict at 'EscRate')⍳⊂Z)⊃ dic at 'DYNINC' 'NDYNINC' 'DYNINC3' 'DYNINC4'[53]       ⍝ 1↓ m2n ⍙POPUPSdict at 'EscRate' use these[54]  [55]  [56]  :case 'SALinf'[57]      :if mt Z[58]          Z←dic at 'SALINC'[59]      :endif[60]  [61]  :caselist 'SALdednf'  'SALmaxf'[62]      :if mt Z[63]          Z←dic at 'SALinf'[64]          :if mt Z[65]              Z←dic at 'SALINC'[66]          :endif[67]      :endif[68]  [69]  :caselist 'INDREV' 'IndINDREV'[70]      :if mt Z[71]          Z←dic at 'REVN'                         ⍝ dnp28dec17[72]      :endif[73]  [74]  [75]  :endselect[76]  [77]  [78]  [79]  [80]  ⍝ SALinf       - defaults if blank - comes from SALINC (see CREATE∆Financial[15])[81]  ⍝ SALdednf     - defaults if blank go first to SALinf (2d) then SALINC (1d)[82]  ⍝ SALmaxf      - defaults if blank go first to SALinf (2d) then SALINC (1d)[83]  ⍝ PHIOffInc    - OK[84]  ⍝ REVCASHCAP   - REVN[85]  ⍝ REVN         - OK[86]  ⍝ iDCONTS1     - OK[87]  ⍝ iDCONTS2     - OK[88]  ⍝ REVDBR1      - defaults if blank to REVN[89]  ⍝ REVDBR2      - defaults if blank to REVN[90]  ⍝ REVDAR1      - defaults if blank to REVN[91]  ⍝ REVDAR2      - defaults if blank to REVN[92]  ⍝ INDREV       - defaults if blank to REVN[93]  ⍝ IndINDREV    - defaults if blank  to REVN[94]  ⍝ PAYINC       - OK[95]  ⍝ B88GMPINC    - OK[96]  ⍝ A88GMPINC    - OK[97]  ⍝ DEFINC       - OK[98]  ⍝ DYNDBR1      - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4[99]  ⍝ DYNDBR2      - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4[100] ⍝ DYNDAR1      - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4[101] ⍝ DYNDAR2      - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4[102] ⍝ DYNIND       - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4    ∇
+    ∇ Z←RF_PickPointer R;val;is2d;∆stop
+[1]   ⍝ DATAWIN.sf#24
+[2]   ⍝ Assigns Escalation/Revaluation/Increases
+[3]   ⍝ Revn dnp28dec17 * Fix for KS: if INDREV is mt, use REV
+[4]   ⍝ Revn dnp03jan18 * Remove <values> from financials that have been picked from multi variables.
+[5]   ⍝ Revn dnp22mar18 * fix for indpups- return fin pointer corresponding to the dynamism indicator
+[6]   
+[7]   
+[8]   val←↑tab at R                                          ⍝ tab is a row of the big Roll Forward Table
+[9]   ∆stop←1
+[10]  :if mt Z← dic at val
+[11]      Z←''                                               ⍝ Makes big & awkward empties into simple empties
+[12]  
+[13]  :elseif 1=⎕vi val                                      ⍝ deal w/ numeric entries in the Roll forward table (tab) first
+[14]  ⍝:andif (⊂R) ∊'AgeMale' 'AgeFemale' 'Increase'
+[15]      Z←val
+[16]  
+[17]  :else
+[18]  
+[19]      :if is2d←2=rank Z
+[20]          Z←DLTB Z[rn;]
+[21]          Z←DLTB '<' StripText Z                         ⍝ Revn dnp03jan18
+[22]      :endif
+[23]  
+[24]      :if R≡'Timing' ⋄ :andif Z≡'Weighted' ⋄ Z←'Review Date' ⋄ :endif
+[25]  
+[26]      :if  ^/ ('Deferreds' ≡ BasisType)  (esctype≡'Excess over GMP')  (R ≡ 'Revaluation')
+[27]      :andif ~(dic at 'PASTREV') starts 'No'
+[28]          Z←'None'
+[29]      :endif
+[30]  
+[31]  
+[32]  :endif
+[33]  
+[34]  :select val
+[35]  :case 'BARBIND'
+[36]      :select Z
+[37]      :case 'Rate 1'
+[38]          Z←dic at 'REVRAT'
+[39]      :case 'Rate 2'
+[40]          Z←dic at 'AUXREVRAT'
+[41]      :case 'Rate 3'
+[42]          Z←dic at 'REVRAT3'
+[43]      :endselect
+[44]  
+[45]  :caselist 'REVDBR1' 'REVDBR2' 'REVDAR2' 'REVDAR2'
+[46]      :if mt  Z
+[47]          Z←dic at 'REVN'
+[48]      :endif
+[49]  
+[50]  :caselist 'DYNDBR1' 'DYNDBR2' 'DYNDAR1' 'DYNDAR2' 'DYNIND' 'IndDYNDBR1' 'IndDYNDBR2' 'IndDYNDAR1' 'IndDYNDAR2' 'IndDYNIND'
+[51]  ⍝        Z←  ((1↓ m2n ⍙POPUPSdict at 'EscRate')⍳dic at val)⊃ dic at 'DYNINC' 'NDYNINC' 'DYNINC3' 'DYNINC4'
+[52]       Z←  ((1↓ m2n ⍙POPUPSdict at 'EscRate')⍳⊂Z)⊃ dic at 'DYNINC' 'NDYNINC' 'DYNINC3' 'DYNINC4'
+[53]       ⍝ 1↓ m2n ⍙POPUPSdict at 'EscRate' use these
+[54]  
+[55]  
+[56]  :case 'SALinf'
+[57]      :if mt Z
+[58]          Z←dic at 'SALINC'
+[59]      :endif
+[60]  
+[61]  :caselist 'SALdednf'  'SALmaxf'
+[62]      :if mt Z
+[63]          Z←dic at 'SALinf'
+[64]          :if mt Z
+[65]              Z←dic at 'SALINC'
+[66]          :endif
+[67]      :endif
+[68]  
+[69]  :caselist 'INDREV' 'IndINDREV'
+[70]      :if mt Z
+[71]          Z←dic at 'REVN'                         ⍝ dnp28dec17
+[72]      :endif
+[73]  
+[74]  
+[75]  :endselect
+[76]  
+[77]  
+[78]  
+[79]  
+[80]  ⍝ SALinf       - defaults if blank - comes from SALINC (see CREATE∆Financial[15])
+[81]  ⍝ SALdednf     - defaults if blank go first to SALinf (2d) then SALINC (1d)
+[82]  ⍝ SALmaxf      - defaults if blank go first to SALinf (2d) then SALINC (1d)
+[83]  ⍝ PHIOffInc    - OK
+[84]  ⍝ REVCASHCAP   - REVN
+[85]  ⍝ REVN         - OK
+[86]  ⍝ iDCONTS1     - OK
+[87]  ⍝ iDCONTS2     - OK
+[88]  ⍝ REVDBR1      - defaults if blank to REVN
+[89]  ⍝ REVDBR2      - defaults if blank to REVN
+[90]  ⍝ REVDAR1      - defaults if blank to REVN
+[91]  ⍝ REVDAR2      - defaults if blank to REVN
+[92]  ⍝ INDREV       - defaults if blank to REVN
+[93]  ⍝ IndINDREV    - defaults if blank  to REVN
+[94]  ⍝ PAYINC       - OK
+[95]  ⍝ B88GMPINC    - OK
+[96]  ⍝ A88GMPINC    - OK
+[97]  ⍝ DEFINC       - OK
+[98]  ⍝ DYNDBR1      - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4
+[99]  ⍝ DYNDBR2      - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4
+[100] ⍝ DYNDAR1      - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4
+[101] ⍝ DYNDAR2      - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4
+[102] ⍝ DYNIND       - if main special 3 4-> DYNINC NDYNINC DYNINC3 DYNINC4
+    ∇

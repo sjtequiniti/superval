@@ -1,1 +1,25 @@
-    ∇ Z←MakeDataTable table;xxx;∆;fmts;row1;records;∆table;top2;row2[1]   ⍝ DATAWIN.sf#23[2]   ⍝ Makes data table fit for purpose[3]   ⍝ Takes a table of member records[4]   ⍝ Produces table with "correct" headings and format row[5]   ⍝ xxx      ← Format Format_Create 0[6]   row1     ← GetNames NAMES[7]   ∆        ← ∊⍴¨⍎¨ m2n SStoMAT DateStandVars[8]   :if mt CharVars ⋄ CharVars← 0 0 ⍴''⋄ :endif[9]   [10]  fmts ← ∆ push ⍎¨(⊂'df'),¨ ∆←1↓¨ m2n (∆⌿ SStoMAT DateStandVars)  ⍝ Dictionary of  formats (dates first)[11]  :if ~mt DateVars[12]      fmts← fmts amend (1↓¨m2n DateVars)  pr¨ m2n DateFmt[13]  :endif[14]  ⍝ ∆    ← 1↓¨ m2n (SStoMAT CharStandVars) OVER CharVars[15]  ∆    ← (fieldtype=2)/row1[16]  fmts ← fmts amend ∆ pr¨ (⍴∆)⍴'C'                                             ⍝ Add character vars to dic of formats[17]  ∆    ← (fieldtype=0)/row1[18]  fmts ← fmts amend ∆ pr¨ (⍴∆)⍴'N'                                             ⍝ Add numeric vars to dic of formats[19]  row2     ← fmts at row1[20]  records  ← ((⊃,/⍴¨datafields)/⍳⍴datafields)⊂table[;⊃,/datafields][21]  ∆table   ←DLTB¨ row1 OVER  row2 OVER records[22]  ∆table[1 2;(2⊃⍴∆table)]←'' ''[23]  Z←∆table    ∇
+    ∇ Z←MakeDataTable table;xxx;∆;fmts;row1;records;∆table;top2;row2
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ Makes data table fit for purpose
+[3]   ⍝ Takes a table of member records
+[4]   ⍝ Produces table with "correct" headings and format row
+[5]   ⍝ xxx      ← Format Format_Create 0
+[6]   row1     ← GetNames NAMES
+[7]   ∆        ← ∊⍴¨⍎¨ m2n SStoMAT DateStandVars
+[8]   :if mt CharVars ⋄ CharVars← 0 0 ⍴''⋄ :endif
+[9]   
+[10]  fmts ← ∆ push ⍎¨(⊂'df'),¨ ∆←1↓¨ m2n (∆⌿ SStoMAT DateStandVars)  ⍝ Dictionary of  formats (dates first)
+[11]  :if ~mt DateVars
+[12]      fmts← fmts amend (1↓¨m2n DateVars)  pr¨ m2n DateFmt
+[13]  :endif
+[14]  ⍝ ∆    ← 1↓¨ m2n (SStoMAT CharStandVars) OVER CharVars
+[15]  ∆    ← (fieldtype=2)/row1
+[16]  fmts ← fmts amend ∆ pr¨ (⍴∆)⍴'C'                                             ⍝ Add character vars to dic of formats
+[17]  ∆    ← (fieldtype=0)/row1
+[18]  fmts ← fmts amend ∆ pr¨ (⍴∆)⍴'N'                                             ⍝ Add numeric vars to dic of formats
+[19]  row2     ← fmts at row1
+[20]  records  ← ((⊃,/⍴¨datafields)/⍳⍴datafields)⊂table[;⊃,/datafields]
+[21]  ∆table   ←DLTB¨ row1 OVER  row2 OVER records
+[22]  ∆table[1 2;(2⊃⍴∆table)]←'' ''
+[23]  Z←∆table
+    ∇

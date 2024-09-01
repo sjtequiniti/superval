@@ -1,1 +1,71 @@
-    ∇ R←Title GetDir95 Dir;⎕elx;elx;BI;Data;MaxPath;hF;idlist;pData;t;lpfnHook;IMalloc[1]   ⍝ MAINWIN.sf#2[2]   ⍝ Use common dialog box to choose a directory[3]   ⍝ only works in Windows 95 or Windows NT 4.0[4]   ⍝ Dir←   initial directory[5]   ⍝ Title← additional text above the tree view[6]   ⍝ R←     new directory ('' if cancel or error)[7]   ⍝ Copyright 1998 APL2000, Inc.[8]   [9]    R←'' ⋄ hF←pData←lpfnHook←idlist←0[10]   MaxPath←⎕wcall 'W_Const' 'MAX_PATH'   ⍝ size of path[11]  [12]   :if 0=⎕nc 'Title' ⋄ Title←'' ⋄ :endif ⍝ default information string[13]   Title←Title,⎕TCNUL                    ⍝ null terminated[14]  [15]   Dir←(-'\'=¯1↑Dir)↓Dir ⍝ remove trailing backslash[16]  ⍝ end in backslash if root directory[17]   :if '\\'≡2↑Dir ⋄ Dir←Dir,(3=+/Dir='\')⍴'\'  ⍝ root of UNC if currently 3 backslashes[18]   :else          ⋄ Dir←Dir,(':'=¯1↑Dir)⍴'\'   ⍝ root if ends in colon (:)[19]   :endif[20]  [21]   Dir←Dir,(0⌈MaxPath-⍴Dir)⍴⎕tcnul       ⍝ pad with nulls[22]  [23]   Data←(MaxPath⍴⎕tcnul),Title,Dir                             ⍝ build composite data[24]   →(0=hF←⎕wcall 'GlobalAlloc' 'GMEM_MOVEABLE' (↑⍴Data))/⍙exit ⍝ allocate memory[25]   →(0=pData←⎕wcall 'GlobalLock' hF)/⍙exit                     ⍝ get ptr to memory[26]   Data W_Mem pData                                            ⍝ write data to memory[27]  [28]  ⍝ on initialization of dialog box, set initial directory[29]  ⍝ in callback: ⎕warg← hwnd, msg, lParam, lpData[30]  ⍝ lpData is pointer to initial directory[31]  ⍝ BFFM_SETSELECTION message: if first param is 1, second param is ptr to a path[32]   t←'0 0⍴⎕wcall ''SendMessage'' (1⊃⎕warg) ''BFFM_SETSELECTION'' 1 (4⊃⎕warg)'[33]   lpfnHook←⎕wcall 'W_CreateFilter' ('BrowseCallbackProc' ('BFFM_INITIALIZED' t))[34]  [35]  ⍝ create BROWSEINFO structure[36]   BI←''[37]   BI←BI,I2C WhwndOwner            ⍝ hwndOwner[38]   BI←BI,I2C 0                     ⍝ pidlRoot (null means use desktop)[39]   BI←BI,I2C pData                 ⍝ pszDisplayName (first piece of Data)[40]   BI←BI,I2C pData+MaxPath         ⍝ lpszTitle (Title = second piece of Data)[41]   BI←BI,I2C 81                    ⍝ ulFlags (BIF_RETURNONLYFSDIRS, BIF_EDITBOX, BIF_NEWDIALOGSTYLE = must be a directory, edit box, new style)[42]   BI←BI,I2C lpfnHook              ⍝ lpfn (callback function)[43]   BI←BI,I2C pData+MaxPath+⍴Title  ⍝ lpData (Dir = third piece of data))[44]   BI←BI,I2C 0                     ⍝ iImage[45]  [46]  elx←⎕elx ⋄ ⎕elx←'GetDir95Fail←1 ⋄ R←RunGetFolder Dir ⋄ →⍙exit'[47]  ⍝ get pidl (pointer to idlist)[48]   idlist←↑⎕wcall 'SHBrowseForFolder' BI  ⍝ must free memory allocated for pidl[49]   →(0=idlist)/⍙exit ⍝ exit if error or cancel[50]  [51]  ⍝ change from idlist to a path[52]   t←⎕wcall 'SHGetPathFromIDList' idlist (MaxPath⍴⎕tcnul)[53]   →(0=↑t)/⍙exit ⋄ t←↑1↓t[54]   R←(^\t≠⎕tcnul)/t  ⍝ get up to the first null[55]  [56]  ⍙exit:⎕elx←elx[57]   :if idlist≠0 ⍝ free the pointer to the idlist[58]       IMalloc←↑323 ⎕DR ↑1↓⎕wcall 'SHGetMalloc' (4⍴⎕tcnul) ⍝ ptr to IMalloc interface[59]       0 0⍴⎕wcall 'IMalloc::Free' IMalloc idlist           ⍝ free the pidl[60]   :endif[61]  [62]   :if lpfnHook≠0  ⍝ free the pointer to the callback function[63]       0 0⍴⎕wcall 'W_DestroyFilter' lpfnHook[64]   :endif[65]  [66]   :if hF≠0 ⍝ free pointer to Data[67]       0 0⍴⎕wcall 'GlobalUnlock' hF ⍝ unlock memory[68]       0 0⍴⎕wcall 'GlobalFree' hF   ⍝ free memory[69]   :endif    ∇
+    ∇ R←Title GetDir95 Dir;⎕elx;elx;BI;Data;MaxPath;hF;idlist;pData;t;lpfnHook;IMalloc
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝ Use common dialog box to choose a directory
+[3]   ⍝ only works in Windows 95 or Windows NT 4.0
+[4]   ⍝ Dir←   initial directory
+[5]   ⍝ Title← additional text above the tree view
+[6]   ⍝ R←     new directory ('' if cancel or error)
+[7]   ⍝ Copyright 1998 APL2000, Inc.
+[8]   
+[9]    R←'' ⋄ hF←pData←lpfnHook←idlist←0
+[10]   MaxPath←⎕wcall 'W_Const' 'MAX_PATH'   ⍝ size of path
+[11]  
+[12]   :if 0=⎕nc 'Title' ⋄ Title←'' ⋄ :endif ⍝ default information string
+[13]   Title←Title,⎕TCNUL                    ⍝ null terminated
+[14]  
+[15]   Dir←(-'\'=¯1↑Dir)↓Dir ⍝ remove trailing backslash
+[16]  ⍝ end in backslash if root directory
+[17]   :if '\\'≡2↑Dir ⋄ Dir←Dir,(3=+/Dir='\')⍴'\'  ⍝ root of UNC if currently 3 backslashes
+[18]   :else          ⋄ Dir←Dir,(':'=¯1↑Dir)⍴'\'   ⍝ root if ends in colon (:)
+[19]   :endif
+[20]  
+[21]   Dir←Dir,(0⌈MaxPath-⍴Dir)⍴⎕tcnul       ⍝ pad with nulls
+[22]  
+[23]   Data←(MaxPath⍴⎕tcnul),Title,Dir                             ⍝ build composite data
+[24]   →(0=hF←⎕wcall 'GlobalAlloc' 'GMEM_MOVEABLE' (↑⍴Data))/⍙exit ⍝ allocate memory
+[25]   →(0=pData←⎕wcall 'GlobalLock' hF)/⍙exit                     ⍝ get ptr to memory
+[26]   Data W_Mem pData                                            ⍝ write data to memory
+[27]  
+[28]  ⍝ on initialization of dialog box, set initial directory
+[29]  ⍝ in callback: ⎕warg← hwnd, msg, lParam, lpData
+[30]  ⍝ lpData is pointer to initial directory
+[31]  ⍝ BFFM_SETSELECTION message: if first param is 1, second param is ptr to a path
+[32]   t←'0 0⍴⎕wcall ''SendMessage'' (1⊃⎕warg) ''BFFM_SETSELECTION'' 1 (4⊃⎕warg)'
+[33]   lpfnHook←⎕wcall 'W_CreateFilter' ('BrowseCallbackProc' ('BFFM_INITIALIZED' t))
+[34]  
+[35]  ⍝ create BROWSEINFO structure
+[36]   BI←''
+[37]   BI←BI,I2C WhwndOwner            ⍝ hwndOwner
+[38]   BI←BI,I2C 0                     ⍝ pidlRoot (null means use desktop)
+[39]   BI←BI,I2C pData                 ⍝ pszDisplayName (first piece of Data)
+[40]   BI←BI,I2C pData+MaxPath         ⍝ lpszTitle (Title = second piece of Data)
+[41]   BI←BI,I2C 81                    ⍝ ulFlags (BIF_RETURNONLYFSDIRS, BIF_EDITBOX, BIF_NEWDIALOGSTYLE = must be a directory, edit box, new style)
+[42]   BI←BI,I2C lpfnHook              ⍝ lpfn (callback function)
+[43]   BI←BI,I2C pData+MaxPath+⍴Title  ⍝ lpData (Dir = third piece of data))
+[44]   BI←BI,I2C 0                     ⍝ iImage
+[45]  
+[46]  elx←⎕elx ⋄ ⎕elx←'GetDir95Fail←1 ⋄ R←RunGetFolder Dir ⋄ →⍙exit'
+[47]  ⍝ get pidl (pointer to idlist)
+[48]   idlist←↑⎕wcall 'SHBrowseForFolder' BI  ⍝ must free memory allocated for pidl
+[49]   →(0=idlist)/⍙exit ⍝ exit if error or cancel
+[50]  
+[51]  ⍝ change from idlist to a path
+[52]   t←⎕wcall 'SHGetPathFromIDList' idlist (MaxPath⍴⎕tcnul)
+[53]   →(0=↑t)/⍙exit ⋄ t←↑1↓t
+[54]   R←(^\t≠⎕tcnul)/t  ⍝ get up to the first null
+[55]  
+[56]  ⍙exit:⎕elx←elx
+[57]   :if idlist≠0 ⍝ free the pointer to the idlist
+[58]       IMalloc←↑323 ⎕DR ↑1↓⎕wcall 'SHGetMalloc' (4⍴⎕tcnul) ⍝ ptr to IMalloc interface
+[59]       0 0⍴⎕wcall 'IMalloc::Free' IMalloc idlist           ⍝ free the pidl
+[60]   :endif
+[61]  
+[62]   :if lpfnHook≠0  ⍝ free the pointer to the callback function
+[63]       0 0⍴⎕wcall 'W_DestroyFilter' lpfnHook
+[64]   :endif
+[65]  
+[66]   :if hF≠0 ⍝ free pointer to Data
+[67]       0 0⍴⎕wcall 'GlobalUnlock' hF ⍝ unlock memory
+[68]       0 0⍴⎕wcall 'GlobalFree' hF   ⍝ free memory
+[69]   :endif
+    ∇

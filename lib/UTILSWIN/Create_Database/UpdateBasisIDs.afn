@@ -1,0 +1,37 @@
+    ∇ UpdateBasisIDs;∆;type;ClassBase;basisIDs;basisNames;⍙dbXLbasis;mappings;recs;msk;newbasisIDs
+[1]   ⍝ UTILSWIN.sf#11
+[2]   ⍝ Update the BasisItemIDs to Fixed values
+[3]   
+[4]   mappings←⍬ ⍬ ⋄ ⍙dbXLbasis←0 11⍴''
+[5]   
+[6]   ⍝ Do each Group separately as names clash
+[7]   :for ∆ :in spin ('Pensioners' 'Deferreds' 'Actives' 'Consolidation') (0 10000 20000 30000) ⋄ (type ClassBase)←∆
+[8]       :if ~mt ↑(basisIDs basisNames)←⎕split ⍉1 ⍙DBadoCONCommand "SELECT BasisItemID, BasisItemName FROM BasisItem WHERE BasisItemID BETWEEN ",(⍕1+ClassBase)," AND ",⍕9999+ClassBase ⍝ Current BasisItem Records
+[9]           ⍙dbXLbasis←⍙dbXLbasis⍪∆←'database' XL_BasisDetails type                              ⍝ ⍙dbXLbasis with Fixed numbers
+[10]          msk←basisIDs≠newbasisIDs←((∆ at 'ItemID'),0)[(∆ at 'Excel')⍳DLTB¨basisNames]
+[11]          mappings←mappings,¨msk/¨basisIDs newbasisIDs
+[12]      :endif
+[13]  :endfor
+[14]  
+[15]  :if ^/~mt mappings
+[16]      recs←1 ⍙DBadoCONCommand "SELECT * FROM BasisData" ⍝ Current BasisData Records
+[17]      msk←0≠recs[;2+sqlDatabase]←mappings mapp recs[;2+sqlDatabase]
+[18]      recs←msk⌿recs
+[19]  
+[20]      0 0⍴0 ⍙DBadoCONCommand "DELETE FROM BasisData"
+[21]      'ADOrst' ⎕wi 'XOpen' 'BasisData' ('ADOcon' ⎕wi 'obj') cursor lock
+[22]      ⍙DBInsertData recs
+[23]      'ADOrst' ⎕wi 'XClose'
+[24]  
+[25]      recs←1 ⍙DBadoCONCommand "SELECT * FROM BasisItem" ⍝ Current BasisItem Records
+[26]      msk←0≠recs[;1]←mappings mapp recs[;1]
+[27]      recs←msk⌿recs
+[28]      recs←(unique recs[;1])⌿recs
+[29]  ⍝⍝⍝    recs←((⍉↑OVER/,¨¨⍙dbXLbasis at 'ItemID' 'Excel'),(⊂' - ') join¨spin ⍙dbXLbasis at 'Page' 'Frame' 'FieldDesc'),⍙dbXLbasis at 'Type'
+[30]  
+[31]      0 0⍴0 ⍙DBadoCONCommand "DELETE FROM BasisItem"
+[32]      'ADOrst' ⎕wi 'XOpen' 'BasisItem' ('ADOcon' ⎕wi 'obj') cursor lock
+[33]      ⍙DBInsertData recs
+[34]      'ADOrst' ⎕wi 'XClose'
+[35]  :endif
+    ∇

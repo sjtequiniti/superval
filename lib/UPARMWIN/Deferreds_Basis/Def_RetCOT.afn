@@ -1,0 +1,51 @@
+    ∇ field Def_RetCOT parm;page;z;isActive;MESS;sex
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Retirement COT Page
+[3]   
+[4]   page←'pgRetCOT.'
+[5]   
+[6]   :select parm
+[7]   :case 'Init'
+[8]       (parent,page,'fButtons.bnDeferreds_BasisEditRF') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[9]       (parent,page,'fButtons.bnDeferreds_BasisEditRC') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[10]  
+[11]  :case 'Change'
+[12]      :select field
+[13]      :caselist 'cbCOMMULT2' 'cbCOMPER2' 'cbCOTDATA'
+[14]          z←(bBuck∨ClntCode=3)^mt¨((⊂parent,page,'fCOT.'),¨'cbCOMMULT2' 'cbCOMPER2' 'cbCOTDATA') MultiWI 'text'
+[15]          ((parent,page,'fCOT.') 'cbCOMMULT2') Win∆SetRelated 'enabled' (^/0 1 1/z)
+[16]          ((parent,page,'fCOT.') 'cbCOMPER2' ) Win∆SetRelated 'enabled' (^/1 0 1/z)
+[17]          ((parent,page,'fCOT.') 'cbCOTDATA' ) Win∆SetRelated 'enabled' (^/1 1 0/z)
+[18]      :caselist 'cbm_ERTABParmC' 'cbf_ERTABParmC'
+[19]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fCOT.',field) ⎕wi 'text'),'"'
+[20]              isActive←0
+[21]              sex←(↑('M' 'Fem')[1+'f'=field[3]]),'ale '
+[22]              MESS←2⊃((sex,'COT Retirement Factors Parameter Set') 0) GET∆RetFactGlobals 2↓field
+[23]              :if ~openParameters∨changedParm
+[24]                  changedParm←1
+[25]                  (parent,page,'fCOT.',field) ⎕wi 'suppress' 1
+[26]                  Assign_Inputs 1
+[27]                  (parent,page,'fCOT.',field) ⎕wi 'suppress' 0
+[28]                  changedParm←0
+[29]              :endif
+[30]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[31]          :endif
+[32]      :case 'cbCashParm2'
+[33]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fCOT.',field) ⎕wi 'text'),'"'
+[34]              isActive←0
+[35]              MESS←2⊃('Retirement Cash on Top Parameter Set' 0) GET∆RetCashGlobals 2↓field
+[36]              :if ~openParameters∨changedParm
+[37]                  changedParm←1
+[38]                  (parent,page,'fCOT.',field) ⎕wi 'suppress' 1
+[39]                  Assign_Inputs 1
+[40]                  (parent,page,'fCOT.',field) ⎕wi 'suppress' 0
+[41]                  changedParm←0
+[42]              :endif
+[43]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[44]          :endif
+[45]      :endselect
+[46]  
+[47]  :case 'Valid'
+[48]  
+[49]  :endselect
+    ∇

@@ -1,1 +1,45 @@
-    ∇ Error←Format Format∆CHECK parm;FileList;tieno;i;data;recl;RECL;valid;FormatDesc;size[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Fn to carry out standard Data Format validations[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 3/00 Windowised[7]   (FileList valid)←parm[8]   Error←0⍴'' ⋄ tieno←'Native' TieNumber FileList[9]   [10]  :if ~0∊⍴,DLTMB Format[11]      FormatDesc←(Format[1+⍳3],'Format') (6↓1 HyphenSwap Format)[12]  :endif[13]  [14]  :if 0∊⍴,DLTMB FileList ⋄ :return ⋄ :endif ⍝ No File specified[15]  [16]  :for i :in ⍳1↑⍴FileList[17]      :if ~FileExist FileList[i;] ⍝ Check Existence of File[18]      :orif 0=FileList[i;] NTIE tieno[19]          :if ~∨/valid ⎕ss 'Datanew'[20]              Error←'FileNotFound' ('\' Win∆Child FileList[i;])[21]          :endif[22]          :return[23]      :endif[24]  [25]      :if 0∊⍴,DLTMB Format ⋄ →end ⋄ :endif ⍝ No Format specified[26]  [27]      data←'ASCII' Read∆DataFile tieno,size,0,(size←⎕NSIZE tieno),0 ⍝ Check first Chunk![28]  [29]      :if 0=recl←(data⍳⎕av[13+⎕io])-⎕io ⍝ Find record end - first NL[30]          Error←'No matching Members found in Data File' ⋄ →end[31]      :endif[32]  [33]      :if 0∊⍴ClientFile ReadFile FormatDesc,⊂'RECL' ⍝ Read RECL[34]          Error←'FormatNotFound' ⋄ →end[35]      :endif[36]  [37]      :if ~recl=zwb RECL ⍝ Are Record Length equal to Format[38]           Error←'InvRecLength' ('\' Win∆Child FileList[i;]) ⋄ →end[39]      :endif[40]  [41]  end:⎕nuntie tieno[42]      :if ~0∊⍴,Error ⋄ :return ⋄ :endif[43]  :endfor    ∇
+    ∇ Error←Format Format∆CHECK parm;FileList;tieno;i;data;recl;RECL;valid;FormatDesc;size
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Fn to carry out standard Data Format validations
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 3/00 Windowised
+[7]   (FileList valid)←parm
+[8]   Error←0⍴'' ⋄ tieno←'Native' TieNumber FileList
+[9]   
+[10]  :if ~0∊⍴,DLTMB Format
+[11]      FormatDesc←(Format[1+⍳3],'Format') (6↓1 HyphenSwap Format)
+[12]  :endif
+[13]  
+[14]  :if 0∊⍴,DLTMB FileList ⋄ :return ⋄ :endif ⍝ No File specified
+[15]  
+[16]  :for i :in ⍳1↑⍴FileList
+[17]      :if ~FileExist FileList[i;] ⍝ Check Existence of File
+[18]      :orif 0=FileList[i;] NTIE tieno
+[19]          :if ~∨/valid ⎕ss 'Datanew'
+[20]              Error←'FileNotFound' ('\' Win∆Child FileList[i;])
+[21]          :endif
+[22]          :return
+[23]      :endif
+[24]  
+[25]      :if 0∊⍴,DLTMB Format ⋄ →end ⋄ :endif ⍝ No Format specified
+[26]  
+[27]      data←'ASCII' Read∆DataFile tieno,size,0,(size←⎕NSIZE tieno),0 ⍝ Check first Chunk!
+[28]  
+[29]      :if 0=recl←(data⍳⎕av[13+⎕io])-⎕io ⍝ Find record end - first NL
+[30]          Error←'No matching Members found in Data File' ⋄ →end
+[31]      :endif
+[32]  
+[33]      :if 0∊⍴ClientFile ReadFile FormatDesc,⊂'RECL' ⍝ Read RECL
+[34]          Error←'FormatNotFound' ⋄ →end
+[35]      :endif
+[36]  
+[37]      :if ~recl=zwb RECL ⍝ Are Record Length equal to Format
+[38]           Error←'InvRecLength' ('\' Win∆Child FileList[i;]) ⋄ →end
+[39]      :endif
+[40]  
+[41]  end:⎕nuntie tieno
+[42]      :if ~0∊⍴,Error ⋄ :return ⋄ :endif
+[43]  :endfor
+    ∇

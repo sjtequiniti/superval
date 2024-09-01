@@ -1,1 +1,100 @@
-    ∇ LP2∆BENEFIT;A;B;C;D;DOVERD1;DOVERD2;E;F;G;H;GPUPNRAD;GPUWNRAD;GPUPSPAD;GPUWSPAD;FGPUPNRAD;FGPUWNRAD;FGPUPSPAD;FGPUWSPAD;RetAge∆pp;Inc∆pp;ABno∆pp;IncType∆pp;BenType∆pp;Start∆pp;End∆pp;GP∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;Upin∆pp;FGPUWPRESPAD;FPUWPRESPAD;GPUWPRESPAD;PUWPRESPAD;Dec∆pp[1]   ⍝ ACTWIN.sf#9[2]   ⍝ CLAYBROOK VALUATION SYSTEM[3]   ⍝[4]   ⍝[5]   ⍝ Main Pension[6]   ⍝ Annuity Costing Factors[7]   :if DeferNRA[8]       →IsAccrued/L3[9]       DOVERD1←(-NX)↑1⌊DX2XXA[SPA] CDIV (NRA∆G⍴DX2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑DX2XX[X][10]      DOVERD2←DNRADX×(-NX)↑1⌊DX1XXA[SPA] CDIV (NRA∆G⍴DX1XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑DX1XX[X][11]      A←0⌈((-NX)↑((NRA∆G⍴RA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA2XX[X]))-DOVERD1×(-NX)↑(SPA⍴RA2XXA[SPA]),(0⌊SPA-LatestRA)↑RA2XX[X][12]      B←0⌈((-NX)↑((NRA∆G⍴LA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA2XX[X]))-DOVERD1×(-NX)↑(SPA⍴LA2XXA[SPA]),(0⌊SPA-LatestRA)↑LA2XX[X][13]      →(SPA<NRA∆G)/L2[14]      C←DOVERD2×(-NX)↑(SPA⍴RA2XXA[SPA]),(0⌊SPA-LatestRA)↑RA2XX[X][15]      D←DOVERD2×(-NX)↑(SPA⍴LA2XXA[SPA]),(0⌊SPA-LatestRA)↑LA2XX[X] ⋄ →L5[16]  L2: C←DOVERD2×(-NX)↑(NRA∆G⍴RA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA2XX[X][17]      D←DOVERD2×(-NX)↑(NRA∆G⍴LA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA2XX[X][18]  L3: DOVERD1←(-NX)↑1⌊DX2XXA[SPA] CDIV (NRA∆G⍴DX2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑DX2XXA[X][19]      DOVERD2←DNRADX×(-NX)↑1⌊DX1XXA[SPA] CDIV (NRA∆G⍴DX1XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑DX1XXA[X][20]      A←0⌈((-NX)↑((NRA∆G⍴RA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA2XXA[X]))-DOVERD1×(-NX)↑(SPA⍴RA2XXA[SPA]),(0⌊SPA-LatestRA)↑RA2XXA[X][21]      B←0⌈((-NX)↑((NRA∆G⍴LA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA2XXA[X]))-DOVERD1×(-NX)↑(SPA⍴LA2XXA[SPA]),(0⌊SPA-LatestRA)↑LA2XXA[X][22]      →(SPA<NRA∆G)/L4[23]      C←DOVERD2×(-NX)↑(SPA⍴RA2XXA[SPA]),(0⌊SPA-LatestRA)↑RA2XXA[X][24]      D←DOVERD2×(-NX)↑(SPA⍴LA2XXA[SPA]),(0⌊SPA-LatestRA)↑LA2XXA[X] ⋄ →L5[25]  L4: C←DOVERD2×(-NX)↑(NRA∆G⍴RA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA2XXA[X][26]      D←DOVERD2×(-NX)↑(NRA∆G⍴LA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA2XXA[X][27]  :else[28]      DOVERD1←DX2XX[XL]CDIV DX2XX[NRA][29]      DOVERD2←DNRADX×DX1XX[XL]CDIV DX1XX[NRA][30]      A←0⌈RA2XX[NRA]-RA2XX[XL]×DOVERD1[31]      B←0⌈LA2XX[NRA]-LA2XX[XL]×DOVERD1[32]      C←RA2XX[XL]×DOVERD2[33]      D←LA2XX[XL]×DOVERD2[34]  :endif[35]  [36]  L5:⍝ Total Pension[37]  E←A×DNRADX×PUPNRAD←(+/[⎕io+1]+/[⎕io+2]TPUPNRA)[⎕io+1;][38]  F←B×DNRADX×PUWNRAD←(+/[⎕io+1]+/[⎕io+2]TPUWNRA)[⎕io+1;][39]  G←C×PUPSPAD←(+/[⎕io+1]+/[⎕io+2]TPUPSPA)[⎕io+1;][40]  PUWSPAD←(+/[⎕io+1]+/[⎕io+2]TPUWSPA)[⎕io+1;][41]  ⍝⍝⍝ (PUWSPAD PUWPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]TPUWSPA)[⎕io+1;;][42]  H←D×PUWSPAD ⍝ This is the benefit on survival to SPA or on Ret if later[43]  LP2←E+F+G+H[44]  GPUPNRAD←(+/[⎕io+1]TPUPNRA)[⎕io+1;⎕io;][45]  GPUWNRAD←(+/[⎕io+1]TPUWNRA)[⎕io+1;⎕io;][46]  GPUPSPAD←(+/[⎕io+1]TPUPSPA)[⎕io+1;⎕io;][47]  GPUWSPAD←(+/[⎕io+1]TPUWSPA)[⎕io+1;⎕io;][48]  ⍝⍝⍝ (GPUWSPAD GPUWPRESPAD)←0 SpouseBens (+/[⎕io+1]TPUWSPA)[⎕io+1;⎕io;;][49]  UM←(A×DNRADX×GPUPNRAD)+(B×DNRADX×GPUWNRAD)+(C×GPUPSPAD)+D×GPUWSPAD[50]  UFUNDCOMP←UFUNDCOMP+UM[51]  ⍝[52]  ⍝ Future Pension[53]  E←A×DNRADX×FPUPNRAD←(+/[⎕io+2]TPUPNRA)[⎕io+1;⎕io+2;][54]  F←B×DNRADX×FPUWNRAD←(+/[⎕io+2]TPUWNRA)[⎕io+1;⎕io+2;][55]  G←C×FPUPSPAD←(+/[⎕io+2]TPUPSPA)[⎕io+1;⎕io+2;][56]  FPUWSPAD←(+/[⎕io+2]TPUWSPA)[⎕io+1;⎕io+2;][57]  ⍝⍝⍝ (FPUWSPAD FPUWPRESPAD)←0 SpouseBens (+/[⎕io+2]TPUWSPA)[⎕io+1;⎕io+2;;][58]  H←D×FPUWSPAD[59]  FGPUPNRAD←TPUPNRA[⎕io+1;⎕io+2;⎕io;][60]  FGPUWNRAD←TPUWNRA[⎕io+1;⎕io+2;⎕io;][61]  FGPUPSPAD←TPUPSPA[⎕io+1;⎕io+2;⎕io;][62]  FGPUWSPAD←TPUWSPA[⎕io+1;⎕io+2;⎕io;][63]  ⍝⍝⍝ (FGPUWSPAD FGPUWPRESPAD)←0 SpouseBens TPUWSPA[⎕io+1;⎕io+2;⎕io;;][64]  LF2←E+F+G+H[65]  FUFUNDCOMP←FUFUNDCOMP+(A×DNRADX×FGPUPNRAD)+(B×DNRADX×FGPUWNRAD)+(C×FGPUPSPAD)+D×FGPUWSPAD[66]  ⍝[67]  :if isNPCR ⋄ Inc∆pp←DYNINCPost[68]  :else      ⋄ Inc∆pp←DYNINC[69]  :endif[70]  ⍝⍝⍝ Dec∆pp←'W2'[71]  Dec∆pp←'W' ⋄ BenType∆pp←'P' ⋄ IncType∆pp←'M'[72]  :if IsAccrued ⋄ ABno∆pp←'2' ⋄ :endif[73]  [74]  Start∆pp←RetAge∆pp←Age∆pp⌈NRA∆G ⋄ End∆pp←Start∆pp⌈XL⌈Age∆pp ⋄ GP∆pp←NX⍴GPeriod[75]  [76]  Upin∆pp←0 ⍝ Not "underpinned"[77]  SL∆pp←,PUPNRAD-GPUPNRAD ⋄ FSL∆pp←,FPUPNRAD-FGPUPNRAD ⋄ Con∆pp←,PUWNRAD-GPUWNRAD ⋄ FCon∆pp←,FPUWNRAD-FGPUWNRAD[78]  ⍝⍝⍝ Con∆pp←PUWPRESPAD-GPUWPRESPAD ⋄ FCon∆pp←FPUWPRESPAD-FGPUWPRESPAD[79]  [80]  PP∆CreateInterface[81]  [82]  Upin∆pp←1 ⍝ "underpinned"[83]  SL∆pp←,GPUPNRAD ⋄ FSL∆pp←,FGPUPNRAD ⋄ Con∆pp←,GPUWNRAD ⋄ FCon∆pp←,FGPUWNRAD[84]  ⍝⍝⍝ Con∆pp←GPUWPRESPAD ⋄ FCon∆pp←FGPUWPRESPAD[85]  [86]  PP∆CreateInterface[87]  [88]  Dec∆pp←'W' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-RetAge∆pp[89]  [90]  Upin∆pp←0 ⍝ Not "underpinned"[91]  SL∆pp←,PUPSPAD-GPUPSPAD ⋄ FSL∆pp←,FPUPSPAD-FGPUPSPAD ⋄ Con∆pp←,PUWSPAD-GPUWSPAD ⋄ FCon∆pp←,FPUWSPAD-FGPUWSPAD[92]  [93]  PP∆CreateInterface[94]  [95]  Upin∆pp←1 ⍝ "underpinned"[96]  SL∆pp←,GPUPSPAD ⋄ FSL∆pp←,FGPUPSPAD ⋄ Con∆pp←,GPUWSPAD ⋄ FCon∆pp←,FGPUWSPAD[97]  [98]  PP∆CreateInterface    ∇
+    ∇ LP2∆BENEFIT;A;B;C;D;DOVERD1;DOVERD2;E;F;G;H;GPUPNRAD;GPUWNRAD;GPUPSPAD;GPUWSPAD;FGPUPNRAD;FGPUWNRAD;FGPUPSPAD;FGPUWSPAD;RetAge∆pp;Inc∆pp;ABno∆pp;IncType∆pp;BenType∆pp;Start∆pp;End∆pp;GP∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;Upin∆pp;FGPUWPRESPAD;FPUWPRESPAD;GPUWPRESPAD;PUWPRESPAD;Dec∆pp
+[1]   ⍝ ACTWIN.sf#9
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ Main Pension
+[6]   ⍝ Annuity Costing Factors
+[7]   :if DeferNRA
+[8]       →IsAccrued/L3
+[9]       DOVERD1←(-NX)↑1⌊DX2XXA[SPA] CDIV (NRA∆G⍴DX2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑DX2XX[X]
+[10]      DOVERD2←DNRADX×(-NX)↑1⌊DX1XXA[SPA] CDIV (NRA∆G⍴DX1XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑DX1XX[X]
+[11]      A←0⌈((-NX)↑((NRA∆G⍴RA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA2XX[X]))-DOVERD1×(-NX)↑(SPA⍴RA2XXA[SPA]),(0⌊SPA-LatestRA)↑RA2XX[X]
+[12]      B←0⌈((-NX)↑((NRA∆G⍴LA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA2XX[X]))-DOVERD1×(-NX)↑(SPA⍴LA2XXA[SPA]),(0⌊SPA-LatestRA)↑LA2XX[X]
+[13]      →(SPA<NRA∆G)/L2
+[14]      C←DOVERD2×(-NX)↑(SPA⍴RA2XXA[SPA]),(0⌊SPA-LatestRA)↑RA2XX[X]
+[15]      D←DOVERD2×(-NX)↑(SPA⍴LA2XXA[SPA]),(0⌊SPA-LatestRA)↑LA2XX[X] ⋄ →L5
+[16]  L2: C←DOVERD2×(-NX)↑(NRA∆G⍴RA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA2XX[X]
+[17]      D←DOVERD2×(-NX)↑(NRA∆G⍴LA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA2XX[X]
+[18]  L3: DOVERD1←(-NX)↑1⌊DX2XXA[SPA] CDIV (NRA∆G⍴DX2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑DX2XXA[X]
+[19]      DOVERD2←DNRADX×(-NX)↑1⌊DX1XXA[SPA] CDIV (NRA∆G⍴DX1XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑DX1XXA[X]
+[20]      A←0⌈((-NX)↑((NRA∆G⍴RA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA2XXA[X]))-DOVERD1×(-NX)↑(SPA⍴RA2XXA[SPA]),(0⌊SPA-LatestRA)↑RA2XXA[X]
+[21]      B←0⌈((-NX)↑((NRA∆G⍴LA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA2XXA[X]))-DOVERD1×(-NX)↑(SPA⍴LA2XXA[SPA]),(0⌊SPA-LatestRA)↑LA2XXA[X]
+[22]      →(SPA<NRA∆G)/L4
+[23]      C←DOVERD2×(-NX)↑(SPA⍴RA2XXA[SPA]),(0⌊SPA-LatestRA)↑RA2XXA[X]
+[24]      D←DOVERD2×(-NX)↑(SPA⍴LA2XXA[SPA]),(0⌊SPA-LatestRA)↑LA2XXA[X] ⋄ →L5
+[25]  L4: C←DOVERD2×(-NX)↑(NRA∆G⍴RA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA2XXA[X]
+[26]      D←DOVERD2×(-NX)↑(NRA∆G⍴LA2XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA2XXA[X]
+[27]  :else
+[28]      DOVERD1←DX2XX[XL]CDIV DX2XX[NRA]
+[29]      DOVERD2←DNRADX×DX1XX[XL]CDIV DX1XX[NRA]
+[30]      A←0⌈RA2XX[NRA]-RA2XX[XL]×DOVERD1
+[31]      B←0⌈LA2XX[NRA]-LA2XX[XL]×DOVERD1
+[32]      C←RA2XX[XL]×DOVERD2
+[33]      D←LA2XX[XL]×DOVERD2
+[34]  :endif
+[35]  
+[36]  L5:⍝ Total Pension
+[37]  E←A×DNRADX×PUPNRAD←(+/[⎕io+1]+/[⎕io+2]TPUPNRA)[⎕io+1;]
+[38]  F←B×DNRADX×PUWNRAD←(+/[⎕io+1]+/[⎕io+2]TPUWNRA)[⎕io+1;]
+[39]  G←C×PUPSPAD←(+/[⎕io+1]+/[⎕io+2]TPUPSPA)[⎕io+1;]
+[40]  PUWSPAD←(+/[⎕io+1]+/[⎕io+2]TPUWSPA)[⎕io+1;]
+[41]  ⍝⍝⍝ (PUWSPAD PUWPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]TPUWSPA)[⎕io+1;;]
+[42]  H←D×PUWSPAD ⍝ This is the benefit on survival to SPA or on Ret if later
+[43]  LP2←E+F+G+H
+[44]  GPUPNRAD←(+/[⎕io+1]TPUPNRA)[⎕io+1;⎕io;]
+[45]  GPUWNRAD←(+/[⎕io+1]TPUWNRA)[⎕io+1;⎕io;]
+[46]  GPUPSPAD←(+/[⎕io+1]TPUPSPA)[⎕io+1;⎕io;]
+[47]  GPUWSPAD←(+/[⎕io+1]TPUWSPA)[⎕io+1;⎕io;]
+[48]  ⍝⍝⍝ (GPUWSPAD GPUWPRESPAD)←0 SpouseBens (+/[⎕io+1]TPUWSPA)[⎕io+1;⎕io;;]
+[49]  UM←(A×DNRADX×GPUPNRAD)+(B×DNRADX×GPUWNRAD)+(C×GPUPSPAD)+D×GPUWSPAD
+[50]  UFUNDCOMP←UFUNDCOMP+UM
+[51]  ⍝
+[52]  ⍝ Future Pension
+[53]  E←A×DNRADX×FPUPNRAD←(+/[⎕io+2]TPUPNRA)[⎕io+1;⎕io+2;]
+[54]  F←B×DNRADX×FPUWNRAD←(+/[⎕io+2]TPUWNRA)[⎕io+1;⎕io+2;]
+[55]  G←C×FPUPSPAD←(+/[⎕io+2]TPUPSPA)[⎕io+1;⎕io+2;]
+[56]  FPUWSPAD←(+/[⎕io+2]TPUWSPA)[⎕io+1;⎕io+2;]
+[57]  ⍝⍝⍝ (FPUWSPAD FPUWPRESPAD)←0 SpouseBens (+/[⎕io+2]TPUWSPA)[⎕io+1;⎕io+2;;]
+[58]  H←D×FPUWSPAD
+[59]  FGPUPNRAD←TPUPNRA[⎕io+1;⎕io+2;⎕io;]
+[60]  FGPUWNRAD←TPUWNRA[⎕io+1;⎕io+2;⎕io;]
+[61]  FGPUPSPAD←TPUPSPA[⎕io+1;⎕io+2;⎕io;]
+[62]  FGPUWSPAD←TPUWSPA[⎕io+1;⎕io+2;⎕io;]
+[63]  ⍝⍝⍝ (FGPUWSPAD FGPUWPRESPAD)←0 SpouseBens TPUWSPA[⎕io+1;⎕io+2;⎕io;;]
+[64]  LF2←E+F+G+H
+[65]  FUFUNDCOMP←FUFUNDCOMP+(A×DNRADX×FGPUPNRAD)+(B×DNRADX×FGPUWNRAD)+(C×FGPUPSPAD)+D×FGPUWSPAD
+[66]  ⍝
+[67]  :if isNPCR ⋄ Inc∆pp←DYNINCPost
+[68]  :else      ⋄ Inc∆pp←DYNINC
+[69]  :endif
+[70]  ⍝⍝⍝ Dec∆pp←'W2'
+[71]  Dec∆pp←'W' ⋄ BenType∆pp←'P' ⋄ IncType∆pp←'M'
+[72]  :if IsAccrued ⋄ ABno∆pp←'2' ⋄ :endif
+[73]  
+[74]  Start∆pp←RetAge∆pp←Age∆pp⌈NRA∆G ⋄ End∆pp←Start∆pp⌈XL⌈Age∆pp ⋄ GP∆pp←NX⍴GPeriod
+[75]  
+[76]  Upin∆pp←0 ⍝ Not "underpinned"
+[77]  SL∆pp←,PUPNRAD-GPUPNRAD ⋄ FSL∆pp←,FPUPNRAD-FGPUPNRAD ⋄ Con∆pp←,PUWNRAD-GPUWNRAD ⋄ FCon∆pp←,FPUWNRAD-FGPUWNRAD
+[78]  ⍝⍝⍝ Con∆pp←PUWPRESPAD-GPUWPRESPAD ⋄ FCon∆pp←FPUWPRESPAD-FGPUWPRESPAD
+[79]  
+[80]  PP∆CreateInterface
+[81]  
+[82]  Upin∆pp←1 ⍝ "underpinned"
+[83]  SL∆pp←,GPUPNRAD ⋄ FSL∆pp←,FGPUPNRAD ⋄ Con∆pp←,GPUWNRAD ⋄ FCon∆pp←,FGPUWNRAD
+[84]  ⍝⍝⍝ Con∆pp←GPUWPRESPAD ⋄ FCon∆pp←FGPUWPRESPAD
+[85]  
+[86]  PP∆CreateInterface
+[87]  
+[88]  Dec∆pp←'W' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-RetAge∆pp
+[89]  
+[90]  Upin∆pp←0 ⍝ Not "underpinned"
+[91]  SL∆pp←,PUPSPAD-GPUPSPAD ⋄ FSL∆pp←,FPUPSPAD-FGPUPSPAD ⋄ Con∆pp←,PUWSPAD-GPUWSPAD ⋄ FCon∆pp←,FPUWSPAD-FGPUWSPAD
+[92]  
+[93]  PP∆CreateInterface
+[94]  
+[95]  Upin∆pp←1 ⍝ "underpinned"
+[96]  SL∆pp←,GPUPSPAD ⋄ FSL∆pp←,FGPUPSPAD ⋄ Con∆pp←,GPUWSPAD ⋄ FCon∆pp←,FGPUWSPAD
+[97]  
+[98]  PP∆CreateInterface
+    ∇

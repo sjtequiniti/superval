@@ -1,0 +1,26 @@
+    ∇ Z←⍙dbname ⍙DBOpen arg;xxx;tie;found;no;DBID;connection
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Open a Database
+[3]   ⍝ arg is a flag to indicate type of database
+[4]   ⍝   0   Open Valuation Database (for adding new Database - SQL Server only)
+[5]   ⍝   1   Valuation Database (for "creation" or ¯1 if simply connecting)
+[6]   ⍝   2   Consolidation Database (for "creation" or ¯2 if simply connecting)
+[7]   ⍝   3   Scenario Database (for "creation" or ¯3 if simply connecting)
+[8]   ⍝ Reads: sqlDatabase sqlTimeout
+[9]   (arg connection)←2↑arg,⊂'' ⍝ connection defaults to '' (need connection Mode to change password)
+[10]  
+[11]  (⍙dbname DBID found)←⍙dbname ⍙DBExists arg
+[12]  
+[13]  :if ~sqlDatabase                                            ⍝ Access Database
+[14]      :if found
+[15]          xxx←'ADOcon' ⎕WI 'Create' 'ADODB.Connection'
+[16]          'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[17]          'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[18]          'ADOcon' ⎕wi 'XOpen' (⍙dbname ⍙DBconnectionString connection)
+[19]      :elseif ~found ⋄ :andif arg<0                           ⍝ Close Connection if existing Database not found
+[20]          xxx←'ADOcon' ⎕WI 'Delete'                           ⍝ avoid XOpen after XClose of Connection object
+[21]      :endif
+[22]  :endif
+[23]  
+[24]  Z←⍙dbname DBID found
+    ∇

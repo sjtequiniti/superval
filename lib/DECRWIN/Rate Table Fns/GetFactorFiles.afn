@@ -1,1 +1,24 @@
-    ∇ res←GetFactorFiles arg;⎕elx;File;z;tieno;index;n[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Get a list of New Factor Files[3]   ⍝ 'arg' of 0 restricts "New" list to just SVFactors.sf[4]   [5]   z←⍳0 ⋄ ⎕elx←'n←0 ⋄ →end'[6]   [7]   res←UPPERCASE ⎕xlib LibraryDir,'*.sf'[8]   :if ~arg ⋄ res←res[res ExactTLU 'SVFACTORS.SF';] ⋄ :endif[9]   [10]  :for File :in res←m2n res[11]      File←LibraryDir,File[12]      :if n←0=File FSTIE tieno←TieNumber File ⍝ Can tie it![13]      :andif n←1<(⎕fsize tieno)[2] ⍝ Has at least 1 component[14]      :andif n←2=⍴⍴index←⎕fread tieno,1 ⍝ 2 dimensional index[15]      :andif n←2=≡index ⍝ with nested Index - any country[16]      :andif n←index[2;index[1;]⍳⊂'∆_Name']≡⊂'FactorFile' ⍝ of the right type[17]      :andif n←index[2;index[1;]⍳⊂'∆_Code']≡⊂(3 2⍴'AUUKSA')[1+uk;] ⍝ of the right Country[18]      :endif[19]  end:z←z,n ⋄ ⎕funtie tieno[20]  :endfor[21]  [22]  res←'Factor Files' OVER z⌿⊃res    ∇
+    ∇ res←GetFactorFiles arg;⎕elx;File;z;tieno;index;n
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Get a list of New Factor Files
+[3]   ⍝ 'arg' of 0 restricts "New" list to just SVFactors.sf
+[4]   
+[5]   z←⍳0 ⋄ ⎕elx←'n←0 ⋄ →end'
+[6]   
+[7]   res←UPPERCASE ⎕xlib LibraryDir,'*.sf'
+[8]   :if ~arg ⋄ res←res[res ExactTLU 'SVFACTORS.SF';] ⋄ :endif
+[9]   
+[10]  :for File :in res←m2n res
+[11]      File←LibraryDir,File
+[12]      :if n←0=File FSTIE tieno←TieNumber File ⍝ Can tie it!
+[13]      :andif n←1<(⎕fsize tieno)[2] ⍝ Has at least 1 component
+[14]      :andif n←2=⍴⍴index←⎕fread tieno,1 ⍝ 2 dimensional index
+[15]      :andif n←2=≡index ⍝ with nested Index - any country
+[16]      :andif n←index[2;index[1;]⍳⊂'∆_Name']≡⊂'FactorFile' ⍝ of the right type
+[17]      :andif n←index[2;index[1;]⍳⊂'∆_Code']≡⊂(3 2⍴'AUUKSA')[1+uk;] ⍝ of the right Country
+[18]      :endif
+[19]  end:z←z,n ⋄ ⎕funtie tieno
+[20]  :endfor
+[21]  
+[22]  res←'Factor Files' OVER z⌿⊃res
+    ∇

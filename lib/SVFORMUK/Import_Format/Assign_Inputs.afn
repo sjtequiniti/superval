@@ -1,1 +1,48 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Import_Format" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Import_Format" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmImportFormat.cbFormatFile" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB FormatFile[11]  :if mt selection[12]      :if ~mt DLTB FormatFile[13]          warnings←warnings OVER "Previous Selection for 'Format Files' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmImportFormat.cbFormatFile" ⎕wi "value" (¯1↑1,selection)[18]  PickList←"fmImportFormat.lvFormat" ⎕wi "list"[19]  :if 0∊⍴PickList[20]      value←⍬[21]  :else[22]      list←(1 0×⍴PickList)⍴""[23]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX Format) OVER " ")[1;][24]          list←list,"⍺",(⊃PickList[;n])," "[25]      :endfor[26]      list←m2n list[27]      NameList←m2n MATRIX Format[28]      value←(list∊NameList)/PickList[;1][29]  :endif[30]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[31]      value←PickList[1;1] ⋄ modified←1[32]  :endif[33]  "fmImportFormat.lvFormat" ⎕wi "value" value[34]  0 0⍴"fmImportFormat.lvFormat" ⎕wi "EnsureVisible" ((1↑value),1)[35]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Import_Format[36]      :for var :in spin Comment_Import_Format at "variable" "row" ⋄ (var row)←var[37]          "Import_Format" ParmColor ((FormFields for "variable" var) at "control"),var row 1[38]      :endfor[39]  :endif[40]  :if ~0∊⍴,warnings[41]      MDISPLAY DLTMB warnings,⎕tcnl[42]      Win∆AssignVars "fmImportFormat"[43]  :endif[44]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Import_Format" "" "Names"[45]      "fmImportFormat" ⎕wi "modified" 0[46]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Import_Format" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Import_Format" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmImportFormat.cbFormatFile" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB FormatFile
+[11]  :if mt selection
+[12]      :if ~mt DLTB FormatFile
+[13]          warnings←warnings OVER "Previous Selection for 'Format Files' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmImportFormat.cbFormatFile" ⎕wi "value" (¯1↑1,selection)
+[18]  PickList←"fmImportFormat.lvFormat" ⎕wi "list"
+[19]  :if 0∊⍴PickList
+[20]      value←⍬
+[21]  :else
+[22]      list←(1 0×⍴PickList)⍴""
+[23]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX Format) OVER " ")[1;]
+[24]          list←list,"⍺",(⊃PickList[;n])," "
+[25]      :endfor
+[26]      list←m2n list
+[27]      NameList←m2n MATRIX Format
+[28]      value←(list∊NameList)/PickList[;1]
+[29]  :endif
+[30]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[31]      value←PickList[1;1] ⋄ modified←1
+[32]  :endif
+[33]  "fmImportFormat.lvFormat" ⎕wi "value" value
+[34]  0 0⍴"fmImportFormat.lvFormat" ⎕wi "EnsureVisible" ((1↑value),1)
+[35]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Import_Format
+[36]      :for var :in spin Comment_Import_Format at "variable" "row" ⋄ (var row)←var
+[37]          "Import_Format" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[38]      :endfor
+[39]  :endif
+[40]  :if ~0∊⍴,warnings
+[41]      MDISPLAY DLTMB warnings,⎕tcnl
+[42]      Win∆AssignVars "fmImportFormat"
+[43]  :endif
+[44]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Import_Format" "" "Names"
+[45]      "fmImportFormat" ⎕wi "modified" 0
+[46]  :endif
+    ∇

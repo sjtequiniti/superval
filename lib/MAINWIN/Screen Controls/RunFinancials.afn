@@ -1,0 +1,34 @@
+    ∇ RunFinancials arg;Fieldlist;Fieldcontrol;n;AbsFinList;AbsFinDesc;z;row;vars;field;i;var
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Run the Financial Assumptions Module (if arg=1) and update Financials fields
+[3]   
+[4]   :if arg ⋄ 'PARMWIN' CallModule 'Financials_Display' ⋄ :endif
+[5]   
+[6]   0 UpdateVarLists 'GetFinList' 'GetAbsNumList' 'GetAllNumList' ⍝ Update any Combo Financial Fields
+[7]   
+[8]   (Fieldlist Fieldcontrol)←2↑Win∆GetFieldList ControlName
+[9]   :if 0∊⍴n←Fieldcontrol ExactTLU 'F1SS' ⋄ :return ⋄ :endif ⍝ Pick up Financial fields on Grids
+[10]  AbsFinList←⊃⍙FinAssdict at 'List' ⋄ AbsFinDesc←⊃⍙FinAssdict at 'Label'
+[11]  
+[12]  :for n :in n
+[13]      field←Fieldlist[n;]
+[14]      :select DLTB Fieldcontrol[n;]
+[15]      :case 'F1SS'
+[16]          :if ~0∊⍴z←(SStoMAT field ⎕wi '∆type') ExactTLU 'Fin'
+[17]              row←'Row'≡field ⎕wi'∆roworcol'
+[18]              vars←field ⎕wi '∆name'
+[19]              :for z :in z
+[20]                  :if ~mt ⍎var←(,vars[z;])~'[;]'
+[21]                      i←((i=0)×1+↑⍴AbsFinList)+i←↑¨(⊂⎕av[209] StripText AbsFinList OVER ' ') ExactTLU¨⎕av[209] StripText¨'<' StripText¨⎕split ⍎var
+[22]                      ⍎'lr',var,'←(AbsFinDesc OVER " ")[i;]'
+[23]                      ⍎var,'←⎕split (AbsFinList OVER " ")[i;]'
+[24]                      ⍎var,'←⊃⊃ConcatLabel/¨spin ',var,' (⎕split lr',var,')'
+[25]                      :if row ⋄ field ⎕wi "TextRC[]" (⎕mix z∘., ⍳1↑⍴⍎var ) (m2n ⎕av[209 151] REPL ⍎var)
+[26]                      :else   ⋄ field ⎕wi "TextRC[]" (⎕mix (⍳1↑⍴⍎var)∘.,z) (m2n ⎕av[209 151] REPL ⍎var)
+[27]                      :endif
+[28]                  :endif
+[29]              :endfor
+[30]          :endif
+[31]      :endselect
+[32]  :endfor
+    ∇

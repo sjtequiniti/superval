@@ -1,0 +1,16 @@
+    ∇ ParmFileList←Type GetParmFiles parm;folder
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Return a list of Parameter Files
+[3]   
+[4]   :if 0=⎕nc 'Type' ⋄  Type←InputsType
+[5]   :else            ⋄ (Type folder)←2↑eis Type
+[6]   :endif
+[7]   
+[8]   :if     Type≡'SVPPFFile'  ⋄ ParmFileList←↑(Type        (parm/Win∆CountryCode)) GetParmFileList LibraryDir
+[9]   :elseif Type≡'QSMFile'    ⋄ ParmFileList←↑(Type        (parm/Win∆CountryCode)) GetParmFileList ConsolidDir
+[10]  :elseif Type≡'OtherBases' ⋄ ParmFileList←↑('BasisFile' (parm/Win∆CountryCode)) GetParmFileList folder
+[11]  :else                     ⋄ ParmFileList←↑(Type        (parm/Win∆CountryCode)) GetParmFileList InputDir
+[12]  :endif
+[13]  
+[14]  ParmFileList←'Parameter Files' OVER 0 Uniquelist ParmFileList
+    ∇

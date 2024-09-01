@@ -1,1 +1,36 @@
-    ∇ ∆rc←MessageBox rt∆arg;∆b;∆buttons;∆default;∆hdl∆;∆icon;∆mode;∆style;∆txt;∆title;∆tmp;⎕io;elx;⎕elx[1]   ⍝ MAINWIN.sf#2[2]   ⍝ cover for Windows MessageBox[3]   ⍝ rt∆arg←   (∆text ∆title ∆buttons ∆icon ∆mode ∆default)[4]   ⍝ ∆txt←     text of box (use ⎕TCNL to start new lines)[5]   ⍝ ∆title←   title of box[6]   ⍝ ∆buttons← 'OK'=OK, 'OC'=OK/Cancel, 'ARI'=Abort/Retry/Ignore,[7]   ⍝           'RC'=Retry/Cancel, 'YN'=Yes/No, 'YNC'=Yes/No/Cancel[8]   ⍝ ∆icon←    ?=question, !=exclamation, i=info, else=stop sign[9]   ⍝ ∆mode←    'A'=app modal - can't do anything in calling form[10]  ⍝           'S'=system modal - can't do anything in Windows[11]  ⍝           'T'=task modal - can't do anything in this app[12]  ⍝ ∆default← default button - 1, 2, or 3[13]  ⍝ ∆rc←      index of button pressed[14]  [15]   ⎕io←1 ⋄ elx←⎕elx[16]   rt∆arg←6↑rt∆arg,(⍴rt∆arg)↓'' '' 'OK' 'S' 'A' 1[17]   (∆txt ∆title ∆buttons ∆icon ∆mode ∆default)←rt∆arg[18]   ((∆txt='⍟')/∆txt)←⎕tcnl   ⍝ ⍟ is same as newline character[19]   ∆style←'MB_ICON',('?!i'⍳∆icon)⊃'QUESTION' 'EXCLAMATION' 'INFORMATION' 'STOP'[20]  [21]   ∆tmp←'OK' 'OC' 'ARI' 'RC' 'YN' 'YNC' ⍳⊂∆buttons[22]   →(∆tmp∊⍳6)/⍙L1 ⋄ ∆tmp←1 ⋄ ∆buttons←'OK'  ⍝ if invalid[23]  ⍙L1:∆b←'OK' 'OKCANCEL' 'ABORTRETRYIGNORE' 'RETRYCANCEL' 'YESNO' 'YESNOCANCEL'[24]   ∆style←∆style,' MB_',∆tmp⊃∆b[25]  [26]   ∆style←∆style,' MB_',('ST'⍳∆mode)⊃'SYSTEMMODAL' 'TASKMODAL' 'APPLMODAL'[27]   ∆style←∆style,' MB_DEFBUTTON',⍕⌊∆default⌈1⌊3[28]  [29]  :IF ∆mode∊'TS' ⋄ ∆hdl∆←0[30]  :ELSE          ⋄ ∆hdl∆←WhwndOwner[31]  :ENDIF[32]  [33]  ⍙L2:∆rc←1⌈⎕WCALL 'MessageBox' ∆hdl∆ ∆txt ∆title ∆style[34]      ∆rc←∆buttons⍳'OCARIYN'[∆rc]    ∇
+    ∇ ∆rc←MessageBox rt∆arg;∆b;∆buttons;∆default;∆hdl∆;∆icon;∆mode;∆style;∆txt;∆title;∆tmp;⎕io;elx;⎕elx
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝ cover for Windows MessageBox
+[3]   ⍝ rt∆arg←   (∆text ∆title ∆buttons ∆icon ∆mode ∆default)
+[4]   ⍝ ∆txt←     text of box (use ⎕TCNL to start new lines)
+[5]   ⍝ ∆title←   title of box
+[6]   ⍝ ∆buttons← 'OK'=OK, 'OC'=OK/Cancel, 'ARI'=Abort/Retry/Ignore,
+[7]   ⍝           'RC'=Retry/Cancel, 'YN'=Yes/No, 'YNC'=Yes/No/Cancel
+[8]   ⍝ ∆icon←    ?=question, !=exclamation, i=info, else=stop sign
+[9]   ⍝ ∆mode←    'A'=app modal - can't do anything in calling form
+[10]  ⍝           'S'=system modal - can't do anything in Windows
+[11]  ⍝           'T'=task modal - can't do anything in this app
+[12]  ⍝ ∆default← default button - 1, 2, or 3
+[13]  ⍝ ∆rc←      index of button pressed
+[14]  
+[15]   ⎕io←1 ⋄ elx←⎕elx
+[16]   rt∆arg←6↑rt∆arg,(⍴rt∆arg)↓'' '' 'OK' 'S' 'A' 1
+[17]   (∆txt ∆title ∆buttons ∆icon ∆mode ∆default)←rt∆arg
+[18]   ((∆txt='⍟')/∆txt)←⎕tcnl   ⍝ ⍟ is same as newline character
+[19]   ∆style←'MB_ICON',('?!i'⍳∆icon)⊃'QUESTION' 'EXCLAMATION' 'INFORMATION' 'STOP'
+[20]  
+[21]   ∆tmp←'OK' 'OC' 'ARI' 'RC' 'YN' 'YNC' ⍳⊂∆buttons
+[22]   →(∆tmp∊⍳6)/⍙L1 ⋄ ∆tmp←1 ⋄ ∆buttons←'OK'  ⍝ if invalid
+[23]  ⍙L1:∆b←'OK' 'OKCANCEL' 'ABORTRETRYIGNORE' 'RETRYCANCEL' 'YESNO' 'YESNOCANCEL'
+[24]   ∆style←∆style,' MB_',∆tmp⊃∆b
+[25]  
+[26]   ∆style←∆style,' MB_',('ST'⍳∆mode)⊃'SYSTEMMODAL' 'TASKMODAL' 'APPLMODAL'
+[27]   ∆style←∆style,' MB_DEFBUTTON',⍕⌊∆default⌈1⌊3
+[28]  
+[29]  :IF ∆mode∊'TS' ⋄ ∆hdl∆←0
+[30]  :ELSE          ⋄ ∆hdl∆←WhwndOwner
+[31]  :ENDIF
+[32]  
+[33]  ⍙L2:∆rc←1⌈⎕WCALL 'MessageBox' ∆hdl∆ ∆txt ∆title ∆style
+[34]      ∆rc←∆buttons⍳'OCARIYN'[∆rc]
+    ∇

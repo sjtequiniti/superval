@@ -1,1 +1,10 @@
-    ∇ Z←XV_ParseHeader2 line;∆[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Parse 2nd lines of a page header; return client, section, timestamp. SJT 18jan10[3]   ⍝ eg[4]   ⍝Client:  SOR27                                                     GROUP  SUMMARY LISTING                                                     18 December 2009 12:48 PM[5]   [6]   ∆←DLTB 7↓line                                                                   ⍝ drop 'Client:' prefix[7]   ∆←DLTB¨(+\XV_PartOnDblSpace ∆)⊂∆[8]   Z←DLTB¨1⌽↑¨,/¨(1 2,(¯2+⍴∆)⍴3)⊂¯1⌽∆,¨' '                                         ⍝ ASSUME any rogue dbl spaces are in central title    ∇
+    ∇ Z←XV_ParseHeader2 line;∆
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Parse 2nd lines of a page header; return client, section, timestamp. SJT 18jan10
+[3]   ⍝ eg
+[4]   ⍝Client:  SOR27                                                     GROUP  SUMMARY LISTING                                                     18 December 2009 12:48 PM
+[5]   
+[6]   ∆←DLTB 7↓line                                                                   ⍝ drop 'Client:' prefix
+[7]   ∆←DLTB¨(+\XV_PartOnDblSpace ∆)⊂∆
+[8]   Z←DLTB¨1⌽↑¨,/¨(1 2,(¯2+⍴∆)⍴3)⊂¯1⌽∆,¨' '                                         ⍝ ASSUME any rogue dbl spaces are in central title
+    ∇

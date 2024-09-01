@@ -1,0 +1,25 @@
+    ∇ res←text ParametersSaved arg;Header;lookup;select;dic;type;parm
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Return the User and Date/Time report for Run Descriptions
+[3]   
+[4]   parm←''
+[5]   :if 2=≡arg ⋄ (type parm)←arg ⋄ :else ⋄ type←arg ⋄ :endif
+[6]   :if 0=⎕nc 'text' ⋄ text←'' ⋄ :endif
+[7]   
+[8]   parm←1 DropEther parm
+[9]   
+[10]  :if '{Library}'≡9↑parm ⋄ Header←GHeader ⋄ lookup←10↓parm ⍝ Globals Header
+[11]  :elseif 'Basis'≡5↑text ⋄ Header←BHeader ⋄ lookup←   parm ⍝ Basis File Header
+[12]  :elseif   'PPF'≡3↑text ⋄ Header←PHeader ⋄ lookup←   parm ⍝ PPF File Header
+[13]  :else                  ⋄ Header←CHeader ⋄ lookup←   parm ⍝ ClientFile Header
+[14]  :endif
+[15]  type←type,(select←'[Select]'≡8↑lookup)/'_Select' ⋄ lookup←(9×select)↓lookup
+[16]  
+[17]  dic←Header for '∆_Name' type
+[18]  :if ~mt lookup ⋄ dic←dic for '∆_Description' lookup ⋄ :endif
+[19]  
+[20]  :if uSERisRSE ⋄ :andif 1≠rowsIn dic ⋄ crash ⋄ :endif ⍝⍝⍝
+[21]  
+[22]  res←         ("    ",text,"Parameters Save Date/Time") (↑dic at '∆_TSModified')
+[23]  res←res OVER ("    ",text,"Parameters Saved By")       (↑dic at '∆_UserModified')
+    ∇

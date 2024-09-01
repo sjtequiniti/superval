@@ -1,0 +1,16 @@
+    ∇ patrons←patronsOf fields;ind;patrons;props
+[1]   ⍝ UTILSWIN.sf#5
+[2]   ⍝ Fields whose values are required to evaluate the properties of fields
+[3]   ⍝ patrons can include members of fields
+[4]   ⍝ Reads: ALLEPREFS ALLPROPS ALLREFS PROPERTIES
+[5]   ⍝ Revn: sjt10jun14
+[6]   
+[7]   patrons←''
+[8]   props←,fields∘.,'.',¨PROPERTIES                     ⍝ properties to be evaluated
+[9]   
+[10]  :while ×⍴props
+[11]      ind←ALLPROPS⍳props                              ⍝ find props to be evaluated
+[12]      patrons←patrons,(nub↑,/ALLREFS[ind])~patrons    ⍝ new fields whose values required to evaluate props
+[13]      props←nub↑,/ALLEPREFS[ind]                      ⍝                   props required to evaluate props
+[14]  :endwhile
+    ∇

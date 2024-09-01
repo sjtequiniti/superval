@@ -1,0 +1,38 @@
+    ∇ Z←L test_harness ⍙⍙fn;xxx;lines;mf;labels;retries;i;N;folder;title;no
+[1]   ⍝ UTILSWIN.sf#7
+[2]   ⍝ Run test function in folder
+[3]   ⍝ L: folder & N
+[4]   ⍝ folder: (str) filepath to folder with write access, terminated with \
+[5]   ⍝ N (int>0) # times to run test
+[6]   ⍝ ⍙⍙fn: (str) name of test function
+[7]   ⍝       test function has labels on lines to time
+[8]   ⍝ Z: (tbl) `lbl: label on test function line
+[9]   ⍝          `time: total time executing line
+[10]  ⍝          `t2: time executing line less time executing called functions
+[11]  ⍝          `n: number of executions
+[12]  ⍝          `rpt: number of retries under error handling
+[13]  ⍝          `lno: function line number
+[14]  ⍝ Vern: sjt12jan16
+[15]  (folder N title)←L
+[16]  ('Testing:' 'Current Test:') Win∆ProgressBar 'SetLabels'
+[17]  no←('Native files' 'Component files' 'Windows calls')⍳⊂title
+[18]  (no 3 title) Win∆ProgressBar 'FileUpdate'
+[19]  'Testing File I/O Operations' Win∆ProgressBar 'Open'
+[20]  
+[21]  lines←(⍳tally ⎕CR ⍙⍙fn)-⎕IO
+[22]  retries←lines×0
+[23]  xxx←1 ⎕MF ⍙⍙fn
+[24]  :for i :in ⍳N
+[25]      :if ~×10∣i ⋄ (i N (⍕i)) Win∆ProgressBar 'MemberUpdate' ⋄ :endif
+[26]      retries←retries+0,⍎⍙⍙fn," '",folder,"'"
+[27]      ⎕WGIVE 0
+[28]  :endfor
+[29]  mf←'time' 't2' 'n'⍪ ⎕MF ⍙⍙fn
+[30]  mf←mf amend 'rpt' (' *'[1+×retries])
+[31]  mf←mf amend 'lno' lines
+[32]  labels←labelsIn ⍙⍙fn
+[33]  mf←mf amend 'mean' (⎕SPLIT 'CI15' ⎕FMT ⌊↑÷/mf at 'time' 'n')
+[34]  Z←('lbl' push keysIn labels),mf for 'lno' push valsIn labels
+[35]  
+[36]  Win∆ProgressBar2 'Hide'
+    ∇

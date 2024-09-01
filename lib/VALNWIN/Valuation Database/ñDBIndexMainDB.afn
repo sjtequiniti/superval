@@ -1,0 +1,97 @@
+    ∇ Z←⍙DBIndexMainDB ActivesID;ClassName;BasisTimeStamp;DataTimeStamp;rec;ValType;data;fields;DBnew;z;tempLoc;VDateInd;OtherResID;CAT;Valnts;XLnew;skipflag;MESS;OldResID;OldBasisID;DBBasisID;DBResID;ResultsCategoryID;BasisCategoryID;rstFields;NEparmsTS
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Create/Update Index to an Database File
+[3]   
+[4]   (6 7 'Updating Database Basis Parameter Tables') Win∆ProgressBar2 'FileUpdate'
+[5]   
+[6]   ValType←ValMeth
+[7]   :if ppf ⋄ :andif s143 ⋄ ValType←(2↑ValType),'3' ⋄ :endif
+[8]   ValType←5↑ValType,dab/' ',⍕'PD'[abNO]
+[9]   
+[10]  VDateInd←vDATEind⊃'Previous' 'Current'
+[11]  ClassName←,⊃(ClassID=1 2 3 4)/'Active' 'Active New Entrant' 'Deferred' 'Pensioner'
+[12]  BasisTimeStamp←⍙DBTimeStamp (InputDir,basisFile) ReadFile (ClassName,'s_Basis') basisDesc 'FRDCI'
+[13]  DataTimeStamp←1 0 WGetFileTime InputDir,fILENAME
+[14]  skipflag←(OrigValnRun^'Primary Basis'≡ScenarioDesc)∨(ScenValnRun^~'Primary Basis'≡ScenarioDesc)
+[15]  
+[16]  'ADOrst' ⎕wi 'XOpen' 'ResultsCategory' ('ADOcon' ⎕wi 'obj') cursor lock
+[17]  rstFields←⍙DBadoRstFields 'ADOrst'
+[18]  
+[19]  (1 4 'Determining Database IDs') Win∆ProgressBar2 'MemberUpdate'
+[20]  (DBnew Valnts MESS)←⍙DBRunIDs ⍝ Determine if a new run (and get suggested results and basis IDs)
+[21]  :if ResultsCategoryID=¯1 ⋄ ResultsCategoryID←(1,⌈/DBResID  ) ⍙DBNextID 'ResultsCategoryID' ⋄ :endif
+[22]  :if   BasisCategoryID=¯1 ⋄   BasisCategoryID←(1,⌈/DBBasisID) ⍙DBNextID   'BasisCategoryID' ⋄ :endif
+[23]  OldResID←↑(DBnew≠1)/ResultsCategoryID ⋄ OldBasisID←BasisCategoryID
+[24]  
+[25]  (2 4 'Updating Database Basis Details') Win∆ProgressBar2 'MemberUpdate'
+[26]  :if ClassID≠2
+[27]      (basischanged IFbasischanged)←⍙DBXL_Basis ⍝ Determine if Basis Changed and add if it has
+[28]      IFbasischanged←basischanged ⍝⍝⍝ FIXME: remove when new entrants can be run independently
+[29]  :endif
+[30]  Valnts←Valnts×skipflag^~(ClassID≠2)⊃basischanged IFbasischanged
+[31]  
+[32]  :if skipflag ⋄ :andif ~mt MESS
+[33]      MESS VALN∆LOG 'Add'
+[34]  :endif
+[35]  
+[36]  (3 4 'Deleting Excel Results') Win∆ProgressBar2 'MemberUpdate'
+[37]  :if ~XLnew←mt 'XL' ⎕wi 'self' ⋄ :andif ¯1≠BasisCategoryID
+[38]      :if useBasisCat ⋄ CAT←↑basisDesc
+[39]      :else           ⋄ CAT←⍕BasisCategoryID
+[40]      :endif
+[41]      CAT←CAT,'()' embrace DLTB Cat
+[42]      XLnew←↑CAT XL_ClearFile (ClassID≠2)⊃basischanged IFbasischanged
+[43]      0 0⍴'XL.wb' ⎕wi 'Close' ⍝ Closes workbook but leaves Excel connection
+[44]      :if ~excelOutput ⋄ :orif excelDelay ⋄ XL_Quit ⋄ :endif
+[45]  :endif
+[46]  
+[47]  ⍙DBFixMainDB ⍝ Change all "OldResID/OldBasisID" to new ResultsCategoryID/BasisCategoryID
+[48]  
+[49]  :if skipflag ⋄ :andif 0=DBnew ⋄ :andif ~(ClassID≠2)⊃basischanged IFbasischanged
+[50]      AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Valuation Results for this run found in Database'
+[51]      NERASE dattie ⍝ Delete Data (sub-)file
+[52]      :if ×rowsIn ValuationRunList ⋄ :andif (DatabaseID+OldResID)∊ValuationRunList at 'ResultsCategoryID'
+[53]          'This Valuation has previously been run in this Batch' VALN∆LOG 'Warning'
+[54]      :else
+[55]          ValuationRunList←ValuationRunList OVER BatchRow (DatabaseID+ResultsCategoryID) (DatabaseID+BasisCategoryID) ScenarioID ClassID vDATE XLnew ((~BasisCategoryID∊ValuationRunList at 'VFmissing')×VFmissing×BasisCategoryID) 1
+[56]      :endif
+[57]      0 0⍴⎕ex 'ScenarioID ClassID'
+[58]      ('NOTE:  Valuation Run on ',ScenarioDesc,' was not re-run as Database valuation results already existed') VALN∆LOG 'Add'
+[59]      0 0⍴'ADOrst' ⎕wi 'Delete'
+[60]      0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[61]      0 0⍴'ADOcon' ⎕wi 'XClose' ⋄ 0 0⍴'ADOcon' ⎕wi 'Delete'
+[62]      XL_Quit ⋄ →end
+[63]  :endif
+[64]  
+[65]  (4 4 'Deleting Database Results') Win∆ProgressBar2 'MemberUpdate'
+[66]  ((ClassID≠2)⊃basischanged IFbasischanged) ⍙DBClearMainDB DBnew
+[67]  
+[68]  :if sqlDatabase
+[69]      0 0⍴'ADOrst' ⎕wi 'XClose' ⍝ Close and re-open to update cached records???
+[70]      'ADOrst' ⎕wi 'XOpen' 'ResultsCategory' ('ADOcon' ⎕wi 'obj') cursor lock
+[71]  :endif
+[72]  
+[73]  :if ResultsCategoryID=¯1 ⋄ ResultsCategoryID←(1,⌈/DBResID  ) ⍙DBNextID 'ResultsCategoryID' ⋄ :endif
+[74]  :if   BasisCategoryID=¯1 ⋄   BasisCategoryID←(1,⌈/DBBasisID) ⍙DBNextID   'BasisCategoryID' ⋄ :endif
+[75]  
+[76]  :if 0≠ActivesID ⍝ New Entrants run
+[77]      'ADOrst' ⎕wi 'xFilter' ("ResultsCategoryID=",⍕DatabaseID+ActivesID) ⍝ find Active run record
+[78]      rec←,'ADOrst' ⎕wi 'XGetRows' ⍝ the Active run record
+[79]      NEparmsTS←⍙DBTimeStamp ClientFile ReadFile 'NE_Model' NEparms 'FRDCI'
+[80]      rec[rstFields⍳"ResultsCategoryID" "ClassID" "ClassName" "IndivCashFlow"  "NewEntDescription" "NewEntTimeStamp" "ActResultsID" "Finalised"]←(DatabaseID+ResultsCategoryID) ClassID ClassName 0 NEparms NEparmsTS ActivesID 0
+[81]      ⍙DBInsertData rec
+[82]      'ADOrst' ⎕wi 'xFilter' ''
+[83]  :elseif ∣DBnew ⋄ :orif ~OldResID≡ResultsCategoryID ⍝⍝⍝ ⋄ :orif IFbasischanged ⍝ New run so must add a new record
+[84]      fields←rstFields⍳    (~sqlDatabase)↓'DatabaseID' 'ResultsCategoryID'             'ClassID' 'BasisCategoryID'            'Sex'     'ValuationDate'                        'ValnMethod' 'ControlPeriod' 'IncInsured' 'BenCap' 'BasisFile' 'ScenarioID' 'ExactAge' 'BasisTimeStamp' 'BasisDescription' 'ScenarioDescription' 'DataFile' 'DataTimeStamp' 'DataCategory' 'AgeSummary' 'MemberSummary' 'AggValuation' 'SeparateComCot' 'SplitCombyPI' 'IndivCashFlow' 'ValuationFactors' 'ShowRates' 'ValnDateInd' 'IncNewEntrants' 'AltScenario' 'AltScenLeftService' 'AltScenSpouseCF' 'CSVFile' 'OutputData' 'AOSCalcs' 'ClassName' 'ActResultsID' 'InputFolder'                          'LibraryFolder'                         'BatchJob'   'UserName' 'ValnTimeStamp'             'RunVersion' 'OutputFilename' 'Finalised' 'BasisCategory'         ,(aosind/⊂'PrevValnDate')     ,bAON/⊂'FinAssSummarised'
+[85]      fields ⍙DBInsertData (~sqlDatabase)↓ DatabaseID  (DatabaseID+ResultsCategoryID)   ClassID  (DatabaseID+BasisCategoryID) (,SelSex) (⍙DBTimeStamp ¯3↑pvDATE,vDATEind/vDATE) ValType      contper         insind       bencap   basisFile   ScenarioID   AgeInterp  BasisTimeStamp   basisDesc          ScenarioDesc          fILENAME   DataTimeStamp   Cat            summopt      memsumm        (aggopt[0])     sepComCot        splitCombyPI   IndCashFlow     VFtables           decopt      VDateInd      newent           fscopt       (fscopt×HLDII)       (fscopt×SpouseCF)  csvind    dataind      aosind    ClassName    0             ((255 InputDir) ConvertDir 'ShortDir') ((255 LibraryDir) ConvertDir 'ShortDir') BatchJobName uSER      (⍙DBTimeStamp ValnTimeStamp) version     ''                0          (↑useBasisCat↑basisDesc),(aosind/⊂⍙DBTimeStamp pvDATE),bAON/0
+[86]  :else ⍝ Must update the current record     ⍝⍝⍝ provided we are sure that no-one else is currently doing this valuation run!!!
+[87]      fields←rstFields⍳"BasisTimeStamp" "DataFile" "DataTimeStamp" "DataCategory" "AgeSummary" "MemberSummary" "AggValuation" "SeparateComCot" "SplitCombyPI" "IndivCashFlow" "ValuationFactors" "ShowRates" "ValnDateInd" "IncNewEntrants" "AltScenario" "AltScenLeftService" "AltScenSpouseCF" "CSVFile" "OutputData" "AOSCalcs" "InputFolder"                          "LibraryFolder"                         "BatchJob"   "UserName" "ValnTimeStamp"             "RunVersion" "OutputFilename" "Finalised" "BasisCategory"         ,(aosind/⊂"PrevValnDate")     ,bAON/⊂'FinAssSummarised'
+[88]      data←             BasisTimeStamp   fILENAME   DataTimeStamp   Cat            summopt      memsumm         (aggopt[0])    sepComCot        splitCombyPI   IndCashFlow     VFtables           decopt      VDateInd      newent           fscopt       (fscopt×HLDII)       (fscopt×SpouseCF)  csvind    dataind      aosind    ((255 InputDir) ConvertDir 'ShortDir') ((255 LibraryDir) ConvertDir 'ShortDir') BatchJobName uSER      (⍙DBTimeStamp ValnTimeStamp) version      ''               0          (↑useBasisCat↑basisDesc),(aosind/⊂⍙DBTimeStamp pvDATE),bAON/0
+[89]      'ADOrst' ⎕wi 'xFilter' ('ResultsCategoryID=',⍕DatabaseID+ResultsCategoryID)
+[90]      'ADOrst' ⎕wi 'XUpdate' ('#' ⎕wi 'VT' fields 8204) data
+[91]      'ADOrst' ⎕wi 'xFilter' ''
+[92]  :endif
+[93]  0 0⍴'ADOrst' ⎕wi 'XClose'
+[94]  
+[95]  end:Z←ResultsCategoryID BasisCategoryID
+    ∇

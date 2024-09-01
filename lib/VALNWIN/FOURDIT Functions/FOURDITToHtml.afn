@@ -1,0 +1,98 @@
+    ∇ body←FOURDITToHtml tnos;⎕IO;∆;xxx;drop;last;dic;subtitle;vars;tbl;bvars;key;prev;next;linksp;linksn;labels;anchors;RefTables;PW;vals;AllTables;ki;defn;defs;sk;surprises;missing;AGEVARS;tno;∆stop;title;AllGroups;sm;firstValues;firstref;misslist;usedtitles
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ tnos: (int+) tie#s of Basis and Member Audit component files
+[3]   ⍝ Reads: FOURDITVARDESC
+[4]   ⍝ Vern: sjt21sep15
+[5]   ⍝ Revn: dnp29sep15 * fix for prototype mysteries
+[6]   ⍝       dnp29sep15 * 'VARDESC' -> 'FOURDITVARDESC'
+[7]   ⍝       sjt09nov15 * no surprises or links in age-listing vars
+[8]   ⍝       sjt10nov15 * space for _ in column heads
+[9]   ⍝       sjt09sep16 * ToC subtitle, subtitle
+[10]  ⍝       sjt30sep17 * prioritise Member Data
+[11]  ⎕IO←1
+[12]  ∆stop←1 ⍝ DEBUG set watchpoint
+[13]  
+[14]  ⍝ Tabulate records in Audit component file
+[15]  tbl←,[0.5] 'title' 'subtitle' 'missing' 'var' 'val'
+[16]  :for tno :in tnos
+[17]      (drop last)←(2↑⎕FSIZE tno)-1
+[18]      :for dic :in ⎕FREAD¨tno,¨drop↓⍳last                                         ⍝ Audit entry dictionaries
+[19]          (title subtitle missing)←dic at ∆←'⍙⍙title' '⍙⍙subtitle' '⍙⍙missing'
+[20]          :if 1=≡vars←(keysIn dic)~∆ ⋄ vars←⊂vars ⋄ :endif
+[21]          tbl←tbl⍪(⊂title), (⊂subtitle), missing, vars,[1.5] dic at vars
+[22]      :endfor
+[23]  :endfor
+[24]  ⍝ 30sep17 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[25]  leadwith←,⊂'Member Data'                                                        ⍝ begin report with these tables
+[26]  tbl←tbl sortedBy ⍋(leadwith,(nub ∆)~leadwith)⍳∆←tbl at 'title'
+[27]  ⍝ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[28]  tbl←tbl for unique ⎕split valsIn tbl                                            ⍝ Remove duplicates
+[29]  (vals vars)←tbl at 'val' 'var'
+[30]  
+[31]  sm←'→←⊃'                                                                        ⍝ syntax modifiers
+[32]  
+[33]  ⍝ eg ⊃foo is assigned value of 1st FOURDIT reference to foo
+[34]  firstref←unique vars~¨⊂sm                                                       ⍝ flag 1st references
+[35]  firstValues←push firstref/¨(vars~¨⊂sm) vals                                     ⍝ cache 1st references
+[36]  ∆←'⊃'∊¨vars                                                                     ⍝ flag vars with shoes
+[37]  (∆/vals)←firstValues at ∆/vars~¨⊂sm                                             ⍝ replace with 1st value
+[38]  
+[39]  ⍝ Display Check Boxes as Yes/No
+[40]  ∆←(⊂'Check')≡¨↑¨((⊂FOURDITVARDESC) for¨(⊂⊂'name'),¨(⊂¨vars~¨⊂sm)) at¨⊂'type'
+[41]  ∆←∆^∆\(⍴¨∆/vals)∊⍬ 0 (,0) 1 (,1)
+[42]  (∆/vals)←CheckTranslate¨⍕¨∆/vals
+[43]  
+[44]  tbl←tbl amend ('val' vals) ('first' firstref)
+[45]  
+[46]  ∆←2=rank¨vals
+[47]  tbl←tbl amend 'is2D' (∆\ (2=≡¨∆/vals) ∨ (0=↑¨0⍴¨↑¨∆/vals) ^ 1<2⊃¨2↑¨⍴¨∆/vals)   ⍝ flag 2D tables - dnp29sep15
+[48]  defs←'←'=↑¨⌽¨vars                                                               ⍝ flag redefns
+[49]  bvars←vars~¨⊂sm                                                                 ⍝ 'bare' variable names
+[50]  defs←defs ∨ unique bvars                                                        ⍝ flag defns and redefns
+[51]  ∆←(((push FOURDITVARDESC at 'name' 'fmt')at bvars) V2C¨vals)                    ⍝ count and format each value
+[52]  tbl←tbl amend spin ('multi' 'count' 'txt')(spin ∆)
+[53]  tbl←tbl amend 'desc' ((FOURDITVARDESC at 'name' 'description')mapp bvars)       ⍝ descriptions where available
+[54]  
+[55]  :if ecflag
+[56]      misslist←nub (bvars≡¨((FOURDITVARDESC at 'name' 'description')mapp bvars))/bvars         ⍝ Throw list of missing descriptions to WS
+[57]      misslist←(~'q'=↑¨misslist)/misslist ⋄ misslist←misslist~'Age' 'Year'
+[58]      misslist
+[59]  :endif
+[60]  
+[61]  ⍝ Calculate indexes to definitions and prev/next references; highlight surprise value changes
+[62]  AllTables←nub RefTables←tbl at 'subtitle'
+[63]  ki←WHERE¨sk←⎕SPLIT key←(nub bvars)∘.≡bvars                                      ⍝ keys, split keys; key indexes
+[64]  defn←(~defs)×+⌿key× ⌈\key ×[2] defs×⍳⍴defs                                      ⍝ indexes of latest definitions
+[65]  (prev next)←⎕SPLIT ↑+/sk ⎕EXPAND¨⊃¨(⊂¯2 2)↓¨¨⊂¨1⌽¨(⊂0 0),¨ki                    ⍝ indexes to prev/next refs; else 0
+[66]  ⍝anchors←('a' xattr¨(⊂'name')pr¨(⊂'ref'),¨⍕¨⍳⍴defn)xtag¨⊂,' '                   ⍝ anchors for inbound links
+[67]  anchors←('a' xattr¨(⊂'id')pr¨(⊂'ref'),¨⍕¨⍳⍴defn)xtag¨⊂,' '                      ⍝ anchors for inbound links (HTML5)
+[68]  linksp←'prev' linksFrom prev ((×prev)⎕REPL¨⊂'&lt;')                             ⍝ links to prev usage
+[69]  linksn←'next' linksFrom next ((×next)⎕REPL¨⊂'&gt;')                             ⍝ links to next usage
+[70]  surprises←∨⌿⎕MIX sk ⎕EXPAND¨(dif¨(⊂vals) indexat¨ki) ^ ~(⊂defs) indexat¨ki      ⍝ flag suprises (unexpected value changes)
+[71]  
+[72]  surprises←surprises^~tbl at 'missing'                                           ⍝ FIXME: Missing can't be a surprise
+[73]  
+[74]  ⍝ Special cases: vars that list ages and exit ages
+[75]  AGEVARS←,¨'X' 'Age' 'AGES' 'Year' 'T'
+[76]  (defn surprises)←(defn surprises) × ⊂∆← ~bvars∊AGEVARS
+[77]  (linksp linksn)←(⊂∆)⎕REPL¨¨linksp linksn
+[78]  
+[79]  tbl←tbl amend 'surprise' surprises
+[80]  labels←xmlEscape¨aplEscape¨(⊂'_ ')REPL¨tbl at 'desc'
+[81]  labels←linksp,¨('defn' linksFrom defn labels),¨linksn                           ⍝ prefix and suffix link 'buttons'
+[82]  tbl←tbl amend 'label' (anchors,¨labels)
+[83]  
+[84]  ⍝ Compose audit entries in HTML
+[85]  PW←132                                                                          ⍝ notional page width
+[86]  (AllGroups body)←composeToC tbl                                                 ⍝ table of contents
+[87]  
+[88]  usedtitles←⊂''
+[89]  ∆←↑rr composeTable¨spin pop tbl groupby (∆) ((keysIn tbl)~∆←'title' 'subtitle') ⍝ sections
+[90]  :if ecflag
+[91]      ∆←∆,tbl composeIndex 'missing' 'missing' 'Missing elements'
+[92]      ∆←∆,tbl composeIndex 'surprise' 'surprises' 'Surprise value changes'
+[93]  :endif
+[94]  body←body,('div' xattr 'id' 'main') xtag ∆
+[95]  
+[96]  xxx←⎕ex '⍙⍙prevtitle ⍙⍙prevsubtitle'
+    ∇

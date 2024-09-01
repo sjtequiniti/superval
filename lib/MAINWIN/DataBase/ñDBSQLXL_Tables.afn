@@ -1,0 +1,46 @@
+    ∇ larg ⍙DBSQLXL_Tables ⍙dbname;list;xxx;⍙db;indexed;∆;sqlDatabase;tableind
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Set up SQL Server Tables using TSQL
+[3]   ⍝ (ADOX.Catalog.Create not supported by SQL Server provider)
+[4]   ⍝ Reads: ⍙dbopen AOSCtl
+[5]   ⍝ Revn: sjt28sep15
+[6]   
+[7]   (sqlDatabase tableind)←larg ⋄ tableind←sqlDatabase∨tableind∊2 3 ⍝_NoIndex tables conditional on sqlDatabase or Consolidation/Scenario
+[8]   
+[9]   indexed←1
+[10]  list←'BenefitType' 'Contingency' 'LiabilityType' 'DataItem' 'BasisType',sqlDatabase/⊂ 'Scheme'
+[11]  list←list,'Version' 'AllocatedIDs' 'Identification' 'ResultsCategory' 'ResultsData' 'OutputFile' 'AltScenData',tableind/'ResultsData_NoIndex' 'AltScenData_NoIndex'
+[12]  list←list,AOSCtl/'AOSMember' 'AOSType' 'AOSResults' 'AOSClass' 'AOSItem',tableind/⊂'AOSResults_NoIndex'
+[13]  list←list,'BasisItem' 'BasisData' 'CharMemberData' 'NumMemberData' 'MemberFields' 'MemberResults',tableind/⊂'MemberResults_NoIndex'
+[14]  list←list,'FinancialsGroups' 'FinancialsValues' 'TableNames' 'TableValues',(bQSM∨bAON)/'CategoryAssumptions' 'BenefitAssumptions'
+[15]  ⍝⍝⍝ list←list,(bQSM∨ecflag)/'CategoryAssumptions_new' 'BenefitAssumptions_new'
+[16]  
+[17]  :if sqlDatabase
+[18]      ⍙db←'[]' embrace ⍙dbname
+[19]  
+[20]      ⍙DBSQLOpen 'Database' 'Master'
+[21]      xxx←'ADOcon' ⎕WI 'XExecute' ("CREATE DATABASE ",⍙db) ⍝⍝⍝ " on (name=",⍙db,", filename='",folder,⍙dbname,".mdf')") ⍝⍝⍝ if "local"
+[22]      xxx←(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete' ⍝ avoid XOpen after XClose of Connection object
+[23]      xxx←'ADOcon' ⎕WI 'Create' 'ADODB.Connection'
+[24]      'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[25]      'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[26]      ⍙DBSQLOpen 'Database' ⍙dbname
+[27]  
+[28]      xxx←'ADOcon' ⎕WI 'XExecute' ((⊂';',⎕tcnl) join indexed ⍙DBSQLCreateTable¨list)
+[29]  :else
+[30]      xxx←'AXS' ⎕wi 'Create' 'Access.Application'
+[31]      'AXS' ⎕wi 'XNewCurrentDatabase' ⍙dbname
+[32]      'AXS' ⎕wi 'Delete'
+[33]      :if ~mt ∆←⍙DBPassword
+[34]          xxx←⍙dbname ⍙DBOpen ¯1 (MATRIX 'Mode' 'Share Exclusive')
+[35]          xxx←0 ⍙DBadoCONCommand 'ALTER DATABASE PASSWORD ',∆,' NULL'
+[36]          xxx←(⊂'ADOcon') ⎕wi¨'XClose' 'Delete'
+[37]      :endif
+[38]      xxx←⍙dbname ⍙DBOpen ¯1
+[39]  
+[40]  ⍝ TableID enclosed in []
+[41]      :for ∆ :in list
+[42]          sqlDatabase Create_Table indexed ∆
+[43]      :endfor
+[44]  :endif
+    ∇

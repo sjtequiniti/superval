@@ -1,0 +1,50 @@
+    ∇ res←field Update_Database parm;parent;MESS;sqlDatabase;progid
+[1]   ⍝ UTILSWIN.sf#15
+[2]   ⍝ Function to allow user control on Update Access Databases
+[3]   
+[4]   parent←'fmDBUpdate.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]  
+[12]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[13]  
+[14]      :repeat
+[15]          :select ↑field
+[16]          :case 'edmdbFile'
+[17]          :endselect
+[18]      :until mt field←1↓field
+[19]  
+[20]  :case 'Valid' ⍝ Routine specific validation
+[21]  
+[22]      :if ~∨/∨/¨('.MDB ' '.ACCDB ')⍷¨⊂UPPERCASE mdbFile,' '
+[23]          res←'Invalid File Selection.  Please select an Access Database'
+[24]          Win∆SetFocus parent,'edmdbFile' ⋄ :return
+[25]      :endif
+[26]  
+[27]  :case 'Run'
+[28]  
+[29]      sqlDatabase←0 ⋄ progid←⍙DBAccessProvider 0
+[30]      0 0⍴(SystemDir,'UTILSWIN') ReadFile 'Create_Database'
+[31]      :if 2↓mdbFile ⍙DBOpen ¯1
+[32]          :if ~mt MESS←0 Database_Migration mdbFile
+[33]              MDISPLAY MESS
+[34]          :else
+[35]              MDISPLAY 'No updating required for the ',mdbFile,' database.'
+[36]          :endif
+[37]          0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[38]          0 0⍴(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete'   ⍝ avoid XOpen after XClose of Connection object
+[39]          res←'Quit'
+[40]      :else
+[41]          MDISPLAY mdbFile,' database not found.'
+[42]      :endif
+[43]      0 0⍴(SystemDir,'UTILSWIN') DeleteModule 'Create_Database'
+[44]  
+[45]  
+[46]  :case 'Quit' ⍝ Deleting "other" variables
+[47]  
+[48]  :endselect
+    ∇

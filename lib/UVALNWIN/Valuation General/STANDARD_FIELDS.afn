@@ -1,1 +1,42 @@
-    ∇ EXIT STANDARD∆FIELDS MembGroup;I[1]   ⍝ UVALNWIN.sf#3[2]   ⍝ Creating the data in the Standard fields.[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   [8]   NOM←zwb '1 ',REC[fNOM] ⋄ NAME←REC[fNAME] ⋄ SEX←1↑REC[fSEX] ⋄ CAT←1↑REC[fCAT][9]   ⍝⍀⍝ 'Member Data' 'Standard Fields' FOURDIT 'NOM← NAME← SEX← CAT←'[10]  [11]  :if MembGroup≡'Pensioners' ⍝ needed for output of exit[12]      NotSpouse←,~'S'=↑UPPERCASE REC[fMEMORSP] ⍝ 0 for Spouse, 1 for Member[13]      MS←1↑REC[fMS][14]      ⍝⍀⍝ FOURDIT 'NotSpouse← MS←'[15]  :endif[16]  [17]  →EXIT/0[18]  [19]  ⍝ Universal Fields[20]  GMP0←zwb REC[fGMP0] ⋄ GMPE0←zwb REC[fGMPE0][21]  ⍝⍀⍝ FOURDIT 'GMP0← GMPE0←'[22]  [23]  :select MembGroup[24]  :caselist 'Actives' 'New Entrants'[25]      SAL0←zwb REC[fSAL] ⋄ PSAL←zwb REC[fPSAL] ⋄ ACWO0←zwb REC[fACWO] ⋄ EACWO0←zwb REC[fEACWO] ⋄ ACW←zwb REC[fACW][26]      BOE←zwb REC[fBOE][27]      ⍝⍀⍝ FOURDIT ('SAL0← PSAL← ACW←',aosind/' ACWO0← EACWO0← BOE←')[28]  :case 'Deferreds'[29]      ACW←zwb REC[fACW] ⋄ TOP←REC[fTOP] ⍝ TOP???[30]      BOE←zwb REC[fBOE][31]      ⍝⍀⍝ FOURDIT ('ACW←',aosind/' TOP← BOE←')[32]  :case 'Pensioners'[33]      :if     0≠⍴fLD  ⋄ LD←(dfLD DOB) DATEEXP REC[fLD][34]      :elseif 0≠⍴fDPC ⋄ LD←DPC[35]      :else           ⋄ LD←¯3↑VDATE,aosind/pvDATE[36]      :endif[37]      TPP←zwb REC[fTPP] ⋄ BOE←zwb REC[fBOT][38]      :if ~^/' '=SDOB←REC[fSDOB] ⋄ SDOB←dfSDOB DATEEXP REC[fSDOB] ⋄ :endif[39]      ⍝⍀⍝ FOURDIT ('LD← SDOB←',aosind/' TPP← BOE←')[40]  :endselect    ∇
+    ∇ EXIT STANDARD∆FIELDS MembGroup;I
+[1]   ⍝ UVALNWIN.sf#3
+[2]   ⍝ Creating the data in the Standard fields.
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   
+[8]   NOM←zwb '1 ',REC[fNOM] ⋄ NAME←REC[fNAME] ⋄ SEX←1↑REC[fSEX] ⋄ CAT←1↑REC[fCAT]
+[9]   ⍝⍀⍝ 'Member Data' 'Standard Fields' FOURDIT 'NOM← NAME← SEX← CAT←'
+[10]  
+[11]  :if MembGroup≡'Pensioners' ⍝ needed for output of exit
+[12]      NotSpouse←,~'S'=↑UPPERCASE REC[fMEMORSP] ⍝ 0 for Spouse, 1 for Member
+[13]      MS←1↑REC[fMS]
+[14]      ⍝⍀⍝ FOURDIT 'NotSpouse← MS←'
+[15]  :endif
+[16]  
+[17]  →EXIT/0
+[18]  
+[19]  ⍝ Universal Fields
+[20]  GMP0←zwb REC[fGMP0] ⋄ GMPE0←zwb REC[fGMPE0]
+[21]  ⍝⍀⍝ FOURDIT 'GMP0← GMPE0←'
+[22]  
+[23]  :select MembGroup
+[24]  :caselist 'Actives' 'New Entrants'
+[25]      SAL0←zwb REC[fSAL] ⋄ PSAL←zwb REC[fPSAL] ⋄ ACWO0←zwb REC[fACWO] ⋄ EACWO0←zwb REC[fEACWO] ⋄ ACW←zwb REC[fACW]
+[26]      BOE←zwb REC[fBOE]
+[27]      ⍝⍀⍝ FOURDIT ('SAL0← PSAL← ACW←',aosind/' ACWO0← EACWO0← BOE←')
+[28]  :case 'Deferreds'
+[29]      ACW←zwb REC[fACW] ⋄ TOP←REC[fTOP] ⍝ TOP???
+[30]      BOE←zwb REC[fBOE]
+[31]      ⍝⍀⍝ FOURDIT ('ACW←',aosind/' TOP← BOE←')
+[32]  :case 'Pensioners'
+[33]      :if     0≠⍴fLD  ⋄ LD←(dfLD DOB) DATEEXP REC[fLD]
+[34]      :elseif 0≠⍴fDPC ⋄ LD←DPC
+[35]      :else           ⋄ LD←¯3↑VDATE,aosind/pvDATE
+[36]      :endif
+[37]      TPP←zwb REC[fTPP] ⋄ BOE←zwb REC[fBOT]
+[38]      :if ~^/' '=SDOB←REC[fSDOB] ⋄ SDOB←dfSDOB DATEEXP REC[fSDOB] ⋄ :endif
+[39]      ⍝⍀⍝ FOURDIT ('LD← SDOB←',aosind/' TPP← BOE←')
+[40]  :endselect
+    ∇

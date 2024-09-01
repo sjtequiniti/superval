@@ -1,1 +1,81 @@
-    ∇ PHIERPENS;NOTNEG;∆a;∆aC[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Apply Early Retirement Reduction Factors to PHI Retirement benefits[3]   ⍝ Called from INIT∆CASH (via ERPENS)[4]   ⍝[5]   ⍝ Initialise variables[6]   PHIERPEN←PHIERPENC←PHISERPEN←PHIIRDED←0×PHITPEN[7]   ⍝[8]   ⍝ Apply Early Retirement Factors[9]   PHIERPEN [;;⎕io  ;;;⎕io  ;;]←PHIRETTPEN[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC[10]  PHIERPEN [;;⎕io  ;;;⎕io+1;;]←PHIRETTPEN[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC[11]  PHIERPEN [;;⎕io+1;;;⎕io  ;;]←PHIRETTPEN[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACF[12]  PHIERPEN [;;⎕io+1;;;⎕io+1;;]←PHIRETTPEN[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACF[13]  PHIERPEN [;;⎕io+2;;;⎕io  ;;]←PHIRETTPEN[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC[14]  PHIERPEN [;;⎕io+2;;;⎕io+1;;]←PHIRETTPEN[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC[15]  PHIERPENC[;;⎕io  ;;;⎕io  ;;]←PHIRETTPEN[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACC[16]  PHIERPENC[;;⎕io  ;;;⎕io+1;;]←PHIRETTPEN[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACC[17]  PHIERPENC[;;⎕io+1;;;⎕io  ;;]←PHIRETTPEN[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACFC[18]  PHIERPENC[;;⎕io+1;;;⎕io+1;;]←PHIRETTPEN[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACFC[19]  PHIERPENC[;;⎕io+2;;;⎕io  ;;]←PHIRETTPEN[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACC[20]  PHIERPENC[;;⎕io+2;;;⎕io+1;;]←PHIRETTPEN[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACC[21]  :if servind ⋄ :andif LRFApplies ⍝ LRF only to Pre NRA Pension[22]      PHIERPEN [;;⎕io  ;;;⎕io  ;;]←PHIERPEN [;;⎕io  ;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC    -×ERFAC[23]      PHIERPEN [;;⎕io  ;;;⎕io+1;;]←PHIERPEN [;;⎕io  ;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC  -×BARBFAC[24]      PHIERPEN [;;⎕io+1;;;⎕io  ;;]←PHIERPEN [;;⎕io+1;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACF   -×ERFACF[25]      PHIERPEN [;;⎕io+1;;;⎕io+1;;]←PHIERPEN [;;⎕io+1;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACF -×BARBFACF[26]      PHIERPEN [;;⎕io+2;;;⎕io  ;;]←PHIERPEN [;;⎕io+2;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC    -×ERFAC[27]      PHIERPEN [;;⎕io+2;;;⎕io+1;;]←PHIERPEN [;;⎕io+2;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC  -×BARBFAC[28]      PHIERPENC[;;⎕io  ;;;⎕io  ;;]←PHIERPENC[;;⎕io  ;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACC   -×ERFACC[29]      PHIERPENC[;;⎕io  ;;;⎕io+1;;]←PHIERPENC[;;⎕io  ;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACC -×BARBFACC[30]      PHIERPENC[;;⎕io+1;;;⎕io  ;;]←PHIERPENC[;;⎕io+1;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACFC  -×ERFACFC[31]      PHIERPENC[;;⎕io+1;;;⎕io+1;;]←PHIERPENC[;;⎕io+1;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACFC-×BARBFACFC[32]      PHIERPENC[;;⎕io+2;;;⎕io  ;;]←PHIERPENC[;;⎕io+2;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACC   -×ERFACC[33]      PHIERPENC[;;⎕io+2;;;⎕io+1;;]←PHIERPENC[;;⎕io+2;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACC -×BARBFACC[34]  :endif[35]  :if ClntCode=3[36]      PHISERPEN[;;⎕io  ;;;⎕io  ;;]←PHIRETSTPEN[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴NoRF+ERFAC   ×~NoRF[37]      PHISERPEN[;;⎕io  ;;;⎕io+1;;]←PHIRETSTPEN[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴NoRF+BARBFAC ×~NoRF[38]      PHISERPEN[;;⎕io+1;;;⎕io  ;;]←PHIRETSTPEN[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴NoRF+ERFACF  ×~NoRF[39]      PHISERPEN[;;⎕io+1;;;⎕io+1;;]←PHIRETSTPEN[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴NoRF+BARBFACF×~NoRF[40]      PHISERPEN[;;⎕io+2;;;⎕io  ;;]←PHIRETSTPEN[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴NoRF+ERFAC   ×~NoRF[41]      PHISERPEN[;;⎕io+2;;;⎕io+1;;]←PHIRETSTPEN[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴NoRF+BARBFAC ×~NoRF[42]      :if servind ⋄ :andif LRFApplies ⋄ :andif WARLRFind ⍝ LRF only to Pre NRA Pension[43]          PHISERPEN[;;⎕io  ;;;⎕io  ;;]←PHISERPEN[;;⎕io  ;;;⎕io  ;;]-PHISTPEN∆Post[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC   -×ERFAC[44]          PHISERPEN[;;⎕io  ;;;⎕io+1;;]←PHISERPEN[;;⎕io  ;;;⎕io+1;;]-PHISTPEN∆Post[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC -×BARBFAC[45]          PHISERPEN[;;⎕io+1;;;⎕io  ;;]←PHISERPEN[;;⎕io+1;;;⎕io  ;;]-PHISTPEN∆Post[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACF  -×ERFACF[46]          PHISERPEN[;;⎕io+1;;;⎕io+1;;]←PHISERPEN[;;⎕io+1;;;⎕io+1;;]-PHISTPEN∆Post[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACF-×BARBFACF[47]          PHISERPEN[;;⎕io+2;;;⎕io  ;;]←PHISERPEN[;;⎕io+2;;;⎕io  ;;]-PHISTPEN∆Post[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC   -×ERFAC[48]          PHISERPEN[;;⎕io+2;;;⎕io+1;;]←PHISERPEN[;;⎕io+2;;;⎕io+1;;]-PHISTPEN∆Post[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC -×BARBFAC[49]      :endif[50]  :endif[51]  [52]  ⍝ Set IR deductions for later use.[53]  PHIIRTOT←(+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+5]PHIERPEN)[⎕io;;] ⍝ sum over all dimensions except 'IRMax' and 'Term/Term'[54]  :if IRLIM='P'[55]      PHIIRDED[;;;;⎕io;;;]←PHIERPEN[;;;;⎕io;;;] MultiDimMult 1⌊0⌈(PHIIRTOT-(NX,NX)⍴IRPEN) CDIV PHIIRTOT ⍝ deduction the same proportion of all relevant benefits[56]  :else[57]      PHIIRTOTF←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+5]PHIERPEN)[⎕io+2;⎕io;;][58]      PHIIRDED[;⎕io+2;;;⎕io;;;]←PHIERPEN[;⎕io+2;;;⎕io;;;] MultiDimMult 1⌊0⌈(PHIIRTOT-          (NX,NX)⍴IRPEN) CDIV          PHIIRTOTF ⍝ apply limit to future first[59]      PHIIRDED[;⎕io  ;;;⎕io;;;]←PHIERPEN[;⎕io  ;;;⎕io;;;] MultiDimMult 1⌊0⌈(PHIIRTOT-PHIIRTOTF+(NX,NX)⍴IRPEN) CDIV PHIIRTOT-PHIIRTOTF ⍝ take balance off past[60]      PHIIRDED[;⎕io+1;;;⎕io;;;]←PHIERPEN[;⎕io+1;;;⎕io;;;] MultiDimMult 1⌊0⌈(PHIIRTOT-PHIIRTOTF+(NX,NX)⍴IRPEN) CDIV PHIIRTOT-PHIIRTOTF[61]  :endif[62]  NOTNEG←0<+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIIRDED[63]  PHIIRDED←PHIIRDED MultiDimMult NOTNEG ⍝ Make sure that PHIIRDED is not negative at any age[64]  ⍝[65]  ⍝ Restrict for IRMax[66]  PHIERACCPEN ←PHIERPEN -PHIIRDED[67]  PHIERACCPENC←PHIERPENC-PHIIRDED  ⍝ Dubious logic[68]  :if ClntCode=3[69]      PHISERACCPEN←PHISERPEN ⍝ NOT YET ADJUSTED FOR IRMAX[70]  :endif[71]  ⍝ and sum over all but escalation rate and term[72]  ∆a←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIERACCPEN ⍝ For Varprint?????[73]  PHIERACCPN←+/[⎕io+1]∆a[74]  PHIFERACCPN←∆a[;⎕io+2;;][75]  PHIGERACCPN←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIERACCPEN)[;⎕io;;][76]  ∆aC←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIERACCPENC[77]  PHIERACCPNC←+/[⎕io+1]∆aC[78]  PHIFERACCPNC←∆aC[;⎕io+2;;][79]  PHIGERACCPNC←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIERACCPENC)[;⎕io;;]    ∇
+    ∇ PHIERPENS;NOTNEG;∆a;∆aC
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Apply Early Retirement Reduction Factors to PHI Retirement benefits
+[3]   ⍝ Called from INIT∆CASH (via ERPENS)
+[4]   ⍝
+[5]   ⍝ Initialise variables
+[6]   PHIERPEN←PHIERPENC←PHISERPEN←PHIIRDED←0×PHITPEN
+[7]   ⍝
+[8]   ⍝ Apply Early Retirement Factors
+[9]   PHIERPEN [;;⎕io  ;;;⎕io  ;;]←PHIRETTPEN[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC
+[10]  PHIERPEN [;;⎕io  ;;;⎕io+1;;]←PHIRETTPEN[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC
+[11]  PHIERPEN [;;⎕io+1;;;⎕io  ;;]←PHIRETTPEN[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACF
+[12]  PHIERPEN [;;⎕io+1;;;⎕io+1;;]←PHIRETTPEN[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACF
+[13]  PHIERPEN [;;⎕io+2;;;⎕io  ;;]←PHIRETTPEN[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC
+[14]  PHIERPEN [;;⎕io+2;;;⎕io+1;;]←PHIRETTPEN[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC
+[15]  PHIERPENC[;;⎕io  ;;;⎕io  ;;]←PHIRETTPEN[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACC
+[16]  PHIERPENC[;;⎕io  ;;;⎕io+1;;]←PHIRETTPEN[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACC
+[17]  PHIERPENC[;;⎕io+1;;;⎕io  ;;]←PHIRETTPEN[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACFC
+[18]  PHIERPENC[;;⎕io+1;;;⎕io+1;;]←PHIRETTPEN[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACFC
+[19]  PHIERPENC[;;⎕io+2;;;⎕io  ;;]←PHIRETTPEN[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACC
+[20]  PHIERPENC[;;⎕io+2;;;⎕io+1;;]←PHIRETTPEN[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACC
+[21]  :if servind ⋄ :andif LRFApplies ⍝ LRF only to Pre NRA Pension
+[22]      PHIERPEN [;;⎕io  ;;;⎕io  ;;]←PHIERPEN [;;⎕io  ;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC    -×ERFAC
+[23]      PHIERPEN [;;⎕io  ;;;⎕io+1;;]←PHIERPEN [;;⎕io  ;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC  -×BARBFAC
+[24]      PHIERPEN [;;⎕io+1;;;⎕io  ;;]←PHIERPEN [;;⎕io+1;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACF   -×ERFACF
+[25]      PHIERPEN [;;⎕io+1;;;⎕io+1;;]←PHIERPEN [;;⎕io+1;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACF -×BARBFACF
+[26]      PHIERPEN [;;⎕io+2;;;⎕io  ;;]←PHIERPEN [;;⎕io+2;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC    -×ERFAC
+[27]      PHIERPEN [;;⎕io+2;;;⎕io+1;;]←PHIERPEN [;;⎕io+2;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC  -×BARBFAC
+[28]      PHIERPENC[;;⎕io  ;;;⎕io  ;;]←PHIERPENC[;;⎕io  ;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACC   -×ERFACC
+[29]      PHIERPENC[;;⎕io  ;;;⎕io+1;;]←PHIERPENC[;;⎕io  ;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACC -×BARBFACC
+[30]      PHIERPENC[;;⎕io+1;;;⎕io  ;;]←PHIERPENC[;;⎕io+1;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACFC  -×ERFACFC
+[31]      PHIERPENC[;;⎕io+1;;;⎕io+1;;]←PHIERPENC[;;⎕io+1;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACFC-×BARBFACFC
+[32]      PHIERPENC[;;⎕io+2;;;⎕io  ;;]←PHIERPENC[;;⎕io+2;;;⎕io  ;;]-PHITPEN∆Post[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACC   -×ERFACC
+[33]      PHIERPENC[;;⎕io+2;;;⎕io+1;;]←PHIERPENC[;;⎕io+2;;;⎕io+1;;]-PHITPEN∆Post[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACC -×BARBFACC
+[34]  :endif
+[35]  :if ClntCode=3
+[36]      PHISERPEN[;;⎕io  ;;;⎕io  ;;]←PHIRETSTPEN[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴NoRF+ERFAC   ×~NoRF
+[37]      PHISERPEN[;;⎕io  ;;;⎕io+1;;]←PHIRETSTPEN[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴NoRF+BARBFAC ×~NoRF
+[38]      PHISERPEN[;;⎕io+1;;;⎕io  ;;]←PHIRETSTPEN[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴NoRF+ERFACF  ×~NoRF
+[39]      PHISERPEN[;;⎕io+1;;;⎕io+1;;]←PHIRETSTPEN[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴NoRF+BARBFACF×~NoRF
+[40]      PHISERPEN[;;⎕io+2;;;⎕io  ;;]←PHIRETSTPEN[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴NoRF+ERFAC   ×~NoRF
+[41]      PHISERPEN[;;⎕io+2;;;⎕io+1;;]←PHIRETSTPEN[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴NoRF+BARBFAC ×~NoRF
+[42]      :if servind ⋄ :andif LRFApplies ⋄ :andif WARLRFind ⍝ LRF only to Pre NRA Pension
+[43]          PHISERPEN[;;⎕io  ;;;⎕io  ;;]←PHISERPEN[;;⎕io  ;;;⎕io  ;;]-PHISTPEN∆Post[;;⎕io  ;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC   -×ERFAC
+[44]          PHISERPEN[;;⎕io  ;;;⎕io+1;;]←PHISERPEN[;;⎕io  ;;;⎕io+1;;]-PHISTPEN∆Post[;;⎕io  ;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC -×BARBFAC
+[45]          PHISERPEN[;;⎕io+1;;;⎕io  ;;]←PHISERPEN[;;⎕io+1;;;⎕io  ;;]-PHISTPEN∆Post[;;⎕io+1;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFACF  -×ERFACF
+[46]          PHISERPEN[;;⎕io+1;;;⎕io+1;;]←PHISERPEN[;;⎕io+1;;;⎕io+1;;]-PHISTPEN∆Post[;;⎕io+1;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFACF-×BARBFACF
+[47]          PHISERPEN[;;⎕io+2;;;⎕io  ;;]←PHISERPEN[;;⎕io+2;;;⎕io  ;;]-PHISTPEN∆Post[;;⎕io+2;;;⎕io  ;;] MultiDimMult (NX,NX)⍴ERFAC   -×ERFAC
+[48]          PHISERPEN[;;⎕io+2;;;⎕io+1;;]←PHISERPEN[;;⎕io+2;;;⎕io+1;;]-PHISTPEN∆Post[;;⎕io+2;;;⎕io+1;;] MultiDimMult (NX,NX)⍴BARBFAC -×BARBFAC
+[49]      :endif
+[50]  :endif
+[51]  
+[52]  ⍝ Set IR deductions for later use.
+[53]  PHIIRTOT←(+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+5]PHIERPEN)[⎕io;;] ⍝ sum over all dimensions except 'IRMax' and 'Term/Term'
+[54]  :if IRLIM='P'
+[55]      PHIIRDED[;;;;⎕io;;;]←PHIERPEN[;;;;⎕io;;;] MultiDimMult 1⌊0⌈(PHIIRTOT-(NX,NX)⍴IRPEN) CDIV PHIIRTOT ⍝ deduction the same proportion of all relevant benefits
+[56]  :else
+[57]      PHIIRTOTF←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+5]PHIERPEN)[⎕io+2;⎕io;;]
+[58]      PHIIRDED[;⎕io+2;;;⎕io;;;]←PHIERPEN[;⎕io+2;;;⎕io;;;] MultiDimMult 1⌊0⌈(PHIIRTOT-          (NX,NX)⍴IRPEN) CDIV          PHIIRTOTF ⍝ apply limit to future first
+[59]      PHIIRDED[;⎕io  ;;;⎕io;;;]←PHIERPEN[;⎕io  ;;;⎕io;;;] MultiDimMult 1⌊0⌈(PHIIRTOT-PHIIRTOTF+(NX,NX)⍴IRPEN) CDIV PHIIRTOT-PHIIRTOTF ⍝ take balance off past
+[60]      PHIIRDED[;⎕io+1;;;⎕io;;;]←PHIERPEN[;⎕io+1;;;⎕io;;;] MultiDimMult 1⌊0⌈(PHIIRTOT-PHIIRTOTF+(NX,NX)⍴IRPEN) CDIV PHIIRTOT-PHIIRTOTF
+[61]  :endif
+[62]  NOTNEG←0<+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIIRDED
+[63]  PHIIRDED←PHIIRDED MultiDimMult NOTNEG ⍝ Make sure that PHIIRDED is not negative at any age
+[64]  ⍝
+[65]  ⍝ Restrict for IRMax
+[66]  PHIERACCPEN ←PHIERPEN -PHIIRDED
+[67]  PHIERACCPENC←PHIERPENC-PHIIRDED  ⍝ Dubious logic
+[68]  :if ClntCode=3
+[69]      PHISERACCPEN←PHISERPEN ⍝ NOT YET ADJUSTED FOR IRMAX
+[70]  :endif
+[71]  ⍝ and sum over all but escalation rate and term
+[72]  ∆a←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIERACCPEN ⍝ For Varprint?????
+[73]  PHIERACCPN←+/[⎕io+1]∆a
+[74]  PHIFERACCPN←∆a[;⎕io+2;;]
+[75]  PHIGERACCPN←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIERACCPEN)[;⎕io;;]
+[76]  ∆aC←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIERACCPENC
+[77]  PHIERACCPNC←+/[⎕io+1]∆aC
+[78]  PHIFERACCPNC←∆aC[;⎕io+2;;]
+[79]  PHIGERACCPNC←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIERACCPENC)[;⎕io;;]
+    ∇

@@ -1,0 +1,41 @@
+    ∇ Z←changesIn R;old;new;lo;ln;m;T;more;o1;n2;o2;n1;pm;count;fm;nc;∆;xp;hm;tm
+[1]   ⍝ UTILSWIN.sf#4
+[2]   ⍝ Expansion vectors to align (partially) matching rows of old and new
+[3]   ⍝ new is old with lines edited, deleted or inserted
+[4]   ⍝ Heuristic. Could be improved:
+[5]   ⍝ If 10>tally rump, use DNP's algorithm (Vector 26.2) for a brute-force
+[6]   ⍝ best solution, else use heuristic as below.
+[7]   ⍝ Revn: sjt21apr15 dnp15may15
+[8]   T←0.5                               ⍝ threshold for partial matches
+[9]   (old new)←R
+[10]  nc←2⊃⍴old                           ⍝ number of columns
+[11]  (lo ln)←⎕SPLIT¨old new
+[12]  
+[13]  hm←+/^\((∆≤tally lo)×∆←lo⍳ln)=⍳tally ln          ⍝ # matches at head  ⍝ SV904022
+[14]  tm←+/^\ ((∆≤tally hm↓lo) ×∆←↑⍳/⌽¨hm↓¨lo ln)=⍳tally hm↓ln ⍝ # matches at tail ⍝ SV904022
+[15]  (lo ln)←(-tm)↓¨hm↓¨lo ln            ⍝ unmatched rump
+[16]  
+[17]  xp←2 0⍴0
+[18]  :while ^/×count←tally¨lo ln
+[19]      more←count^.>1
+[20]      (o1 n1)←↑¨lo ln
+[21]      :if more ⋄ (o2 n2)←2⊃¨lo ln ⋄ :endif
+[22]      (fm pm)←1 T≤(+/o1≡¨n1)÷nc               ⍝ full or partial match
+[23]      :if     fm                  ⋄ m←1 1     ⍝ copy
+[24]      :elseif count≡1 1           ⋄ m←1 pm    ⍝ edit or deletion
+[25]      :elseif more ⋄ :andif o1≡n2 ⋄ m←0 1     ⍝ 1 row inserted
+[26]      :elseif more ⋄ :andif o2≡n1 ⋄ m←1 0     ⍝ 1 row deleted
+[27]      :elseif pm                  ⋄ m←1 1     ⍝ edit
+[28]      :elseif (⊂n1)∊lo            ⋄ m←0 1     ⍝ insertion
+[29]      :else                       ⋄ m←1 0     ⍝ deletion
+[30]      :endif
+[31]      xp←xp,m
+[32]      (lo ln)←m↓¨lo ln
+[33]      :if lo≡ln                       ⍝ fast finish
+[34]          xp←xp,(2,⍴lo)⍴1
+[35]          (lo ln)←'' ''
+[36]      :endif
+[37]  :endwhile
+[38]  
+[39]  Z←⎕SPLIT tm⌽ ((tm+hm)/2 1⍴1), xp,(⌈/∆)/ ,[1.5] ×∆←tally¨lo ln
+    ∇

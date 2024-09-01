@@ -1,0 +1,40 @@
+    ∇ Rng XL_PasteFormats Range;⎕elx;elx;noranges;range;rng;∆;MaxNo;roworcol;source;target;splits
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Paste Formats from source "Rng" to target "Range"
+[3]   ⍝  "Range" can be a "mulitiple" of the size of "Rng"
+[4]   ⍝ Will retry with "Rng" and "Range" split into smaller bits
+[5]   
+[6]   noranges←1 ⋄ rng←⊂Rng←4⍴Rng ⋄ range←⊂Range←4⍴Range ⋄ elx←⎕elx ⋄ ⎕elx←'→Retry'
+[7]   
+[8]   ExcelRunButton XL_Clipboard "Open"
+[9]   
+[10]  Top:
+[11]  :for ∆ :in spin rng range ⋄ (source target)←∆
+[12]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 source)
+[13]      0 0⍴'XL.Rng' ⎕wi 'XCopy'
+[14]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 target)
+[15]      0 0⍴'XL.Rng' ⎕wi 'XPasteSpecial' (↑⍙XL at '=xlPasteFormats')
+[16]  :endfor
+[17]  
+[18]  XL_Clipboard "Close"
+[19]  :return ⍝ Success
+[20]  
+[21]  Retry:
+[22]  :if ~mt ∆←(WHERE (⊂⍬)≡¨Rng)-⎕io ⋄ roworcol←~↑∆
+[23]  :else                           ⋄ roworcol←≠/Rng[⎕io+1 3] ⍝ 1 is Column based copying (0 is row based)
+[24]  :endif
+[25]  MaxNo←⌈(1+-/Range[⎕io+roworcol+2 0])÷1+-/Rng[⎕io+roworcol+2 0] ⍝ Maximum number of sub-ranges
+[26]  ⎕elx←'→Retry1'
+[27]  
+[28]  Retry1:                                 ⍝ Use smaller ranges to overcome error
+[29]  :if noranges=MaxNo ⋄ ⎕elx←elx ⋄ →Top ⋄ :endif ⍝ One last try!
+[30]  noranges←MaxNo⌊noranges×2               ⍝ Set the number of smaller ranges
+[31]  
+[32]  ⍝ Create a number of smaller ranges
+[33]  splits←MaxNo÷noranges                   ⍝ Number of splits
+[34]  splits←(Range[⎕io+roworcol]+⌊splits×(⍳noranges)-⎕io),Range[⎕io+2+roworcol]+1 ⍝ Start values of split ranges
+[35]  rng  ←noranges⌿MATRIX Rng                                                                        ⋄ rng  ←⎕split rng
+[36]  range←noranges⌿MATRIX Range ⋄ range[;⎕io+roworcol]←¯1↓splits ⋄ range[;⎕io+2+roworcol]←1↓splits-1 ⋄ range←⎕split range
+[37]  
+[38]  →Top
+    ∇

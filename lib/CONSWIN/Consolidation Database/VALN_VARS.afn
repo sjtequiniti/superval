@@ -1,1 +1,26 @@
-    ∇ VALN∆VARS[1]   ⍝ CONSWIN.sf#11[2]   ⍝ Valuation Method related Variabales[3]   [4]   hpcenabled←0[5]   approx←0 ⍝⍝⍝ Used when estimating DAB results[6]   AgeInterp←1[7]   ValMeth←3↑valind[8]   dab←ValMeth≡'DAB' ⋄ NotPUC←~(⊂ValMeth)∊'PUC' 'UCM' ⋄ ppf←'PP'≡2↑ValMeth ⋄ s143←'3'=¯1↑ValMeth[9]   bencap←'Y'=↑bencap ⋄ aosind←'Y'=↑aosind[10]  HLDII←'I'=↑fscopt ⋄ fscopt←∨/'EI'=↑fscopt ⋄ PROPT←1 ⍝⍝⍝ 'Y'=↑PROPT[11]  contper←zwb '150 ',contper[12]  [13]  ConsIndex←ConsIndex sortedBy 'ID'[14]  ConsIndex←ConsIndex for (⊂'ID'),runs ⍝ Selected runs only[15]  :if ppf[16]      runsP←(ConsIndex for 'method' 'PPP') at 'ID'[17]      runsD←(ConsIndex for 'method' 'PPD' 'PP3') at 'ID'[18]      runsA←runs~runsD,runsP ⋄ runsNE←⍳0[19]  :else[20]      runsP← (ConsIndex for 'method' 'PEN') at 'ID'[21]      runsD← (ConsIndex for 'method' 'DEF') at 'ID'[22]      runsNE←(ConsIndex for 'newent' 'Yes') at 'ID'[23]      runsA←runs~runsD,runsP[24]  :endif    ∇
+    ∇ VALN∆VARS
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ Valuation Method related Variabales
+[3]   
+[4]   hpcenabled←0
+[5]   approx←0 ⍝⍝⍝ Used when estimating DAB results
+[6]   AgeInterp←1
+[7]   ValMeth←3↑valind
+[8]   dab←ValMeth≡'DAB' ⋄ NotPUC←~(⊂ValMeth)∊'PUC' 'UCM' ⋄ ppf←'PP'≡2↑ValMeth ⋄ s143←'3'=¯1↑ValMeth
+[9]   bencap←'Y'=↑bencap ⋄ aosind←'Y'=↑aosind
+[10]  HLDII←'I'=↑fscopt ⋄ fscopt←∨/'EI'=↑fscopt ⋄ PROPT←1 ⍝⍝⍝ 'Y'=↑PROPT
+[11]  contper←zwb '150 ',contper
+[12]  
+[13]  ConsIndex←ConsIndex sortedBy 'ID'
+[14]  ConsIndex←ConsIndex for (⊂'ID'),runs ⍝ Selected runs only
+[15]  :if ppf
+[16]      runsP←(ConsIndex for 'method' 'PPP') at 'ID'
+[17]      runsD←(ConsIndex for 'method' 'PPD' 'PP3') at 'ID'
+[18]      runsA←runs~runsD,runsP ⋄ runsNE←⍳0
+[19]  :else
+[20]      runsP← (ConsIndex for 'method' 'PEN') at 'ID'
+[21]      runsD← (ConsIndex for 'method' 'DEF') at 'ID'
+[22]      runsNE←(ConsIndex for 'newent' 'Yes') at 'ID'
+[23]      runsA←runs~runsD,runsP
+[24]  :endif
+    ∇

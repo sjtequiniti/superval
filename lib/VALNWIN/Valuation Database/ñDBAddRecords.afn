@@ -1,0 +1,21 @@
+    ∇ ⍙DBAddRecords;rows;z;x
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Insert Records into Temporary Variables
+[3]   
+[4]   :if 0≠rows←↑⍴⍙dbbenres
+[5]       :if (z←↑⍴xl_membres)<x←xl_membrow+rows ⍝ Exceeding extent of "results" variable
+[6]           xl_membres←(z←x⌈z+500)↑[0]xl_membres
+[7]           :if ~aggopt[0]∨csvind∨summopt ⋄ xl_membmax←z ⋄ :endif
+[8]       :endif
+[9]       xl_membres[xl_membrow+⍳rows;]←MembID,⍙dbbenres ⋄ xl_membrow←xl_membrow+rows
+[10]      ⍙dbbenres←0⌿⍙dbbenres
+[11]  :endif
+[12]  :if 0≠rows←↑⍴⍙dbbenproj
+[13]      :if (z←↑⍴⍙dbfundres)<x←⍙dbfundrow+rows ⍝ Exceeding extent of "results" variable
+[14]          ⍙dbfundres←(z←x⌈z+2000)↑[0]⍙dbfundres
+[15]          :if aosind∨neIND ⋄ ⍙dbfundmax←z ⋄ :endif
+[16]      :endif
+[17]      ⍙dbfundres[⍙dbfundrow+⍳rows;]←⍙dbbenproj ⋄ ⍙dbfundrow←⍙dbfundrow+rows
+[18]      ⍙dbbenproj←0⌿⍙dbbenproj
+[19]  :endif
+    ∇

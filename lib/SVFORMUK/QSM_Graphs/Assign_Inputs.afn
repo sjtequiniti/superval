@@ -1,1 +1,50 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "QSM_Graphs" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "QSM_Graphs" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   no←1↑⍴PickList←SStoMAT ("fmQSMGraphs.fgraphtype.opgraphtype_1" ⎕wi "∆lastoption") ⎕wi "∆options"[10]  value←¯1↑1,selection←PickList ExactTLU graphtype[11]  :if 0∊⍴selection[12]      modified←⌈/modified,×value[13]  :endif[14]  :for nn :in ⍳no[15]      ("fmQSMGraphs.fgraphtype.opgraphtype_",⍕nn) ⎕wi "value" (value=nn)[16]  :endfor[17]  "fmQSMGraphs.ckshowzeroes" ⎕wi "value" (zwb showzeroes)[18]  "fmQSMGraphs.ssgraphdata" ⎕wi "XClearRange" 1 1 ("fmQSMGraphs.ssgraphdata" ⎕wi "MaxRow") ("fmQSMGraphs.ssgraphdata" ⎕wi "MaxCol") 3[19]  MaxRow←MaxCol←1[20]  value←(1 20⌈⍴value)↑value←MATRIX case[21]  MaxCol←"fmQSMGraphs.ssgraphdata" ⎕wi "MaxCol"[22]  "fmQSMGraphs.ssgraphdata" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[23]  "fmQSMGraphs.ssgraphdata" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)[24]  value←(1 ⌈⍴value)↑value←MATRIX oldvalues[25]  MaxCol←"fmQSMGraphs.ssgraphdata" ⎕wi "MaxCol"[26]  "fmQSMGraphs.ssgraphdata" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[27]  "fmQSMGraphs.ssgraphdata" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)[28]  value←(1 ⌈⍴value)↑value←MATRIX newvalues[29]  MaxCol←"fmQSMGraphs.ssgraphdata" ⎕wi "MaxCol"[30]  "fmQSMGraphs.ssgraphdata" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[31]  "fmQSMGraphs.ssgraphdata" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,3) (m2n ⎕av[209 151] REPL value)[32]  "fmQSMGraphs.ssgraphdata" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[33]  (MaxRow MaxCol)←"fmQSMGraphs.ssgraphdata" ⎕wi "xGetActiveCell" 0 0[34]  "fmQSMGraphs.ssgraphdata" ⎕wi "xSetActiveCell" (MaxRow⌊"fmQSMGraphs.ssgraphdata" ⎕wi "xMaxRow") (MaxCol⌊"fmQSMGraphs.ssgraphdata" ⎕wi "xMaxCol")[35]  "fmQSMGraphs.ssgraphdata" ⎕wi "xmodified" 0[36]  "fmQSMGraphs.ssgraphdata" ⎕wi "onXModified" "('fmQSMGraphs.' (Win∆Parent 'fmQSMGraphs.')) MultiWI 'modified' ('fmQSMGraphs.ssgraphdata' ⎕wi 'xmodified')"[37]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_QSM_Graphs[38]      :for var :in spin Comment_QSM_Graphs at "variable" "row" ⋄ (var row)←var[39]          "QSM_Graphs" ParmColor ((FormFields for "variable" var) at "control"),var row 1[40]      :endfor[41]  :endif[42]  :if ~0∊⍴,warnings[43]      MDISPLAY DLTMB warnings,⎕tcnl[44]      Win∆AssignVars "fmQSMGraphs"[45]  :endif[46]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "QSM_Graphs" "" "Names"[47]      "fmQSMGraphs" ⎕wi "modified" 0[48]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "QSM_Graphs" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "QSM_Graphs" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   no←1↑⍴PickList←SStoMAT ("fmQSMGraphs.fgraphtype.opgraphtype_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[10]  value←¯1↑1,selection←PickList ExactTLU graphtype
+[11]  :if 0∊⍴selection
+[12]      modified←⌈/modified,×value
+[13]  :endif
+[14]  :for nn :in ⍳no
+[15]      ("fmQSMGraphs.fgraphtype.opgraphtype_",⍕nn) ⎕wi "value" (value=nn)
+[16]  :endfor
+[17]  "fmQSMGraphs.ckshowzeroes" ⎕wi "value" (zwb showzeroes)
+[18]  "fmQSMGraphs.ssgraphdata" ⎕wi "XClearRange" 1 1 ("fmQSMGraphs.ssgraphdata" ⎕wi "MaxRow") ("fmQSMGraphs.ssgraphdata" ⎕wi "MaxCol") 3
+[19]  MaxRow←MaxCol←1
+[20]  value←(1 20⌈⍴value)↑value←MATRIX case
+[21]  MaxCol←"fmQSMGraphs.ssgraphdata" ⎕wi "MaxCol"
+[22]  "fmQSMGraphs.ssgraphdata" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[23]  "fmQSMGraphs.ssgraphdata" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)
+[24]  value←(1 ⌈⍴value)↑value←MATRIX oldvalues
+[25]  MaxCol←"fmQSMGraphs.ssgraphdata" ⎕wi "MaxCol"
+[26]  "fmQSMGraphs.ssgraphdata" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[27]  "fmQSMGraphs.ssgraphdata" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)
+[28]  value←(1 ⌈⍴value)↑value←MATRIX newvalues
+[29]  MaxCol←"fmQSMGraphs.ssgraphdata" ⎕wi "MaxCol"
+[30]  "fmQSMGraphs.ssgraphdata" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[31]  "fmQSMGraphs.ssgraphdata" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,3) (m2n ⎕av[209 151] REPL value)
+[32]  "fmQSMGraphs.ssgraphdata" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[33]  (MaxRow MaxCol)←"fmQSMGraphs.ssgraphdata" ⎕wi "xGetActiveCell" 0 0
+[34]  "fmQSMGraphs.ssgraphdata" ⎕wi "xSetActiveCell" (MaxRow⌊"fmQSMGraphs.ssgraphdata" ⎕wi "xMaxRow") (MaxCol⌊"fmQSMGraphs.ssgraphdata" ⎕wi "xMaxCol")
+[35]  "fmQSMGraphs.ssgraphdata" ⎕wi "xmodified" 0
+[36]  "fmQSMGraphs.ssgraphdata" ⎕wi "onXModified" "('fmQSMGraphs.' (Win∆Parent 'fmQSMGraphs.')) MultiWI 'modified' ('fmQSMGraphs.ssgraphdata' ⎕wi 'xmodified')"
+[37]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_QSM_Graphs
+[38]      :for var :in spin Comment_QSM_Graphs at "variable" "row" ⋄ (var row)←var
+[39]          "QSM_Graphs" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[40]      :endfor
+[41]  :endif
+[42]  :if ~0∊⍴,warnings
+[43]      MDISPLAY DLTMB warnings,⎕tcnl
+[44]      Win∆AssignVars "fmQSMGraphs"
+[45]  :endif
+[46]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "QSM_Graphs" "" "Names"
+[47]      "fmQSMGraphs" ⎕wi "modified" 0
+[48]  :endif
+    ∇

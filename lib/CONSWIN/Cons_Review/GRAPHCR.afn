@@ -1,1 +1,36 @@
-    ∇ PageView←GRAPHCR;CP;data[1]   ⍝ CONSWIN.sf#10[2]   ⍝ Graph Contribution Rate[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝[7]   ⍝ V2.50u RE 1/11/93 Standardised[8]   :if 0∊⍴PageView←(parent,'picResults') ⎕wi 'self'[9]       :return ⍝ Graph Control doesn't exist yet!![10]  :endif[11]  [12]  CP←1⌈(SIZE-1)⌊zwb (parent,'edProjPer') ⎕wi 'text'[13]  data←GTOTS[⍳CP+1;13] CDIV GTOTS[⍳CP+1;17][14]  [15]  chSet 'HMargin' 60 36[16]  chSet 'Heading' 'Company Contribution Rate'[17]  chSet 'Sub' (DLTMB 'over ',(⍕CP),' years')[18]  chSet 'HFont' 'tii,12,blue'[19]  chSet 'Style' 'boxed,xyplot,grid'[20]  chSet 'Grid' 'dotted,fine'[21]  chSet 'XCaption' 'Year'[22]  chSet 'YCaption' '% of Salaries'[23]  chSet 'XRange' (VDATE[3]+0,CP)[24]  chSet 'YRange' (⌊/0,data),⌈/0,data[25]  [26]  chSet 'Style' 'lines,nomarkers'[27]  chPlot (VDATE[3]+0,⍳CP) (data)[28]  [29]  chSet 'Style' 'nolines,nomarkers,novalues'[30]  [31]  PageView←chClose[32]  [33]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box[34]  ppt←.5+.×(((parent,'picResults') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point    ∇
+    ∇ PageView←GRAPHCR;CP;data
+[1]   ⍝ CONSWIN.sf#10
+[2]   ⍝ Graph Contribution Rate
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝
+[7]   ⍝ V2.50u RE 1/11/93 Standardised
+[8]   :if 0∊⍴PageView←(parent,'picResults') ⎕wi 'self'
+[9]       :return ⍝ Graph Control doesn't exist yet!!
+[10]  :endif
+[11]  
+[12]  CP←1⌈(SIZE-1)⌊zwb (parent,'edProjPer') ⎕wi 'text'
+[13]  data←GTOTS[⍳CP+1;13] CDIV GTOTS[⍳CP+1;17]
+[14]  
+[15]  chSet 'HMargin' 60 36
+[16]  chSet 'Heading' 'Company Contribution Rate'
+[17]  chSet 'Sub' (DLTMB 'over ',(⍕CP),' years')
+[18]  chSet 'HFont' 'tii,12,blue'
+[19]  chSet 'Style' 'boxed,xyplot,grid'
+[20]  chSet 'Grid' 'dotted,fine'
+[21]  chSet 'XCaption' 'Year'
+[22]  chSet 'YCaption' '% of Salaries'
+[23]  chSet 'XRange' (VDATE[3]+0,CP)
+[24]  chSet 'YRange' (⌊/0,data),⌈/0,data
+[25]  
+[26]  chSet 'Style' 'lines,nomarkers'
+[27]  chPlot (VDATE[3]+0,⍳CP) (data)
+[28]  
+[29]  chSet 'Style' 'nolines,nomarkers,novalues'
+[30]  
+[31]  PageView←chClose
+[32]  
+[33]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box
+[34]  ppt←.5+.×(((parent,'picResults') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+    ∇

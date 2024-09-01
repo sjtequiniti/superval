@@ -1,1 +1,40 @@
-    ∇ res←type Win∆ConvertParms Name;control[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Convert Run Parameters from Character according to Type[3]   [4]   (control type)←type ⍝ Control type and specific type of field[5]   [6]   res←⍎Name ⍝ Default if no conversion possible[7]   [8]   :if ^/4≠⎕nc Name[9]       :select DLTMB control ⍝ Conversion according to Field type[10]      :caselist 'APL' 'Combo' 'Date' 'DateRel' 'Edit' 'LEdit' 'File' 'FileS' 'FileM' 'Parm' 'NumRel' 'Mort' 'MortImp'[11]          :select type[12]          :case 'Num'[13]              :if ^/' '=⍎Name[14]                  res←⍳0 ⍝ Numbers are ⍳0 when blank[15]              :else[16]                  res←⎕fi '+ ' REPL ⍎Name[17]              :endif[18]          :case 'Date'[19]              res←'DD/MM/YYYY' DATEEXP ⍎Name[20]          :case 'DateRel'[21]              res←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields (⍎'lr',Name) (⍎Name)[22]          :case 'NumRel'[23]              res←⎕fi '+ ' REPL ↑⌽'Num' SwapRelFields (⍎'lr',Name) (⍎Name)[24]          :caselist 'File' ' FileM' 'FileS'[25]               res←SStoMAT ',',⍎Name[26]               res←(+/^\' '=res)⌽res ⍝ Delete Leading Blanks[27]               res←⊃(⊂InputDir),¨⎕split res[28]          :case 'Password'[29]               res←⌽11 ⎕dr res[30]          :endselect[31]      :caselist 'List' 'ListM' 'ListS' 'ListD'[32]              res←SStoMAT ⍎Name ⍝ Convert Segmented String[33]      :caselist 'Decr' 'Option' 'Radar' 'Check' 'F1SS' 'Listview' 'ListviewS' 'ListviewM' 'ListviewD' 'Multi' 'LMulti' 'Microsoft Web Browser'[34]          ⍝ No Standard Conversion for Decrements, F1SS, Option/Radar, Check or Listview[35]      :else[36]          type,' not catered for!!!'[37]      :endselect[38]  :endif    ∇
+    ∇ res←type Win∆ConvertParms Name;control
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Convert Run Parameters from Character according to Type
+[3]   
+[4]   (control type)←type ⍝ Control type and specific type of field
+[5]   
+[6]   res←⍎Name ⍝ Default if no conversion possible
+[7]   
+[8]   :if ^/4≠⎕nc Name
+[9]       :select DLTMB control ⍝ Conversion according to Field type
+[10]      :caselist 'APL' 'Combo' 'Date' 'DateRel' 'Edit' 'LEdit' 'File' 'FileS' 'FileM' 'Parm' 'NumRel' 'Mort' 'MortImp'
+[11]          :select type
+[12]          :case 'Num'
+[13]              :if ^/' '=⍎Name
+[14]                  res←⍳0 ⍝ Numbers are ⍳0 when blank
+[15]              :else
+[16]                  res←⎕fi '+ ' REPL ⍎Name
+[17]              :endif
+[18]          :case 'Date'
+[19]              res←'DD/MM/YYYY' DATEEXP ⍎Name
+[20]          :case 'DateRel'
+[21]              res←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields (⍎'lr',Name) (⍎Name)
+[22]          :case 'NumRel'
+[23]              res←⎕fi '+ ' REPL ↑⌽'Num' SwapRelFields (⍎'lr',Name) (⍎Name)
+[24]          :caselist 'File' ' FileM' 'FileS'
+[25]               res←SStoMAT ',',⍎Name
+[26]               res←(+/^\' '=res)⌽res ⍝ Delete Leading Blanks
+[27]               res←⊃(⊂InputDir),¨⎕split res
+[28]          :case 'Password'
+[29]               res←⌽11 ⎕dr res
+[30]          :endselect
+[31]      :caselist 'List' 'ListM' 'ListS' 'ListD'
+[32]              res←SStoMAT ⍎Name ⍝ Convert Segmented String
+[33]      :caselist 'Decr' 'Option' 'Radar' 'Check' 'F1SS' 'Listview' 'ListviewS' 'ListviewM' 'ListviewD' 'Multi' 'LMulti' 'Microsoft Web Browser'
+[34]          ⍝ No Standard Conversion for Decrements, F1SS, Option/Radar, Check or Listview
+[35]      :else
+[36]          type,' not catered for!!!'
+[37]      :endselect
+[38]  :endif
+    ∇

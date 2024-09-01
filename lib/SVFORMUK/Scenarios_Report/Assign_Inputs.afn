@@ -1,1 +1,39 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Scenarios_Report" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Scenarios_Report" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmScenariosRep.lvSavedScens" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SavedScens) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX SavedScens[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmScenariosRep.lvSavedScens" ⎕wi "value" value[25]  0 0⍴"fmScenariosRep.lvSavedScens" ⎕wi "EnsureVisible" ((1↑value),1)[26]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Scenarios_Report[27]      :for var :in spin Comment_Scenarios_Report at "variable" "row" ⋄ (var row)←var[28]          "Scenarios_Report" ParmColor ((FormFields for "variable" var) at "control"),var row 1[29]      :endfor[30]  :endif[31]  :if ~0∊⍴,warnings[32]      MDISPLAY DLTMB warnings,⎕tcnl[33]      Win∆AssignVars "fmScenariosRep"[34]  :endif[35]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Scenarios_Report" "" "Names"[36]      "fmScenariosRep" ⎕wi "modified" 0[37]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Scenarios_Report" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Scenarios_Report" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmScenariosRep.lvSavedScens" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SavedScens) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX SavedScens
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmScenariosRep.lvSavedScens" ⎕wi "value" value
+[25]  0 0⍴"fmScenariosRep.lvSavedScens" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Scenarios_Report
+[27]      :for var :in spin Comment_Scenarios_Report at "variable" "row" ⋄ (var row)←var
+[28]          "Scenarios_Report" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[29]      :endfor
+[30]  :endif
+[31]  :if ~0∊⍴,warnings
+[32]      MDISPLAY DLTMB warnings,⎕tcnl
+[33]      Win∆AssignVars "fmScenariosRep"
+[34]  :endif
+[35]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Scenarios_Report" "" "Names"
+[36]      "fmScenariosRep" ⎕wi "modified" 0
+[37]  :endif
+    ∇

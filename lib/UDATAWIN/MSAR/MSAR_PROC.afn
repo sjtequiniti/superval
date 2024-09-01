@@ -1,1 +1,107 @@
-    ∇ res←MSAR∆PROC;⎕io;tieno;tpr1;RECL;lRECL;NN;size;NO;NUMRECS;RunTime;REC;dobadd;datea;dfDATEa;fDATEa;fDATEb;dfDATEb;dateb;min;max;serv;ind;fPENPER;valid;acc;values;FV;fmt;SRVRND[1]   ⍝ UDATAWIN.sf#5[2]   ⍝ Member Specific Accrual Rates[3]   ⍝  Initialise Input/Output files[4]   [5]   ⎕io←0 ⋄ res←''[6]   ('Reading Input File:' 'Writing Output File:') Win∆ProgressBar 'SetLabels'[7]   'Running Member Specific Accrual Rate Calculator' Win∆ProgressBar 'Open'[8]   [9]   :if FileExist InputDir,FILE[10]  :orif 0=tieno←NCREATE InputDir,FILE[11]      MDISPLAY 'InvFileName' FILE ⋄ res←parent,'fFiles.edFILE' ⋄ →END[12]  :endif[13]  [14]  ⍝ Tie file and Calculate number of records[15]  :if 0=(InputDir,fILENAME) NTIE tpr1←'Native' TieNumber ''[16]      Error←'FileNotFound' ⋄ →ERR[17]  :endif[18]  [19]  RunTime←DLTMB 1 DATESPELL ⎕ts[20]  NN←⌊(size←⎕NSIZE tpr1)÷RECL←recl+2 ⋄ NO←0[21]  lRECL←RECL+FV←2+zwb DecP ⋄ FV←¯1+RECL+⍳FV[22]  fmt←'M<->F',(⍕⍴FV),'.',⍕zwb DecP[23]  [24]  CREATEDATADESC Format ⍝ Create Data Format Variables[25]  [26]  :if ~('Valuation Date')≡DATEa←,'Act' DescToVariableUK DATEa[27]      dfDATEa←⍎'df',DATEa ⋄ fDATEa←⍎'f',DATEa[28]  :endif[29]  [30]  :if ~(⊂DATEb←,'Act' DescToVariableUK DATEb)∊'Valuation Date' 'Normal Retirement Date'[31]      dfDATEb←⍎'df',DATEb ⋄ fDATEb←⍎'f',DATEb[32]  :endif[33]  SRVRND←,servrnd[;0][34]  dobadd←zwb¨m_DOBADD f_DOBADD[35]  [36]  ⍝ ind of 0 for SRVTBL, 1 for Data Field and 2 for Constant[37]  :if ind←~0∊⍴PENPER←,'Act' DescToVariableUK PENPER[38]      :if 2=ind←ind+↑⎕vi PENPER ⋄ PENPER←0.01×zwb PENPER[39]      :else                     ⋄ fPENPER←⍎'f',PENPER[40]      :endif[41]  :else[42]      SRVTBL←100 OVERTAKE DEC∆CHECK SRVTBL[43]  :endif[44]  [45]  min←(zwb minnum) CDIV zwb mindenom[46]  max←(zwb maxnum) ZDIV zwb maxdenom[47]  [48]  READ:NUMRECS←↑⍴REC←0 ¯2↓'ASCII' Read∆DataFile tpr1 size RECL (NN-NO) NO[49]  [50]  ((NO←NO+NUMRECS) NN fILENAME) Win∆ProgressBar 'FileUpdate'[51]  REC←((NUMRECS,lRECL)↑0 ¯1↓REC),¯1↑[1]REC[52]  [53]  :if DATEa≡'Valuation Date' ⋄ datea←vDATE[54]  :elseif ∨/~DATECHECK datea←MATRIX dfDATEa DATEEXP REC[;fDATEa][55]      Error←'InvFileDate' ⋄ →ERR  ⍝ Dates must be valid if specified[56]  :endif[57]  [58]  :if     DATEb≡'Valuation Date' ⋄ dateb←vDATE[59]  :elseif DATEb≡'Normal Retirement Date'[60]      :if ∨/~DATECHECK dateb←MATRIX dfDOB DATEEXP REC[;fDOB][61]          Error←'InvFileDate' ⋄ →ERR  ⍝ Dates must be valid if specified[62]      :endif[63]      dateb[;2]←1900+1900∣dateb[;2]+dobadd[,'F'=UPPERCASE REC[;fSEX]][64]  :elseif ∨/~DATECHECK datea←MATRIX dfDATEa DATEEXP REC[;fDATEa][65]      Error←'InvFileDate' ⋄ →ERR  ⍝ Dates must be valid if specified[66]  :endif[67]  [68]  serv←∣SRVRND DURN datea TO dateb[69]  :select ind[70]  :case 2 ⋄ acc←PENPER[71]  :case 1 ⋄[72]      :if ∨/~valid←⎕VI ,(acc←REC[;fPENPER]),' ' ⍝ Numbers must be valid[73]      :orif (⍴valid)≠1↑⍴(∨/' '≠acc)⌿acc         ⍝ and scalar![74]          Error←'InvFileNum' ⋄ →ERR[75]      :endif[76]      acc←,0.01×MatrixZWB acc[77]  :case 'SRVTBL'[78]      acc←SRVTBL[1+⌊serv]+(SRVTBL[1+⌈serv]-SRVTBL[1+⌊serv])×1⊤serv[79]  :endselect[80]  values←max⌊(acc CDIV serv)⌈min[81]  :if 1=⍴,values ⋄ values←NUMRECS/values ⋄ :endif ⍝ Expand if Constant Specified[82]  [83]  :if NUMRECS≠⍴,values ⍝ Error - wrong no. of results[84]  :orif ∨/'*'=,values←fmt ⎕FMT values ⍝ Error if doesn't fit in field[85]      Error←'InvEntry' 'Invalid numeric result calculated' ⋄ →ERR[86]  :endif[87]  [88]  REC[;FV]←values ⋄ REC APPEND tieno[89]  (NO NN FILE) Win∆ProgressBar 'MemberUpdate'[90]  :if NO<NN ⋄ →READ ⋄ :endif[91]  [92]  FormName ⎕wi 'Focus'[93]  ('Member Specific Accrual Rate Calculation at ',RunTime) BROWSE tieno ⋄ →END[94]  [95]  ERR: ⍝ on Error processing[96]       res←parent,'fFiles.edfILENAME' ⋄ Error←Error fILENAME[97]  ERR1:MDISPLAY Error ⋄ (InputDir,FILE) NERASE tieno[98]  [99]  END:⎕io←1 ⍝??⍝[100] Win∆AssignVars ControlName ⍝ Reset to screen values if an error[101] ⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'[102] [103] →0[104] ⍝ Update Actives Data Format[105] FormatMSAR    ∇
+    ∇ res←MSAR∆PROC;⎕io;tieno;tpr1;RECL;lRECL;NN;size;NO;NUMRECS;RunTime;REC;dobadd;datea;dfDATEa;fDATEa;fDATEb;dfDATEb;dateb;min;max;serv;ind;fPENPER;valid;acc;values;FV;fmt;SRVRND
+[1]   ⍝ UDATAWIN.sf#5
+[2]   ⍝ Member Specific Accrual Rates
+[3]   ⍝  Initialise Input/Output files
+[4]   
+[5]   ⎕io←0 ⋄ res←''
+[6]   ('Reading Input File:' 'Writing Output File:') Win∆ProgressBar 'SetLabels'
+[7]   'Running Member Specific Accrual Rate Calculator' Win∆ProgressBar 'Open'
+[8]   
+[9]   :if FileExist InputDir,FILE
+[10]  :orif 0=tieno←NCREATE InputDir,FILE
+[11]      MDISPLAY 'InvFileName' FILE ⋄ res←parent,'fFiles.edFILE' ⋄ →END
+[12]  :endif
+[13]  
+[14]  ⍝ Tie file and Calculate number of records
+[15]  :if 0=(InputDir,fILENAME) NTIE tpr1←'Native' TieNumber ''
+[16]      Error←'FileNotFound' ⋄ →ERR
+[17]  :endif
+[18]  
+[19]  RunTime←DLTMB 1 DATESPELL ⎕ts
+[20]  NN←⌊(size←⎕NSIZE tpr1)÷RECL←recl+2 ⋄ NO←0
+[21]  lRECL←RECL+FV←2+zwb DecP ⋄ FV←¯1+RECL+⍳FV
+[22]  fmt←'M<->F',(⍕⍴FV),'.',⍕zwb DecP
+[23]  
+[24]  CREATEDATADESC Format ⍝ Create Data Format Variables
+[25]  
+[26]  :if ~('Valuation Date')≡DATEa←,'Act' DescToVariableUK DATEa
+[27]      dfDATEa←⍎'df',DATEa ⋄ fDATEa←⍎'f',DATEa
+[28]  :endif
+[29]  
+[30]  :if ~(⊂DATEb←,'Act' DescToVariableUK DATEb)∊'Valuation Date' 'Normal Retirement Date'
+[31]      dfDATEb←⍎'df',DATEb ⋄ fDATEb←⍎'f',DATEb
+[32]  :endif
+[33]  SRVRND←,servrnd[;0]
+[34]  dobadd←zwb¨m_DOBADD f_DOBADD
+[35]  
+[36]  ⍝ ind of 0 for SRVTBL, 1 for Data Field and 2 for Constant
+[37]  :if ind←~0∊⍴PENPER←,'Act' DescToVariableUK PENPER
+[38]      :if 2=ind←ind+↑⎕vi PENPER ⋄ PENPER←0.01×zwb PENPER
+[39]      :else                     ⋄ fPENPER←⍎'f',PENPER
+[40]      :endif
+[41]  :else
+[42]      SRVTBL←100 OVERTAKE DEC∆CHECK SRVTBL
+[43]  :endif
+[44]  
+[45]  min←(zwb minnum) CDIV zwb mindenom
+[46]  max←(zwb maxnum) ZDIV zwb maxdenom
+[47]  
+[48]  READ:NUMRECS←↑⍴REC←0 ¯2↓'ASCII' Read∆DataFile tpr1 size RECL (NN-NO) NO
+[49]  
+[50]  ((NO←NO+NUMRECS) NN fILENAME) Win∆ProgressBar 'FileUpdate'
+[51]  REC←((NUMRECS,lRECL)↑0 ¯1↓REC),¯1↑[1]REC
+[52]  
+[53]  :if DATEa≡'Valuation Date' ⋄ datea←vDATE
+[54]  :elseif ∨/~DATECHECK datea←MATRIX dfDATEa DATEEXP REC[;fDATEa]
+[55]      Error←'InvFileDate' ⋄ →ERR  ⍝ Dates must be valid if specified
+[56]  :endif
+[57]  
+[58]  :if     DATEb≡'Valuation Date' ⋄ dateb←vDATE
+[59]  :elseif DATEb≡'Normal Retirement Date'
+[60]      :if ∨/~DATECHECK dateb←MATRIX dfDOB DATEEXP REC[;fDOB]
+[61]          Error←'InvFileDate' ⋄ →ERR  ⍝ Dates must be valid if specified
+[62]      :endif
+[63]      dateb[;2]←1900+1900∣dateb[;2]+dobadd[,'F'=UPPERCASE REC[;fSEX]]
+[64]  :elseif ∨/~DATECHECK datea←MATRIX dfDATEa DATEEXP REC[;fDATEa]
+[65]      Error←'InvFileDate' ⋄ →ERR  ⍝ Dates must be valid if specified
+[66]  :endif
+[67]  
+[68]  serv←∣SRVRND DURN datea TO dateb
+[69]  :select ind
+[70]  :case 2 ⋄ acc←PENPER
+[71]  :case 1 ⋄
+[72]      :if ∨/~valid←⎕VI ,(acc←REC[;fPENPER]),' ' ⍝ Numbers must be valid
+[73]      :orif (⍴valid)≠1↑⍴(∨/' '≠acc)⌿acc         ⍝ and scalar!
+[74]          Error←'InvFileNum' ⋄ →ERR
+[75]      :endif
+[76]      acc←,0.01×MatrixZWB acc
+[77]  :case 'SRVTBL'
+[78]      acc←SRVTBL[1+⌊serv]+(SRVTBL[1+⌈serv]-SRVTBL[1+⌊serv])×1⊤serv
+[79]  :endselect
+[80]  values←max⌊(acc CDIV serv)⌈min
+[81]  :if 1=⍴,values ⋄ values←NUMRECS/values ⋄ :endif ⍝ Expand if Constant Specified
+[82]  
+[83]  :if NUMRECS≠⍴,values ⍝ Error - wrong no. of results
+[84]  :orif ∨/'*'=,values←fmt ⎕FMT values ⍝ Error if doesn't fit in field
+[85]      Error←'InvEntry' 'Invalid numeric result calculated' ⋄ →ERR
+[86]  :endif
+[87]  
+[88]  REC[;FV]←values ⋄ REC APPEND tieno
+[89]  (NO NN FILE) Win∆ProgressBar 'MemberUpdate'
+[90]  :if NO<NN ⋄ →READ ⋄ :endif
+[91]  
+[92]  FormName ⎕wi 'Focus'
+[93]  ('Member Specific Accrual Rate Calculation at ',RunTime) BROWSE tieno ⋄ →END
+[94]  
+[95]  ERR: ⍝ on Error processing
+[96]       res←parent,'fFiles.edfILENAME' ⋄ Error←Error fILENAME
+[97]  ERR1:MDISPLAY Error ⋄ (InputDir,FILE) NERASE tieno
+[98]  
+[99]  END:⎕io←1 ⍝??⍝
+[100] Win∆AssignVars ControlName ⍝ Reset to screen values if an error
+[101] ⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'
+[102] 
+[103] →0
+[104] ⍝ Update Actives Data Format
+[105] FormatMSAR
+    ∇

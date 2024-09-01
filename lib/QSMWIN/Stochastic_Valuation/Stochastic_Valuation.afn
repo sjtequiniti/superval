@@ -1,0 +1,101 @@
+    ∇ res←field Stochastic_Valuation parm;parent;ExcelRunButton;∆;index;Parmlist;sheetnames;MESS;group;list
+[1]   ⍝ QSMWIN.sf#7
+[2]   ⍝ Function to allow user control on Stochastic Valuation module
+[3]   
+[4]   parent←'fmStochVal.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Prepare'
+[9]   
+[10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]      Parmlist←0⍴⊂''
+[14]      :for qsmfile :in m2n 1 0↓'QSMFile' GetParmFiles 1
+[15]          index←(ConsolidDir,qsmfile) ReadFile 'Index'
+[16]          ∆←(index at '∆_Name')∊⊂'Quick_Scenario'
+[17]          Parmlist←Parmlist,(⊂('{}' embrace qsmfile),' '),¨(∆/index at '∆_Description'),¨' ',¨((⊂'[]') embrace¨∆/index at '∆_TSModified'),¨'-',¨∆/index at '∆_VersModified'
+[18]      :endfor
+[19]      :if mt Parmlist
+[20]          res←'No Saved Quick Scenarios found' ⋄ :return
+[21]      :endif
+[22]  
+[23]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[24]  
+[25]      :repeat
+[26]          :select ↑field
+[27]          :case 'lvQSMParms' ⍝ Extract some data from selected QSM
+[28]              Win∆AssignVars ControlName
+[29]              (qsmfile parms)←ConsolidDir '',¨2↑m2n SStoMAT QSMParms
+[30]              saveVersion←qsmfile ReadFile 'Quick_Scenario' parms 'VERSION'
+[31]              0 0⍴qsmfile ReadFile 'Quick_Scenario' parms (⊃'ValDATE' 'RFDate' 'lrRFDate' 'restab')
+[32]              groupings←restab at 'PreInterestGroup' 'PostInterestGroup' 'InflationGroup' 'RevaluationGroup' 'IncreaseGroup'
+[33]              groupings←(nub lmt ,⊃groupings)~'GMP None' 'GMP Fixed' 'GMP Limited 5%' '⍙Not Used'
+[34]              (parent,'edEffDate') ⎕wi 'text' ((mt RFDate) means ValDATE else ↑⌽'Date' SwapRelFields lrRFDate RFDate)
+[35]              (parent,'lsGroups') ⎕wi 'list' (⊃groupings)
+[36]          :case 'cbxlDIR'
+[37]              Win∆AssignVars ControlName
+[38]              :select xlDIR
+[39]              :case 'Input Folder'   ⋄ SV_Dir←InputDir
+[40]              :case 'Library Folder' ⋄ SV_Dir←LibraryDir
+[41]              :endselect
+[42]              (parent,"cbxlFILE") ⎕wi "list" (list←⊃m2n 1 0↓GetXLSFiles SV_Dir)
+[43]              (parent,"cbxlFILE") ⎕wi 'suppress' 1
+[44]              (parent,"cbxlFILE") ⎕wi 'text' xlFILE
+[45]              (parent,"cbxlFILE") ⎕wi 'suppress' 0
+[46]              (parent,"cbxlFILE") ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴list)↑list)
+[47]          :endselect
+[48]      :until mt field←1↓field
+[49]  
+[50]  :case 'Valid' ⍝ Routine specific validation
+[51]  
+[52]      :if 0=⎕nc 'ExcelRunButton' ⋄ ExcelRunButton←(parent,'bntemp') ⎕wi 'Create' 'Button' ('visible' 0) ⋄ :endif
+[53]      :if ~mt 'XL' ⎕wi 'self'
+[54]          :if ~mt res←XL_Create ExcelRunButton ⋄ :return ⋄ :endif
+[55]      :endif
+[56]      :if ~mt res←ExcelRunButton XL_Open (SV_Dir,xlFILE) 0 1 ⋄ :return ⋄ :endif
+[57]  
+[58]      ⍝ Check sheetnames in groupings and vice-versa
+[59]      sheetnames←m2n XL_SheetNames ''
+[60]      :if ~mt ∆←sheetnames~groupings
+[61]          MESS←'The following Excel sheets:',(2/⎕tcnl),(', ' join ∆),(2/⎕tcnl),'are not required by the selected Quick Scenario Model.'
+[62]          :if 'N'='YN' ASK MESS,(2/⎕tcnl),'Do you want to continue?'
+[63]              res←'Fix Stochastic Assumptions spreadsheet to match the Quick Scenario Model' ⋄ →out
+[64]          :endif
+[65]      :endif
+[66]  
+[67]      :if ~mt ∆←groupings~sheetnames
+[68]          MESS←'The following Quick Scenario Financial Groupings:',(2/⎕tcnl),(', ' join ∆),(2/⎕tcnl),'do not have Stochastic Assumptions attributed to them.'
+[69]          :if 'N'='YN' ASK MESS,(2/⎕tcnl),'Do you want to continue?'
+[70]              res←'Fix Stochastic Assumptions spreadsheet to match the Quick Scenario Model' ⋄ →out
+[71]          :endif
+[72]          groupings←groupings~∆
+[73]      :endif
+[74]  
+[75]      scenarios←⍳0
+[76]      :for group :in groupings
+[77]          0 XL_ActivateWorksheet group
+[78]          scenarios←scenarios,((('XL' ⎕wi 'xActiveSheet') ⎕wi 'xUsedRange') ⎕wi 'xRows') ⎕wi 'xCount'
+[79]      :endfor
+[80]      :if ∨/scenarios≠↑scenarios
+[81]          MESS←'There are a different number of Stochastic Assumptions scenarios in the Excel File:',(2/⎕tcnl),(', ' join groupings,¨,' ',¨(⊂'()') embrace¨⍕¨scenarios),(2/⎕tcnl)
+[82]          :if 'N'='YN' ASK MESS,(2/⎕tcnl),'Do you want to continue with just ',(⍕⌊/scenarios),' scenarios?'
+[83]              res←'Fix Stochastic Assumptions spreadsheet to match the Quick Scenario Model' ⋄ →out
+[84]          :endif
+[85]      :endif
+[86]      scenarios←⌊/scenarios
+[87]      :return
+[88]  
+[89]  out:0 0⍴'XL.wb' ⎕wi 'Close' ⍝ Close previous spreadsheet
+[90]  
+[91]  :case 'Run'
+[92]      'res←SV_run' Win∆ProgressBar 'Start'
+[93]      res←''
+[94]  
+[95]  :case 'Quit' ⍝ Deleting "other" variables
+[96]      XL_Quit
+[97]      0 0⍴⎕ex 'qsmfile parms saveVersion ValDATE RFDate lrRFDate restab groupings projyears SV_Dir'
+[98]  
+[99]  :endselect
+    ∇

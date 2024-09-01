@@ -1,0 +1,28 @@
+    ∇ field Pen_Main parm;page
+[1]   ⍝ UPARMWIN.sf#9
+[2]   ⍝ Do Initialisation, Changes and Validation of Main Page
+[3]   
+[4]   page←'pgMain.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]       TotNumVars←CharVars←DateVars←0 0⍴''
+[9]       Format←HyphenSwap Format
+[10]  
+[11]  :case 'Init'
+[12]      (parent,page) ⎕wi 'imageindex' 4
+[13]  
+[14]  :case 'Change'
+[15]      :select field
+[16]      :caselist 'edfILENAME' 'lsCatSels'
+[17]          (parent,page,'fData.') Win∆FileChanges field
+[18]      :case 'cbFormat'
+[19]          ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[20]          Format←(parent,page,'fData.cbFormat') ⎕wi 'text'
+[21]          (parent,page,'fData.') Win∆FileChanges field
+[22]      :endselect
+[23]  
+[24]  :case 'Valid'
+[25]  
+[26]  :endselect
+    ∇

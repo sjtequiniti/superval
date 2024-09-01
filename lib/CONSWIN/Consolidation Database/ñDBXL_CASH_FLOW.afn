@@ -1,1 +1,138 @@
-    ∇ GTOTS←⍙DBXL_CASH∆FLOW;tab;capind;sql;sql1;ResultsCategoryID;BasisCategoryID;sql2;VMP;V;disc;z;sCEN_disc;ResSize;table;ID;Cap;Collar;∆[1]   ⍝ CONSWIN.sf#11[2]   ⍝[3]   ⍝ Write the Cash Flows[4]   [5]   1 XL_ActivateWorksheet 'CashFlow'[6]   GTOTS←(SIZE,19)⍴0 ⋄ CoConts←(SIZE,2)⍴0[7]   table←'ResultsData_NoIndex'[8]   [9]   sql← DLTMB "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1                           AND ContingencyID IN (%2) AND LiabilityTypeID=%3 GROUP BY SVYear"[10]  sql1←DLTMB "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID IN (%2) AND ContingencyID IN (%3) AND LiabilityTypeID=%4 GROUP BY SVYear"[11]  sql2←DLTMB "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID=%2                                AND LiabilityTypeID=%3 GROUP BY SVYear"[12]  [13]  :if ~0∊⍴runsA ⍝ Actives Cash Flows which can vary by Category[14]      :for ResultsCategoryID :in runsA[15]          ((runsA⍳ResultsCategoryID) (⍴runs) (↑(ConsIndex for 'ID' ResultsCategoryID) at 'desc')) Win∆ProgressBar 'MemberUpdate'[16]  [17]          capind←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE (BasisItemName=",(1 ⍙DBString 20↑"capind"),") AND (BasisItemID BETWEEN 20000 AND 29999)"[18]          BasisCategoryID←,1 ⍙DBadoCONCommand "SELECT BasisCategoryID FROM ResultsCategory WHERE ResultsCategoryID=",⍕ResultsCategoryID[19]          capind←⍬⍴"C"=1↑,⊃,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") AND (BasisItemID=",(⍕capind),")"[20]  [21]          tab←0×GTOTS ⍝ Retirement Cash Flows - All in Column[22]          tab[;3-1×capind]←                -SIZE↑(ResultsCategoryID, 1,8) ⍙DBSQLRead sql ⍝ All ER[23]          tab[;3-2×capind]←tab[;3-2×capind]-SIZE↑(ResultsCategoryID (2 21) 8) ⍙DBSQLRead sql ⍝ All NR & LR[24]          :if ~capind ⍝ Move Cash Benefits to their column[25]              tab[;1]←       -SIZE↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) (2 21) 8) ⍙DBSQLRead sql1 ⍝ NR & LR Cash[26]              tab[;2]←       -SIZE↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57)     1  8) ⍙DBSQLRead sql1 ⍝ ER Cash[27]              tab[;3]←tab[;3]-+/tab[;1 2][28]          :endif[29]  [30]          ⍝ Death Cash Flows[31]          tab[;6]←        -SIZE↑(ResultsCategoryID (9 10) 3 8) ⍙DBSQLRead sql1 ⍝ Death Insured Pension and Cash[32]          tab[;5-capind]←(-SIZE↑(ResultsCategoryID (3 23) 8) ⍙DBSQLRead sql)-tab[;6] ⍝ Death Before NRA + Death after NRA - Insured[33]          :if ~capind[34]              tab[;5]←tab[;5]-tab[;4]←-SIZE↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) (3 23) 8) ⍙DBSQLRead sql1 ⍝ Death Before & After NRA Cash[35]          :endif[36]          tab[;6]←insind×tab[;6][37]  [38]          ⍝ Ill-Health Cash Flows[39]          tab[;9]←        -SIZE↑(ResultsCategoryID (9 10) 4 8) ⍙DBSQLRead sql1 ⍝ Ill-Health Insured Pension & Cash[40]          tab[;8-capind]←(-SIZE↑(ResultsCategoryID,4,8) ⍙DBSQLRead sql)-tab[;9] ⍝ All Ill-Health - Insured[41]          :if ~capind[42]              tab[;8]←tab[;8]-tab[;7]←-SIZE↑(ResultsCategoryID,1,4,8) ⍙DBSQLRead sql1 ⍝ Ill-Health Cash[43]          :endif[44]          tab[;9]←insind×tab[;9][45]  [46]          ⍝ Leaving Cash Flows[47]          tab[;12]←       -SIZE↑(ResultsCategoryID,6,8) ⍙DBSQLRead sql ⍝ Leaving Death in Deferment[48]          tab[;11-capind]←-SIZE↑(ResultsCategoryID,5,8) ⍙DBSQLRead sql ⍝ All Leaving[49]          :if ~capind[50]              tab[;11]←tab[;11]-tab[;10]←-SIZE↑(ResultsCategoryID,1,5,8) ⍙DBSQLRead sql1 ⍝ Leaving Cash[51]          :endif[52]  [53]          ⍝ Contributions Cash Flows[54]          tab[;13]←SIZE↑(ResultsCategoryID,11,8,8) ⍙DBSQLRead sql1 ⍝ Member[55]          CoConts[;1]←CoConts[;1]+SIZE↑(ResultsCategoryID 11 (9 15,(NotPUC^insind)/29 30) 8) ⍙DBSQLRead sql1 ⍝ Employer Normal Conts, Scheme Fee Conts & Premiums[56]          CoConts[;2]←CoConts[;2]+SIZE↑(ResultsCategoryID 11 (10 28) 8) ⍙DBSQLRead sql1 ⍝ Employer Deficit 1 & 2 Conts[57]  [58]          ⍝ Expenses[59]          tab[;17]←-SIZE↑(ResultsCategoryID 32 (8 9 11 15 16 10 28,(NotPUC^insind)/29 30) 8) ⍙DBSQLRead sql1[60]  [61]          GTOTS←GTOTS+tab[62]      :endfor[63]  :endif[64]  [65]  :if ~0∊⍴runsP ⍝ Pensioners Cash Flows[66]      ((⍴runsA,runsP) (⍴runs) 'All Pensioners') Win∆ProgressBar 'MemberUpdate'[67]  [68]      GTOTS[;19]←-SIZE↑⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID IN (",(0 ⍙DBNumList runsP),") AND LiabilityTypeID=8",(sqlDatabase/" AND DatabaseID=",DBID)," GROUP BY SVYear"[69]  :endif[70]  [71]  :for ResultsCategoryID :in runsD ⍝ Deferreds Cash Flows[72]      (((⍴runsA,runsP)+runsD⍳ResultsCategoryID) (⍴runs) (↑(ConsIndex for 'ID' ResultsCategoryID) at 'desc')) Win∆ProgressBar 'MemberUpdate'[73]  [74]      BasisCategoryID←,1 ⍙DBadoCONCommand "SELECT BasisCategoryID FROM ResultsCategory WHERE ResultsCategoryID=",⍕ResultsCategoryID[75]      capind←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE (BasisItemName=",(1 ⍙DBString 20↑"capind"),") AND (BasisItemID BETWEEN 10000 AND 19999)"[76]      capind←⍬⍴"C"=1↑,⊃,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") AND (BasisItemID=",(⍕capind),")"[77]      ⍝ Cash (and capitalised) Retirement Benefits[78]      tab←SIZE↑⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID = ",(⍕ResultsCategoryID),((~capind)/" AND BenefitTypeID IN  (1, 35, 44, 45, 46, 47, 36, 54, 55, 56, 57)")," AND LiabilityTypeID=8 AND ContingencyID IN (1, 2) GROUP BY SVYear"[79]      GTOTS[;19]←GTOTS[;19]-(SIZE↑⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID = ",(⍕ResultsCategoryID)," AND LiabilityTypeID=8 GROUP BY SVYear")-tab[80]      :if ∨/0≠tab[81]          disc←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE (BasisItemName=",(1 ⍙DBString 20↑"IR"),") AND (BasisItemID BETWEEN 10000 AND 19999)"[82]          disc←¯1↓DLTB '<' Win∆Child ,⊃,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") AND (BasisItemID=",(⍕disc),")"[83]          ID←↑1 ⍙DBadoCONCommand "SELECT FinancialsID FROM FinancialsGroups WHERE BasisCategoryID=",⍕BasisCategoryID[84]          :while 3≠⍴∆←,1 ⍙DBadoCONCommand "SELECT FinancialsValue, FinancialsCap, FinancialsCollar FROM FinancialsValues WHERE FinancialsID=",(⍕ID)," AND FinancialsName=",(1 ⍙DBString disc)[85]          :andif '-'∊disc[86]  ⍝⍝⍝            disc←DLTB StripText disc[87]              disc←¯1↓'-' Win∆Parent disc[88]          :endwhile[89]          :if bASM ⋄ sCEN_disc←↑,1 ⍙DBadoCONCommand "SELECT FinancialsScenValue FROM FinancialsValues WHERE FinancialsID=",(⍕ID)," AND FinancialsName=",(1 ⍙DBString disc)[90]          :else    ⋄ sCEN_disc←''[91]          :endif[92]          (disc Cap Collar)←∆[93]          :if ~^/⎕vi disc ⍝ Select the Yield Curve values[94]              disc←,1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE BasisCategoryID=",(⍕BasisCategoryID)," AND TableName=",1 ⍙DBString 255↑disc[95]              disc←⍕,⊃0 1↓1 ⍙DBadoCONCommand "SELECT TableDuration, TableValue FROM TableValues WHERE TableID=",(⍕disc)," ORDER BY TableDuration"[96]          :endif[97]          :if ~^/⎕vi '+ ' REPL sCEN_disc ⍝ Select the Yield Curve values[98]              sCEN_disc←,1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE BasisCategoryID=",(⍕BasisCategoryID)," AND TableName=",1 ⍙DBString 255↑sCEN_disc[99]              sCEN_disc←⍕,⊃0 1↓1 ⍙DBadoCONCommand "SELECT TableDuration, TableValue FROM TableValues WHERE TableID=",(⍕sCEN_disc)," ORDER BY TableDuration"[100]         :endif[101]         :if ∨/~mt¨Cap Collar[102]             disc←disc,'⋄',((~mt Cap)/'Cap: ',Cap),(~mt Collar)/'Collar: ',Collar[103]         :endif[104]         ResSize←0 ⋄ disc←1+0.01×0 MergeRates disc sCEN_disc[105] [106]         V←¯1↓×\1,(÷2/SIZE OVERTAKE disc)*0.5 ⍝ Set up discounter vectors[107]         VMP←((⍴V)⍴0 1)/V ⍝  At t=0.5, 1.5, 2.5,...[108]         V←((⍴V)⍴1 0)/V ⍝    At t=0, 1, 2,...[109]         GTOTS[;19]←GTOTS[;19]-tab×V CDIV VMP[110]     :endif[111] :endfor[112] [113] ⍝ (unapportioned) Employer Expenses and Deficit Conts[114] CoConts[;1]←CoConts[;1]+SIZE↑(DatabaseID 11 (9 15,(NotPUC^insind)/29 30) 8) ⍙DBSQLRead sql1 ⍝ Employer Normal Conts, Scheme Fee Conts & Premiums[115] CoConts[;2]←CoConts[;2]+SIZE↑(DatabaseID 11 (10 28) 8) ⍙DBSQLRead sql1 ⍝ Employer Deficit 1 & 2 Conts[116] [117] :if uk=1 ⋄ :andif ~0∊⍴runsA ⋄ :andif ~NotPUC ⋄ :andif contper>1 ⍝ Average Normal Cost during Control Period in UK[118]     ⍝ Text version averages (incorrectly) using undiscounted cashflows[119]     CoConts[⍳SIZE⌊contper;1]←(SIZE⌊contper)↑(+/contper↑[1]PVCONTS1pc)×(+/(contper↑CoConts[;1])×contper↑vMP) CDIV +/(contper↑vMP)×contper↑+/PVCONTS1pc[120] :endif[121] GTOTS[;14]←+/CoConts ⍝ CoConts saved for "Statistics" page[122] [123] ⍝ Scheme Fee Expenses[124] GTOTS[;17]←GTOTS[;17]-SIZE↑(DatabaseID,32,8) ⍙DBSQLRead sql2[125] ⍝ Additional Liabilities[126] GTOTS[;1]←GTOTS[;1]-SIZE↑(DatabaseID,33,17,8) ⍙DBSQLRead sql1[127] [128] ⍝ Temporary adjustments to get figures correct for ASSCALC[129] GTOTS[;4 7 10]←GTOTS[;4 7 10]+GTOTS[;6 9 12] ⋄ GTOTS[;18]←+/GTOTS[;(⍳5), 7 8 10 11][130] ASSCALC[131] GTOTS[;4 7 10]←GTOTS[;4 7 10]-GTOTS[;6 9 12] ⍝ Undo Temporary adjustments[132] [133] 0 0⍴(GTOTS←GTOTS[;(⍳12),19 13 14 17 20 21]) XL_Data RCtoA1 11 5 (10+SIZE) 22[134] [135] (12 2 12 4) XL_PasteAll 13 2 (10+SIZE) 4[136] (12 5 12 23) XL_PasteFormats 13 5 (10+SIZE) 23    ∇
+    ∇ GTOTS←⍙DBXL_CASH∆FLOW;tab;capind;sql;sql1;ResultsCategoryID;BasisCategoryID;sql2;VMP;V;disc;z;sCEN_disc;ResSize;table;ID;Cap;Collar;∆
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝
+[3]   ⍝ Write the Cash Flows
+[4]   
+[5]   1 XL_ActivateWorksheet 'CashFlow'
+[6]   GTOTS←(SIZE,19)⍴0 ⋄ CoConts←(SIZE,2)⍴0
+[7]   table←'ResultsData_NoIndex'
+[8]   
+[9]   sql← DLTMB "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1                           AND ContingencyID IN (%2) AND LiabilityTypeID=%3 GROUP BY SVYear"
+[10]  sql1←DLTMB "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID IN (%2) AND ContingencyID IN (%3) AND LiabilityTypeID=%4 GROUP BY SVYear"
+[11]  sql2←DLTMB "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID=%2                                AND LiabilityTypeID=%3 GROUP BY SVYear"
+[12]  
+[13]  :if ~0∊⍴runsA ⍝ Actives Cash Flows which can vary by Category
+[14]      :for ResultsCategoryID :in runsA
+[15]          ((runsA⍳ResultsCategoryID) (⍴runs) (↑(ConsIndex for 'ID' ResultsCategoryID) at 'desc')) Win∆ProgressBar 'MemberUpdate'
+[16]  
+[17]          capind←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE (BasisItemName=",(1 ⍙DBString 20↑"capind"),") AND (BasisItemID BETWEEN 20000 AND 29999)"
+[18]          BasisCategoryID←,1 ⍙DBadoCONCommand "SELECT BasisCategoryID FROM ResultsCategory WHERE ResultsCategoryID=",⍕ResultsCategoryID
+[19]          capind←⍬⍴"C"=1↑,⊃,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") AND (BasisItemID=",(⍕capind),")"
+[20]  
+[21]          tab←0×GTOTS ⍝ Retirement Cash Flows - All in Column
+[22]          tab[;3-1×capind]←                -SIZE↑(ResultsCategoryID, 1,8) ⍙DBSQLRead sql ⍝ All ER
+[23]          tab[;3-2×capind]←tab[;3-2×capind]-SIZE↑(ResultsCategoryID (2 21) 8) ⍙DBSQLRead sql ⍝ All NR & LR
+[24]          :if ~capind ⍝ Move Cash Benefits to their column
+[25]              tab[;1]←       -SIZE↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) (2 21) 8) ⍙DBSQLRead sql1 ⍝ NR & LR Cash
+[26]              tab[;2]←       -SIZE↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57)     1  8) ⍙DBSQLRead sql1 ⍝ ER Cash
+[27]              tab[;3]←tab[;3]-+/tab[;1 2]
+[28]          :endif
+[29]  
+[30]          ⍝ Death Cash Flows
+[31]          tab[;6]←        -SIZE↑(ResultsCategoryID (9 10) 3 8) ⍙DBSQLRead sql1 ⍝ Death Insured Pension and Cash
+[32]          tab[;5-capind]←(-SIZE↑(ResultsCategoryID (3 23) 8) ⍙DBSQLRead sql)-tab[;6] ⍝ Death Before NRA + Death after NRA - Insured
+[33]          :if ~capind
+[34]              tab[;5]←tab[;5]-tab[;4]←-SIZE↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) (3 23) 8) ⍙DBSQLRead sql1 ⍝ Death Before & After NRA Cash
+[35]          :endif
+[36]          tab[;6]←insind×tab[;6]
+[37]  
+[38]          ⍝ Ill-Health Cash Flows
+[39]          tab[;9]←        -SIZE↑(ResultsCategoryID (9 10) 4 8) ⍙DBSQLRead sql1 ⍝ Ill-Health Insured Pension & Cash
+[40]          tab[;8-capind]←(-SIZE↑(ResultsCategoryID,4,8) ⍙DBSQLRead sql)-tab[;9] ⍝ All Ill-Health - Insured
+[41]          :if ~capind
+[42]              tab[;8]←tab[;8]-tab[;7]←-SIZE↑(ResultsCategoryID,1,4,8) ⍙DBSQLRead sql1 ⍝ Ill-Health Cash
+[43]          :endif
+[44]          tab[;9]←insind×tab[;9]
+[45]  
+[46]          ⍝ Leaving Cash Flows
+[47]          tab[;12]←       -SIZE↑(ResultsCategoryID,6,8) ⍙DBSQLRead sql ⍝ Leaving Death in Deferment
+[48]          tab[;11-capind]←-SIZE↑(ResultsCategoryID,5,8) ⍙DBSQLRead sql ⍝ All Leaving
+[49]          :if ~capind
+[50]              tab[;11]←tab[;11]-tab[;10]←-SIZE↑(ResultsCategoryID,1,5,8) ⍙DBSQLRead sql1 ⍝ Leaving Cash
+[51]          :endif
+[52]  
+[53]          ⍝ Contributions Cash Flows
+[54]          tab[;13]←SIZE↑(ResultsCategoryID,11,8,8) ⍙DBSQLRead sql1 ⍝ Member
+[55]          CoConts[;1]←CoConts[;1]+SIZE↑(ResultsCategoryID 11 (9 15,(NotPUC^insind)/29 30) 8) ⍙DBSQLRead sql1 ⍝ Employer Normal Conts, Scheme Fee Conts & Premiums
+[56]          CoConts[;2]←CoConts[;2]+SIZE↑(ResultsCategoryID 11 (10 28) 8) ⍙DBSQLRead sql1 ⍝ Employer Deficit 1 & 2 Conts
+[57]  
+[58]          ⍝ Expenses
+[59]          tab[;17]←-SIZE↑(ResultsCategoryID 32 (8 9 11 15 16 10 28,(NotPUC^insind)/29 30) 8) ⍙DBSQLRead sql1
+[60]  
+[61]          GTOTS←GTOTS+tab
+[62]      :endfor
+[63]  :endif
+[64]  
+[65]  :if ~0∊⍴runsP ⍝ Pensioners Cash Flows
+[66]      ((⍴runsA,runsP) (⍴runs) 'All Pensioners') Win∆ProgressBar 'MemberUpdate'
+[67]  
+[68]      GTOTS[;19]←-SIZE↑⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID IN (",(0 ⍙DBNumList runsP),") AND LiabilityTypeID=8",(sqlDatabase/" AND DatabaseID=",DBID)," GROUP BY SVYear"
+[69]  :endif
+[70]  
+[71]  :for ResultsCategoryID :in runsD ⍝ Deferreds Cash Flows
+[72]      (((⍴runsA,runsP)+runsD⍳ResultsCategoryID) (⍴runs) (↑(ConsIndex for 'ID' ResultsCategoryID) at 'desc')) Win∆ProgressBar 'MemberUpdate'
+[73]  
+[74]      BasisCategoryID←,1 ⍙DBadoCONCommand "SELECT BasisCategoryID FROM ResultsCategory WHERE ResultsCategoryID=",⍕ResultsCategoryID
+[75]      capind←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE (BasisItemName=",(1 ⍙DBString 20↑"capind"),") AND (BasisItemID BETWEEN 10000 AND 19999)"
+[76]      capind←⍬⍴"C"=1↑,⊃,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") AND (BasisItemID=",(⍕capind),")"
+[77]      ⍝ Cash (and capitalised) Retirement Benefits
+[78]      tab←SIZE↑⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID = ",(⍕ResultsCategoryID),((~capind)/" AND BenefitTypeID IN  (1, 35, 44, 45, 46, 47, 36, 54, 55, 56, 57)")," AND LiabilityTypeID=8 AND ContingencyID IN (1, 2) GROUP BY SVYear"
+[79]      GTOTS[;19]←GTOTS[;19]-(SIZE↑⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID = ",(⍕ResultsCategoryID)," AND LiabilityTypeID=8 GROUP BY SVYear")-tab
+[80]      :if ∨/0≠tab
+[81]          disc←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE (BasisItemName=",(1 ⍙DBString 20↑"IR"),") AND (BasisItemID BETWEEN 10000 AND 19999)"
+[82]          disc←¯1↓DLTB '<' Win∆Child ,⊃,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") AND (BasisItemID=",(⍕disc),")"
+[83]          ID←↑1 ⍙DBadoCONCommand "SELECT FinancialsID FROM FinancialsGroups WHERE BasisCategoryID=",⍕BasisCategoryID
+[84]          :while 3≠⍴∆←,1 ⍙DBadoCONCommand "SELECT FinancialsValue, FinancialsCap, FinancialsCollar FROM FinancialsValues WHERE FinancialsID=",(⍕ID)," AND FinancialsName=",(1 ⍙DBString disc)
+[85]          :andif '-'∊disc
+[86]  ⍝⍝⍝            disc←DLTB StripText disc
+[87]              disc←¯1↓'-' Win∆Parent disc
+[88]          :endwhile
+[89]          :if bASM ⋄ sCEN_disc←↑,1 ⍙DBadoCONCommand "SELECT FinancialsScenValue FROM FinancialsValues WHERE FinancialsID=",(⍕ID)," AND FinancialsName=",(1 ⍙DBString disc)
+[90]          :else    ⋄ sCEN_disc←''
+[91]          :endif
+[92]          (disc Cap Collar)←∆
+[93]          :if ~^/⎕vi disc ⍝ Select the Yield Curve values
+[94]              disc←,1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE BasisCategoryID=",(⍕BasisCategoryID)," AND TableName=",1 ⍙DBString 255↑disc
+[95]              disc←⍕,⊃0 1↓1 ⍙DBadoCONCommand "SELECT TableDuration, TableValue FROM TableValues WHERE TableID=",(⍕disc)," ORDER BY TableDuration"
+[96]          :endif
+[97]          :if ~^/⎕vi '+ ' REPL sCEN_disc ⍝ Select the Yield Curve values
+[98]              sCEN_disc←,1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE BasisCategoryID=",(⍕BasisCategoryID)," AND TableName=",1 ⍙DBString 255↑sCEN_disc
+[99]              sCEN_disc←⍕,⊃0 1↓1 ⍙DBadoCONCommand "SELECT TableDuration, TableValue FROM TableValues WHERE TableID=",(⍕sCEN_disc)," ORDER BY TableDuration"
+[100]         :endif
+[101]         :if ∨/~mt¨Cap Collar
+[102]             disc←disc,'⋄',((~mt Cap)/'Cap: ',Cap),(~mt Collar)/'Collar: ',Collar
+[103]         :endif
+[104]         ResSize←0 ⋄ disc←1+0.01×0 MergeRates disc sCEN_disc
+[105] 
+[106]         V←¯1↓×\1,(÷2/SIZE OVERTAKE disc)*0.5 ⍝ Set up discounter vectors
+[107]         VMP←((⍴V)⍴0 1)/V ⍝  At t=0.5, 1.5, 2.5,...
+[108]         V←((⍴V)⍴1 0)/V ⍝    At t=0, 1, 2,...
+[109]         GTOTS[;19]←GTOTS[;19]-tab×V CDIV VMP
+[110]     :endif
+[111] :endfor
+[112] 
+[113] ⍝ (unapportioned) Employer Expenses and Deficit Conts
+[114] CoConts[;1]←CoConts[;1]+SIZE↑(DatabaseID 11 (9 15,(NotPUC^insind)/29 30) 8) ⍙DBSQLRead sql1 ⍝ Employer Normal Conts, Scheme Fee Conts & Premiums
+[115] CoConts[;2]←CoConts[;2]+SIZE↑(DatabaseID 11 (10 28) 8) ⍙DBSQLRead sql1 ⍝ Employer Deficit 1 & 2 Conts
+[116] 
+[117] :if uk=1 ⋄ :andif ~0∊⍴runsA ⋄ :andif ~NotPUC ⋄ :andif contper>1 ⍝ Average Normal Cost during Control Period in UK
+[118]     ⍝ Text version averages (incorrectly) using undiscounted cashflows
+[119]     CoConts[⍳SIZE⌊contper;1]←(SIZE⌊contper)↑(+/contper↑[1]PVCONTS1pc)×(+/(contper↑CoConts[;1])×contper↑vMP) CDIV +/(contper↑vMP)×contper↑+/PVCONTS1pc
+[120] :endif
+[121] GTOTS[;14]←+/CoConts ⍝ CoConts saved for "Statistics" page
+[122] 
+[123] ⍝ Scheme Fee Expenses
+[124] GTOTS[;17]←GTOTS[;17]-SIZE↑(DatabaseID,32,8) ⍙DBSQLRead sql2
+[125] ⍝ Additional Liabilities
+[126] GTOTS[;1]←GTOTS[;1]-SIZE↑(DatabaseID,33,17,8) ⍙DBSQLRead sql1
+[127] 
+[128] ⍝ Temporary adjustments to get figures correct for ASSCALC
+[129] GTOTS[;4 7 10]←GTOTS[;4 7 10]+GTOTS[;6 9 12] ⋄ GTOTS[;18]←+/GTOTS[;(⍳5), 7 8 10 11]
+[130] ASSCALC
+[131] GTOTS[;4 7 10]←GTOTS[;4 7 10]-GTOTS[;6 9 12] ⍝ Undo Temporary adjustments
+[132] 
+[133] 0 0⍴(GTOTS←GTOTS[;(⍳12),19 13 14 17 20 21]) XL_Data RCtoA1 11 5 (10+SIZE) 22
+[134] 
+[135] (12 2 12 4) XL_PasteAll 13 2 (10+SIZE) 4
+[136] (12 5 12 23) XL_PasteFormats 13 5 (10+SIZE) 23
+    ∇

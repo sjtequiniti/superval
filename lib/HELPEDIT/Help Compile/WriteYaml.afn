@@ -1,1 +1,54 @@
-    ∇ helpdir WriteYaml x;∆;t;i;m;ip;p;xm;xp;xt;xu;yml[1]   ⍝ HELPEDIT.sf#4[2]   ⍝ Write MkDocs YAML configuration file[3]   ⍝ Version: sjt17nov19[4]   (t m)←x                                             ⍝ titles, MDs[5]   i←⎕av⍋⊃t                                            ⍝ grade titles[6]   t←t[i] ⋄ m←m[i]                                     ⍝ sort titles and MDs[7]   ip←∨/':'=⊃t                                         ⍝ flag prefixes[8]   p←trim¨ip\(1+∆⍳¨':')↑¨∆←ip/t                        ⍝ prefix strings, including trailing ': '[9]   (ip/t)←(1+tally¨ip/p)↓¨ip/t                         ⍝ drop prefixes from titles[10]  (ip/p)←((tally¨∆)×(⍳⍴∆)=∆⍳∆)↑¨∆←ip/p                ⍝ first only of each prefix group[11]  ∆←×tally¨p                                          ⍝ flag group strings[12]  (∆/p)←(⊂'- '),¨∆/p                                  ⍝ mark up groups[13]  xm←(2+∆[2])↓⊃,/0,¨1∨∆ ⎕PENCLOSE ∆←1,×tally¨p        ⍝ expansion mask[14]  [15]  xp←(¯1↓1⌽xm\p),⊂''                                  ⍝ expanded prefixes[16]  ⍝xd←1⌈xm\ip+1                                        ⍝ expanded depth in ToC[17]  xt←xm\((¯2×ip+1)↑¨⊂'- '),¨t[18]  xu←xm\(⊂': '),¨m[19]  [20]  yml←ScriptFollowing,join xp,¨xt,¨xu[21]  ⍝# MkDocs configuration file for SuperVal Help subsystem[22]  ⍝# Generated: HELPEDIT#4.CompileDocs[23]  ⍝# by {uSER}, {1 DATESPELL ⎕TS}[24]  ⍝copyright: 'Equiniti Claybrook Ltd 1985-{↑⎕TS}'[25]  ⍝docs_dir: 'docs'[26]  ⍝extra:[27]  ⍝  version: '{version}'[28]  ⍝extra_javascript:[29]  ⍝  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML'[30]  ⍝  - 'https://code.jquery.com/jquery-3.1.1.min.js'[31]  ⍝markdown_extensions:[32]  ⍝   - pymdownx.arithmatex[33]  ⍝#  - mdx_math[34]  ⍝site_author: 'Equiniti Claybrook'[35]  ⍝site_description: 'Help for SuperVal users'[36]  ⍝site_dir: '..\site'[37]  ⍝site_name: 'SuperVal {version}'[38]  ⍝theme:[39]  ⍝  logo: 'img/superval.ico'[40]  ⍝  name: 'material'[41]  ⍝  palette:[42]  ⍝    primary: 'red'[43]  ⍝    accent: 'indigo'[44]  ⍝  toc:[45]  ⍝    title: On this page[46]  ⍝use_directory_urls: false[47]  ⍝nav:[48]  ⍝- Home: index.md[49]  [50]  ⍝ Write MkDocs configuration file[51]  yml←'/£/&#163;/ß/&#225;' TEXTREPL yml[52]  yml nfile_put_contents helpdir,'mkdocs\mkdocs.yml'    ∇
+    ∇ helpdir WriteYaml x;∆;t;i;m;ip;p;xm;xp;xt;xu;yml
+[1]   ⍝ HELPEDIT.sf#4
+[2]   ⍝ Write MkDocs YAML configuration file
+[3]   ⍝ Version: sjt17nov19
+[4]   (t m)←x                                             ⍝ titles, MDs
+[5]   i←⎕av⍋⊃t                                            ⍝ grade titles
+[6]   t←t[i] ⋄ m←m[i]                                     ⍝ sort titles and MDs
+[7]   ip←∨/':'=⊃t                                         ⍝ flag prefixes
+[8]   p←trim¨ip\(1+∆⍳¨':')↑¨∆←ip/t                        ⍝ prefix strings, including trailing ': '
+[9]   (ip/t)←(1+tally¨ip/p)↓¨ip/t                         ⍝ drop prefixes from titles
+[10]  (ip/p)←((tally¨∆)×(⍳⍴∆)=∆⍳∆)↑¨∆←ip/p                ⍝ first only of each prefix group
+[11]  ∆←×tally¨p                                          ⍝ flag group strings
+[12]  (∆/p)←(⊂'- '),¨∆/p                                  ⍝ mark up groups
+[13]  xm←(2+∆[2])↓⊃,/0,¨1∨∆ ⎕PENCLOSE ∆←1,×tally¨p        ⍝ expansion mask
+[14]  
+[15]  xp←(¯1↓1⌽xm\p),⊂''                                  ⍝ expanded prefixes
+[16]  ⍝xd←1⌈xm\ip+1                                        ⍝ expanded depth in ToC
+[17]  xt←xm\((¯2×ip+1)↑¨⊂'- '),¨t
+[18]  xu←xm\(⊂': '),¨m
+[19]  
+[20]  yml←ScriptFollowing,join xp,¨xt,¨xu
+[21]  ⍝# MkDocs configuration file for SuperVal Help subsystem
+[22]  ⍝# Generated: HELPEDIT#4.CompileDocs
+[23]  ⍝# by {uSER}, {1 DATESPELL ⎕TS}
+[24]  ⍝copyright: 'Equiniti Claybrook Ltd 1985-{↑⎕TS}'
+[25]  ⍝docs_dir: 'docs'
+[26]  ⍝extra:
+[27]  ⍝  version: '{version}'
+[28]  ⍝extra_javascript:
+[29]  ⍝  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML'
+[30]  ⍝  - 'https://code.jquery.com/jquery-3.1.1.min.js'
+[31]  ⍝markdown_extensions:
+[32]  ⍝   - pymdownx.arithmatex
+[33]  ⍝#  - mdx_math
+[34]  ⍝site_author: 'Equiniti Claybrook'
+[35]  ⍝site_description: 'Help for SuperVal users'
+[36]  ⍝site_dir: '..\site'
+[37]  ⍝site_name: 'SuperVal {version}'
+[38]  ⍝theme:
+[39]  ⍝  logo: 'img/superval.ico'
+[40]  ⍝  name: 'material'
+[41]  ⍝  palette:
+[42]  ⍝    primary: 'red'
+[43]  ⍝    accent: 'indigo'
+[44]  ⍝  toc:
+[45]  ⍝    title: On this page
+[46]  ⍝use_directory_urls: false
+[47]  ⍝nav:
+[48]  ⍝- Home: index.md
+[49]  
+[50]  ⍝ Write MkDocs configuration file
+[51]  yml←'/£/&#163;/ß/&#225;' TEXTREPL yml
+[52]  yml nfile_put_contents helpdir,'mkdocs\mkdocs.yml'
+    ∇

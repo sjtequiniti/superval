@@ -1,0 +1,51 @@
+    ∇ res←field Drop_Database parm;parent;sqlDatabase;ID
+[1]   ⍝ UTILSWIN.sf#10
+[2]   ⍝ Function to allow user control on Drop Database
+[3]   
+[4]   parent←'fmDropDB.' ⋄ res←0⍴'' ⍝ Default response
+[5]   sqlDatabase←1
+[6]   
+[7]   :select parm
+[8]   
+[9]   :case 'Prepare'
+[10]  
+[11]      :if 0=⎕nc 'sql_properties'
+[12]          :if mt sqlConName ⋄ :orif mt ConfigFile ReadFile 'Configure_SQL' sqlConName ⋄ :orif accesslevel<zwb SQLAccess
+[13]              res←'SQL Server Connection properties not specified.',⎕tcnl
+[14]              res←res,'First update your User details (Tools/Administration/Manage Users)'
+[15]              :return
+[16]          :endif
+[17]          sql_properties←⊃spin m2n¨property propvalue
+[18]          sqlTimeout←zwb SQLTimeout
+[19]          0 0⍴DeleteVars 'Configure_SQL'
+[20]      :endif
+[21]  
+[22]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[23]  
+[24]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[25]  
+[26]      :if mt (parent,'lvSQLDBase') ⎕wi 'list'
+[27]          res←'No Scheme Databases found to Delete'
+[28]      :endif
+[29]  
+[30]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[31]  
+[32]      :repeat
+[33]          :select ↑field
+[34]              :case ' '
+[35]          :endselect
+[36]      :until mt field←1↓field
+[37]  
+[38]  :case 'Valid' ⍝ Routine specific validation
+[39]  
+[40]  :case 'Run'
+[41]  
+[42]      ((⊂parent,'bnDrop_Database'),¨'Save' 'Quit' 'Help') MultiWI 'enabled' 0
+[43]      ID←⍕(parent,'lvSQLDBase') ⎕wi 'value'
+[44]      'DropSQLDatabase ID' Win∆ProgressBar 'Start'
+[45]      res←'Quit'
+[46]  
+[47]  :case 'Quit' ⍝ Deleting "other" variables
+[48]  
+[49]  :endselect
+    ∇

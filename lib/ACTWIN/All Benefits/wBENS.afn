@@ -1,1 +1,103 @@
-    ∇ wBENS;⎕IO;SLICELOOP;TOTRE;TOTREV;CAREtemp1;PPF∆DIDPEN;IndTPEN;IndSTPEN;IndPROSPEN;IndSPROSPEN;IndFPEN;IndSFPEN;IndFPROSPEN;IndSFPROSPEN;IndCASH∆Ind;temp;allserv;PROP;FASMP;PEN∆NRA;UNITPEN;ACCRATE;SERV∆PreNRA;PreNRADATE∆L;ISERV;DSERV;ACC;UPSERV;Tier1;Tier12;Tier1∆NRA;Tier12∆NRA;Tier1∆PreNRA;Tier12∆PreNRA;Tier1∆I;Tier12∆I;Tier1∆D;Tier12∆D;∆A;slice;IndILLTPEN;IndILLSTPEN;IndSFILLTPEN;IndFILLTPEN;IndTPEN∆Post;IndSTPEN∆Post;PHIUNITPEN;PHITier1;PHITier12;PHITier1∆D;PHITier12∆D;IndPHITPEN;IndPHISTPEN;IndPHIFPEN;IndPHISFPEN;IndPHITPEN∆Post;IndPHISTPEN∆Post;PHITier12∆PreNRA;PHITier1∆PreNRA;PROSPEN2;SPROSPEN2;DPROSPEN2;PHIDPROSPEN2;nx;∆B;nonzero;IACC_SRA_PSUniform;DACC_SRA_PSUniform;PreNRAACC_SRA_PSUniform;ACC_SRA_PSUniform[1]   ⍝ ACTWIN.sf#4[2]   ⎕IO←0 ⋄ PHIUNITPEN←(NX,NX)⍴UNITPEN←NX⍴0[3]   PROP←1 ⍝ Needed for VarPrint[4]   IACC_SRA_PSUniform←DACC_SRA_PSUniform←PreNRAACC_SRA_PSUniform←ACC_SRA_PSUniform←NX⍴0[5]   [6]   :if     IndFlag ⋄ :andif 0≠NoIndSlices ⋄                            SLICELOOP←⌽(∨/' '≠IndSliceDesc)/⍳NoIndSlices[7]   :elseif AltFlag ⋄ :andif 0≠NoAltSlices ⋄ allserv←AltSRATAB SUM∆SERV SLICELOOP←⌽(∨/' '≠AltSliceDesc)/⍳NoAltSlices[8]   :else                                  ⋄ allserv←   SRATAB SUM∆SERV SLICELOOP←⌽(∨/' '≠   SliceDesc)/⍳NoSlices[9]   :endif[10]  [11]  :if ILLIND=3 ⋄ :orif WOBAS=5[12]      PROSPEN2←SPROSPEN2←DPROSPEN2←PROSPEN[13]      :if PHI ⋄ PHIDPROSPEN2←PHIDPROSPEN ⋄ :endif[14]  :endif[15]  [16]  :while 0≠⍴SLICELOOP[17]      Tier1←Tier12←Tier1∆NRA←Tier12∆NRA←Tier1∆PreNRA←Tier12∆PreNRA←Tier1∆I←Tier12∆I←Tier1∆D←Tier12∆D←0[18]      :if PHI ⋄ PHITier1←PHITier12←PHITier1∆PreNRA←PHITier12∆PreNRA←PHITier1∆D←PHITier12∆D←0 ⋄ :endif[19]      ∆A←⍕1+slice←↑SLICELOOP[20]      PHICAREProRate←CAREProRate←(NX,NX)⍴0 ⍝ CARE Pro-ration array[21]      :if IndFlag     ⋄ wREAD∆IndSLICE∆VARS 1 ⍝ READ IN ALL THE VARS STDATE∆L etc[22]          IndTPEN←IndSTPEN←IndPHITPEN←IndPHISTPEN←IndTPEN∆Post←IndSTPEN∆Post←IndPHITPEN∆Post←IndPHISTPEN∆Post←IndILLTPEN←IndILLSTPEN←IndPROSPEN←IndSPROSPEN←IndFPEN←IndSFPEN←IndPHIFPEN←IndPHISFPEN←IndFILLTPEN←IndSFILLTPEN←IndFPROSPEN←IndSFPROSPEN←0[23]      :elseif AltFlag ⋄ wREAD∆AltSLICE∆VARS 1 ⍝ READ IN ALL THE VARS STDATE∆L etc[24]      :else           ⋄ wREAD∆SLICE∆VARS 1    ⍝ READ IN ALL THE VARS STDATE∆L etc[25]      :endif[26]      :if ⍬≡STDATE∆L[27]          FNDATE∆L←STDATE∆L←(NX,3)⍴100 0 0[28]          SERV∆PreNRA←SERV←NX⍴ADDYRS∆L[29]          testline←'b'[30]      :else[31]          STDATE∆L←(NX,3)⍴STDATE∆L ⋄ FNDATE∆L←(NX,3)⍴FNDATE∆L[32]          :if ~100∊MINSDAT∆L ⋄ STDATE∆L← STDATE∆L DATEMAX (NX,3)⍴MINSDAT∆L ⋄ :endif[33]          :if ~100∊MAXFDAT∆L ⋄ FNDATE∆L← FNDATE∆L DATEMIN (NX,3)⍴MAXFDAT∆L ⋄ :endif[34]          :if slice=0[35]              FNDATE∆L  ←FNDATE∆L DATEMIN LDATE[36]          :endif[37]          PreNRADATE∆L  ←FNDATE∆L   DATEMIN NRD[38]          :if ~servind ⍝ No Accrual beyond NRD[39]              FNDATE∆L  ←PreNRADATE∆L[40]          :endif[41]          SERV∆PreNRA←0⌈SERVRND∆L DURN STDATE∆L,PreNRADATE∆L[42]          SERV       ←0⌈SERVRND∆L DURN STDATE∆L,FNDATE∆L[43]          testline←'af'[⎕io+accind] ⍝ CARE[44]      :endif[45]  [46]      :if SERVINDM∆L[47]  ⍝⍝⍝        ITOTSRVM  ←ITOTSRVM  +ISERV←(0⌈      IHSRVMAX[ENX_1]          -ITOTSRVM  )⌊SERV∆PreNRA[48]          ITOTSRVM  ←ITOTSRVM  +ISERV←(0⌈((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)-ITOTSRVM  )⌊SERV∆PreNRA[49]  ⍝⍝⍝        DTOTSRVM  ←DTOTSRVM  +DSERV←(0⌈     DISSRVMAX[ENX_1]          -DTOTSRVM  )⌊SERV∆PreNRA[50]          DTOTSRVM  ←DTOTSRVM  +DSERV←(0⌈((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)-DTOTSRVM  )⌊SERV∆PreNRA[51]           TOTSRVM  ← TOTSRVM  + SERV←(0⌈((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)- TOTSRVM  )⌊SERV[52]          SERV∆PreNRA←SERV∆PreNRA⌊SERV←NX↑(NX-SNX)↑SERV[53]      :else[54]          ISERV←DSERV←SERV∆PreNRA⌊SERV←NX↑(NX-SNX)↑SERV[55]      :endif[56]  [57]  ⍝ TIERS PROCESSED UPWARDS[58]      TIERLOOP←⍳3[59]      :while 0≠⍴TIERLOOP[60]         tier←↑TIERLOOP[61]         :if IndFlag     ⋄ wREAD∆IndSLICE∆VARS 0[62]         :elseif AltFlag ⋄ wREAD∆AltSLICE∆VARS 0[63]         :else           ⋄ wREAD∆SLICE∆VARS 0[64]         :endif[65]         :if ⍬≡SALCOD∆L,FIXPEN∆L                        ⋄ →L0 ⍝ GO TO NEXT TIER[66]         :elseif (slice≠0)^accind^⍬≡FIXPEN∆L ⋄ →L0 ⍝ GO TO NEXT TIER[67]         :else[68]              ∆B←⍕1+tier[69]              wBEN_SCALE[70]  ⍝⍝⍝            :if test[71]  ⍝⌿⍝                ∆C←'Benefit Type:',('FC')[accind],' Dyn:',('SM34')[dynind],' Tranche:',('BAF')[sliceup],' Revalue:','123'[revdefind],' Underpin:','YN'[upinslind],' In IRMax:','YN'[irind],' ER Factor:','12'[barbind][72]  ⍝⌿⍝                AUDIT ' ⍺ß0',testline[73]  ⍝⍝⍝            :endif[74]              wBEN_ADJUST ⍝ Pension Adjustments[75]  ⍝⍝⍝           :if ~^/0=PEN,SERV ⍝ Allow Prospective Calcs[76]              :if IndFlag ⋄ wIndBENCALC[77]              :else       ⋄ wBENCALC[78]              :endif[79]  ⍝⍝⍝           :endif[80]         :endif[81]  L0: TIERLOOP←1↓TIERLOOP[82]      :endwhile[83]      SLICELOOP←1↓SLICELOOP[84]      :if IndFlag     ⋄ IndFINPROC[85]      :elseif slice=0 ⋄ :andif accind ⋄ :andif ~IsAccrued[86]          :if nonzero←∨/0≠,ProRate∆pp←(¯1⊖+⍀CAREProRate) CDIV (NX,NX)⍴+⌿CAREProRate[87]              ⍝⍝⍝ FIXME:  Consider Late Retirement and "Accrual after NRA" (for those aged X0-0.5 to X0)[88]              ProRate∆pp[0;]←0 ⋄ ProRate∆pp[nx;nx]←×nx←NX_1-SNX×~bGAD[89]              ProRate∆pp←MATRIX ⍉ProRate∆pp[90]              ProRate∆pp[;(-SNX×~bGAD)↑⍳NX]←1[91]          :endif[92]          ProRate∆pp←ProRate∆pp,nonzero[93]          :if ^/0=,ProRate∆CARE ⋄ ProRate∆CARE←ProRate∆pp ⋄ :endif[94]      :endif[95]  :endwhile[96]  :if ~IndFlag[97]      :if WOBAS=5  ⋄    DPROSPEN←DIS2D∆L×[⎕io+6]DPROSPEN2[98]          :if PHI  ⋄ PHIDPROSPEN←PHIDPROSPEN2 MultiDimMult (NX,NX)⍴DIS2D∆L ⋄ :endif[99]      :endif[100]     :if ILLIND=3 ⋄     PROSPEN←ILL2D∆L×[⎕io+6] PROSPEN2 ⋄ SPROSPEN←ILL2D∆L×[⎕io+6]SPROSPEN2 ⋄ :endif[101] :endif    ∇
+    ∇ wBENS;⎕IO;SLICELOOP;TOTRE;TOTREV;CAREtemp1;PPF∆DIDPEN;IndTPEN;IndSTPEN;IndPROSPEN;IndSPROSPEN;IndFPEN;IndSFPEN;IndFPROSPEN;IndSFPROSPEN;IndCASH∆Ind;temp;allserv;PROP;FASMP;PEN∆NRA;UNITPEN;ACCRATE;SERV∆PreNRA;PreNRADATE∆L;ISERV;DSERV;ACC;UPSERV;Tier1;Tier12;Tier1∆NRA;Tier12∆NRA;Tier1∆PreNRA;Tier12∆PreNRA;Tier1∆I;Tier12∆I;Tier1∆D;Tier12∆D;∆A;slice;IndILLTPEN;IndILLSTPEN;IndSFILLTPEN;IndFILLTPEN;IndTPEN∆Post;IndSTPEN∆Post;PHIUNITPEN;PHITier1;PHITier12;PHITier1∆D;PHITier12∆D;IndPHITPEN;IndPHISTPEN;IndPHIFPEN;IndPHISFPEN;IndPHITPEN∆Post;IndPHISTPEN∆Post;PHITier12∆PreNRA;PHITier1∆PreNRA;PROSPEN2;SPROSPEN2;DPROSPEN2;PHIDPROSPEN2;nx;∆B;nonzero;IACC_SRA_PSUniform;DACC_SRA_PSUniform;PreNRAACC_SRA_PSUniform;ACC_SRA_PSUniform
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⎕IO←0 ⋄ PHIUNITPEN←(NX,NX)⍴UNITPEN←NX⍴0
+[3]   PROP←1 ⍝ Needed for VarPrint
+[4]   IACC_SRA_PSUniform←DACC_SRA_PSUniform←PreNRAACC_SRA_PSUniform←ACC_SRA_PSUniform←NX⍴0
+[5]   
+[6]   :if     IndFlag ⋄ :andif 0≠NoIndSlices ⋄                            SLICELOOP←⌽(∨/' '≠IndSliceDesc)/⍳NoIndSlices
+[7]   :elseif AltFlag ⋄ :andif 0≠NoAltSlices ⋄ allserv←AltSRATAB SUM∆SERV SLICELOOP←⌽(∨/' '≠AltSliceDesc)/⍳NoAltSlices
+[8]   :else                                  ⋄ allserv←   SRATAB SUM∆SERV SLICELOOP←⌽(∨/' '≠   SliceDesc)/⍳NoSlices
+[9]   :endif
+[10]  
+[11]  :if ILLIND=3 ⋄ :orif WOBAS=5
+[12]      PROSPEN2←SPROSPEN2←DPROSPEN2←PROSPEN
+[13]      :if PHI ⋄ PHIDPROSPEN2←PHIDPROSPEN ⋄ :endif
+[14]  :endif
+[15]  
+[16]  :while 0≠⍴SLICELOOP
+[17]      Tier1←Tier12←Tier1∆NRA←Tier12∆NRA←Tier1∆PreNRA←Tier12∆PreNRA←Tier1∆I←Tier12∆I←Tier1∆D←Tier12∆D←0
+[18]      :if PHI ⋄ PHITier1←PHITier12←PHITier1∆PreNRA←PHITier12∆PreNRA←PHITier1∆D←PHITier12∆D←0 ⋄ :endif
+[19]      ∆A←⍕1+slice←↑SLICELOOP
+[20]      PHICAREProRate←CAREProRate←(NX,NX)⍴0 ⍝ CARE Pro-ration array
+[21]      :if IndFlag     ⋄ wREAD∆IndSLICE∆VARS 1 ⍝ READ IN ALL THE VARS STDATE∆L etc
+[22]          IndTPEN←IndSTPEN←IndPHITPEN←IndPHISTPEN←IndTPEN∆Post←IndSTPEN∆Post←IndPHITPEN∆Post←IndPHISTPEN∆Post←IndILLTPEN←IndILLSTPEN←IndPROSPEN←IndSPROSPEN←IndFPEN←IndSFPEN←IndPHIFPEN←IndPHISFPEN←IndFILLTPEN←IndSFILLTPEN←IndFPROSPEN←IndSFPROSPEN←0
+[23]      :elseif AltFlag ⋄ wREAD∆AltSLICE∆VARS 1 ⍝ READ IN ALL THE VARS STDATE∆L etc
+[24]      :else           ⋄ wREAD∆SLICE∆VARS 1    ⍝ READ IN ALL THE VARS STDATE∆L etc
+[25]      :endif
+[26]      :if ⍬≡STDATE∆L
+[27]          FNDATE∆L←STDATE∆L←(NX,3)⍴100 0 0
+[28]          SERV∆PreNRA←SERV←NX⍴ADDYRS∆L
+[29]          testline←'b'
+[30]      :else
+[31]          STDATE∆L←(NX,3)⍴STDATE∆L ⋄ FNDATE∆L←(NX,3)⍴FNDATE∆L
+[32]          :if ~100∊MINSDAT∆L ⋄ STDATE∆L← STDATE∆L DATEMAX (NX,3)⍴MINSDAT∆L ⋄ :endif
+[33]          :if ~100∊MAXFDAT∆L ⋄ FNDATE∆L← FNDATE∆L DATEMIN (NX,3)⍴MAXFDAT∆L ⋄ :endif
+[34]          :if slice=0
+[35]              FNDATE∆L  ←FNDATE∆L DATEMIN LDATE
+[36]          :endif
+[37]          PreNRADATE∆L  ←FNDATE∆L   DATEMIN NRD
+[38]          :if ~servind ⍝ No Accrual beyond NRD
+[39]              FNDATE∆L  ←PreNRADATE∆L
+[40]          :endif
+[41]          SERV∆PreNRA←0⌈SERVRND∆L DURN STDATE∆L,PreNRADATE∆L
+[42]          SERV       ←0⌈SERVRND∆L DURN STDATE∆L,FNDATE∆L
+[43]          testline←'af'[⎕io+accind] ⍝ CARE
+[44]      :endif
+[45]  
+[46]      :if SERVINDM∆L
+[47]  ⍝⍝⍝        ITOTSRVM  ←ITOTSRVM  +ISERV←(0⌈      IHSRVMAX[ENX_1]          -ITOTSRVM  )⌊SERV∆PreNRA
+[48]          ITOTSRVM  ←ITOTSRVM  +ISERV←(0⌈((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)-ITOTSRVM  )⌊SERV∆PreNRA
+[49]  ⍝⍝⍝        DTOTSRVM  ←DTOTSRVM  +DSERV←(0⌈     DISSRVMAX[ENX_1]          -DTOTSRVM  )⌊SERV∆PreNRA
+[50]          DTOTSRVM  ←DTOTSRVM  +DSERV←(0⌈((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)-DTOTSRVM  )⌊SERV∆PreNRA
+[51]           TOTSRVM  ← TOTSRVM  + SERV←(0⌈((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)- TOTSRVM  )⌊SERV
+[52]          SERV∆PreNRA←SERV∆PreNRA⌊SERV←NX↑(NX-SNX)↑SERV
+[53]      :else
+[54]          ISERV←DSERV←SERV∆PreNRA⌊SERV←NX↑(NX-SNX)↑SERV
+[55]      :endif
+[56]  
+[57]  ⍝ TIERS PROCESSED UPWARDS
+[58]      TIERLOOP←⍳3
+[59]      :while 0≠⍴TIERLOOP
+[60]         tier←↑TIERLOOP
+[61]         :if IndFlag     ⋄ wREAD∆IndSLICE∆VARS 0
+[62]         :elseif AltFlag ⋄ wREAD∆AltSLICE∆VARS 0
+[63]         :else           ⋄ wREAD∆SLICE∆VARS 0
+[64]         :endif
+[65]         :if ⍬≡SALCOD∆L,FIXPEN∆L                        ⋄ →L0 ⍝ GO TO NEXT TIER
+[66]         :elseif (slice≠0)^accind^⍬≡FIXPEN∆L ⋄ →L0 ⍝ GO TO NEXT TIER
+[67]         :else
+[68]              ∆B←⍕1+tier
+[69]              wBEN_SCALE
+[70]  ⍝⍝⍝            :if test
+[71]  ⍝⌿⍝                ∆C←'Benefit Type:',('FC')[accind],' Dyn:',('SM34')[dynind],' Tranche:',('BAF')[sliceup],' Revalue:','123'[revdefind],' Underpin:','YN'[upinslind],' In IRMax:','YN'[irind],' ER Factor:','12'[barbind]
+[72]  ⍝⌿⍝                AUDIT ' ⍺ß0',testline
+[73]  ⍝⍝⍝            :endif
+[74]              wBEN_ADJUST ⍝ Pension Adjustments
+[75]  ⍝⍝⍝           :if ~^/0=PEN,SERV ⍝ Allow Prospective Calcs
+[76]              :if IndFlag ⋄ wIndBENCALC
+[77]              :else       ⋄ wBENCALC
+[78]              :endif
+[79]  ⍝⍝⍝           :endif
+[80]         :endif
+[81]  L0: TIERLOOP←1↓TIERLOOP
+[82]      :endwhile
+[83]      SLICELOOP←1↓SLICELOOP
+[84]      :if IndFlag     ⋄ IndFINPROC
+[85]      :elseif slice=0 ⋄ :andif accind ⋄ :andif ~IsAccrued
+[86]          :if nonzero←∨/0≠,ProRate∆pp←(¯1⊖+⍀CAREProRate) CDIV (NX,NX)⍴+⌿CAREProRate
+[87]              ⍝⍝⍝ FIXME:  Consider Late Retirement and "Accrual after NRA" (for those aged X0-0.5 to X0)
+[88]              ProRate∆pp[0;]←0 ⋄ ProRate∆pp[nx;nx]←×nx←NX_1-SNX×~bGAD
+[89]              ProRate∆pp←MATRIX ⍉ProRate∆pp
+[90]              ProRate∆pp[;(-SNX×~bGAD)↑⍳NX]←1
+[91]          :endif
+[92]          ProRate∆pp←ProRate∆pp,nonzero
+[93]          :if ^/0=,ProRate∆CARE ⋄ ProRate∆CARE←ProRate∆pp ⋄ :endif
+[94]      :endif
+[95]  :endwhile
+[96]  :if ~IndFlag
+[97]      :if WOBAS=5  ⋄    DPROSPEN←DIS2D∆L×[⎕io+6]DPROSPEN2
+[98]          :if PHI  ⋄ PHIDPROSPEN←PHIDPROSPEN2 MultiDimMult (NX,NX)⍴DIS2D∆L ⋄ :endif
+[99]      :endif
+[100]     :if ILLIND=3 ⋄     PROSPEN←ILL2D∆L×[⎕io+6] PROSPEN2 ⋄ SPROSPEN←ILL2D∆L×[⎕io+6]SPROSPEN2 ⋄ :endif
+[101] :endif
+    ∇

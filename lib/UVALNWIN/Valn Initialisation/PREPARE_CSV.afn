@@ -1,1 +1,25 @@
-    ∇ PREPARE∆CSV;csvfile;csvhead;vars;csvahead[1]   ⍝ UVALNWIN.sf#2[2]   ⍝ Preparatory Work for Valuation Extract Program[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝[7]   ⍝ Create .CSV Extract File[8]   csvfile←OutputDir,('.' StripText FILES),'.CSV'[9]   ⍝ If file exists erase it and create new one[10]  tpE←NCREATE csvfile[11]  [12]  ⍝ Assign Column Headings[13]  :if ppf ⋄ csvhead←'Age'[14]  :else   ⋄ 0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' CSV'[15]  :endif[16]  [17]  vars←DLTMB ',',(SStoMAT CharStandNames) OVER CharDesc OVER (SStoMAT DateStandNames) OVER DateDesc OVER (SStoMAT FixNumStandNames,VarNumStandNames) OVER TotNumDesc[18]  [19]  :if ~PROPT ⋄ :orif ppf ⋄ csvahead←''[20]  :else   ⋄ 0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' ACSV'[21]  :endif[22]  [23]  ('Run TimeStamp',vars,',',csvhead,',',csvahead) APPEND tpE    ∇
+    ∇ PREPARE∆CSV;csvfile;csvhead;vars;csvahead
+[1]   ⍝ UVALNWIN.sf#2
+[2]   ⍝ Preparatory Work for Valuation Extract Program
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝
+[7]   ⍝ Create .CSV Extract File
+[8]   csvfile←OutputDir,('.' StripText FILES),'.CSV'
+[9]   ⍝ If file exists erase it and create new one
+[10]  tpE←NCREATE csvfile
+[11]  
+[12]  ⍝ Assign Column Headings
+[13]  :if ppf ⋄ csvhead←'Age'
+[14]  :else   ⋄ 0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' CSV'
+[15]  :endif
+[16]  
+[17]  vars←DLTMB ',',(SStoMAT CharStandNames) OVER CharDesc OVER (SStoMAT DateStandNames) OVER DateDesc OVER (SStoMAT FixNumStandNames,VarNumStandNames) OVER TotNumDesc
+[18]  
+[19]  :if ~PROPT ⋄ :orif ppf ⋄ csvahead←''
+[20]  :else   ⋄ 0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' ACSV'
+[21]  :endif
+[22]  
+[23]  ('Run TimeStamp',vars,',',csvhead,',',csvahead) APPEND tpE
+    ∇

@@ -1,0 +1,38 @@
+    ∇ desc UpdateBrowserHistory file;⎕io;History;Files;Desc;n;tries
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Function used to update Browsed Output Files History
+[3]   ⎕io←1
+[4]   
+[5]   :if ∨/'TEMP$$'⍷UPPERCASE file ⋄ :return ⋄ :endif
+[6]   
+[7]   tries←0,0.001×5⌈?20/200
+[8]   :repeat
+[9]       0 0⍴⎕dl ↑tries
+[10]  :until ~mt History←ClientFile ReadFile 'BrowserHistory'
+[11]  :orif   mt tries←1↓tries
+[12]  
+[13]  :if ⍬≡History
+[14]      0 0⍴ClientFile SaveToFile 'BrowserHistory' 'History of Browsed Files' (History←0 2⍴'') 0
+[15]  :endif
+[16]  
+[17]  Files←⊃History[;1]⋄ Desc←⊃History[;2]
+[18]  
+[19]  :if ∨/n←(InputDir OutputDir)∊⊂'\' Win∆Parent file←,UPPERCASE file
+[20]     ⍝ Make Path a relative one if in Input or Output Directory
+[21]     file←(DLTB ⊃¯1↑n/'In' 'Out'),'put Folder\','\' Win∆Child file
+[22]  :endif
+[23]  
+[24]  :if 0=n←1↑Files ExactTLU file
+[25]      History←(file desc) OVER History ⍝ Add to Browser History
+[26]      History←((⍴History)⌊bhistory,2)↑History
+[27]  :else ⍝ Move existing File to top and update description (if required)
+[28]      :if ~0∊⍴desc←DLTB desc
+[29]      :andif ~'Selected File'≡desc
+[30]          Desc←Desc[⍳n-1;] OVER desc OVER (n,0)↓Desc
+[31]      :endif
+[32]      Files←Files[n←n,(⍳1↑⍴Files)~n;] ⋄ Desc←Desc[n;]
+[33]      History[;1]←⎕split Files ⋄ History[;2]←⎕split Desc
+[34]  :endif
+[35]  
+[36]  0 0⍴ClientFile SaveToFile 'BrowserHistory' 'History of Browsed Files' History 0
+    ∇

@@ -1,1 +1,63 @@
-    ∇ ⍙DBXL_DAB∆VALUES;sql;ResultsCategoryID;cash;pens;sql1;tab;values;size;sql2;InsD;InsI;table[1]   ⍝ CONSWIN.sf#11[2]   ⍝ Calculate Liability figures for DAB method from Projected Cashflows/Accrued Benefits[3]   [4]   table←'ResultsData_NoIndex'[5]   [6]   tab←0 10⍴0[7]   sql← "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND ContingencyID IN (%2) AND LiabilityTypeID=%3 GROUP BY SVYear"[8]   sql1←"SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID IN (1, 35, 44, 45, 46, 47, 36, 54, 55, 56, 57) AND ContingencyID IN (%2) AND LiabilityTypeID=%3 GROUP BY SVYear" ⍝ Cash Only[9]   sql2←"SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID IN (9, 10) AND ContingencyID=%2 AND LiabilityTypeID=%3 GROUP BY SVYear" ⍝ Insured Only[10]  size←contper⌈SIZE[11]  [12]  :for ResultsCategoryID :in runsA[13]      cash←-size↑(ResultsCategoryID (1 2 21) 4) ⍙DBSQLRead sql1 ⍝ Past Service Retirement[14]      pens←-size↑(ResultsCategoryID (1 2 21) 4) ⍙DBSQLRead sql[15]      cash[⍳contper]←-contper↑(ResultsCategoryID (1 2 21) 8) ⍙DBSQLRead sql1 ⍝ Total Service Retirement in contper[16]      pens[⍳contper]←-contper↑(ResultsCategoryID (1 2 21) 8) ⍙DBSQLRead sql[17]      pens←pens-cash[18]      values←5↑+/(cash×size↑v)+(pens×size↑vMP)[19]  [20]      values←-size↑(ResultsCategoryID (3 23) 4) ⍙DBSQLRead sql ⍝ Past Service Death in Service[21]      values[⍳contper]←-contper↑(ResultsCategoryID (3 23) 8) ⍙DBSQLRead sql ⍝ Total Service Death in Service only in contper[22]      values[⍳contper]←values[⍳contper]-(contper↑InsD←-(ResultsCategoryID 3 8) ⍙DBSQLRead sql2)[23]      values[⎕io+1]←+/(size↑vMP)×values[24]  [25]      values←-size↑(ResultsCategoryID 4 4) ⍙DBSQLRead sql ⍝ Past Service Ill-Health[26]      values[⍳contper]←(-contper↑(ResultsCategoryID 4 8) ⍙DBSQLRead sql)-(contper↑InsI←-(ResultsCategoryID 4 8) ⍙DBSQLRead sql2)[27]      values[⎕io+2]←+/(size↑vMP)×values ⍝ Total Service Ill-Health only in contper[28]  [29]      cash←-size↑(ResultsCategoryID 5 4) ⍙DBSQLRead sql1 ⍝ Past Service Leaving[30]      pens←-size↑(ResultsCategoryID 5 4) ⍙DBSQLRead sql[31]      cash[⍳contper]←-contper↑(ResultsCategoryID 5 8) ⍙DBSQLRead sql1 ⍝ Total Service Leaving only in contper[32]      pens[⍳contper]←-contper↑(ResultsCategoryID 5 8) ⍙DBSQLRead sql[33]      pens←pens-cash[34]      values[⎕io+3]←+/(cash×size↑v)+(pens×size↑vMP)[35]  [36]      pens←-size↑(ResultsCategoryID 6 4) ⍙DBSQLRead sql ⍝ Past Service Death in Deferment[37]      pens[⍳contper]←-contper↑(ResultsCategoryID 6 8) ⍙DBSQLRead sql[38]      values[⎕io+4]←+/(size↑vMP)×pens ⍝ Total Service Death in Deferment only in contper[39]  [40]      ⍝ Target Accrued Benefit at end of Control Period[41]      values←values,-+/(1↑contper↓vMP)×0 ⍙DBRemoveNulls ,1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=",(⍕ResultsCategoryID)," AND LiabilityTypeID IN (",(⍕9+abNO=0),", 11) AND DataItemID=14 AND SVYear=",(⍕contper)[42]  [43]      ⍝ Expenses[44]      values←values,-+/(contper↑vMP)×contper↑ResultsCategoryID ⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID=32 AND LiabilityTypeID=8 GROUP BY SVYear"[45]  [46]      ⍝ Member, Company and V1% Contributions[47]      values←values,+/(contper↑vMP)×contper↑ (ResultsCategoryID  8 8) ⍙DBSQLRead sql[48]      values←values,+/(contper↑vMP)×contper↑((ResultsCategoryID  9 8) ⍙DBSQLRead sql)-(InsD+InsI)[49]      values←values,+/(contper↑vMP)×contper↑ (ResultsCategoryID 11 8) ⍙DBSQLRead sql[50]  [51]      tab←tab⍪values[52]  :endfor[53]  [54]  values←XL_Data RCtoA1 13 7 (12+rowsA) 9 ⋄ values←values,XL_Data RCtoA1 13 14 (12+rowsA) 15[55]  tab[;⍳5]←0⌈tab[;⍳5]-values[56]  [57]  tab[;⎕io+6]←tab[;⎕io+6]+ExpSFMAT ⋄ tab[;⎕io+8]←tab[;⎕io+8]+ExpSFMAT[58]  [59]  0 0⍴(tab[;  ⍳3]) XL_Data RCtoA1 (39+dab+rows+rowsA)  7 (38+dab+rows+rowsA+N) 9[60]  0 0⍴(tab[;3+⍳2]) XL_Data RCtoA1 (39+dab+rows+rowsA) 14 (38+dab+rows+rowsA+N) 15[61]  0 0⍴(tab[;5+⍳5]) XL_Data RCtoA1 (39+dab+rows+rowsA) 18 (38+dab+rows+rowsA+N) 22    ∇
+    ∇ ⍙DBXL_DAB∆VALUES;sql;ResultsCategoryID;cash;pens;sql1;tab;values;size;sql2;InsD;InsI;table
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ Calculate Liability figures for DAB method from Projected Cashflows/Accrued Benefits
+[3]   
+[4]   table←'ResultsData_NoIndex'
+[5]   
+[6]   tab←0 10⍴0
+[7]   sql← "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND ContingencyID IN (%2) AND LiabilityTypeID=%3 GROUP BY SVYear"
+[8]   sql1←"SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID IN (1, 35, 44, 45, 46, 47, 36, 54, 55, 56, 57) AND ContingencyID IN (%2) AND LiabilityTypeID=%3 GROUP BY SVYear" ⍝ Cash Only
+[9]   sql2←"SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID IN (9, 10) AND ContingencyID=%2 AND LiabilityTypeID=%3 GROUP BY SVYear" ⍝ Insured Only
+[10]  size←contper⌈SIZE
+[11]  
+[12]  :for ResultsCategoryID :in runsA
+[13]      cash←-size↑(ResultsCategoryID (1 2 21) 4) ⍙DBSQLRead sql1 ⍝ Past Service Retirement
+[14]      pens←-size↑(ResultsCategoryID (1 2 21) 4) ⍙DBSQLRead sql
+[15]      cash[⍳contper]←-contper↑(ResultsCategoryID (1 2 21) 8) ⍙DBSQLRead sql1 ⍝ Total Service Retirement in contper
+[16]      pens[⍳contper]←-contper↑(ResultsCategoryID (1 2 21) 8) ⍙DBSQLRead sql
+[17]      pens←pens-cash
+[18]      values←5↑+/(cash×size↑v)+(pens×size↑vMP)
+[19]  
+[20]      values←-size↑(ResultsCategoryID (3 23) 4) ⍙DBSQLRead sql ⍝ Past Service Death in Service
+[21]      values[⍳contper]←-contper↑(ResultsCategoryID (3 23) 8) ⍙DBSQLRead sql ⍝ Total Service Death in Service only in contper
+[22]      values[⍳contper]←values[⍳contper]-(contper↑InsD←-(ResultsCategoryID 3 8) ⍙DBSQLRead sql2)
+[23]      values[⎕io+1]←+/(size↑vMP)×values
+[24]  
+[25]      values←-size↑(ResultsCategoryID 4 4) ⍙DBSQLRead sql ⍝ Past Service Ill-Health
+[26]      values[⍳contper]←(-contper↑(ResultsCategoryID 4 8) ⍙DBSQLRead sql)-(contper↑InsI←-(ResultsCategoryID 4 8) ⍙DBSQLRead sql2)
+[27]      values[⎕io+2]←+/(size↑vMP)×values ⍝ Total Service Ill-Health only in contper
+[28]  
+[29]      cash←-size↑(ResultsCategoryID 5 4) ⍙DBSQLRead sql1 ⍝ Past Service Leaving
+[30]      pens←-size↑(ResultsCategoryID 5 4) ⍙DBSQLRead sql
+[31]      cash[⍳contper]←-contper↑(ResultsCategoryID 5 8) ⍙DBSQLRead sql1 ⍝ Total Service Leaving only in contper
+[32]      pens[⍳contper]←-contper↑(ResultsCategoryID 5 8) ⍙DBSQLRead sql
+[33]      pens←pens-cash
+[34]      values[⎕io+3]←+/(cash×size↑v)+(pens×size↑vMP)
+[35]  
+[36]      pens←-size↑(ResultsCategoryID 6 4) ⍙DBSQLRead sql ⍝ Past Service Death in Deferment
+[37]      pens[⍳contper]←-contper↑(ResultsCategoryID 6 8) ⍙DBSQLRead sql
+[38]      values[⎕io+4]←+/(size↑vMP)×pens ⍝ Total Service Death in Deferment only in contper
+[39]  
+[40]      ⍝ Target Accrued Benefit at end of Control Period
+[41]      values←values,-+/(1↑contper↓vMP)×0 ⍙DBRemoveNulls ,1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=",(⍕ResultsCategoryID)," AND LiabilityTypeID IN (",(⍕9+abNO=0),", 11) AND DataItemID=14 AND SVYear=",(⍕contper)
+[42]  
+[43]      ⍝ Expenses
+[44]      values←values,-+/(contper↑vMP)×contper↑ResultsCategoryID ⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ",table," WHERE ResultsCategoryID=%1 AND BenefitTypeID=32 AND LiabilityTypeID=8 GROUP BY SVYear"
+[45]  
+[46]      ⍝ Member, Company and V1% Contributions
+[47]      values←values,+/(contper↑vMP)×contper↑ (ResultsCategoryID  8 8) ⍙DBSQLRead sql
+[48]      values←values,+/(contper↑vMP)×contper↑((ResultsCategoryID  9 8) ⍙DBSQLRead sql)-(InsD+InsI)
+[49]      values←values,+/(contper↑vMP)×contper↑ (ResultsCategoryID 11 8) ⍙DBSQLRead sql
+[50]  
+[51]      tab←tab⍪values
+[52]  :endfor
+[53]  
+[54]  values←XL_Data RCtoA1 13 7 (12+rowsA) 9 ⋄ values←values,XL_Data RCtoA1 13 14 (12+rowsA) 15
+[55]  tab[;⍳5]←0⌈tab[;⍳5]-values
+[56]  
+[57]  tab[;⎕io+6]←tab[;⎕io+6]+ExpSFMAT ⋄ tab[;⎕io+8]←tab[;⎕io+8]+ExpSFMAT
+[58]  
+[59]  0 0⍴(tab[;  ⍳3]) XL_Data RCtoA1 (39+dab+rows+rowsA)  7 (38+dab+rows+rowsA+N) 9
+[60]  0 0⍴(tab[;3+⍳2]) XL_Data RCtoA1 (39+dab+rows+rowsA) 14 (38+dab+rows+rowsA+N) 15
+[61]  0 0⍴(tab[;5+⍳5]) XL_Data RCtoA1 (39+dab+rows+rowsA) 18 (38+dab+rows+rowsA+N) 22
+    ∇

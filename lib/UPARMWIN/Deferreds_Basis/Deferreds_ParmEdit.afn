@@ -1,0 +1,24 @@
+    ∇ type Deferreds_ParmEdit field;globalsPkg;Module
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Cover function of the calling of Parameter Editing functions
+[3]   
+[4]   :select type
+[5]   :case 'ParmsD' ⋄ Module←'Decrement_Rates'
+[6]   :case 'ParmsW' ⋄ Module←'Spouse_Parameters'
+[7]   :case 'ParmsX' ⋄ Module←'Retirement_Age'
+[8]   :case 'ParmsR' ⋄ Module←'Retirement_Factors'
+[9]   :case 'ParmsT' ⋄ Module←'Commutation_Tables'
+[10]  :case 'ParmsL' ⋄ Module←'Retirement_Cash'
+[11]  :endselect
+[12]  
+[13]  :if ~0≡field←field ⎕wi '∆focusfield'
+[14]      globalsPkg←(Module field 'Deferreds') GlobalsPkg (MigDir,'SVMIGT',Win∆CountryCode) ReadFile 'Globals Migration'
+[15]  :endif
+[16]  
+[17]  'PARMWIN' CallModule Module
+[18]  
+[19]  UpdateVarLists ⊂Module
+[20]  
+[21]  ⍝ Perform onChange for all relevanrt fields in case the parameters underlying a Parameter Set being used have changed
+[22]  0 0⍴((FormFields for (⊂'variable'),(relRules for 'Type' type) at 'Field') at 'shortname') Deferreds_Basis 'Change'
+    ∇

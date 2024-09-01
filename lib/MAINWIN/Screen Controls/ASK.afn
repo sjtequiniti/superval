@@ -1,0 +1,25 @@
+    ∇ res←type ASK Question;⎕io;MESS;parameters;n
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Windows Version of DOS ASK.  Question is either:
+[3]   ⍝   Question Number - component number of MESSAGES file
+[4]   ⍝   Question Description - component description in MESSAGES file; or
+[5]   ⍝   Question Text and (optional) parameters replacing %1, %2, %3 etc in Question Text
+[6]   
+[7]   ⍝ type is valid responses (used by MessageBox) - default is 'YN'
+[8]   ⍝ res returns the response eg 'Y' or 'N' for a type 'YN'
+[9]   ⎕io←1
+[10]  :if 0=⎕nc 'type' ⋄ type←'YN' ⋄ :endif
+[11]  
+[12]  parameters←''
+[13]  :if 1≠≡Question ⍝ Replacement of %1, %2, %3 etc
+[14]      parameters←1↓Question ⋄ Question←1⊃Question
+[15]  :endif
+[16]  
+[17]  :if mt MESS←⍙MESSdict ReadDictFile Question ⋄ MESS←Question ⋄ :endif
+[18]  
+[19]  :for n :in ⍳⍴parameters←(+/'%'=MESS)↑parameters
+[20]      MESS←('⍺%',(⍕n),'⍺',n⊃parameters) TEXTREPL MESS
+[21]  :endfor
+[22]  
+[23]  res←type[MessageBox (DLTMB MESS) (SystemName,' Query') (type) ('?') ('A') (2)]
+    ∇

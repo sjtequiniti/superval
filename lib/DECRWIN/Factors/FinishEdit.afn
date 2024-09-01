@@ -1,1 +1,42 @@
-    ∇ FinishEdit esc[1]   ⍝ DECRWIN.sf#10[2]   ⍝ Fn to reconfigure Form after add/edit factors[3]   [4]   :if esc[5]       :if 0≠'fmFactors' ⎕wi 'modified'[6]       :orif 0≠SSName ⎕wi 'xmodified'[7]           :if 'N'=ASK 'IgnoreChange'[8]               :return[9]           :endif[10]      :endif[11]  :endif[12]  [13]  :if ~0∊⍴,Error←FactorFile DecrTied 'Release' ⋄ MDISPLAY Error ⋄ :endif[14]  [15]  SSName ⎕wi 'onXModified' '' ⍝ Remove onXModified[16]  SSName ⎕wi 'onXEndEdit' '' ⍝ Remove End Edit (again!)[17]  SSName ⎕wi 'onExit' '' ⍝ Remove Exit (again!)[18]  SSName ⎕wi 'XSetActiveCell' 1 1[19]  SSName ⎕wi 'XShowActiveCell'[20]  0 0⍴Factors 'lock'[21]  [22]  ⍝ Enable List & "List" Buttons[23]  'fmFactors.lsTABLE' ⎕wi 'enabled' 1[24]  ⍝ Replace Cancel with Quit[25]  'fmFactors.bnFactorsCancel' ⎕wi 'visible' ¯1[26]  'fmFactors.bnFactorsCancel' ⎕wi 'style' 0[27]  'fmFactors' ⎕wi '∆quitbutton' 'fmFactors.bnFactorsQuit'[28]  'fmFactors.bnFactorsQuit' ⎕wi 'visible' 1[29]  'fmFactors.bnFactorsQuit' ⎕wi 'style' 2[30]  'fmFactors' ⎕wi 'onModified' ''[31]  'fmFactors.bnFactorsSave' ⎕wi 'enabled' 0[32]  'fmFactors.bnFactorsSave' ⎕wi 'style' 0[33]  'fmFactors.bnFactorsEdit' ⎕wi 'enabled' (accesslevel≥rtAccess[4])[34]  'fmFactors.bnFactorsAdd' ⎕wi 'enabled' (accesslevel≥rtAccess[5])[35]  'fmFactors.bnFactorsDelete' ⎕wi 'enabled' (accesslevel≥rtAccess[6])[36]  [37]  (('fmFactors.') ('edTableNo' 'edTableDesc' 'cbDecP')) Win∆SetRelated 'enabled' 0[38]  [39]  Assign_Inputs 0[40]  0 Win∆SetFocus 'fmFactors.lsTABLE' ⍝ Focus on List    ∇
+    ∇ FinishEdit esc
+[1]   ⍝ DECRWIN.sf#10
+[2]   ⍝ Fn to reconfigure Form after add/edit factors
+[3]   
+[4]   :if esc
+[5]       :if 0≠'fmFactors' ⎕wi 'modified'
+[6]       :orif 0≠SSName ⎕wi 'xmodified'
+[7]           :if 'N'=ASK 'IgnoreChange'
+[8]               :return
+[9]           :endif
+[10]      :endif
+[11]  :endif
+[12]  
+[13]  :if ~0∊⍴,Error←FactorFile DecrTied 'Release' ⋄ MDISPLAY Error ⋄ :endif
+[14]  
+[15]  SSName ⎕wi 'onXModified' '' ⍝ Remove onXModified
+[16]  SSName ⎕wi 'onXEndEdit' '' ⍝ Remove End Edit (again!)
+[17]  SSName ⎕wi 'onExit' '' ⍝ Remove Exit (again!)
+[18]  SSName ⎕wi 'XSetActiveCell' 1 1
+[19]  SSName ⎕wi 'XShowActiveCell'
+[20]  0 0⍴Factors 'lock'
+[21]  
+[22]  ⍝ Enable List & "List" Buttons
+[23]  'fmFactors.lsTABLE' ⎕wi 'enabled' 1
+[24]  ⍝ Replace Cancel with Quit
+[25]  'fmFactors.bnFactorsCancel' ⎕wi 'visible' ¯1
+[26]  'fmFactors.bnFactorsCancel' ⎕wi 'style' 0
+[27]  'fmFactors' ⎕wi '∆quitbutton' 'fmFactors.bnFactorsQuit'
+[28]  'fmFactors.bnFactorsQuit' ⎕wi 'visible' 1
+[29]  'fmFactors.bnFactorsQuit' ⎕wi 'style' 2
+[30]  'fmFactors' ⎕wi 'onModified' ''
+[31]  'fmFactors.bnFactorsSave' ⎕wi 'enabled' 0
+[32]  'fmFactors.bnFactorsSave' ⎕wi 'style' 0
+[33]  'fmFactors.bnFactorsEdit' ⎕wi 'enabled' (accesslevel≥rtAccess[4])
+[34]  'fmFactors.bnFactorsAdd' ⎕wi 'enabled' (accesslevel≥rtAccess[5])
+[35]  'fmFactors.bnFactorsDelete' ⎕wi 'enabled' (accesslevel≥rtAccess[6])
+[36]  
+[37]  (('fmFactors.') ('edTableNo' 'edTableDesc' 'cbDecP')) Win∆SetRelated 'enabled' 0
+[38]  
+[39]  Assign_Inputs 0
+[40]  0 Win∆SetFocus 'fmFactors.lsTABLE' ⍝ Focus on List
+    ∇

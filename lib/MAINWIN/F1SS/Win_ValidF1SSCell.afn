@@ -1,0 +1,26 @@
+    ∇ row Win∆ValidF1SSCell col;text;BeforeValid;Error;MaxRow;MaxCol
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Check the validity of a cell in a F1SS
+[3]   ⍝  "row" is the row and "col" is column
+[4]   
+[5]   BeforeValid←text←1⊃⎕warg
+[6]   
+[7]   Error←0 Win∆ValidF1SS row,col
+[8]   
+[9]   :if 0=⎕nc 'F1SSEvent' ⋄ F1SSEvent←'' ⋄ :endif
+[10]  :if F1SSEvent≡'Exit' ⍝ Globals necessary for onExit to work
+[11]      F1SSError←Error
+[12]  :endif
+[13]  
+[14]  :if 0∊⍴,Error
+[15]      ⎕wi 'CancelEdit'
+[16]      ⎕wi 'xmodified' 0
+[17]      ⎕wi 'xmodified' 1
+[18]      Win∆F1SSCursor
+[19]  :else
+[20]      :if ~F1SSEvent≡'Exit'
+[21]          MDISPLAY Error
+[22]          ⎕wres←BeforeValid 1
+[23]      :endif
+[24]  :endif
+    ∇

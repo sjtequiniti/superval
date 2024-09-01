@@ -1,1 +1,77 @@
-    ∇ res←field Data_Editor parm;parent;Page;z[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Function to allow user control on Memer Data Editor[3]   [4]   parent←'fmDataEdit.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       editing←0 ⋄ hSS←parent,'fData.ssData' ⋄ fORMAT←''[10]      RecsPerPage←,MDEpage←1 ⍝ Default these for "SelChange"[11]  [12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[13]      EditorBns[14]      hSS ⎕wi 'SetSelection' ¯1 ¯1 ¯1 ¯1[15]      hSS ⎕wi 'SetFont' 'Courier New' (⌊8×1↑CharSize÷13) 0 0 0 0 0 0 0[16]      hSS ⎕wi 'AllowFillRange' 0[17]      hSS ⎕wi 'AllowObjSelections' 0[18]      hSS ⎕wi 'ShowVScrollBar' 0[19]      hSS ⎕wi 'onXRClick' 'Mouse_Menu'[20]      hSS ⎕wi 'onKeyDown' 'Check_Key ⎕warg'[21]      hSS ⎕wi 'onSelChange' 'Cell_Change'[22]      (parent,'fStats.edfpageno') ⎕wi 'onChange' '0 0⍴(⊂"edfpageno") Data_Editor "Change"'[23]      (parent,'fStats.edfrecno') ⎕wi 'onChange' '0 0⍴(⊂"edfrecno") Data_Editor "Change"'[24]      (parent,'fStats.edfindhits') ⎕wi 'onChange' '0 0⍴(⊂"edfindhits") Data_Editor "Change"'[25]      parent ⎕wi 'onResize' 'Data_SavePage ⋄ AutoResize ⋄ Reset_File 0'[26]  [27]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[28]  [29]      :repeat[30]          :select ↑field[31]          :case 'edfILENAME'[32]              fILENAME←UPPERCASE DTDot DLTB (parent,'fFile.edfILENAME') ⎕wi 'text'[33]              :if editing[34]                  :if z←fILENAME≡UPPERCASE EditFile[35]                      (parent,'fFile.lOrigFile') ⎕wi 'caption' ''[36]                  :elseif '⍺'∊EditFile[37]                       (parent,'fFile.lOrigFile') ⎕wi 'caption' 'New File'[38]                  :else[39]                       (parent,'fFile.lOrigFile') ⎕wi 'caption' ('Original File:  ',EditFile)[40]                  :endif[41]                  (parent,'bnData_EditorSave') ⎕wi 'enabled' z[42]                  (parent,'bnData_EditorSaveAs') ⎕wi 'enabled' (~z)[43]              :endif[44]          :case 'edfpageno'[45]              :if (parent,'fStats.edfpageno')≡'#' ⎕wi 'focus'[46]                  Page←⍬⍴1⌈MaxPage⌊zwb (parent,'fStats.edfpageno') ⎕wi 'text'[47]                  Data_Display Page xrow xcol[48]              :endif[49]          :case 'edfrecno'[50]              :if (parent,'fStats.edfrecno')≡'#' ⎕wi 'focus'[51]                  xrow←⍬⍴1⌈MaxRec⌊zwb (parent,'fStats.edfrecno') ⎕wi 'text'[52]                  Page←+/xrow>+\0,RecsPerPage[53]                  xrow←xrow-+/(Page-1)↑RecsPerPage[54]                  Data_Display Page xrow xcol[55]              :endif[56]          :case 'edfindhits'[57]              z←×zwb (parent,'fStats.edfindhits') ⎕wi 'text'[58]              (parent,'bnData_EditorNext') ⎕wi 'visible' (¯1+2×z)[59]              ((⊂parent,'fStats.'),¨'llfsearch' 'edfsearch') MultiWI 'visible' (¯1+2×z)[60]              :if 0=z ⋄ hSS ⎕wi '∆findhits' (0 2⍴0) ⋄ :endif[61]              parent ⎕wi 'Paint'[62]          :endselect[63]      :until mt field←1↓field[64]  [65]  :case 'Valid' ⍝ Routine specific validation[66]  [67]  :case 'Run'[68]  [69]  :case 'Quit' ⍝ Deleting "other" variables[70]      0 0⍴⎕ex 'editing EditFile fORMAT MaxRec MaxPage hSS DispREC DataNotes'[71]      0 0⍴⎕ex 'NAMES fmt fieldtype colnos lastchar filetie edttie block Tagged FileChanged RecsPerPage CanDisplayRows RecsPerChunk datafields'[72]      0 0⍴⎕ex 'MDEpage Maxcol xrow xcol'[73]      parent ⎕wi 'onResize' 'AutoResize'[74]  [75]  :endselect    ∇
+    ∇ res←field Data_Editor parm;parent;Page;z
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Function to allow user control on Memer Data Editor
+[3]   
+[4]   parent←'fmDataEdit.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       editing←0 ⋄ hSS←parent,'fData.ssData' ⋄ fORMAT←''
+[10]      RecsPerPage←,MDEpage←1 ⍝ Default these for "SelChange"
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]      EditorBns
+[14]      hSS ⎕wi 'SetSelection' ¯1 ¯1 ¯1 ¯1
+[15]      hSS ⎕wi 'SetFont' 'Courier New' (⌊8×1↑CharSize÷13) 0 0 0 0 0 0 0
+[16]      hSS ⎕wi 'AllowFillRange' 0
+[17]      hSS ⎕wi 'AllowObjSelections' 0
+[18]      hSS ⎕wi 'ShowVScrollBar' 0
+[19]      hSS ⎕wi 'onXRClick' 'Mouse_Menu'
+[20]      hSS ⎕wi 'onKeyDown' 'Check_Key ⎕warg'
+[21]      hSS ⎕wi 'onSelChange' 'Cell_Change'
+[22]      (parent,'fStats.edfpageno') ⎕wi 'onChange' '0 0⍴(⊂"edfpageno") Data_Editor "Change"'
+[23]      (parent,'fStats.edfrecno') ⎕wi 'onChange' '0 0⍴(⊂"edfrecno") Data_Editor "Change"'
+[24]      (parent,'fStats.edfindhits') ⎕wi 'onChange' '0 0⍴(⊂"edfindhits") Data_Editor "Change"'
+[25]      parent ⎕wi 'onResize' 'Data_SavePage ⋄ AutoResize ⋄ Reset_File 0'
+[26]  
+[27]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[28]  
+[29]      :repeat
+[30]          :select ↑field
+[31]          :case 'edfILENAME'
+[32]              fILENAME←UPPERCASE DTDot DLTB (parent,'fFile.edfILENAME') ⎕wi 'text'
+[33]              :if editing
+[34]                  :if z←fILENAME≡UPPERCASE EditFile
+[35]                      (parent,'fFile.lOrigFile') ⎕wi 'caption' ''
+[36]                  :elseif '⍺'∊EditFile
+[37]                       (parent,'fFile.lOrigFile') ⎕wi 'caption' 'New File'
+[38]                  :else
+[39]                       (parent,'fFile.lOrigFile') ⎕wi 'caption' ('Original File:  ',EditFile)
+[40]                  :endif
+[41]                  (parent,'bnData_EditorSave') ⎕wi 'enabled' z
+[42]                  (parent,'bnData_EditorSaveAs') ⎕wi 'enabled' (~z)
+[43]              :endif
+[44]          :case 'edfpageno'
+[45]              :if (parent,'fStats.edfpageno')≡'#' ⎕wi 'focus'
+[46]                  Page←⍬⍴1⌈MaxPage⌊zwb (parent,'fStats.edfpageno') ⎕wi 'text'
+[47]                  Data_Display Page xrow xcol
+[48]              :endif
+[49]          :case 'edfrecno'
+[50]              :if (parent,'fStats.edfrecno')≡'#' ⎕wi 'focus'
+[51]                  xrow←⍬⍴1⌈MaxRec⌊zwb (parent,'fStats.edfrecno') ⎕wi 'text'
+[52]                  Page←+/xrow>+\0,RecsPerPage
+[53]                  xrow←xrow-+/(Page-1)↑RecsPerPage
+[54]                  Data_Display Page xrow xcol
+[55]              :endif
+[56]          :case 'edfindhits'
+[57]              z←×zwb (parent,'fStats.edfindhits') ⎕wi 'text'
+[58]              (parent,'bnData_EditorNext') ⎕wi 'visible' (¯1+2×z)
+[59]              ((⊂parent,'fStats.'),¨'llfsearch' 'edfsearch') MultiWI 'visible' (¯1+2×z)
+[60]              :if 0=z ⋄ hSS ⎕wi '∆findhits' (0 2⍴0) ⋄ :endif
+[61]              parent ⎕wi 'Paint'
+[62]          :endselect
+[63]      :until mt field←1↓field
+[64]  
+[65]  :case 'Valid' ⍝ Routine specific validation
+[66]  
+[67]  :case 'Run'
+[68]  
+[69]  :case 'Quit' ⍝ Deleting "other" variables
+[70]      0 0⍴⎕ex 'editing EditFile fORMAT MaxRec MaxPage hSS DispREC DataNotes'
+[71]      0 0⍴⎕ex 'NAMES fmt fieldtype colnos lastchar filetie edttie block Tagged FileChanged RecsPerPage CanDisplayRows RecsPerChunk datafields'
+[72]      0 0⍴⎕ex 'MDEpage Maxcol xrow xcol'
+[73]      parent ⎕wi 'onResize' 'AutoResize'
+[74]  
+[75]  :endselect
+    ∇

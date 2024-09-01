@@ -1,1 +1,47 @@
-    ∇ CREATE∆AOS_PEN;⎕io;LIST;fn;A;z;var;midvp[1]   ⍝ PENWIN.sf#2[2]   ⍝ Create AOS Parameters[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   ⎕io←prevind←ResSize←0[8]   fMOE←fMOT ⋄ fDOE←fDOT ⋄ fBOE←fBOT ⍝ UK Variable inconsistencies[9]   [10]  :if aosind[11]      ResSize←1+⌈ValPer←pvDATE YDAYS vDATE ⍝ Create Global Variables[12]      midVDATE←pvDATE+(⌊0.5+30×1∣12×1∣midvp),(⌊12×1∣midvp),⌊midvp←ValPer÷2[13]      :if 31<midVDATE[0] ⋄ midVDATE[0 1]←midVDATE[0 1]+¯31 1 ⋄ :endif[14]      :if 12<midVDATE[1] ⋄ midVDATE[1 2]←midVDATE[1 2]+¯12 1 ⋄ :endif[15]      ⍎(~DATECHECK midVDATE)/'midVDATE[0]←midVDATE[0]-1 ⋄ →⎕lc'[16]      ∆ResMult←((1∣ValPer)+0=1∣ValPer),(⌈ValPer)⍴1[17]      ⍝ AOS Totals - 1 TOP's, 4 Types (OA, NA, OE, NE), 19 Rows for X Years[18]      aos∆TOTS←(1 4 19,ResSize)⍴0 ⋄ STOTS←9/APAGE←0 ⋄ ARECN←pAGE[19]      aostype←(1,1⌈⍴fTOP)↑MOE←(1,1⌈z←⍴fMOT)⍴' '[20]  [21]      ⍝ Create AOS Parameters[22]      CODE←'0',⊃((⍴DISCode)⍴z↑1) ⎕penclose DISCode[23]      CODEcol←,ZWB CODE[;,0] ⋄ CODE←((1↑⍴CODE),z)↑0 1↓CODE[24]      z←⍴fTOP[25]      TopCODE←('0',⊃((⍴RetType)⍴z↑1) ⎕penclose RetType) OVER ('1',⊃((⍴DISType)⍴z↑1) ⎕penclose DISType) OVER ('2',⊃((⍴IllType)⍴z↑1) ⎕penclose IllType) OVER ('3',⊃((⍴WthType)⍴z↑1) ⎕penclose WthType)[26]      TopCODEcol←,ZWB TopCODE[;,0] ⋄ TopCODE←((1↑⍴TopCODE),⍴fTOP)↑0 1↓TopCODE[27]  [28]      ⍝ Create Numeric Data Fields Function[29]      LIST←m2n (SStoMAT VarNumStandVars) OVER 'f',TotNumVars[30]      fn←'CREATEDATANUMS prevind' OVER '→(~prevind)/L1' ⋄ prevind←1[31]  LAB: ⍝ Loop around to do Previous then Current Data Format[32]      :for var :in LIST[33]          :if prevind ⋄ :andif ~0∊⍴⍎var ⋄ :andif 0∊⍴⍎'p',var[34]              ('Column Specification for Previous ',(1↓var),' has not been Specified in Data Format') VALN∆LOG 'Error'[35]              AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Invalid Data Format for AOS'[36]              :continue[37]          :endif[38]          A←DLTMB 'I5' ⎕FMT MATRIX ⍎(prevind/'p'),var[39]          fn←fn OVER var,'←',A,(0∊⍴A)/'⍬'[40]      :endfor[41]      fn←fn OVER '→0' OVER prevind/'L1:'[42]      →(0=prevind←~prevind)/LAB ⋄ 0 0 ⍴⎕DEF fn ⋄ →prevind←0[43]  :else[44]      aosterm←0[45]  :endif    ∇
+    ∇ CREATE∆AOS_PEN;⎕io;LIST;fn;A;z;var;midvp
+[1]   ⍝ PENWIN.sf#2
+[2]   ⍝ Create AOS Parameters
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕io←prevind←ResSize←0
+[8]   fMOE←fMOT ⋄ fDOE←fDOT ⋄ fBOE←fBOT ⍝ UK Variable inconsistencies
+[9]   
+[10]  :if aosind
+[11]      ResSize←1+⌈ValPer←pvDATE YDAYS vDATE ⍝ Create Global Variables
+[12]      midVDATE←pvDATE+(⌊0.5+30×1∣12×1∣midvp),(⌊12×1∣midvp),⌊midvp←ValPer÷2
+[13]      :if 31<midVDATE[0] ⋄ midVDATE[0 1]←midVDATE[0 1]+¯31 1 ⋄ :endif
+[14]      :if 12<midVDATE[1] ⋄ midVDATE[1 2]←midVDATE[1 2]+¯12 1 ⋄ :endif
+[15]      ⍎(~DATECHECK midVDATE)/'midVDATE[0]←midVDATE[0]-1 ⋄ →⎕lc'
+[16]      ∆ResMult←((1∣ValPer)+0=1∣ValPer),(⌈ValPer)⍴1
+[17]      ⍝ AOS Totals - 1 TOP's, 4 Types (OA, NA, OE, NE), 19 Rows for X Years
+[18]      aos∆TOTS←(1 4 19,ResSize)⍴0 ⋄ STOTS←9/APAGE←0 ⋄ ARECN←pAGE
+[19]      aostype←(1,1⌈⍴fTOP)↑MOE←(1,1⌈z←⍴fMOT)⍴' '
+[20]  
+[21]      ⍝ Create AOS Parameters
+[22]      CODE←'0',⊃((⍴DISCode)⍴z↑1) ⎕penclose DISCode
+[23]      CODEcol←,ZWB CODE[;,0] ⋄ CODE←((1↑⍴CODE),z)↑0 1↓CODE
+[24]      z←⍴fTOP
+[25]      TopCODE←('0',⊃((⍴RetType)⍴z↑1) ⎕penclose RetType) OVER ('1',⊃((⍴DISType)⍴z↑1) ⎕penclose DISType) OVER ('2',⊃((⍴IllType)⍴z↑1) ⎕penclose IllType) OVER ('3',⊃((⍴WthType)⍴z↑1) ⎕penclose WthType)
+[26]      TopCODEcol←,ZWB TopCODE[;,0] ⋄ TopCODE←((1↑⍴TopCODE),⍴fTOP)↑0 1↓TopCODE
+[27]  
+[28]      ⍝ Create Numeric Data Fields Function
+[29]      LIST←m2n (SStoMAT VarNumStandVars) OVER 'f',TotNumVars
+[30]      fn←'CREATEDATANUMS prevind' OVER '→(~prevind)/L1' ⋄ prevind←1
+[31]  LAB: ⍝ Loop around to do Previous then Current Data Format
+[32]      :for var :in LIST
+[33]          :if prevind ⋄ :andif ~0∊⍴⍎var ⋄ :andif 0∊⍴⍎'p',var
+[34]              ('Column Specification for Previous ',(1↓var),' has not been Specified in Data Format') VALN∆LOG 'Error'
+[35]              AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Invalid Data Format for AOS'
+[36]              :continue
+[37]          :endif
+[38]          A←DLTMB 'I5' ⎕FMT MATRIX ⍎(prevind/'p'),var
+[39]          fn←fn OVER var,'←',A,(0∊⍴A)/'⍬'
+[40]      :endfor
+[41]      fn←fn OVER '→0' OVER prevind/'L1:'
+[42]      →(0=prevind←~prevind)/LAB ⋄ 0 0 ⍴⎕DEF fn ⋄ →prevind←0
+[43]  :else
+[44]      aosterm←0
+[45]  :endif
+    ∇

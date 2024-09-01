@@ -1,0 +1,25 @@
+    ∇ cn←package SaveInvResults Component;File;tieno;oldFile;∆_Index;oldtie
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Save Investigation Results to SVINVRES file
+[3]   ⍝  package contains the "package" to be saved
+[4]   ⍝  Component is a nested array of:
+[5]   ⍝  1. Investigation type ie Snapshot_Salary, Cohort_Salary, New_Entrant_Age, etc
+[6]   ⍝  2. The Run Description
+[7]   
+[8]   :if ~File FTIE tieno←TieNumber File←OutputDir,'SVINVRES.sf'
+[9]       :if oldFile FTIE oldtie←TieNumber oldFile←OutputDir,'INVRES'
+[10]          :if 0∊⍴∆_Index←(⎕fread oldtie,1) ConvertIndex oldtie
+[11]              ⎕funtie oldtie ⋄ →create
+[12]          :else
+[13]              File ⎕xfdup oldtie ⋄ ⎕funtie oldtie
+[14]              0 0⍴File FTIE tieno
+[15]              ∆_Index ⎕freplace tieno,1
+[16]          :endif
+[17]      :else
+[18]  create: →(0=CreateFile File 'Saved Investigation Results')/⎕lc
+[19]      :endif
+[20]  :endif
+[21]  
+[22]  cn←File AddToFile Component
+[23]  cn←File SaveToFile cn '' package 0
+    ∇

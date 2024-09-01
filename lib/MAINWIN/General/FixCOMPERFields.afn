@@ -1,0 +1,17 @@
+    ∇ res←FixCOMPERFields;z;vars;var;fixed;MESS
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Convert the COMPER fields from Proportion to Percentage
+[3]   
+[4]   res←0 3⍴'' 0 ''
+[5]   
+[6]   :if zwb COMPERwarn ⋄ :andif ∨/z←~mt¨⍎¨vars←'COMPER' 'COMPER2' 'ILLCOMPER' 'ILLCOMPER2'
+[7]       :for z :in z/⍳4
+[8]           :if fixed←1=↑⎕vi ⍎var←z⊃vars
+[9]               ⍎var,'←⍕100×zwb ',var
+[10]          :endif
+[11]          MESS←'Note:  ',(z⊃'' '' 'Ill-Health ' 'Ill-Health '),'Retirement Cash ',(z⊃'' 'On Top ' '' 'On Top '),'uses a Cash Proportion which has changed to a Cash Percentage in V9.10.',⎕tcnl
+[12]          res←res OVER var ⍬ (MESS,(⎕io+fixed)⊃('The Member Data Field ',(⍎var),' will need to be adjusted for this change.') ('The previous Cash Proportion has been changed to a Cash Percentage - please save the Basis.'))
+[13]      :endfor
+[14]  :endif
+[15]  COMPERwarn←'0' ⍝ Reset warning flag so this message does not appear again (once Basis is saved)!
+    ∇

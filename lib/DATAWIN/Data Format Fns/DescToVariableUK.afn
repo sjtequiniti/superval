@@ -1,1 +1,25 @@
-    ∇ res←FormatType DescToVariableUK desc;Names;Vars;N;I;z;value[1]   ⍝ DATAWIN.sf#2[2]   ⍝ Convert Data Field Descriptions into the Global Variables[3]   [4]   :if 0=⎕nc 'CharStandNames' ⍝ Read Format Variables (if not already)[5]       0 0⍴⍙VALUESdict ReadDictFile (FormatType,'Format') '' (SStoMAT '⍺CharStandNames⍺DateStandNames⍺FixNumStandNames⍺VarNumStandNames⍺CharStandVars⍺DateStandVars⍺FixNumStandVars⍺VarNumStandVars')[6]   :endif[7]   [8]   Names←m2n SStoMAT CharStandNames,DateStandNames,FixNumStandNames,VarNumStandNames[9]   Vars←0 1↓ SStoMAT CharStandVars, DateStandVars, FixNumStandVars, VarNumStandVars[10]  N←⍳1↑⍴res←desc←MATRIX desc[11]  [12]  :for I :in N[13]      :if ∨/' '≠desc[I;] ⋄ :andif ~1≡↑⎕vi desc[I;][14]          :if ∨/z←Names∊⊂DLTB desc[I;][15]              :if ∨/z←('DOT' 'BOT' 'SAL')∊⊂,value←z⌿Vars[16]                  value←↑z/'DOE' 'BOE' 'SAL0'[17]              :endif[18]          :else[19]              value←StripText desc[I;][20]          :endif[21]          value ASSIGN∆Dict ('res[',(⍕I),';]')[22]      :endif[23]  :endfor    ∇
+    ∇ res←FormatType DescToVariableUK desc;Names;Vars;N;I;z;value
+[1]   ⍝ DATAWIN.sf#2
+[2]   ⍝ Convert Data Field Descriptions into the Global Variables
+[3]   
+[4]   :if 0=⎕nc 'CharStandNames' ⍝ Read Format Variables (if not already)
+[5]       0 0⍴⍙VALUESdict ReadDictFile (FormatType,'Format') '' (SStoMAT '⍺CharStandNames⍺DateStandNames⍺FixNumStandNames⍺VarNumStandNames⍺CharStandVars⍺DateStandVars⍺FixNumStandVars⍺VarNumStandVars')
+[6]   :endif
+[7]   
+[8]   Names←m2n SStoMAT CharStandNames,DateStandNames,FixNumStandNames,VarNumStandNames
+[9]   Vars←0 1↓ SStoMAT CharStandVars, DateStandVars, FixNumStandVars, VarNumStandVars
+[10]  N←⍳1↑⍴res←desc←MATRIX desc
+[11]  
+[12]  :for I :in N
+[13]      :if ∨/' '≠desc[I;] ⋄ :andif ~1≡↑⎕vi desc[I;]
+[14]          :if ∨/z←Names∊⊂DLTB desc[I;]
+[15]              :if ∨/z←('DOT' 'BOT' 'SAL')∊⊂,value←z⌿Vars
+[16]                  value←↑z/'DOE' 'BOE' 'SAL0'
+[17]              :endif
+[18]          :else
+[19]              value←StripText desc[I;]
+[20]          :endif
+[21]          value ASSIGN∆Dict ('res[',(⍕I),';]')
+[22]      :endif
+[23]  :endfor
+    ∇

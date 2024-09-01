@@ -1,0 +1,16 @@
+    ∇ res←⍙DBTableVars table;tab;flds;keymask;mask;cols;fmt;prefix;nokeys
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Create the "characteristic" variables of a Database Table
+[3]   
+[4]   tab←⍙SCHEMADict at table
+[5]   tab←tab for ZWB¨(⊂'()') embrace¨tab at 'Alternate'  ⍝ Keep just 1 of any Alternate fields
+[6]   flds←tab at 'Fields'                                ⍝ Field names
+[7]   nokeys←+/keymask←(¯1↓~'Y'=↑¨tab at 'Constant'),0    ⍝ Mask for key fields (no Constant or value - assume last row is always the value)
+[8]   mask←ZWB¨(⊂'()') embrace¨tab at 'Relevant'          ⍝ Mask of fields used
+[9]   prefix←lmt mask/tab at 'Value'                      ⍝ Constants (assumed inserted at the start of each record)
+[10]  fmt←⍕¨cols←ZWB¨(tab for keymask^mask) at 'Cols'     ⍝ Field widths for Key Format
+[11]  fmt←',' join  (('M<->I' 'M<->F')[⎕io+'.'∊¨fmt]),¨fmt←(cols>0)/fmt ⍝ Format string (MemberID is -ve to exclude from fmt string)
+[12]  cols←+/⌊∣cols                                       ⍝ Total width of key fields
+[13]  
+[14]  res←flds keymask mask cols fmt prefix nokeys
+    ∇

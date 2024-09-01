@@ -1,0 +1,14 @@
+    ∇ nl RenameVars prefixes;old;new
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ The left argument is a list of variables in the workspace, all named
+[3]   ⍝ xxxCR, xxxSAL and so on where xxx is the old prefix.
+[4]   
+[5]   ⍝ We wish to create a new set of variables with the new prefix named yyyCR, yyySAL and so on.
+[6]   ⍝ Then clean up the old variables.
+[7]   
+[8]   (old new)←prefixes
+[9]   
+[10]  nl←(old⍷nl)[;⎕io]⌿nl
+[11]  
+[12]  0 0⍴⍎¨⎕split (⊃(⊂new),¨(⍴old)↓¨⎕split nl),'←',nl
+    ∇

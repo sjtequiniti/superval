@@ -1,1 +1,161 @@
-    ∇ res←field Scenarios parm;SSName;row;col;z;OldParm;warnings;page;Parmlist;LocalGlobals[1]   ⍝ PARMWIN.sf#24[2]   ⍝ Function to allow user control on Scenarios form[3]   res←0⍴'' ⍝ Default response[4]   [5]   :select parm[6]   :case 'Prepare'[7]       parent←'fmScenarios.sScenarios.' ⍝ Held Globally to avoid crash in Editing[8]       CIndex←ClientFile ReadFile 'Index' ⍝ ClientFile Index[9]   [10]      :if 0=rowsIn LocalGlobals←↑gucommon 1 'Fin' 'RelNum' 'ParmsM' 'ParmsI' 'ParmsX' 'ParmsD' 'ParmsW' 'ParmsR' 'ParmsT' 'ParmsL' 'ParmsS'[11]          res←'No Global Parameter Sets in use in the Bases found in this Folder.  Please update Bases before using Scenarios.'[12]      :else[13]          0 0⍴ScenarioData    'Prepare'[14]          0 0⍴ScenarioFins    'Prepare'[15]          0 0⍴ScenarioMort    'Prepare'[16]          0 0⍴ScenarioMImp    'Prepare'[17]          0 0⍴ScenarioRetAge  'Prepare'[18]          0 0⍴ScenarioDRates  'Prepare'[19]          0 0⍴ScenarioSpouse  'Prepare'[20]          0 0⍴ScenarioRetFact 'Prepare'[21]          0 0⍴ScenarioCommT   'Prepare'[22]          0 0⍴ScenarioRetCash 'Prepare'[23]          0 0⍴ScenarioSpDate  'Prepare'[24]          0 0⍴ScenarioNEM     'Prepare'[25]      :endif[26]  [27]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[28]      FinDefault←'' ⋄ unchanged←0[29]      warnings←              ScenarioData    'Vars'[30]      warnings←warnings OVER ScenarioFins    'Vars'[31]      warnings←warnings OVER ScenarioMort    'Vars'[32]      warnings←warnings OVER ScenarioMImp    'Vars'[33]      warnings←warnings OVER ScenarioRetAge  'Vars'[34]      warnings←warnings OVER ScenarioDRates  'Vars'[35]      warnings←warnings OVER ScenarioSpouse  'Vars'[36]      warnings←warnings OVER ScenarioRetFact 'Vars'[37]      warnings←warnings OVER ScenarioCommT   'Vars'[38]      warnings←warnings OVER ScenarioRetCash 'Vars'[39]      warnings←warnings OVER ScenarioSpDate  'Vars'[40]      warnings←warnings OVER ScenarioNEM     'Vars'[41]  [42]      :if ~mt warnings[43]          MDISPLAY DLTMB warnings,⎕tcnl[44]      :endif[45]  [46]  :case 'PostAssign'[47]       0 0⍴((⊂'edDatavDATE'),(zwb ScenRel)⌽'ckScenRel' 'ckScenAbs') Scenarios 'Change' ⍝ Fudge to get a Financials columns hidden!!!![48]  [49]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[50]      Display∆Access scenAccess[1 2][51]  [52]      :if ~mt res←ScenarioData    'Init' ⋄ :return ⋄ :endif[53]      :if ~mt res←ScenarioFins    'Init' ⋄ :return ⋄ :endif[54]      :if ~mt res←ScenarioMort    'Init' ⋄ :return ⋄ :endif[55]      :if ~mt res←ScenarioMImp    'Init' ⋄ :return ⋄ :endif[56]      :if ~mt res←ScenarioRetAge  'Init' ⋄ :return ⋄ :endif[57]      :if ~mt res←ScenarioDRates  'Init' ⋄ :return ⋄ :endif[58]      :if ~mt res←ScenarioSpouse  'Init' ⋄ :return ⋄ :endif[59]      :if ~mt res←ScenarioRetFact 'Init' ⋄ :return ⋄ :endif[60]      :if ~mt res←ScenarioCommT   'Init' ⋄ :return ⋄ :endif[61]      :if ~mt res←ScenarioRetCash 'Init' ⋄ :return ⋄ :endif[62]      :if ~mt res←ScenarioSpDate  'Init' ⋄ :return ⋄ :endif[63]      :if ~mt res←ScenarioNEM     'Init' ⋄ :return ⋄ :endif[64]  [65]  :case 'PageChange' ⍝ The onChange events (disabling fields according to value of others)[66]  [67]      ⍝ Only enable Create Financials button on Financials page when sufficient access[68]      z←(basAccess[2]≤accesslevel)^'pgFinancials'≡(↑2⊃⎕warg)⊃parent ⎕wi 'pages'[69]      ⍝   and if either Absolutes or Relatives or skipped to new future Valuation Date[70]      z←z^(∨/zwb¨ScenAbs ScenRel)∨^/((DTDot parent),'.pgValuationData.ckTermAdjFin') ⎕wi 'Ref' 'enabled' 'value'[71]      'fmScenarios.bnScenariosCreateFin' ⎕wi 'enabled' z[72]  [73]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[74]  [75]      :repeat[76]          :select ↑field[77]          :case 'edDatavDATE'[78]              ((DTDot parent),'.pgValuationData.ckTermAdjFin') ⎕wi 'enabled' (~mt ((DTDot parent),'.pgValuationData.edDatavDATE') ⎕wi 'text')[79]          :case 'ssValuationData' ⋄ 0 0⍴ScenarioData    'Change'[80]          :caselist 'ssFinancials' 'ckScenRel' 'ckScenAbs' 'ckFinCurrent' ⋄ 0 0⍴(↑field) ScenarioFins 'Change'[81]          :case 'ssMortality'     ⋄ 0 0⍴ScenarioMort    'Change'[82]          :case 'ssMortImp'       ⋄ 0 0⍴ScenarioMImp    'Change'[83]          :case 'ssRetAge'        ⋄ 0 0⍴ScenarioRetAge  'Change'[84]          :case 'ssDRates'        ⋄ 0 0⍴ScenarioDRates  'Change'[85]          :case 'ssSpouse'        ⋄ 0 0⍴ScenarioSpouse  'Change'[86]          :case 'ssRetFact'       ⋄ 0 0⍴ScenarioRetFact 'Change'[87]          :case 'ssCommT'         ⋄ 0 0⍴ScenarioCommT   'Change'[88]          :case 'ssRetCash'       ⋄ 0 0⍴ScenarioRetCash 'Change'[89]          :case 'ssSpDate'        ⋄ 0 0⍴ScenarioSpDate  'Change'[90]          :case 'ssNEModel'       ⋄ 0 0⍴ScenarioNEM     'Change'[91]          :endselect[92]      :until mt field←1↓field[93]  [94]  :case 'SSClick'[95]  [96]      (SSName row col)←field[97]      :if row≠0 ⍝ Not the Header Row[98]          :if 'ssFinancials'≡Win∆Child SSName ⋄ :andif col∊4 5 ⍝ Only the Scenario columns[99]              OldParm←'⍺',,⊃,SSName Win∆F1SSGetTextArray row col 1 1[100]             YieldDir RunGetCSVFiles field[101]         :elseif 'ssValnData'≡Win∆Child SSName[102]             :if     col=3 ⍝ The Filename column[103]                 'Data Single' GetFileList 'Single'[104]                 SSName ⎕wi "SetColWidthAuto" ¯1 col ¯1 col 0[105]             :elseif col=4 ⍝ The Format column[106]                 Parmlist←Formats (row=1 2 3)/'ADP'[107]                 Parmlist SelClientParms field[108]             :endif[109]         :elseif col=2 ⍝ Only the Scenario column - Get a list comparable Globals[110]             OldParm←'⍺',,⊃,SSName Win∆F1SSGetTextArray row 2 1 1[111]             :select Win∆Child SSName[112]             :case 'ssMortality' ⋄ Parmlist←GetMortParms 'Select'[113]             :case 'ssMortImp'   ⋄ Parmlist←'None' GetClientParms 'Mort_Improvement'[114]             :case 'ssRetAge'    ⋄ Parmlist←GetClientParms 'Retirement_Age'[115]             :case 'ssDRates'    ⋄ Parmlist←GetClientParms 'Decrement_Rates'[116]             :case 'ssSpouse'    ⋄ Parmlist←GetClientParms 'Spouse_Parameters'[117]             :case 'ssRetFact'   ⋄ Parmlist←GetClientParms 'Retirement_Factors'[118]             :case 'ssCommT'     ⋄ Parmlist←GetClientParms 'Commutation_Tables'[119]             :case 'ssRetCash'   ⋄ Parmlist←GetClientParms 'Retirement_Cash'[120]             :case 'ssSpDate'    ⋄ Parmlist←GetClientParms 'Spreading_Dates'[121]             :case 'ssNEModel'   ⋄ Parmlist←GetClientParms 'NE_Model'[122]             :endselect[123]             Parmlist SelClientParms field[124]         :endif[125]     :endif[126] [127] :case 'Valid'[128] [129]     :repeat[130]         :select DLTMB ↑field[131]         :case 'All'[132]             :for page :in 'pgValuationData' 'pgFinancials' 'pgMortality' 'pgMortImprovement' 'pgRetirementAge' 'pgDecrements' 'pgSpouse' 'pgRetFactors' 'pgCommTables' 'pgRetCash' 'pgSpreadDates' 'pgNEModel'[133]                 :if ~mt res←(⊂page) Scenarios 'Valid' ⋄ :leave ⋄ :endif[134]             :endfor[135]         :case 'pgValuationData'   ⋄ res←ScenarioData    'Valid'[136]         :case 'pgFinancials'      ⋄ res←ScenarioFins    'Valid'[137]         :case 'pgMortality'       ⋄ res←ScenarioMort    'Valid'[138]         :case 'pgMortImprovement' ⋄ res←ScenarioMImp    'Valid'[139]         :case 'pgRetirementAge'   ⋄ res←ScenarioRetAge  'Valid'[140]         :case 'pgDecrements'      ⋄ res←ScenarioDRates  'Valid'[141]         :case 'pgSpouse'          ⋄ res←ScenarioSpouse  'Valid'[142]         :case 'pgRetFactors'      ⋄ res←ScenarioRetFact 'Valid'[143]         :case 'pgCommTables'      ⋄ res←ScenarioCommT   'Valid'[144]         :case 'pgRetCash'         ⋄ res←ScenarioRetCash 'Valid'[145]         :case 'pgSpreadDates'     ⋄ res←ScenarioSpDate  'Valid'[146]         :case 'pgNEModel'         ⋄ res←ScenarioNEM     'Valid'[147]         :endselect[148]     :until mt field←1↓field[149] [150] :case 'Run'[151] [152]     res←'Quit'[153] [154] :case 'Quit' ⍝ Deleting "other" variables[155]     0 0⍴⎕ex 'unchanged offerexit parent Finwarnings finType finValue CIndex'[156]     0 0⍴⎕ex 'DataGlobs FinGlobs MortGlobs MImpGlobs RetAgeGlobs DRatesGlobs SpouseGlobs RetFactGlobs CommTGlobs RetCashGlobs SpDateGlobs NEMGlobs'[157]     0 0⍴DeleteVars 'Financials_Display'[158] [159] :endselect    ∇
+    ∇ res←field Scenarios parm;SSName;row;col;z;OldParm;warnings;page;Parmlist;LocalGlobals
+[1]   ⍝ PARMWIN.sf#24
+[2]   ⍝ Function to allow user control on Scenarios form
+[3]   res←0⍴'' ⍝ Default response
+[4]   
+[5]   :select parm
+[6]   :case 'Prepare'
+[7]       parent←'fmScenarios.sScenarios.' ⍝ Held Globally to avoid crash in Editing
+[8]       CIndex←ClientFile ReadFile 'Index' ⍝ ClientFile Index
+[9]   
+[10]      :if 0=rowsIn LocalGlobals←↑gucommon 1 'Fin' 'RelNum' 'ParmsM' 'ParmsI' 'ParmsX' 'ParmsD' 'ParmsW' 'ParmsR' 'ParmsT' 'ParmsL' 'ParmsS'
+[11]          res←'No Global Parameter Sets in use in the Bases found in this Folder.  Please update Bases before using Scenarios.'
+[12]      :else
+[13]          0 0⍴ScenarioData    'Prepare'
+[14]          0 0⍴ScenarioFins    'Prepare'
+[15]          0 0⍴ScenarioMort    'Prepare'
+[16]          0 0⍴ScenarioMImp    'Prepare'
+[17]          0 0⍴ScenarioRetAge  'Prepare'
+[18]          0 0⍴ScenarioDRates  'Prepare'
+[19]          0 0⍴ScenarioSpouse  'Prepare'
+[20]          0 0⍴ScenarioRetFact 'Prepare'
+[21]          0 0⍴ScenarioCommT   'Prepare'
+[22]          0 0⍴ScenarioRetCash 'Prepare'
+[23]          0 0⍴ScenarioSpDate  'Prepare'
+[24]          0 0⍴ScenarioNEM     'Prepare'
+[25]      :endif
+[26]  
+[27]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[28]      FinDefault←'' ⋄ unchanged←0
+[29]      warnings←              ScenarioData    'Vars'
+[30]      warnings←warnings OVER ScenarioFins    'Vars'
+[31]      warnings←warnings OVER ScenarioMort    'Vars'
+[32]      warnings←warnings OVER ScenarioMImp    'Vars'
+[33]      warnings←warnings OVER ScenarioRetAge  'Vars'
+[34]      warnings←warnings OVER ScenarioDRates  'Vars'
+[35]      warnings←warnings OVER ScenarioSpouse  'Vars'
+[36]      warnings←warnings OVER ScenarioRetFact 'Vars'
+[37]      warnings←warnings OVER ScenarioCommT   'Vars'
+[38]      warnings←warnings OVER ScenarioRetCash 'Vars'
+[39]      warnings←warnings OVER ScenarioSpDate  'Vars'
+[40]      warnings←warnings OVER ScenarioNEM     'Vars'
+[41]  
+[42]      :if ~mt warnings
+[43]          MDISPLAY DLTMB warnings,⎕tcnl
+[44]      :endif
+[45]  
+[46]  :case 'PostAssign'
+[47]       0 0⍴((⊂'edDatavDATE'),(zwb ScenRel)⌽'ckScenRel' 'ckScenAbs') Scenarios 'Change' ⍝ Fudge to get a Financials columns hidden!!!!
+[48]  
+[49]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[50]      Display∆Access scenAccess[1 2]
+[51]  
+[52]      :if ~mt res←ScenarioData    'Init' ⋄ :return ⋄ :endif
+[53]      :if ~mt res←ScenarioFins    'Init' ⋄ :return ⋄ :endif
+[54]      :if ~mt res←ScenarioMort    'Init' ⋄ :return ⋄ :endif
+[55]      :if ~mt res←ScenarioMImp    'Init' ⋄ :return ⋄ :endif
+[56]      :if ~mt res←ScenarioRetAge  'Init' ⋄ :return ⋄ :endif
+[57]      :if ~mt res←ScenarioDRates  'Init' ⋄ :return ⋄ :endif
+[58]      :if ~mt res←ScenarioSpouse  'Init' ⋄ :return ⋄ :endif
+[59]      :if ~mt res←ScenarioRetFact 'Init' ⋄ :return ⋄ :endif
+[60]      :if ~mt res←ScenarioCommT   'Init' ⋄ :return ⋄ :endif
+[61]      :if ~mt res←ScenarioRetCash 'Init' ⋄ :return ⋄ :endif
+[62]      :if ~mt res←ScenarioSpDate  'Init' ⋄ :return ⋄ :endif
+[63]      :if ~mt res←ScenarioNEM     'Init' ⋄ :return ⋄ :endif
+[64]  
+[65]  :case 'PageChange' ⍝ The onChange events (disabling fields according to value of others)
+[66]  
+[67]      ⍝ Only enable Create Financials button on Financials page when sufficient access
+[68]      z←(basAccess[2]≤accesslevel)^'pgFinancials'≡(↑2⊃⎕warg)⊃parent ⎕wi 'pages'
+[69]      ⍝   and if either Absolutes or Relatives or skipped to new future Valuation Date
+[70]      z←z^(∨/zwb¨ScenAbs ScenRel)∨^/((DTDot parent),'.pgValuationData.ckTermAdjFin') ⎕wi 'Ref' 'enabled' 'value'
+[71]      'fmScenarios.bnScenariosCreateFin' ⎕wi 'enabled' z
+[72]  
+[73]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[74]  
+[75]      :repeat
+[76]          :select ↑field
+[77]          :case 'edDatavDATE'
+[78]              ((DTDot parent),'.pgValuationData.ckTermAdjFin') ⎕wi 'enabled' (~mt ((DTDot parent),'.pgValuationData.edDatavDATE') ⎕wi 'text')
+[79]          :case 'ssValuationData' ⋄ 0 0⍴ScenarioData    'Change'
+[80]          :caselist 'ssFinancials' 'ckScenRel' 'ckScenAbs' 'ckFinCurrent' ⋄ 0 0⍴(↑field) ScenarioFins 'Change'
+[81]          :case 'ssMortality'     ⋄ 0 0⍴ScenarioMort    'Change'
+[82]          :case 'ssMortImp'       ⋄ 0 0⍴ScenarioMImp    'Change'
+[83]          :case 'ssRetAge'        ⋄ 0 0⍴ScenarioRetAge  'Change'
+[84]          :case 'ssDRates'        ⋄ 0 0⍴ScenarioDRates  'Change'
+[85]          :case 'ssSpouse'        ⋄ 0 0⍴ScenarioSpouse  'Change'
+[86]          :case 'ssRetFact'       ⋄ 0 0⍴ScenarioRetFact 'Change'
+[87]          :case 'ssCommT'         ⋄ 0 0⍴ScenarioCommT   'Change'
+[88]          :case 'ssRetCash'       ⋄ 0 0⍴ScenarioRetCash 'Change'
+[89]          :case 'ssSpDate'        ⋄ 0 0⍴ScenarioSpDate  'Change'
+[90]          :case 'ssNEModel'       ⋄ 0 0⍴ScenarioNEM     'Change'
+[91]          :endselect
+[92]      :until mt field←1↓field
+[93]  
+[94]  :case 'SSClick'
+[95]  
+[96]      (SSName row col)←field
+[97]      :if row≠0 ⍝ Not the Header Row
+[98]          :if 'ssFinancials'≡Win∆Child SSName ⋄ :andif col∊4 5 ⍝ Only the Scenario columns
+[99]              OldParm←'⍺',,⊃,SSName Win∆F1SSGetTextArray row col 1 1
+[100]             YieldDir RunGetCSVFiles field
+[101]         :elseif 'ssValnData'≡Win∆Child SSName
+[102]             :if     col=3 ⍝ The Filename column
+[103]                 'Data Single' GetFileList 'Single'
+[104]                 SSName ⎕wi "SetColWidthAuto" ¯1 col ¯1 col 0
+[105]             :elseif col=4 ⍝ The Format column
+[106]                 Parmlist←Formats (row=1 2 3)/'ADP'
+[107]                 Parmlist SelClientParms field
+[108]             :endif
+[109]         :elseif col=2 ⍝ Only the Scenario column - Get a list comparable Globals
+[110]             OldParm←'⍺',,⊃,SSName Win∆F1SSGetTextArray row 2 1 1
+[111]             :select Win∆Child SSName
+[112]             :case 'ssMortality' ⋄ Parmlist←GetMortParms 'Select'
+[113]             :case 'ssMortImp'   ⋄ Parmlist←'None' GetClientParms 'Mort_Improvement'
+[114]             :case 'ssRetAge'    ⋄ Parmlist←GetClientParms 'Retirement_Age'
+[115]             :case 'ssDRates'    ⋄ Parmlist←GetClientParms 'Decrement_Rates'
+[116]             :case 'ssSpouse'    ⋄ Parmlist←GetClientParms 'Spouse_Parameters'
+[117]             :case 'ssRetFact'   ⋄ Parmlist←GetClientParms 'Retirement_Factors'
+[118]             :case 'ssCommT'     ⋄ Parmlist←GetClientParms 'Commutation_Tables'
+[119]             :case 'ssRetCash'   ⋄ Parmlist←GetClientParms 'Retirement_Cash'
+[120]             :case 'ssSpDate'    ⋄ Parmlist←GetClientParms 'Spreading_Dates'
+[121]             :case 'ssNEModel'   ⋄ Parmlist←GetClientParms 'NE_Model'
+[122]             :endselect
+[123]             Parmlist SelClientParms field
+[124]         :endif
+[125]     :endif
+[126] 
+[127] :case 'Valid'
+[128] 
+[129]     :repeat
+[130]         :select DLTMB ↑field
+[131]         :case 'All'
+[132]             :for page :in 'pgValuationData' 'pgFinancials' 'pgMortality' 'pgMortImprovement' 'pgRetirementAge' 'pgDecrements' 'pgSpouse' 'pgRetFactors' 'pgCommTables' 'pgRetCash' 'pgSpreadDates' 'pgNEModel'
+[133]                 :if ~mt res←(⊂page) Scenarios 'Valid' ⋄ :leave ⋄ :endif
+[134]             :endfor
+[135]         :case 'pgValuationData'   ⋄ res←ScenarioData    'Valid'
+[136]         :case 'pgFinancials'      ⋄ res←ScenarioFins    'Valid'
+[137]         :case 'pgMortality'       ⋄ res←ScenarioMort    'Valid'
+[138]         :case 'pgMortImprovement' ⋄ res←ScenarioMImp    'Valid'
+[139]         :case 'pgRetirementAge'   ⋄ res←ScenarioRetAge  'Valid'
+[140]         :case 'pgDecrements'      ⋄ res←ScenarioDRates  'Valid'
+[141]         :case 'pgSpouse'          ⋄ res←ScenarioSpouse  'Valid'
+[142]         :case 'pgRetFactors'      ⋄ res←ScenarioRetFact 'Valid'
+[143]         :case 'pgCommTables'      ⋄ res←ScenarioCommT   'Valid'
+[144]         :case 'pgRetCash'         ⋄ res←ScenarioRetCash 'Valid'
+[145]         :case 'pgSpreadDates'     ⋄ res←ScenarioSpDate  'Valid'
+[146]         :case 'pgNEModel'         ⋄ res←ScenarioNEM     'Valid'
+[147]         :endselect
+[148]     :until mt field←1↓field
+[149] 
+[150] :case 'Run'
+[151] 
+[152]     res←'Quit'
+[153] 
+[154] :case 'Quit' ⍝ Deleting "other" variables
+[155]     0 0⍴⎕ex 'unchanged offerexit parent Finwarnings finType finValue CIndex'
+[156]     0 0⍴⎕ex 'DataGlobs FinGlobs MortGlobs MImpGlobs RetAgeGlobs DRatesGlobs SpouseGlobs RetFactGlobs CommTGlobs RetCashGlobs SpDateGlobs NEMGlobs'
+[157]     0 0⍴DeleteVars 'Financials_Display'
+[158] 
+[159] :endselect
+    ∇

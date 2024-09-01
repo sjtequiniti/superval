@@ -1,0 +1,45 @@
+    ∇ Clear_Database;sqlDatabase;xxx;∆
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Function to clear all Results from the Valuation database
+[3]   
+[4]   :if 'Y'='YN' ASK 'You are about to delete all results from the ',ValnResultsDB,' database.',⎕tcnl,'Are you sure you want to continue?'
+[5]       sqlDatabase←1
+[6]   
+[7]       :if 0=⎕nc 'sql_properties'
+[8]           :if mt sqlConName ⋄ :orif mt ConfigFile ReadFile 'Configure_SQL' sqlConName ⋄ :orif accesslevel<zwb SQLAccess
+[9]               ∆←'SQL Server Connection properties not specified.',⎕tcnl
+[10]              MDISPLAY ∆,'Refer to your Site Administrator to update your User details (Tools/Administration/Manage Users)'
+[11]              :return
+[12]          :endif
+[13]          sql_properties←⊃spin m2n¨property propvalue
+[14]          sqlTimeout←zwb SQLTimeout
+[15]          0 0⍴DeleteVars 'Configure_SQL'
+[16]      :endif
+[17]  
+[18]      :if ↑2↓ValnResultsDB ⍙DBOpen ¯1
+[19]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM ResultsCategory"
+[20]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM ResultsData"
+[21]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM CharMemberData"
+[22]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM NumMemberData"
+[23]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM MemberResults"
+[24]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM AltScenData"
+[25]          :if AOSCtl
+[26]              0 0⍴0 ⍙DBadoCONCommand "DELETE FROM AOSResults"
+[27]              0 0⍴0 ⍙DBadoCONCommand "DELETE FROM AOSMember"
+[28]              0 0⍴0 ⍙DBadoCONCommand "DELETE FROM AOSType"
+[29]          :endif
+[30]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM BenefitType WHERE BenefitTypeID > 100"
+[31]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM BasisItem"
+[32]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM BasisData"
+[33]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM MemberFields"
+[34]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM TableNames"
+[35]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM TableValues"
+[36]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM OutputFile"
+[37]  
+[38]          0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[39]          xxx←(⊂'ADOcon') ⎕WI¨ 'XClose' 'Delete'     ⍝ avoid XOpen after XClose of Connection object
+[40]      :else
+[41]          MDISPLAY 'SQL Server Database ',ValnResultsDB,' not found'
+[42]      :endif
+[43]  :endif
+    ∇

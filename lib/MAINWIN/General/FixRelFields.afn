@@ -1,0 +1,193 @@
+    ∇ FixRelFields MembGroup;∆;no;size
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Fix the Relative Fields (swapping label and field, if required)
+[3]   
+[4]   :select MembGroup
+[5]   :case 'Actives'
+[6]       :select uk
+[7]       :case 0 ⍝ Aust
+[8]           ∆←       'Date' SwapRelFields (contsEntry[1;]) lrcontsEntry1
+[9]           ∆←∆ OVER 'Date' SwapRelFields (contsEntry[2;]) lrcontsEntry1
+[10]          ∆←∆ OVER 'Date' SwapRelFields (contsEntry[3;]) lrcontsEntry3
+[11]          contsEntry←⊃∆[;⎕io] ⋄ (lrcontsEntry1 lrcontsEntry2 lrcontsEntry3)←∆[;⎕io+1]
+[12]          ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText SALdedn) (m2n lrSALdedn)
+[13]          SALdedn←⊃∆[;⎕io] ⋄ lrSALdedn←⊃∆[;⎕io+1]
+[14]          ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText SALmax) (m2n lrSALmax)
+[15]          SALmax←⊃∆[;⎕io] ⋄ lrSALmax←⊃∆[;⎕io+1]
+[16]  lrSALinf[1;] - Fin?
+[17]  lrSXX[1;]
+[18]  lrSALdednf[1;] - Fin?
+[19]  lrSALmaxf[1;] - Fin?
+[20]      :case 1 ⍝ UK
+[21]          (mpuDATE lrmpuDATE)←'Date' SwapRelFields mpuDATE lrmpuDATE
+[22]          (m_MBARBADJ lrm_MBARBADJ)←'Num' SwapRelFields m_MBARBADJ lrm_MBARBADJ
+[23]          (m_SBARBADJ lrm_SBARBADJ)←'Num' SwapRelFields m_SBARBADJ lrm_SBARBADJ
+[24]          (m_LBARBADJ lrm_LBARBADJ)←'Num' SwapRelFields m_LBARBADJ lrm_LBARBADJ
+[25]          (m_4BARBADJ lrm_4BARBADJ)←'Num' SwapRelFields m_4BARBADJ lrm_4BARBADJ
+[26]          (f_MBARBADJ lrf_MBARBADJ)←'Num' SwapRelFields f_MBARBADJ lrf_MBARBADJ
+[27]          (f_SBARBADJ lrf_SBARBADJ)←'Num' SwapRelFields f_SBARBADJ lrf_SBARBADJ
+[28]          (f_LBARBADJ lrf_LBARBADJ)←'Num' SwapRelFields f_LBARBADJ lrf_LBARBADJ
+[29]          (f_4BARBADJ lrf_4BARBADJ)←'Num' SwapRelFields f_4BARBADJ lrf_4BARBADJ
+[30]          (V1pcRatio  lrV1pcRatio )←'Num' SwapRelFields V1pcRatio  lrV1pcRatio
+[31]          size←↑⍴MATRIX SALdesc
+[32]          lrSALadj    ←((size,0)⌈⍴lrSALadj)    ↑lrSALadj    ←MATRIX lrSALadj
+[33]          lrSALdednadj←((size,0)⌈⍴lrSALdednadj)↑lrSALdednadj←MATRIX lrSALdednadj
+[34]          lrSALmaxadj ←((size,0)⌈⍴lrSALmaxadj )↑lrSALmaxadj ←MATRIX lrSALmaxadj
+[35]          no←↑⍴SliceDesc
+[36]          lrSTDATE ←  ((⍴lrSTDATE   )⌈1 0×no)↑lrSTDATE   ←MATRIX lrSTDATE
+[37]          lrFNDATE ←  ((⍴lrFNDATE   )⌈1 0×no)↑lrFNDATE   ←MATRIX lrFNDATE
+[38]          lrPENADJ1←  ((⍴lrPENADJ1  )⌈1 0×no)↑lrPENADJ1  ←MATRIX lrPENADJ1
+[39]          lrPENADJ2←  ((⍴lrPENADJ2  )⌈1 0×no)↑lrPENADJ2  ←MATRIX lrPENADJ2
+[40]          lrPENADJ3←  ((⍴lrPENADJ3  )⌈1 0×no)↑lrPENADJ3  ←MATRIX lrPENADJ3
+[41]          lrm_PPFADJ1←((⍴lrm_PPFADJ1)⌈1 0×no)↑lrm_PPFADJ1←MATRIX lrm_PPFADJ1
+[42]          lrm_PPFADJ2←((⍴lrm_PPFADJ2)⌈1 0×no)↑lrm_PPFADJ2←MATRIX lrm_PPFADJ2
+[43]          lrm_PPFADJ3←((⍴lrm_PPFADJ3)⌈1 0×no)↑lrm_PPFADJ3←MATRIX lrm_PPFADJ3
+[44]          lrf_PPFADJ1←((⍴lrf_PPFADJ1)⌈1 0×no)↑lrf_PPFADJ1←MATRIX lrf_PPFADJ1
+[45]          lrf_PPFADJ2←((⍴lrf_PPFADJ2)⌈1 0×no)↑lrf_PPFADJ2←MATRIX lrf_PPFADJ2
+[46]          lrf_PPFADJ3←((⍴lrf_PPFADJ3)⌈1 0×no)↑lrf_PPFADJ3←MATRIX lrf_PPFADJ3
+[47]          no←↑⍴AltSliceDesc
+[48]          lrAltSTDATE   ←((⍴lrAltSTDATE   )⌈1 0×no)↑lrAltSTDATE   ←MATRIX lrAltSTDATE
+[49]          lrAltFNDATE   ←((⍴lrAltFNDATE   )⌈1 0×no)↑lrAltFNDATE   ←MATRIX lrAltFNDATE
+[50]          lrAltPENADJ1  ←((⍴lrAltPENADJ1  )⌈1 0×no)↑lrAltPENADJ1  ←MATRIX lrAltPENADJ1
+[51]          lrAltPENADJ2  ←((⍴lrAltPENADJ2  )⌈1 0×no)↑lrAltPENADJ2  ←MATRIX lrAltPENADJ2
+[52]          lrAltPENADJ3  ←((⍴lrAltPENADJ3  )⌈1 0×no)↑lrAltPENADJ3  ←MATRIX lrAltPENADJ3
+[53]          lrm_AltPPFADJ1←((⍴lrm_AltPPFADJ1)⌈1 0×no)↑lrm_AltPPFADJ1←MATRIX lrm_AltPPFADJ1
+[54]          lrm_AltPPFADJ2←((⍴lrm_AltPPFADJ2)⌈1 0×no)↑lrm_AltPPFADJ2←MATRIX lrm_AltPPFADJ2
+[55]          lrm_AltPPFADJ3←((⍴lrm_AltPPFADJ3)⌈1 0×no)↑lrm_AltPPFADJ3←MATRIX lrm_AltPPFADJ3
+[56]          lrf_AltPPFADJ1←((⍴lrf_AltPPFADJ1)⌈1 0×no)↑lrf_AltPPFADJ1←MATRIX lrf_AltPPFADJ1
+[57]          lrf_AltPPFADJ2←((⍴lrf_AltPPFADJ2)⌈1 0×no)↑lrf_AltPPFADJ2←MATRIX lrf_AltPPFADJ2
+[58]          lrf_AltPPFADJ3←((⍴lrf_AltPPFADJ3)⌈1 0×no)↑lrf_AltPPFADJ3←MATRIX lrf_AltPPFADJ3
+[59]          :if ~mt IndPENADJ1
+[60]              ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText IndPENADJ1) (m2n lrIndPENADJ1)
+[61]              IndPENADJ1←⊃∆[;⎕io] ⋄ lrIndPENADJ1←⊃∆[;⎕io+1]
+[62]          :endif
+[63]          :if ~mt IndPENADJ2
+[64]              ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText IndPENADJ2) (m2n lrIndPENADJ2)
+[65]              IndPENADJ2←⊃∆[;⎕io] ⋄ lrIndPENADJ2←⊃∆[;⎕io+1]
+[66]          :endif
+[67]          :if ~mt IndPENADJ3
+[68]              ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText IndPENADJ3) (m2n lrIndPENADJ3)
+[69]              IndPENADJ3←⊃∆[;⎕io] ⋄ lrIndPENADJ3←⊃∆[;⎕io+1]
+[70]          :endif
+[71]          no←↑⍴IndSliceDesc
+[72]          lrIndSTDATE   ←((⍴lrIndSTDATE   )⌈1 0×no)↑lrIndSTDATE   ←MATRIX lrIndSTDATE
+[73]          lrIndFNDATE   ←((⍴lrIndFNDATE   )⌈1 0×no)↑lrIndFNDATE   ←MATRIX lrIndFNDATE
+[74]          lrm_IndPPFADJ1←((⍴lrm_IndPPFADJ1)⌈1 0×no)↑lrm_IndPPFADJ1←MATRIX lrm_IndPPFADJ1
+[75]          lrm_IndPPFADJ2←((⍴lrm_IndPPFADJ2)⌈1 0×no)↑lrm_IndPPFADJ2←MATRIX lrm_IndPPFADJ2
+[76]          lrm_IndPPFADJ3←((⍴lrm_IndPPFADJ3)⌈1 0×no)↑lrm_IndPPFADJ3←MATRIX lrm_IndPPFADJ3
+[77]          lrf_IndPPFADJ1←((⍴lrf_IndPPFADJ1)⌈1 0×no)↑lrf_IndPPFADJ1←MATRIX lrf_IndPPFADJ1
+[78]          lrf_IndPPFADJ2←((⍴lrf_IndPPFADJ2)⌈1 0×no)↑lrf_IndPPFADJ2←MATRIX lrf_IndPPFADJ2
+[79]          lrf_IndPPFADJ3←((⍴lrf_IndPPFADJ3)⌈1 0×no)↑lrf_IndPPFADJ3←MATRIX lrf_IndPPFADJ3
+[80]      :case 2 ⍝ RSA
+[81]          ∆←       'Date' SwapRelFields (contsEntry[1;]) lrcontsEntry1
+[82]          ∆←∆ OVER 'Date' SwapRelFields (contsEntry[2;]) lrcontsEntry1
+[83]          ∆←∆ OVER 'Date' SwapRelFields (contsEntry[3;]) lrcontsEntry3
+[84]          contsEntry←⊃∆[;⎕io] ⋄ (lrcontsEntry1 lrcontsEntry2 lrcontsEntry3)←∆[;⎕io+1]
+[85]          ∆←       'Date' SwapRelFields (mpuEntry[1;]) lrmpuEntry1
+[86]          ∆←∆ OVER 'Date' SwapRelFields (mpuEntry[2;]) lrmpuEntry1
+[87]          ∆←∆ OVER 'Date' SwapRelFields (mpuEntry[3;]) lrmpuEntry3
+[88]          mpuEntry←⊃∆[;⎕io] ⋄ (lrmpuEntry1 lrmpuEntry2 lrmpuEntry3)←∆[;⎕io+1]
+[89]          ∆←       'Date' SwapRelFields (V1pcEntry[1;]) lrV1pcEntry1
+[90]          ∆←∆ OVER 'Date' SwapRelFields (V1pcEntry[2;]) lrV1pcEntry1
+[91]          ∆←∆ OVER 'Date' SwapRelFields (V1pcEntry[3;]) lrV1pcEntry3
+[92]          V1pcEntry←⊃∆[;⎕io] ⋄ (lrV1pcEntry1 lrV1pcEntry2 lrV1pcEntry3)←∆[;⎕io+1]
+[93]          (mpuDATE lrmpuDATE)←'Date' SwapRelFields mpuDATE lrmpuDATE
+[94]          ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText SALdedn) (m2n lrSALdedn)
+[95]          SALdedn←⊃∆[;⎕io] ⋄ lrSALdedn←⊃∆[;⎕io+1]
+[96]          ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText SALmax) (m2n lrSALmax)
+[97]          SALmax←⊃∆[;⎕io] ⋄ lrSALmax←⊃∆[;⎕io+1]
+[98]  lrSALinf[1;] - Fin?
+[99]  lrSXX[1;]
+[100] lrSALdednf[1;] - Fin?
+[101] lrSALmaxf[1;] - Fin?
+[102] lrServiceTab1[1;]
+[103] lrAccrualTab1[1;]
+[104] lrServiceTab2[1;]
+[105] lrAccrualTab2[1;]
+[106] lrServiceTab3[1;]
+[107] lrAccrualTab3[1;]
+[108] lrDISj[1;] - Fin?
+[109] lrILLj[1;] - Fin?
+[110] lrWTHj[1;] - Fin?
+[111] lrDIDj[1;] - Fin?
+[112]     :endselect
+[113] :case 'Deferreds'
+[114]     :select uk
+[115]     :case 0 ⍝ Aust
+[116] lrBAGE[1;]
+[117] lrEAGE[1;]
+[118] lrGP[1;]
+[119] lrGPAGE[1;]
+[120] lrADJ[1;]
+[121] lrREV[1;]
+[122] lrREVmult[1;]
+[123] lrpvmdef[1;]
+[124] lrpvm[1;]
+[125]     :case 1 ⍝ UK
+[126]         (mpuDATE lrmpuDATE)←'Date' SwapRelFields mpuDATE lrmpuDATE
+[127]         (BARBDATE lrBARBDATE)←'Date' SwapRelFields BARBDATE lrBARBDATE
+[128]         (BARBEND  lrBARBEND )←'Date' SwapRelFields BARBEND  lrBARBEND
+[129]         ( preADJ  lrpreADJ)←'Num' SwapRelFields  preADJ  lrpreADJ
+[130]         (postADJ lrpostADJ)←'Num' SwapRelFields postADJ lrpostADJ
+[131]         (CASHCAPADJ lrCASHCAPADJ)←'Num' SwapRelFields CASHCAPADJ lrCASHCAPADJ
+[132]         (DBR1ADJ lrDBR1ADJ)←'Num' SwapRelFields DBR1ADJ lrDBR1ADJ
+[133]         (DBR2ADJ lrDBR2ADJ)←'Num' SwapRelFields DBR2ADJ lrDBR2ADJ
+[134]         (DAR1ADJ lrDAR1ADJ)←'Num' SwapRelFields DAR1ADJ lrDAR1ADJ
+[135]         (DAR2ADJ lrDAR2ADJ)←'Num' SwapRelFields DAR2ADJ lrDAR2ADJ
+[136]         :if ~mt lrPUPADJ
+[137]             ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText PUPADJ) (m2n lrPUPADJ)
+[138]             PUPADJ←⊃∆[;⎕io] ⋄ lrPUPADJ←⊃∆[;⎕io+1]
+[139]         :endif
+[140]         :if ~mt lrIndPUPADJ
+[141]             ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText IndPUPADJ) (m2n lrIndPUPADJ)
+[142]             IndPUPADJ←⊃∆[;⎕io] ⋄ lrIndPUPADJ←⊃∆[;⎕io+1]
+[143]         :endif
+[144]         no←↑⍴PUPADJ
+[145]         lrINDSTART    ←((⍴lrINDSTART)    ⌈1 0×no)↑lrINDSTART    ←MATRIX lrINDSTART
+[146]         lrINDFINISH   ←((⍴lrINDFINISH)   ⌈1 0×no)↑lrINDFINISH   ←MATRIX lrINDFINISH
+[147]         no←↑⍴IndPUPADJ
+[148]         lrIndINDSTART ←((⍴lrIndINDSTART) ⌈1 0×no)↑lrIndINDSTART ←MATRIX lrIndINDSTART
+[149]         lrIndINDFINISH←((⍴lrIndINDFINISH)⌈1 0×no)↑lrIndINDFINISH←MATRIX lrIndINDFINISH
+[150]     :case 2 ⍝ RSA
+[151] lrBAGE[1;]
+[152] lrEAGE[1;]
+[153] lrGP[1;]
+[154] lrGPAGE[1;]
+[155] lrADJ[1;]
+[156] lrREV[1;]
+[157] lrREVmult[1;]
+[158] lrpvmdef[1;]
+[159] lrpvm[1;]
+[160]     :endselect
+[161] :case 'Pensioners'
+[162]     :select uk
+[163]     :case 0 ⍝ Aust
+[164] lrBAGE[1;]
+[165] lrEAGE[1;]
+[166] lrGP[1;]
+[167] lrGPAGE[1;]
+[168] lrADJ[1;]
+[169] lrREV[1;]
+[170] lrREVmult[1;]
+[171] lrpvmdef[1;] - Fin?
+[172] lrpvm[1;] - Fin?
+[173]     :case 1 ⍝ UK
+[174]         ( preADJ  lrpreADJ)←'Num' SwapRelFields  preADJ  lrpreADJ
+[175]         (postADJ lrpostADJ)←'Num' SwapRelFields postADJ lrpostADJ
+[176]         :if ~mt lrADJFAC
+[177]             ∆←MATRIX ⊃OVER/(⊂'Num') SwapRelFields¨spin (m2n '<' StripText ADJFAC) (m2n lrADJFAC)
+[178]             ADJFAC←⊃∆[;⎕io] ⋄ lrADJFAC←⊃∆[;⎕io+1]
+[179]         :endif
+[180]     :case 2 ⍝ RSA
+[181] lrBAGE[1;]
+[182] lrEAGE[1;]
+[183] lrGP[1;]
+[184] lrGPAGE[1;]
+[185] lrADJ[1;]
+[186] lrREV[1;]
+[187] lrREVmult[1;]
+[188] lrpvmdef[1;] - Fin?
+[189] lrpvm[1;] - Fin?
+[190]     :endselect
+[191]  :endselect
+    ∇

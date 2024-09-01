@@ -1,0 +1,22 @@
+    ∇ ⍙dbname ⍙DBInsertMainDB arg;AgeInterp
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Insert "standard" information into Main Database File
+[3]   
+[4]   (4 7 'Preparing Database') Win∆ProgressBar2 'FileUpdate'
+[5]   AgeInterp←1 ⍝ Defaults for Creating Database
+[6]   
+[7]   :if accessSQLtabs
+[8]       0 arg ⍙DBSQLXL_Tables ⍙dbname ⍝ Create Access Database using SQL
+[9]   :else
+[10]      ⍙dbname ⍙DBXL_Tables arg ⍝ Create Access Database using ADOX (32-bit only)
+[11]  :endif
+[12]  
+[13]  (4 4 'Inserting Fixed Data') Win∆ProgressBar2 'MemberUpdate'
+[14]  ⍙DBInitialise arg
+[15]  
+[16]  0 0⍴'ADOrst' ⎕wi 'XClose'
+[17]  
+[18]  ⍝⍝ Overcome Access ignoring record writes for small initial runs
+[19]  0 0⍴0 ⍙DBadoCONCommand "DELETE FROM ResultsData"
+[20]  ⎕wgive 0
+    ∇

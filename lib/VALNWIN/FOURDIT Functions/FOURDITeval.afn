@@ -1,0 +1,33 @@
+    ∇ ⍙⍙Z←FOURDITeval ⍙⍙varnames;⍙⍙vals;⍙⍙defined;∆;refs;⍙⍙labels;⍙⍙var;⍙⍙lab
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Values of varnames
+[3]   ⍝ varnames: (strs)
+[4]   ⍝ Z: ok + (vec)
+[5]   ⍝ ok: (flgs)
+[6]   ⍝ Vern: sjt21sep15
+[7]   
+[8]   ⍝ Referenced variables don't need to exist
+[9]   refs←('→'∊¨⍙⍙varnames) ∨ ('⊃'∊¨⍙⍙varnames)
+[10]  ⍙⍙varnames←⍙⍙varnames~¨⊂'←→⊃'
+[11]  
+[12]  ⍙⍙vals←(⊂'{missing: '),¨⍙⍙varnames,¨'}'
+[13]  ⍙⍙defined←2=⎕NC⊃qtrim¨⍙⍙varnames
+[14]  
+[15]  (⍙⍙defined/⍙⍙vals)←⍎¨⍙⍙defined/⍙⍙varnames
+[16]  
+[17]  :if ∨/∆←(⊂'Decr')≡¨↑¨((⊂FOURDITVARDESC) for¨(⊂⊂'name'),¨(⊂¨⍙⍙varnames)) at¨⊂'type'
+[18]      ⍙⍙labels←0⍴⊂''
+[19]      :for ⍙⍙var :in ∆/⍙⍙varnames
+[20]          :if     2=⎕nc ⍙⍙lab←'lr',⍙⍙var~'[;]' ⋄ ⍙⍙labels←⍙⍙labels,⊂⊃(⊂' - '),¨⎕split ⍎⍙⍙lab
+[21]          :elseif 2=⎕nc ⍙⍙lab←⍙⍙lab,'1'        ⋄ ⍙⍙labels←⍙⍙labels,⊂3↑[⎕io]MATRIX ' - ',⍎⍙⍙lab
+[22]          :else                                ⋄ ⍙⍙labels←⍙⍙labels,⊂''
+[23]          :endif
+[24]      :endfor
+[25]      (∆/⍙⍙vals)←(∆/⍙⍙vals),¨⍙⍙labels
+[26]  :endif
+[27]  
+[28]  (refs/⍙⍙vals)←⊂''
+[29]  ⍙⍙defined←⍙⍙defined∨refs
+[30]  
+[31]  ⍙⍙Z←(~⍙⍙defined) ⍙⍙vals
+    ∇

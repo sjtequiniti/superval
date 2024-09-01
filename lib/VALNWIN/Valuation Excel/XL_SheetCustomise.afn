@@ -1,0 +1,17 @@
+    ∇ sheet XL_SheetCustomise rows;delete
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Delete rows from the ActiveSheet
+[3]   
+[4]   delete←⎕split ⊖((rows≠¯1↓¯1,1+rows)/rows),[⎕io+0.5](rows≠1↓¯1+rows,0)/rows
+[5]   
+[6]   :if ~mt delete
+[7]       :if ~mt sheet ⋄ sheet XL_ProtectSheet 0 ⋄ :endif
+[8]   
+[9]       ⍝ Delete Multiple Ranges at once - limited to 25 pairs at a time due to 255 char limit on Range string
+[10]      :while ~mt delete
+[11]          'XL' ⎕wi 'Range>.Rng' (',' join ':' join¨⍕¨¨(25⌊⍴delete)↑delete)
+[12]          0 0⍴'XL.Rng' ⎕wi 'XDelete' (↑⍙XL at '=xlShiftUp')
+[13]          delete←25↓delete
+[14]      :endwhile
+[15]  :endif
+    ∇

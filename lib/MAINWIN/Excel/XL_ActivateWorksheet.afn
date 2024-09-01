@@ -1,0 +1,12 @@
+    ∇ unprotect XL_ActivateWorksheet wksht;t
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Activate specific sheet in active workbook and unprotect if required
+[3]   ⍝ eg.  0 XL_ActivateWorksheet 3 or 1 XL_ActivateWorksheet 'Sheet2'
+[4]   
+[5]   :if unprotect ⋄ wksht XL_ProtectSheet 0 ⋄ :endif ⍝ Turn Protection Off
+[6]   ⍝⍝⍝t←0
+[7]   ⍝⍝⍝:repeat
+[8]   ⍝⍝⍝    :if 100=t←t+1 ⋄ crash ⋄ :endif ⍝ 100 tries
+[9]       (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' wksht) ⎕wi 'XActivate'
+[10]  ⍝⍝⍝:until wksht≡('XL' ⎕wi 'xActiveSheet') ⎕wi 'xName'
+    ∇

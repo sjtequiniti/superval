@@ -1,0 +1,39 @@
+    ∇ Z←now GpDeriveSetsGM t_b;basisTable;gpNew;gpNow;∆;gpS21;unq;nms;gpNub;gpMap;new;typs;idx;matched;pMimp;dTemplates;pNEM;now;idx1;idx2
+[1]   ⍝ UPARMWIN.sf#13
+[2]   ⍝ Identifies new parameter sets from basisTable, matching to prior GPs in now
+[3]   ⍝ Vern: dnp25jan16
+[4]   ⍝ Revn: dnp28apr16 - matching of existing sets not working- fixed by removing 'Dsc' from comparison of sets
+[5]   ⍝ Revn: dnp29apr16 - reinstates Dsc into set comparison and fixes matching of now and new sets
+[6]   ⍝ Revn: dnp03may16 - fix where no un-Globalised Parameter Sets found
+[7]   (typs basisTable)←t_b
+[8]   
+[9]   dTemplates←typs push (⊂⍙VALUESdict) at¨typs                                     ⍝ Parmset templates
+[10]  
+[11]  ∆←basisTable at 'File' 'memtyp' 'Name' 'bases' 'vernos'
+[12]  ∆←(⊂dTemplates typs) GpReadFromGM¨spin ∆                                        ⍝ find GPs in S21 bases
+[13]  gpS21←2 rnk 'Typ' 'Dsc' 'Sex' 'Pkg' 'Var' 'Cat' 'Fil' 'Mch' 'Cls'⍪ ⊃↑,/∆
+[14]  
+[15]  ∆←'Typ' 'Pkg' 'Mch' 'Dsc'                                                       ⍝ components of keys
+[16]  (gpS21 now)←(gpS21 now) amend¨(⊂'Key')pr¨ GpIdentKey¨¨spin¨(gpS21 now) at¨ ⊂∆   ⍝ Watch Out: amends ⍺
+[17]  unq←(rowsIn now)↓  unique ↑,/now gpS21 at¨⊂'Key'                                ⍝ flag unique new values from basisTable
+[18]  nms←(now at 'Dsc') makeUnique unq/gpS21 at 'Dsc'                                ⍝ ensure unique names for them
+[19]  new←((gpS21 for unq) select 'Typ' 'Pkg' 'Key') amend ('Dsc' nms) ('Cmp' (unq/0))
+[20]  
+[21]  gpNub←↑append/(now new) select¨ ⊂'Cmp' 'Typ' 'Dsc' 'Pkg' 'Key'
+[22]  gpNub←gpNub amend 'Gid' (1E6+(∆/¯1 1) ×⍳+/∆←rowsIn¨now new)                     ⍝ IDs for GPs: <1E6 defined, >1E6 derived
+[23]  
+[24]  :if 0=rowsIn gpS21                                                              ⍝ No un-Globalised Parameter Sets found (no "new" sets)
+[25]      idx←↑⍳/gpNub gpS21 at¨⊂'Key'                                                ⍝ find GP keys in nub
+[26]  :else
+[27]      idx1← (rowsIn now) + ↑⍳/       new  gpS21 at¨⊂'Key'                         ⍝ compare new with gpS21
+[28]      idx2←                ↑⍳/ ¯1↓¨¨ now  gpS21 at¨⊂'Key'                         ⍝ compare now with gpS21 - ignores descriptions
+[29]      idx←(1+idx2≤(rowsIn now))⊃¨ spin idx1 idx2                                  ⍝ find GP keys in nub
+[30]  :endif
+[31]  
+[32]  matched←(⍳⍴gpNub at 'Key')∊idx                                                  ⍝ flag matches in nub
+[33]  
+[34]  ∆←gpS21 select 'Fil' 'Cat' 'Sex' 'Typ' 'Var' 'Cls'
+[35]  gpMap←∆ amend ('Lid' (⍳rowsIn ∆)) ('Gid' ((gpNub at 'Gid')[idx]))               ⍝ link IDs and GP IDs
+[36]  
+[37]  Z←(gpNub for matched) (gpMap)                                                   ⍝ `Cmp`Typ`Dsc`Pkg`Key`Gid ; `Fil`Cat`Sex`Typ`Var`Cls`Lid`Gid
+    ∇

@@ -1,0 +1,27 @@
+    ∇ Z←class linksFrom R;strs;i;hrefs;seln;tag;atts;∆;title;href;reftables
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Hyperlinks of class to hrefs for non-zero href and non-empty strs
+[3]   ⍝ class: (str) ['defn' ∣ 'prev' ∣ 'next']
+[4]   ⍝ R: hrefs + labels
+[5]   ⍝ hrefs: (ints) ≥0
+[6]   ⍝ labels: (strs) XML-escaped
+[7]   ⍝ Reads: RefTables
+[8]   ⍝ Tests:
+[9]   ⍝?⍝ 'abc' '' '<a class="defn" href="#ref2" title="Definition in Entry 2">g&amp;i</a>' ≡ 'defn' linksFrom (0 1 2)('abc' '' 'g&amp;i')
+[10]  ⍝ Vern: sjt21sep15
+[11]  (hrefs Z)←R
+[12]  
+[13]  :if 2=⎕NC 'RefTables' ⋄ reftables←RefTables ⋄ :else ⋄ reftables←(⊂'Entry '),¨⍕¨⍳⌈/hrefs ⋄ :endif ⍝ TESTING
+[14]  
+[15]  :if ∨/seln←(×hrefs) × ~mt¨Z
+[16]      ∆←↑('defn' 'prev' 'next')('Definition' 'Previous reference' 'Next reference')map ⊂class
+[17]      title←∆,' in '
+[18]      tag←'a' xattr 'class' class
+[19]      :for i :in WHERE seln
+[20]          href←i⊃hrefs
+[21]          atts←'' xattr ('href' ('#ref',⍕href)) ('title' (title,href⊃reftables))
+[22]          (i⊃Z)←(tag,atts) xtag i⊃Z
+[23]      :endfor
+[24]  :endif
+[25]  
+    ∇

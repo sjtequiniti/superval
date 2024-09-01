@@ -1,0 +1,49 @@
+    ∇ ⍙⍙L FOURDIT ⍙⍙vardic;⎕io;⍙⍙vars;⍙⍙vals;⍙⍙missing;⍙⍙subtitle;xxx;⍙⍙status;∆;tab;vars⍙⍙;⍙⍙title;⍙⍙ok;stat;⍙⍙origvars
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Write record of args and their values to file tied to AuditCTie
+[3]   ⍝ rargs: (str + [vars ∣ (dic)])
+[4]   ⍝ largs: str
+[5]   ⍝ vars: space-separated list of variable names, each possibly suffixed with '←', '→' or '⊃'
+[6]   ⍝ Read: AuditCTie FIXED_ALIASES VARIABLE_ALIASES
+[7]   ⍝ Vern: sjt21sep15
+[8]   ⍝ Revn: dnp22oct15 * can accept dictionary as ⍵
+[9]   ⍝       dnp06jan16 * optional left arg: group ⍙⍙title
+[10]  ⍝       sjt09sep16 * title and subtitle in ⍺
+[11]  ⍝       sjt14sep16 * variable aliases
+[12]  ⎕IO←1
+[13]  :if 0=⎕NC '⍙⍙L' ⋄ :orif ⍙⍙L≡'' ⋄ ⍙⍙L←'' '' ⋄ :endif
+[14]  (⍙⍙title ⍙⍙subtitle)←FOURDITtitles ⍙⍙L ⍝ parse ⍺
+[15]  
+[16]  :if 1=≡⍙⍙vardic
+[17]      ⍙⍙vars←FOURDITaliases qtrim¨⍙⍙origvars←' ' partition DLTMB ⍙⍙vardic
+[18]      vars⍙⍙←⍙⍙vars~¨⊂'←→⊃'                                                   ⍝⍝⍝⋄ ⍙⍙origvars←⍙⍙origvars~¨⊂'←→⊃'
+[19]      ⍙⍙status←↑¨((⊂FOURDITVARDESC) for¨(⊂⊂'name'),¨(⊂¨vars⍙⍙)) at¨⊂'status'  ⍝ Only relevant vars
+[20]  
+[21]      :if 0∊∆←∊⍴¨DLTB¨⍙⍙status                                                ⍝ Update FOURDITVARDESC status column
+[22]          tab←FOURDITVARDESC for (⊂'name'),(~∆)/vars⍙⍙
+[23]          FOURDITVARDESC←FOURDITVARDESC for ~(FOURDITVARDESC at 'name')∊(~∆)/vars⍙⍙
+[24]          FOURDITVARDESC←FOURDITVARDESC append tab amend 'status' ((rowsIn tab)/,∨/lmt DLTB¨⍙⍙status)
+[25]          ⍙⍙status←↑¨((⊂FOURDITVARDESC) for¨(⊂⊂'name'),¨(⊂¨vars⍙⍙)) at¨⊂'status'
+[26]  
+[27]          ((⍙⍙status∊⍬ '    ')/⍙⍙status)←⊂,1                                  ⍝ Temporary(?) Fix for variables missing from FOURDITVARDESC
+[28]  
+[29]      :endif
+[30]  
+[31]     :if ⍙⍙ok←∨/∆←∊⍙⍙status                                                   ⍝ relevant variables?
+[32]          ⍙⍙vars←∆/⍙⍙vars
+[33]          (⍙⍙missing ⍙⍙vals)←FOURDITeval ∆/⍙⍙origvars
+[34]      :endif
+[35]  :else
+[36]      (⍙⍙vars ⍙⍙vals)←pop ⍙⍙vardic
+[37]      ⍙⍙vars←FOURDITaliases ⍙⍙vars
+[38]      ⍙⍙missing←(⍴⍙⍙vals)⍴0                                                   ⍝ No missing vals in a dictionary!
+[39]      ⍙⍙ok←1
+[40]      ⍙⍙vardic←↑⍙⍙vardic
+[41]  :endif
+[42]  :if uSERisRSE ⋄ ⍙⍙ok ('#',⍙⍙title) ('#',⍙⍙subtitle) ⍙⍙vardic ⋄ :endif
+[43]  
+[44]  :if ⍙⍙ok
+[45]      ∆←('⍙⍙title' '⍙⍙subtitle' '⍙⍙missing',⍙⍙vars) push ⍙⍙title ⍙⍙subtitle ⍙⍙missing,⍙⍙vals
+[46]      xxx←∆ ⎕FAPPEND AuditCTie
+[47]  :endif
+    ∇

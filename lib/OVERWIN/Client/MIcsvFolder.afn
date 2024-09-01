@@ -1,1 +1,28 @@
-    ∇ micsvDir←MIcsvFolder;Dir;z[1]   ⍝ OVERWIN.sf#10[2]   ⍝ Return the Client Yield Folder[3]   [4]   :if ~''≡micsvDir←UPPERCASE INIString 'SV Folders' 'Mort Imp' '' (InputDir,'svscheme.ini')[5]       :if ∨/z←'~'∊¨Dir←(Dir='\') ⎕penclose Dir←'\',micsvDir[6]       :andif ∨/z←9=,⊃⍴¨Dir←z/Dir[7]       :andif ∨/(8-~⎕io)=(Dir←z/Dir)⍳¨⊂'~'[8]           micsvDir←'' ⍝ Ignore Short Directories[9]       :endif[10]      :if 'Scheme'≡6↑csvType[11]          micsvDir←(micsvDir InputDir) ConvertDir 'Absolute'[12]      :else[13]          micsvDir←(micsvDir LibraryDir) ConvertDir 'Absolute'[14]      :endif[15]  [16]      :if ~FolderExist micsvDir ⍝ Check if valid Folder[17]          micsvDir←''[18]      :endif[19]  ⍝⍝⍝    elx←⎕elx ⋄ ⎕elx←"⎕elx←elx ⋄ micsvDir←'' ⋄ →⎕lc+1"[20]  ⍝⍝⍝    0 0⍴⎕xlib micsvDir ⋄ ⎕elx←elx ⍝ Check if valid Folder ⍝⍝⍝ Could use FileExist?[21]  :endif[22]  [23]  ⍝ use LibraryDir as default for selection[24]  :if ''≡micsvDir ⋄ micsvDir←LibraryDir ⋄ :endif[25]  [26]  micsvDir←FullFolder micsvDir ⍝ Add Backslash    ∇
+    ∇ micsvDir←MIcsvFolder;Dir;z
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ Return the Client Yield Folder
+[3]   
+[4]   :if ~''≡micsvDir←UPPERCASE INIString 'SV Folders' 'Mort Imp' '' (InputDir,'svscheme.ini')
+[5]       :if ∨/z←'~'∊¨Dir←(Dir='\') ⎕penclose Dir←'\',micsvDir
+[6]       :andif ∨/z←9=,⊃⍴¨Dir←z/Dir
+[7]       :andif ∨/(8-~⎕io)=(Dir←z/Dir)⍳¨⊂'~'
+[8]           micsvDir←'' ⍝ Ignore Short Directories
+[9]       :endif
+[10]      :if 'Scheme'≡6↑csvType
+[11]          micsvDir←(micsvDir InputDir) ConvertDir 'Absolute'
+[12]      :else
+[13]          micsvDir←(micsvDir LibraryDir) ConvertDir 'Absolute'
+[14]      :endif
+[15]  
+[16]      :if ~FolderExist micsvDir ⍝ Check if valid Folder
+[17]          micsvDir←''
+[18]      :endif
+[19]  ⍝⍝⍝    elx←⎕elx ⋄ ⎕elx←"⎕elx←elx ⋄ micsvDir←'' ⋄ →⎕lc+1"
+[20]  ⍝⍝⍝    0 0⍴⎕xlib micsvDir ⋄ ⎕elx←elx ⍝ Check if valid Folder ⍝⍝⍝ Could use FileExist?
+[21]  :endif
+[22]  
+[23]  ⍝ use LibraryDir as default for selection
+[24]  :if ''≡micsvDir ⋄ micsvDir←LibraryDir ⋄ :endif
+[25]  
+[26]  micsvDir←FullFolder micsvDir ⍝ Add Backslash
+    ∇

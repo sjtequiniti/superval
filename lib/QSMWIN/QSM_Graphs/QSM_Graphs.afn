@@ -1,0 +1,71 @@
+    ∇ res←field QSM_Graphs parm;parent;SSName;Notes;flds
+[1]   ⍝ QSMWIN.sf#5
+[2]   ⍝ Function to allow user control on QSM Graph Configuration
+[3]   
+[4]   parent←'fmQSMGraphs.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]   
+[9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[10]      case←'Favourable +/+' 'Favourable +/0' 'Favourable +/-' 'Favourable 0/-' 'Favourable -/-'
+[11]      case←⊃case,'Unfavourable +/+' 'Unfavourable 0/+' 'Unfavourable -/+' 'Unfavourable -/0' 'Unfavourable -/-'
+[12]      oldvalues←'¯-' REPL ⊃⍕¨250 200   50    0  ¯50  50   0 ¯50 ¯200 ¯250
+[13]      newvalues←'¯-' REPL ⊃⍕¨ 50   0 ¯150 ¯200 ¯250 250 200 150    0  ¯50
+[14]      :if ~mt GraphType ⋄ graphtype←GraphType ⋄ :endif
+[15]  
+[16]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[17]      SSName←parent,"ssgraphdata"
+[18]      SSName Win∆F1SSSetSelection 1 2 10 3
+[19]      SSName ⎕wi 'xSetAlignment' 4 0 2 0 ⍝ Align Input Right
+[20]      SSName Win∆F1SSSetSelection 1 1 1 1
+[21]  
+[22]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[23]  
+[24]      :repeat
+[25]          :select ↑field
+[26]          :case 'opgraphtype_1'
+[27]              GraphView←showzeroes TestGraph 'Superimposed'
+[28]              (parent,'ckshowzeroes') ⎕wi 'enabled' 1
+[29]              Notes←'Superimposed Lines',⎕tcnl,⎕tcnl
+[30]              Notes←Notes,'Green bar (favourable outcome) on top of the Blue bar (Original Value) on top of the Red bar (unfavourable outcome)',⎕tcnl
+[31]              Notes←Notes,'The Adjusted Value series is defined by the top of the Green bars and Red bars (or the bottom of the Green and Red bars when the Adjusted Value is negative'
+[32]          :case 'opgraphtype_2'
+[33]              GraphView←showzeroes TestGraph 'Stacked'
+[34]              (parent,'ckshowzeroes') ⎕wi 'enabled' 1
+[35]              Notes←'Stacked Bars',⎕tcnl,⎕tcnl
+[36]              Notes←Notes,'For favourable outcomes, Green bar is Adjusted Value and Blue bar is excess of Original Value over the Adjusted Value',⎕tcnl
+[37]              Notes←Notes,'For unfavourable outcomes, Blue bar is Original Value and Red bar is excess of Adjusted Value over the Original Value',⎕tcnl
+[38]              Notes←Notes,'The Adjusted Value series is defined by the top of the Green bars and Red bars'
+[39]          :case 'opgraphtype_3'
+[40]              GraphView←showzeroes TestGraph 'Changes'
+[41]              (parent,'ckshowzeroes') ⎕wi 'enabled' 0
+[42]              Notes←'Changes Highlighted',⎕tcnl,⎕tcnl
+[43]              Notes←Notes,'Green bar (favourable outcome) and Red bar (unfavourable outcome) indicate the change in outcome',⎕tcnl
+[44]              Notes←Notes,'The Adjusted Value series is defined by the top of the Green bars and the bottom of the Red bars'
+[45]          :case 'opgraphtype_4'
+[46]              GraphView←showzeroes TestGraph 'Multi-Line'
+[47]              (parent,'ckshowzeroes') ⎕wi 'enabled' 0
+[48]              Notes←'Multi-Line',⎕tcnl,⎕tcnl
+[49]              Notes←Notes,'A Blue bar (Original Value) with a Green bar (favourable Adjusted Value) or a Red bar (unfavourable Adjusted Value)',⎕tcnl
+[50]              Notes←Notes,'The Adjusted Value series is defined by the top of the Green and Red bars'
+[51]          :case 'ckshowzeroes'
+[52]              showzeroes←⍕(parent,'ckshowzeroes') ⎕wi 'value'
+[53]              flds←'opgraphtype_1' 'opgraphtype_2' 'opgraphtype_3' 'opgraphtype_4'
+[54]              0 0⍴((((⊂parent,'fgraphtype.'),¨flds) ⎕wi¨⊂'value')/flds) QSM_Graphs 'Change'
+[55]              :continue
+[56]          :endselect
+[57]          (parent,'lNotes') ⎕wi 'caption' Notes
+[58]      :until mt field←1↓field
+[59]  
+[60]  :case 'Valid' ⍝ Routine specific validation
+[61]  
+[62]  :case 'Run'
+[63]      GraphType←DLTB graphtype ⋄ ShowZeroes←showzeroes
+[64]      res←'Quit'
+[65]  
+[66]  :case 'Quit' ⍝ Deleting "other" variables
+[67]      0 0⍴⎕ex 'GraphView'
+[68]  
+[69]  :endselect
+    ∇

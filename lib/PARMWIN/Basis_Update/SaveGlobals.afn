@@ -1,1 +1,23 @@
-    ∇ desc←larg SaveGlobals arg;package;exist;z;AuditLog;AuditCN;SaveCN;tab;CIndex;type;stem[1]   ⍝ PARMWIN.sf#39[2]   ⍝ Check for existing Globals with same Parameters else save a new Globals[3]   [4]   (desc package)←arg ⋄ (CIndex type)←larg[5]   tab←CIndex for '∆_Name' type[6]   [7]   exist←z←0 ⋄ stem←desc[8]   [9]   :while (⊂desc)∊tab at '∆_Description'[10]  :andif ~exist←package≡↑((tab for '∆_Description' desc) at '∆_CompNo') file_get_cns ClientFile,'.sf'[11]      desc←stem,' [',(⍕z←z+1),']'[12]  :endwhile[13]  [14]  :if ~exist[15]      SaveCN←ClientFile AddToFile type desc[16]      0 0⍴ClientFile SaveToFile SaveCN desc package 0[17]  [18]      AuditLog←defaults Win∆AuditLog package[19]      AuditCN←ClientFile AddToFile ('⊂',(⍕SaveCN),'⊃') desc[20]      0 0⍴ClientFile SaveToFile AuditCN desc (pack 'AuditLog') 0[21]  :endif    ∇
+    ∇ desc←larg SaveGlobals arg;package;exist;z;AuditLog;AuditCN;SaveCN;tab;CIndex;type;stem
+[1]   ⍝ PARMWIN.sf#39
+[2]   ⍝ Check for existing Globals with same Parameters else save a new Globals
+[3]   
+[4]   (desc package)←arg ⋄ (CIndex type)←larg
+[5]   tab←CIndex for '∆_Name' type
+[6]   
+[7]   exist←z←0 ⋄ stem←desc
+[8]   
+[9]   :while (⊂desc)∊tab at '∆_Description'
+[10]  :andif ~exist←package≡↑((tab for '∆_Description' desc) at '∆_CompNo') file_get_cns ClientFile,'.sf'
+[11]      desc←stem,' [',(⍕z←z+1),']'
+[12]  :endwhile
+[13]  
+[14]  :if ~exist
+[15]      SaveCN←ClientFile AddToFile type desc
+[16]      0 0⍴ClientFile SaveToFile SaveCN desc package 0
+[17]  
+[18]      AuditLog←defaults Win∆AuditLog package
+[19]      AuditCN←ClientFile AddToFile ('⊂',(⍕SaveCN),'⊃') desc
+[20]      0 0⍴ClientFile SaveToFile AuditCN desc (pack 'AuditLog') 0
+[21]  :endif
+    ∇

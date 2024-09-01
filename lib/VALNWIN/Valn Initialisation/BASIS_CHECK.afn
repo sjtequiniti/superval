@@ -1,0 +1,50 @@
+    ∇ inerror←aosenabled BASIS∆CHECK MembGroup;saveVersion;warnings;ppfenabled;capenabled;neproj;nemethod;isValn;∆
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Make checks on various parts of the Basis
+[3]   
+[4]   'Valuation Preparations' Win∆ProgressBar2 'Open'
+[5]   ('Task:' 'Process:') Win∆ProgressBar2 'SetLabels'
+[6]   
+[7]   :if inerror←MembGroup VAL∆PARMS parms ⍝ Set Valuation Parameters (no further checking if Basis parameters missing)
+[8]       expungelist←0 0⍴''
+[9]       Win∆ProgressBar2 'Hide'
+[10]      :return
+[11]  :endif
+[12]  
+[13]  1 SplitFields MembGroup ⍝ Split Multiply Occurring Rate Table fields
+[14]  
+[15]  ⍝ Flags used in Relevance Rules
+[16]  isValn←1 ⋄ ppfenabled←ppf ⋄ capenabled←bencap ⍝ Determine if PPF/capped fields checked
+[17]  aosenabled←aosind ⋄ neproj←newent ⋄ nemethod←(⊂ValMeth)∊'EAN' 'NEC' 'SUR' 'NOT'
+[18]  
+[19]  (warnings relRules expungelist comments)←1 1 0 validateInput MembGroup
+[20]  (⊃warnings at 'message') VALN∆LOG 'Add'
+[21]  
+[22]  :if inerror←∨/∊('ERROR:' 'WARNING:' 'NOTE:')⍷¨⊂,VALN∆Errors
+[23]      :if test ⋄ :andif ClassID=4 ⋄ FOURDITclose 'Basis' ⋄ :endif ⍝⍝⍝ FIXME
+[24]      Win∆ProgressBar2 'Hide' ⋄ :return
+[25]  :endif
+[26]  
+[27]  UPDATE∆FIELDS ⍝ Update fields with "Scheme/Global" defaults
+[28]  
+[29]  ('Task:' 'Process:') Win∆ProgressBar2 'SetLabels'
+[30]  :if XLCtl ⋄ InitialiseDBXL ValMeth
+[31]  :else     ⋄ CREATE∆VALRES
+[32]  :endif
+[33]  
+[34]  Win∆ProgressBar2 'Hide'
+[35]  
+[36]  :if inerror←∨/∊('ERROR:' 'WARNING:' 'NOTE:')⍷¨⊂,VALN∆Errors
+[37]      :if test ⋄ :andif ClassID=4 ⋄ FOURDITclose 'Basis' ⋄ :endif ⍝⍝⍝ FIXME
+[38]      :return
+[39]  :endif
+[40]  
+[41]  :if test ⋄ :andif ClassID=4 ⍝⍝⍝ FIXME
+[42]      FOURDITVARDESC←FOURDITVARDESC append SetFOURVARDESC relRules
+[43]      FOURDITVARDESC←FOURDITVARDESC FOURVARDESCinit 'Data'
+[44]      FOURDITVARDESC←FOURDITVARDESC FOURVARDESCinit 'Scenario'
+[45]  
+[46]      ∆←relRules for ~∨/¨(⊂'(Hidden')⍷¨relRules at 'Desc'
+[47]      'Basis Parameters' FOURDIT (' ' join (lmt (∆ sortedBy 'Row') at 'Field'),¨'←')
+[48]  :endif
+    ∇

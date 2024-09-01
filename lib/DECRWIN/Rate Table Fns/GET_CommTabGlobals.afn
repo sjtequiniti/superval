@@ -1,1 +1,46 @@
-    ∇ res←larg GET∆CommTabGlobals varname;flds;success;MESS;desc;errflag;var;tab;old;new;vars;descs;∆;list;ill;labs;parms;check;parmlist;idx[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Extract the Commutation Tables Global parameters using the "description" pointer "varname"[3]   ⍝ larg is the description of the Commutation Tables set and a valuation flag[4]   [5]   (desc errflag)←larg ⋄ var←DLTB ⍎varname[6]   [7]   :if ↑res←(success MESS)←2↑ClientFile ReadModule 'Commutation_Tables' var 'Commutation Tables' desc errflag varname[8]       tab←⍙RULESdict ReadDictFile 'Commutation_Tables'[9]       tab←tab for ⍎¨tab at 'Editable' ⍝ Exclude those not required[10]      flds←tab at 'Field'[11]  [12]      ill←∨/'ILL'⍷varname[13]  [14]      old←DLTB¨⍎¨vars←(⊂(2+3×ill)↑varname),¨3↓¨flds ⍝ Currently set Variables[15]  [16]      ∆←~(⍎comment_var,' at "variable"')∊(⊂'/gct/',(2+3×ill)↑varname) TEXTREPL¨flds[17]      ⍎comment_var,'←',comment_var,' for ∆'[18]      :if ×rowsIn Comment_Commutation_Tables←Comment_Commutation_Tables for (⊂'variable'),flds ⍝ Add Commutation_Tables comments[19]          Comment_Commutation_Tables←Comment_Commutation_Tables amend 'variable' ((⊂'/gct/',(2+3×ill)↑varname) TEXTREPL¨Comment_Commutation_Tables at 'variable')[20]          ⍎comment_var,'←',comment_var,' append Comment_Commutation_Tables'[21]      :endif[22]  [23]      list←m2n ⍙VALUESdict ReadDictFile 'Commutation_Tables' '' 'NAMES'[24]      flds←0 Uniquelist ⊃(qtrim¨flds),(labs∊list)/labs←(⊂'lr'),¨flds~¨⊂'[;]'[25]      flds RenameVars 'gct' ((2+3×ill)↑varname) ⋄ flds RenameVars 'lrgct' ('lr',(2+3×ill)↑varname)[26]      0 0⍴⎕ex ⊃list[27]  [28]      :if ∨/∆←~old≡¨new←DLTB¨⍎¨vars[29]          new←∆/new ⋄ vars←∆/vars[30]  [31]          parms←⊃spin (tab for (⊂'Field'),parmlist←(⊂'gct'),¨(2+3×ill)↓¨vars) at 'Field' 'Type' 'Desc'[32]          check←parms[;2]≡¨⊂'Check'[33]          idx←parmlist⍳parms[;1][34]          parms[;1]←vars[idx] ⋄ new←new[idx][35]          :if ∨/check ⋄ (check/new)←CheckTranslate ¨check/new ⋄ :endif[36]          parms[;2]←new[37]  [38]          :for ∆ :in ⎕split parms ⋄ (vars new descs)←∆[39]              MESS←MESS OVER vars ⍬ ((errflag/'Warning:  '),'Value for "',descs,'" in ',desc,' has changed to "',new,'"')[40]          :endfor[41]      :endif[42]  [43]      res←success MESS[44]  :endif    ∇
+    ∇ res←larg GET∆CommTabGlobals varname;flds;success;MESS;desc;errflag;var;tab;old;new;vars;descs;∆;list;ill;labs;parms;check;parmlist;idx
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Extract the Commutation Tables Global parameters using the "description" pointer "varname"
+[3]   ⍝ larg is the description of the Commutation Tables set and a valuation flag
+[4]   
+[5]   (desc errflag)←larg ⋄ var←DLTB ⍎varname
+[6]   
+[7]   :if ↑res←(success MESS)←2↑ClientFile ReadModule 'Commutation_Tables' var 'Commutation Tables' desc errflag varname
+[8]       tab←⍙RULESdict ReadDictFile 'Commutation_Tables'
+[9]       tab←tab for ⍎¨tab at 'Editable' ⍝ Exclude those not required
+[10]      flds←tab at 'Field'
+[11]  
+[12]      ill←∨/'ILL'⍷varname
+[13]  
+[14]      old←DLTB¨⍎¨vars←(⊂(2+3×ill)↑varname),¨3↓¨flds ⍝ Currently set Variables
+[15]  
+[16]      ∆←~(⍎comment_var,' at "variable"')∊(⊂'/gct/',(2+3×ill)↑varname) TEXTREPL¨flds
+[17]      ⍎comment_var,'←',comment_var,' for ∆'
+[18]      :if ×rowsIn Comment_Commutation_Tables←Comment_Commutation_Tables for (⊂'variable'),flds ⍝ Add Commutation_Tables comments
+[19]          Comment_Commutation_Tables←Comment_Commutation_Tables amend 'variable' ((⊂'/gct/',(2+3×ill)↑varname) TEXTREPL¨Comment_Commutation_Tables at 'variable')
+[20]          ⍎comment_var,'←',comment_var,' append Comment_Commutation_Tables'
+[21]      :endif
+[22]  
+[23]      list←m2n ⍙VALUESdict ReadDictFile 'Commutation_Tables' '' 'NAMES'
+[24]      flds←0 Uniquelist ⊃(qtrim¨flds),(labs∊list)/labs←(⊂'lr'),¨flds~¨⊂'[;]'
+[25]      flds RenameVars 'gct' ((2+3×ill)↑varname) ⋄ flds RenameVars 'lrgct' ('lr',(2+3×ill)↑varname)
+[26]      0 0⍴⎕ex ⊃list
+[27]  
+[28]      :if ∨/∆←~old≡¨new←DLTB¨⍎¨vars
+[29]          new←∆/new ⋄ vars←∆/vars
+[30]  
+[31]          parms←⊃spin (tab for (⊂'Field'),parmlist←(⊂'gct'),¨(2+3×ill)↓¨vars) at 'Field' 'Type' 'Desc'
+[32]          check←parms[;2]≡¨⊂'Check'
+[33]          idx←parmlist⍳parms[;1]
+[34]          parms[;1]←vars[idx] ⋄ new←new[idx]
+[35]          :if ∨/check ⋄ (check/new)←CheckTranslate ¨check/new ⋄ :endif
+[36]          parms[;2]←new
+[37]  
+[38]          :for ∆ :in ⎕split parms ⋄ (vars new descs)←∆
+[39]              MESS←MESS OVER vars ⍬ ((errflag/'Warning:  '),'Value for "',descs,'" in ',desc,' has changed to "',new,'"')
+[40]          :endfor
+[41]      :endif
+[42]  
+[43]      res←success MESS
+[44]  :endif
+    ∇

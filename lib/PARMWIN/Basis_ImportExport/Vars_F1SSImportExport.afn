@@ -1,1 +1,83 @@
-    ∇ Z←Vars_F1SSImportExport exportfield;roworcol;MaxRow;MaxCol;list;Names;i;selection;z;x;exportlabel;exportname;CurrValue;Header;num;char;date;VarName[1]   ⍝ PARMWIN.sf#19[2]   ⍝ Create variables (Header, exportname, exportlabel and CurrValue) required when exporting from F1 Grid[3]   [4]   roworcol←exportfield ⎕wi '∆roworcol' ⋄ MaxRow←exportfield ⎕wi 'MaxRow' ⋄ MaxCol←exportfield ⎕wi 'MaxCol'[5]   :select Fields[6]   :case 'Field'[7]       selections←(⍴selections)⍴2⌿selections[;⍳2][8]       exportbeyond←0[9]   :case 'Frame'[10]      :if roworcol≡'Col' ⋄ selections[;2]←1 ⋄ selections[;4]←MaxCol[11]      :else              ⋄ selections[;1]←1 ⋄ selections[;3]←MaxRow[12]      :endif[13]      exportbeyond←1[14]  :case 'Related'[15]      :if roworcol≡'Col' ⋄ selections[;1]←1 ⋄ selections[;3]←MaxRow[16]      :else              ⋄ selections[;2]←1 ⋄ selections[;4]←MaxCol[17]      :endif[18]      exportbeyond←0[19]  :case 'Page'[20]      selections←MATRIX 1 1 MaxRow MaxCol[21]      exportbeyond←1[22]  :endselect[23]  [24]  list←⍙VALUESdict ReadDictFile SavedModule '' 'NAMES'[25]  Names←exportfield ⎕wi '∆name' ⋄ exportlabel←exportname←0⍴'' ⋄ Header←CurrValue←0 0⍴''[26]  [27]  char←0 ⍝ Special bit for Data Defaults[28]  :if    num←~0∊⍴Names TLU 'DataNum' ⍝ Numeric Data Defaults[29]  :orif char←~0∊⍴Names TLU 'DataChar' ⍝ Character Data Defaults[30]  :orif date←~0∊⍴Names TLU 'DataDate' ⍝ Date Data Defaults[31]      selections[;2]←1 ⋄ selections[;4]←2-char[32]      :if      num ⋄ VarName←'DataNumVars'[33]      :elseif char ⋄ VarName←'DataCharVars'[34]      :elseif date ⋄ VarName←'DataDateVars'[35]      :endif[36]      :if 0=↑⍴execute VarName ⋄ →end ⋄ :endif[37]      :for i :in ⍳↑⍴selections[38]          selection←selections[i;][39]          :for x :in 1+COLS 'I3' ⎕fmt selection[1 3][40]              Header←Header OVER 'Variable ',⍕x[41]              exportname←exportname,⊂VarName,'[',(⍕x),';]'[42]              exportlabel←exportlabel,⊂''[43]          :endfor[44]      :endfor[45]  :endif[46]  [47]  :for i :in ⍳↑⍴selections[48]      selection←selections[i;][49]      :if roworcol≡'Col'[50]          :for z :in 1+COLS 'I3' ⎕fmt MaxCol⌊selection[2 4][51]              :if 0∊⍴DLTB Names[z;] ⋄ :continue ⋄ :endif[52]              :for x :in 1+COLS 'I3' ⎕fmt selection[1 3][53]                  Header←Header OVER ("/ /",⎕tcnl,⎕tclf) TEXTREPL DLTB (exportfield ⎕wi 'ColText' z),' ',⍕x[54]                  exportname←exportname,⊂('/;/',(⍕x),';') TEXTREPL Names[z;][55]                  :if ~0∊⍴list ExactTLU 'lr','[' StripText Names[z;][56]                      exportlabel←exportlabel,⊂('/;/',(⍕x),';') TEXTREPL 'lr',Names[z;][57]                  :else[58]                      exportlabel←exportlabel,⊂''[59]                  :endif[60]              :endfor[61]          :endfor[62]      :else[63]          :for z :in 1+COLS 'I3' ⎕fmt MaxRow⌊selection[1 3][64]              :if 0∊⍴DLTB Names[z;] ⋄ :continue ⋄ :endif[65]              :for x :in 1+COLS 'I3' ⎕fmt selection[2 4][66]                  Header←Header OVER ("/ /",⎕tcnl,⎕tclf) TEXTREPL DLTB (exportfield ⎕wi 'RowText' z),' ',⍕x[67]                  exportname←exportname,⊂('/;/',(⍕x),';')  TEXTREPL Names[z;][68]                  :if ~0∊⍴list ExactTLU 'lr','[' StripText Names[z;][69]                      exportlabel←exportlabel,⊂('/;/',(⍕x),';') TEXTREPL 'lr',Names[z;][70]                  :else[71]                      exportlabel←exportlabel,⊂''[72]                  :endif[73]              :endfor[74]          :endfor[75]      :endif[76]  :endfor[77]  [78]  CurrValue←MATRIX (⊂"Values to be ",heading),⍕¨execute¨exportname[79]  exportfield←(⍴exportname)⌿MATRIX exportfield[80]  [81]  end:Z←Header CurrValue exportname exportlabel exportfield    ∇
+    ∇ Z←Vars_F1SSImportExport exportfield;roworcol;MaxRow;MaxCol;list;Names;i;selection;z;x;exportlabel;exportname;CurrValue;Header;num;char;date;VarName
+[1]   ⍝ PARMWIN.sf#19
+[2]   ⍝ Create variables (Header, exportname, exportlabel and CurrValue) required when exporting from F1 Grid
+[3]   
+[4]   roworcol←exportfield ⎕wi '∆roworcol' ⋄ MaxRow←exportfield ⎕wi 'MaxRow' ⋄ MaxCol←exportfield ⎕wi 'MaxCol'
+[5]   :select Fields
+[6]   :case 'Field'
+[7]       selections←(⍴selections)⍴2⌿selections[;⍳2]
+[8]       exportbeyond←0
+[9]   :case 'Frame'
+[10]      :if roworcol≡'Col' ⋄ selections[;2]←1 ⋄ selections[;4]←MaxCol
+[11]      :else              ⋄ selections[;1]←1 ⋄ selections[;3]←MaxRow
+[12]      :endif
+[13]      exportbeyond←1
+[14]  :case 'Related'
+[15]      :if roworcol≡'Col' ⋄ selections[;1]←1 ⋄ selections[;3]←MaxRow
+[16]      :else              ⋄ selections[;2]←1 ⋄ selections[;4]←MaxCol
+[17]      :endif
+[18]      exportbeyond←0
+[19]  :case 'Page'
+[20]      selections←MATRIX 1 1 MaxRow MaxCol
+[21]      exportbeyond←1
+[22]  :endselect
+[23]  
+[24]  list←⍙VALUESdict ReadDictFile SavedModule '' 'NAMES'
+[25]  Names←exportfield ⎕wi '∆name' ⋄ exportlabel←exportname←0⍴'' ⋄ Header←CurrValue←0 0⍴''
+[26]  
+[27]  char←0 ⍝ Special bit for Data Defaults
+[28]  :if    num←~0∊⍴Names TLU 'DataNum' ⍝ Numeric Data Defaults
+[29]  :orif char←~0∊⍴Names TLU 'DataChar' ⍝ Character Data Defaults
+[30]  :orif date←~0∊⍴Names TLU 'DataDate' ⍝ Date Data Defaults
+[31]      selections[;2]←1 ⋄ selections[;4]←2-char
+[32]      :if      num ⋄ VarName←'DataNumVars'
+[33]      :elseif char ⋄ VarName←'DataCharVars'
+[34]      :elseif date ⋄ VarName←'DataDateVars'
+[35]      :endif
+[36]      :if 0=↑⍴execute VarName ⋄ →end ⋄ :endif
+[37]      :for i :in ⍳↑⍴selections
+[38]          selection←selections[i;]
+[39]          :for x :in 1+COLS 'I3' ⎕fmt selection[1 3]
+[40]              Header←Header OVER 'Variable ',⍕x
+[41]              exportname←exportname,⊂VarName,'[',(⍕x),';]'
+[42]              exportlabel←exportlabel,⊂''
+[43]          :endfor
+[44]      :endfor
+[45]  :endif
+[46]  
+[47]  :for i :in ⍳↑⍴selections
+[48]      selection←selections[i;]
+[49]      :if roworcol≡'Col'
+[50]          :for z :in 1+COLS 'I3' ⎕fmt MaxCol⌊selection[2 4]
+[51]              :if 0∊⍴DLTB Names[z;] ⋄ :continue ⋄ :endif
+[52]              :for x :in 1+COLS 'I3' ⎕fmt selection[1 3]
+[53]                  Header←Header OVER ("/ /",⎕tcnl,⎕tclf) TEXTREPL DLTB (exportfield ⎕wi 'ColText' z),' ',⍕x
+[54]                  exportname←exportname,⊂('/;/',(⍕x),';') TEXTREPL Names[z;]
+[55]                  :if ~0∊⍴list ExactTLU 'lr','[' StripText Names[z;]
+[56]                      exportlabel←exportlabel,⊂('/;/',(⍕x),';') TEXTREPL 'lr',Names[z;]
+[57]                  :else
+[58]                      exportlabel←exportlabel,⊂''
+[59]                  :endif
+[60]              :endfor
+[61]          :endfor
+[62]      :else
+[63]          :for z :in 1+COLS 'I3' ⎕fmt MaxRow⌊selection[1 3]
+[64]              :if 0∊⍴DLTB Names[z;] ⋄ :continue ⋄ :endif
+[65]              :for x :in 1+COLS 'I3' ⎕fmt selection[2 4]
+[66]                  Header←Header OVER ("/ /",⎕tcnl,⎕tclf) TEXTREPL DLTB (exportfield ⎕wi 'RowText' z),' ',⍕x
+[67]                  exportname←exportname,⊂('/;/',(⍕x),';')  TEXTREPL Names[z;]
+[68]                  :if ~0∊⍴list ExactTLU 'lr','[' StripText Names[z;]
+[69]                      exportlabel←exportlabel,⊂('/;/',(⍕x),';') TEXTREPL 'lr',Names[z;]
+[70]                  :else
+[71]                      exportlabel←exportlabel,⊂''
+[72]                  :endif
+[73]              :endfor
+[74]          :endfor
+[75]      :endif
+[76]  :endfor
+[77]  
+[78]  CurrValue←MATRIX (⊂"Values to be ",heading),⍕¨execute¨exportname
+[79]  exportfield←(⍴exportname)⌿MATRIX exportfield
+[80]  
+[81]  end:Z←Header CurrValue exportname exportlabel exportfield
+    ∇

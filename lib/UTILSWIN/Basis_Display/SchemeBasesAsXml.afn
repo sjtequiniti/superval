@@ -1,0 +1,161 @@
+    ∇ xml←larg SchemeBasesAsXml bases;⎕IO;∆;xxx;mtypes;files;i;idx;file;bss;okf;nobases;totbases;this;defaults;pkg;problems;tbl;⍙CACHE;tempglob;isValn;PIsenabled;s143;nemethod;mod;isActive;isDeferred;isPensioner;OffsetSlice;FirstSlice;AltFirstSlice;IndFirstSlice;bfields;sv;status;probs;rls;frame;fx;px;rn;bx;bfx;x;mtypesfound;neproj;filecount;IR;saveVersion;page;comments;ClientFile;⍙MortAssdict;⍙FinAssdict;AbsDict;InputDir;YieldDir;MIcsvDir
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ Selected bases from basis files in InputDir represented in XML
+[3]   ⍝ bases: (tbl) `file`∆_Name`∆_Description
+[4]   ⍝ Reads: cLIENT FIELDS InputDir ppfenabled RESERVED_WORDS vDATE
+[5]   ⍝ Vern: sjt03jul15
+[6]   ⍝       sjt16nov15 * ⎕IO; rank-2 single-value params
+[7]   ⍝       sjt18nov15 * validateInput
+[8]   ⍝       sjt18dec15 * blank _ in page names
+[9]   ⍝       sjt21dec15 * warning attr in table-row (FIXME warnings for implicit tables?)
+[10]  ⍝       sjt04jan16 * suffix values with lr labels
+[11]  ⍝       sjt19jan16 * drop extension from basis file
+[12]  ⍝       sjt20jan16 * drop filepath from basis@file
+[13]  ⍝       rse02feb16 * notes; ProgressBar
+[14]  ⍝       sjt04feb16 * merging distinguish problems
+[15]  ⍝       sjt09feb16 * report multiple issues on a cell
+[16]  ⍝       sjt10feb16 * doubly escaped XML entities
+[17]  ⍝       sjt15feb16 * execute with 0 ←→ rowsIn problems
+[18]  ⍝       sjt08mar16 * multiple issue messages on multivalue parameters
+[19]  ⎕IO←1
+[20]  ('Basis:' 'Process:') Win∆ProgressBar 'SetLabels'
+[21]  'Preparing Basis Details' Win∆ProgressBar 'Open'
+[22]  
+[23]  mtypes←'Actives' 'Deferreds' 'Pensioners',¨⊂'_Basis'
+[24]  defaults←mtypes push ⍙VALUESdict at mtypes                                      ⍝ d: mtype=>default values
+[25]  IR←1                                                                            ⍝ index of Relevant in PROPERTIES
+[26]  
+[27]  ⍝ Confirm files exist, are basisfiles, and bases are in them; find component numbers
+[28]  files←'ok' 'idx' 'file' 'bases'⍪0,0,⍉⊃pop bases groupby 'file'
+[29]  :for i :in 1+⍳rowsIn files
+[30]      (file bss)←files[i;3 4]
+[31]      :if okf←2=rank idx←file ReadFile 'Index'
+[32]      :andif okf←'BasisFile'≡(⊂2 2)⊃idx
+[33]          ∆←idx for '∆_Name' push mtypes
+[34]          idx←∆ for ↑∊/spin¨∆ bss at¨⊂'∆_Name' '∆_Description'
+[35]      :endif
+[36]      files[i;1 2 4]←okf idx bss
+[37]  :endfor
+[38]  filecount←+/∆←files at 'ok'                                                     ⍝ FIXME report rejected files?
+[39]  mtypesfound←nub (↑append/(files for ∆) at 'idx') at '∆_Name'
+[40]  
+[41]  ⍝ environment for applying Relevance Rules
+[42]  isValn←PIsenabled←0 ⋄ s143←ppfenabled
+[43]  neproj←0 ⋄ nemethod←1                                                           ⍝ default values for NE Model field
+[44]  
+[45]  x←''                                                                            ⍝ XML
+[46]  ∆←(files select 'file' 'idx' 'bases') for files at 'ok'
+[47]  
+[48]  (nobases totbases)←0,+/rowsIn¨∆ at 'idx'                                        ⍝ Progress Bar counters
+[49]  
+[50]  :for ∆ :in 1↓⎕SPLIT ∆ ⋄ (file idx bss)←∆                                        ⍝ loop on basis files
+[51]      bfx←''                                                                      ⍝ basisfile XML
+[52]  
+[53]      idx←idx amend 'pkg' ((idx at '∆_CompNo') file_get_cns file)
+[54]      :for this :in ∆[1] push¨ 1↓∆←⎕SPLIT idx                                     ⍝ loop on bases in file
+[55]  
+[56]          ((nobases←nobases+1) totbases ((40 file ConvertDir 'ShortDir'),' - ',↑idx at '∆_Description')) Win∆ProgressBar 'FileUpdate'
+[57]          (1 2 'Validating Basis Details') Win∆ProgressBar 'MemberUpdate'
+[58]  
+[59]          saveVersion←+/(10*-0 2 4)×MatrixZWB SStoMAT '.',↑idx at '∆_VersModified'
+[60]          ⍝ join pointers to global params using basis package as environment
+[61]          pkg←(defaults at this at '∆_Name') pins this at 'pkg'
+[62]          mod←'_' StripText this at '∆_Name'                                      ⍝ lose _Basis suffix
+[63]  
+[64]          (InputDir YieldDir MIcsvDir ClientFile ⍙FinAssdict ⍙MortAssdict AbsDict)←larg GetSchemeParms '\' Win∆Parent file
+[65]          (problems tbl pkg comments)←pkg pevalz "⍙pkg UpdateBasisParms '",mod,"' 1"       ⍝ scenario←→0 * problems: `variable`row`message
+[66]  
+[67]          comments←comments amend 'message' (DLTMB¨(⊂'Comment: '),¨(⊂' by ') join ¨spin (comments at 'comment') ((⊂' at ') join ¨spin comments at 'user' 'timestamp'))
+[68]          problems←problems append comments select 'variable' 'row' 'message'
+[69]  
+[70]          problems←problems amend 'etyp' (caseDn¨(¯1+∆⍳¨':')↑¨∆←problems at 'message')
+[71]          :if ×rowsIn problems                                                    ⍝ merge multiple messages 15feb16
+[72]              problems←↑append/↑mergeMessages¨/pop problems groupby ('variable' 'row')('message' 'etyp')
+[73]          :else
+[74]              problems←problems ⍪ 'no one' ⍬ 'nothing' 'none'                     ⍝ dummy to preserve shape
+[75]          :endif
+[76]  
+[77]          1 FlattenPropertyRules tbl                                              ⍝ rel rules for this mtype
+[78]          tbl←tbl amend 'param' (qtrim¨tbl at 'Field')                            ⍝ pure param names
+[79]  
+[80]          ⍝ cache basis values from pkg, except reserved words
+[81]          ⍙CACHE←(p2d pkg) omit m2n RESERVED_WORDS                                ⍝ cache parameter values
+[82]          ⍙CACHE←(keysIn ⍙CACHE) push ⍙CACHE lrExtend pop ⍙CACHE                  ⍝ suffix with label values
+[83]          ⍙CACHE←push((⊃keysIn ⍙CACHE)[;⍳5]∨.≠'sCEN_')/¨pop ⍙CACHE                ⍝ Ignore any variables in the Basis starting with "sCEN_"
+[84]          ⍝ temporarily define reserved words from pkg as globals
+[85]          tempglob←⊃↑intersect/m2n¨ RESERVED_WORDS (pnames pkg)
+[86]          tempglob pdef pkg
+[87]          ⍝ and some more... FIXME: copied from PARMWIN#39.Basis_Update
+[88]          (isActive isDeferred isPensioner)←'Active' 'Deferred' 'Pensioner'∊⊂mod
+[89]          :if isActive
+[90]              OffsetSlice←(⍳tally ⍙CACHE at 'SliceDesc')=zwb ⍙CACHE at 'SLICEUP'
+[91]              ∆←tally¨⍙CACHE at 'SliceDesc' 'AltSliceDesc' 'IndSliceDesc'
+[92]              (FirstSlice AltFirstSlice IndFirstSlice)←∆↑¨1
+[93]          :endif
+[94]          tempglob←tempglob OVER ⊃'OffsetSlice' 'FirstSlice' 'AltFirstSlice' 'IndFirstSlice'
+[95]  
+[96]          bfields←↑intersect/qtrim¨¨(keysIn ⍙CACHE)(FIELDS)                       ⍝ parameters in basis
+[97]          ∆←(('['∊¨FIELDS) ^ ((qtrim¨FIELDS)∊bfields))/FIELDS                     ⍝ indexed expressions for cached params
+[98]          ⍙CACHE←⍙CACHE update ∆ push ⍙CACHE atindexed ∆                          ⍝ cache values for indexed expressions
+[99]          tbl←tbl for FIELDS ∊ keysIn ⍙CACHE                                      ⍝ fields with rules and cached values
+[100] 
+[101]         ⍝ Work around new single-value vars with matrix values 12nov15
+[102]         ⍝ Convert values to vector 'display' forms
+[103]         ∆←'DataCharValue' 'DataCharVars' 'DataDateAbs' 'DataDateAdj'
+[104]         ∆←∆,'DataDateRel' 'DataDateVars' 'DataNumDecP' 'DataNumType' 'DataNumValue' 'DataNumVars'
+[105]         ∆←∆,'contsBand' 'contsBandCR' 'V1pcBand' 'V1pcBandCR' 'mpuBand' 'mpuBandCR'
+[106]         ⍙CACHE←⍙CACHE omit ∆
+[107] 
+[108]         ⍝ Update tbl with values and Relevant properties of
+[109]         ⍝ unindexed single-value params, eg FOO.Relevant
+[110]         tbl←tbl amend 'value' (↑at/⍙CACHE tbl 'Field')                          ⍝ single and indexed values
+[111]         sv←mt¨tbl at 'Alternative'                                              ⍝ flag single values
+[112]         status←1 applyRulesFor sv/tbl at 'Field'                                ⍝ d: param=>Evaluated Properties
+[113]         tbl←tbl amend 'relevant' (⍕¨sv\∣↑¨status at sv/tbl at 'Field')          ⍝ multivalues flagged irrelevant
+[114]         tbl←tbl amend 'sex' (('m_' 'f_' push 'MF') at 2↑¨tbl at 'Field')        ⍝ gendered parameters
+[115]         ⍝ multivalue params can have multiple errors * 08mar16
+[116]         probs←(problems for 'row' ⍬) select 'variable' 'etyp' 'message'         ⍝ single-value params have single (merged) messages
+[117]         tbl←tbl amend 'etyp'    ((push probs at 'variable' 'etyp')    at tbl at 'Field')
+[118]         tbl←tbl amend 'message' ((push probs at 'variable' 'message') at tbl at 'Field')
+[119]         ⍝ see implicitTableAsXml for marking up multivalue messages
+[120] 
+[121]         xxx←⎕EX tempglob
+[122] 
+[123]         tbl[1;]←('Field' 'Type' 'Desc')('field' 'type' 'name') mapp tbl[1;]     ⍝ column heads for XML attributes
+[124]         tbl←tbl amend 'Frame' (DLTB¨tbl at 'Frame')
+[125] 
+[126]         (2 2 'Exporting basis as XML') Win∆ProgressBar 'MemberUpdate'
+[127]         ⍝ Compose XML
+[128]         bx←''                                                                   ⍝ basis XML
+[129]         ∆←∆[1] pr¨¨1↓∆←⎕SPLIT aplEscape¨⍕¨problems                              ⍝ 10feb16
+[130]         bx←bx,'problems' xtag ((⊂'problem')xattr¨∆) xtag¨ ⊂''
+[131]         ∆←'field' 'Frame' 'Alternative' 'type' 'name' 'param' 'value' 'relevant' 'sex' 'etyp' 'row' 'message'
+[132]         :for ∆ :in spin pop tbl groupby 'Page' ∆ ⋄ (page ∆)←∆
+[133]             px←''                                                               ⍝ page XML
+[134]             :for ∆ :in spin pop ∆ groupby 'Frame' ⋄ (frame rls)←∆
+[135]                 fx←''                                                           ⍝ frame XML
+[136]                 sv←(mt¨rls at 'Alternative')∨2>rank¨⍙CACHE at rls at 'field'    ⍝ flag slice variables
+[137]                 fx←fx,(rls for sv) tableAsXml ''                                ⍝ XML for single values
+[138]                 fx←fx,((rls for~sv)(problems)) implicitTableAsXml ⍙CACHE        ⍝ XML for implicit table * 08mar16
+[139]                 px←px,eis('frame' xattr 'name' frame) xtag fx
+[140]             :endfor
+[141]             bx←bx,eis('page' xattr 'name' ('_ ' REPL page)) xtag px
+[142]         :endfor
+[143]         ∆←'CompNo' 'Name' 'Description' 'UserCreated' 'TSCreated' 'UserModified' 'TSModified' 'VersModified'
+[144]         rn←spin ('Name' 'mtype')('Description' 'category')                      ⍝ rename
+[145]         ∆←'basis' xattr spin (caseDn¨rn mapp ∆) (DLTMB¨⍕¨this at (⊂'∆_'),¨∆)
+[146]         bfx←bfx, ∆ xtag bx
+[147]     :endfor
+[148] 
+[149]     x←x,('basisfile' xattr ('folder' (xmlEscape '\' Win∆Parent file)) ('file' (xmlEscape '\' Win∆Child '.' Win∆Parent file))) xtag bfx ⍝ 20jan16 & RSE 24may20
+[150] :endfor
+[151] 
+[152] ∆←''
+[153] ∆←∆,⊂'name'            (xmlEscape cLIENT)
+[154] ∆←∆,⊂'folder'          (xmlEscape InputDir)
+[155] ∆←∆,⊂'valuation-date'  (DLTB,0 DATESPELL⌽vDATE)
+[156] ∆←∆,⊂'files'           (⍕filecount)
+[157] ∆←∆,⊂'mtypes'          (⍕+/unique mtypesfound)
+[158] xml←eis('scheme' xattr ∆) xtag x
+[159] Win∆ProgressBar 'Close'
+    ∇

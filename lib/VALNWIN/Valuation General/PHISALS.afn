@@ -1,0 +1,53 @@
+    ∇ sals←type PHISALS rarg;salNO;years;z;presals
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Create an array of PHI Salaries
+[3]   
+[4]   sals←(NX,NX)⍴0 ⋄ salNO←↑rarg ⋄ years←,1↓rarg
+[5]   
+[6]   :if PHISelfCheck ⍝PHI⍝
+[7]       :if (⊂type)∊'CARESALLY' 'CARESALMP'
+[8]           :select type
+[9]           :case 'CARESALLY' ⋄ sals←(NX,NX)⍴CARESALLYvec[;salNO]
+[10]          :case 'CARESALMP' ⋄ sals←(NX,NX)⍴CARESALMPvec[;salNO]
+[11]          :endselect
+[12]          :return
+[13]      :elseif IsAccrued
+[14]          :select type
+[15]          :caselist 'SAL' 'SALMP' ⋄ sals←(NX,NX)⍴SALvec[;salNO]
+[16]          :caselist 'FAS' 'FASMP' ⋄ sals←(NX,NX)⍴FASvec[;salNO]
+[17]          :endselect
+[18]      :else
+[19]          :select type
+[20]          :case 'SAL'   ⋄ sals←(NX,NX)⍴SALvec[;salNO]
+[21]          :case 'SALMP' ⋄ sals←(NX,NX)⍴SALMPvec[;salNO]
+[22]          :case 'FAS'   ⋄ sals←(NX,NX)⍴FASvec[;salNO]
+[23]          :case 'FASMP' ⋄ sals←(NX,NX)⍴FASMPvec[;salNO]
+[24]          :endselect
+[25]      :endif
+[26]  :else
+[27]      :if (⊂type)∊'CARESALLY' 'CARESALMP'
+[28]          :select type
+[29]          :case 'CARESALLY' ⋄ sals[;years]←NX⌿MATRIX PHICARESALLY[years;salNO]×CARESALLYvec[years;salNO] CDIV PHICARESALLY[years;salNO]
+[30]                           presals←CARESALLYvec[;salNO]
+[31]          :case 'CARESALMP' ⋄ sals[;years]←NX⌿MATRIX PHICARESALMP[years;salNO]×CARESALMPvec[years;salNO] CDIV PHICARESALMP[years;salNO]
+[32]                           presals←CARESALMPvec[;salNO]
+[33]          :endselect
+[34]          sals←(presals×[1]~PHISYBen)+sals×PHISYBen
+[35]          :return
+[36]      :elseif IsAccrued
+[37]          :select type
+[38]          :caselist 'SAL' 'SALMP' ⋄ sals[years;]←⍉PHISAL[;salNO]∘.×SALvec[years;salNO] CDIV PHISAL[years;salNO]
+[39]          :caselist 'FAS' 'FASMP' ⋄ sals[years;]←⍉PHIFAS[;salNO]∘.×FASvec[years;salNO] CDIV PHIFAS[years;salNO]
+[40]          :endselect
+[41]      :else
+[42]          :select type
+[43]          :case 'SAL'   ⋄ sals[years;]←⍉PHISAL  [;salNO]∘.×SALMPvec[years;salNO] CDIV PHISALMP[years;salNO]
+[44]          :case 'SALMP' ⋄ sals[years;]←⍉PHISALMP[;salNO]∘.×SALMPvec[years;salNO] CDIV PHISALMP[years;salNO]
+[45]          :case 'FAS'   ⋄ sals[years;]←⍉PHIFAS  [;salNO]∘.×FASMPvec[years;salNO] CDIV PHIFASMP[years;salNO]
+[46]          :case 'FASMP' ⋄ sals[years;]←⍉PHIFASMP[;salNO]∘.×FASMPvec[years;salNO] CDIV PHIFASMP[years;salNO]
+[47]          :endselect
+[48]      :endif
+[49]  :endif
+[50]  
+[51]  sals←sals×PHISYBen
+    ∇

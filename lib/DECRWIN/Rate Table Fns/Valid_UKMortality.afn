@@ -1,1 +1,116 @@
-    ∇ res←parent Valid_UKMortality Page;∆decrdesc;∆decrlist;desc;xxx[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Validate the UK Mortality and Mortality Improvement Tables[3]   [4]   0 0⍴GetDecrList 'List'[5]   ∆decrdesc←FormName ⎕wi '∆decrdesc' ⋄ ∆decrlist←FormName ⎕wi '∆decrlist'[6]   [7]   :if ~↑(xxx res)←2↑((desc←'Primary Annuitant Mortality in Deferment') 0) GET∆MortGlobals 'P_DDEF'[8]   :orif ~mt res←desc Win∆DecrCheck (P_DDEFTABXX[1;]) lrP_DDEFTABXX1[9]       Win∆SetFocus parent,Page,'.fDefer.cbP_DDEF' ⋄ :return[10]  :endif[11]  [12]  :if ~↑(xxx res)←2↑((desc←'Primary Annuitant Mortality Improvement in Deferment') 0) GET∆ImpGlobals 'P_miDDEF'[13]      Win∆SetFocus parent,Page,'.fDefer.cbP_miDDEF' ⋄ :return[14]  :elseif ~'None'≡4↑P_miDDEFMORTIMPR[15]      :if '2D'≡2↑P_miDDEFMORTIMPR[16]          :if ~mt DLTB P_miDDEFIMPTBLcsv[17]          :andif ~mt ,res←(desc 0) CSVFILE∆CHECK MIcsvDir,P_miDDEFIMPTBLcsv[18]              Win∆SetFocus parent,Page,'.fDefer.cbP_miDDEF' ⋄ :return[19]          :elseif ~mt res←desc Win∆DecrCheck (P_miDDEFIMPTBL[1;]) lrP_miDDEFIMPTBL1[20]              Win∆SetFocus parent,Page,'.fDefer.cbP_miDDEF' ⋄ :return[21]          :endif[22]          :if ~mt P_DDEFORIG ⋄ :andif (zwb P_DDEFORIG)<zwb P_miDDEFIMPORIG[23]              res←'InvalidBaseYear' 'Primary Annuitant in Deferment'[24]              Win∆SetFocus parent,Page,'.fDefer.cbP_DDEF' ⋄ :return[25]          :endif[26]      :else ⍝ Calendar Year, Specified Year of Birth, Accurate[27]          :if   ~mt res←(desc,' Beta Table')  Win∆DecrCheck (P_miDDEFBETA[1;] ) lrP_miDDEFBETA1[28]          :orif ~mt res←(desc,' Alpha Table') Win∆DecrCheck (P_miDDEFALPHA[1;]) lrP_miDDEFALPHA1[29]              Win∆SetFocus parent,Page,'.fDefer.cbP_miDDEF' ⋄ :return[30]          :endif[31]      :endif[32]  :endif[33]  [34]  :if ~↑(xxx res)←2↑((desc←'Spouse Mortality in Deferment') 0) GET∆MortGlobals 'S_DDEF'[35]  :orif ~mt res←desc Win∆DecrCheck (S_DDEFTABXX[1;]) lrS_DDEFTABXX1[36]      Win∆SetFocus parent,Page,'.fDefer.cbS_DDEF' ⋄ :return[37]  :endif[38]  [39]  :if ~↑(xxx res)←2↑((desc←'Spouse Mortality Improvement in Deferment') 0) GET∆ImpGlobals 'S_miDDEF'[40]      Win∆SetFocus parent,Page,'.fDefer.cbS_miDDEF' ⋄ :return[41]  :elseif ~'None'≡4↑S_miDDEFMORTIMPR[42]      :if '2D'≡2↑S_miDDEFMORTIMPR[43]          :if ~mt DLTB S_miDDEFIMPTBLcsv[44]          :andif ~mt ,res←(desc 0) CSVFILE∆CHECK MIcsvDir,S_miDDEFIMPTBLcsv[45]              Win∆SetFocus parent,Page,'.fDefer.cbS_miDDEF' ⋄ :return[46]          :elseif ~mt res←desc Win∆DecrCheck (S_miDDEFIMPTBL[1;]) lrS_miDDEFIMPTBL1[47]              Win∆SetFocus parent,Page,'.fDefer.cbS_miDDEF' ⋄ :return[48]          :endif[49]          :if ~mt S_DDEFORIG ⋄ :andif (zwb S_DDEFORIG)<zwb S_miDDEFIMPORIG[50]              res←'InvalidBaseYear' 'Spouse in Deferment'[51]              Win∆SetFocus parent,Page,'.fDefer.cbS_DDEF' ⋄ :return[52]          :endif[53]      :else ⍝ Calendar Year, Specified Year of Birth, Accurate[54]          :if   ~mt res←(desc,' Beta Table')  Win∆DecrCheck (S_miDDEFBETA[1;])  lrS_miDDEFBETA1[55]          :orif ~mt res←(desc,' Alpha Table') Win∆DecrCheck (S_miDDEFALPHA[1;]) lrS_miDDEFALPHA1[56]              Win∆SetFocus parent,Page,'.fDefer.cbS_miDDEF' ⋄ :return[57]          :endif[58]      :endif[59]  :endif[60]  [61]  :if ~↑(xxx res)←2↑((desc←'Primary Annuitant Mortality on Pension') 0) GET∆MortGlobals 'P_DPEN'[62]  :orif ~mt res←desc Win∆DecrCheck (P_DPENTABXX[1;]) lrP_DPENTABXX1[63]      Win∆SetFocus parent,Page,'.fPension.cbP_DPEN' ⋄ :return[64]  :endif[65]  [66]  :if ~↑(xxx res)←2↑((desc←'Primary Annuitant Mortality Improvement on Pension') 0) GET∆ImpGlobals 'P_miDPEN'[67]      Win∆SetFocus parent,Page,'.fPension.cbP_miDPEN' ⋄ :return[68]  :elseif ~'None'≡4↑P_miDPENMORTIMPR[69]      :if '2D'≡2↑P_miDPENMORTIMPR[70]          :if ~mt DLTB P_miDPENIMPTBLcsv[71]          :andif ~mt ,res←(desc 0) CSVFILE∆CHECK MIcsvDir,P_miDPENIMPTBLcsv[72]              Win∆SetFocus parent,Page,'.fPension.cbP_miDPEN' ⋄ :return[73]          :elseif ~mt res←desc Win∆DecrCheck (P_miDPENIMPTBL[1;]) lrP_miDPENIMPTBL1[74]              Win∆SetFocus parent,Page,'.fPension.cbP_miDPEN' ⋄ :return[75]          :endif[76]          :if ~mt P_DPENORIG ⋄ :andif (zwb P_DPENORIG)<zwb P_miDPENIMPORIG[77]              res←'InvalidBaseYear' 'Primary Annuitant on Pension'[78]              Win∆SetFocus parent,Page,'.fPension.cbP_DPEN' ⋄ :return[79]          :endif[80]      :else ⍝ Calendar Year, Specified Year of Birth, Accurate[81]          :if   ~mt res←(desc,' Beta Table')  Win∆DecrCheck (P_miDPENBETA[1;])  lrP_miDPENBETA1[82]          :orif ~mt res←(desc,' Alpha Table') Win∆DecrCheck (P_miDPENALPHA[1;]) lrP_miDPENALPHA1[83]              Win∆SetFocus parent,Page,'.fPension.cbP_miDPEN' ⋄ :return[84]          :endif[85]      :endif[86]  :endif[87]  [88]  :if ~↑(xxx res)←2↑((desc←'Spouse Mortality on Pension') 0) GET∆MortGlobals 'S_DPEN'[89]  :orif ~mt res←desc Win∆DecrCheck (S_DPENTABXX[1;]) lrS_DPENTABXX1[90]      Win∆SetFocus parent,Page,'.fPension.cbS_DPEN' ⋄ :return[91]  :endif[92]  [93]  :if ~↑(xxx res)←2↑((desc←'Spouse Mortality Improvement on Pension') 0) GET∆ImpGlobals 'S_miDPEN'[94]      Win∆SetFocus parent,Page,'.fPension.cbS_miDPEN' ⋄ :return[95]  :elseif ~'None'≡4↑S_miDPENMORTIMPR[96]      :if '2D'≡2↑S_miDPENMORTIMPR[97]          :if ~mt DLTB S_miDPENIMPTBLcsv[98]          :andif ~mt ,res←(desc 0) CSVFILE∆CHECK MIcsvDir,S_miDPENIMPTBLcsv[99]              Win∆SetFocus parent,Page,'.fPension.cbS_miDPEN' ⋄ :return[100]         :elseif ~mt res←desc Win∆DecrCheck (S_miDPENIMPTBL[1;]) lrS_miDPENIMPTBL1[101]             Win∆SetFocus parent,Page,'.fPension.cbS_miDPEN' ⋄ :return[102]         :endif[103]         :if ~mt S_DPENORIG ⋄ :andif (zwb S_DPENORIG)<zwb S_miDPENIMPORIG[104]             res←'InvalidBaseYear' 'Spouse on Pension'[105]             Win∆SetFocus parent,Page,'.fPension.cbS_DPEN' ⋄ :return[106]         :endif[107]     :else ⍝ Calendar Year, Specified Year of Birth, Accurate[108]         :if   ~mt res←(desc,' Beta Table')  Win∆DecrCheck (S_miDPENBETA[1;])  lrS_miDPENBETA1[109]         :orif ~mt res←(desc,' Alpha Table') Win∆DecrCheck (S_miDPENALPHA[1;]) lrS_miDPENALPHA1[110]             Win∆SetFocus parent,Page,'.fPension.cbS_miDPEN' ⋄ :return[111]         :endif[112]     :endif[113] :endif[114] :if mt res ⋄ res←0⍴'' ⋄ :endif ⍝ Shape of Result can't be 0 0???    ∇
+    ∇ res←parent Valid_UKMortality Page;∆decrdesc;∆decrlist;desc;xxx
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Validate the UK Mortality and Mortality Improvement Tables
+[3]   
+[4]   0 0⍴GetDecrList 'List'
+[5]   ∆decrdesc←FormName ⎕wi '∆decrdesc' ⋄ ∆decrlist←FormName ⎕wi '∆decrlist'
+[6]   
+[7]   :if ~↑(xxx res)←2↑((desc←'Primary Annuitant Mortality in Deferment') 0) GET∆MortGlobals 'P_DDEF'
+[8]   :orif ~mt res←desc Win∆DecrCheck (P_DDEFTABXX[1;]) lrP_DDEFTABXX1
+[9]       Win∆SetFocus parent,Page,'.fDefer.cbP_DDEF' ⋄ :return
+[10]  :endif
+[11]  
+[12]  :if ~↑(xxx res)←2↑((desc←'Primary Annuitant Mortality Improvement in Deferment') 0) GET∆ImpGlobals 'P_miDDEF'
+[13]      Win∆SetFocus parent,Page,'.fDefer.cbP_miDDEF' ⋄ :return
+[14]  :elseif ~'None'≡4↑P_miDDEFMORTIMPR
+[15]      :if '2D'≡2↑P_miDDEFMORTIMPR
+[16]          :if ~mt DLTB P_miDDEFIMPTBLcsv
+[17]          :andif ~mt ,res←(desc 0) CSVFILE∆CHECK MIcsvDir,P_miDDEFIMPTBLcsv
+[18]              Win∆SetFocus parent,Page,'.fDefer.cbP_miDDEF' ⋄ :return
+[19]          :elseif ~mt res←desc Win∆DecrCheck (P_miDDEFIMPTBL[1;]) lrP_miDDEFIMPTBL1
+[20]              Win∆SetFocus parent,Page,'.fDefer.cbP_miDDEF' ⋄ :return
+[21]          :endif
+[22]          :if ~mt P_DDEFORIG ⋄ :andif (zwb P_DDEFORIG)<zwb P_miDDEFIMPORIG
+[23]              res←'InvalidBaseYear' 'Primary Annuitant in Deferment'
+[24]              Win∆SetFocus parent,Page,'.fDefer.cbP_DDEF' ⋄ :return
+[25]          :endif
+[26]      :else ⍝ Calendar Year, Specified Year of Birth, Accurate
+[27]          :if   ~mt res←(desc,' Beta Table')  Win∆DecrCheck (P_miDDEFBETA[1;] ) lrP_miDDEFBETA1
+[28]          :orif ~mt res←(desc,' Alpha Table') Win∆DecrCheck (P_miDDEFALPHA[1;]) lrP_miDDEFALPHA1
+[29]              Win∆SetFocus parent,Page,'.fDefer.cbP_miDDEF' ⋄ :return
+[30]          :endif
+[31]      :endif
+[32]  :endif
+[33]  
+[34]  :if ~↑(xxx res)←2↑((desc←'Spouse Mortality in Deferment') 0) GET∆MortGlobals 'S_DDEF'
+[35]  :orif ~mt res←desc Win∆DecrCheck (S_DDEFTABXX[1;]) lrS_DDEFTABXX1
+[36]      Win∆SetFocus parent,Page,'.fDefer.cbS_DDEF' ⋄ :return
+[37]  :endif
+[38]  
+[39]  :if ~↑(xxx res)←2↑((desc←'Spouse Mortality Improvement in Deferment') 0) GET∆ImpGlobals 'S_miDDEF'
+[40]      Win∆SetFocus parent,Page,'.fDefer.cbS_miDDEF' ⋄ :return
+[41]  :elseif ~'None'≡4↑S_miDDEFMORTIMPR
+[42]      :if '2D'≡2↑S_miDDEFMORTIMPR
+[43]          :if ~mt DLTB S_miDDEFIMPTBLcsv
+[44]          :andif ~mt ,res←(desc 0) CSVFILE∆CHECK MIcsvDir,S_miDDEFIMPTBLcsv
+[45]              Win∆SetFocus parent,Page,'.fDefer.cbS_miDDEF' ⋄ :return
+[46]          :elseif ~mt res←desc Win∆DecrCheck (S_miDDEFIMPTBL[1;]) lrS_miDDEFIMPTBL1
+[47]              Win∆SetFocus parent,Page,'.fDefer.cbS_miDDEF' ⋄ :return
+[48]          :endif
+[49]          :if ~mt S_DDEFORIG ⋄ :andif (zwb S_DDEFORIG)<zwb S_miDDEFIMPORIG
+[50]              res←'InvalidBaseYear' 'Spouse in Deferment'
+[51]              Win∆SetFocus parent,Page,'.fDefer.cbS_DDEF' ⋄ :return
+[52]          :endif
+[53]      :else ⍝ Calendar Year, Specified Year of Birth, Accurate
+[54]          :if   ~mt res←(desc,' Beta Table')  Win∆DecrCheck (S_miDDEFBETA[1;])  lrS_miDDEFBETA1
+[55]          :orif ~mt res←(desc,' Alpha Table') Win∆DecrCheck (S_miDDEFALPHA[1;]) lrS_miDDEFALPHA1
+[56]              Win∆SetFocus parent,Page,'.fDefer.cbS_miDDEF' ⋄ :return
+[57]          :endif
+[58]      :endif
+[59]  :endif
+[60]  
+[61]  :if ~↑(xxx res)←2↑((desc←'Primary Annuitant Mortality on Pension') 0) GET∆MortGlobals 'P_DPEN'
+[62]  :orif ~mt res←desc Win∆DecrCheck (P_DPENTABXX[1;]) lrP_DPENTABXX1
+[63]      Win∆SetFocus parent,Page,'.fPension.cbP_DPEN' ⋄ :return
+[64]  :endif
+[65]  
+[66]  :if ~↑(xxx res)←2↑((desc←'Primary Annuitant Mortality Improvement on Pension') 0) GET∆ImpGlobals 'P_miDPEN'
+[67]      Win∆SetFocus parent,Page,'.fPension.cbP_miDPEN' ⋄ :return
+[68]  :elseif ~'None'≡4↑P_miDPENMORTIMPR
+[69]      :if '2D'≡2↑P_miDPENMORTIMPR
+[70]          :if ~mt DLTB P_miDPENIMPTBLcsv
+[71]          :andif ~mt ,res←(desc 0) CSVFILE∆CHECK MIcsvDir,P_miDPENIMPTBLcsv
+[72]              Win∆SetFocus parent,Page,'.fPension.cbP_miDPEN' ⋄ :return
+[73]          :elseif ~mt res←desc Win∆DecrCheck (P_miDPENIMPTBL[1;]) lrP_miDPENIMPTBL1
+[74]              Win∆SetFocus parent,Page,'.fPension.cbP_miDPEN' ⋄ :return
+[75]          :endif
+[76]          :if ~mt P_DPENORIG ⋄ :andif (zwb P_DPENORIG)<zwb P_miDPENIMPORIG
+[77]              res←'InvalidBaseYear' 'Primary Annuitant on Pension'
+[78]              Win∆SetFocus parent,Page,'.fPension.cbP_DPEN' ⋄ :return
+[79]          :endif
+[80]      :else ⍝ Calendar Year, Specified Year of Birth, Accurate
+[81]          :if   ~mt res←(desc,' Beta Table')  Win∆DecrCheck (P_miDPENBETA[1;])  lrP_miDPENBETA1
+[82]          :orif ~mt res←(desc,' Alpha Table') Win∆DecrCheck (P_miDPENALPHA[1;]) lrP_miDPENALPHA1
+[83]              Win∆SetFocus parent,Page,'.fPension.cbP_miDPEN' ⋄ :return
+[84]          :endif
+[85]      :endif
+[86]  :endif
+[87]  
+[88]  :if ~↑(xxx res)←2↑((desc←'Spouse Mortality on Pension') 0) GET∆MortGlobals 'S_DPEN'
+[89]  :orif ~mt res←desc Win∆DecrCheck (S_DPENTABXX[1;]) lrS_DPENTABXX1
+[90]      Win∆SetFocus parent,Page,'.fPension.cbS_DPEN' ⋄ :return
+[91]  :endif
+[92]  
+[93]  :if ~↑(xxx res)←2↑((desc←'Spouse Mortality Improvement on Pension') 0) GET∆ImpGlobals 'S_miDPEN'
+[94]      Win∆SetFocus parent,Page,'.fPension.cbS_miDPEN' ⋄ :return
+[95]  :elseif ~'None'≡4↑S_miDPENMORTIMPR
+[96]      :if '2D'≡2↑S_miDPENMORTIMPR
+[97]          :if ~mt DLTB S_miDPENIMPTBLcsv
+[98]          :andif ~mt ,res←(desc 0) CSVFILE∆CHECK MIcsvDir,S_miDPENIMPTBLcsv
+[99]              Win∆SetFocus parent,Page,'.fPension.cbS_miDPEN' ⋄ :return
+[100]         :elseif ~mt res←desc Win∆DecrCheck (S_miDPENIMPTBL[1;]) lrS_miDPENIMPTBL1
+[101]             Win∆SetFocus parent,Page,'.fPension.cbS_miDPEN' ⋄ :return
+[102]         :endif
+[103]         :if ~mt S_DPENORIG ⋄ :andif (zwb S_DPENORIG)<zwb S_miDPENIMPORIG
+[104]             res←'InvalidBaseYear' 'Spouse on Pension'
+[105]             Win∆SetFocus parent,Page,'.fPension.cbS_DPEN' ⋄ :return
+[106]         :endif
+[107]     :else ⍝ Calendar Year, Specified Year of Birth, Accurate
+[108]         :if   ~mt res←(desc,' Beta Table')  Win∆DecrCheck (S_miDPENBETA[1;])  lrS_miDPENBETA1
+[109]         :orif ~mt res←(desc,' Alpha Table') Win∆DecrCheck (S_miDPENALPHA[1;]) lrS_miDPENALPHA1
+[110]             Win∆SetFocus parent,Page,'.fPension.cbS_miDPEN' ⋄ :return
+[111]         :endif
+[112]     :endif
+[113] :endif
+[114] :if mt res ⋄ res←0⍴'' ⋄ :endif ⍝ Shape of Result can't be 0 0???
+    ∇

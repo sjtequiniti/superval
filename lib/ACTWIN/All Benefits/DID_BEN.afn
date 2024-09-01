@@ -1,1 +1,364 @@
-    ∇ DID∆BEN;GMPREV∆DDTAB;∆A;∆B;∆BP;∆C;∆CP;∆CT;∆D;∆E;∆F;∆G;∆H;∆I;∆J;DIDPEN;GDIDMAIN;GDIDSPECIAL;GDIDLIMITED;GDID4;FGDIDMAIN;FGDIDSPECIAL;FGDIDLIMITED;FGDID4;i0;i2;i3;DATE1;DATE2;DATE3;DATE4;DIDCALC;FDIDCALC;MDIDCALC;g1;g2;g3;DIDDATE;MDIDSPECIAL;MDIDMAIN;MDIDLIMITED;MDID4;DIDLS;DID∆GLS;DIDPre∆LS;DIDPost∆LS;fixed∆l;LRF;escfactB88;escfactA88;p;PRE88;∆[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Used by LTC∆BENEFIT[3]   ⍝[4]   LTC←LFC←0   ⍝ Initialise Death Benefits[5]   fixed∆l←GREV=1[6]   ∆C←'Dyn: ',DIDDYN,'  Rev: ',⍕DIDREVDEF[7]       :select GREV[8]       :case 0 ⋄ GMPREV∆DDTAB←0[9]       :case 1 ⋄ GMPREV∆DDTAB←1↓GMPFixedRates-1[10]                PRE88←VDATE YDAYS COD2[11]                :if IsAccrued ⋄ p←0⌈LeaveTerms+⌈PRE88[12]                :else         ⋄ p←0⌈LeaveTerms+⌊PRE88+0.5≤PRE88-⌊PRE88[13]                :endif[14]                p←DIFF 0,((NX-SNX)⌊p),NX[15]      :case 2 ⋄ GMPREV∆DDTAB←0.05[16]      :case 3 ⋄ GMPREV∆DDTAB←s148-1[17]      :endselect[18]  DID←DIDMAIN←DIDSPECIAL←DIDLIMITED←DID4←DIDPreGMP←DIDPostGMP←DIDPre←DIDPost←0[19]  FDID←FDIDMAIN←FDIDSPECIAL←FDIDLIMITED←FDID4←FDIDPostGMP←0[20]  GDIDMAIN←GDIDSPECIAL←GDIDLIMITED←GDID4←FGDIDMAIN←FGDIDSPECIAL←FGDIDLIMITED←FGDID4←0[21]  DIDPEN←0×TPEN∆DID  ⍝ Initialise as zero[22]  ⍝ GAD TO DO[23]  [24]  ⍝ DID Pension[25]  :if DDINDS≠0[26]      :if ~100 0 0≡DIDDATE←DIDDAT[27]          DIDDATE←,DIDDATMIN DATEMAX ⍎DIDDAT[28]      :endif[29]      :select DDINDS[30]      :case 1     ⍝ GMP then Spouse's[31]          :if isNPCR ⍝ Use uncapped TPEN∆DID[32]              DIDPEN←WDIDFRAC×DIDTPEN[33]              ⍝ Only GMP for first tranche[34]              DIDPEN[;⎕io;;;;;]←0×DIDPEN[;⎕io;;;;;][35]              DIDPEN[⎕io;⎕io;⎕io;⎕io;⎕io;⎕io;]←DIDWGMP[36]          :else[37]              DIDPEN←WDIDFRAC×TPEN∆DID[38]              ⍝ Only GMP for first tranche[39]              DIDPEN[;⎕io;;;;;]←0×DIDPEN[;⎕io;;;;;][40]          :endif[41]          PDIDCALC←+⌿+⌿+⌿+⌿+⌿DIDPEN[;⎕io;;;;;]   ⍝ Zero - used in VARPRINT[42]      :caselist 2  4  ⍝ 2 - GMP then 1/160ths (revalued)[43]                      ⍝ 4 - Max(GMP, 1/160ths) then 1/160ths (revalued)[44]          DATE1←COEND∆L DATEMAX DIDDATE[45]          FDIDCALC←(0⌈servrnd DURN VDATE TO LDATE)×FASMPvec[;DIDSAL] CDIV 160[46]          MDIDCALC←((0⌈servrnd DURN DATE1 TO LDATE)×FASMPvec[;DIDSAL] CDIV 160)-FDIDCALC[47]          PDIDCALC←(4=DDINDS)×((0⌈servrnd DURN DIDDATE TO LDATE)×FASMPvec[;DIDSAL] CDIV 160)-MDIDCALC+FDIDCALC ⍝ Only GMP for first tranche if DDINDS=2[48]          i0←(DIDDYN⍷'SM34')/⍳4[49]          i2←~DIDREVDEF[50]          :if mpuflag[51]              DATE2←mpuDATE DATEMAX DIDDATE[52]              DATE3←mpuDATE DATEMAX COEND∆L DATEMAX DIDDATE[53]              DATE4←mpuDATE DATEMAX VDATE ⍝ Assumes that DIDDAT is not after VDATE[54]              g1←1⌊0⌈(((NX,3)⍴DATE2) DAYS (NX,3)⍴COEND∆L) CDIV 0⌈((NX,3)⍴DIDDATE) DAYS (NX,3)⍴COEND∆L  ⍝ 0⌈ in divisor in case COEND∆L is before DIDDATE[55]              g2←1⌊0⌈(((NX,3)⍴DATE3) DAYS (NX,3)⍴VDATE) CDIV ((NX,3)⍴DATE1) DAYS (NX,3)⍴VDATE[56]              g3←1⌊0⌈(((NX,3)⍴DATE4) DAYS LDATE) CDIV 0⌈((NX,3)⍴VDATE) DAYS LDATE[57]          :else[58]              g1←g2←g3←0[59]          :endif[60]          DIDPEN[i0;⎕io+1;⎕io;⎕io  ;⎕io;⎕io;]←   g2 ×MDIDCALC[61]          DIDPEN[i0;⎕io+1;⎕io;⎕io+1;⎕io;⎕io;]←(1-g2)×MDIDCALC[62]          DIDPEN[i0;⎕io+2;⎕io;⎕io  ;⎕io;⎕io;]←   g3 ×FDIDCALC[63]          DIDPEN[i0;⎕io+2;⎕io;⎕io+1;⎕io;⎕io;]←(1-g3)×FDIDCALC[64]          ⍝ Gtee on first tranche done below[65]      :case 3     ⍝ Max(GMP, 1/160ths) then Spouse's[66]          :if isNPCR ⍝ Use uncapped TPEN∆DID[67]              DIDPEN←WDIDFRAC×DIDTPEN[68]          :else[69]              DIDPEN←WDIDFRAC×TPEN∆DID[70]          :endif[71]          DIDPEN[;⎕io;;;;;]←0×DIDPEN[;⎕io;;;;;] ⍝ Initialise first tranche to zero[72]          PDIDCALC←(0⌈servrnd DURN DIDDATE,COEND∆L)×FASMPvec[;DIDSAL] CDIV 160[73]          i0←(DIDDYN⍷'SM34')/⍳4[74]          i2←~DIDREVDEF[75]          :if g1←mpuflag[76]              DATE2←mpuDATE DATEMAX DIDDATE[77]              g1←1⌊0⌈(((NX,3)⍴DATE2) DAYS (NX,3)⍴COEND∆L) CDIV 0⌈((NX,3)⍴DIDDATE) DAYS (NX,3)⍴COEND∆L ⍝ 0⌈ in divisor in case COEND∆L is before DIDDATE[78]          :endif[79]          ⍝ Gtee on first tranche done below[80]      :case 5     ⍝ Spouse's[81]          DIDPEN←WDIDFRAC×TPEN∆DID[82]          PDIDCALC←+⌿+⌿+⌿+⌿+⌿DIDPEN[;⎕io;;;;;][83]          ⍝ Take WGMP off first tranche[84]          DIDPEN[;⎕io;;;;;]←DIDPEN[;⎕io;;;;;]×[⎕io+5]0⌈1-WGMP CDIV +/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]DIDPEN[;⎕io;;;;;][85]      :endselect[86]      :if isNPCR[87]          :select DDINDS[88]          :case 2 ⍝ 2 - GMP then 1/160ths (revalued)[89]              ⍝ Only GMP for first tranche[90]              DIDPEN[;⎕io;;;;;]←0×DIDPEN[;⎕io;;;;;][91]              DIDPEN[⎕io;⎕io;⎕io;⎕io;⎕io;⎕io;]←DIDWGMP[92]          :caselist 3 4[93]              DIDPEN[⎕io;⎕io;⎕io;⎕io;⎕io;⎕io;]←DIDPEN[⎕io;⎕io;⎕io;⎕io;⎕io;⎕io;]+0⌈DIDWGMP-PDIDCALC[94]          :endselect[95]      :endif[96]      :if DDINDS∊3 4 ⋄ :andif DIDBAS=0 ⍝ Can only do the comparison at leaving if using Table[97]          DIDPEN[i0;⎕io;i2;⎕io  ;⎕io;⎕io;]←   g1 ×0⌈PDIDCALC-WGMP[98]          DIDPEN[i0;⎕io;i2;⎕io+1;⎕io;⎕io;]←(1-g1)×0⌈PDIDCALC-WGMP[99]      :endif[100] [101]     :if DIDBAS=0   ⍝ Cost using Table[102]         ⍝ Do partial sums[103]         DIDPEN←+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]DIDPEN[104]         ⍝[105]         DDTAB←ddtab[X][106]         DIDPreGMP   ←DIDPre ←DDTAB×0.5×PreGMP×Male[107]         DIDPostGMP  ←DIDPost←DDTAB×0.5×PostGMP[108]         DIDSPECIAL  ←DDTAB×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io  ;     ;   ;][109]         DIDMAIN     ←DDTAB×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+1;     ;   ;][110]         DIDLIMITED  ←DDTAB×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+2;     ;   ;][111]         DID4        ←DDTAB×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+3;     ;   ;][112]         FDIDSPECIAL ←DDTAB×+/[⎕io]         DIDPEN[⎕io  ;⎕io+2;   ;][113]         FDIDMAIN    ←DDTAB×+/[⎕io]         DIDPEN[⎕io+1;⎕io+2;   ;][114]         FDIDLIMITED ←DDTAB×+/[⎕io]         DIDPEN[⎕io+2;⎕io+2;   ;][115]         FDID4       ←DDTAB×+/[⎕io]         DIDPEN[⎕io+3;⎕io+2;   ;][116]         GDIDSPECIAL ←DDTAB×+/[⎕io]         DIDPEN[⎕io  ;     ;⎕io;][117]         GDIDMAIN    ←DDTAB×+/[⎕io]         DIDPEN[⎕io+1;     ;⎕io;][118]         GDIDLIMITED ←DDTAB×+/[⎕io]         DIDPEN[⎕io+2;     ;⎕io;][119]         GDID4       ←DDTAB×+/[⎕io]         DIDPEN[⎕io+3;     ;⎕io;][120]         FGDIDSPECIAL←DDTAB×                DIDPEN[⎕io  ;⎕io+2;⎕io;][121]         FGDIDMAIN   ←DDTAB×                DIDPEN[⎕io+1;⎕io+2;⎕io;][122]         FGDIDLIMITED←DDTAB×                DIDPEN[⎕io+2;⎕io+2;⎕io;][123]         FGDID4      ←DDTAB×                DIDPEN[⎕io+3;⎕io+2;⎕io;][124]         GMPDID←DIDPreGMP+DIDPostGMP  ⍝ FOR USE IN INIT∆ACC[125]         XSDID←DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4      ⍝ FOR USE IN INIT ACC[126]         LTC←DID←DIDPreGMP+DIDPostGMP+DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4[127]         LFC←FDID←FDIDMAIN+FDIDSPECIAL+FDIDLIMITED+FDID4[128]         UFUNDCOMP←UFUNDCOMP+DID ⋄ FUFUNDCOMP←FUFUNDCOMP+FDID[129]     :else ⍝ Cost using Valuation Basis[130]         ⍝ Do partial sums[131]         DIDPEN←+/[⎕io+4]+/[⎕io+5]DIDPEN[132]           ⍝ REVRAT  non GMP increase rate    GREV∆DDTAB GMP increase rate (full)[133]             DID∆M ←(   REVRAT-1) DDTAB∆2 HMP×DA2∆l[134]             DID∆S ←(   REVRAT-1) DDTAB∆2 HMP×DA1∆l[135]             DID∆L ←(   REVRAT-1) DDTAB∆2 HMP×DA6∆l[136]             DID∆4 ←(   REVRAT-1) DDTAB∆2 HMP×DA7∆l[137]             DIDN∆M←(AUXREVRAT-1) DDTAB∆2 HMP×DA2∆l[138]             DIDN∆S←(AUXREVRAT-1) DDTAB∆2 HMP×DA1∆l[139]             DIDN∆L←(AUXREVRAT-1) DDTAB∆2 HMP×DA6∆l[140]             DIDN∆4←(AUXREVRAT-1) DDTAB∆2 HMP×DA7∆l[141]             DID3∆M←(  REVRAT3-1) DDTAB∆2 HMP×DA2∆l[142]             DID3∆S←(  REVRAT3-1) DDTAB∆2 HMP×DA1∆l[143]             DID3∆L←(  REVRAT3-1) DDTAB∆2 HMP×DA6∆l[144]             DID3∆4←(  REVRAT3-1) DDTAB∆2 HMP×DA7∆l[145]             ∆6503D←(DIDDYN⍷'SM34')/DID∆S DID∆M DID∆L DID∆4[146]             :select DDINDS[147]             :caselist 1 2 5[148]                 DIDSPECIAL ←(DID∆S×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io  ;;⎕io;   ;])+(DIDN∆S×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io  ;;⎕io+1;   ;])+DID3∆S×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io;  ;⎕io+2;   ;][149]                 DIDMAIN    ←(DID∆M×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+1;;⎕io;   ;])+(DIDN∆M×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+1;;⎕io+1;   ;])+DID3∆M×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+1;;⎕io+2;   ;][150]                 DIDLIMITED ←(DID∆L×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+2;;⎕io;   ;])+(DIDN∆L×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+2;;⎕io+1;   ;])+DID3∆L×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+2;;⎕io+2;   ;][151]                 DID4       ←(DID∆4×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+3;;⎕io;   ;])+(DIDN∆4×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+3;;⎕io+1;   ;])+DID3∆4×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+3;;⎕io+2;   ;][152]                 GDIDSPECIAL←(DID∆S×+/[⎕io]         DIDPEN[⎕io  ;;⎕io;⎕io;])+(DIDN∆S×+/[⎕io]         DIDPEN[⎕io  ;;⎕io+1;⎕io;])+DID3∆S×+/[⎕io]         DIDPEN[⎕io;  ;⎕io+2;⎕io;][153]                 GDIDMAIN   ←(DID∆M×+/[⎕io]         DIDPEN[⎕io+1;;⎕io;⎕io;])+(DIDN∆M×+/[⎕io]         DIDPEN[⎕io+1;;⎕io+1;⎕io;])+DID3∆M×+/[⎕io]         DIDPEN[⎕io+1;;⎕io+2;⎕io;][154]                 GDIDLIMITED←(DID∆L×+/[⎕io]         DIDPEN[⎕io+2;;⎕io;⎕io;])+(DIDN∆L×+/[⎕io]         DIDPEN[⎕io+2;;⎕io+1;⎕io;])+DID3∆L×+/[⎕io]         DIDPEN[⎕io+2;;⎕io+2;⎕io;][155]                 GDID4      ←(DID∆4×+/[⎕io]         DIDPEN[⎕io+3;;⎕io;⎕io;])+(DIDN∆4×+/[⎕io]         DIDPEN[⎕io+3;;⎕io+1;⎕io;])+DID3∆4×+/[⎕io]         DIDPEN[⎕io+3;;⎕io+2;⎕io;][156]             :caselist 3 4[157]                 DIDSPECIAL ←(   (DIDDYN='S')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA1∆l) PDIDCALC WGMP)+(DID∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io;   ;]+DIDPEN[⎕io  ;⎕io+2;⎕io;   ;])+(DIDN∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io+1;   ;]+DIDPEN[⎕io  ;⎕io+2;⎕io+1;   ;])+DID3∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io+2;   ;]+DIDPEN[⎕io  ;⎕io+2;⎕io+2;   ;][158]                 DIDMAIN    ←(   (DIDDYN='M')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA2∆l) PDIDCALC WGMP)+(DID∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io;   ;]+DIDPEN[⎕io+1;⎕io+2;⎕io;   ;])+(DIDN∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io+1;   ;]+DIDPEN[⎕io+1;⎕io+2;⎕io+1;   ;])+DID3∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io+2;   ;]+DIDPEN[⎕io+1;⎕io+2;⎕io+2;   ;][159]                 DIDLIMITED ←(   (DIDDYN='3')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA6∆l) PDIDCALC WGMP)+(DID∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io;   ;]+DIDPEN[⎕io+2;⎕io+2;⎕io;   ;])+(DIDN∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io+1;   ;]+DIDPEN[⎕io+2;⎕io+2;⎕io+1;   ;])+DID3∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io+2;   ;]+DIDPEN[⎕io+2;⎕io+2;⎕io+2;   ;][160]                 DID4       ←(   (DIDDYN='4')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA7∆l) PDIDCALC WGMP)+(DID∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io;   ;]+DIDPEN[⎕io+3;⎕io+2;⎕io;   ;])+(DIDN∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io+1;   ;]+DIDPEN[⎕io+3;⎕io+2;⎕io+1;   ;])+DID3∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io+2;   ;]+DIDPEN[⎕io+3;⎕io+2;⎕io+2;   ;][161]                 GDIDSPECIAL←(g1×(DIDDYN='S')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA1∆l) PDIDCALC WGMP)+(DID∆S×       DIDPEN[⎕io  ;⎕io+1;⎕io;⎕io;]+DIDPEN[⎕io  ;⎕io+2;⎕io;⎕io;])+(DIDN∆S×       DIDPEN[⎕io  ;⎕io+1;⎕io+1;⎕io;]+DIDPEN[⎕io  ;⎕io+2;⎕io+1;⎕io;])+DID3∆S×       DIDPEN[⎕io  ;⎕io+1;⎕io+2;⎕io;]+DIDPEN[⎕io  ;⎕io+2;⎕io+2;⎕io;][162]                 GDIDMAIN   ←(g1×(DIDDYN='M')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA2∆l) PDIDCALC WGMP)+(DID∆M×       DIDPEN[⎕io+1;⎕io+1;⎕io;⎕io;]+DIDPEN[⎕io+1;⎕io+2;⎕io;⎕io;])+(DIDN∆M×       DIDPEN[⎕io+1;⎕io+1;⎕io+1;⎕io;]+DIDPEN[⎕io+1;⎕io+2;⎕io+1;⎕io;])+DID3∆M×       DIDPEN[⎕io+1;⎕io+1;⎕io+2;⎕io;]+DIDPEN[⎕io+1;⎕io+2;⎕io+2;⎕io;][163]                 GDIDLIMITED←(g1×(DIDDYN='3')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA6∆l) PDIDCALC WGMP)+(DID∆L×       DIDPEN[⎕io+2;⎕io+1;⎕io;⎕io;]+DIDPEN[⎕io+2;⎕io+2;⎕io;⎕io;])+(DIDN∆L×       DIDPEN[⎕io+2;⎕io+1;⎕io+1;⎕io;]+DIDPEN[⎕io+2;⎕io+2;⎕io+1;⎕io;])+DID3∆L×       DIDPEN[⎕io+2;⎕io+1;⎕io+2;⎕io;]+DIDPEN[⎕io+2;⎕io+2;⎕io+2;⎕io;][164]                 GDID4      ←(g1×(DIDDYN='4')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA7∆l) PDIDCALC WGMP)+(DID∆4×       DIDPEN[⎕io+3;⎕io+1;⎕io;⎕io;]+DIDPEN[⎕io+3;⎕io+2;⎕io;⎕io;])+(DIDN∆4×       DIDPEN[⎕io+3;⎕io+1;⎕io+1;⎕io;]+DIDPEN[⎕io+3;⎕io+2;⎕io+1;⎕io;])+DID3∆4×       DIDPEN[⎕io+3;⎕io+1;⎕io+2;⎕io;]+DIDPEN[⎕io+3;⎕io+2;⎕io+2;⎕io;][165]             :endselect[166]             FDIDSPECIAL ←(DID∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+2;⎕io;   ;])+(DIDN∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+2;⎕io+1;   ;])+DID3∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+2;⎕io+2;   ;][167]             FDIDMAIN    ←(DID∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+2;⎕io;   ;])+(DIDN∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+2;⎕io+1;   ;])+DID3∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+2;⎕io+2;   ;][168]             FDIDLIMITED ←(DID∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+2;⎕io;   ;])+(DIDN∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+2;⎕io+1;   ;])+DID3∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+2;⎕io+2;   ;][169]             FDID4       ←(DID∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+2;⎕io;   ;])+(DIDN∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+2;⎕io+1;   ;])+DID3∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+2;⎕io+2;   ;][170]             FGDIDSPECIAL←(DID∆S×       DIDPEN[⎕io  ;⎕io+2;⎕io;⎕io;])+(DIDN∆S×       DIDPEN[⎕io  ;⎕io+2;⎕io+1;⎕io;])+DID3∆S×       DIDPEN[⎕io  ;⎕io+2;⎕io+2;⎕io;][171]             FGDIDMAIN   ←(DID∆M×       DIDPEN[⎕io+1;⎕io+2;⎕io;⎕io;])+(DIDN∆M×       DIDPEN[⎕io+1;⎕io+2;⎕io+1;⎕io;])+DID3∆M×       DIDPEN[⎕io+1;⎕io+2;⎕io+2;⎕io;][172]             FGDIDLIMITED←(DID∆L×       DIDPEN[⎕io+2;⎕io+2;⎕io;⎕io;])+(DIDN∆L×       DIDPEN[⎕io+2;⎕io+2;⎕io+1;⎕io;])+DID3∆L×       DIDPEN[⎕io+2;⎕io+2;⎕io+2;⎕io;][173]             FGDID4      ←(DID∆4×       DIDPEN[⎕io+3;⎕io+2;⎕io;⎕io;])+(DIDN∆4×       DIDPEN[⎕io+3;⎕io+2;⎕io+1;⎕io;])+DID3∆4×       DIDPEN[⎕io+3;⎕io+2;⎕io+2;⎕io;][174]             LRF←1+(0⌈(XMP+0.5×IsAccrued)-SPA)×∆←52.18÷700 ⋄ LRF←LRF÷1+(0⌈Xe-SPA)×∆            [175]             escfactB88←1⌈DYNRATB88[⎕io+2×term+0⌈(XMP+0.5×IsAccrued)-↑X] CDIV DYNRATB88[⎕io+2×term+0⌈SPA-↑X][176] [177]             :if fixed∆l[178]                 DIDPre←↑,/(DIFF 0,+\p)↑¨(¯1↓0,+\p)↓¨GMPREV∆DDTAB DDTAB∆3¨⊂HMP×DA3∆l×LRF×escfactB88[179]             :else[180]                 DIDPre←GMPREV∆DDTAB DDTAB∆3 HMP×DA3∆l×LRF×escfactB88[181]             :endif[182]             ∆6503A←DIDPre←DIDPre CDIV LRF×escfactB88[183]             DIDPreGMP←DIDPre×0.5×PreGMP×Male[184] [185]             escfactA88←1⌈DYNRATA88[⎕io+2×term+0⌈(XMP+0.5×IsAccrued)-↑X] CDIV DYNRATA88[⎕io+2×term+0⌈SPA-↑X][186] [187]             :if fixed∆l[188]                 DIDPost←↑,/(DIFF 0,+\p)↑¨(¯1↓0,+\p)↓¨GMPREV∆DDTAB DDTAB∆3¨⊂HMP×DA4∆l×LRF×escfactA88[189]             :else[190]                 DIDPost←GMPREV∆DDTAB DDTAB∆3 HMP×DA4∆l×LRF×escfactA88[191]             :endif[192]             ∆6503B←DIDPost←DIDPost CDIV LRF×escfactA88[193]             DIDPostGMP←DIDPost×0.5× PostGMP[194]             :if mpuflag[195]                 UFUNDCOMP←UFUNDCOMP+(GFRAC1×DIDPreGMP)+(GFRAC2×DIDPostGMP)+GDIDMAIN+GDIDSPECIAL+GDIDLIMITED+GDID4[196]                 UPre←UPre+GFRAC1×DIDPreGMP ⋄ UPost←UPost+GFRAC2×DIDPostGMP ⋄ UM←UM+GDIDMAIN ⋄ US←US+GDIDSPECIAL ⋄ UL←UL+GDIDLIMITED ⋄ U4←U4+GDID4[197]                 FUFUNDCOMP←FUFUNDCOMP+FDIDPostGMP+FGDIDMAIN+FGDIDSPECIAL+FGDIDLIMITED+FGDID4[198]             :endif[199]             :if isNPCR[200]                 DIDPreGMP  ←0.9×DIDPreGMP[201]                 DIDPostGMP ←0.9×DIDPostGMP[202]                 DIDMAIN    ←0.9×DIDMAIN[203]                 DIDSPECIAL ←0.9×DIDSPECIAL[204]                 DIDLIMITED ←0.9×DIDLIMITED[205]                 DID4       ←0.9×DID4[206]                 FDIDMAIN   ←0.9×FDIDMAIN[207]                 FDIDSPECIAL←0.9×FDIDSPECIAL[208]                 FDIDLIMITED←0.9×FDIDLIMITED[209]                 FDID4      ←0.9×FDID4[210]             :endif[211]             GMPDID←DIDPreGMP+DIDPostGMP  ⍝ FOR USE IN INIT∆ACC[212]             XSDID←DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4      ⍝ FOR USE IN INIT ACC[213]             DIDPre←DIDPreGMP ⋄ DIDPost←DIDPostGMP[214]             LTC←DID←DIDPreGMP+DIDPostGMP+DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4[215]             LFC←FDID←FDIDMAIN+FDIDSPECIAL+FDIDLIMITED+FDID4[216]                 ⍝:if DDIND=10 ⍝ TO DO[217]                 ⍝    LTC←LTC+DID←LTONTOP∆L×(REVRAT-1) DDTAB∆2 1[218]                 ⍝    LFC←LFC+FDID←LFONTOP∆L×(REVRAT-1) DDTAB∆2 1[219]                 ⍝    UFUNDCOMP←UFUNDCOMP+DID[220]                 ⍝    FUFUNDCOMP←FUFUNDCOMP+FDID[221]                 ⍝:endif[222]     :endif[223] ⍝⍝⍝    :if test ⋄ :andif 0≠DDINDS[224] ⍝⌿⍝    :if 0≠DDINDS[225] ⍝⌿⍝        :if DIDBAS≠0[226] ⍝⌿⍝            MDIDSPECIAL←(DID∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io;;])+DIDN∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io+1;;][227] ⍝⌿⍝            MDIDMAIN   ←(DID∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io;;])+DIDN∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io+1;;][228] ⍝⌿⍝            MDIDLIMITED←(DID∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io;;])+DIDN∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io+1;;][229] ⍝⌿⍝            MDID4      ←(DID∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io;;])+DIDN∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io+1;;][230] ⍝⌿⍝            :if isNPCR[231] ⍝⌿⍝                MDIDSPECIAL←0.9×MDIDSPECIAL[232] ⍝⌿⍝                MDIDMAIN   ←0.9×MDIDMAIN[233] ⍝⌿⍝                MDIDLIMITED←0.9×MDIDLIMITED[234] ⍝⌿⍝                MDID4      ←0.9×MDID4[235] ⍝⌿⍝            :endif[236] ⍝⌿⍝            MDID←MDIDMAIN+MDIDSPECIAL+MDIDLIMITED+MDID4[237] ⍝⌿⍝            PDID←DID-MDID+FDID+DIDPreGMP+DIDPostGMP[238] ⍝⌿⍝        :endif[239] ⍝⌿⍝        ∆A←∆6490A←0.5×PreGMP×Male[240] ⍝⌿⍝        :if DIDBAS=0 ⍝ DIDPEN a different shape if costed using a Table[241] ⍝⌿⍝            ∆6491A←  +⌿DIDPEN[⎕io+1;⎕io+1;;]  ⍝ Post-97[242] ⍝⌿⍝            ∆6491B←  +⌿DIDPEN[⎕io  ;⎕io+1;;][243] ⍝⌿⍝            ∆6491C←  +⌿DIDPEN[⎕io+2;⎕io+1;;][244] ⍝⌿⍝            ∆6491D←  +⌿DIDPEN[⎕io+3;⎕io+1;;][245] ⍝⌿⍝            ∆6492A←  +⌿DIDPEN[⎕io+1;⎕io+2;;]  ⍝ Future[246] ⍝⌿⍝            ∆6492B←  +⌿DIDPEN[⎕io  ;⎕io+2;;][247] ⍝⌿⍝            ∆6492C←  +⌿DIDPEN[⎕io+2;⎕io+2;;][248] ⍝⌿⍝            ∆6492D←  +⌿DIDPEN[⎕io+3;⎕io+2;;][249] ⍝⌿⍝        :else[250] ⍝⌿⍝            ∆6491A←+⌿+⌿DIDPEN[⎕io+1;⎕io+1;;;]  ⍝ Post-97[251] ⍝⌿⍝            ∆6491B←+⌿+⌿DIDPEN[⎕io  ;⎕io+1;;;][252] ⍝⌿⍝            ∆6491C←+⌿+⌿DIDPEN[⎕io+2;⎕io+1;;;][253] ⍝⌿⍝            ∆6491D←+⌿+⌿DIDPEN[⎕io+3;⎕io+1;;;][254] ⍝⌿⍝            ∆6492A←+⌿+⌿DIDPEN[⎕io+1;⎕io+2;;;]  ⍝ Future[255] ⍝⌿⍝            ∆6492B←+⌿+⌿DIDPEN[⎕io  ;⎕io+2;;;][256] ⍝⌿⍝            ∆6492C←+⌿+⌿DIDPEN[⎕io+2;⎕io+2;;;][257] ⍝⌿⍝            ∆6492D←+⌿+⌿DIDPEN[⎕io+3;⎕io+2;;;][258] ⍝⌿⍝        :endif[259] ⍝⌿⍝    :endif[260] :endif[261] ⍝[262] ⍝ DID Lump Sum[263] ⍝[264]     :select DDINDL ⍝ Note that DID LS benefits are excluded from Underpin calculations[265]     :case 1 ⍝ Return of Conts[266]         vdd←(jdef-1) DDTAB∆2 1[267]         :if IsAccrued[268]             LTC←LTC+∆G←∆6505G← CASH∆D←(1-0.1×bencap)×vdd×AC[269]             LFC←LFC+∆H←∆6505H←FCASH∆D←(1-0.1×bencap)×vdd×AC  -ACPM[270]         :else[271]             LTC←LTC+∆G←∆6505G← CASH∆D←               vdd×ACMP[272]             LFC←LFC+∆H←∆6505H←FCASH∆D←               vdd×ACMP-ACPMMP[273]         :endif[274]     :case 2 ⍝ Return of Conts if no Spouse[275]         vdd←(jdef-1) DDTAB∆2 1[276]         :if IsAccrued[277]             LTC←LTC+∆G←∆6505G← CASH∆D←(1-0.1×bencap)×(1-HMP)×vdd×AC[278]             LFC←LFC+∆H←∆6505H←FCASH∆D←(1-0.1×bencap)×(1-HMP)×vdd×AC  -ACPM[279]         :else[280]             LTC←LTC+∆G←∆6505G← CASH∆D←               (1-HMP)×vdd×ACMP[281]             LFC←LFC+∆H←∆6505H←FCASH∆D←               (1-HMP)×vdd×ACMP-ACPMMP[282]         :endif[283]     :case 333 ⍝ FIXME: Return of Reserve (temporarily removed)[284]         ∆6505A←DID      ⍝ Store initial values[285]         ∆6505B←FDID[286]         DDMULT←(VNRAVX CDIV DNRADX)-1[287]         DIDPreGMP  ←DIDPreGMP  +GMP∆Pre ×DDMULT[288]         DIDPostGMP ←DIDPostGMP +GMP∆Post×DDMULT[289]         DIDMAIN    ←DIDMAIN    +LP2×DDMULT[290]         DIDSPECIAL ←DIDSPECIAL +LP3×DDMULT[291]         DIDLIMITED ←DIDLIMITED +LP6×DDMULT[292]         DID4       ←DID4       +LP7×DDMULT[293]         FDIDMAIN   ←FDIDMAIN   +LF2×DDMULT[294]         FDIDSPECIAL←FDIDSPECIAL+LF3×DDMULT[295]         FDIDLIMITED←FDIDLIMITED+LF6×DDMULT[296]         FDID4      ←FDID4      +LF7×DDMULT[297]         LTC←DID←DIDPreGMP+DIDPostGMP+DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4[298]         LFC←FDID←FDIDMAIN+FDIDSPECIAL+FDIDLIMITED+FDID4[299]         ∆6505A← DID-∆6505A[300]         ∆6505B←FDID-∆6505B[301]         CASH∆D←FCASH∆D←0[302]     :case 4 ⍝ Multiple of Pension[303]         :if isNPCR ⋄ DIDLS←DDLMULT×DIDTPEN[304]         :else      ⋄ DIDLS←DDLMULT×TPEN∆DID ⍝ Use uncapped TPEN∆DID[305]         :endif[306]         ⍝ Take LS arising from GMP off first tranche[307]         DIDLS[;⎕io;;;;;]←DIDLS[;⎕io;;;;;]×[⎕io+5]0⌈1-DDLMULT×GMP CDIV +/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]DIDLS[;⎕io;;;;;][308]         ⍝ Sum over all but time, revn, term[309]         DIDLS←+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DIDLS[310]         DID∆LS ←(   REVRAT-1) DDTAB∆2 1[311]         DID∆NLS←(AUXREVRAT-1) DDTAB∆2 1[312]         DID∆3LS←(  REVRAT3-1) DDTAB∆2 1[313]         ∆A←∆6505A←+/[⎕io]DIDLS[;⎕io  ;] ⍝ Total excess rev[314]         ∆B←∆6505B←+/[⎕io]DIDLS[;⎕io+1;] ⍝ Total excess non rev[315]         ∆I←+/[⎕io]DIDLS[;⎕io+2;] ⍝ Total excess rev3[316]         ∆C←∆6505C←DIDLS[⎕io+2;⎕io  ;] ⍝ Future excess rev[317]         ∆D←∆6505D←DIDLS[⎕io+2;⎕io+1;] ⍝ Future  excess non rev[318]         ∆J←DIDLS[⎕io+2;⎕io+2;] ⍝ Future excess rev3[319] [320]         LRF←1+(0⌈(XMP+0.5×IsAccrued)-SPA)×∆←52.18÷700 ⋄ LRF←LRF÷1+(0⌈Xe-SPA)×∆            [321]         escfactB88←1⌈DYNRATB88[⎕io+2×term+0⌈(XMP+0.5×IsAccrued)-↑X] CDIV DYNRATB88[⎕io+2×term+0⌈SPA-↑X][322] [323]         :if fixed∆l[324]             DIDPre∆LS←↑,/(DIFF 0,+\p)↑¨(¯1↓0,+\p)↓¨GMPREV∆DDTAB DDTAB∆3¨⊂LRF×escfactB88[325]         :else[326]             DIDPre∆LS←GMPREV∆DDTAB DDTAB∆3 LRF×escfactB88[327]         :endif[328]         ∆E←∆6505E←DDLMULT×PreGMP[329]         escfactA88←1⌈DYNRATA88[⎕io+2×term+0⌈(XMP+0.5×IsAccrued)-↑X] CDIV DYNRATA88[⎕io+2×term+0⌈SPA-↑X][330]         :if fixed∆l[331]             DIDPost∆LS←↑,/(DIFF 0,+\p)↑¨(¯1↓0,+\p)↓¨GMPREV∆DDTAB DDTAB∆3¨⊂LRF×escfactA88[332]         :else[333]             DIDPost∆LS←GMPREV∆DDTAB DDTAB∆3 LRF×escfactA88[334]         :endif[335]         ∆F←∆6505F←DDLMULT×PostGMP[336]         :if isNPCR[337]             LTC←LTC+∆G←∆6509G← CASH∆D←0.9×(DID∆LS×∆A)+(DID∆NLS×∆B)+(DID∆3LS×∆I)+(DIDPre∆LS×∆E)+DIDPost∆LS×∆F[338]             LFC←LFC+∆H←∆6509H←FCASH∆D←0.9×(DID∆LS×∆C)+(DID∆NLS×∆D)+ DID∆3LS×∆J[339]         :else[340]             LTC←LTC+∆G←∆6509G← CASH∆D←(DID∆LS×∆A)+(DID∆NLS×∆B)+(DID∆3LS×∆I)+(DIDPre∆LS×∆E)+DIDPost∆LS×∆F[341]             LFC←LFC+∆H←∆6509H←FCASH∆D←(DID∆LS×∆C)+(DID∆NLS×∆D)+ DID∆3LS×∆J[342]         :endif[343]     :else[344]         CASH∆D←FCASH∆D←0[345]     :endselect[346] ⍝⍝⍝ :if test ⋄ :andif DDINDL=1 ⋄ :andif ~IsAccrued[347] ⍝⌿⍝ :if DDINDL=1 ⋄ :andif ~IsAccrued[348] ⍝⌿⍝    vdd←(jdef-1) DDTAB∆2 1[349] ⍝⌿⍝    ∆G←∆6505G←vdd×ACMP        ⋄ ⍝ RETCONTS[350] ⍝⌿⍝    ∆H←∆6505H←vdd×ACMP-ACPMMP ⋄ ⍝ FRETCONTS[351] ⍝⌿⍝ :endif[352] :if CONTOP[353]     LTC←LTC+∆7010F←LTONTOP×DNRADX ⋄ LFC←LFC+LFONTOP×DNRADX[354]     :if mpuflag[355]         UFUNDCOMP←UFUNDCOMP+GONTOP×DNRADX ⋄ FUFUNDCOMP←FUFUNDCOMP+LFONTOP×DNRADX ⍝⍝⍝ ⋄ UONTOP←GONTOP×DNRADX[356]     :endif[357] :else[358]     LTC←LTC+∆7010F←LCASH×DNRADX ⋄ LFC←LFC+FLCASH×DNRADX[359]     :if mpuflag[360]         UFUNDCOMP←UFUNDCOMP+LGCASH×DNRADX ⋄ FUFUNDCOMP←FUFUNDCOMP+FLGCASH×DNRADX[361]     :endif[362] :endif    ∇
+    ∇ DID∆BEN;GMPREV∆DDTAB;∆A;∆B;∆BP;∆C;∆CP;∆CT;∆D;∆E;∆F;∆G;∆H;∆I;∆J;DIDPEN;GDIDMAIN;GDIDSPECIAL;GDIDLIMITED;GDID4;FGDIDMAIN;FGDIDSPECIAL;FGDIDLIMITED;FGDID4;i0;i2;i3;DATE1;DATE2;DATE3;DATE4;DIDCALC;FDIDCALC;MDIDCALC;g1;g2;g3;DIDDATE;MDIDSPECIAL;MDIDMAIN;MDIDLIMITED;MDID4;DIDLS;DID∆GLS;DIDPre∆LS;DIDPost∆LS;fixed∆l;LRF;escfactB88;escfactA88;p;PRE88;∆
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Used by LTC∆BENEFIT
+[3]   ⍝
+[4]   LTC←LFC←0   ⍝ Initialise Death Benefits
+[5]   fixed∆l←GREV=1
+[6]   ∆C←'Dyn: ',DIDDYN,'  Rev: ',⍕DIDREVDEF
+[7]       :select GREV
+[8]       :case 0 ⋄ GMPREV∆DDTAB←0
+[9]       :case 1 ⋄ GMPREV∆DDTAB←1↓GMPFixedRates-1
+[10]                PRE88←VDATE YDAYS COD2
+[11]                :if IsAccrued ⋄ p←0⌈LeaveTerms+⌈PRE88
+[12]                :else         ⋄ p←0⌈LeaveTerms+⌊PRE88+0.5≤PRE88-⌊PRE88
+[13]                :endif
+[14]                p←DIFF 0,((NX-SNX)⌊p),NX
+[15]      :case 2 ⋄ GMPREV∆DDTAB←0.05
+[16]      :case 3 ⋄ GMPREV∆DDTAB←s148-1
+[17]      :endselect
+[18]  DID←DIDMAIN←DIDSPECIAL←DIDLIMITED←DID4←DIDPreGMP←DIDPostGMP←DIDPre←DIDPost←0
+[19]  FDID←FDIDMAIN←FDIDSPECIAL←FDIDLIMITED←FDID4←FDIDPostGMP←0
+[20]  GDIDMAIN←GDIDSPECIAL←GDIDLIMITED←GDID4←FGDIDMAIN←FGDIDSPECIAL←FGDIDLIMITED←FGDID4←0
+[21]  DIDPEN←0×TPEN∆DID  ⍝ Initialise as zero
+[22]  ⍝ GAD TO DO
+[23]  
+[24]  ⍝ DID Pension
+[25]  :if DDINDS≠0
+[26]      :if ~100 0 0≡DIDDATE←DIDDAT
+[27]          DIDDATE←,DIDDATMIN DATEMAX ⍎DIDDAT
+[28]      :endif
+[29]      :select DDINDS
+[30]      :case 1     ⍝ GMP then Spouse's
+[31]          :if isNPCR ⍝ Use uncapped TPEN∆DID
+[32]              DIDPEN←WDIDFRAC×DIDTPEN
+[33]              ⍝ Only GMP for first tranche
+[34]              DIDPEN[;⎕io;;;;;]←0×DIDPEN[;⎕io;;;;;]
+[35]              DIDPEN[⎕io;⎕io;⎕io;⎕io;⎕io;⎕io;]←DIDWGMP
+[36]          :else
+[37]              DIDPEN←WDIDFRAC×TPEN∆DID
+[38]              ⍝ Only GMP for first tranche
+[39]              DIDPEN[;⎕io;;;;;]←0×DIDPEN[;⎕io;;;;;]
+[40]          :endif
+[41]          PDIDCALC←+⌿+⌿+⌿+⌿+⌿DIDPEN[;⎕io;;;;;]   ⍝ Zero - used in VARPRINT
+[42]      :caselist 2  4  ⍝ 2 - GMP then 1/160ths (revalued)
+[43]                      ⍝ 4 - Max(GMP, 1/160ths) then 1/160ths (revalued)
+[44]          DATE1←COEND∆L DATEMAX DIDDATE
+[45]          FDIDCALC←(0⌈servrnd DURN VDATE TO LDATE)×FASMPvec[;DIDSAL] CDIV 160
+[46]          MDIDCALC←((0⌈servrnd DURN DATE1 TO LDATE)×FASMPvec[;DIDSAL] CDIV 160)-FDIDCALC
+[47]          PDIDCALC←(4=DDINDS)×((0⌈servrnd DURN DIDDATE TO LDATE)×FASMPvec[;DIDSAL] CDIV 160)-MDIDCALC+FDIDCALC ⍝ Only GMP for first tranche if DDINDS=2
+[48]          i0←(DIDDYN⍷'SM34')/⍳4
+[49]          i2←~DIDREVDEF
+[50]          :if mpuflag
+[51]              DATE2←mpuDATE DATEMAX DIDDATE
+[52]              DATE3←mpuDATE DATEMAX COEND∆L DATEMAX DIDDATE
+[53]              DATE4←mpuDATE DATEMAX VDATE ⍝ Assumes that DIDDAT is not after VDATE
+[54]              g1←1⌊0⌈(((NX,3)⍴DATE2) DAYS (NX,3)⍴COEND∆L) CDIV 0⌈((NX,3)⍴DIDDATE) DAYS (NX,3)⍴COEND∆L  ⍝ 0⌈ in divisor in case COEND∆L is before DIDDATE
+[55]              g2←1⌊0⌈(((NX,3)⍴DATE3) DAYS (NX,3)⍴VDATE) CDIV ((NX,3)⍴DATE1) DAYS (NX,3)⍴VDATE
+[56]              g3←1⌊0⌈(((NX,3)⍴DATE4) DAYS LDATE) CDIV 0⌈((NX,3)⍴VDATE) DAYS LDATE
+[57]          :else
+[58]              g1←g2←g3←0
+[59]          :endif
+[60]          DIDPEN[i0;⎕io+1;⎕io;⎕io  ;⎕io;⎕io;]←   g2 ×MDIDCALC
+[61]          DIDPEN[i0;⎕io+1;⎕io;⎕io+1;⎕io;⎕io;]←(1-g2)×MDIDCALC
+[62]          DIDPEN[i0;⎕io+2;⎕io;⎕io  ;⎕io;⎕io;]←   g3 ×FDIDCALC
+[63]          DIDPEN[i0;⎕io+2;⎕io;⎕io+1;⎕io;⎕io;]←(1-g3)×FDIDCALC
+[64]          ⍝ Gtee on first tranche done below
+[65]      :case 3     ⍝ Max(GMP, 1/160ths) then Spouse's
+[66]          :if isNPCR ⍝ Use uncapped TPEN∆DID
+[67]              DIDPEN←WDIDFRAC×DIDTPEN
+[68]          :else
+[69]              DIDPEN←WDIDFRAC×TPEN∆DID
+[70]          :endif
+[71]          DIDPEN[;⎕io;;;;;]←0×DIDPEN[;⎕io;;;;;] ⍝ Initialise first tranche to zero
+[72]          PDIDCALC←(0⌈servrnd DURN DIDDATE,COEND∆L)×FASMPvec[;DIDSAL] CDIV 160
+[73]          i0←(DIDDYN⍷'SM34')/⍳4
+[74]          i2←~DIDREVDEF
+[75]          :if g1←mpuflag
+[76]              DATE2←mpuDATE DATEMAX DIDDATE
+[77]              g1←1⌊0⌈(((NX,3)⍴DATE2) DAYS (NX,3)⍴COEND∆L) CDIV 0⌈((NX,3)⍴DIDDATE) DAYS (NX,3)⍴COEND∆L ⍝ 0⌈ in divisor in case COEND∆L is before DIDDATE
+[78]          :endif
+[79]          ⍝ Gtee on first tranche done below
+[80]      :case 5     ⍝ Spouse's
+[81]          DIDPEN←WDIDFRAC×TPEN∆DID
+[82]          PDIDCALC←+⌿+⌿+⌿+⌿+⌿DIDPEN[;⎕io;;;;;]
+[83]          ⍝ Take WGMP off first tranche
+[84]          DIDPEN[;⎕io;;;;;]←DIDPEN[;⎕io;;;;;]×[⎕io+5]0⌈1-WGMP CDIV +/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]DIDPEN[;⎕io;;;;;]
+[85]      :endselect
+[86]      :if isNPCR
+[87]          :select DDINDS
+[88]          :case 2 ⍝ 2 - GMP then 1/160ths (revalued)
+[89]              ⍝ Only GMP for first tranche
+[90]              DIDPEN[;⎕io;;;;;]←0×DIDPEN[;⎕io;;;;;]
+[91]              DIDPEN[⎕io;⎕io;⎕io;⎕io;⎕io;⎕io;]←DIDWGMP
+[92]          :caselist 3 4
+[93]              DIDPEN[⎕io;⎕io;⎕io;⎕io;⎕io;⎕io;]←DIDPEN[⎕io;⎕io;⎕io;⎕io;⎕io;⎕io;]+0⌈DIDWGMP-PDIDCALC
+[94]          :endselect
+[95]      :endif
+[96]      :if DDINDS∊3 4 ⋄ :andif DIDBAS=0 ⍝ Can only do the comparison at leaving if using Table
+[97]          DIDPEN[i0;⎕io;i2;⎕io  ;⎕io;⎕io;]←   g1 ×0⌈PDIDCALC-WGMP
+[98]          DIDPEN[i0;⎕io;i2;⎕io+1;⎕io;⎕io;]←(1-g1)×0⌈PDIDCALC-WGMP
+[99]      :endif
+[100] 
+[101]     :if DIDBAS=0   ⍝ Cost using Table
+[102]         ⍝ Do partial sums
+[103]         DIDPEN←+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]DIDPEN
+[104]         ⍝
+[105]         DDTAB←ddtab[X]
+[106]         DIDPreGMP   ←DIDPre ←DDTAB×0.5×PreGMP×Male
+[107]         DIDPostGMP  ←DIDPost←DDTAB×0.5×PostGMP
+[108]         DIDSPECIAL  ←DDTAB×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io  ;     ;   ;]
+[109]         DIDMAIN     ←DDTAB×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+1;     ;   ;]
+[110]         DIDLIMITED  ←DDTAB×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+2;     ;   ;]
+[111]         DID4        ←DDTAB×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+3;     ;   ;]
+[112]         FDIDSPECIAL ←DDTAB×+/[⎕io]         DIDPEN[⎕io  ;⎕io+2;   ;]
+[113]         FDIDMAIN    ←DDTAB×+/[⎕io]         DIDPEN[⎕io+1;⎕io+2;   ;]
+[114]         FDIDLIMITED ←DDTAB×+/[⎕io]         DIDPEN[⎕io+2;⎕io+2;   ;]
+[115]         FDID4       ←DDTAB×+/[⎕io]         DIDPEN[⎕io+3;⎕io+2;   ;]
+[116]         GDIDSPECIAL ←DDTAB×+/[⎕io]         DIDPEN[⎕io  ;     ;⎕io;]
+[117]         GDIDMAIN    ←DDTAB×+/[⎕io]         DIDPEN[⎕io+1;     ;⎕io;]
+[118]         GDIDLIMITED ←DDTAB×+/[⎕io]         DIDPEN[⎕io+2;     ;⎕io;]
+[119]         GDID4       ←DDTAB×+/[⎕io]         DIDPEN[⎕io+3;     ;⎕io;]
+[120]         FGDIDSPECIAL←DDTAB×                DIDPEN[⎕io  ;⎕io+2;⎕io;]
+[121]         FGDIDMAIN   ←DDTAB×                DIDPEN[⎕io+1;⎕io+2;⎕io;]
+[122]         FGDIDLIMITED←DDTAB×                DIDPEN[⎕io+2;⎕io+2;⎕io;]
+[123]         FGDID4      ←DDTAB×                DIDPEN[⎕io+3;⎕io+2;⎕io;]
+[124]         GMPDID←DIDPreGMP+DIDPostGMP  ⍝ FOR USE IN INIT∆ACC
+[125]         XSDID←DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4      ⍝ FOR USE IN INIT ACC
+[126]         LTC←DID←DIDPreGMP+DIDPostGMP+DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4
+[127]         LFC←FDID←FDIDMAIN+FDIDSPECIAL+FDIDLIMITED+FDID4
+[128]         UFUNDCOMP←UFUNDCOMP+DID ⋄ FUFUNDCOMP←FUFUNDCOMP+FDID
+[129]     :else ⍝ Cost using Valuation Basis
+[130]         ⍝ Do partial sums
+[131]         DIDPEN←+/[⎕io+4]+/[⎕io+5]DIDPEN
+[132]           ⍝ REVRAT  non GMP increase rate    GREV∆DDTAB GMP increase rate (full)
+[133]             DID∆M ←(   REVRAT-1) DDTAB∆2 HMP×DA2∆l
+[134]             DID∆S ←(   REVRAT-1) DDTAB∆2 HMP×DA1∆l
+[135]             DID∆L ←(   REVRAT-1) DDTAB∆2 HMP×DA6∆l
+[136]             DID∆4 ←(   REVRAT-1) DDTAB∆2 HMP×DA7∆l
+[137]             DIDN∆M←(AUXREVRAT-1) DDTAB∆2 HMP×DA2∆l
+[138]             DIDN∆S←(AUXREVRAT-1) DDTAB∆2 HMP×DA1∆l
+[139]             DIDN∆L←(AUXREVRAT-1) DDTAB∆2 HMP×DA6∆l
+[140]             DIDN∆4←(AUXREVRAT-1) DDTAB∆2 HMP×DA7∆l
+[141]             DID3∆M←(  REVRAT3-1) DDTAB∆2 HMP×DA2∆l
+[142]             DID3∆S←(  REVRAT3-1) DDTAB∆2 HMP×DA1∆l
+[143]             DID3∆L←(  REVRAT3-1) DDTAB∆2 HMP×DA6∆l
+[144]             DID3∆4←(  REVRAT3-1) DDTAB∆2 HMP×DA7∆l
+[145]             ∆6503D←(DIDDYN⍷'SM34')/DID∆S DID∆M DID∆L DID∆4
+[146]             :select DDINDS
+[147]             :caselist 1 2 5
+[148]                 DIDSPECIAL ←(DID∆S×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io  ;;⎕io;   ;])+(DIDN∆S×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io  ;;⎕io+1;   ;])+DID3∆S×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io;  ;⎕io+2;   ;]
+[149]                 DIDMAIN    ←(DID∆M×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+1;;⎕io;   ;])+(DIDN∆M×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+1;;⎕io+1;   ;])+DID3∆M×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+1;;⎕io+2;   ;]
+[150]                 DIDLIMITED ←(DID∆L×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+2;;⎕io;   ;])+(DIDN∆L×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+2;;⎕io+1;   ;])+DID3∆L×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+2;;⎕io+2;   ;]
+[151]                 DID4       ←(DID∆4×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+3;;⎕io;   ;])+(DIDN∆4×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+3;;⎕io+1;   ;])+DID3∆4×+/[⎕io]+/[⎕io+1]DIDPEN[⎕io+3;;⎕io+2;   ;]
+[152]                 GDIDSPECIAL←(DID∆S×+/[⎕io]         DIDPEN[⎕io  ;;⎕io;⎕io;])+(DIDN∆S×+/[⎕io]         DIDPEN[⎕io  ;;⎕io+1;⎕io;])+DID3∆S×+/[⎕io]         DIDPEN[⎕io;  ;⎕io+2;⎕io;]
+[153]                 GDIDMAIN   ←(DID∆M×+/[⎕io]         DIDPEN[⎕io+1;;⎕io;⎕io;])+(DIDN∆M×+/[⎕io]         DIDPEN[⎕io+1;;⎕io+1;⎕io;])+DID3∆M×+/[⎕io]         DIDPEN[⎕io+1;;⎕io+2;⎕io;]
+[154]                 GDIDLIMITED←(DID∆L×+/[⎕io]         DIDPEN[⎕io+2;;⎕io;⎕io;])+(DIDN∆L×+/[⎕io]         DIDPEN[⎕io+2;;⎕io+1;⎕io;])+DID3∆L×+/[⎕io]         DIDPEN[⎕io+2;;⎕io+2;⎕io;]
+[155]                 GDID4      ←(DID∆4×+/[⎕io]         DIDPEN[⎕io+3;;⎕io;⎕io;])+(DIDN∆4×+/[⎕io]         DIDPEN[⎕io+3;;⎕io+1;⎕io;])+DID3∆4×+/[⎕io]         DIDPEN[⎕io+3;;⎕io+2;⎕io;]
+[156]             :caselist 3 4
+[157]                 DIDSPECIAL ←(   (DIDDYN='S')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA1∆l) PDIDCALC WGMP)+(DID∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io;   ;]+DIDPEN[⎕io  ;⎕io+2;⎕io;   ;])+(DIDN∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io+1;   ;]+DIDPEN[⎕io  ;⎕io+2;⎕io+1;   ;])+DID3∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io+2;   ;]+DIDPEN[⎕io  ;⎕io+2;⎕io+2;   ;]
+[158]                 DIDMAIN    ←(   (DIDDYN='M')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA2∆l) PDIDCALC WGMP)+(DID∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io;   ;]+DIDPEN[⎕io+1;⎕io+2;⎕io;   ;])+(DIDN∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io+1;   ;]+DIDPEN[⎕io+1;⎕io+2;⎕io+1;   ;])+DID3∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io+2;   ;]+DIDPEN[⎕io+1;⎕io+2;⎕io+2;   ;]
+[159]                 DIDLIMITED ←(   (DIDDYN='3')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA6∆l) PDIDCALC WGMP)+(DID∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io;   ;]+DIDPEN[⎕io+2;⎕io+2;⎕io;   ;])+(DIDN∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io+1;   ;]+DIDPEN[⎕io+2;⎕io+2;⎕io+1;   ;])+DID3∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io+2;   ;]+DIDPEN[⎕io+2;⎕io+2;⎕io+2;   ;]
+[160]                 DID4       ←(   (DIDDYN='4')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA7∆l) PDIDCALC WGMP)+(DID∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io;   ;]+DIDPEN[⎕io+3;⎕io+2;⎕io;   ;])+(DIDN∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io+1;   ;]+DIDPEN[⎕io+3;⎕io+2;⎕io+1;   ;])+DID3∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io+2;   ;]+DIDPEN[⎕io+3;⎕io+2;⎕io+2;   ;]
+[161]                 GDIDSPECIAL←(g1×(DIDDYN='S')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA1∆l) PDIDCALC WGMP)+(DID∆S×       DIDPEN[⎕io  ;⎕io+1;⎕io;⎕io;]+DIDPEN[⎕io  ;⎕io+2;⎕io;⎕io;])+(DIDN∆S×       DIDPEN[⎕io  ;⎕io+1;⎕io+1;⎕io;]+DIDPEN[⎕io  ;⎕io+2;⎕io+1;⎕io;])+DID3∆S×       DIDPEN[⎕io  ;⎕io+1;⎕io+2;⎕io;]+DIDPEN[⎕io  ;⎕io+2;⎕io+2;⎕io;]
+[162]                 GDIDMAIN   ←(g1×(DIDDYN='M')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA2∆l) PDIDCALC WGMP)+(DID∆M×       DIDPEN[⎕io+1;⎕io+1;⎕io;⎕io;]+DIDPEN[⎕io+1;⎕io+2;⎕io;⎕io;])+(DIDN∆M×       DIDPEN[⎕io+1;⎕io+1;⎕io+1;⎕io;]+DIDPEN[⎕io+1;⎕io+2;⎕io+1;⎕io;])+DID3∆M×       DIDPEN[⎕io+1;⎕io+1;⎕io+2;⎕io;]+DIDPEN[⎕io+1;⎕io+2;⎕io+2;⎕io;]
+[163]                 GDIDLIMITED←(g1×(DIDDYN='3')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA6∆l) PDIDCALC WGMP)+(DID∆L×       DIDPEN[⎕io+2;⎕io+1;⎕io;⎕io;]+DIDPEN[⎕io+2;⎕io+2;⎕io;⎕io;])+(DIDN∆L×       DIDPEN[⎕io+2;⎕io+1;⎕io+1;⎕io;]+DIDPEN[⎕io+2;⎕io+2;⎕io+1;⎕io;])+DID3∆L×       DIDPEN[⎕io+2;⎕io+1;⎕io+2;⎕io;]+DIDPEN[⎕io+2;⎕io+2;⎕io+2;⎕io;]
+[164]                 GDID4      ←(g1×(DIDDYN='4')×(GMPREV∆DDTAB ((~i2)×REVRAT-1)) DDTAB∆COMP (HMP×DA7∆l) PDIDCALC WGMP)+(DID∆4×       DIDPEN[⎕io+3;⎕io+1;⎕io;⎕io;]+DIDPEN[⎕io+3;⎕io+2;⎕io;⎕io;])+(DIDN∆4×       DIDPEN[⎕io+3;⎕io+1;⎕io+1;⎕io;]+DIDPEN[⎕io+3;⎕io+2;⎕io+1;⎕io;])+DID3∆4×       DIDPEN[⎕io+3;⎕io+1;⎕io+2;⎕io;]+DIDPEN[⎕io+3;⎕io+2;⎕io+2;⎕io;]
+[165]             :endselect
+[166]             FDIDSPECIAL ←(DID∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+2;⎕io;   ;])+(DIDN∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+2;⎕io+1;   ;])+DID3∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+2;⎕io+2;   ;]
+[167]             FDIDMAIN    ←(DID∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+2;⎕io;   ;])+(DIDN∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+2;⎕io+1;   ;])+DID3∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+2;⎕io+2;   ;]
+[168]             FDIDLIMITED ←(DID∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+2;⎕io;   ;])+(DIDN∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+2;⎕io+1;   ;])+DID3∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+2;⎕io+2;   ;]
+[169]             FDID4       ←(DID∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+2;⎕io;   ;])+(DIDN∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+2;⎕io+1;   ;])+DID3∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+2;⎕io+2;   ;]
+[170]             FGDIDSPECIAL←(DID∆S×       DIDPEN[⎕io  ;⎕io+2;⎕io;⎕io;])+(DIDN∆S×       DIDPEN[⎕io  ;⎕io+2;⎕io+1;⎕io;])+DID3∆S×       DIDPEN[⎕io  ;⎕io+2;⎕io+2;⎕io;]
+[171]             FGDIDMAIN   ←(DID∆M×       DIDPEN[⎕io+1;⎕io+2;⎕io;⎕io;])+(DIDN∆M×       DIDPEN[⎕io+1;⎕io+2;⎕io+1;⎕io;])+DID3∆M×       DIDPEN[⎕io+1;⎕io+2;⎕io+2;⎕io;]
+[172]             FGDIDLIMITED←(DID∆L×       DIDPEN[⎕io+2;⎕io+2;⎕io;⎕io;])+(DIDN∆L×       DIDPEN[⎕io+2;⎕io+2;⎕io+1;⎕io;])+DID3∆L×       DIDPEN[⎕io+2;⎕io+2;⎕io+2;⎕io;]
+[173]             FGDID4      ←(DID∆4×       DIDPEN[⎕io+3;⎕io+2;⎕io;⎕io;])+(DIDN∆4×       DIDPEN[⎕io+3;⎕io+2;⎕io+1;⎕io;])+DID3∆4×       DIDPEN[⎕io+3;⎕io+2;⎕io+2;⎕io;]
+[174]             LRF←1+(0⌈(XMP+0.5×IsAccrued)-SPA)×∆←52.18÷700 ⋄ LRF←LRF÷1+(0⌈Xe-SPA)×∆            
+[175]             escfactB88←1⌈DYNRATB88[⎕io+2×term+0⌈(XMP+0.5×IsAccrued)-↑X] CDIV DYNRATB88[⎕io+2×term+0⌈SPA-↑X]
+[176] 
+[177]             :if fixed∆l
+[178]                 DIDPre←↑,/(DIFF 0,+\p)↑¨(¯1↓0,+\p)↓¨GMPREV∆DDTAB DDTAB∆3¨⊂HMP×DA3∆l×LRF×escfactB88
+[179]             :else
+[180]                 DIDPre←GMPREV∆DDTAB DDTAB∆3 HMP×DA3∆l×LRF×escfactB88
+[181]             :endif
+[182]             ∆6503A←DIDPre←DIDPre CDIV LRF×escfactB88
+[183]             DIDPreGMP←DIDPre×0.5×PreGMP×Male
+[184] 
+[185]             escfactA88←1⌈DYNRATA88[⎕io+2×term+0⌈(XMP+0.5×IsAccrued)-↑X] CDIV DYNRATA88[⎕io+2×term+0⌈SPA-↑X]
+[186] 
+[187]             :if fixed∆l
+[188]                 DIDPost←↑,/(DIFF 0,+\p)↑¨(¯1↓0,+\p)↓¨GMPREV∆DDTAB DDTAB∆3¨⊂HMP×DA4∆l×LRF×escfactA88
+[189]             :else
+[190]                 DIDPost←GMPREV∆DDTAB DDTAB∆3 HMP×DA4∆l×LRF×escfactA88
+[191]             :endif
+[192]             ∆6503B←DIDPost←DIDPost CDIV LRF×escfactA88
+[193]             DIDPostGMP←DIDPost×0.5× PostGMP
+[194]             :if mpuflag
+[195]                 UFUNDCOMP←UFUNDCOMP+(GFRAC1×DIDPreGMP)+(GFRAC2×DIDPostGMP)+GDIDMAIN+GDIDSPECIAL+GDIDLIMITED+GDID4
+[196]                 UPre←UPre+GFRAC1×DIDPreGMP ⋄ UPost←UPost+GFRAC2×DIDPostGMP ⋄ UM←UM+GDIDMAIN ⋄ US←US+GDIDSPECIAL ⋄ UL←UL+GDIDLIMITED ⋄ U4←U4+GDID4
+[197]                 FUFUNDCOMP←FUFUNDCOMP+FDIDPostGMP+FGDIDMAIN+FGDIDSPECIAL+FGDIDLIMITED+FGDID4
+[198]             :endif
+[199]             :if isNPCR
+[200]                 DIDPreGMP  ←0.9×DIDPreGMP
+[201]                 DIDPostGMP ←0.9×DIDPostGMP
+[202]                 DIDMAIN    ←0.9×DIDMAIN
+[203]                 DIDSPECIAL ←0.9×DIDSPECIAL
+[204]                 DIDLIMITED ←0.9×DIDLIMITED
+[205]                 DID4       ←0.9×DID4
+[206]                 FDIDMAIN   ←0.9×FDIDMAIN
+[207]                 FDIDSPECIAL←0.9×FDIDSPECIAL
+[208]                 FDIDLIMITED←0.9×FDIDLIMITED
+[209]                 FDID4      ←0.9×FDID4
+[210]             :endif
+[211]             GMPDID←DIDPreGMP+DIDPostGMP  ⍝ FOR USE IN INIT∆ACC
+[212]             XSDID←DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4      ⍝ FOR USE IN INIT ACC
+[213]             DIDPre←DIDPreGMP ⋄ DIDPost←DIDPostGMP
+[214]             LTC←DID←DIDPreGMP+DIDPostGMP+DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4
+[215]             LFC←FDID←FDIDMAIN+FDIDSPECIAL+FDIDLIMITED+FDID4
+[216]                 ⍝:if DDIND=10 ⍝ TO DO
+[217]                 ⍝    LTC←LTC+DID←LTONTOP∆L×(REVRAT-1) DDTAB∆2 1
+[218]                 ⍝    LFC←LFC+FDID←LFONTOP∆L×(REVRAT-1) DDTAB∆2 1
+[219]                 ⍝    UFUNDCOMP←UFUNDCOMP+DID
+[220]                 ⍝    FUFUNDCOMP←FUFUNDCOMP+FDID
+[221]                 ⍝:endif
+[222]     :endif
+[223] ⍝⍝⍝    :if test ⋄ :andif 0≠DDINDS
+[224] ⍝⌿⍝    :if 0≠DDINDS
+[225] ⍝⌿⍝        :if DIDBAS≠0
+[226] ⍝⌿⍝            MDIDSPECIAL←(DID∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io;;])+DIDN∆S×+/[⎕io]DIDPEN[⎕io  ;⎕io+1;⎕io+1;;]
+[227] ⍝⌿⍝            MDIDMAIN   ←(DID∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io;;])+DIDN∆M×+/[⎕io]DIDPEN[⎕io+1;⎕io+1;⎕io+1;;]
+[228] ⍝⌿⍝            MDIDLIMITED←(DID∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io;;])+DIDN∆L×+/[⎕io]DIDPEN[⎕io+2;⎕io+1;⎕io+1;;]
+[229] ⍝⌿⍝            MDID4      ←(DID∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io;;])+DIDN∆4×+/[⎕io]DIDPEN[⎕io+3;⎕io+1;⎕io+1;;]
+[230] ⍝⌿⍝            :if isNPCR
+[231] ⍝⌿⍝                MDIDSPECIAL←0.9×MDIDSPECIAL
+[232] ⍝⌿⍝                MDIDMAIN   ←0.9×MDIDMAIN
+[233] ⍝⌿⍝                MDIDLIMITED←0.9×MDIDLIMITED
+[234] ⍝⌿⍝                MDID4      ←0.9×MDID4
+[235] ⍝⌿⍝            :endif
+[236] ⍝⌿⍝            MDID←MDIDMAIN+MDIDSPECIAL+MDIDLIMITED+MDID4
+[237] ⍝⌿⍝            PDID←DID-MDID+FDID+DIDPreGMP+DIDPostGMP
+[238] ⍝⌿⍝        :endif
+[239] ⍝⌿⍝        ∆A←∆6490A←0.5×PreGMP×Male
+[240] ⍝⌿⍝        :if DIDBAS=0 ⍝ DIDPEN a different shape if costed using a Table
+[241] ⍝⌿⍝            ∆6491A←  +⌿DIDPEN[⎕io+1;⎕io+1;;]  ⍝ Post-97
+[242] ⍝⌿⍝            ∆6491B←  +⌿DIDPEN[⎕io  ;⎕io+1;;]
+[243] ⍝⌿⍝            ∆6491C←  +⌿DIDPEN[⎕io+2;⎕io+1;;]
+[244] ⍝⌿⍝            ∆6491D←  +⌿DIDPEN[⎕io+3;⎕io+1;;]
+[245] ⍝⌿⍝            ∆6492A←  +⌿DIDPEN[⎕io+1;⎕io+2;;]  ⍝ Future
+[246] ⍝⌿⍝            ∆6492B←  +⌿DIDPEN[⎕io  ;⎕io+2;;]
+[247] ⍝⌿⍝            ∆6492C←  +⌿DIDPEN[⎕io+2;⎕io+2;;]
+[248] ⍝⌿⍝            ∆6492D←  +⌿DIDPEN[⎕io+3;⎕io+2;;]
+[249] ⍝⌿⍝        :else
+[250] ⍝⌿⍝            ∆6491A←+⌿+⌿DIDPEN[⎕io+1;⎕io+1;;;]  ⍝ Post-97
+[251] ⍝⌿⍝            ∆6491B←+⌿+⌿DIDPEN[⎕io  ;⎕io+1;;;]
+[252] ⍝⌿⍝            ∆6491C←+⌿+⌿DIDPEN[⎕io+2;⎕io+1;;;]
+[253] ⍝⌿⍝            ∆6491D←+⌿+⌿DIDPEN[⎕io+3;⎕io+1;;;]
+[254] ⍝⌿⍝            ∆6492A←+⌿+⌿DIDPEN[⎕io+1;⎕io+2;;;]  ⍝ Future
+[255] ⍝⌿⍝            ∆6492B←+⌿+⌿DIDPEN[⎕io  ;⎕io+2;;;]
+[256] ⍝⌿⍝            ∆6492C←+⌿+⌿DIDPEN[⎕io+2;⎕io+2;;;]
+[257] ⍝⌿⍝            ∆6492D←+⌿+⌿DIDPEN[⎕io+3;⎕io+2;;;]
+[258] ⍝⌿⍝        :endif
+[259] ⍝⌿⍝    :endif
+[260] :endif
+[261] ⍝
+[262] ⍝ DID Lump Sum
+[263] ⍝
+[264]     :select DDINDL ⍝ Note that DID LS benefits are excluded from Underpin calculations
+[265]     :case 1 ⍝ Return of Conts
+[266]         vdd←(jdef-1) DDTAB∆2 1
+[267]         :if IsAccrued
+[268]             LTC←LTC+∆G←∆6505G← CASH∆D←(1-0.1×bencap)×vdd×AC
+[269]             LFC←LFC+∆H←∆6505H←FCASH∆D←(1-0.1×bencap)×vdd×AC  -ACPM
+[270]         :else
+[271]             LTC←LTC+∆G←∆6505G← CASH∆D←               vdd×ACMP
+[272]             LFC←LFC+∆H←∆6505H←FCASH∆D←               vdd×ACMP-ACPMMP
+[273]         :endif
+[274]     :case 2 ⍝ Return of Conts if no Spouse
+[275]         vdd←(jdef-1) DDTAB∆2 1
+[276]         :if IsAccrued
+[277]             LTC←LTC+∆G←∆6505G← CASH∆D←(1-0.1×bencap)×(1-HMP)×vdd×AC
+[278]             LFC←LFC+∆H←∆6505H←FCASH∆D←(1-0.1×bencap)×(1-HMP)×vdd×AC  -ACPM
+[279]         :else
+[280]             LTC←LTC+∆G←∆6505G← CASH∆D←               (1-HMP)×vdd×ACMP
+[281]             LFC←LFC+∆H←∆6505H←FCASH∆D←               (1-HMP)×vdd×ACMP-ACPMMP
+[282]         :endif
+[283]     :case 333 ⍝ FIXME: Return of Reserve (temporarily removed)
+[284]         ∆6505A←DID      ⍝ Store initial values
+[285]         ∆6505B←FDID
+[286]         DDMULT←(VNRAVX CDIV DNRADX)-1
+[287]         DIDPreGMP  ←DIDPreGMP  +GMP∆Pre ×DDMULT
+[288]         DIDPostGMP ←DIDPostGMP +GMP∆Post×DDMULT
+[289]         DIDMAIN    ←DIDMAIN    +LP2×DDMULT
+[290]         DIDSPECIAL ←DIDSPECIAL +LP3×DDMULT
+[291]         DIDLIMITED ←DIDLIMITED +LP6×DDMULT
+[292]         DID4       ←DID4       +LP7×DDMULT
+[293]         FDIDMAIN   ←FDIDMAIN   +LF2×DDMULT
+[294]         FDIDSPECIAL←FDIDSPECIAL+LF3×DDMULT
+[295]         FDIDLIMITED←FDIDLIMITED+LF6×DDMULT
+[296]         FDID4      ←FDID4      +LF7×DDMULT
+[297]         LTC←DID←DIDPreGMP+DIDPostGMP+DIDMAIN+DIDSPECIAL+DIDLIMITED+DID4
+[298]         LFC←FDID←FDIDMAIN+FDIDSPECIAL+FDIDLIMITED+FDID4
+[299]         ∆6505A← DID-∆6505A
+[300]         ∆6505B←FDID-∆6505B
+[301]         CASH∆D←FCASH∆D←0
+[302]     :case 4 ⍝ Multiple of Pension
+[303]         :if isNPCR ⋄ DIDLS←DDLMULT×DIDTPEN
+[304]         :else      ⋄ DIDLS←DDLMULT×TPEN∆DID ⍝ Use uncapped TPEN∆DID
+[305]         :endif
+[306]         ⍝ Take LS arising from GMP off first tranche
+[307]         DIDLS[;⎕io;;;;;]←DIDLS[;⎕io;;;;;]×[⎕io+5]0⌈1-DDLMULT×GMP CDIV +/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]DIDLS[;⎕io;;;;;]
+[308]         ⍝ Sum over all but time, revn, term
+[309]         DIDLS←+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DIDLS
+[310]         DID∆LS ←(   REVRAT-1) DDTAB∆2 1
+[311]         DID∆NLS←(AUXREVRAT-1) DDTAB∆2 1
+[312]         DID∆3LS←(  REVRAT3-1) DDTAB∆2 1
+[313]         ∆A←∆6505A←+/[⎕io]DIDLS[;⎕io  ;] ⍝ Total excess rev
+[314]         ∆B←∆6505B←+/[⎕io]DIDLS[;⎕io+1;] ⍝ Total excess non rev
+[315]         ∆I←+/[⎕io]DIDLS[;⎕io+2;] ⍝ Total excess rev3
+[316]         ∆C←∆6505C←DIDLS[⎕io+2;⎕io  ;] ⍝ Future excess rev
+[317]         ∆D←∆6505D←DIDLS[⎕io+2;⎕io+1;] ⍝ Future  excess non rev
+[318]         ∆J←DIDLS[⎕io+2;⎕io+2;] ⍝ Future excess rev3
+[319] 
+[320]         LRF←1+(0⌈(XMP+0.5×IsAccrued)-SPA)×∆←52.18÷700 ⋄ LRF←LRF÷1+(0⌈Xe-SPA)×∆            
+[321]         escfactB88←1⌈DYNRATB88[⎕io+2×term+0⌈(XMP+0.5×IsAccrued)-↑X] CDIV DYNRATB88[⎕io+2×term+0⌈SPA-↑X]
+[322] 
+[323]         :if fixed∆l
+[324]             DIDPre∆LS←↑,/(DIFF 0,+\p)↑¨(¯1↓0,+\p)↓¨GMPREV∆DDTAB DDTAB∆3¨⊂LRF×escfactB88
+[325]         :else
+[326]             DIDPre∆LS←GMPREV∆DDTAB DDTAB∆3 LRF×escfactB88
+[327]         :endif
+[328]         ∆E←∆6505E←DDLMULT×PreGMP
+[329]         escfactA88←1⌈DYNRATA88[⎕io+2×term+0⌈(XMP+0.5×IsAccrued)-↑X] CDIV DYNRATA88[⎕io+2×term+0⌈SPA-↑X]
+[330]         :if fixed∆l
+[331]             DIDPost∆LS←↑,/(DIFF 0,+\p)↑¨(¯1↓0,+\p)↓¨GMPREV∆DDTAB DDTAB∆3¨⊂LRF×escfactA88
+[332]         :else
+[333]             DIDPost∆LS←GMPREV∆DDTAB DDTAB∆3 LRF×escfactA88
+[334]         :endif
+[335]         ∆F←∆6505F←DDLMULT×PostGMP
+[336]         :if isNPCR
+[337]             LTC←LTC+∆G←∆6509G← CASH∆D←0.9×(DID∆LS×∆A)+(DID∆NLS×∆B)+(DID∆3LS×∆I)+(DIDPre∆LS×∆E)+DIDPost∆LS×∆F
+[338]             LFC←LFC+∆H←∆6509H←FCASH∆D←0.9×(DID∆LS×∆C)+(DID∆NLS×∆D)+ DID∆3LS×∆J
+[339]         :else
+[340]             LTC←LTC+∆G←∆6509G← CASH∆D←(DID∆LS×∆A)+(DID∆NLS×∆B)+(DID∆3LS×∆I)+(DIDPre∆LS×∆E)+DIDPost∆LS×∆F
+[341]             LFC←LFC+∆H←∆6509H←FCASH∆D←(DID∆LS×∆C)+(DID∆NLS×∆D)+ DID∆3LS×∆J
+[342]         :endif
+[343]     :else
+[344]         CASH∆D←FCASH∆D←0
+[345]     :endselect
+[346] ⍝⍝⍝ :if test ⋄ :andif DDINDL=1 ⋄ :andif ~IsAccrued
+[347] ⍝⌿⍝ :if DDINDL=1 ⋄ :andif ~IsAccrued
+[348] ⍝⌿⍝    vdd←(jdef-1) DDTAB∆2 1
+[349] ⍝⌿⍝    ∆G←∆6505G←vdd×ACMP        ⋄ ⍝ RETCONTS
+[350] ⍝⌿⍝    ∆H←∆6505H←vdd×ACMP-ACPMMP ⋄ ⍝ FRETCONTS
+[351] ⍝⌿⍝ :endif
+[352] :if CONTOP
+[353]     LTC←LTC+∆7010F←LTONTOP×DNRADX ⋄ LFC←LFC+LFONTOP×DNRADX
+[354]     :if mpuflag
+[355]         UFUNDCOMP←UFUNDCOMP+GONTOP×DNRADX ⋄ FUFUNDCOMP←FUFUNDCOMP+LFONTOP×DNRADX ⍝⍝⍝ ⋄ UONTOP←GONTOP×DNRADX
+[356]     :endif
+[357] :else
+[358]     LTC←LTC+∆7010F←LCASH×DNRADX ⋄ LFC←LFC+FLCASH×DNRADX
+[359]     :if mpuflag
+[360]         UFUNDCOMP←UFUNDCOMP+LGCASH×DNRADX ⋄ FUFUNDCOMP←FUFUNDCOMP+FLGCASH×DNRADX
+[361]     :endif
+[362] :endif
+    ∇

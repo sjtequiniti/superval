@@ -1,0 +1,77 @@
+    ∇ res←field AddScheme_Database parm;parent;sqlDatabase;cursor;lock;schemes;SchemeID;z;ValnResultsDB;sqlschemeID
+[1]   ⍝ UTILSWIN.sf#12
+[2]   ⍝ Function to allow user control on Adding Scheme to SQL Database
+[3]   
+[4]   parent←'fmAddSchemeDB.' ⋄ res←0⍴'' ⍝ Default response
+[5]   sqlDatabase←1
+[6]   
+[7]   :select parm
+[8]   
+[9]   :case 'Prepare'
+[10]  
+[11]      :if 0=⎕nc 'sql_properties'
+[12]          :if mt sqlConName ⋄ :orif mt ConfigFile ReadFile 'Configure_SQL' sqlConName ⋄ :orif accesslevel<zwb SQLAccess
+[13]              res←'SQL Server Connection properties not specified.',⎕tcnl
+[14]              res←res,'First update your User details (Tools/Administration/Manage Users)'
+[15]              :return
+[16]          :endif
+[17]          sql_properties←⊃spin m2n¨property propvalue
+[18]          sqlTimeout←zwb SQLTimeout
+[19]          0 0⍴DeleteVars 'Configure_SQL'
+[20]      :endif
+[21]  
+[22]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[23]      :if 0=⎕nc 'AddSchemeQuit' ⋄ AddSchemeQuit←0 ⋄ :endif
+[24]  
+[25]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[26]  
+[27]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[28]  
+[29]      :repeat
+[30]          :select ↑field
+[31]          :case ' '
+[32]          :endselect
+[33]      :until mt field←1↓field
+[34]  
+[35]  :case 'Valid' ⍝ Routine specific validation
+[36]  
+[37]  :case 'Run'
+[38]  
+[39]      ((⊂parent,'bnAddScheme_Database'),¨'Save' 'Quit' 'Help') MultiWI 'enabled' 0
+[40]  
+[41]      ValnResultsDB←DBFile ⋄ sqlschemeID←0
+[42]      0 0⍴'ADOcon' ⎕wi 'Create' 'ADODB.Connection'
+[43]      'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[44]      'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[45]      :if ~2↓'' ⍙DBOpen 0
+[46]          MDISPLAY 'Unable to Open ',DBFile,' Database.' ⋄ →end
+[47]      :endif
+[48]  
+[49]      0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'                         ⍝ ADOrst closed by ⍙DBOpen
+[50]      cursor←'ADOrst' ⎕wi 'adOpenStatic' ⋄ lock←'ADOrst' ⎕wi 'adLockOptimistic'
+[51]      'ADOrst' ⎕wi 'XOpen' 'Scheme' ('ADOcon' ⎕wi 'obj') cursor lock
+[52]      :if ~mt schemes←1 ⍙DBadoCONCommand "SELECT SchemeID, Scheme, ",('TaskValnDate' ⍙DBDateFormat 'dd/mm/yyyy'),", Task FROM Scheme"
+[53]      :andif ∨/z←(⎕split UPPERCASE¨DLTB¨0 1↓schemes)∊⊂UPPERCASE¨sCHEME TaskVDate TaskDesc
+[54]          0 0⍴(⊂'ADOrst') ⎕WI¨'XClose' 'Close' 'Delete'
+[55]          MDISPLAY (' ' join sCHEME TaskDesc),' at ',TaskVDate,' already exists on the database as Scheme ID ',(⍕z⌿schemes[;1]),'.'
+[56]      :else
+[57]          SchemeID←1 ⍙DBNextID 'SchemeID'                                 ⍝ Next Available number
+[58]          ⍙DBInsertData SchemeID sCHEME (⍙DBTimeStamp 'DD/MM/YYYY' DATEEXP TaskVDate) TaskDesc
+[59]  
+[60]          ⍝ Update Schemes List in SQL Configuration file
+[61]          schemes←DLTB¨1 ⍙DBadoCONCommand "SELECT SchemeID, Scheme, ",('TaskValnDate' ⍙DBDateFormat 'dd/mm/yyyy'),", Task FROM Scheme"
+[62]          0 0⍴ConfigFile SaveToFile DBFile 'List of Defined Schemes' (pack 'schemes')
+[63]          0 0⍴(⊂'ADOrst') ⎕WI¨'XClose' 'Close' 'Delete'
+[64]  
+[65]          MDISPLAY 'New Scheme successfully add to the database with Scheme ID ',(⍕SchemeID),'.'
+[66]      :endif
+[67]  end:0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[68]      0 0⍴(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete'
+[69]      ((⊂parent,'bnAddScheme_Database'),¨'Save' 'Quit' 'Help') MultiWI 'enabled' 1
+[70]      res←AddSchemeQuit/'Quit'
+[71]  
+[72]  :case 'Quit' ⍝ Deleting "other" variables
+[73]      0 0⍴⎕ex 'AddSchemeQuit'
+[74]  
+[75]  :endselect
+    ∇

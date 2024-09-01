@@ -1,1 +1,113 @@
-    ∇ tab←⍙WebInitialiseCash tab;benbasis;msk;rows;cashtab;row;parttab;cot;comm;addtab;replaced;penmsk;vals;∆;newtab;pentab;COMpc;pens;monly;penVF;weights;liab;factors;ADaypc[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Create Pension Cashflows for any Future CARE (all) or Valuation Basis (% of Pension, Mult of Pension) Cash liabilities[3]   ⍝  enabling reflection of changes in Pension Amount, Commutation Factors and Service limit changes[4]   [5]   :if ∨/∆←(tab at 'ClassName')∊'Active' 'Deferred' ⍝ Only Cash rows[6]   :andif ∨/∆^1=∣tab at 'CashBenefit'[7]       benbasis←tab at 'BenefitBasis' ⋄ (cot comm)←∣×¨tab at 'CashOnTop' 'Commutation'[8]       addtab←MATRIX keysIn tab ⋄ replaced←(rowsIn tab)⍴0[9]   [10]      ⍝ IR Maximum and Accrual x Salary:[11]      ⍝ COT: only affected by Salary Inflation (no effect when CARE, Pensions change, Comm Fact (VB or not) change)[12]      ⍝ Comm: Cash only affected by Salary Inflation.  Pensions changes when Comm Fact (VB or not) changes - "not" covered by field entry[13]  [14]      :if ∨/msk←comm^(∨/¨(⊂'Valn Basis')⍷¨benbasis)^(∨/¨(⊂'IR Maximum')⍷¨benbasis)∨(∨/¨(⊂'Accrual x Salary')⍷¨benbasis)[15]          :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time[16]              parttab←cashtab for row=rows[17]              :if ∨/penmsk←tab ⍙WebPensionRecords parttab[18]                  vals←tab at 'VBFactAdjType'[19]                  (penmsk/vals)←1                                             ⍝ VBFactAdjType 1 is change in Pension because of Fixed Cash and VB Comm Fact[20]                  tab←tab amend 'VBFactAdjType' vals[21]              :endif[22]          :endfor[23]      :endif[24]  [25]      ⍝ % of Pension - no change for non-Valuation Basis Comm Factors (substitute Pension records to ensure inflation at same rates)[26]      ⍝ COT/Comm: for Valuation Basis Factors replace Cash records with Pension records - handles all changes[27]  [28]      :if ∨/msk←∨/¨(⊂'% of Pension')⍷¨benbasis[29]          :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time[30]              parttab←cashtab for row=rows[31]              :if ∨/penmsk←tab ⍙WebPensionRecords parttab                     ⍝ Get companion Pension records[32]                  :if ∆←∨/'Valn Basis'⍷↑parttab at 'BenefitBasis' ⋄ :orif 1<+/penmsk ⍝ if more than one record, replace with pension records[33]                      addtab←addtab append (tab for penmsk) ⍙WebCashRecords parttab ∆[34]                      ((row=msk\rows)/replaced)←1[35]                  :endif[36]              :endif[37]          :endfor[38]      :endif[39]  [40]      ⍝ Multiple of Pension[41]      ⍝ COT: convert Cash to Pension records (if more than one) to get correct inflation[42]      ⍝ Comm: convert Cash to Pension records (if more than one) to get correct inflation, VBFactAdjustment if Valn Basis Comm Factors[43]  [44]      :if ∨/msk←∨/¨(⊂'Mult of Pension')⍷¨benbasis[45]          :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time[46]              parttab←cashtab for row=rows[47]              :if ∨/penmsk←tab ⍙WebPensionRecords parttab                     ⍝ Get companion Pension records[48]                  :if 1<+/penmsk                                              ⍝ if more than one record, replace with pension records[49]                      addtab←addtab append (tab for penmsk) ⍙WebCashRecords parttab 0[50]                      ((row=msk\rows)/replaced)←1[51]                  :endif[52]                  :if ∨/(∨/'Valn Basis'⍷↑parttab at 'BenefitBasis')^∣×parttab at 'Commutation'[53]                      vals←tab at 'VBFactAdjType'[54]                      (penmsk/vals)←1                                             ⍝ VBFactAdjType 1 is change in Pension because of Fixed Cash and VB Comm Fact[55]                      tab←tab amend 'VBFactAdjType' vals[56]                  :endif[57]              :endif[58]          :endfor[59]      :endif[60]  [61]      ⍝ A-Day Cash[62]      ⍝ Comm (only):[63]  [64]      :if ∨/msk←∨/¨(⊂'% of A-Day Cash')⍷¨benbasis[65]          :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time[66]              parttab←cashtab for row=rows[67]              ADaypc←0.01×zwb (,(∨/'%'=∆)⌿∆←SStoMAT ' ',↑parttab at 'BenefitBasis')~'%'[68]              :if ∨/penmsk←tab ⍙WebPensionRecords parttab                     ⍝ Get companion Pension records[69]                  pentab←tab for penmsk[70]                  newtab←pentab ⍙WebCashRecords parttab 0                     ⍝ replace with pension records[71]                  ((row=msk\rows)/replaced)←1[72]                  pens←+/¨(⊂penfymsk)×¨pentab at 'MemberCashFlow'             ⍝ First Year pensions (close enough)[73]                  monly←pentab at 'MemberOnly'[74]                  ⍝ Pension Valuation factors[75]                  penVF←(((+/¨(pentab at 'Discount')×(pentab at 'MemberCashFlow')+(~monly)×pentab at 'SpouseCashFlow'))×+/¨(⊂penfymsk)×¨÷(pentab at 'Discount')×pentab at 'Inflator') CDIV pens[76]                  weights←(penVF×pens) CDIV ¨+/penVF ×pens[77]                  liab←⊂maxpay↑,↑parttab at 'MemberCashFlow'[78]                  factors←(liab×¨weights CDIV¨ +/weights) CDIV pens×COMpc CDIV 1-COMpc←pentab at 'CashRate'[79]                  vals←tab at 'CashFactor'[80]                  (penmsk/vals)←factors[81]                  tab←tab amend 'CashFactor' vals[82]                  vals←tab at 'ADay%'[83]                  (penmsk/vals)←⊂ADaypc[84]                  tab←tab amend 'ADay%' vals[85]                  newtab←newtab amend 'CashFactor' factors[86]                  newtab←newtab amend 'ADay%' ((+/penmsk)⍴⊂ADaypc)[87]                  :if ∨/(∨/'Valn Basis'⍷↑parttab at 'BenefitBasis')^∣×parttab at 'Commutation'[88]                      vals←tab at 'VBFactAdjType'[89]                      (penmsk/vals)←2                                         ⍝ VBFactAdjType 2 is change in Pension because of A-Day Cash and VB Comm Fact[90]                      tab←tab amend 'VBFactAdjType' vals[91]                      newtab←newtab amend 'VBFactAdjType' ((rowsIn newtab)⍴3) ⍝ VBFactAdjType 3 is change in Cash because of A-Day Cash and VB Comm Fact[92]                  :endif[93]                  addtab←addtab append newtab[94]              :endif[95]          :endfor[96]      :endif[97]  [98]      ⍝ Change Future CARE Cash to Pension to allow for change in Future Accrual[99]      :if ∨/msk←(~replaced)^(cot∨comm)^∨/¨(⊂'CARE')⍷¨benbasis[100]         :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time[101]             parttab←cashtab for row=rows[102]             :if ∨/penmsk←tab ⍙WebPensionRecords parttab                     ⍝ Get companion Pension records[103]                 addtab←addtab append (tab for penmsk) ⍙WebCashRecords parttab 0[104]                 ((row=msk\rows)/replaced)←1[105]             :endif[106]         :endfor[107]     :endif[108] [109]     tab←(tab for ~replaced) append addtab[110]     agediff←(rowsIn tab)↑(~replaced)/agediff[111] :endif    ∇
+    ∇ tab←⍙WebInitialiseCash tab;benbasis;msk;rows;cashtab;row;parttab;cot;comm;addtab;replaced;penmsk;vals;∆;newtab;pentab;COMpc;pens;monly;penVF;weights;liab;factors;ADaypc
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Create Pension Cashflows for any Future CARE (all) or Valuation Basis (% of Pension, Mult of Pension) Cash liabilities
+[3]   ⍝  enabling reflection of changes in Pension Amount, Commutation Factors and Service limit changes
+[4]   
+[5]   :if ∨/∆←(tab at 'ClassName')∊'Active' 'Deferred' ⍝ Only Cash rows
+[6]   :andif ∨/∆^1=∣tab at 'CashBenefit'
+[7]       benbasis←tab at 'BenefitBasis' ⋄ (cot comm)←∣×¨tab at 'CashOnTop' 'Commutation'
+[8]       addtab←MATRIX keysIn tab ⋄ replaced←(rowsIn tab)⍴0
+[9]   
+[10]      ⍝ IR Maximum and Accrual x Salary:
+[11]      ⍝ COT: only affected by Salary Inflation (no effect when CARE, Pensions change, Comm Fact (VB or not) change)
+[12]      ⍝ Comm: Cash only affected by Salary Inflation.  Pensions changes when Comm Fact (VB or not) changes - "not" covered by field entry
+[13]  
+[14]      :if ∨/msk←comm^(∨/¨(⊂'Valn Basis')⍷¨benbasis)^(∨/¨(⊂'IR Maximum')⍷¨benbasis)∨(∨/¨(⊂'Accrual x Salary')⍷¨benbasis)
+[15]          :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time
+[16]              parttab←cashtab for row=rows
+[17]              :if ∨/penmsk←tab ⍙WebPensionRecords parttab
+[18]                  vals←tab at 'VBFactAdjType'
+[19]                  (penmsk/vals)←1                                             ⍝ VBFactAdjType 1 is change in Pension because of Fixed Cash and VB Comm Fact
+[20]                  tab←tab amend 'VBFactAdjType' vals
+[21]              :endif
+[22]          :endfor
+[23]      :endif
+[24]  
+[25]      ⍝ % of Pension - no change for non-Valuation Basis Comm Factors (substitute Pension records to ensure inflation at same rates)
+[26]      ⍝ COT/Comm: for Valuation Basis Factors replace Cash records with Pension records - handles all changes
+[27]  
+[28]      :if ∨/msk←∨/¨(⊂'% of Pension')⍷¨benbasis
+[29]          :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time
+[30]              parttab←cashtab for row=rows
+[31]              :if ∨/penmsk←tab ⍙WebPensionRecords parttab                     ⍝ Get companion Pension records
+[32]                  :if ∆←∨/'Valn Basis'⍷↑parttab at 'BenefitBasis' ⋄ :orif 1<+/penmsk ⍝ if more than one record, replace with pension records
+[33]                      addtab←addtab append (tab for penmsk) ⍙WebCashRecords parttab ∆
+[34]                      ((row=msk\rows)/replaced)←1
+[35]                  :endif
+[36]              :endif
+[37]          :endfor
+[38]      :endif
+[39]  
+[40]      ⍝ Multiple of Pension
+[41]      ⍝ COT: convert Cash to Pension records (if more than one) to get correct inflation
+[42]      ⍝ Comm: convert Cash to Pension records (if more than one) to get correct inflation, VBFactAdjustment if Valn Basis Comm Factors
+[43]  
+[44]      :if ∨/msk←∨/¨(⊂'Mult of Pension')⍷¨benbasis
+[45]          :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time
+[46]              parttab←cashtab for row=rows
+[47]              :if ∨/penmsk←tab ⍙WebPensionRecords parttab                     ⍝ Get companion Pension records
+[48]                  :if 1<+/penmsk                                              ⍝ if more than one record, replace with pension records
+[49]                      addtab←addtab append (tab for penmsk) ⍙WebCashRecords parttab 0
+[50]                      ((row=msk\rows)/replaced)←1
+[51]                  :endif
+[52]                  :if ∨/(∨/'Valn Basis'⍷↑parttab at 'BenefitBasis')^∣×parttab at 'Commutation'
+[53]                      vals←tab at 'VBFactAdjType'
+[54]                      (penmsk/vals)←1                                             ⍝ VBFactAdjType 1 is change in Pension because of Fixed Cash and VB Comm Fact
+[55]                      tab←tab amend 'VBFactAdjType' vals
+[56]                  :endif
+[57]              :endif
+[58]          :endfor
+[59]      :endif
+[60]  
+[61]      ⍝ A-Day Cash
+[62]      ⍝ Comm (only):
+[63]  
+[64]      :if ∨/msk←∨/¨(⊂'% of A-Day Cash')⍷¨benbasis
+[65]          :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time
+[66]              parttab←cashtab for row=rows
+[67]              ADaypc←0.01×zwb (,(∨/'%'=∆)⌿∆←SStoMAT ' ',↑parttab at 'BenefitBasis')~'%'
+[68]              :if ∨/penmsk←tab ⍙WebPensionRecords parttab                     ⍝ Get companion Pension records
+[69]                  pentab←tab for penmsk
+[70]                  newtab←pentab ⍙WebCashRecords parttab 0                     ⍝ replace with pension records
+[71]                  ((row=msk\rows)/replaced)←1
+[72]                  pens←+/¨(⊂penfymsk)×¨pentab at 'MemberCashFlow'             ⍝ First Year pensions (close enough)
+[73]                  monly←pentab at 'MemberOnly'
+[74]                  ⍝ Pension Valuation factors
+[75]                  penVF←(((+/¨(pentab at 'Discount')×(pentab at 'MemberCashFlow')+(~monly)×pentab at 'SpouseCashFlow'))×+/¨(⊂penfymsk)×¨÷(pentab at 'Discount')×pentab at 'Inflator') CDIV pens
+[76]                  weights←(penVF×pens) CDIV ¨+/penVF ×pens
+[77]                  liab←⊂maxpay↑,↑parttab at 'MemberCashFlow'
+[78]                  factors←(liab×¨weights CDIV¨ +/weights) CDIV pens×COMpc CDIV 1-COMpc←pentab at 'CashRate'
+[79]                  vals←tab at 'CashFactor'
+[80]                  (penmsk/vals)←factors
+[81]                  tab←tab amend 'CashFactor' vals
+[82]                  vals←tab at 'ADay%'
+[83]                  (penmsk/vals)←⊂ADaypc
+[84]                  tab←tab amend 'ADay%' vals
+[85]                  newtab←newtab amend 'CashFactor' factors
+[86]                  newtab←newtab amend 'ADay%' ((+/penmsk)⍴⊂ADaypc)
+[87]                  :if ∨/(∨/'Valn Basis'⍷↑parttab at 'BenefitBasis')^∣×parttab at 'Commutation'
+[88]                      vals←tab at 'VBFactAdjType'
+[89]                      (penmsk/vals)←2                                         ⍝ VBFactAdjType 2 is change in Pension because of A-Day Cash and VB Comm Fact
+[90]                      tab←tab amend 'VBFactAdjType' vals
+[91]                      newtab←newtab amend 'VBFactAdjType' ((rowsIn newtab)⍴3) ⍝ VBFactAdjType 3 is change in Cash because of A-Day Cash and VB Comm Fact
+[92]                  :endif
+[93]                  addtab←addtab append newtab
+[94]              :endif
+[95]          :endfor
+[96]      :endif
+[97]  
+[98]      ⍝ Change Future CARE Cash to Pension to allow for change in Future Accrual
+[99]      :if ∨/msk←(~replaced)^(cot∨comm)^∨/¨(⊂'CARE')⍷¨benbasis
+[100]         :for row :in rows←⍳rowsIn cashtab←tab for msk                       ⍝ Process one row at a time
+[101]             parttab←cashtab for row=rows
+[102]             :if ∨/penmsk←tab ⍙WebPensionRecords parttab                     ⍝ Get companion Pension records
+[103]                 addtab←addtab append (tab for penmsk) ⍙WebCashRecords parttab 0
+[104]                 ((row=msk\rows)/replaced)←1
+[105]             :endif
+[106]         :endfor
+[107]     :endif
+[108] 
+[109]     tab←(tab for ~replaced) append addtab
+[110]     agediff←(rowsIn tab)↑(~replaced)/agediff
+[111] :endif
+    ∇

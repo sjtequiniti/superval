@@ -1,0 +1,14 @@
+    ∇ FOURDITVARDESC←SetFOURVARDESC relRules;∆
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Vern: dnp04nov15
+[3]   ⍝ Revn: dnp11nov15  * nice dictionary magics
+[4]   
+[5]   relRules←relRules amend 'status' (,¨∨/¨relRules at 'status')
+[6]   ∆←relRules for ('['∊¨relRules at 'Field')
+[7]   ∆←∆ amend 'Field' (qtrim¨∆ at 'Field')
+[8]   ∆←∆ for unique ∆ at 'Field'
+[9]   relRules←relRules append ∆
+[10]  
+[11]  ∆←valsIn relRules select 'Field' 'Desc' 'Page'  'Type' 'status'
+[12]  FOURDITVARDESC←'name' 'description' 'page' 'type' 'status' 'fmt'⍪ ∆,⊂''
+    ∇

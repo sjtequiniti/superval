@@ -1,0 +1,58 @@
+    ∇ CREATE∆HEAD;A
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Read & Create Headers required for Valuation
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   
+[8]   ARECN←RECN←pAGE ⋄ APAGE←SPAGE←0
+[9]   :if ~(⊂ValMeth)∊(⊂'PEN'),(uk≠1)/⊂'DEF' ⋄ :andif PROPT ⍝ Accrued Bens Headers
+[10]      0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation AccBen'
+[11]      0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation IndAcc'
+[12]      ⍝ H5 for individual listing and H3 for group summary
+[13]      H3←((-¯1↑⍴H3) WRITE∆HEAD 'ACCRUED BENEFITS SUMMARY LISTING') OVER H3
+[14]      H5←((-¯1↑⍴H5) WRITE∆HEAD 'INDIVIDUAL ACCRUED BENS LISTING') OVER H5
+[15]  :endif
+[16]  
+[17]  :if ~(⊂ValMeth)∊'ABC' 'PPA' 'PPD'
+[18]      ⍝ Read Headers - H0+H1 for individual listing and H2 for group summary
+[19]      0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' Group'
+[20]      H2←((-¯1↑⍴H2) WRITE∆HEAD 'GROUP SUMMARY LISTING') OVER H2
+[21]      :if ~ppf ⋄ :andif ~(⊂ValMeth)∊(⊂'PEN'),(uk≠1)/⊂'DEF'
+[22]          0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' TotInd'
+[23]          0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' IndMem'
+[24]          0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation CoCR'
+[25]          0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation NormCost'
+[26]          H1←((-¯1↑⍴H1) WRITE∆HEAD 'TOTAL INDIVIDUAL MEMBER LISTING') OVER H1
+[27]          H0←((-¯1↑⍴H0) WRITE∆HEAD 'INDIVIDUAL MEMBER LISTING') OVER H0
+[28]          IPAGE←0
+[29]      :endif
+[30]  :else
+[31]      H0←H1←H5 ⋄ H2←H3
+[32]  :endif
+[33]  
+[34]  :if decopt
+[35]      0 0⍴(SystemDir,'Headers') ReadFile 'Valuation DecrHead'
+[36]  :endif
+[37]  
+[38]  :if aosind ⍝ Do the following if Analysis of Surplus asked for
+[39]      0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation AOSGroup'
+[40]      0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation AOSIndMem'
+[41]      0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation AOSSumm'
+[42]      0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation AOSDesc'
+[43]      ⍝ H7 for individual listing and H6 for group summary
+[44]      H6←((-¯1↑⍴H6) WRITE∆HEAD 'AOS SUMMARY LISTING') OVER H6
+[45]      H7←((-¯1↑⍴H7) WRITE∆HEAD 'INDIVIDUAL AOS LISTING') OVER H7
+[46]      H8←((-¯1↑⍴H8) WRITE∆HEAD 'ANALYSIS OF SURPLUS SUMMARY LISTING') OVER H8
+[47]      PPAGE←0 ⋄ SRECN←pAGE
+[48]  
+[49]      ⍝ Create Output Headers - Group Summary and Individual
+[50]      A←pvDATE⍪vDATE[0],vDATE[1],((ResSize-1),1)⍴vDATE[2]-⌽⍳ResSize-1
+[51]      H7←(H7 OVER(¯40↑'Year Commencing'),,((ResSize,8)⍴' '),(ResSize,10)⍴SDATE A)⍪' '
+[52]  :else
+[53]      H6←H7←H2
+[54]  :endif
+[55]  
+[56]  CREATE∆HEAD∆ver ⍝ Modify Headers for Valuation Parameters
+    ∇

@@ -1,1 +1,25 @@
-    ∇ wPUP_LOOP2_TRACE1;flds;∆;names[1]   ⍝ DEFWIN.sf#9[2]   ⍝ Write first part of trace file for processing member.[3]   ⍝ v8.50 DT/SJT summer 2010 [Enhanced Deferreds][4]   ⍝ ⎕IO = 0[5]   [6]   TRACE_BOOKMARK 'Top'[7]   TRACE_Def 'h1 class="first"' xtag 'Valuation parameters'[8]   ∆←('Valuation date' VDATE)('SuperVal version' version)('Member data' (InputDir,fILENAME))[9]   TRACE_Def 'table' xtag ↑,/(⊂'tr')xtag¨,/(⊂'td style="text-align: left"') xtag¨⍕¨⎕MIX ∆[10]  TRACE_Def 'p' xtag 'Basis: ',InputDir,basisFile[11]  [12]  TRACE_Def 'h1' xtag 'Member ',NAME[13]  [14]  ∆←∊×⍴¨⍎¨flds←m2n (SStoMAT CharStandVars ,DateStandVars ,FixNumStandVars ,VarNumStandVars ) OVER 'f',CharVars OVER DateVars OVER TotNumVars[15]  names←∆/     m2n (SStoMAT CharStandNames,DateStandNames,FixNumStandNames,VarNumStandNames) OVER     CharDesc OVER DateDesc OVER TotNumDesc[16]  flds←∆/1↓¨flds ⋄ (((⊂'MOE')≡¨flds)/flds)←⊂'MOT' ⍝ MOE is used for another reason!!![17]  [18]  TRACE_Def 'table' xtag ↑,/(⊂'tr')xtag¨,/(⊂'td style="text-align: left"') xtag¨⍕¨⍉⎕MIX (names)(,¨⍎¨flds) ⍝ M8320[19]  [20]  TRACE_Def 'h2' xtag sex,' early-retirement factors'[21]  [22]   'For pensions and commutation'  TRACE_Def ((⊂'age'),ertnms[iPen;]) ⍪X, ⍉ .00001 rnd ertabs[↑iPen;;X] ⍝ SV5000310[23]   'For cash on top'               TRACE_Def ((⊂'age'),ertnms[iCot;]) ⍪X, ⍉ .00001 rnd ertabs[↑iCot;;X] ⍝ SV5000310    ∇
+    ∇ wPUP_LOOP2_TRACE1;flds;∆;names
+[1]   ⍝ DEFWIN.sf#9
+[2]   ⍝ Write first part of trace file for processing member.
+[3]   ⍝ v8.50 DT/SJT summer 2010 [Enhanced Deferreds]
+[4]   ⍝ ⎕IO = 0
+[5]   
+[6]   TRACE_BOOKMARK 'Top'
+[7]   TRACE_Def 'h1 class="first"' xtag 'Valuation parameters'
+[8]   ∆←('Valuation date' VDATE)('SuperVal version' version)('Member data' (InputDir,fILENAME))
+[9]   TRACE_Def 'table' xtag ↑,/(⊂'tr')xtag¨,/(⊂'td style="text-align: left"') xtag¨⍕¨⎕MIX ∆
+[10]  TRACE_Def 'p' xtag 'Basis: ',InputDir,basisFile
+[11]  
+[12]  TRACE_Def 'h1' xtag 'Member ',NAME
+[13]  
+[14]  ∆←∊×⍴¨⍎¨flds←m2n (SStoMAT CharStandVars ,DateStandVars ,FixNumStandVars ,VarNumStandVars ) OVER 'f',CharVars OVER DateVars OVER TotNumVars
+[15]  names←∆/     m2n (SStoMAT CharStandNames,DateStandNames,FixNumStandNames,VarNumStandNames) OVER     CharDesc OVER DateDesc OVER TotNumDesc
+[16]  flds←∆/1↓¨flds ⋄ (((⊂'MOE')≡¨flds)/flds)←⊂'MOT' ⍝ MOE is used for another reason!!!
+[17]  
+[18]  TRACE_Def 'table' xtag ↑,/(⊂'tr')xtag¨,/(⊂'td style="text-align: left"') xtag¨⍕¨⍉⎕MIX (names)(,¨⍎¨flds) ⍝ M8320
+[19]  
+[20]  TRACE_Def 'h2' xtag sex,' early-retirement factors'
+[21]  
+[22]   'For pensions and commutation'  TRACE_Def ((⊂'age'),ertnms[iPen;]) ⍪X, ⍉ .00001 rnd ertabs[↑iPen;;X] ⍝ SV5000310
+[23]   'For cash on top'               TRACE_Def ((⊂'age'),ertnms[iCot;]) ⍪X, ⍉ .00001 rnd ertabs[↑iCot;;X] ⍝ SV5000310
+    ∇

@@ -1,1 +1,134 @@
-    ∇ Z←XV_TablePvb lines;∆;ibdy;isTbl;ibgn;lrec;xxx;cspan;hds;spn;htgs;full;odd;evn;isex;f1;o1;e1;nr;nc;ptf;bdy;pto;pte;cols;MRG;tgs;cmmt;thd;tbd;cnt;rws;bgn;tgt;rbgn;nxt;pt2;iy;pt1;l1[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag a possibly very deep Present Value of Benefits table in lines, if there. SJT 25jan10[3]   ⍝ Tabulated records are couplets (2 table rows each) unless numbers are large, in which case each table row is[4]   ⍝ split into a pair with the cells interleaved; ie 4 table rows per record, a quatrain.[5]   ⍝ In the HTML result table, quatrains are merged back to couplets.[6]   ⍝ Return number of lines read and rws of an HTML table.[7]   ⍝ Calling fn ensures lines contains ≥2 empty lines[8]   ⍝ Cols mostly contain R-aligned numbers[9]   ⍝ Reads ext vars: section FF STYLE_TH STYLE_THG[10]  ⍝ col hds eg[11]  ⍝                                 <--------------------------------- Present Value of Benefits ---------------------------------------->< Insured 1st Year Cost > Pensions[12]  ⍝      Sex  Salary    PS             Retirement Benefits Leaving Service Benefit Costed  Costed  Ill Hth Ill Hth   Total  Member Company    DIS   GL   Ill Health Total Pen[13]  ⍝Name  Age   PV 1%    PM             GMP Pension    Cash     GMP Pension    Cash DIS Pen GL Cash Pension  Cash     Liab.  Conts  Liab.      Pen  Cash   Pen  Cash Acc'd Pen[14]  [15]  :If isTbl←1∊(↑lines)⎕SS 'Insured 1st Year Cost'[16]  :AndIf isTbl←0 0 0 1≡' '^.=¨4↑lines[17]  [18]      cnt←3+(7↑¨lines)⍳⊂'TOTAL: '                                                 ⍝ depth of table body, inc total quatrain[19]      ∆←'Name '^.=⍉⊃5↑¨4↓cnt↑lines                                                ⍝ flag any repeated table header[20]      nxt←lines[(⍳4),4+(⍳⍴∆)~,(∆/⍳⍴∆)∘.+1-⌽⍳5]                                    ⍝ lose those and preceding 4 lines[21]      ibdy←4↓¯4↓⍳⍴nxt                                                             ⍝ index table body[22]      ibgn←(' '≠↑¨nxt[ibdy])/ibdy                                                 ⍝ index lines beginning records[23]      lrec←¯1+-⌿⊃1 ¯1↓¨⊂ibgn,1+↑⌽ibdy                                             ⍝ lengths of records[24]  [25]  :EndIf[26]  [27]  cmmt←⊂'<!-- XV_TablePvb -->'[28]  [29]  :If ~isTbl[30]      (cnt rws)←0 ''                                                              ⍝ no table found[31]  [32]  :ElseIf ×⍴lrec~2 4                                                              ⍝ TEST all records are couplets or quatrains[33]  :OrIf ∨/(↑,/nxt[(⍳4)+↑⌽ibdy]) ⎕SS '***'                                         ⍝ TEST overflow in totals quatrain?[34]      rws←cmmt,'pre class="err"' xtag xmlEscape¨ cnt↑lines[35]  [36]  :Else[37]  [38]     ⍝ WATCH OUT Table header too irregular to analyse, so reconstructed. Vulnerable to change in table format or header content. :-([39]     ⍝ NB placeholders for unmerged empty colheads[40]      ∆←  ⊂"∣    ∣   ∣      ∣  ∣     ∣Present Value of Benefits                                                            ∣∣∣∣∣∣∣∣∣∣∣∣∣ Insured 1st Year Cost∣∣∣ ∣Pensions"[41]      ∆←∆,⊂"∣    ∣Sex∣Salary∣PS∣{nul}∣Retirement Benefits∣∣∣Leaving Service Benefit∣∣∣Costed        ∣∣Ill Health ∣∣Total∣Member∣Company∣ DIS∣GL  ∣Ill Health    ∣ ∣Total Pen"[42]      ∆←∆,⊂"∣Name∣Age∣PV 1% ∣PM∣{nul}∣GMP∣Pension∣Cash     ∣GMP∣Pension∣Cash         ∣DIS Pen∣GL Cash∣Pension∣Cash∣Liab.∣Conts ∣Liab.  ∣ Pen∣Cash∣Pen∣Cash        ∣Acc'd Pen"[43]      hds←DLTB¨1↓¨⊃(+\¨∆=¨'∣')⊂¨∆[44]     ⍝ accommodate varying top line[45]      l1←↑nxt[46]      hds[1;6 19]←DLTB¨(+\ 1 0^.=⊃0 ¯1⌽¨⊂≠\l1∊'<>')⊂↑⊂[2](l1∊'<>-')⊖l1,[.5]' '[47]      hds[1;2⊃⍴hds]←⊂(1-(⌽l1)⍳'>')↑l1[48]  [49]      xxx←⎕FX⊃'Z←cspan R;i;l' 'l←(1↓i,1+⍴R)-i←Z/⍳⍴Z←R' 'Z[i]←l' 'Z←Z+^\Z=0'       ⍝ NB no merging of leading empty header cells[50]      spn←(⊃cspan¨⊂[2] ×↑¨⍴¨hds[⍳2;])⍪1                                           ⍝ calculate hdr cell spans using placeholders[51]      hds[2 3;5]←'' ''                                                            ⍝ remove placeholders for empty header[52]  [53]      htgs←↑⊂[2 3] (1+×spn-1)⊖⊃(⊂⍴spn)⍴¨⊂¨('')('th',STYLE_TH)('th',STYLE_THG)     ⍝ hdr cell attributes[54]      htgs←htgs,¨((spn>1)×⍴¨∆)⍴¨∆←(⊂' colspan="'),¨(⍕¨spn),¨'"'                   ⍝ colspans as needed[55]  [56]      thd←'thead' xtag ↑,/(⊂'tr') xtag¨ ⊂[2] htgs xtag¨hds[57]  [58]  [59]      full←,((lrec=2)/ibgn)∘.+0 1                                                 ⍝ in couplets, both lines are full[60]      (odd evn)←,¨⊂[1 2] ((lrec=4)/ibgn)∘.+2 2⍴(⍳4)-1                             ⍝ quatrains: odd evn odd evn[61]  [62]     ⍝ mark partitions for the various kinds of rows from R edges of data[63]      isex←((2⊃nxt) ⎕SS 'Sex')⍳1                                                  ⍝ index R edge of col 1 from 2nd hdr line[64]      bgn←(1⌽isex↑1 1),0 1                                                        ⍝ special case: 1st columns[65]  [66]      :If ×⍴ibgn[67]          l1←(↑ibgn)⊃nxt                                                          ⍝ 1st data line[68]          iy←(×⍴∆)↑∆←isex+∆/⍳⍴∆←isex↓∨⌿⊃(⊂l1) ⎕SS¨'y ' 'y1'                       ⍝ find duration field so spurious space can be ignored[69]          iy←(^/l1[,iy∘.+¯1 2]∊'0123456789')/iy                                   ⍝ eg 7y10; test digits for yrs and months[70]      :Else[71]          iy←⍬[72]      :EndIf[73]  [74]      :If ×⍴full[75]          f1←⊃nxt[↑full][76]          ptf←bgn,(⍴bgn)↓1⌽(~∆)^¯1⌽∆←' '≠¯1⌽f1[77]          ptf[iy+1]←0                                                             ⍝ preclude partition with age column[78]          ptf[↑⌽ptf/⍳⍴ptf]←0                                                      ⍝ lose partn after last column[79]      :EndIf[80]  [81]      :If ×⍴odd[82]          (o1 e1)←nxt[↑¨odd evn]                                                  ⍝ derive odd/evn partitions from 1st quatrain[83]          (pto pte)←⊂[2] 1⌽(~∆)^¯1⌽∆←' '≠¯1⌽⊃o1 e1[84]          pto←bgn,(⍴bgn)↓pto[85]          pto[iy+1]←0                                                             ⍝ preclude partition with age column[86]          pto[↑⌽pto/⍳⍴pto]←0                                                      ⍝ lose partn after last column[87]          pte←1,1↓pte                                                             ⍝ correct 1st partn[88]          pte[↑⌽pte/⍳⍴pte]←0                                                      ⍝ lose partn after last column[89]      :EndIf[90]  [91]     ⍝ construct and fill result table[92]      (nr nc)←(2×↑⍴lrec)(2⊃⍴hds)                                                  ⍝ shape of result: 2 rows per record[93]      bdy←nr nc⍴⊂''[94]      rbgn←(1=2∣∆)/∆←⍳nr                                                          ⍝ result rows that begin records[95]  [96]      cols←1 2 ¯3 4 5,∆×1+¯2×2∣∆←5↓⍳nc                                            ⍝ -ve cols to be filled from 'even' rows[97]  [98]      :If ×⍴full[99]          tgt←,((lrec=2)/rbgn)∘.+0 1                                              ⍝ result couplets to fill from couplets[100]         bdy[tgt;∣cols         ]←(+\ptf)⊂[2] ⊃nxt[full][101]     :EndIf[102]     :If ×⍴odd[103]         tgt←,((lrec=4)/rbgn)∘.+0 1                                              ⍝ result couplets to fill from quatrains[104]         bdy[tgt;(cols>0)/ cols]←(+\pto)⊂[2] ⊃nxt[odd][105]         bdy[tgt;(cols<0)/∣cols]←(+\pte)⊂[2] ⊃nxt[evn][106]     :EndIf[107] [108]    ⍝ append blank row and 2 totals rows[109]     bdy←bdy⍪3 nc⍴⊂''[110]     tgs←(⍴bdy)⍴(1,nc-1)/'td' 'td style="text-align: right"'                     ⍝ TD tags: R-align all but col 1[111] [112]     pt1←1,1 0^.=⊃1 ¯1↓¨' '=nxt[¯3+⍴nxt]                                         ⍝ partition 1st total row on R edges[113]     pt1[iy+1]←0                                                                 ⍝ preclude partition with age column[114]     pt1[↑⌽pt1/⍳⍴pt1]←0                                                          ⍝ lose partn after last column[115]     bdy[nr+2 3;(cols>0)/ cols]←(+\pt1)⊂[2] ⊃nxt[¯3 ¯1+⍴nxt]                     ⍝ fill totals rows from rows 1 3 of totals quatrain[116] [117]    ⍝ merge leftmost cells of 1st total row[118]     MRG←4[119]     bdy[nr+2;⍳MRG  ]←MRG↑⊂↑,/bdy[nr+2;⍳MRG][120]     tgs[nr+2;⍳MRG-2]←DLTB¨(MRG-2)↑⊂'td colspan="',(⍕MRG-2),'"'                  ⍝ leave last 2 of them for overwriting[121] [122]     pt2←1,1 0^.=⊃1 ¯1↓¨' '=nxt[¯2+⍴nxt]                                         ⍝ partition 2nd total row on R edges[123]     pt2[↑⌽pt2/⍳⍴pt2]←0                                                          ⍝ lose partn after last column[124]     bdy[nr+2 3;(cols<0)/∣cols]←(+\pt2)⊂[2] ⊃nxt[¯2 0+⍴nxt]                      ⍝ fill totals rows from rows 2 4 of totals quatrain[125] [126]     tbd←'tbody' xtag ↑,/(⊂'tr')xtag¨⊂[2] tgs xtag¨DLTB¨bdy[127] [128]     rws←'table' xtag cmmt,thd,tbd[129] [130] :EndIf[131] [132] Z←cnt rws    ∇
+    ∇ Z←XV_TablePvb lines;∆;ibdy;isTbl;ibgn;lrec;xxx;cspan;hds;spn;htgs;full;odd;evn;isex;f1;o1;e1;nr;nc;ptf;bdy;pto;pte;cols;MRG;tgs;cmmt;thd;tbd;cnt;rws;bgn;tgt;rbgn;nxt;pt2;iy;pt1;l1
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag a possibly very deep Present Value of Benefits table in lines, if there. SJT 25jan10
+[3]   ⍝ Tabulated records are couplets (2 table rows each) unless numbers are large, in which case each table row is
+[4]   ⍝ split into a pair with the cells interleaved; ie 4 table rows per record, a quatrain.
+[5]   ⍝ In the HTML result table, quatrains are merged back to couplets.
+[6]   ⍝ Return number of lines read and rws of an HTML table.
+[7]   ⍝ Calling fn ensures lines contains ≥2 empty lines
+[8]   ⍝ Cols mostly contain R-aligned numbers
+[9]   ⍝ Reads ext vars: section FF STYLE_TH STYLE_THG
+[10]  ⍝ col hds eg
+[11]  ⍝                                 <--------------------------------- Present Value of Benefits ---------------------------------------->< Insured 1st Year Cost > Pensions
+[12]  ⍝      Sex  Salary    PS             Retirement Benefits Leaving Service Benefit Costed  Costed  Ill Hth Ill Hth   Total  Member Company    DIS   GL   Ill Health Total Pen
+[13]  ⍝Name  Age   PV 1%    PM             GMP Pension    Cash     GMP Pension    Cash DIS Pen GL Cash Pension  Cash     Liab.  Conts  Liab.      Pen  Cash   Pen  Cash Acc'd Pen
+[14]  
+[15]  :If isTbl←1∊(↑lines)⎕SS 'Insured 1st Year Cost'
+[16]  :AndIf isTbl←0 0 0 1≡' '^.=¨4↑lines
+[17]  
+[18]      cnt←3+(7↑¨lines)⍳⊂'TOTAL: '                                                 ⍝ depth of table body, inc total quatrain
+[19]      ∆←'Name '^.=⍉⊃5↑¨4↓cnt↑lines                                                ⍝ flag any repeated table header
+[20]      nxt←lines[(⍳4),4+(⍳⍴∆)~,(∆/⍳⍴∆)∘.+1-⌽⍳5]                                    ⍝ lose those and preceding 4 lines
+[21]      ibdy←4↓¯4↓⍳⍴nxt                                                             ⍝ index table body
+[22]      ibgn←(' '≠↑¨nxt[ibdy])/ibdy                                                 ⍝ index lines beginning records
+[23]      lrec←¯1+-⌿⊃1 ¯1↓¨⊂ibgn,1+↑⌽ibdy                                             ⍝ lengths of records
+[24]  
+[25]  :EndIf
+[26]  
+[27]  cmmt←⊂'<!-- XV_TablePvb -->'
+[28]  
+[29]  :If ~isTbl
+[30]      (cnt rws)←0 ''                                                              ⍝ no table found
+[31]  
+[32]  :ElseIf ×⍴lrec~2 4                                                              ⍝ TEST all records are couplets or quatrains
+[33]  :OrIf ∨/(↑,/nxt[(⍳4)+↑⌽ibdy]) ⎕SS '***'                                         ⍝ TEST overflow in totals quatrain?
+[34]      rws←cmmt,'pre class="err"' xtag xmlEscape¨ cnt↑lines
+[35]  
+[36]  :Else
+[37]  
+[38]     ⍝ WATCH OUT Table header too irregular to analyse, so reconstructed. Vulnerable to change in table format or header content. :-(
+[39]     ⍝ NB placeholders for unmerged empty colheads
+[40]      ∆←  ⊂"∣    ∣   ∣      ∣  ∣     ∣Present Value of Benefits                                                            ∣∣∣∣∣∣∣∣∣∣∣∣∣ Insured 1st Year Cost∣∣∣ ∣Pensions"
+[41]      ∆←∆,⊂"∣    ∣Sex∣Salary∣PS∣{nul}∣Retirement Benefits∣∣∣Leaving Service Benefit∣∣∣Costed        ∣∣Ill Health ∣∣Total∣Member∣Company∣ DIS∣GL  ∣Ill Health    ∣ ∣Total Pen"
+[42]      ∆←∆,⊂"∣Name∣Age∣PV 1% ∣PM∣{nul}∣GMP∣Pension∣Cash     ∣GMP∣Pension∣Cash         ∣DIS Pen∣GL Cash∣Pension∣Cash∣Liab.∣Conts ∣Liab.  ∣ Pen∣Cash∣Pen∣Cash        ∣Acc'd Pen"
+[43]      hds←DLTB¨1↓¨⊃(+\¨∆=¨'∣')⊂¨∆
+[44]     ⍝ accommodate varying top line
+[45]      l1←↑nxt
+[46]      hds[1;6 19]←DLTB¨(+\ 1 0^.=⊃0 ¯1⌽¨⊂≠\l1∊'<>')⊂↑⊂[2](l1∊'<>-')⊖l1,[.5]' '
+[47]      hds[1;2⊃⍴hds]←⊂(1-(⌽l1)⍳'>')↑l1
+[48]  
+[49]      xxx←⎕FX⊃'Z←cspan R;i;l' 'l←(1↓i,1+⍴R)-i←Z/⍳⍴Z←R' 'Z[i]←l' 'Z←Z+^\Z=0'       ⍝ NB no merging of leading empty header cells
+[50]      spn←(⊃cspan¨⊂[2] ×↑¨⍴¨hds[⍳2;])⍪1                                           ⍝ calculate hdr cell spans using placeholders
+[51]      hds[2 3;5]←'' ''                                                            ⍝ remove placeholders for empty header
+[52]  
+[53]      htgs←↑⊂[2 3] (1+×spn-1)⊖⊃(⊂⍴spn)⍴¨⊂¨('')('th',STYLE_TH)('th',STYLE_THG)     ⍝ hdr cell attributes
+[54]      htgs←htgs,¨((spn>1)×⍴¨∆)⍴¨∆←(⊂' colspan="'),¨(⍕¨spn),¨'"'                   ⍝ colspans as needed
+[55]  
+[56]      thd←'thead' xtag ↑,/(⊂'tr') xtag¨ ⊂[2] htgs xtag¨hds
+[57]  
+[58]  
+[59]      full←,((lrec=2)/ibgn)∘.+0 1                                                 ⍝ in couplets, both lines are full
+[60]      (odd evn)←,¨⊂[1 2] ((lrec=4)/ibgn)∘.+2 2⍴(⍳4)-1                             ⍝ quatrains: odd evn odd evn
+[61]  
+[62]     ⍝ mark partitions for the various kinds of rows from R edges of data
+[63]      isex←((2⊃nxt) ⎕SS 'Sex')⍳1                                                  ⍝ index R edge of col 1 from 2nd hdr line
+[64]      bgn←(1⌽isex↑1 1),0 1                                                        ⍝ special case: 1st columns
+[65]  
+[66]      :If ×⍴ibgn
+[67]          l1←(↑ibgn)⊃nxt                                                          ⍝ 1st data line
+[68]          iy←(×⍴∆)↑∆←isex+∆/⍳⍴∆←isex↓∨⌿⊃(⊂l1) ⎕SS¨'y ' 'y1'                       ⍝ find duration field so spurious space can be ignored
+[69]          iy←(^/l1[,iy∘.+¯1 2]∊'0123456789')/iy                                   ⍝ eg 7y10; test digits for yrs and months
+[70]      :Else
+[71]          iy←⍬
+[72]      :EndIf
+[73]  
+[74]      :If ×⍴full
+[75]          f1←⊃nxt[↑full]
+[76]          ptf←bgn,(⍴bgn)↓1⌽(~∆)^¯1⌽∆←' '≠¯1⌽f1
+[77]          ptf[iy+1]←0                                                             ⍝ preclude partition with age column
+[78]          ptf[↑⌽ptf/⍳⍴ptf]←0                                                      ⍝ lose partn after last column
+[79]      :EndIf
+[80]  
+[81]      :If ×⍴odd
+[82]          (o1 e1)←nxt[↑¨odd evn]                                                  ⍝ derive odd/evn partitions from 1st quatrain
+[83]          (pto pte)←⊂[2] 1⌽(~∆)^¯1⌽∆←' '≠¯1⌽⊃o1 e1
+[84]          pto←bgn,(⍴bgn)↓pto
+[85]          pto[iy+1]←0                                                             ⍝ preclude partition with age column
+[86]          pto[↑⌽pto/⍳⍴pto]←0                                                      ⍝ lose partn after last column
+[87]          pte←1,1↓pte                                                             ⍝ correct 1st partn
+[88]          pte[↑⌽pte/⍳⍴pte]←0                                                      ⍝ lose partn after last column
+[89]      :EndIf
+[90]  
+[91]     ⍝ construct and fill result table
+[92]      (nr nc)←(2×↑⍴lrec)(2⊃⍴hds)                                                  ⍝ shape of result: 2 rows per record
+[93]      bdy←nr nc⍴⊂''
+[94]      rbgn←(1=2∣∆)/∆←⍳nr                                                          ⍝ result rows that begin records
+[95]  
+[96]      cols←1 2 ¯3 4 5,∆×1+¯2×2∣∆←5↓⍳nc                                            ⍝ -ve cols to be filled from 'even' rows
+[97]  
+[98]      :If ×⍴full
+[99]          tgt←,((lrec=2)/rbgn)∘.+0 1                                              ⍝ result couplets to fill from couplets
+[100]         bdy[tgt;∣cols         ]←(+\ptf)⊂[2] ⊃nxt[full]
+[101]     :EndIf
+[102]     :If ×⍴odd
+[103]         tgt←,((lrec=4)/rbgn)∘.+0 1                                              ⍝ result couplets to fill from quatrains
+[104]         bdy[tgt;(cols>0)/ cols]←(+\pto)⊂[2] ⊃nxt[odd]
+[105]         bdy[tgt;(cols<0)/∣cols]←(+\pte)⊂[2] ⊃nxt[evn]
+[106]     :EndIf
+[107] 
+[108]    ⍝ append blank row and 2 totals rows
+[109]     bdy←bdy⍪3 nc⍴⊂''
+[110]     tgs←(⍴bdy)⍴(1,nc-1)/'td' 'td style="text-align: right"'                     ⍝ TD tags: R-align all but col 1
+[111] 
+[112]     pt1←1,1 0^.=⊃1 ¯1↓¨' '=nxt[¯3+⍴nxt]                                         ⍝ partition 1st total row on R edges
+[113]     pt1[iy+1]←0                                                                 ⍝ preclude partition with age column
+[114]     pt1[↑⌽pt1/⍳⍴pt1]←0                                                          ⍝ lose partn after last column
+[115]     bdy[nr+2 3;(cols>0)/ cols]←(+\pt1)⊂[2] ⊃nxt[¯3 ¯1+⍴nxt]                     ⍝ fill totals rows from rows 1 3 of totals quatrain
+[116] 
+[117]    ⍝ merge leftmost cells of 1st total row
+[118]     MRG←4
+[119]     bdy[nr+2;⍳MRG  ]←MRG↑⊂↑,/bdy[nr+2;⍳MRG]
+[120]     tgs[nr+2;⍳MRG-2]←DLTB¨(MRG-2)↑⊂'td colspan="',(⍕MRG-2),'"'                  ⍝ leave last 2 of them for overwriting
+[121] 
+[122]     pt2←1,1 0^.=⊃1 ¯1↓¨' '=nxt[¯2+⍴nxt]                                         ⍝ partition 2nd total row on R edges
+[123]     pt2[↑⌽pt2/⍳⍴pt2]←0                                                          ⍝ lose partn after last column
+[124]     bdy[nr+2 3;(cols<0)/∣cols]←(+\pt2)⊂[2] ⊃nxt[¯2 0+⍴nxt]                      ⍝ fill totals rows from rows 2 4 of totals quatrain
+[125] 
+[126]     tbd←'tbody' xtag ↑,/(⊂'tr')xtag¨⊂[2] tgs xtag¨DLTB¨bdy
+[127] 
+[128]     rws←'table' xtag cmmt,thd,tbd
+[129] 
+[130] :EndIf
+[131] 
+[132] Z←cnt rws
+    ∇

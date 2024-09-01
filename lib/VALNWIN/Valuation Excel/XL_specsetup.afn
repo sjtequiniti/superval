@@ -1,0 +1,189 @@
+    ∇ type XL_specsetup ClassID;basis;rows;z;codes;ppfcodes
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Specific Modifications to Excel file according to Valuation Class/Method
+[3]   
+[4]   :select type
+[5]   :case 'BasisPages' ⍝ Varying other basis pages
+[6]       (2 9 'All Bases') Win∆ProgressBar2 'MemberUpdate' ⍝??⍝ Consolidation??
+[7]       z←'rows' XL_BasisDetails ∣ClassID
+[8]       '' XL_SheetCustomise (11-⎕io)+WHERE ~z
+[9]   
+[10]      z←10++/z ⍝ Adjusted Number of Basis Rows
+[11]      (12  3) XL_PasteFormulas 12 3 z 3
+[12]      (11  9) XL_PasteFormats 11  9 z  9
+[13]      (11 10) XL_PasteFormats 11 10 z 10
+[14]  
+[15]      :if ClassID>0 ⍝ Don't do this part if -ve ClassID
+[16]          (('XL' ⎕wi 'xActiveSheet') ⎕wi 'xName') XL_ProtectSheet 1
+[17]  
+[18]          (3 9 'Main Basis') Win∆ProgressBar2 'MemberUpdate'
+[19]          codes←' ',(⍕ClntCode),('~6'[⎕io+bGAD]),((⎕io+(ClntCode=3)∨bBuck)⊃'AB'),((ClntCode=3)^~bGAD)/'2'
+[20]          ppfcodes←' ',(⍕ppf),(s143,bencap∨ppf,0)/'234'
+[21]  
+[22]          ⍝ Adjust Main page
+[23]          1 XL_ActivateWorksheet 'Main' ⋄ basis←XL_Data 'MainDetails'
+[24]          0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'MainDetails') ⎕wi 'Delete'
+[25]          z←  (,⊃basis[;  ⎕io])∊codes
+[26]          z←z^(,⊃basis[;1+⎕io])∊ppfcodes
+[27]          z←z^(,⊃basis[;2+⎕io])∊' ',⍕aosind
+[28]          '' XL_SheetCustomise (11-⎕io)+WHERE ~z
+[29]  
+[30]          :select ClassID
+[31]          :case 1 ⍝ Actives
+[32]              (4 9 'Slices') Win∆ProgressBar2 'MemberUpdate' ⍝ Adjust Slices page
+[33]              1 XL_ActivateWorksheet 'Slices' ⋄ basis←XL_Data 'SliceDetails'
+[34]              0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'SliceDetails') ⎕wi 'Delete'
+[35]              z←  (,⊃basis[;  ⎕io])∊codes
+[36]              z←z^(,⊃basis[;1+⎕io])∊ppfcodes
+[37]              '' XL_SheetCustomise (11-⎕io)+WHERE ~z
+[38]  
+[39]              (5 9 'Salaries') Win∆ProgressBar2 'MemberUpdate' ⍝ Adjust Sals page
+[40]              1 XL_ActivateWorksheet 'Sal-Conts' ⋄ basis←XL_Data 'SalDetails'
+[41]              0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'SalDetails') ⎕wi 'Delete'
+[42]              z←  (,⊃basis[;  ⎕io])∊codes
+[43]              z←z^(,⊃basis[;1+⎕io])∊ppfcodes
+[44]              z←z^(,⊃basis[;2+⎕io])∊' ',⍕aosind
+[45]              '' XL_SheetCustomise (11-⎕io)+WHERE ~z
+[46]  
+[47]          :case 3 ⍝ Deferreds
+[48]              (4 9 'PUPs') Win∆ProgressBar2 'MemberUpdate' ⍝ Adjust PUPs page
+[49]              1 XL_ActivateWorksheet 'PUPs' ⋄ basis←XL_Data 'PUPDetails'
+[50]              0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'PUPDetails') ⎕wi 'Delete'
+[51]              z←  (,⊃basis[;  ⎕io])∊codes
+[52]              z←z^(,⊃basis[;1+⎕io])∊ppfcodes
+[53]              '' XL_SheetCustomise (11-⎕io)+WHERE ~z
+[54]  
+[55]          :case 4 ⍝ Pensioners
+[56]              (4 9 'Pensions') Win∆ProgressBar2 'MemberUpdate' ⍝ Adjust Pensions page
+[57]              1 XL_ActivateWorksheet 'Pensions' ⋄ basis←XL_Data 'PensDetails'
+[58]              0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'PensDetails') ⎕wi 'Delete'
+[59]              z←  (,⊃basis[;  ⎕io])∊codes
+[60]              z←z^(,⊃basis[;1+⎕io])∊ppfcodes
+[61]              '' XL_SheetCustomise (11-⎕io)+WHERE ~z
+[62]  
+[63]              (5 9 'GMPs') Win∆ProgressBar2 'MemberUpdate' ⍝ Adjust GMP page
+[64]              1 XL_ActivateWorksheet 'GMP' ⋄ basis←XL_Data 'GMPDetails'
+[65]              0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'GMPDetails') ⎕wi 'Delete'
+[66]              z←  (,⊃basis[;  ⎕io])∊codes
+[67]              z←z^(,⊃basis[;1+⎕io])∊ppfcodes
+[68]              '' XL_SheetCustomise (11-⎕io)+WHERE ~z
+[69]          :endselect
+[70]      :endif
+[71]  
+[72]  :case 'FixIndexes' ⍝ Change  Formulas no longer required to Values
+[73]      (6 9 'Fixing Indices') Win∆ProgressBar2 'MemberUpdate'
+[74]      0 XL_ActivateWorksheet 'Main'
+[75]      XL_PasteValues 'MainIndexes'  ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'MainIndexes' ) ⎕wi 'Delete'
+[76]      XL_PasteValues 'MainIndexes2' ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'MainIndexes2') ⎕wi 'Delete'
+[77]      'Main' XL_ProtectSheet 1
+[78]  
+[79]      :select ClassID
+[80]      :case 1 ⍝ Actives
+[81]          0 XL_ActivateWorksheet 'Slices'
+[82]          XL_PasteValues 'SliceIndexes'  ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'SliceIndexes' ) ⎕wi 'Delete'
+[83]          XL_PasteValues 'SliceIndexes2' ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'SliceIndexes2') ⎕wi 'Delete'
+[84]          'Slices' XL_ProtectSheet 1
+[85]          0 XL_ActivateWorksheet 'Sal-Conts'
+[86]          XL_PasteValues 'SalIndexes' ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'SalIndexes'   ) ⎕wi 'Delete'
+[87]          'Sal-Conts' XL_ProtectSheet 1
+[88]      :case 3 ⍝ Deferreds
+[89]          0 XL_ActivateWorksheet 'PUPs'
+[90]          XL_PasteValues 'PUPIndexes' ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'PUPIndexes') ⎕wi 'Delete'
+[91]          'PUPs' XL_ProtectSheet 1
+[92]      :case 4 ⍝ Pensioners
+[93]          0 XL_ActivateWorksheet 'Pensions'
+[94]          XL_PasteValues 'PensIndexes' ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'PensIndexes') ⎕wi 'Delete'
+[95]          'Pensions' XL_ProtectSheet 1
+[96]          0 XL_ActivateWorksheet 'GMP'
+[97]          XL_PasteValues 'GMPIndexes' ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'GMPIndexes' ) ⎕wi 'Delete'
+[98]          XL_PasteValues 'GMPIndexes2' ⋄ 0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'GMPIndexes2') ⎕wi 'Delete'
+[99]          'GMP' XL_ProtectSheet 1
+[100]     :endselect
+[101] 
+[102] :case 'Capped'
+[103]     (7 9 'Individual Member Results') Win∆ProgressBar2 'MemberUpdate'
+[104]     1 XL_ActivateWorksheet 'IndivRes'
+[105]     :select ClassID
+[106]     :case 1 ⍝ Actives
+[107]         (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ValnStat') ⎕wi 'XDelete' ⍝⍝⍝ Could reinstate this
+[108]         ⍝ Leave Demographic Statistics as they could be reinstated
+[109]         'L' XL_RangeDelete ⍬ 16 ⍬ 234 ⍝ Delete AAN/PUC Results
+[110]     :case 3 ⍝ Deferreds
+[111]         'L' XL_RangeDelete ⍬ 13 ⍬ 126 ⍝ Delete NDF Results
+[112]         'XL' ⎕wi 'Range>.Rng' 'J10:K10' ⋄ 0 0⍴'XL.Rng' ⎕wi 'XClearContents'
+[113]     :case 4 ⍝ Pensioners
+[114]         'L' XL_RangeDelete ⍬ 16 ⍬ 199 ⍝ Delete Normal Results
+[115]     :endselect
+[116]     :if AgeInterp ⋄ (4⍴13 11) XL_NumberFormat '#0.00' ⋄ :endif ⍝ Reset Age Formats to 2dp
+[117]     :if basisIdentifier
+[118]         (13 8) XL_HAlign '=xlHAlignLeft'
+[119]         'XL' ⎕wi 'Range>.Rng' (RCtoA1 13 8)
+[120]         'XL.Rng' ⎕wi 'xColumnWidth' (3×'XL.Rng' ⎕wi 'xColumnWidth')
+[121]     :endif
+[122]     'IndivRes' XL_ProtectSheet 1
+[123] 
+[124] :case 'Normal'
+[125]     (7 9 'Individual Member Results') Win∆ProgressBar2 'MemberUpdate'
+[126]     1 XL_ActivateWorksheet 'IndivRes'
+[127]     :select ClassID
+[128]     :case 1 ⍝ Actives
+[129]         :if 12≤ExcelVersion ⋄ 'L' XL_RangeDelete ⍬ 257 ⍬ 265 ⋄ :endif
+[130]         'L' XL_RangeDelete ⍬ 235 ⍬ (256-bencap) ⍝ Delete PPF Results
+[131]         'L' XL_RangeDelete 4⍴⍬ (122-dab) ⍝ Only one of Co Liab & Target AB column
+[132]         :if ~NotPUC ⍝ Remove Total Service Results
+[133]             'XL' ⎕wi 'Range>.Rng' (RCtoA1 9 8 9 119)
+[134]             0 0⍴'XL.Rng' ⎕wi 'XClearContents'
+[135]         :endif
+[136]     :case 3 ⍝ Deferreds
+[137]         'L' XL_RangeDelete ⍬ 149 ⍬ 157
+[138]         'L' XL_RangeDelete ⍬ 127 ⍬ (148-bencap) ⍝ Delete PPF Results
+[139]     :case 4 ⍝ Pensioners
+[140]         'L' XL_RangeDelete ⍬ 222 ⍬ 227
+[141]         'L' XL_RangeDelete ⍬ (108+92×bencap) ⍬ (221-bencap) ⍝ Delete PPF Results
+[142]     :endselect
+[143]     :if AgeInterp ⋄ (4⍴13 11) XL_NumberFormat '#0.00' ⋄ :endif ⍝ Reset Age Formats to 2dp
+[144]     :if basisIdentifier
+[145]         (13 8) XL_HAlign '=xlHAlignLeft'
+[146]         'XL' ⎕wi 'Range>.Rng' (RCtoA1 13 8)
+[147]         'XL.Rng' ⎕wi 'xColumnWidth' (3×'XL.Rng' ⎕wi 'xColumnWidth')
+[148]     :endif
+[149]     'IndivRes' XL_ProtectSheet 1
+[150] 
+[151]     :if ClassID=1
+[152]         (8 9 'Statistics') Win∆ProgressBar2 'MemberUpdate'
+[153]         1 XL_ActivateWorksheet 'ValnStat' ⋄ basis←XL_Data 'StatDetails'
+[154]         0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'StatDetails') ⎕wi 'Delete'
+[155]         z←,(,⊃basis[;⎕io])∊' ',⍕~NotPUC
+[156]         '' XL_SheetCustomise (10-⎕io)+WHERE ~z
+[157]         'ValnStat' XL_ProtectSheet 1
+[158]     :endif
+[159] 
+[160] :case 'StatCap'
+[161]     (8 9 'Statistics') Win∆ProgressBar2 'MemberUpdate'
+[162]     1 XL_ActivateWorksheet 'StatCalc'
+[163]     :select ClassID
+[164]     :case 1 ⍝ Actives
+[165]         ⍝ Leave Demographic Statistics as they could be reinstated
+[166]         'L' XL_RangeDelete ⍬ 41 ⍬ 120 ⍝ Delete V1%/Norm Cost
+[167]     :case 3 ⍝ Deferreds
+[168]         'XL' ⎕wi 'Range>.Rng' 'F3:F9' ⋄ 0 0⍴'XL.Rng' ⎕wi 'XClearContents'
+[169]     :case 4 ⍝ Pensioners
+[170]         'L' XL_RangeDelete ⍬ 6 ⍬ 115 ⍝ Delete Valuation Stat Calcs
+[171]     :endselect
+[172]     'StatCalc' XL_ProtectSheet ¯1
+[173] 
+[174] :case 'StatNorm'
+[175]     (8 9 'Statistics') Win∆ProgressBar2 'MemberUpdate'
+[176]     :if ClassID≠3
+[177]         1 XL_ActivateWorksheet 'StatCalc'
+[178]         :select ClassID
+[179]         :case 1 ⍝ Actives
+[180]             :if NotPUC ⋄ 'L' XL_RangeDelete ⍬ 41 ⍬ 60 ⋄ :endif ⍝ Delete Norm Cost
+[181]         :case 4 ⍝ Pensioners
+[182]             'L' XL_RangeDelete ⍬ (62+54×bencap) ⍬ 120 ⍝ Delete PPF Stats
+[183]         :endselect
+[184]         'StatCalc' XL_ProtectSheet ¯1
+[185]     :endif
+[186] 
+[187] :endselect
+    ∇

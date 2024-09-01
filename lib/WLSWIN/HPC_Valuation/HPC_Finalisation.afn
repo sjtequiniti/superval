@@ -1,0 +1,91 @@
+    ∇ ⍙⍙res←⍙⍙inerror HPC_Finalisation ⍙⍙tab;⍙⍙wsFile;schemafiles;⍙⍙arg;⍙⍙msk;⍙⍙Split;⍙⍙InputDir;⍙⍙worker;⍙⍙SourceDir;⍙⍙sfTie;⍙⍙split;⍙⍙otherDir;newrecsize;⍙⍙otherfile;VFDBtab;RETcomfacs;ILLcomfacs;⍙⍙HeldTie;⍙⍙heldtie;inerror;files;file;⍙⍙tries;∆;⍙⍙errmsg;⍙⍙ts
+[1]   ⍝ WLSWIN.sf#5
+[2]   ⍝ Do the finalisation of the Valuation Run
+[3]   
+[4]   (⍙⍙worker ⍙⍙InputDir ⍙⍙Split ⍙⍙HeldTie)←⍙⍙tab at 'worker' 'InputDir' 'Split' 'HeldTie'
+[5]   ⍙⍙msk←⍙⍙Split=1
+[6]   ⍙⍙SourceDir←↑⍙⍙msk/⍙⍙InputDir
+[7]   
+[8]   ⍙⍙wsFile←⍙⍙SourceDir,(↑⍙⍙msk/⍙⍙worker),'.sf'
+[9]   ⍙⍙wsFile ⎕xftie ⍙⍙sfTie←TieNumber ⍙⍙wsFile
+[10]  pdef 'inflate no_header wrapl=1' ⎕dr ⎕fread ⍙⍙sfTie 2                   ⍝ Read variable soup
+[11]  ⍙⍙wsFile ⎕xferase ⍙⍙sfTie                                               ⍝ Delete the Worker Valuation file
+[12]  
+[13]  ⍙⍙arg←UPPERCASE '/',(FolderToUNC ⍙⍙SourceDir),'/',InputDir
+[14]               ⍙dbfundfile ←⍙⍙arg TEXTREPL UPPERCASE ⍙dbfundfile
+[15]  :if fscopt ⋄ ⍙dbscenfile ←⍙⍙arg TEXTREPL UPPERCASE ⍙dbscenfile  ⋄ :endif
+[16]  :if ~neIND ⋄ xl_membfile ←⍙⍙arg TEXTREPL UPPERCASE xl_membfile
+[17]               xl_ndatafile←⍙⍙arg TEXTREPL UPPERCASE xl_ndatafile
+[18]               xl_cdatafile←⍙⍙arg TEXTREPL UPPERCASE xl_cdatafile ⋄ :endif
+[19]  :if aosind ⋄ xl_maosfile ←⍙⍙arg TEXTREPL UPPERCASE xl_maosfile
+[20]               ⍙dbaosfile  ←⍙⍙arg TEXTREPL UPPERCASE ⍙dbaosfile   ⋄ :endif
+[21]  
+[22]  files←⊂⍙dbfundfile                                                      ⍝ Move files to upload folder
+[23]  :if fscopt ⋄ files←files,⊂⍙dbscenfile  ⋄ :endif
+[24]  :if ~neIND ⋄ files←files,⊂xl_membfile
+[25]               files←files,⊂xl_ndatafile
+[26]               files←files,⊂xl_cdatafile ⋄ :endif
+[27]  :if aosind ⋄ files←files,⊂xl_maosfile
+[28]               files←files,⊂⍙dbaosfile   ⋄ :endif
+[29]  :for file :in files←'\' Win∆Child¨files
+[30]      ⍙⍙tries←0
+[31]      ∆←(⍙⍙SourceDir,file) (InputDir,file)
+[32]      :repeat
+[33]      :until 0 CopyFile ∆ ⋄ :orif 100=⍙⍙tries←⍙⍙tries+1
+[34]      :if ⍙⍙tries=100
+[35]          ⍙⍙tries←0
+[36]          ∆←'copy ',' ' join '""' embrace¨∆
+[37]          ⍙⍙ts←1 WGetFileTime ⍙⍙SourceDir,file
+[38]          :repeat
+[39]              0 0⍴(1+2×runtime) ⎕cmd ∆
+[40]          :until ⍙⍙ts≡1 WGetFileTime InputDir,file ⋄ :orif 100=⍙⍙tries←⍙⍙tries+1
+[41]          :if 100=⍙⍙tries
+[42]              ⍙⍙errmsg←'Unable to copy the Valuation Results file:  ',⍙⍙SourceDir,file,' to ',InputDir,file,':  '
+[43]              ⍙⍙hpcLogTie HPC_Log ⍙⍙errmsg
+[44]          :endif
+[45]      :endif
+[46]  :endfor
+[47]  
+[48]  :if ~⍙⍙inerror
+[49]      schemafiles←⍙DBSchemaFiles InputDir                                     ⍝ Create schema.ini in the Worker folder
+[50]  
+[51]                   HPC_InflateResults ⍙dbfundfile  ⍙dbfundtie
+[52]      :if fscopt ⋄ HPC_InflateResults ⍙dbscenfile  ⍙dbscentie  ⋄ :endif
+[53]      :if ~neIND ⋄ HPC_InflateResults xl_membfile  xl_membtie
+[54]                   HPC_InflateResults xl_ndatafile xl_ndatatie
+[55]                   HPC_InflateResults xl_cdatafile xl_cdatatie ⋄ :endif
+[56]      :if aosind ⋄ HPC_InflateResults xl_maosfile  xl_maostie
+[57]                   HPC_InflateResults ⍙dbaosfile   ⍙dbaostie   ⋄ :endif
+[58]  :endif
+[59]  
+[60]  :if 1<rowsIn ⍙⍙tab                                                              ⍝ Split run
+[61]      :for ⍙⍙split :in (⍙⍙tab at 'Split')~1
+[62]          ⍙⍙msk←⍙⍙Split=⍙⍙split
+[63]          ⍙⍙otherDir←↑⍙⍙msk/⍙⍙InputDir
+[64]          ⍙⍙otherfile←(↑⍙⍙msk/⍙⍙worker),'.sf'
+[65]          ⍙⍙heldtie←↑⍙⍙msk/⍙⍙HeldTie
+[66]  
+[67]          ⍙⍙inerror HPC_BlendRuns ⍙⍙otherDir ⍙⍙otherfile ⍙⍙heldtie
+[68]      :endfor
+[69]      :if ~⍙⍙inerror ⋄ newrecsize←⍙DBCompressFiles 0 ⋄ :endif ⍝ Summarising Temporary Database records
+[70]  ⍝⍝⍝:else
+[71]  ⍝⍝⍝                 0 0⍴⍙dbfundfile  NSTIE ⍙dbfundtie
+[72]  ⍝⍝⍝    :if fscopt ⋄ 0 0⍴⍙dbscenfile  NSTIE ⍙dbscentie  ⋄ :endif
+[73]  ⍝⍝⍝    :if ~neIND ⋄ 0 0⍴xl_membfile  NSTIE xl_membtie
+[74]  ⍝⍝⍝                 0 0⍴xl_ndatafile NSTIE xl_ndatatie
+[75]  ⍝⍝⍝                 0 0⍴xl_cdatafile NSTIE xl_cdatatie ⋄ :endif
+[76]  ⍝⍝⍝    :if aosind ⋄ 0 0⍴xl_maosfile  NSTIE xl_maostie
+[77]  ⍝⍝⍝                 0 0⍴⍙dbaosfile   NSIE ⍙dbaostie    ⋄ :endif
+[78]  :endif
+[79]  
+[80]  :if ~⍙⍙inerror
+[81]      WRITE∆RES ⍝ Results to a file for later consolidation
+[82]  
+[83]      CLEARVARS                                                               ⍝ Remove valuation variables
+[84]  
+[85]      :if ⍙dbopt ⋄ :andif ~neIND
+[86]          ValuationRunList←ValuationRunList OVER BatchRow ResultsCategoryID BasisCategoryID ScenarioID ClassID vDATE excelDelay ((~BasisCategoryID∊ValuationRunList at 'VFmissing')×VFmissing×BasisCategoryID) 0
+[87]      ⍝⍝⍝    0 0⍴⎕ex 'ResultsCategoryID ScenarioID ClassID'
+[88]      :endif
+[89]  :endif
+    ∇

@@ -1,1 +1,92 @@
-    ∇ res←field Migrate_S21PPF parm;parent;nErr;lv;∆;csvs;xCopy;xxx;htmPath[1]   ⍝ PPFWIN.sf#9[2]   ⍝ Function to allow user control on PPF Migration module[3]   [4]   parent←'fmMigS21PPF.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       0 0⍴(⊂MigDir,'MIGRATE') ReadFile¨'PPFLibrary_Callbacks' 'Migration_Utilities'[10]  [11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[12]  [13]      ∆←(MigDir,'SVMIGT',Win∆CountryCode) ReadFile 'PPF Library Migration'[14]      PLM_RULES← (∆ for (';' ≠ ↑¨∆ at 'Globals') ^ ~^/mt¨1↓[1] ∆) select ∆[1;]~⊂'Notes'[15]  [16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[17]  [18]      :repeat[19]          :select ↑field[20]          :case ' '[21]          :endselect[22]      :until mt field←1↓field[23]  [24]  :case 'Back'[25]  [26]      :select DLTMB Win∆Child ↑field[27]      :case 'fAnomaly'[28]          0 0⍴(parent,'fAnomaly.webAnomaly') ⎕wi 'XNavigate2' (StyleDir,'blank.htm')[29]      :case 'fSummary'[30]          0 0⍴(parent,'fSummary.webSummary') ⎕wi 'XNavigate2' (StyleDir,'blank.htm')[31]          res←'Back'[32]      :case 'fOverwrite'[33]          0 0⍴(parent,'fOverwrite.webOverwrite') ⎕wi 'XNavigate2' (StyleDir,'blank.htm')[34]          res←'Back'[35]      :endselect[36]  [37]  :case 'Next'[38]  [39]      :select DLTMB Win∆Child ↑field[40]      :case 'fSets'[41]          lv←parent,'fSets.lvPPFSets'[42]          ∆←'id' 'xx' 'path' 'file' 'set' 'xx' 'xx'⍪ lv ⎕WI 'list'[43]          ∆←∆ for 'id' push lv ⎕WI 'value'[44]          (PlmTable PlmConversionReports)←PLM_RULES PpfLibraryConvert ∆ select 'path' 'file' 'set'[45]          PlmTable←PlmTable amend 'PPF_Yields' (PpfYieldsCorrect¨ PlmTable at 'PPF_Yields')[46]          (PPF_YIELDS PPF_CAPS)←PpfLibraryTables PlmTable[47]  [48]          ⍝ Display the Anomalies Report[49]          (nErr htmPath)←PpfLibraryAnomalies PlmTable PPF_YIELDS PPF_CAPS[50]          :if ×nErr ⋄ 0 0⍴(parent,'fAnomaly.webAnomaly') ⎕wi 'XNavigate2' htmPath ⍝ display anomalies report at htmPath[51]          :else     ⋄ res←'Next' ⍝ Continue to fSummary[52]          :endif[53]  [54]      :case 'fAnomaly'[55]          htmPath←PpfLibraryPreview PlmTable PPF_YIELDS PPF_CAPS[56]          0 0⍴(parent,'fSummary.webSummary') ⎕wi 'XNavigate2' htmPath             ⍝ display preview report at htmPath[57]  [58]      :case 'fSummary'[59]          ∆←'PPFMIMPTBL2' 'PPFFIMPTBL2' 'PPFMIMPTBL' 'PPFFIMPTBL'                 ⍝ S21 parameters that refer to CSVs[60]          ∆←(PLM_RULES at 'Old Variable 1' 'New Variable Name') map ∆             ⍝ V9 equivalents[61]          csvs←nub , UPPERCASE¨ (PlmTable at 'PPF_Overrides') ∘.at ∆              ⍝ CSVs needed in Library Folder[62]  [63]          ∆←INIString 'Path' 'LibraryFolder' '' (UserProfDir,INIFile)             ⍝ S21 Library folder[64]          (fileCopyList xCopy)←MigrateFilesToBeCopied ,⊂∆ LibraryDir csvs[65]  [66]          ∆←,'I12' ⎕FMT 100⊥5↑⎕TS[67]          htmPath←InputDir,'ppf-library-migration-copying',∆,'.htm'               ⍝ HTM filename includes timestamp[68]          htmPath (StyleDir,'migration-copying.xsl') writeHtmReport xCopy[69]          0 0⍴(parent,'fOverwrite.webOverwrite') ⎕wi 'XNavigate2' htmPath         ⍝ display copying report at htmPath[70]  [71]      :case 'fOverwrite'[72]          ⍝ Proceed to Run to PpfLibrarySave[73]  [74]      :endselect[75]  [76]  :case 'Valid' ⍝ Routine specific validation[77]  [78]  [79]  :case 'Run'[80]      PpfLibrarySave PlmTable PPF_YIELDS PPF_CAPS[81]      :if ~mt fileCopyList ⋄ xxx←MigCopyFile/⊃fileCopyList ⋄ :endif                  ⍝ copy yield-curve files[82]  [83]      parent ⎕wi '∆modified' 1[84]      res←'Quit'[85]  [86]  :case 'Quit' ⍝ Deleting "other" variables[87]      0 0⍴(⊂MigDir,'MIGRATE') DeleteModule¨'PPFLibrary_Callbacks' 'Migration_Utilities'[88]      xxx←⎕EX⊃'PLM_RULES' 'PPF_YIELDS' 'PPF_CAPS' 'PlmTable' 'fileCopyList'[89]  [90]  :endselect    ∇
+    ∇ res←field Migrate_S21PPF parm;parent;nErr;lv;∆;csvs;xCopy;xxx;htmPath
+[1]   ⍝ PPFWIN.sf#9
+[2]   ⍝ Function to allow user control on PPF Migration module
+[3]   
+[4]   parent←'fmMigS21PPF.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       0 0⍴(⊂MigDir,'MIGRATE') ReadFile¨'PPFLibrary_Callbacks' 'Migration_Utilities'
+[10]  
+[11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[12]  
+[13]      ∆←(MigDir,'SVMIGT',Win∆CountryCode) ReadFile 'PPF Library Migration'
+[14]      PLM_RULES← (∆ for (';' ≠ ↑¨∆ at 'Globals') ^ ~^/mt¨1↓[1] ∆) select ∆[1;]~⊂'Notes'
+[15]  
+[16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[17]  
+[18]      :repeat
+[19]          :select ↑field
+[20]          :case ' '
+[21]          :endselect
+[22]      :until mt field←1↓field
+[23]  
+[24]  :case 'Back'
+[25]  
+[26]      :select DLTMB Win∆Child ↑field
+[27]      :case 'fAnomaly'
+[28]          0 0⍴(parent,'fAnomaly.webAnomaly') ⎕wi 'XNavigate2' (StyleDir,'blank.htm')
+[29]      :case 'fSummary'
+[30]          0 0⍴(parent,'fSummary.webSummary') ⎕wi 'XNavigate2' (StyleDir,'blank.htm')
+[31]          res←'Back'
+[32]      :case 'fOverwrite'
+[33]          0 0⍴(parent,'fOverwrite.webOverwrite') ⎕wi 'XNavigate2' (StyleDir,'blank.htm')
+[34]          res←'Back'
+[35]      :endselect
+[36]  
+[37]  :case 'Next'
+[38]  
+[39]      :select DLTMB Win∆Child ↑field
+[40]      :case 'fSets'
+[41]          lv←parent,'fSets.lvPPFSets'
+[42]          ∆←'id' 'xx' 'path' 'file' 'set' 'xx' 'xx'⍪ lv ⎕WI 'list'
+[43]          ∆←∆ for 'id' push lv ⎕WI 'value'
+[44]          (PlmTable PlmConversionReports)←PLM_RULES PpfLibraryConvert ∆ select 'path' 'file' 'set'
+[45]          PlmTable←PlmTable amend 'PPF_Yields' (PpfYieldsCorrect¨ PlmTable at 'PPF_Yields')
+[46]          (PPF_YIELDS PPF_CAPS)←PpfLibraryTables PlmTable
+[47]  
+[48]          ⍝ Display the Anomalies Report
+[49]          (nErr htmPath)←PpfLibraryAnomalies PlmTable PPF_YIELDS PPF_CAPS
+[50]          :if ×nErr ⋄ 0 0⍴(parent,'fAnomaly.webAnomaly') ⎕wi 'XNavigate2' htmPath ⍝ display anomalies report at htmPath
+[51]          :else     ⋄ res←'Next' ⍝ Continue to fSummary
+[52]          :endif
+[53]  
+[54]      :case 'fAnomaly'
+[55]          htmPath←PpfLibraryPreview PlmTable PPF_YIELDS PPF_CAPS
+[56]          0 0⍴(parent,'fSummary.webSummary') ⎕wi 'XNavigate2' htmPath             ⍝ display preview report at htmPath
+[57]  
+[58]      :case 'fSummary'
+[59]          ∆←'PPFMIMPTBL2' 'PPFFIMPTBL2' 'PPFMIMPTBL' 'PPFFIMPTBL'                 ⍝ S21 parameters that refer to CSVs
+[60]          ∆←(PLM_RULES at 'Old Variable 1' 'New Variable Name') map ∆             ⍝ V9 equivalents
+[61]          csvs←nub , UPPERCASE¨ (PlmTable at 'PPF_Overrides') ∘.at ∆              ⍝ CSVs needed in Library Folder
+[62]  
+[63]          ∆←INIString 'Path' 'LibraryFolder' '' (UserProfDir,INIFile)             ⍝ S21 Library folder
+[64]          (fileCopyList xCopy)←MigrateFilesToBeCopied ,⊂∆ LibraryDir csvs
+[65]  
+[66]          ∆←,'I12' ⎕FMT 100⊥5↑⎕TS
+[67]          htmPath←InputDir,'ppf-library-migration-copying',∆,'.htm'               ⍝ HTM filename includes timestamp
+[68]          htmPath (StyleDir,'migration-copying.xsl') writeHtmReport xCopy
+[69]          0 0⍴(parent,'fOverwrite.webOverwrite') ⎕wi 'XNavigate2' htmPath         ⍝ display copying report at htmPath
+[70]  
+[71]      :case 'fOverwrite'
+[72]          ⍝ Proceed to Run to PpfLibrarySave
+[73]  
+[74]      :endselect
+[75]  
+[76]  :case 'Valid' ⍝ Routine specific validation
+[77]  
+[78]  
+[79]  :case 'Run'
+[80]      PpfLibrarySave PlmTable PPF_YIELDS PPF_CAPS
+[81]      :if ~mt fileCopyList ⋄ xxx←MigCopyFile/⊃fileCopyList ⋄ :endif                  ⍝ copy yield-curve files
+[82]  
+[83]      parent ⎕wi '∆modified' 1
+[84]      res←'Quit'
+[85]  
+[86]  :case 'Quit' ⍝ Deleting "other" variables
+[87]      0 0⍴(⊂MigDir,'MIGRATE') DeleteModule¨'PPFLibrary_Callbacks' 'Migration_Utilities'
+[88]      xxx←⎕EX⊃'PLM_RULES' 'PPF_YIELDS' 'PPF_CAPS' 'PlmTable' 'fileCopyList'
+[89]  
+[90]  :endselect
+    ∇

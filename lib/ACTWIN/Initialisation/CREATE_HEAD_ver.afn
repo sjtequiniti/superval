@@ -1,1 +1,39 @@
-    ∇ CREATE∆HEAD∆ver;Z[1]   ⍝ ACTWIN.sf#2[2]   ⍝ Add necessary Valuation Parameters to Headers[3]   ⍝ also modify if Summarised Results selected[4]   ⍝[5]   ⍝[6]   ⍝ V Windows RSE Aug 98 "Windowised"[7]   H2[2;]←(¯1↑⍴H2)↑'Run Description: ',gROUP[8]   H2[3;]←(¯1↑⍴H2)↑'Data File: ',FILES[9]   [10]  ⍝ Make Header changes for "summary" option[11]  :if summopt[12]      SUMMARY∆OPT[13]      H2[5+⍳3;⍳11]←Z←3 11⍴'      No.        of   Age  Memb. '[14]      :if PROPT  ⋄ H3[4+⍳3;⍳11]←Z ⋄ :endif[15]      :if aosind ⋄ H8[3+⍳3;⍳11]←Z ⋄ :endif[16]  :endif[17]  [18]  :if aosind[19]      H6[3;(59+⍳7),103+⍳17]←(7↑EntryInd),17↑DLTMB 2 DATESPELL⌽pvDATE[20]  :endif[21]  [22]  :if ~NotPUC ⍝ PUC/UCM Header Modifications[23]      H0[5;92+⍳2]←H1[5;74+⍳2]←H2[4;68+⍳2]←'I2' ⎕FMT contper[24]      :if ValMeth≡'PUC'[25]          H0[4;154+⍳8]←H1[5;118+⍳8]←'   PUC  '[26]      :endif[27]      :if PROPT[28]          H3[4+⍳2;123+⍳9]← 2 9 ⍴'  Accrued  Benefit' ⋄ H3[3;123+⍳9]←'    PUC  '[29]          :if ValMeth≡'UCM'[30]              H3[4+⍳2;117+⍳7]← 2 7 ⍴'AccruedBenefit' ⋄ H3[3;117+⍳12]←'UC(ABO) UC(V'[31]          :endif[32]      :endif[33]  :endif[34]  :if dab ⍝ DAB Header Modifications[35]      H1[5;76+⍳2]←H2[4;68+⍳2]←'I2' ⎕FMT contper[36]      H2[5 6;128+⍳8]←2 8⍴16↑'PV Acc  Ben t=',,'I2' ⎕FMT contper[37]  :endif    ∇
+    ∇ CREATE∆HEAD∆ver;Z
+[1]   ⍝ ACTWIN.sf#2
+[2]   ⍝ Add necessary Valuation Parameters to Headers
+[3]   ⍝ also modify if Summarised Results selected
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   H2[2;]←(¯1↑⍴H2)↑'Run Description: ',gROUP
+[8]   H2[3;]←(¯1↑⍴H2)↑'Data File: ',FILES
+[9]   
+[10]  ⍝ Make Header changes for "summary" option
+[11]  :if summopt
+[12]      SUMMARY∆OPT
+[13]      H2[5+⍳3;⍳11]←Z←3 11⍴'      No.        of   Age  Memb. '
+[14]      :if PROPT  ⋄ H3[4+⍳3;⍳11]←Z ⋄ :endif
+[15]      :if aosind ⋄ H8[3+⍳3;⍳11]←Z ⋄ :endif
+[16]  :endif
+[17]  
+[18]  :if aosind
+[19]      H6[3;(59+⍳7),103+⍳17]←(7↑EntryInd),17↑DLTMB 2 DATESPELL⌽pvDATE
+[20]  :endif
+[21]  
+[22]  :if ~NotPUC ⍝ PUC/UCM Header Modifications
+[23]      H0[5;92+⍳2]←H1[5;74+⍳2]←H2[4;68+⍳2]←'I2' ⎕FMT contper
+[24]      :if ValMeth≡'PUC'
+[25]          H0[4;154+⍳8]←H1[5;118+⍳8]←'   PUC  '
+[26]      :endif
+[27]      :if PROPT
+[28]          H3[4+⍳2;123+⍳9]← 2 9 ⍴'  Accrued  Benefit' ⋄ H3[3;123+⍳9]←'    PUC  '
+[29]          :if ValMeth≡'UCM'
+[30]              H3[4+⍳2;117+⍳7]← 2 7 ⍴'AccruedBenefit' ⋄ H3[3;117+⍳12]←'UC(ABO) UC(V'
+[31]          :endif
+[32]      :endif
+[33]  :endif
+[34]  :if dab ⍝ DAB Header Modifications
+[35]      H1[5;76+⍳2]←H2[4;68+⍳2]←'I2' ⎕FMT contper
+[36]      H2[5 6;128+⍳8]←2 8⍴16↑'PV Acc  Ben t=',,'I2' ⎕FMT contper
+[37]  :endif
+    ∇

@@ -1,1 +1,31 @@
-    ∇ Data_SavePage;col;cells;get;notblank;blank[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Save the current page of data to the temporary file[3]   [4]   :if ~editing ⋄ :return ⋄ :endif ⍝ Not Editing[5]   :if ~hSS ⎕wi 'xModified' ⋄ :return ⋄ :endif ⍝ No Changes[6]   [7]   ⍝ Fill in column major order (since always the same data type)[8]   :for col :in ⍳⍴fieldtype[9]       ⍝ Need to return blank cells as blank![10]      cells←⎕mix ,(⍳1↑⍴DispREC)∘.,col ⍝ Build coords[11]      blank←(0=hSS ⎕wi 'xTypeRC[]' cells)/⍳↑⍴cells[12]      notblank←(0≠hSS ⎕wi 'xTypeRC[]' cells)/⍳↑⍴cells[13]      :if 0=⍴notblank[14]          DispREC[blank;col⊃datafields]←' '[15]          :continue ⍝ with next column[16]      :endif[17]  [18]      get←hSS ⎕wi 'TextRC[]' (cells[notblank;])[19]      :if fieldtype[col]∊0 1 ⍝ Number or Date[20]          get←⎕mix (-⍴col⊃datafields)↑¨get[21]      :else[22]          get←⎕mix (⍴col⊃datafields)↑¨get[23]      :endif[24]      DispREC[notblank;col⊃datafields]←get[25]      DispREC[blank;col⊃datafields]←' '[26]  :endfor[27]  [28]  (,DispREC) ⎕nreplace edttie,RECL×+/(MDEpage-1)↑RecsPerPage[29]  hSS ⎕wi 'xModified' 0 ⋄ FileChanged←1    ∇
+    ∇ Data_SavePage;col;cells;get;notblank;blank
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Save the current page of data to the temporary file
+[3]   
+[4]   :if ~editing ⋄ :return ⋄ :endif ⍝ Not Editing
+[5]   :if ~hSS ⎕wi 'xModified' ⋄ :return ⋄ :endif ⍝ No Changes
+[6]   
+[7]   ⍝ Fill in column major order (since always the same data type)
+[8]   :for col :in ⍳⍴fieldtype
+[9]       ⍝ Need to return blank cells as blank!
+[10]      cells←⎕mix ,(⍳1↑⍴DispREC)∘.,col ⍝ Build coords
+[11]      blank←(0=hSS ⎕wi 'xTypeRC[]' cells)/⍳↑⍴cells
+[12]      notblank←(0≠hSS ⎕wi 'xTypeRC[]' cells)/⍳↑⍴cells
+[13]      :if 0=⍴notblank
+[14]          DispREC[blank;col⊃datafields]←' '
+[15]          :continue ⍝ with next column
+[16]      :endif
+[17]  
+[18]      get←hSS ⎕wi 'TextRC[]' (cells[notblank;])
+[19]      :if fieldtype[col]∊0 1 ⍝ Number or Date
+[20]          get←⎕mix (-⍴col⊃datafields)↑¨get
+[21]      :else
+[22]          get←⎕mix (⍴col⊃datafields)↑¨get
+[23]      :endif
+[24]      DispREC[notblank;col⊃datafields]←get
+[25]      DispREC[blank;col⊃datafields]←' '
+[26]  :endfor
+[27]  
+[28]  (,DispREC) ⎕nreplace edttie,RECL×+/(MDEpage-1)↑RecsPerPage
+[29]  hSS ⎕wi 'xModified' 0 ⋄ FileChanged←1
+    ∇

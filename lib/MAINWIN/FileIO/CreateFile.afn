@@ -1,0 +1,33 @@
+    ∇ tieno←∆_Name CreateFile File;⎕elx;∆_Description;∆_Code;∆_Index;∆_TimeStamp;∆_TimeNum
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Create a file named "File" which is a file of type "∆_Name"
+[3]   ⍝ "File" can be nested with a File Description
+[4]   ⍝ Typical "∆_Name" is "ClientFile", "BasisFile", "SVALMENU", ∆_Name is equal to File is not specified
+[5]   
+[6]   :if 1=≡File ⋄ ∆_Description←'\' Win∆Child File
+[7]   :else       ⋄ (File ∆_Description)←2↑File
+[8]   :endif
+[9]   :if 0=⎕nc '∆_Name' ⋄ ∆_Name←'\' Win∆Child File ⋄ :endif
+[10]  ∆_Code←(~(⊂UPPERCASE ∆_Name)∊'PREFFILE' 'CONFIGFILE' 'HELPFILE')/,Win∆CountryCode ⍝ PrefFile is Universal
+[11]  
+[12]  ⎕elx←'→tieno←0'
+[13]  :if ~'.SF'≡¯3↑File←DLTB UPPERCASE File
+[14]      File←File,'.SF' ⍝ Add extension required for extended names
+[15]  :endif
+[16]  
+[17]  :if File FTIE tieno←TieNumber File ⍝ If File exists
+[18]      :if 'Y'='YN' ASK 'Delete' File ⍝  and user wants to erase
+[19]          File ⎕xftie tieno          ⍝ Special bit for MESSGAES File!!
+[20]          File ⎕xferase tieno
+[21]      :else
+[22]          tieno←0 ⋄ :return          ⍝ else signal failure and abort!
+[23]      :endif
+[24]  :endif
+[25]  
+[26]  File ⎕xfcreate tieno
+[27]  ∆_TimeStamp←,1 DATESPELL ⎕ts ⋄ ∆_TimeNum←TIMEBASE ⎕ts
+[28]  ∆_Index←MATRIX '∆_CompNo' '∆_Name' '∆_Description' '∆_Code' '∆_UserCreated' '∆_TSCreated' '∆_UserModified' '∆_TSModified' '∆_TimeModified' '∆_VersModified' '∆_Deleted'
+[29]  ∆_Index←∆_Index⍪1          ∆_Name   ∆_Description   ∆_Code   uSER            ∆_TimeStamp   uSER             ∆_TimeStamp    ∆_TimeNum        version         ''
+[30]  
+[31]  0 0⍴∆_Index ⎕fappend tieno ⋄ ⎕funtie tieno
+    ∇

@@ -1,0 +1,53 @@
+    ∇ arg UpdateVarLists fns;Fieldlist;field;fn;list;value;text;style;extent;var;blank;limit;label;where;x;edit;suppress;adjustlab
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Update the Combo properties when a (possible) change in list property
+[3]   
+[4]   Fieldlist←'Control' 'Type' OVER ⊃spin m2n¨2↑Win∆GetFieldList ControlName
+[5]   :if 0=rowsIn Fieldlist←Fieldlist for 'Type' 'Combo' ⋄ :return ⋄ :endif
+[6]   
+[7]   :if 0=⎕nc 'arg' ⋄ arg←1 1 ⋄ :endif
+[8]   (suppress adjustlab)←2↑arg,1
+[9]   
+[10]  :for field :in Fieldlist at 'Control'
+[11]      :if ∨/∊fns⍷¨⊂fn←field ⎕wi '∆update'
+[12]          (list value text style extent limit)←field ⎕wi 'Ref' 'list' 'value' 'text' 'style' 'extent' 'limit'
+[13]          blank←(edit←style≠style BinAdd 2)∨(0=field ⎕wi '∆mandatory')                               ⍝ Determine if Combo/Edit or non-mandatory Fields
+[14]  
+[15]          :if 0≠value
+[16]              text←DLTB list[value;]
+[17]          :elseif mt DLTB text
+[18]          :andif (,2)≡⎕nc qtrim var←field ⎕wi '∆name'
+[19]              text←⍎var
+[20]          :endif
+[21]  
+[22]          list←(blank,0)⍴' '
+[23]          field ⎕wi 'list' (list←list OVER 1 0↓⍎fn)                                             ⍝ Create new list
+[24]          field ⎕wi 'extent' (150,(¯10+(6+2×0=↑2 2⊤style)×¯1↑CharSize)+¯1↑Win∆TextSize ((0,limit)⌈⍴list)↑list) ⍝ Stretch field to fit
+[25]  
+[26]          :if 0=value←↑(⎕av[209] StripText list) ExactTLU ⎕av[209] StripText text
+[27]              value←↑(StripText list) ExactTLU StripText text
+[28]          :endif
+[29]  
+[30]          field ⎕wi 'suppress' suppress
+[31]          :if 0=value ⋄ :andif edit ⍝ Combo/Edit or non-mandatory Fields
+[32]              field ⎕wi 'text' text
+[33]          :else
+[34]              field ⎕wi 'value' value
+[35]          :endif
+[36]          field ⎕wi 'suppress' 0
+[37]  
+[38]          :if adjustlab
+[39]          :andif ~0≡label←field ⎕wi '∆rightlabel'                                                   ⍝ Move Right Label
+[40]              where←4↑,field ⎕wi "∆where"
+[41]              x←0.5×⍴where←Win∆Calcwhere where+0 3 0,10+¯1↑field ⎕wi "extent"
+[42]              label ⎕wi "∆where" ((x,2)⍴where)
+[43]              label ⎕wi "where" (((Win∆Parent label) ⎕wi "size") Win∆Resize label ⎕wi "∆where")
+[44]          :endif
+[45]  ⍝        :if 0≠delta←¯1↑(field ⎕wi 'extent')-extent
+[46]  ⍝            (field ⎕wi '∆rightlabel') ⎕wi '∆where' (((field ⎕wi '∆rightlabel') ⎕wi '∆where')+2 2⍴0 0 0,delta)
+[47]  ⍝            (Win∆Parent field ⎕wi '∆rightlabel') ⎕wi 'Resize'
+[48]  ⍝        :endif
+[49]      :endif
+[50]  :endfor
+[51]  ControlName ⎕wi 'Paint'
+    ∇

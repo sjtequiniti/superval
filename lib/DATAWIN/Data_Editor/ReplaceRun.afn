@@ -1,1 +1,57 @@
-    ∇ ReplaceRun col;changetext;limit;recs;data;Hits;Total;cols;z;all;row;origtext[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Run the Replace Text Routine[3]   ⍝ Search in current field only and find a complete match[4]   [5]   limit←colnos[col;2] ⋄ origtext←hSS ⎕wi 'TextRC' xrow col[6]   'DATAWIN' CallModule 'Replace'[7]   :if 0=⎕nc 'changetext' ⋄ :return ⋄ :endif[8]   [9]   Data_SavePage ⍝ Save Changes[10]  [11]  0 0⍴⎕nread edttie, 82,0 0 ⍝ Reset File Pointer[12]  Hits←⍳Total←0 ⋄ cols←colnos[col;1]+⍳limit[13]  :for recs :in RecsPerChunk[14]      data←(recs,RECL)⍴⎕nread edttie,82,RECL×recs[15]      :if origtext[16]          Hits←Hits,Total+data[;cols] ExactTLU changetext[1;][17]      :else[18]          Hits←Hits,Total+(LJUSTIFY data[;cols]) ExactTLU changetext[1;][19]      :endif[20]      Total←Total+recs[21]  :endfor[22]  [23]  :if 0=⍴Hits ⍝ No hits[24]      MDISPLAY 'No match found' ⋄ Win∆SetFocus hSS ⋄ :return[25]  :endif[26]  [27]  ⍝ Put the next one first[28]  Hits←(-+/Hits>(xrow-1)++/(MDEpage-1)↑RecsPerPage)⌽Hits[29]  [30]  all←'Y'=ASK (⍕⍴,Hits),' Occurrence',((1<⍴,Hits)/'s'),' of "',changetext[1;],'" found in ',(DLTB NAMES[col;]),'.',⎕tclf,'Replace All?'[31]  0 Win∆SetFocus 'fmDataEdit.fStats.edfrecno'[32]  [33]  :repeat[34]      'fmDataEdit.fStats.edfrecno' ⎕wi 'text' (⍕recno←1↑Hits)[35]      row←(CanDisplayRows×0=row)+row←CanDisplayRows∣recno[36]      :if ~all[37]          hSS ⎕wi 'SetSelection' row col row col[38]          hSS ⎕wi 'XFontColor' (256⊥0 0 255) ⍝ Highlight in Red[39]          hSS ⎕wi 'XSetPattern' 18 (256⊥0 0 0) (256⊥255 0 0)[40]          z←'YNC' ASK 'Replace in Record Number ',(⍕recno),'?'[41]          hSS ⎕wi 'XFontColor' (256⊥0 0 0)[42]          hSS ⎕wi 'XSetPattern' 0 (256⊥0 0 0) (256⊥0 0 0)[43]          :select z[44]          :case 'C'[45]              :leave[46]          :case 'N'[47]              :continue[48]          :endselect[49]      :endif[50]      hSS ⎕wi 'TextRC' row col (changetext[2;])[51]      Data_SavePage ⍝ Save Changes[52]  :until 0=⍴,Hits←1↓Hits[53]  [54]  Data_Display MDEpage,row,col[55]  0 Win∆SetFocus hSS    ∇
+    ∇ ReplaceRun col;changetext;limit;recs;data;Hits;Total;cols;z;all;row;origtext
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Run the Replace Text Routine
+[3]   ⍝ Search in current field only and find a complete match
+[4]   
+[5]   limit←colnos[col;2] ⋄ origtext←hSS ⎕wi 'TextRC' xrow col
+[6]   'DATAWIN' CallModule 'Replace'
+[7]   :if 0=⎕nc 'changetext' ⋄ :return ⋄ :endif
+[8]   
+[9]   Data_SavePage ⍝ Save Changes
+[10]  
+[11]  0 0⍴⎕nread edttie, 82,0 0 ⍝ Reset File Pointer
+[12]  Hits←⍳Total←0 ⋄ cols←colnos[col;1]+⍳limit
+[13]  :for recs :in RecsPerChunk
+[14]      data←(recs,RECL)⍴⎕nread edttie,82,RECL×recs
+[15]      :if origtext
+[16]          Hits←Hits,Total+data[;cols] ExactTLU changetext[1;]
+[17]      :else
+[18]          Hits←Hits,Total+(LJUSTIFY data[;cols]) ExactTLU changetext[1;]
+[19]      :endif
+[20]      Total←Total+recs
+[21]  :endfor
+[22]  
+[23]  :if 0=⍴Hits ⍝ No hits
+[24]      MDISPLAY 'No match found' ⋄ Win∆SetFocus hSS ⋄ :return
+[25]  :endif
+[26]  
+[27]  ⍝ Put the next one first
+[28]  Hits←(-+/Hits>(xrow-1)++/(MDEpage-1)↑RecsPerPage)⌽Hits
+[29]  
+[30]  all←'Y'=ASK (⍕⍴,Hits),' Occurrence',((1<⍴,Hits)/'s'),' of "',changetext[1;],'" found in ',(DLTB NAMES[col;]),'.',⎕tclf,'Replace All?'
+[31]  0 Win∆SetFocus 'fmDataEdit.fStats.edfrecno'
+[32]  
+[33]  :repeat
+[34]      'fmDataEdit.fStats.edfrecno' ⎕wi 'text' (⍕recno←1↑Hits)
+[35]      row←(CanDisplayRows×0=row)+row←CanDisplayRows∣recno
+[36]      :if ~all
+[37]          hSS ⎕wi 'SetSelection' row col row col
+[38]          hSS ⎕wi 'XFontColor' (256⊥0 0 255) ⍝ Highlight in Red
+[39]          hSS ⎕wi 'XSetPattern' 18 (256⊥0 0 0) (256⊥255 0 0)
+[40]          z←'YNC' ASK 'Replace in Record Number ',(⍕recno),'?'
+[41]          hSS ⎕wi 'XFontColor' (256⊥0 0 0)
+[42]          hSS ⎕wi 'XSetPattern' 0 (256⊥0 0 0) (256⊥0 0 0)
+[43]          :select z
+[44]          :case 'C'
+[45]              :leave
+[46]          :case 'N'
+[47]              :continue
+[48]          :endselect
+[49]      :endif
+[50]      hSS ⎕wi 'TextRC' row col (changetext[2;])
+[51]      Data_SavePage ⍝ Save Changes
+[52]  :until 0=⍴,Hits←1↓Hits
+[53]  
+[54]  Data_Display MDEpage,row,col
+[55]  0 Win∆SetFocus hSS
+    ∇

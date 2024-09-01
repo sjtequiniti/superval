@@ -1,1 +1,53 @@
-    ∇ Init_DisplayFAudit;z;red;old;new;olddiff;newdiff;diff;SSName[1]   ⍝ DECRWIN.sf#22[2]   ⍝ Initialise the grids for the Factors Audit Display[3]   [4]   :if ~0∊⍴OldDates[5]       (parent,'edOldDesc') ⎕wi 'visible' 1[6]       (parent,'llOldDesc') ⎕wi 'visible' 1[7]       (parent,'fOldFactors') ⎕wi 'visible' 1[8]   :else[9]       (parent,'lDiff') ⎕wi 'visible' ¯1[10]  :endif[11]  [12]  :if ~0∊⍴NewDates[13]      (parent,'edNewDesc') ⎕wi 'visible' 1[14]      (parent,'llNewDesc') ⎕wi 'visible' 1[15]      (parent,'fNewFactors') ⎕wi 'visible' 1[16]  :else[17]      (parent,'lDiff') ⎕wi 'visible' ¯1[18]  :endif[19]  [20]  Assign_Inputs 0[21]  [22]  :if 1=(parent,'lDiff') ⎕wi 'visible'[23]      (parent,'lDiff') ⎕wi 'color' ¯1 (red←256⊥0 0 255)[24]  [25]      olddiff←,(WHERE old←(1+↑⍴NewDates)=(⎕split NewDates)⍳⎕split OldDates)∘.,1 2[26]      newdiff←,(WHERE new←(1+↑⍴OldDates)=(⎕split OldDates)⍳⎕split NewDates)∘.,1 2[27]  [28]      diff←~(m2n (~old)⌿OldRates)≡¨(m2n (~new)⌿NewRates)[29]      olddiff←olddiff,(WHERE (~old)\diff)∘.,2[30]      newdiff←newdiff,(WHERE (~new)\diff)∘.,2[31]  [32]      SSName←parent,'fOldFactors.ssOldFactors'[33]      :for z :in olddiff[34]          SSName Win∆F1SSSetSelection 4⍴z[35]          SSName ⎕wi 'XFontColor' red[36]      :endfor[37]      SSName Win∆F1SSSetSelection ¯1 1 ¯1 2[38]      SSName ⎕wi 'xSetProtection' 1 1[39]      SSName ⎕wi 'xEnableProtection' 1[40]      SSName Win∆F1SSSetSelection 1 1 1 1[41]  [42]      SSName←parent,'fNewFactors.ssNewFactors'[43]      :for z :in newdiff[44]          SSName Win∆F1SSSetSelection 4⍴z[45]          SSName ⎕wi 'XFontColor' red[46]      :endfor[47]      SSName Win∆F1SSSetSelection ¯1 1 ¯1 2[48]      SSName ⎕wi 'xSetProtection' 1 1[49]      SSName ⎕wi 'xEnableProtection' 1[50]      SSName Win∆F1SSSetSelection 1 1 1 1[51]  :endif    ∇
+    ∇ Init_DisplayFAudit;z;red;old;new;olddiff;newdiff;diff;SSName
+[1]   ⍝ DECRWIN.sf#22
+[2]   ⍝ Initialise the grids for the Factors Audit Display
+[3]   
+[4]   :if ~0∊⍴OldDates
+[5]       (parent,'edOldDesc') ⎕wi 'visible' 1
+[6]       (parent,'llOldDesc') ⎕wi 'visible' 1
+[7]       (parent,'fOldFactors') ⎕wi 'visible' 1
+[8]   :else
+[9]       (parent,'lDiff') ⎕wi 'visible' ¯1
+[10]  :endif
+[11]  
+[12]  :if ~0∊⍴NewDates
+[13]      (parent,'edNewDesc') ⎕wi 'visible' 1
+[14]      (parent,'llNewDesc') ⎕wi 'visible' 1
+[15]      (parent,'fNewFactors') ⎕wi 'visible' 1
+[16]  :else
+[17]      (parent,'lDiff') ⎕wi 'visible' ¯1
+[18]  :endif
+[19]  
+[20]  Assign_Inputs 0
+[21]  
+[22]  :if 1=(parent,'lDiff') ⎕wi 'visible'
+[23]      (parent,'lDiff') ⎕wi 'color' ¯1 (red←256⊥0 0 255)
+[24]  
+[25]      olddiff←,(WHERE old←(1+↑⍴NewDates)=(⎕split NewDates)⍳⎕split OldDates)∘.,1 2
+[26]      newdiff←,(WHERE new←(1+↑⍴OldDates)=(⎕split OldDates)⍳⎕split NewDates)∘.,1 2
+[27]  
+[28]      diff←~(m2n (~old)⌿OldRates)≡¨(m2n (~new)⌿NewRates)
+[29]      olddiff←olddiff,(WHERE (~old)\diff)∘.,2
+[30]      newdiff←newdiff,(WHERE (~new)\diff)∘.,2
+[31]  
+[32]      SSName←parent,'fOldFactors.ssOldFactors'
+[33]      :for z :in olddiff
+[34]          SSName Win∆F1SSSetSelection 4⍴z
+[35]          SSName ⎕wi 'XFontColor' red
+[36]      :endfor
+[37]      SSName Win∆F1SSSetSelection ¯1 1 ¯1 2
+[38]      SSName ⎕wi 'xSetProtection' 1 1
+[39]      SSName ⎕wi 'xEnableProtection' 1
+[40]      SSName Win∆F1SSSetSelection 1 1 1 1
+[41]  
+[42]      SSName←parent,'fNewFactors.ssNewFactors'
+[43]      :for z :in newdiff
+[44]          SSName Win∆F1SSSetSelection 4⍴z
+[45]          SSName ⎕wi 'XFontColor' red
+[46]      :endfor
+[47]      SSName Win∆F1SSSetSelection ¯1 1 ¯1 2
+[48]      SSName ⎕wi 'xSetProtection' 1 1
+[49]      SSName ⎕wi 'xEnableProtection' 1
+[50]      SSName Win∆F1SSSetSelection 1 1 1 1
+[51]  :endif
+    ∇

@@ -1,1 +1,26 @@
-    ∇ var ARG25 parm;R[1]   ⍝ PARMWIN.sf#14[2]   ⍝ Fn to get Parameters required for BEN25 and write the code[3]   [4]   :select parm[5]   :case 'Vars'[6]       ⍝ Conversion of Parameters (if any)[7]       :if ~0∊⍴R←SStoMAT 1↓ALLparms SSINDEX BENno ⍝ Assign Parameters[8]           R ASSIGN∆Dict SStoMAT '⍺VestRate⍺VestCommS⍺VestMaxM⍺VestSind'[9]      :endif[10]  [11]  :case 'Write' ⍝ Write Code and comments[12]      R←VestRate OVER VestCommS OVER VestMaxM OVER VestSind[13]      NEWparms←NEWparms,'ß',DLTMB '⍵',R[14]  [15]      R←StripText R[16]  [17]      fncode←fncode OVER ' ' OVER var,'←BEN25 ',¯1↓DLTMB R,','[18]      fncode←fncode OVER '⍝ Benefit of Return of Future Member''s Contributions plus Vesting at the'[19]      fncode←fncode OVER DLTMB '⍝ Rate of ',R[1;],'% per Completed Year of ',(,(1+zwb R[4;1])⊃'Service' 'Membership'),' commencing after'[20]      fncode←fncode OVER DLTMB '⍝ ',R[2;],' years with a Maximum Multiple of Members Contributions'[21]      fncode←fncode OVER DLTMB '⍝ (including Vesting) of ',R[3;][22]      fncode←fncode OVER '⍝ NOTE:  Includes Future Vesting on Past Contributions'[23]  [24]  :endselect    ∇
+    ∇ var ARG25 parm;R
+[1]   ⍝ PARMWIN.sf#14
+[2]   ⍝ Fn to get Parameters required for BEN25 and write the code
+[3]   
+[4]   :select parm
+[5]   :case 'Vars'
+[6]       ⍝ Conversion of Parameters (if any)
+[7]       :if ~0∊⍴R←SStoMAT 1↓ALLparms SSINDEX BENno ⍝ Assign Parameters
+[8]           R ASSIGN∆Dict SStoMAT '⍺VestRate⍺VestCommS⍺VestMaxM⍺VestSind'
+[9]      :endif
+[10]  
+[11]  :case 'Write' ⍝ Write Code and comments
+[12]      R←VestRate OVER VestCommS OVER VestMaxM OVER VestSind
+[13]      NEWparms←NEWparms,'ß',DLTMB '⍵',R
+[14]  
+[15]      R←StripText R
+[16]  
+[17]      fncode←fncode OVER ' ' OVER var,'←BEN25 ',¯1↓DLTMB R,','
+[18]      fncode←fncode OVER '⍝ Benefit of Return of Future Member''s Contributions plus Vesting at the'
+[19]      fncode←fncode OVER DLTMB '⍝ Rate of ',R[1;],'% per Completed Year of ',(,(1+zwb R[4;1])⊃'Service' 'Membership'),' commencing after'
+[20]      fncode←fncode OVER DLTMB '⍝ ',R[2;],' years with a Maximum Multiple of Members Contributions'
+[21]      fncode←fncode OVER DLTMB '⍝ (including Vesting) of ',R[3;]
+[22]      fncode←fncode OVER '⍝ NOTE:  Includes Future Vesting on Past Contributions'
+[23]  
+[24]  :endselect
+    ∇

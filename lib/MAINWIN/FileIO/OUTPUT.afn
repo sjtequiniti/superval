@@ -1,0 +1,40 @@
+    ∇ res←H1 OUTPUT arg;tieno;APAGE;size;textlines;ind;REC;row;line
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Function to add output (Global SUMMREC) to a native DOS file
+[3]   ⍝ 'H1' is the header, 'arg' is the tie number, current page number and
+[4]   ⍝    current line number (defaults to "textlines" ie force new page)
+[5]   ⍝ Returns Page Number and line number
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   
+[8]   size←1↑⍴REC←SUMMREC←MATRIX SUMMREC ⋄ textlines←pAGE-1↑⍴H1
+[9]   tieno←arg[⎕io] ⋄ APAGE←arg[1+⎕io] ⋄ line←(arg,textlines)[2+⎕io]
+[10]  
+[11]  ⍝ If fits on Current Page
+[12]  :if ind←textlines≥line+size ⋄ line←line+size ⋄ →LAB ⋄ :endif
+[13]  
+[14]  ⍝ else Do we need more than 1 page?
+[15]  LOOP:size←1↑⍴SUMMREC←REC ⋄ →(ind←size≤textlines)/L1
+[16]  
+[17]  ⍝ Find Blank Lines for Appropriate Page Breaks
+[18]  row←¯1↑textlines,(row∊textlines-⍳5)/row←(^/' '=REC)/⍳size
+[19]  SUMMREC←((⍴REC)⌊row,10000)↑REC ⋄ REC←(row,0)↓REC
+[20]  
+[21]  ⍝ Delete Blank Lines when at Top of Page
+[22]  L1:→(0∊⍴SUMMREC←((+/^\^/SUMMREC=' '),0)↓SUMMREC)/END ⋄ line←1↑⍴SUMMREC
+[23]  
+[24]  ⍝ Insert Page Break
+[25]  :if 0≠⎕nsize tieno ⋄ ⎕TCFF ⎕NAPPEND tieno ⋄ :endif
+[26]  
+[27]  H1[⎕IO;(¯3+¯1↑⍴H1)+⍳3]←,'I3' ⎕FMT APAGE←APAGE+1 ⍝ Increment Page Number
+[28]  H1 APPEND tieno ⍝ Add Header
+[29]  
+[30]  LAB: ⍝ Drop Form Feed at start if file not new
+[31]  :if 0≠⎕nsize tieno ⋄ :andif 1=size ⋄ :andif ⎕TCFF=1↑,SUMMREC
+[32]       SUMMREC←MATRIX 1↓,SUMMREC
+[33]  :endif
+[34]  
+[35]  ⍝ Add the Output to File
+[36]  SUMMREC APPEND tieno ⋄ →(~ind)/LOOP
+[37]  
+[38]  END:res←APAGE,line ⍝ Return Updated Page Number and Line number
+    ∇

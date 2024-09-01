@@ -1,0 +1,13 @@
+    ∇ res←ContID DumpCFs BenID;tab
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Get all Cashflows from "acttab" with ContingencyID ContID and BenefitTypeID BenID
+[3]   
+[4]                   tab←parttab for (⊂'ContingencyID'),,¨ContID
+[5]   :if ~mt BenID ⋄ tab←    tab for (⊂'BenefitTypeID'),,¨BenID ⋄ :endif
+[6]   
+[7]   :if 0=rowsIn tab
+[8]       res←(maxyr,1)⍴0
+[9]   :else
+[10]      res←⍉MATRIX ↑+/+⌿¨tab at 'RFCashFlow'
+[11]  :endif
+    ∇

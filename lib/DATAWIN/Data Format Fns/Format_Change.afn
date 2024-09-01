@@ -1,1 +1,45 @@
-    ∇ res←Format Format∆Change field;Currfield;Prevfield;RECL[1]   ⍝ DATAWIN.sf#2[2]   ⍝ The onChange events (disabling fields according to value of others)[3]   ⍝ Previous Char and Date (and some numeric) are disabled and mirror Current field[4]   ⍝ Previous of most numeric are only enabled when Current is non-zero and default to current value[5]   [6]   res←0⍴''[7]   [8]   :if 0∊⍴,field ⋄ :return ⋄ :endif[9]   [10]  :repeat[11]     Prevfield←'fmSV.s',Format,'.pgPrevious.',(2↑↑field),'p',2↓↑field[12]     :if prevind[13]         Currfield←'fmSV.s',Format,'.pgCurrent.',↑field[14]     :else[15]         Currfield←'fmSV.s',Format,'.pgStandard.',↑field[16]     :endif[17]  [18]     :select ↑field[19]     :case 'All' ⍝ Specify all fields in case statements below as left argument[20]         res←(⊃VarNumFields[2]),(⊃FixNumFields[2]),(⊃CharFields[2]),(⊃DateFields[2]),⊃FormatFields[2][21]  [22]     :case 'edRECL'[23]         recl←¯1+zwb RECL←Currfield ⎕wi 'text'[24]         :if prevind ⋄ Prevfield ⎕wi 'text' RECL ⋄ :endif[25]  [26]     :caselist 'cbsalfreq' 'cbpupfreq' 'cbpenfreq'[27]         :if prevind ⋄ Prevfield ⎕wi 'value' (Currfield ⎕wi 'value') ⋄ :endif[28]  [29]     :caselist (⊃FixNumFields[2]),(⊃CharFields[2]),(⊃DateFields[2]),(⊃FormatFields[2]),'edSAgeDiff' 'eddefMS'[30]         :if prevind ⋄ Prevfield ⎕wi 'text' (Currfield ⎕wi 'text') ⋄ :endif[31]  [32]     :caselist ⊃VarNumFields[2][33]         :if prevind[34]             Prevfield ⎕wi 'enabled' (aosenabled^0≠⍴,DLTB Currfield ⎕wi 'text')[35]             :if 0∊⍴,DLTB Prevfield ⎕wi 'text'[36]             :orif 0∊⍴,DLTB Currfield ⎕wi 'text'[37]                  Prevfield ⎕wi 'text' (Currfield ⎕wi 'text')[38]             :endif[39]         :endif[40]  [41]     :endselect[42]  [43]  :until mt field←1↓field    ∇
+    ∇ res←Format Format∆Change field;Currfield;Prevfield;RECL
+[1]   ⍝ DATAWIN.sf#2
+[2]   ⍝ The onChange events (disabling fields according to value of others)
+[3]   ⍝ Previous Char and Date (and some numeric) are disabled and mirror Current field
+[4]   ⍝ Previous of most numeric are only enabled when Current is non-zero and default to current value
+[5]   
+[6]   res←0⍴''
+[7]   
+[8]   :if 0∊⍴,field ⋄ :return ⋄ :endif
+[9]   
+[10]  :repeat
+[11]     Prevfield←'fmSV.s',Format,'.pgPrevious.',(2↑↑field),'p',2↓↑field
+[12]     :if prevind
+[13]         Currfield←'fmSV.s',Format,'.pgCurrent.',↑field
+[14]     :else
+[15]         Currfield←'fmSV.s',Format,'.pgStandard.',↑field
+[16]     :endif
+[17]  
+[18]     :select ↑field
+[19]     :case 'All' ⍝ Specify all fields in case statements below as left argument
+[20]         res←(⊃VarNumFields[2]),(⊃FixNumFields[2]),(⊃CharFields[2]),(⊃DateFields[2]),⊃FormatFields[2]
+[21]  
+[22]     :case 'edRECL'
+[23]         recl←¯1+zwb RECL←Currfield ⎕wi 'text'
+[24]         :if prevind ⋄ Prevfield ⎕wi 'text' RECL ⋄ :endif
+[25]  
+[26]     :caselist 'cbsalfreq' 'cbpupfreq' 'cbpenfreq'
+[27]         :if prevind ⋄ Prevfield ⎕wi 'value' (Currfield ⎕wi 'value') ⋄ :endif
+[28]  
+[29]     :caselist (⊃FixNumFields[2]),(⊃CharFields[2]),(⊃DateFields[2]),(⊃FormatFields[2]),'edSAgeDiff' 'eddefMS'
+[30]         :if prevind ⋄ Prevfield ⎕wi 'text' (Currfield ⎕wi 'text') ⋄ :endif
+[31]  
+[32]     :caselist ⊃VarNumFields[2]
+[33]         :if prevind
+[34]             Prevfield ⎕wi 'enabled' (aosenabled^0≠⍴,DLTB Currfield ⎕wi 'text')
+[35]             :if 0∊⍴,DLTB Prevfield ⎕wi 'text'
+[36]             :orif 0∊⍴,DLTB Currfield ⎕wi 'text'
+[37]                  Prevfield ⎕wi 'text' (Currfield ⎕wi 'text')
+[38]             :endif
+[39]         :endif
+[40]  
+[41]     :endselect
+[42]  
+[43]  :until mt field←1↓field
+    ∇

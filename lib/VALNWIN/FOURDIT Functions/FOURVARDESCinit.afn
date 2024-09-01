@@ -1,0 +1,39 @@
+    ∇ FOURDITVARDESC←FOURDITVARDESC FOURVARDESCinit type;∆;relRules;⍙CACHE;flds;vars;tab
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Adjust FOURDITVARDESC for "standard" variables
+[3]   
+[4]   :select type
+[5]   :case 'Dictionary'
+[6]       FOURDITVARDESC←FOURDITVARDESC amend 'status' (∆ sel¨∆←ZWB¨FOURDITVARDESC at 'status')
+[7]       FOURDITVARDESC←FOURDITVARDESC amend 'fmt' ((rowsIn FOURDITVARDESC)/⊂'')
+[8]       FIXED_ALIASES←FIXED_ALIASES amend spin FOURDITALIASES at 'variable' 'alias'
+[9]   
+[10]  :case 'MembGroup'
+[11]      tab←⍎MembGroup,'VARDESC'
+[12]      tab←tab amend 'status' (∆ sel¨∆←ZWB¨tab at 'status')
+[13]      tab←tab amend 'fmt' ((rowsIn tab)/⊂'')
+[14]      FOURDITVARDESC←FOURDITVARDESC append tab
+[15]      FIXED_ALIASES←FIXED_ALIASES amend spin (⍎MembGroup,'ALIASES') at 'variable' 'alias'
+[16]  
+[17]  :case 'Batch'
+[18]      'Valuation Settings' FOURDIT 'vDATE←',((zwb aosind)∨(zwb vDATEind))/' pvDATE←'
+[19]      relRules←⍙RULESdict ReadDictFile 'Valuation_Batch'
+[20]      relRules←relRules for 'Page' 'Batch Parameters'
+[21]      ⍙CACHE←flds push ⍎¨flds←'dab' 'NotPUC' 'IsDeferred'
+[22]      relRules←relRules amend 'status' (,¨⍎¨relRules at 'Relevant')
+[23]      FOURDITVARDESC←FOURDITVARDESC append SetFOURVARDESC relRules
+[24]      'Valuation Settings' FOURDIT (' ' join (relRules at 'Field'),¨'←')
+[25]  
+[26]  :case 'Data'
+[27]      ∆←       m2n TotNumVars OVER DateVars OVER CharVars OVER 0 1↓SStoMAT DateStandVars ,VarNumStandVars ,FixNumStandVars ,CharStandVars
+[28]      ∆←∆,[0.5]m2n TotNumDesc OVER DateDesc OVER CharDesc OVER     SStoMAT DateStandNames,VarNumStandNames,FixNumStandNames,CharStandNames
+[29]      FOURDITVARDESC←FOURDITVARDESC OVER (((∆,⊂''),⊂''),⊂,1),⊂''
+[30]  
+[31]  :case 'Scenario'
+[32]      ∆←∨/¨(⊂'sCEN_')⍷¨vars←m2n ⍙VALUESdict ReadDictFile (MembGroup,'_Basis') '' 'NAMES' ⍝ Scenario Variables
+[33]      vars←∆/vars
+[34]      ∆←vars,[0.5](⊂'Scenario Adjustment - '),¨↑¨((⊂FOURDITVARDESC) for¨(⊂⊂'name'),¨(⊂¨5↓¨vars)) at¨⊂'description'
+[35]      FOURDITVARDESC←FOURDITVARDESC OVER (((∆,⊂''),⊂''),⊂,scenario),⊂''
+[36]  
+[37]  :endselect
+    ∇

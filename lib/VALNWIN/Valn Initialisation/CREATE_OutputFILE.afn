@@ -1,0 +1,67 @@
+    ∇ CREATE∆OutputFILE;File;tie;OutputNo;tieno;FileList;NOS;fILENAME;N;ado
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Create Output Files required for Valuation
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   
+[8]   :if ~suppressText
+[9]       fILENAME←DTDot ValMeth,(aggopt[0]/' (Aggregated - No Output) '),DLTB FILES
+[10]      ado←OutputNo←0
+[11]  
+[12]      :if XLCtl ⍝ Get minimum Valuation Output extension from Database
+[13]          :if ado←(⊂'ADOcon')∊'#' ⎕wi 'children'
+[14]          :andif 0∊⍴OutputNo←,1 ⍙DBadoCONCommand "SELECT OutputExtension FROM OutputFile WHERE OutputFilename = ",(1 ⍙DBString fILENAME),sqlDatabase/" AND DatabaseID=",⍕DatabaseID
+[15]              'ADOrst' ⎕wi 'XOpen' 'OutputFile' ('ADOcon' ⎕wi 'obj') ('ADOrst' ⎕wi 'adOpenStatic') ('ADOrst' ⎕wi 'adLockOptimistic')
+[16]              ⍙DBInsertData (~sqlDatabase)↓DatabaseID fILENAME (OutputNo←0)
+[17]          :endif
+[18]      :else
+[19]          tieno←TieNumber File←ConsolidDir,'VALRES.SF'
+[20]          →(~File FTIE tieno)/⎕lc ⍝ Keep trying
+[21]  
+[22]          (FileList NOS)←⎕FREAD tieno,2 ⍝ Get the FileList and Output Nos
+[23]  
+[24]          :if 0∊⍴N←(FileList ExactTLU fILENAME)-~⎕io
+[25]              FileList←FileList OVER fILENAME ⋄ N←(⍴,NOS←NOS,OutputNo←0)-~⎕io
+[26]          :else
+[27]              OutputNo←NOS[N]
+[28]          :endif
+[29]      :endif
+[30]  
+[31]      tpr1←OutputNo OPEN∆TPR∆FILE fILENAME
+[32]      OutPutFile←,(tpr1=⎕xnnums)⌿⎕xnnames
+[33]  
+[34]      :if XLCtl
+[35]          :if ado
+[36]              0 0⍴0 ⍙DBadoCONCommand "UPDATE OutputFile SET OutputExtension=",(1 ⍙DBString Win∆Child OutPutFile)," WHERE OutputFilename=",1 ⍙DBString fILENAME
+[37]          :endif
+[38]      :else
+[39]          (FileList NOS) ⎕freplace tieno,2 ⋄ ⎕funtie tieno
+[40]      :endif
+[41]  
+[42]      File←InputDir,'TEMP$$.IND' ⍝ Individual Results temp file
+[43]      :if ~(⊂ValMeth)∊'PEN' 'PPA' 'PPD' 'PPP',(uk≠1)/⊂'DEF'
+[44]          tpI←NCREATE File
+[45]      :elseif FileExist File
+[46]      :andif File NTIE tie←'Native' TieNumber File
+[47]          File NERASE tie
+[48]      :endif
+[49]  
+[50]      File←InputDir,'TEMP$$.ACC' ⍝ Accrued Bens temp file
+[51]      :if PROPT ⋄ :andif (ClassID≠4)∨ppf∨bencap
+[52]          tpA←NCREATE File
+[53]      :elseif FileExist File
+[54]      :andif File NTIE tie←'Native' TieNumber File
+[55]          File NERASE tie
+[56]      :endif
+[57]  
+[58]      File←InputDir,'TEMP$$.AOS' ⍝ Analysis of Surplus temp file
+[59]      :if aosind
+[60]          tpS←NCREATE File
+[61]      :elseif FileExist File
+[62]      :andif File NTIE tie←'Native' TieNumber File
+[63]          File NERASE tie
+[64]      :endif
+[65]  :endif
+    ∇

@@ -1,0 +1,25 @@
+    ∇ RunBulkAnnuity;TABLE;OldTable;max;SUMMREC;tpr1;File;H1;BulkTableDesc;CallingModule;rUNDESC;APAGE;colEdit
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Run the Bulk Annuity Module
+[3]   
+[4]   max←119 ⋄ TABLE←120⍴0 ⋄ OldTable←'DA???'
+[5]   
+[6]   CallingModule←'AnnuityCalc' ⋄ colEdit←0
+[7]   'DECRWIN' CallModule 'Bulk_Annuity'
+[8]   
+[9]   :if ~^/0=TABLE
+[10]  :andif 0≠⎕nc 'rUNDESC'
+[11]      tpr1←OPEN∆TPR∆FILE 'ANNPRINT' ⍝ Open print file
+[12]      File←DLTB (tpr1=⎕xnnums)⌿⎕xnnames
+[13]      H1←(wIDTH WRITE∆HEAD 'BULK ANNUITY TABLE PRINTOUT') OVER ' '
+[14]      SUMMREC←rUNDESC
+[15]      APAGE←↑H1 OUTPUT tpr1,0
+[16]      SUMMREC←(OldTable BulkTableDesc) DecrPrint TABLE
+[17]      0 0⍴⍴H1 OUTPUT tpr1,APAGE
+[18]      ⎕nuntie tpr1
+[19]  
+[20]      MDISPLAY 'OutputFile' File
+[21]  
+[22]      ('Bulk Annuity Table Printout of ',BulkTableDesc,' at ',DLTMB 1 DATESPELL ⎕ts) UpdateBrowserHistory File
+[23]  :endif
+    ∇

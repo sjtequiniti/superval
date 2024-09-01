@@ -1,1 +1,70 @@
-    ∇ AOS∆PROC;last;Reserve;Z;I;X;conts;keys;values;ID[1]   ⍝ PENWIN.sf#3[2]   ⍝ Process AOS Results from Previous and Current Valuation Dates[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   →(prevind∨~aosind)/0 ⍝ Exit if no AOS or if Previous Valuation[8]   [9]   last←ResSize-1 ⋄ Ind∆AOS←+⌿Ind∆AOS ⍝ Collapse Results to One Plane[10]  [11]  ⍝ Determine an "approximate" Interest figure for actuals or approximate expecteds[12]  :if 0=I←1↑((+/0 ¯1↓Ind∆AOS[7+I;]) CDIV +/0 ¯1↓Ind∆AOS[I←5 2 3 4;])~0[13]      I←ResSize↑(PerToEnt/1),v CDIV 1↓v,0[14]      X←¯1↑(I*ResMult) ROLLUP 0,conts←(⌈ValPer)↑ResMult-ExitMult[15]      I←¯1+X ZDIV +/conts[16]  :endif[17]  [18]  ⍝ Actual Pension Paid (and Expected, if required)[19]  :if 0=Ind∆AOS[15;last]←TPP ⍝ Member Actual = Expected if zero[20]      Ind∆AOS[15;last]←+/last↑Ind∆AOS[5;][21]  :endif[22]  Ind∆AOS[18;last]←I×Ind∆AOS[15;last] ⍝ Interest on Actual Pension Paid to VDate[23]  [24]  :if ^/0=Ind∆AOS[5;] ⍝ Member Expected = Actual if zero[25]      Ind∆AOS[12;0]←I×Ind∆AOS[5;0]←Ind∆AOS[15;last][26]  :endif[27]  [28]  ⍝ Determine an "approximate" Interest after exit figure for actuals or approximate expecteds[29]  :if 0=I←(+/¯1↓Ind∆AOS[7;]) CDIV Ind∆AOS[0;last][30]  :andif ∨/EXIT[3 4][31]      I←ResSize↑(PerToEnt/1),v CDIV 1↓v,0 ⋄ conts←(⌈ValPer)↑ExitMult[32]      I←1↓(X←(I*ResMult) ROLLUP 0,conts)-+\0,×conts[33]      Ind∆AOS[7;⍳last]←I×Ind∆AOS[0;last][34]      I←¯1+(¯1↑X) ZDIV +/conts[35]  :endif[36]  [37]  Reserve←Ind∆AOS[13;last][38]  :if ^/0=Ind∆AOS[0;] ⍝ Guesstimates of Expected (and Actual Reserves) as Required[39]      Ind∆AOS[0;last]←Reserve[40]      :for Z :in ⌽⍳last[41]          Ind∆AOS[0;Z]←(Ind∆AOS[0;Z+1]++⌿Ind∆AOS[5 7 12;Z]) CDIV (last↑(PerToEnt/1),v CDIV 1↓v,0)[Z][42]      :endfor[43]      Ind∆AOS[6;⍳last]←((1↓Ind∆AOS[0;])++⌿Ind∆AOS[5 7 12;⍳last])-+⌿Ind∆AOS[0,(1+⍳4),8+⍳4;⍳last][44]  :endif[45]  [46]  Ind∆AOS[13;last]←Reserve+Ind∆AOS[0;last]×0=Reserve ⍝ Current Reserve = Expected if zero[47]  [48]  Ind∆AOS[14;last]←BOE×∨/EXIT[3 4] ⍝ Benefit Paid at Exit[49]  [50]  ⍝ Interest from Exit to VDate on Actual Reserve and Exit Benefit for Exits[51]  Ind∆AOS[16 17;last]←I×Ind∆AOS[13 14;last][52]  [53]  ⍝ Inter-Valuation Totals[54]  Ind∆AOS[1+⍳12;last]←+/ 0 ¯1 ↓Ind∆AOS[1+⍳12;][55]  [56]  LINE∆AOS∆PEN[57]  [58]  ⍝ Create Records for Database/Excel AOS results[59]  :if ⍙dbopt[60]      (keys values)←ClassID XL_StoreAOSRes Ind∆AOS[61]      ID←recn XL_MemberID fMOT                                            ⍝ MemberID[62]      ID←⊂ID,2 0⍕8+EXIT⍳1                                                 ⍝ AOSClasID[63]      keys←ID,¨keys[64]      ID←,'BI2' ⎕FMT ↑(∨/EXIT[3 4])/(20 14)[(0,1+CODEcol)[↑CODE TLU MOT]] ⍝ AOSContingencyID[65]      ID←⊂ID,3 0⍕X0×~(aggopt[0]∨csvind∨summopt)^∨/EXIT[3 4]               ⍝ AOSAge[66]      keys←⊃keys,¨ID[67]      (xl_maostie 'xl_maos') ⍙DBInsertTempData keys values[68]  :endif    ∇
+    ∇ AOS∆PROC;last;Reserve;Z;I;X;conts;keys;values;ID
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ Process AOS Results from Previous and Current Valuation Dates
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   →(prevind∨~aosind)/0 ⍝ Exit if no AOS or if Previous Valuation
+[8]   
+[9]   last←ResSize-1 ⋄ Ind∆AOS←+⌿Ind∆AOS ⍝ Collapse Results to One Plane
+[10]  
+[11]  ⍝ Determine an "approximate" Interest figure for actuals or approximate expecteds
+[12]  :if 0=I←1↑((+/0 ¯1↓Ind∆AOS[7+I;]) CDIV +/0 ¯1↓Ind∆AOS[I←5 2 3 4;])~0
+[13]      I←ResSize↑(PerToEnt/1),v CDIV 1↓v,0
+[14]      X←¯1↑(I*ResMult) ROLLUP 0,conts←(⌈ValPer)↑ResMult-ExitMult
+[15]      I←¯1+X ZDIV +/conts
+[16]  :endif
+[17]  
+[18]  ⍝ Actual Pension Paid (and Expected, if required)
+[19]  :if 0=Ind∆AOS[15;last]←TPP ⍝ Member Actual = Expected if zero
+[20]      Ind∆AOS[15;last]←+/last↑Ind∆AOS[5;]
+[21]  :endif
+[22]  Ind∆AOS[18;last]←I×Ind∆AOS[15;last] ⍝ Interest on Actual Pension Paid to VDate
+[23]  
+[24]  :if ^/0=Ind∆AOS[5;] ⍝ Member Expected = Actual if zero
+[25]      Ind∆AOS[12;0]←I×Ind∆AOS[5;0]←Ind∆AOS[15;last]
+[26]  :endif
+[27]  
+[28]  ⍝ Determine an "approximate" Interest after exit figure for actuals or approximate expecteds
+[29]  :if 0=I←(+/¯1↓Ind∆AOS[7;]) CDIV Ind∆AOS[0;last]
+[30]  :andif ∨/EXIT[3 4]
+[31]      I←ResSize↑(PerToEnt/1),v CDIV 1↓v,0 ⋄ conts←(⌈ValPer)↑ExitMult
+[32]      I←1↓(X←(I*ResMult) ROLLUP 0,conts)-+\0,×conts
+[33]      Ind∆AOS[7;⍳last]←I×Ind∆AOS[0;last]
+[34]      I←¯1+(¯1↑X) ZDIV +/conts
+[35]  :endif
+[36]  
+[37]  Reserve←Ind∆AOS[13;last]
+[38]  :if ^/0=Ind∆AOS[0;] ⍝ Guesstimates of Expected (and Actual Reserves) as Required
+[39]      Ind∆AOS[0;last]←Reserve
+[40]      :for Z :in ⌽⍳last
+[41]          Ind∆AOS[0;Z]←(Ind∆AOS[0;Z+1]++⌿Ind∆AOS[5 7 12;Z]) CDIV (last↑(PerToEnt/1),v CDIV 1↓v,0)[Z]
+[42]      :endfor
+[43]      Ind∆AOS[6;⍳last]←((1↓Ind∆AOS[0;])++⌿Ind∆AOS[5 7 12;⍳last])-+⌿Ind∆AOS[0,(1+⍳4),8+⍳4;⍳last]
+[44]  :endif
+[45]  
+[46]  Ind∆AOS[13;last]←Reserve+Ind∆AOS[0;last]×0=Reserve ⍝ Current Reserve = Expected if zero
+[47]  
+[48]  Ind∆AOS[14;last]←BOE×∨/EXIT[3 4] ⍝ Benefit Paid at Exit
+[49]  
+[50]  ⍝ Interest from Exit to VDate on Actual Reserve and Exit Benefit for Exits
+[51]  Ind∆AOS[16 17;last]←I×Ind∆AOS[13 14;last]
+[52]  
+[53]  ⍝ Inter-Valuation Totals
+[54]  Ind∆AOS[1+⍳12;last]←+/ 0 ¯1 ↓Ind∆AOS[1+⍳12;]
+[55]  
+[56]  LINE∆AOS∆PEN
+[57]  
+[58]  ⍝ Create Records for Database/Excel AOS results
+[59]  :if ⍙dbopt
+[60]      (keys values)←ClassID XL_StoreAOSRes Ind∆AOS
+[61]      ID←recn XL_MemberID fMOT                                            ⍝ MemberID
+[62]      ID←⊂ID,2 0⍕8+EXIT⍳1                                                 ⍝ AOSClasID
+[63]      keys←ID,¨keys
+[64]      ID←,'BI2' ⎕FMT ↑(∨/EXIT[3 4])/(20 14)[(0,1+CODEcol)[↑CODE TLU MOT]] ⍝ AOSContingencyID
+[65]      ID←⊂ID,3 0⍕X0×~(aggopt[0]∨csvind∨summopt)^∨/EXIT[3 4]               ⍝ AOSAge
+[66]      keys←⊃keys,¨ID
+[67]      (xl_maostie 'xl_maos') ⍙DBInsertTempData keys values
+[68]  :endif
+    ∇

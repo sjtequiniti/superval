@@ -1,1 +1,28 @@
-    ∇ NESExport;cn;list;tpr1;RUNDESC;MAT;File;ExpType[1]   ⍝ INVWIN.sf#12[2]   ⍝ Saves the details of the current new entrant salary investigation to a text file.[3]   [4]   cn←'fmNESalaryReview.lvRUNDESC' ⎕wi 'value'[5]   list←'fmNESalaryReview.lvRUNDESC' ⎕wi 'list'[6]   RUNDESC←DLTB ⊃list[list[;1]⍳cn;3][7]   File←DLTB ⊃list[list[;1]⍳cn;5][8]   0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' 'MAT'[9]   [10]  :select 3↑↑(ExpType File)←RunExcelExport OutputDir ('Export ',File)[11]  :case '   '[12]      :return[13]  :case 'CSV' ⍝ CSV File[14]      RUNDESC APPEND tpr1[15]      'New Entrant Salaries by Current Age' APPEND tpr1 ⋄ 'Age,Number,Total Salaries' APPEND tpr1[16]      ('Q<,>I4,Q<,>I9,F16.2' ⎕FMT(¯1+⍳105),MAT) APPEND tpr1 ⋄ ⎕nuntie tpr1[17]  :case 'XLS' ⍝ Excel File[18]      RUNDESC XL_Data 'A1'[19]      'New Entrant Salaries by Current Age' XL_Data 'A2'[20]      ('Age' 'Number' ('Total',⎕tclf,'Salaries')) XL_Data 'A3:C3'[21]      ((¯1+⍳105),MAT) XL_Data 'A4:C108'[22]      'XL.wb' ⎕wi 'SaveAs' File[23]      XL_Quit[24]  :endselect[25]  [26]  MDISPLAY 'OutputFile' File    ∇
+    ∇ NESExport;cn;list;tpr1;RUNDESC;MAT;File;ExpType
+[1]   ⍝ INVWIN.sf#12
+[2]   ⍝ Saves the details of the current new entrant salary investigation to a text file.
+[3]   
+[4]   cn←'fmNESalaryReview.lvRUNDESC' ⎕wi 'value'
+[5]   list←'fmNESalaryReview.lvRUNDESC' ⎕wi 'list'
+[6]   RUNDESC←DLTB ⊃list[list[;1]⍳cn;3]
+[7]   File←DLTB ⊃list[list[;1]⍳cn;5]
+[8]   0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' 'MAT'
+[9]   
+[10]  :select 3↑↑(ExpType File)←RunExcelExport OutputDir ('Export ',File)
+[11]  :case '   '
+[12]      :return
+[13]  :case 'CSV' ⍝ CSV File
+[14]      RUNDESC APPEND tpr1
+[15]      'New Entrant Salaries by Current Age' APPEND tpr1 ⋄ 'Age,Number,Total Salaries' APPEND tpr1
+[16]      ('Q<,>I4,Q<,>I9,F16.2' ⎕FMT(¯1+⍳105),MAT) APPEND tpr1 ⋄ ⎕nuntie tpr1
+[17]  :case 'XLS' ⍝ Excel File
+[18]      RUNDESC XL_Data 'A1'
+[19]      'New Entrant Salaries by Current Age' XL_Data 'A2'
+[20]      ('Age' 'Number' ('Total',⎕tclf,'Salaries')) XL_Data 'A3:C3'
+[21]      ((¯1+⍳105),MAT) XL_Data 'A4:C108'
+[22]      'XL.wb' ⎕wi 'SaveAs' File
+[23]      XL_Quit
+[24]  :endselect
+[25]  
+[26]  MDISPLAY 'OutputFile' File
+    ∇

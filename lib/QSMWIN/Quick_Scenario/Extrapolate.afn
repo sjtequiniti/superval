@@ -1,1 +1,24 @@
-    ∇ array←larg Extrapolate array;first;second;third;rotate;msk;firstnz;type;flg[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Extrapolate previous value bsed on Constant 3rd differences[3]   [4]   (type flg)←larg[5]   [6]   rotate←(⍳↑⍴array)-⎕io[7]   array←rotate⌽array[8]   [9]   :select type[10]  :case 'new'[11]      third←DIFF (DIFF (DIFF array,0),0),0[12]      msk←+/^\array=0                             ⍝ Find first non-zero[13]      :if flg ⋄ msk←msk⌈¯1++/^\0<DIFF ∣array ⋄ :endif  ⍝  or where CFs start declining[14]      firstnz←(maxyr⌊1+msk)⊃¨⎕split third[15]      third←⊃(msk sel¨firstnz),¨msk↓¨⎕split third[16]      array←(-rotate)⌽⌽+\+\+\⌽-0,third[17]  [18]  :case 'old'[19]      third←DIFF second←DIFF first←DIFF array,0[20]      array←(-rotate)⌽array-(first-(second,0)-(third,0),0)[21]  [22]  :endselect    ∇
+    ∇ array←larg Extrapolate array;first;second;third;rotate;msk;firstnz;type;flg
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Extrapolate previous value bsed on Constant 3rd differences
+[3]   
+[4]   (type flg)←larg
+[5]   
+[6]   rotate←(⍳↑⍴array)-⎕io
+[7]   array←rotate⌽array
+[8]   
+[9]   :select type
+[10]  :case 'new'
+[11]      third←DIFF (DIFF (DIFF array,0),0),0
+[12]      msk←+/^\array=0                             ⍝ Find first non-zero
+[13]      :if flg ⋄ msk←msk⌈¯1++/^\0<DIFF ∣array ⋄ :endif  ⍝  or where CFs start declining
+[14]      firstnz←(maxyr⌊1+msk)⊃¨⎕split third
+[15]      third←⊃(msk sel¨firstnz),¨msk↓¨⎕split third
+[16]      array←(-rotate)⌽⌽+\+\+\⌽-0,third
+[17]  
+[18]  :case 'old'
+[19]      third←DIFF second←DIFF first←DIFF array,0
+[20]      array←(-rotate)⌽array-(first-(second,0)-(third,0),0)
+[21]  
+[22]  :endselect
+    ∇

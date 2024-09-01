@@ -1,1 +1,73 @@
-    ∇ AMORT∆CALC∆DB;VMP;CONTS;N;i;tax;PSLIAB;sql;tab;ID;contID;∆[1]   ⍝ CONSWIN.sf#11[2]   ⍝ Amortisation of the Past Service Liability[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   :if ~dab ⋄ :orif abNO=0 ⍝ Determine unfunded liability[8]       PSLIAB←-0 ⍙DBRemoveNulls ,1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ResultsData_NoIndex WHERE SVYear=1 AND LiabilityTypeID IN (10, 11) AND ResultsCategoryID IN (",(0 ⍙DBNumList runs),")"[9]   :else[10]      PSLIAB←-0 ⍙DBRemoveNulls ,1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ResultsData_NoIndex WHERE SVYear=1 AND LiabilityTypeID IN ( 9, 11) AND ResultsCategoryID IN (",(0 ⍙DBNumList runs),")"[11]  :endif[12]  PSLIAB←(1+EXPCC)×(PSLIAB++/LTOT)-ASSETS[13]  [14]  AdditConts←amortamount←amortamount+0.01×amortprop×PSLIAB[15]  [16]  ⍝ Discounter at t=0.5, 1.5, 2.5,..[17]  VMP←((⍴VMP)⍴ 0 1)/VMP←×\1,(÷2/i←TERMAM[1] OVERTAKE amorti)*0.5[18]  ⍝ Amortise by Level Dollar, Salaries or Fixed Dollar plus Interest[19]  :for N :in 1 2[20]      :select ameth[N][21]      :caselist 'L' 'l' ⋄ CONTS←TERMAM[N]⍴PSC1←amortamount[N] CDIV +/VMP[22]      :caselist 'P' 'p' ⋄ CONTS←TERMAM[N]↑+/PVCONTS1pc[;,⍳1+~salind[N]] ⋄ CONTS←CONTS×TERMAM[N]⍴PSC1←amortamount[N] CDIV +/VMP×CONTS[23]      :caselist 'F' 'f' ⋄ CONTS←PSC1+((i-1)÷i*0.5)×MID(⌽+\PSC1←TERMAM[N]⍴amortamount[N]÷TERMAM[N]),0 ⋄ PSC1←1↑PSC1[24]      :endselect[25]  [26]      :if ∨/0≠CONTS[27]          amort∆exp←amort∆exp+(⌈/TERMAM)↑(EXPCC CDIV 1-EXPCC)×CONTS[28]          ⍝⍝⍝ Aust Tax???[29]      ⍝⍝⍝    CONTS←CONTS CDIV 1-TERMAM[N]↑TaxRates ⋄ PSC1←PSC1 CDIV 1-1↑TaxRates[30]      ⍝⍝⍝    amort∆exp←amort∆exp+(⌈/TERMAM)↑tax←CONTS×TERMAM[N]↑TaxRates[31]  [32]          ⍝ Output Deficit Contributions to Database[33]          ⍝⍝⍝ Need to add Aust Tax to Database[34]          :if bQSM ⋄ contID←¯8+N×18 ⍝ Contigency ID of 10 or 28[35]          :else    ⋄ contID←10[36]          :endif[37]          :if ameth[N]∊'Pp'[38]              :if ×rowsIn PV1pctab[39]                  tab←PV1pctab for (TERMAM[N]≥PV1pctab at 'Year')[40]                  ⍙dbfundres←⍙dbfundres⍪(tab at 'ResCatID'),((11 contID  8 12) 0 (tab at 'Year')) ⍙DBValnRecords ∆←PSC1×tab at 'Value' ⍝ Additional Conts[41]                  :if 0≠EXPCC[42]                      ⍙dbfundres←⍙dbfundres⍪(tab at 'ResCatID'),((32 contID  8 12) 0 (tab at 'Year')) ⍙DBValnRecords -∆×(EXPCC CDIV 1-EXPCC) ⍝ Expenses on Additional Conts[43]                  :endif[44]                  tab←(tab amend 'Disc' (VMP[tab at 'Year'])) groupby 'ResCatID'[45]                  ⍙dbfundres←⍙dbfundres⍪(↑tab),((11 contID  6 13) 0 0) ⍙DBValnRecords ∆←PSC1×+/¨↑¨×/¨(1↓tab) at¨⊂'Value' 'Disc' ⍝ PV Additional Conts[46]                  :if 0≠EXPCC[47]                      ⍙dbfundres←⍙dbfundres⍪(↑tab),((32 contID 12 13) 0 0) ⍙DBValnRecords -∆×(EXPCC CDIV 1-EXPCC) ⍝ Expense Liab on Additional Conts[48]                  :endif[49]                  :if bQSM ⍝ QSM records[50]                      ⍙dbfundres←⍙dbfundres⍪(↑tab),((11 contID  6 93) 0 0) ⍙DBValnRecords ∆ ⍝ PV Additional Conts[51]                      :if 0≠EXPCC[52]                          ⍙dbfundres←⍙dbfundres⍪(↑tab),((32 contID 12 93) 0 0) ⍙DBValnRecords -∆×(EXPCC CDIV 1-EXPCC) ⍝ Expense Liab on Additional Conts[53]                      :endif[54]                  :endif[55]              :endif[56]          :else[57]              ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 contID  8 12) 0 (⍳TERMAM[N])) ⍙DBValnRecords CONTS ⍝ Additional Conts[58]              ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 contID  6 13) 0 0) ⍙DBValnRecords +/VMP×CONTS ⍝ PV Additional Conts[59]              ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 contID  8 12) 0 (⍳TERMAM[N])) ⍙DBValnRecords -∆←CONTS×(EXPCC CDIV 1-EXPCC) ⍝ Expenses on Additional Conts[60]              ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 contID 12 13) 0 0) ⍙DBValnRecords -+/VMP×∆ ⍝ Expense Liab on Additional Conts[61]              :if bQSM ⍝ QSM records[62]                  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 contID  6 93) 0 0) ⍙DBValnRecords +/VMP×CONTS ⍝ PV Additional Conts[63]                  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 contID 12 93) 0 0) ⍙DBValnRecords -+/VMP×∆ ⍝ Expense Liab on Additional Conts[64]              :endif[65]          :endif[66]      :endif[67]  [68]      :if N=2 ⋄ :leave ⋄ :endif[69]      PSC←PSC1 ⍝ Discounter at t=0.5, 1.5, 2.5,..[70]      VMP←((⍴VMP)⍴ 0 1)/VMP←×\1,(÷2/i←TERMAM[2] OVERTAKE amorti1)*0.5[71]  :endfor    ∇
+    ∇ AMORT∆CALC∆DB;VMP;CONTS;N;i;tax;PSLIAB;sql;tab;ID;contID;∆
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ Amortisation of the Past Service Liability
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   :if ~dab ⋄ :orif abNO=0 ⍝ Determine unfunded liability
+[8]       PSLIAB←-0 ⍙DBRemoveNulls ,1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ResultsData_NoIndex WHERE SVYear=1 AND LiabilityTypeID IN (10, 11) AND ResultsCategoryID IN (",(0 ⍙DBNumList runs),")"
+[9]   :else
+[10]      PSLIAB←-0 ⍙DBRemoveNulls ,1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ResultsData_NoIndex WHERE SVYear=1 AND LiabilityTypeID IN ( 9, 11) AND ResultsCategoryID IN (",(0 ⍙DBNumList runs),")"
+[11]  :endif
+[12]  PSLIAB←(1+EXPCC)×(PSLIAB++/LTOT)-ASSETS
+[13]  
+[14]  AdditConts←amortamount←amortamount+0.01×amortprop×PSLIAB
+[15]  
+[16]  ⍝ Discounter at t=0.5, 1.5, 2.5,..
+[17]  VMP←((⍴VMP)⍴ 0 1)/VMP←×\1,(÷2/i←TERMAM[1] OVERTAKE amorti)*0.5
+[18]  ⍝ Amortise by Level Dollar, Salaries or Fixed Dollar plus Interest
+[19]  :for N :in 1 2
+[20]      :select ameth[N]
+[21]      :caselist 'L' 'l' ⋄ CONTS←TERMAM[N]⍴PSC1←amortamount[N] CDIV +/VMP
+[22]      :caselist 'P' 'p' ⋄ CONTS←TERMAM[N]↑+/PVCONTS1pc[;,⍳1+~salind[N]] ⋄ CONTS←CONTS×TERMAM[N]⍴PSC1←amortamount[N] CDIV +/VMP×CONTS
+[23]      :caselist 'F' 'f' ⋄ CONTS←PSC1+((i-1)÷i*0.5)×MID(⌽+\PSC1←TERMAM[N]⍴amortamount[N]÷TERMAM[N]),0 ⋄ PSC1←1↑PSC1
+[24]      :endselect
+[25]  
+[26]      :if ∨/0≠CONTS
+[27]          amort∆exp←amort∆exp+(⌈/TERMAM)↑(EXPCC CDIV 1-EXPCC)×CONTS
+[28]          ⍝⍝⍝ Aust Tax???
+[29]      ⍝⍝⍝    CONTS←CONTS CDIV 1-TERMAM[N]↑TaxRates ⋄ PSC1←PSC1 CDIV 1-1↑TaxRates
+[30]      ⍝⍝⍝    amort∆exp←amort∆exp+(⌈/TERMAM)↑tax←CONTS×TERMAM[N]↑TaxRates
+[31]  
+[32]          ⍝ Output Deficit Contributions to Database
+[33]          ⍝⍝⍝ Need to add Aust Tax to Database
+[34]          :if bQSM ⋄ contID←¯8+N×18 ⍝ Contigency ID of 10 or 28
+[35]          :else    ⋄ contID←10
+[36]          :endif
+[37]          :if ameth[N]∊'Pp'
+[38]              :if ×rowsIn PV1pctab
+[39]                  tab←PV1pctab for (TERMAM[N]≥PV1pctab at 'Year')
+[40]                  ⍙dbfundres←⍙dbfundres⍪(tab at 'ResCatID'),((11 contID  8 12) 0 (tab at 'Year')) ⍙DBValnRecords ∆←PSC1×tab at 'Value' ⍝ Additional Conts
+[41]                  :if 0≠EXPCC
+[42]                      ⍙dbfundres←⍙dbfundres⍪(tab at 'ResCatID'),((32 contID  8 12) 0 (tab at 'Year')) ⍙DBValnRecords -∆×(EXPCC CDIV 1-EXPCC) ⍝ Expenses on Additional Conts
+[43]                  :endif
+[44]                  tab←(tab amend 'Disc' (VMP[tab at 'Year'])) groupby 'ResCatID'
+[45]                  ⍙dbfundres←⍙dbfundres⍪(↑tab),((11 contID  6 13) 0 0) ⍙DBValnRecords ∆←PSC1×+/¨↑¨×/¨(1↓tab) at¨⊂'Value' 'Disc' ⍝ PV Additional Conts
+[46]                  :if 0≠EXPCC
+[47]                      ⍙dbfundres←⍙dbfundres⍪(↑tab),((32 contID 12 13) 0 0) ⍙DBValnRecords -∆×(EXPCC CDIV 1-EXPCC) ⍝ Expense Liab on Additional Conts
+[48]                  :endif
+[49]                  :if bQSM ⍝ QSM records
+[50]                      ⍙dbfundres←⍙dbfundres⍪(↑tab),((11 contID  6 93) 0 0) ⍙DBValnRecords ∆ ⍝ PV Additional Conts
+[51]                      :if 0≠EXPCC
+[52]                          ⍙dbfundres←⍙dbfundres⍪(↑tab),((32 contID 12 93) 0 0) ⍙DBValnRecords -∆×(EXPCC CDIV 1-EXPCC) ⍝ Expense Liab on Additional Conts
+[53]                      :endif
+[54]                  :endif
+[55]              :endif
+[56]          :else
+[57]              ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 contID  8 12) 0 (⍳TERMAM[N])) ⍙DBValnRecords CONTS ⍝ Additional Conts
+[58]              ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 contID  6 13) 0 0) ⍙DBValnRecords +/VMP×CONTS ⍝ PV Additional Conts
+[59]              ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 contID  8 12) 0 (⍳TERMAM[N])) ⍙DBValnRecords -∆←CONTS×(EXPCC CDIV 1-EXPCC) ⍝ Expenses on Additional Conts
+[60]              ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 contID 12 13) 0 0) ⍙DBValnRecords -+/VMP×∆ ⍝ Expense Liab on Additional Conts
+[61]              :if bQSM ⍝ QSM records
+[62]                  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 contID  6 93) 0 0) ⍙DBValnRecords +/VMP×CONTS ⍝ PV Additional Conts
+[63]                  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 contID 12 93) 0 0) ⍙DBValnRecords -+/VMP×∆ ⍝ Expense Liab on Additional Conts
+[64]              :endif
+[65]          :endif
+[66]      :endif
+[67]  
+[68]      :if N=2 ⋄ :leave ⋄ :endif
+[69]      PSC←PSC1 ⍝ Discounter at t=0.5, 1.5, 2.5,..
+[70]      VMP←((⍴VMP)⍴ 0 1)/VMP←×\1,(÷2/i←TERMAM[2] OVERTAKE amorti1)*0.5
+[71]  :endfor
+    ∇

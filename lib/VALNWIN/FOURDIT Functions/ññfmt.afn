@@ -1,0 +1,46 @@
+    ∇ Z←Z ⍙⍙fmt R;∆;fractions;SF;neg;common;com;dp;ip;top
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Format string/s for R, calculated unless specified in ⍺
+[3]   ⍝ Z: (str/s) ⍺ for ⎕FMT
+[4]   ⍝ R: (num)
+[5]   ⍝ Tests:
+[6]   ⍝?⍝ 'foo' ≡ 'foo' ⍙⍙fmt 0
+[7]   ⍝?⍝ 'I1' ≡ '' ⍙⍙fmt 0
+[8]   ⍝?⍝ 'I1' ≡ ⍙⍙fmt 0
+[9]   ⍝?⍝ 'I2' ≡ ⍙⍙fmt 10
+[10]  ⍝?⍝ 'I3' ≡ ⍙⍙fmt 123
+[11]  ⍝?⍝ 'CI5' ≡ ⍙⍙fmt 1234
+[12]  ⍝?⍝ 'CM<->P< >I6' ≡ ⍙⍙fmt ¯1234
+[13]  ⍝?⍝ 'F6.2' ≡ ⍙⍙fmt 123.4
+[14]  ⍝?⍝ 'F7.5' ≡ ⍙⍙fmt 0.1234567
+[15]  ⍝?⍝ 'F4.2' ≡ ⍙⍙fmt 1.2
+[16]  ⍝?⍝ 'F6.2' ≡ ⍙⍙fmt 123.45678
+[17]  ⍝?⍝ 'F6.4' ≡ ⍙⍙fmt 1.2345678
+[18]  ⍝?⍝ 'CM<->P< >F10.2' ≡ ⍙⍙fmt ¯10000 1.2345678
+[19]  ⍝?⍝ 'I3' 'CM<->P< >F10.2' ≡ ⍙⍙fmt 2 2⍴ 123 ¯10000 0 1.2345678
+[20]  ⍝ Vern: sjt15sep15
+[21]  ⍝ Revn: dnp22aug17 * powers of 10
+[22]  
+[23]  :if 0=⎕NC 'Z'
+[24]  :orif mt Z
+[25]      :select ↑⍴⍴R
+[26]      :caselist 0 1
+[27]          top←⌈/0,0.000001+∣R                                 ⍝ Make 1 a special case
+[28]          ip←1+⌊10⍟∆+0=∆←⌊top                                 ⍝ integer places
+[29]          com←(⌊ip÷3)-0=3∣ip                                  ⍝ # commas
+[30]          neg←R∨.<0                                           ⍝ (flg) contains -ves
+[31]          fractions←1∣∣R
+[32]          common←(com/'C'),neg/'M<->P< >'
+[33]          :if ∨/×fractions                                    ⍝ (flg) rational
+[34]              SF←5                                            ⍝ significant figures
+[35]              ∆←0⌈SF-ip××⌊top
+[36]              dp←2⌈∆⌊(^⌿0=1∣(,fractions)∘.× 10*⍳∆)⍳1          ⍝ decimal places
+[37]              Z←common,'F',(⍕+/com neg ip 1 dp),'.',⍕dp
+[38]          :else
+[39]              Z←common,'I',⍕1⌈+/com neg ip
+[40]          :endif
+[41]      :case 2
+[42]          Z←⍙⍙fmt¨⎕SPLIT[⎕IO] R
+[43]      :endselect
+[44]  :endif
+    ∇

@@ -1,1 +1,18 @@
-    ∇ Audit_Migration;MigrateAudit[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Migrate the Rate Table Audit File[3]   [4]   :if FileExist LibraryDir,'SVRTAUDIT.SF'[5]       MDISPLAY 'AlreadyFile' ('Migrated Rate Table Audit File ',LibraryDir,'SVRTAudit.sf')[6]   :else[7]       0 0⍴(SystemDir,'DECRWIN') ReadFile 'RTAudit' '' 'MigrateAudit'[8]       :select MigrateAudit[9]       :case 0[10]          MDISPLAY 'Unable to Migrate Rate Table Audit File'[11]      :case ¯1[12]          MDISPLAY 'Migrate Rate Table Audit File "',LibraryDir,'SVRTAudit.sf" should be deleted'[13]      :else[14]          MDISPLAY 'Migrated Rate Table Audit File "',LibraryDir,'SVRTAudit.sf" created'[15]      :endselect[16]  :endif    ∇
+    ∇ Audit_Migration;MigrateAudit
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Migrate the Rate Table Audit File
+[3]   
+[4]   :if FileExist LibraryDir,'SVRTAUDIT.SF'
+[5]       MDISPLAY 'AlreadyFile' ('Migrated Rate Table Audit File ',LibraryDir,'SVRTAudit.sf')
+[6]   :else
+[7]       0 0⍴(SystemDir,'DECRWIN') ReadFile 'RTAudit' '' 'MigrateAudit'
+[8]       :select MigrateAudit
+[9]       :case 0
+[10]          MDISPLAY 'Unable to Migrate Rate Table Audit File'
+[11]      :case ¯1
+[12]          MDISPLAY 'Migrate Rate Table Audit File "',LibraryDir,'SVRTAudit.sf" should be deleted'
+[13]      :else
+[14]          MDISPLAY 'Migrated Rate Table Audit File "',LibraryDir,'SVRTAudit.sf" created'
+[15]      :endselect
+[16]  :endif
+    ∇

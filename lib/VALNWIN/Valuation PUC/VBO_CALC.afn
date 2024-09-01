@@ -1,0 +1,20 @@
+    ∇ VBO∆CALC;N;A;TVVAL;INDVAB
+[1]   ⍝ VALNWIN.sf#8
+[2]   ⍝ Calculate the VBO in the Unit Credit Method
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   INDVAB←0 ⋄ →(×term)/END ⍝ Present Value of Total Benefits
+[8]   TVVAL←(VC[;3],WPC,VWB)×(No∆Bens+2)/(NX,1)⍴vMP×-DIFF tPx,0 ⋄ N←¯1
+[9]   ⍝ Loop to do one benefit at a time
+[10]  LOOP:→((2+No∆Bens)=N←N+1)/END ⋄ →(^/0=TVVAL[;N])/⎕LC
+[11]  ⍝ Check if Future Benefit specified
+[12]  →(0=⍴,A←⍎('WL'[×uk], 7 2 ⍴'FCFPF1F2F3F4F5')[N;])/F3
+[13]  A←NX↑A ⋄ →((×uk)∨N∊ 0 1)/NEXT ⋄ A←A×⍎'WA',⍕N-1
+[14]  ⍝ VAB for Past Service Benefits (when Future specified)
+[15]  NEXT:INDVAB←INDVAB++/TVVAL[;N]-A×vMP×-DIFF tPx,0 ⋄ →LOOP
+[16]  ⍝ VAB for Total Servive Benefits only specified
+[17]  F3:INDVAB←INDVAB++/TVVAL[;N]×(1↑psNoMax)CDIV psmpNoMax ⋄ →LOOP
+[18]  END:PSL←PSL,INDVAB
+    ∇

@@ -1,1 +1,51 @@
-    ∇ res←ProcessBases;frames;chkboxes;invalid;listviews;xxx;mirrors;files;∆;targets;names;memtypes;versions;bases;bfilenames;filelist;lib;bfiles;list;listids;selns;masks[1]   ⍝ OVERWIN.sf#26[2]   ⍝ Applies Validation checks to the Bases Page; constructs MigBasesTable[3]   [4]   frames←(⊂parent,'fBases.'),¨'fActives'        'fDeferreds'      'fPensioners'[5]   listviews←frames,¨          '.lvActBases'     '.lvDefBases'     '.lvPenBases'[6]   chkboxes← frames,¨          '.ckActKeepName'  '.ckDefKeepName'  '.ckPenKeepName'[7]   bfiles←   frames,¨          '.cbActBasisFile' '.cbDefBasisFile' '.cbPenBasisFile'[8]   [9]   mirrors←chkboxes MultiWI 'value'                                                ⍝ flag where bases files to be mirrored[10]  bfilenames←UPPERCASE¨bfiles MultiWI 'text'                                      ⍝ names of specified bases files[11]  [12]  filelist←        m2n UPPERCASE (↑bfiles) ⎕wi 'list'                     ⍝ bases files offered in Combo[13]  lib←     ↑¨deext¨m2n UPPERCASE ⎕XLIB InputDir,'*.SF'                    ⍝ SF files in library[14]  [15]  list←listviews MultiWI 'list'[16]  listids←,¨1↑[2]¨list                                                            ⍝ listids by memtype[17]  selns←listviews MultiWI 'value'                                                 ⍝ selected listids by memtype[18]  masks←listids ∊¨ selns                                                          ⍝ flag selections by V9 memtype[19]  :if 0^.=↑,/masks[20]      res←'Select one or more bases'[21]  :elseif ∨/invalid←~↑∨/1 0=(⊂(~mirrors)/bfilenames) ∊¨ filelist lib              ⍝ Bases files must be in filelist or new[22]      res←'InvFile' (↑invalid/(~mirrors)/bfilenames)[23]  :else[24]      bases←↑,/ABases EBases NBases indexat¨Aorder Eorder Norder indexat¨selns    ⍝ Aorder: listids of ABases, etc[25]      ∆←(↑,/masks) ⌿ ↑⍪/list[26]      files←↑¨deext¨↑(xxx names versions)←⎕SPLIT[1] ∆[;3 4 5][27]  [28]      :if ∨/∆←(⊂UPPERCASE '\' Win∆Child ClientFile)≡¨UPPERCASE ¨DLTB¨files        ⍝ Cannot be same name as ClientFile[29]          files←(DLTB¨files),¨(6×∆)⍴¨⊂'_BASIS'                                    ⍝ Add "_Basis" if it is[30]      :endif[31]  [32]      ∆←+/¨masks                                                                  ⍝ count by V9 memtype[33]      targets←,1↑[1] (↑,/∆⍴¨ mirrors) ⊖ ⊃ (↑,/∆⍴¨ ⊂¨bfilenames) files             ⍝ bases files or mirrors[34]  [35]      ∆←+/'AENP'∘.=UPPERCASE¨↑¨¯3↑¨((↑,/masks)⌿↑⍪/list)[;3]                       ⍝ count by S21 memtype[36]      memtypes←↑,/∆⍴¨ ⊂¨ 'Actives' 'Enhanced_Deferreds' 'Enhanced_Pensioners' 'Pensioners'[37]  [38]      MigNewFiles←(~∆∊lib)/∆←UPPERCASE¨nub targets                                ⍝ target files to be created[39]  [40]      ∆←'File' 'Target' 'Name' 'Memtype' 'Version' 'S21Basis'[41]      MigBasesTable←∆ ⍪⍉⊃ files targets names memtypes versions bases[42]  [43]      (parent,'fParms.fGlobals.ckmigGpMatch1') ⎕wi 'enabled' (∨/1⊃masks)[44]      (parent,'fParms.fGlobals.ckmigGpMatch2') ⎕wi 'enabled' (∨/2⊃masks)[45]      (parent,'fParms.fGlobals.ckmigGpMatch3') ⎕wi 'enabled' (∨/3⊃masks)[46]  [47]      res←0⍴''[48]  [49]  :endif    ∇
+    ∇ res←ProcessBases;frames;chkboxes;invalid;listviews;xxx;mirrors;files;∆;targets;names;memtypes;versions;bases;bfilenames;filelist;lib;bfiles;list;listids;selns;masks
+[1]   ⍝ OVERWIN.sf#26
+[2]   ⍝ Applies Validation checks to the Bases Page; constructs MigBasesTable
+[3]   
+[4]   frames←(⊂parent,'fBases.'),¨'fActives'        'fDeferreds'      'fPensioners'
+[5]   listviews←frames,¨          '.lvActBases'     '.lvDefBases'     '.lvPenBases'
+[6]   chkboxes← frames,¨          '.ckActKeepName'  '.ckDefKeepName'  '.ckPenKeepName'
+[7]   bfiles←   frames,¨          '.cbActBasisFile' '.cbDefBasisFile' '.cbPenBasisFile'
+[8]   
+[9]   mirrors←chkboxes MultiWI 'value'                                                ⍝ flag where bases files to be mirrored
+[10]  bfilenames←UPPERCASE¨bfiles MultiWI 'text'                                      ⍝ names of specified bases files
+[11]  
+[12]  filelist←        m2n UPPERCASE (↑bfiles) ⎕wi 'list'                     ⍝ bases files offered in Combo
+[13]  lib←     ↑¨deext¨m2n UPPERCASE ⎕XLIB InputDir,'*.SF'                    ⍝ SF files in library
+[14]  
+[15]  list←listviews MultiWI 'list'
+[16]  listids←,¨1↑[2]¨list                                                            ⍝ listids by memtype
+[17]  selns←listviews MultiWI 'value'                                                 ⍝ selected listids by memtype
+[18]  masks←listids ∊¨ selns                                                          ⍝ flag selections by V9 memtype
+[19]  :if 0^.=↑,/masks
+[20]      res←'Select one or more bases'
+[21]  :elseif ∨/invalid←~↑∨/1 0=(⊂(~mirrors)/bfilenames) ∊¨ filelist lib              ⍝ Bases files must be in filelist or new
+[22]      res←'InvFile' (↑invalid/(~mirrors)/bfilenames)
+[23]  :else
+[24]      bases←↑,/ABases EBases NBases indexat¨Aorder Eorder Norder indexat¨selns    ⍝ Aorder: listids of ABases, etc
+[25]      ∆←(↑,/masks) ⌿ ↑⍪/list
+[26]      files←↑¨deext¨↑(xxx names versions)←⎕SPLIT[1] ∆[;3 4 5]
+[27]  
+[28]      :if ∨/∆←(⊂UPPERCASE '\' Win∆Child ClientFile)≡¨UPPERCASE ¨DLTB¨files        ⍝ Cannot be same name as ClientFile
+[29]          files←(DLTB¨files),¨(6×∆)⍴¨⊂'_BASIS'                                    ⍝ Add "_Basis" if it is
+[30]      :endif
+[31]  
+[32]      ∆←+/¨masks                                                                  ⍝ count by V9 memtype
+[33]      targets←,1↑[1] (↑,/∆⍴¨ mirrors) ⊖ ⊃ (↑,/∆⍴¨ ⊂¨bfilenames) files             ⍝ bases files or mirrors
+[34]  
+[35]      ∆←+/'AENP'∘.=UPPERCASE¨↑¨¯3↑¨((↑,/masks)⌿↑⍪/list)[;3]                       ⍝ count by S21 memtype
+[36]      memtypes←↑,/∆⍴¨ ⊂¨ 'Actives' 'Enhanced_Deferreds' 'Enhanced_Pensioners' 'Pensioners'
+[37]  
+[38]      MigNewFiles←(~∆∊lib)/∆←UPPERCASE¨nub targets                                ⍝ target files to be created
+[39]  
+[40]      ∆←'File' 'Target' 'Name' 'Memtype' 'Version' 'S21Basis'
+[41]      MigBasesTable←∆ ⍪⍉⊃ files targets names memtypes versions bases
+[42]  
+[43]      (parent,'fParms.fGlobals.ckmigGpMatch1') ⎕wi 'enabled' (∨/1⊃masks)
+[44]      (parent,'fParms.fGlobals.ckmigGpMatch2') ⎕wi 'enabled' (∨/2⊃masks)
+[45]      (parent,'fParms.fGlobals.ckmigGpMatch3') ⎕wi 'enabled' (∨/3⊃masks)
+[46]  
+[47]      res←0⍴''
+[48]  
+[49]  :endif
+    ∇

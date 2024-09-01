@@ -1,1 +1,83 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Decr_Merge" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Decr_Merge" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmDecrMerge.fFiles.edprimaryFile" ⎕wi "text" (DLTB primaryFile)[10]  PickList←"fmDecrMerge.fFiles.cbimportFile" ⎕wi "list"[11]  selection←PickList ExactTLU DLTB importFile[12]  :if mt selection[13]      :if ~mt DLTB importFile[14]          warnings←warnings OVER "Previous Selection for 'Rate Tables File Merged into Primary File' is no longer available"[15]      :endif[16]      modified←⌈/modified,1[17]  :endif[18]  "fmDecrMerge.fFiles.cbimportFile" ⎕wi "value" (¯1↑1,selection)[19]  PickList←"fmDecrMerge.fOK.lvUnique" ⎕wi "list"[20]  :if 0∊⍴PickList[21]      value←⍬[22]  :else[23]      list←(1 0×⍴PickList)⍴""[24]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX Unique) OVER " ")[1;][25]          list←list,"⍺",(⊃PickList[;n])," "[26]      :endfor[27]      list←m2n list[28]      NameList←m2n MATRIX Unique[29]      value←(list∊NameList)/PickList[;1][30]  :endif[31]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[32]      value←PickList[1;1] ⋄ modified←1[33]  :endif[34]  "fmDecrMerge.fOK.lvUnique" ⎕wi "value" value[35]  0 0⍴"fmDecrMerge.fOK.lvUnique" ⎕wi "EnsureVisible" ((1↑value),1)[36]  PickList←"fmDecrMerge.fNotOK.lvFile1" ⎕wi "list"[37]  :if 0∊⍴PickList[38]      value←⍬[39]  :else[40]      list←(1 0×⍴PickList)⍴""[41]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX File1) OVER " ")[1;][42]          list←list,"⍺",(⊃PickList[;n])," "[43]      :endfor[44]      list←m2n list[45]      NameList←m2n MATRIX File1[46]      value←(list∊NameList)/PickList[;1][47]  :endif[48]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[49]      value←PickList[1;1] ⋄ modified←1[50]  :endif[51]  "fmDecrMerge.fNotOK.lvFile1" ⎕wi "value" value[52]  0 0⍴"fmDecrMerge.fNotOK.lvFile1" ⎕wi "EnsureVisible" ((1↑value),1)[53]  PickList←"fmDecrMerge.fNotOK.lvFile2" ⎕wi "list"[54]  :if 0∊⍴PickList[55]      value←⍬[56]  :else[57]      list←(1 0×⍴PickList)⍴""[58]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX File2) OVER " ")[1;][59]          list←list,"⍺",(⊃PickList[;n])," "[60]      :endfor[61]      list←m2n list[62]      NameList←m2n MATRIX File2[63]      value←(list∊NameList)/PickList[;1][64]  :endif[65]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[66]      value←PickList[1;1] ⋄ modified←1[67]  :endif[68]  "fmDecrMerge.fNotOK.lvFile2" ⎕wi "value" value[69]  0 0⍴"fmDecrMerge.fNotOK.lvFile2" ⎕wi "EnsureVisible" ((1↑value),1)[70]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Decr_Merge[71]      :for var :in spin Comment_Decr_Merge at "variable" "row" ⋄ (var row)←var[72]          "Decr_Merge" ParmColor ((FormFields for "variable" var) at "control"),var row 1[73]      :endfor[74]  :endif[75]  :if ~0∊⍴,warnings[76]      MDISPLAY DLTMB warnings,⎕tcnl[77]      Win∆AssignVars "fmDecrMerge"[78]  :endif[79]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Decr_Merge" "" "Names"[80]      "fmDecrMerge" ⎕wi "modified" 0[81]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Decr_Merge" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Decr_Merge" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmDecrMerge.fFiles.edprimaryFile" ⎕wi "text" (DLTB primaryFile)
+[10]  PickList←"fmDecrMerge.fFiles.cbimportFile" ⎕wi "list"
+[11]  selection←PickList ExactTLU DLTB importFile
+[12]  :if mt selection
+[13]      :if ~mt DLTB importFile
+[14]          warnings←warnings OVER "Previous Selection for 'Rate Tables File Merged into Primary File' is no longer available"
+[15]      :endif
+[16]      modified←⌈/modified,1
+[17]  :endif
+[18]  "fmDecrMerge.fFiles.cbimportFile" ⎕wi "value" (¯1↑1,selection)
+[19]  PickList←"fmDecrMerge.fOK.lvUnique" ⎕wi "list"
+[20]  :if 0∊⍴PickList
+[21]      value←⍬
+[22]  :else
+[23]      list←(1 0×⍴PickList)⍴""
+[24]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX Unique) OVER " ")[1;]
+[25]          list←list,"⍺",(⊃PickList[;n])," "
+[26]      :endfor
+[27]      list←m2n list
+[28]      NameList←m2n MATRIX Unique
+[29]      value←(list∊NameList)/PickList[;1]
+[30]  :endif
+[31]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[32]      value←PickList[1;1] ⋄ modified←1
+[33]  :endif
+[34]  "fmDecrMerge.fOK.lvUnique" ⎕wi "value" value
+[35]  0 0⍴"fmDecrMerge.fOK.lvUnique" ⎕wi "EnsureVisible" ((1↑value),1)
+[36]  PickList←"fmDecrMerge.fNotOK.lvFile1" ⎕wi "list"
+[37]  :if 0∊⍴PickList
+[38]      value←⍬
+[39]  :else
+[40]      list←(1 0×⍴PickList)⍴""
+[41]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX File1) OVER " ")[1;]
+[42]          list←list,"⍺",(⊃PickList[;n])," "
+[43]      :endfor
+[44]      list←m2n list
+[45]      NameList←m2n MATRIX File1
+[46]      value←(list∊NameList)/PickList[;1]
+[47]  :endif
+[48]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[49]      value←PickList[1;1] ⋄ modified←1
+[50]  :endif
+[51]  "fmDecrMerge.fNotOK.lvFile1" ⎕wi "value" value
+[52]  0 0⍴"fmDecrMerge.fNotOK.lvFile1" ⎕wi "EnsureVisible" ((1↑value),1)
+[53]  PickList←"fmDecrMerge.fNotOK.lvFile2" ⎕wi "list"
+[54]  :if 0∊⍴PickList
+[55]      value←⍬
+[56]  :else
+[57]      list←(1 0×⍴PickList)⍴""
+[58]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX File2) OVER " ")[1;]
+[59]          list←list,"⍺",(⊃PickList[;n])," "
+[60]      :endfor
+[61]      list←m2n list
+[62]      NameList←m2n MATRIX File2
+[63]      value←(list∊NameList)/PickList[;1]
+[64]  :endif
+[65]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[66]      value←PickList[1;1] ⋄ modified←1
+[67]  :endif
+[68]  "fmDecrMerge.fNotOK.lvFile2" ⎕wi "value" value
+[69]  0 0⍴"fmDecrMerge.fNotOK.lvFile2" ⎕wi "EnsureVisible" ((1↑value),1)
+[70]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Decr_Merge
+[71]      :for var :in spin Comment_Decr_Merge at "variable" "row" ⋄ (var row)←var
+[72]          "Decr_Merge" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[73]      :endfor
+[74]  :endif
+[75]  :if ~0∊⍴,warnings
+[76]      MDISPLAY DLTMB warnings,⎕tcnl
+[77]      Win∆AssignVars "fmDecrMerge"
+[78]  :endif
+[79]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Decr_Merge" "" "Names"
+[80]      "fmDecrMerge" ⎕wi "modified" 0
+[81]  :endif
+    ∇

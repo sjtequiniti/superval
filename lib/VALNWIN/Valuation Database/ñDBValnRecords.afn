@@ -1,0 +1,15 @@
+    ∇ res←keys ⍙DBValnRecords values;age;year;z
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ keys consists of 3 items -
+[3]   ⍝  4 numeric scalars - representing BenefitType, Contingency, LiabilityType and DataItem
+[4]   ⍝  age which can be either vector or scalar; and
+[5]   ⍝  year which can be either vector or scalar.
+[6]   ⍝ One or the other of age and year (except for New Entrant liabilities) will always be 0.
+[7]   
+[8]   res←0 7⍴0 ⍝ Default response
+[9]   :if ^/0=z←,×∣values ⋄ :return ⋄ :endif ⍝ Exit if all zero (no padding)
+[10]  
+[11]  (keys age year)←keys ⍝ Split keys argument
+[12]  :if 0∊z ⋄ (age year values)←z/¨age year values ⋄ :endif ⍝ Only non-zero values stored
+[13]  res←((+/z)⌿MATRIX keys),age,year,[⎕io+0.5],values
+    ∇

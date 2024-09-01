@@ -1,1 +1,175 @@
-    ∇ field Act_Salaries parm;z;list;no;parent;page;SSName;a;f;∆;desc;headings;SALget;SALput;SSSal[1]   ⍝ PARMWIN.sf#6[2]   ⍝ Do Initialisation, Changes and Validation of Salaries[3]   ⍝ Revn: sjt15apr15[4]   [5]   parent←'fmSV.sActives_Basis.' ⋄ page←'pgSalaries.' ⋄ SSName←parent,page,'fSalaries.ssSalaries'[6]   headings←⊃(⊂'Salary '),¨⍕¨⍳no←↑⍴SALdesc[7]   [8]   :select parm[9]   :case 'Vars'[10]      Salaries_Vars[11]      no←↑⍴SALdesc[12]      (parent,page,'fButtons.bnActives_BasisDelete') ⎕wi 'enabled' ((no>      1)^basAccess[2]≤accesslevel)[13]      (parent,page,'fButtons.bnActives_BasisInsert') ⎕wi 'enabled' ((no<10-uk=1)^basAccess[2]≤accesslevel)[14]      (parent,page,'fButtons.bnActives_BasisAdd'   ) ⎕wi 'enabled' ((no<10-uk=1)^basAccess[2]≤accesslevel)[15]      0 0⍴(⊂'ssSalaries') Actives_Basis 'Change'[16]  [17]  :case 'Init'[18]      SSName ⎕wi '∆VarsInWS' 1[19]      0 0⍴(⊂'ssSalaries') Actives_Basis 'Change'[20]  [21]  :case 'Change'[22]      :select field[23]      :case 'ssSalaries'[24]          :for no :in ⍳↑⍴SALdesc[25]              SSName ⎕wi 'ColText' no (SALdesc[no;])[26]              SSName Win∆F1SSSetSelection 1 no 2 no[27]              z←∨/' '≠SALdesc[no;][28]              :if (¯1↑SSName ⎕wi 'GetPattern')≠∆←1+z×¯1+SSName ⎕wi 'xBackColor'[29]                  SSName ⎕wi 'SetPattern' 1 (1+z×¯1+SSName ⎕wi 'xExtraColor') ∆[30]              :endif[31]          :endfor[32]          SSName Win∆F1SSSetSelection 1 1 1 1[33]  [34]          UpdateVarLists ⊂'GetSalaries'[35]  [36]          :if uk=1[37]              :if ∨/'_'≠,list←1 0↓GetSalaries[38]                  list←m2n list[39]                  z←(m2n    SALCOD1)∊list ⋄    SALCOD1←z⍀z⌿   SALCOD1[40]                  z←(m2n    SALCOD2)∊list ⋄    SALCOD2←z⍀z⌿   SALCOD2[41]                  z←(m2n    SALCOD3)∊list ⋄    SALCOD3←z⍀z⌿   SALCOD3[42]                  z←(m2n AltSALCOD1)∊list ⋄ AltSALCOD1←z⍀z⌿AltSALCOD1[43]                  z←(m2n AltSALCOD2)∊list ⋄ AltSALCOD2←z⍀z⌿AltSALCOD2[44]                  z←(m2n AltSALCOD3)∊list ⋄ AltSALCOD3←z⍀z⌿AltSALCOD3[45]                  z←(m2n IndSALCOD1)∊list ⋄ IndSALCOD1←z⍀z⌿IndSALCOD1[46]                  z←(m2n IndSALCOD2)∊list ⋄ IndSALCOD2←z⍀z⌿IndSALCOD2[47]                  z←(m2n IndSALCOD3)∊list ⋄ IndSALCOD3←z⍀z⌿IndSALCOD3[48]              :endif[49]              ⍙CACHE←UpdateCache[50]          :elseif uk=2[51]               TierSal1 et al ??[52]          :endif[53]  [54]      :endselect[55]  [56]  :case 'Valid'[57]  [58]  :caselist 'Add' 'Edit' 'Insert' ⍝ Add/Edit/Insert a Salary Definition[59]  [60]      :if    1=SSName ⎕wi 'SelectionCount'[61]      :andif =/(∆←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4][62]      :andif ~∆≡1 1 1 1[63]          SALget←∆[2][64]      :else[65]          SALget←0[66]      :endif[67]  [68]      :if parm≡'Insert'[69]          :if SALget=0[70]              :if 1=↑⍴desc←SALdesc  ⋄ SALput←0.5[71]              :else[72]                  list←⊃(⊂'Insert Salary before '),¨m2n headings[73]                  :if mt SALput←Win∆SelectionBox desc list ⋄ :return ⋄ :endif[74]                  SALput←¯0.5+↑list ExactTLU ,SALput[75]              :endif[76]          :else[77]              SALput←SALget-0.5[78]          :endif[79]          SALget←0[80]      :endif[81]  [82]      :if SALget=0[83]          desc←SALdesc ⋄ list←headings[84]          :if   parm≡'Edit'                                   ⋄ list←⊃(⊂'Edit '),¨m2n list[85]          :else             ⋄ desc←desc OVER 'Default Values' ⋄ list←⊃(⊂'Use '),¨(m2n list OVER 'Default'),¨⊂' Values'[86]          :endif[87]          :if 1=↑⍴desc ⋄ SALget←list[88]          :elseif mt SALget←Win∆SelectionBox desc list ⋄ :return[89]          :endif[90]          SALget←↑((-~parm≡'Edit')↓[⎕io]list) ExactTLU ,SALget[91]      :endif[92]      :if ~parm≡'Insert' ⋄ SALput←SALget×parm≡'Edit' ⋄ :endif[93]  [94]      Win∆AssignVars ControlName ⍝ Trap current field entries[95]      Format←HyphenSwap Format[96]      SSSal←SSName[97]  [98]      'PARMWIN' CallModule 'Edit_Salary'[99]  [100]     :if parm≡'Insert'[101]         'Actives_Basis' (SSSal ⎕wi '∆name') ParmCommAdjust 'Insert' SALput[102]     :endif[103]     Act_Salaries 'Vars'[104]     openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0[105]     0 0⍴(⊂'ssSalaries') Actives_Basis 'Change'[106] [107] :case 'Delete' ⍝ Delete a Pension Definition[108] [109]     :if 1=SSName ⎕wi 'SelectionCount'[110]     :andif =/(SALget←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4][111]     :andif ~SALget≡1 1 1 1[112]         SALget←SALget[2][113]     :else[114]         :if mt SALget←Win∆SelectionBox SALdesc (list←⊃(⊂'Delete '),¨m2n headings) ⋄ :return ⋄ :endif[115]         SALget←list ExactTLU ,SALget[116]     :endif[117] [118]     :if 'Y'='YN' ASK 'Delete' (headings[SALget;] ConcatLabel SALdesc[SALget;])[119]         Win∆AssignVars ControlName ⍝ Trap current field entries[120]         SALput←(⍳no)~SALget[121]         SALdesc←SALdesc[SALput;][122]         SALdata←SALdata[SALput;][123]         SALinf←SALinf[SALput;][124]         lrSALinf←lrSALinf[SALput;][125]         SALadj←SALadj[SALput;][126]         lrSALadj←lrSALadj[SALput;][127]         salind←salind[SALput;][128]         RevDATE←RevDATE[SALput;][129]         fASPERIOD←fASPERIOD[SALput;][130]         fAScease←fAScease[SALput;][131]         FASdata←FASdata[SALput;][132]         SALlastinc←SALlastinc[SALput;][133]         SALdedn←SALdedn[SALput;][134]         SALdednadj←SALdednadj[SALput;][135]         lrSALdednadj←lrSALdednadj[SALput;][136]         SALdednf←SALdednf[SALput;][137]         lrSALdednf←lrSALdednf[SALput;][138]         SALmax←SALmax[SALput;][139]         SALmaxadj←SALmaxadj[SALput;][140]         lrSALmaxadj←lrSALmaxadj[SALput;][141]         SALmaxf←SALmaxf[SALput;][142]         lrSALmaxf←lrSALmaxf[SALput;][143]         :if uk=1[144]             LRSalInc←LRSalInc[SALput;][145]             lrLRSalInc←lrLRSalInc[SALput;][146]             m_SPROM←m_SPROM[SALput;][147]             m_AgeRate←m_AgeRate[SALput;][148]             m_pcRate←m_pcRate[SALput;][149]             f_SPROM←f_SPROM[SALput;][150]             f_AgeRate←f_AgeRate[SALput;][151]             f_pcRate←f_pcRate[SALput;][152]         :else[153]             SXX←SXX[SALput;][154]             lrSXX←lrSXX[SALput;][155]             AgeRate←AgeRate[SALput;][156]             pcRate←pcRate[SALput;][157]             lrSALdedn←lrSALdedn[SALput;][158]             lrSALmax←lrSALmax[SALput;][159]             :if uk=2[160]                 SALdedntab←SALdedntab[SALput;][161]                 SALmaxtab←SALmaxtab[SALput;][162]             :endif[163]         :endif[164]         SSName ⎕wi 'MaxCol' (¯1+SSName ⎕wi 'MaxCol')[165]         SSName ⎕wi 'xSetSelection' 1 1 1 1[166] [167]         'Actives_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Delete' SALget[168]         Act_Salaries 'Vars'[169]         openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0[170]         0 0⍴(⊂'ssSalaries') Actives_Basis 'Change'[171]     :endif[172] [173] :endselect    ∇
+    ∇ field Act_Salaries parm;z;list;no;parent;page;SSName;a;f;∆;desc;headings;SALget;SALput;SSSal
+[1]   ⍝ PARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Salaries
+[3]   ⍝ Revn: sjt15apr15
+[4]   
+[5]   parent←'fmSV.sActives_Basis.' ⋄ page←'pgSalaries.' ⋄ SSName←parent,page,'fSalaries.ssSalaries'
+[6]   headings←⊃(⊂'Salary '),¨⍕¨⍳no←↑⍴SALdesc
+[7]   
+[8]   :select parm
+[9]   :case 'Vars'
+[10]      Salaries_Vars
+[11]      no←↑⍴SALdesc
+[12]      (parent,page,'fButtons.bnActives_BasisDelete') ⎕wi 'enabled' ((no>      1)^basAccess[2]≤accesslevel)
+[13]      (parent,page,'fButtons.bnActives_BasisInsert') ⎕wi 'enabled' ((no<10-uk=1)^basAccess[2]≤accesslevel)
+[14]      (parent,page,'fButtons.bnActives_BasisAdd'   ) ⎕wi 'enabled' ((no<10-uk=1)^basAccess[2]≤accesslevel)
+[15]      0 0⍴(⊂'ssSalaries') Actives_Basis 'Change'
+[16]  
+[17]  :case 'Init'
+[18]      SSName ⎕wi '∆VarsInWS' 1
+[19]      0 0⍴(⊂'ssSalaries') Actives_Basis 'Change'
+[20]  
+[21]  :case 'Change'
+[22]      :select field
+[23]      :case 'ssSalaries'
+[24]          :for no :in ⍳↑⍴SALdesc
+[25]              SSName ⎕wi 'ColText' no (SALdesc[no;])
+[26]              SSName Win∆F1SSSetSelection 1 no 2 no
+[27]              z←∨/' '≠SALdesc[no;]
+[28]              :if (¯1↑SSName ⎕wi 'GetPattern')≠∆←1+z×¯1+SSName ⎕wi 'xBackColor'
+[29]                  SSName ⎕wi 'SetPattern' 1 (1+z×¯1+SSName ⎕wi 'xExtraColor') ∆
+[30]              :endif
+[31]          :endfor
+[32]          SSName Win∆F1SSSetSelection 1 1 1 1
+[33]  
+[34]          UpdateVarLists ⊂'GetSalaries'
+[35]  
+[36]          :if uk=1
+[37]              :if ∨/'_'≠,list←1 0↓GetSalaries
+[38]                  list←m2n list
+[39]                  z←(m2n    SALCOD1)∊list ⋄    SALCOD1←z⍀z⌿   SALCOD1
+[40]                  z←(m2n    SALCOD2)∊list ⋄    SALCOD2←z⍀z⌿   SALCOD2
+[41]                  z←(m2n    SALCOD3)∊list ⋄    SALCOD3←z⍀z⌿   SALCOD3
+[42]                  z←(m2n AltSALCOD1)∊list ⋄ AltSALCOD1←z⍀z⌿AltSALCOD1
+[43]                  z←(m2n AltSALCOD2)∊list ⋄ AltSALCOD2←z⍀z⌿AltSALCOD2
+[44]                  z←(m2n AltSALCOD3)∊list ⋄ AltSALCOD3←z⍀z⌿AltSALCOD3
+[45]                  z←(m2n IndSALCOD1)∊list ⋄ IndSALCOD1←z⍀z⌿IndSALCOD1
+[46]                  z←(m2n IndSALCOD2)∊list ⋄ IndSALCOD2←z⍀z⌿IndSALCOD2
+[47]                  z←(m2n IndSALCOD3)∊list ⋄ IndSALCOD3←z⍀z⌿IndSALCOD3
+[48]              :endif
+[49]              ⍙CACHE←UpdateCache
+[50]          :elseif uk=2
+[51]               TierSal1 et al ??
+[52]          :endif
+[53]  
+[54]      :endselect
+[55]  
+[56]  :case 'Valid'
+[57]  
+[58]  :caselist 'Add' 'Edit' 'Insert' ⍝ Add/Edit/Insert a Salary Definition
+[59]  
+[60]      :if    1=SSName ⎕wi 'SelectionCount'
+[61]      :andif =/(∆←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[62]      :andif ~∆≡1 1 1 1
+[63]          SALget←∆[2]
+[64]      :else
+[65]          SALget←0
+[66]      :endif
+[67]  
+[68]      :if parm≡'Insert'
+[69]          :if SALget=0
+[70]              :if 1=↑⍴desc←SALdesc  ⋄ SALput←0.5
+[71]              :else
+[72]                  list←⊃(⊂'Insert Salary before '),¨m2n headings
+[73]                  :if mt SALput←Win∆SelectionBox desc list ⋄ :return ⋄ :endif
+[74]                  SALput←¯0.5+↑list ExactTLU ,SALput
+[75]              :endif
+[76]          :else
+[77]              SALput←SALget-0.5
+[78]          :endif
+[79]          SALget←0
+[80]      :endif
+[81]  
+[82]      :if SALget=0
+[83]          desc←SALdesc ⋄ list←headings
+[84]          :if   parm≡'Edit'                                   ⋄ list←⊃(⊂'Edit '),¨m2n list
+[85]          :else             ⋄ desc←desc OVER 'Default Values' ⋄ list←⊃(⊂'Use '),¨(m2n list OVER 'Default'),¨⊂' Values'
+[86]          :endif
+[87]          :if 1=↑⍴desc ⋄ SALget←list
+[88]          :elseif mt SALget←Win∆SelectionBox desc list ⋄ :return
+[89]          :endif
+[90]          SALget←↑((-~parm≡'Edit')↓[⎕io]list) ExactTLU ,SALget
+[91]      :endif
+[92]      :if ~parm≡'Insert' ⋄ SALput←SALget×parm≡'Edit' ⋄ :endif
+[93]  
+[94]      Win∆AssignVars ControlName ⍝ Trap current field entries
+[95]      Format←HyphenSwap Format
+[96]      SSSal←SSName
+[97]  
+[98]      'PARMWIN' CallModule 'Edit_Salary'
+[99]  
+[100]     :if parm≡'Insert'
+[101]         'Actives_Basis' (SSSal ⎕wi '∆name') ParmCommAdjust 'Insert' SALput
+[102]     :endif
+[103]     Act_Salaries 'Vars'
+[104]     openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[105]     0 0⍴(⊂'ssSalaries') Actives_Basis 'Change'
+[106] 
+[107] :case 'Delete' ⍝ Delete a Pension Definition
+[108] 
+[109]     :if 1=SSName ⎕wi 'SelectionCount'
+[110]     :andif =/(SALget←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[111]     :andif ~SALget≡1 1 1 1
+[112]         SALget←SALget[2]
+[113]     :else
+[114]         :if mt SALget←Win∆SelectionBox SALdesc (list←⊃(⊂'Delete '),¨m2n headings) ⋄ :return ⋄ :endif
+[115]         SALget←list ExactTLU ,SALget
+[116]     :endif
+[117] 
+[118]     :if 'Y'='YN' ASK 'Delete' (headings[SALget;] ConcatLabel SALdesc[SALget;])
+[119]         Win∆AssignVars ControlName ⍝ Trap current field entries
+[120]         SALput←(⍳no)~SALget
+[121]         SALdesc←SALdesc[SALput;]
+[122]         SALdata←SALdata[SALput;]
+[123]         SALinf←SALinf[SALput;]
+[124]         lrSALinf←lrSALinf[SALput;]
+[125]         SALadj←SALadj[SALput;]
+[126]         lrSALadj←lrSALadj[SALput;]
+[127]         salind←salind[SALput;]
+[128]         RevDATE←RevDATE[SALput;]
+[129]         fASPERIOD←fASPERIOD[SALput;]
+[130]         fAScease←fAScease[SALput;]
+[131]         FASdata←FASdata[SALput;]
+[132]         SALlastinc←SALlastinc[SALput;]
+[133]         SALdedn←SALdedn[SALput;]
+[134]         SALdednadj←SALdednadj[SALput;]
+[135]         lrSALdednadj←lrSALdednadj[SALput;]
+[136]         SALdednf←SALdednf[SALput;]
+[137]         lrSALdednf←lrSALdednf[SALput;]
+[138]         SALmax←SALmax[SALput;]
+[139]         SALmaxadj←SALmaxadj[SALput;]
+[140]         lrSALmaxadj←lrSALmaxadj[SALput;]
+[141]         SALmaxf←SALmaxf[SALput;]
+[142]         lrSALmaxf←lrSALmaxf[SALput;]
+[143]         :if uk=1
+[144]             LRSalInc←LRSalInc[SALput;]
+[145]             lrLRSalInc←lrLRSalInc[SALput;]
+[146]             m_SPROM←m_SPROM[SALput;]
+[147]             m_AgeRate←m_AgeRate[SALput;]
+[148]             m_pcRate←m_pcRate[SALput;]
+[149]             f_SPROM←f_SPROM[SALput;]
+[150]             f_AgeRate←f_AgeRate[SALput;]
+[151]             f_pcRate←f_pcRate[SALput;]
+[152]         :else
+[153]             SXX←SXX[SALput;]
+[154]             lrSXX←lrSXX[SALput;]
+[155]             AgeRate←AgeRate[SALput;]
+[156]             pcRate←pcRate[SALput;]
+[157]             lrSALdedn←lrSALdedn[SALput;]
+[158]             lrSALmax←lrSALmax[SALput;]
+[159]             :if uk=2
+[160]                 SALdedntab←SALdedntab[SALput;]
+[161]                 SALmaxtab←SALmaxtab[SALput;]
+[162]             :endif
+[163]         :endif
+[164]         SSName ⎕wi 'MaxCol' (¯1+SSName ⎕wi 'MaxCol')
+[165]         SSName ⎕wi 'xSetSelection' 1 1 1 1
+[166] 
+[167]         'Actives_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Delete' SALget
+[168]         Act_Salaries 'Vars'
+[169]         openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[170]         0 0⍴(⊂'ssSalaries') Actives_Basis 'Change'
+[171]     :endif
+[172] 
+[173] :endselect
+    ∇

@@ -1,1 +1,92 @@
-    ∇ Z←ExtractFinancials;ID;ResIDs;IDs;where;ClassName;rechead;ClassBase;notes;note;∆;CID;classes;BasisDesc;noteshdr;benFLDS;catFLDS;catrecs;benrecs;benrec;catrec;mtFin;benTypes;pentab;col;notusedFin;msk[1]   ⍝ CONSWIN.sf#18[2]   ⍝ Extract Financial Assumptions from Basis data for each Category in a Consolidation Database[3]   [4]   ('Membership Group:' 'Basis Name:') Win∆ProgressBar 'SetLabels'[5]   'Summarising Financial Assumptions' Win∆ProgressBar 'Open'[6]   benFLDS←45 ⋄ catFLDS←14+uk=1 ⍝ Total Number of fields (excluding DatabaseID for SQL Server)[7]   [8]   :if ~DatabaseType≡'Consolidation'[9]   :andif ~mt catrecs←1 ⍙DBadoCONCommand 'SELECT * FROM CategoryAssumptions',(sqlDatabase/' WHERE DatabaseID=',⍕DBID),' ORDER BY ResultsCategoryID'[10]             benrecs←1 ⍙DBadoCONCommand 'SELECT * FROM BenefitAssumptions' ,(sqlDatabase/' WHERE DatabaseID=',⍕DBID),' ORDER BY ClassName, ResultsCategoryID, BenefitTypeID, PastService, StartYear'[11]             :if benFLDS>¯1↑⍴benrecs[12]                 benrecs←benrecs,0 ⍝ Append Liability figure temporarily for AON[13]             :endif[14]  :else[15]      benrecs←(0 benFLDS)⍴0 ⋄ catrecs←(0 catFLDS)⍴0[16]  :endif[17]  noteshdr←notes←MATRIX 'ResultsCategoryID' 'Tranche' 'BenefitTypeID' 'FinType' 'FinGroup' 'FinValue' 'FinTabID' 'FieldDesc' 'Ignored'[18]  [19]  :if uk=1 ⋄ IDs←1 ⍙DBadoCONCommand "SELECT DISTINCT ClassID, ResultsCategoryID, BasisCategoryID, ActResultsID, BasisDescription FROM ResultsCategory WHERE ValnMethod NOT LIKE ",(1 ⍙DBString 'PP%'),((~DatabaseType≡'Consolidation')/" AND FinAssSummarised=0"),(sqlDatabase/" AND DatabaseID=",(⍕DBID))," ORDER BY ClassID, BasisCategoryID"[20]  :else    ⋄ IDs←1 ⍙DBadoCONCommand "SELECT DISTINCT ClassID, ResultsCategoryID, 0              , ActResultsID, BasisDescription FROM ResultsCategory",(sqlDatabase/" AND DatabaseID=",(⍕DBID))," ORDER BY ClassID"[21]  :endif[22]  [23]  classes←nub IDs[;1][24]  notusedFin←mtFin←'' '' '' '' '' 0[25]  ⍝⍝⍝ notusedFin←'' '⍙Not Used' '' '' '' 0[26]  [27]  benTypes←'BenNo' 'BenName' OVER DLTB¨1 ⍙DBadoCONCommand 'SELECT * FROM BenefitType WHERE BenefitTypeID > 100'[28]  ⍝⍝⍝ benTypes←DLTB¨benTypes for (100<benTypes at 'BenNo')[29]  pentab←(5 0⍴'') amend 'BenID' (4 5 6 7)[30]  pentab←pentab amend 'BenDesc' ('Main Pension' 'Special Pension' 'Pension Increase 3' 'Pension Increase 4')[31]  [32]  :for ∆ :in nub ⎕split IDs[;1 5,2+uk=1] ⋄ (CID BasisDesc ID)←∆[33]      msk←IDs[;1]=CID[34]      :if uk=1 ⋄ where←" WHERE BasisCategoryID=",⍕ID ⋄ ResIDs←(msk^ID=IDs[;3])/IDs[;2][35]      :else    ⋄ where←" WHERE ResultsCategoryID=",⍕ResIDs←ID[36]      :endif[37]      ClassName←CID⊃'Active' 'Active New Entrant' 'Deferred' 'Pensioner'[38]      ClassBase←10000×2⌊4-CID[39]  [40]      ((classes⍳CID) (⍴classes) ClassName) Win∆ProgressBar 'FileUpdate'[41]      (((msk/IDs[;2+uk=1])⍳ID) (+/msk) BasisDesc) Win∆ProgressBar 'MemberUpdate'[42]  [43]      rechead←ID ClassName[44]  [45]      :select ClassName[46]      :case 'Pensioner' ⋄ (catrec benrec note)←rechead ExtractPenFin ResIDs[47]      :case 'Deferred'  ⋄ (catrec benrec note)←rechead DefFinGroups ResIDs[48]      :else             ⋄ (catrec benrec note)←rechead ActFinGroups ResIDs[49]      :endselect[50]  [51]      :if ∨/∆←catrec[;1]∊catrecs[;1] ⍝ Any already summarised?[52]      :andif ~mt ∆←∆/catrec[;1][53]          catrec←(~catrec[;1]∊∆)⌿catrec[54]          benrec←(~benrec[;1]∊∆)⌿benrec[55]      :endif[56]  [57]      catrecs←catrecs⍪catrec ⋄ benrecs←benrecs⍪benrec ⋄ notes←notes append note[58]  :endfor[59]  [60]  rechead←DBID ''[61]  :if ~DatabaseType≡'Client'[62]  :andif ~mt ↑(benrec note)←ExtractOther 10 28~benrecs[;3] ⍝ Add Amortisation records if they don't already exist[63]      catrecs←catrecs⍪DBID 0 ' ' 1 '' 0 '' 'Continuous' '' '' '' 0 '' 0 ''[64]      benrecs←benrecs⍪benrec[65]      notes←notes append note[66]  :endif[67]  [68]  ⍝⍝⍝ :if DatabaseType≡'Consolidation' ⋄ :andif bQSM ⍝ Remove zero liability rows[69]  ⍝⍝⍝    ∆←~(benrecs[;benFLDS])∊0[70]  ⍝⍝⍝    ∆←∆∨benrecs[;3]∊10 28 33 ⍝ Always keep Amortisation records and Additional Liability[71]  ⍝⍝⍝    benrecs←∆⌿benrecs[72]  ⍝⍝⍝ :else ⍝ Drop Liability figure[73]  :if ~DatabaseType≡'Consolidation' ⋄ :orif ~bQSM ⍝ Remove zero liability rows[74]      benrecs←0 ¯1↓benrecs[75]      :if ~mt IDs[76]          0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsCategory SET FinAssSummarised=1 WHERE BasisCategoryID IN (",(0 ⍙DBNumList IDs[;2]),")"[77]      :endif[78]  :endif[79]  catrecs←(~sqlDatabase)↓[2]DBID,catrecs ⍝⍝⍝ [;1 6 7 2 3 4 5,7↓⍳catFLDS] ⍝ Re-order to Database order[80]  benrecs←(~sqlDatabase)↓[2]DBID,benrecs[81]  catrecs←(catrecs[;1+sqlDatabase]∊benrecs[;1+sqlDatabase])⌿catrecs[82]  catrecs←catrecs[⍋catrecs[;1+sqlDatabase];] ⍝ Sort in ResID order[83]  ⍝ Sort benrecs in ClassName, ResultsCategoryID, BenefitTypeID, PastService, StartYear order[84]  :for col :in 4 5 7 1 2[85]      benrecs←benrecs[⎕av⍋⍕benrecs[;,col+sqlDatabase];][86]  :endfor[87]  [88]  Win∆ProgressBar 'Close'[89]  [90]  Z←catrecs benrecs notes    ∇
+    ∇ Z←ExtractFinancials;ID;ResIDs;IDs;where;ClassName;rechead;ClassBase;notes;note;∆;CID;classes;BasisDesc;noteshdr;benFLDS;catFLDS;catrecs;benrecs;benrec;catrec;mtFin;benTypes;pentab;col;notusedFin;msk
+[1]   ⍝ CONSWIN.sf#18
+[2]   ⍝ Extract Financial Assumptions from Basis data for each Category in a Consolidation Database
+[3]   
+[4]   ('Membership Group:' 'Basis Name:') Win∆ProgressBar 'SetLabels'
+[5]   'Summarising Financial Assumptions' Win∆ProgressBar 'Open'
+[6]   benFLDS←45 ⋄ catFLDS←14+uk=1 ⍝ Total Number of fields (excluding DatabaseID for SQL Server)
+[7]   
+[8]   :if ~DatabaseType≡'Consolidation'
+[9]   :andif ~mt catrecs←1 ⍙DBadoCONCommand 'SELECT * FROM CategoryAssumptions',(sqlDatabase/' WHERE DatabaseID=',⍕DBID),' ORDER BY ResultsCategoryID'
+[10]             benrecs←1 ⍙DBadoCONCommand 'SELECT * FROM BenefitAssumptions' ,(sqlDatabase/' WHERE DatabaseID=',⍕DBID),' ORDER BY ClassName, ResultsCategoryID, BenefitTypeID, PastService, StartYear'
+[11]             :if benFLDS>¯1↑⍴benrecs
+[12]                 benrecs←benrecs,0 ⍝ Append Liability figure temporarily for AON
+[13]             :endif
+[14]  :else
+[15]      benrecs←(0 benFLDS)⍴0 ⋄ catrecs←(0 catFLDS)⍴0
+[16]  :endif
+[17]  noteshdr←notes←MATRIX 'ResultsCategoryID' 'Tranche' 'BenefitTypeID' 'FinType' 'FinGroup' 'FinValue' 'FinTabID' 'FieldDesc' 'Ignored'
+[18]  
+[19]  :if uk=1 ⋄ IDs←1 ⍙DBadoCONCommand "SELECT DISTINCT ClassID, ResultsCategoryID, BasisCategoryID, ActResultsID, BasisDescription FROM ResultsCategory WHERE ValnMethod NOT LIKE ",(1 ⍙DBString 'PP%'),((~DatabaseType≡'Consolidation')/" AND FinAssSummarised=0"),(sqlDatabase/" AND DatabaseID=",(⍕DBID))," ORDER BY ClassID, BasisCategoryID"
+[20]  :else    ⋄ IDs←1 ⍙DBadoCONCommand "SELECT DISTINCT ClassID, ResultsCategoryID, 0              , ActResultsID, BasisDescription FROM ResultsCategory",(sqlDatabase/" AND DatabaseID=",(⍕DBID))," ORDER BY ClassID"
+[21]  :endif
+[22]  
+[23]  classes←nub IDs[;1]
+[24]  notusedFin←mtFin←'' '' '' '' '' 0
+[25]  ⍝⍝⍝ notusedFin←'' '⍙Not Used' '' '' '' 0
+[26]  
+[27]  benTypes←'BenNo' 'BenName' OVER DLTB¨1 ⍙DBadoCONCommand 'SELECT * FROM BenefitType WHERE BenefitTypeID > 100'
+[28]  ⍝⍝⍝ benTypes←DLTB¨benTypes for (100<benTypes at 'BenNo')
+[29]  pentab←(5 0⍴'') amend 'BenID' (4 5 6 7)
+[30]  pentab←pentab amend 'BenDesc' ('Main Pension' 'Special Pension' 'Pension Increase 3' 'Pension Increase 4')
+[31]  
+[32]  :for ∆ :in nub ⎕split IDs[;1 5,2+uk=1] ⋄ (CID BasisDesc ID)←∆
+[33]      msk←IDs[;1]=CID
+[34]      :if uk=1 ⋄ where←" WHERE BasisCategoryID=",⍕ID ⋄ ResIDs←(msk^ID=IDs[;3])/IDs[;2]
+[35]      :else    ⋄ where←" WHERE ResultsCategoryID=",⍕ResIDs←ID
+[36]      :endif
+[37]      ClassName←CID⊃'Active' 'Active New Entrant' 'Deferred' 'Pensioner'
+[38]      ClassBase←10000×2⌊4-CID
+[39]  
+[40]      ((classes⍳CID) (⍴classes) ClassName) Win∆ProgressBar 'FileUpdate'
+[41]      (((msk/IDs[;2+uk=1])⍳ID) (+/msk) BasisDesc) Win∆ProgressBar 'MemberUpdate'
+[42]  
+[43]      rechead←ID ClassName
+[44]  
+[45]      :select ClassName
+[46]      :case 'Pensioner' ⋄ (catrec benrec note)←rechead ExtractPenFin ResIDs
+[47]      :case 'Deferred'  ⋄ (catrec benrec note)←rechead DefFinGroups ResIDs
+[48]      :else             ⋄ (catrec benrec note)←rechead ActFinGroups ResIDs
+[49]      :endselect
+[50]  
+[51]      :if ∨/∆←catrec[;1]∊catrecs[;1] ⍝ Any already summarised?
+[52]      :andif ~mt ∆←∆/catrec[;1]
+[53]          catrec←(~catrec[;1]∊∆)⌿catrec
+[54]          benrec←(~benrec[;1]∊∆)⌿benrec
+[55]      :endif
+[56]  
+[57]      catrecs←catrecs⍪catrec ⋄ benrecs←benrecs⍪benrec ⋄ notes←notes append note
+[58]  :endfor
+[59]  
+[60]  rechead←DBID ''
+[61]  :if ~DatabaseType≡'Client'
+[62]  :andif ~mt ↑(benrec note)←ExtractOther 10 28~benrecs[;3] ⍝ Add Amortisation records if they don't already exist
+[63]      catrecs←catrecs⍪DBID 0 ' ' 1 '' 0 '' 'Continuous' '' '' '' 0 '' 0 ''
+[64]      benrecs←benrecs⍪benrec
+[65]      notes←notes append note
+[66]  :endif
+[67]  
+[68]  ⍝⍝⍝ :if DatabaseType≡'Consolidation' ⋄ :andif bQSM ⍝ Remove zero liability rows
+[69]  ⍝⍝⍝    ∆←~(benrecs[;benFLDS])∊0
+[70]  ⍝⍝⍝    ∆←∆∨benrecs[;3]∊10 28 33 ⍝ Always keep Amortisation records and Additional Liability
+[71]  ⍝⍝⍝    benrecs←∆⌿benrecs
+[72]  ⍝⍝⍝ :else ⍝ Drop Liability figure
+[73]  :if ~DatabaseType≡'Consolidation' ⋄ :orif ~bQSM ⍝ Remove zero liability rows
+[74]      benrecs←0 ¯1↓benrecs
+[75]      :if ~mt IDs
+[76]          0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsCategory SET FinAssSummarised=1 WHERE BasisCategoryID IN (",(0 ⍙DBNumList IDs[;2]),")"
+[77]      :endif
+[78]  :endif
+[79]  catrecs←(~sqlDatabase)↓[2]DBID,catrecs ⍝⍝⍝ [;1 6 7 2 3 4 5,7↓⍳catFLDS] ⍝ Re-order to Database order
+[80]  benrecs←(~sqlDatabase)↓[2]DBID,benrecs
+[81]  catrecs←(catrecs[;1+sqlDatabase]∊benrecs[;1+sqlDatabase])⌿catrecs
+[82]  catrecs←catrecs[⍋catrecs[;1+sqlDatabase];] ⍝ Sort in ResID order
+[83]  ⍝ Sort benrecs in ClassName, ResultsCategoryID, BenefitTypeID, PastService, StartYear order
+[84]  :for col :in 4 5 7 1 2
+[85]      benrecs←benrecs[⎕av⍋⍕benrecs[;,col+sqlDatabase];]
+[86]  :endfor
+[87]  
+[88]  Win∆ProgressBar 'Close'
+[89]  
+[90]  Z←catrecs benrecs notes
+    ∇

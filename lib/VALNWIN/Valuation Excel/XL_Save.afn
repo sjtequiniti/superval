@@ -1,0 +1,26 @@
+    ∇ r←XL_Save FileName;⎕elx;elx;no;n;flag
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Save the active Excel workbook.
+[3]   ⍝ If FileName is null do "Save" else "SaveAs".
+[4]   ⍝ When doing SaveAs with the same name as an existing workbook, it will replace it.
+[5]   ⍝ Copyright APL2000 Inc. 2003
+[6]   
+[7]   ⍝ Check that a workbook is active
+[8]   →(r←0='XL.wb' ⎕wi 'interface')/0 ⍝ no Excel
+[9]   
+[10]  0 XL_ActivateWorksheet 'Header'
+[11]  0 0⍴1 XL_Data 'Update' ⍝ Update Hidden results flag
+[12]  'Header' XL_ProtectSheet ¯1
+[13]  
+[14]  :if ~flag←0=⍴,FileName ⍝ Empty name means just save
+[15]      flag←FileExist FileName
+[16]  :endif
+[17]  
+[18]  n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"XL_Save ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry'
+[19]  retry:
+[20]  :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[21]  
+[22]  :if flag ⋄ 'XL.wb' ⎕wi 'Save'
+[23]  :else    ⋄ 'XL.wb' ⎕wi 'SaveAs' FileName
+[24]  :endif
+    ∇

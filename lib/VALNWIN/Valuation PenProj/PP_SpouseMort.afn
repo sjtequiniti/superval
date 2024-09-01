@@ -1,0 +1,23 @@
+    ∇ PP∆SpouseMort
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Create the required "global" Spouse Mortality variables - pp∆LYrev and pp∆lyadj
+[3]   
+[4]   :if isTOut ⋄ :andif ~pp∆Revonly
+[5]       pp∆LYrev←1⌊1,((⌈pp∆Y0)↓pp∆LY) CDIV pp∆ly[⌊pp∆Y0+pp∆Tstart-pp∆Tret]
+[6]   :elseif pp∆midstart∨(ClassID≠4) ⍝⍝⍝ UK error for Actives and Deferreds
+[7]   :andif ~(ClassID=3)^(pp∆exit≡'DD')
+[8]   ⍝⍝⍝⍝ ⋄ :orif pp∆SPMethod=1 ⍝⍝⍝ Is this needed????
+[9]       pp∆LYrev←1,((⌈pp∆Y0)↓pp∆LY) CDIV pp∆ly[⌊pp∆Y0]
+[10]  :else
+[11]      pp∆LYrev←1,((⌈pp∆Y0)↓pp∆LY) CDIV pp∆LY[⌊pp∆Y0]
+[12]  :endif
+[13]  ⍝⍝⍝ FIXME remove 0.99999 from the end of Decrement tables (except when it is the only rate)
+[14]  pp∆lyadj←pp∆FreqAdj PP∆FreqAdjust pp∆LYrev←pp∆LYrev,1E¯5×¯1↑pp∆LYrev
+[15]  
+[16]  ⍝⍝⍝ UK error - apply fix below for Spouse at Death (whilst on Pension)
+[17]  :if (ClassID=3)^(pp∆exit≡'DD') ⋄ :orif (ClassID=4)^(1=pp∆SPMethod)^('2'=¯1↑pp∆exit) ⍝ Fix for Spouse at Death (upon DiD)
+[18]      pp∆LYrev←MID pp∆LYrev,1E¯5×¯1↑pp∆LYrev
+[19]  :endif
+[20]  
+[21]  ⍝⍀⍝ 'S' PP∆TestUpdate 'pp∆LYrev←' 'pp∆lyadj←'
+    ∇

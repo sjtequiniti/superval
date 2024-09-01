@@ -1,0 +1,90 @@
+    ∇ res←field Edit_IndSlice parm;parent;page;z
+[1]   ⍝ UPARMWIN.sf#5
+[2]   ⍝ Function to allow user control on Independent Slices Details
+[3]   ⍝ Revn: sjt10apr15
+[4]   
+[5]   parent←'fmEditIndSlice.sEdit_IndSlice.' ⋄ res←0⍴'' ⍝ Default response
+[6]   
+[7]   :select parm
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if Sliceget≥1 ⋄ IndSliceValues ⋄ :endif
+[10]      Formattrick←HyphenSwap 'fmSV.sActives_Basis.pgMain.fData.cbFormat' ⎕wi 'text' ⍝ Trick to get Format-related variables
+[11]      FormFields←Win∆GetControlList DTDot parent                                ⍝ Get list of fields
+[12]      IndFirstSlice←Sliceput=1
+[13]      :if Sliceput≠⌊sliceput←Sliceput ⋄ Sliceput←99.5 ⋄ :endif ⍝ Signal failure
+[14]  
+[15]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[16]  
+[17]      (parent,'pgTier1.fAdjust.ckDEDUCTTIER11') ⎕wi 'visible' ¯1
+[18]      (parent,'pgTier1.fAdjust.ckDEDUCTTIER21') ⎕wi 'visible' ¯1
+[19]      (parent,'pgTier2.fAdjust.ckDEDUCTTIER22') ⎕wi 'visible' ¯1
+[20]      :if Sliceget=Sliceput
+[21]          ('fmEditIndSlice.bnEdit_IndSlicePrevious') ⎕wi 'enabled' (Sliceget≠1)
+[22]          ('fmEditIndSlice.bnEdit_IndSliceNext') ⎕wi 'enabled' (Sliceget≠↑⍴IndSliceDesc)
+[23]          parent ⎕wi 'onModified' "ControlName ⎕wi '∆modified' 0"
+[24]          parent ⎕wi 'modified' 0
+[25]          parent ⎕wi '∆modified' 1
+[26]      :endif
+[27]  
+[28]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[29]  
+[30]      :repeat
+[31]          :select ↑field
+[32]          :case 'cbFormattrick'
+[33]          :case 'cktier2defined'
+[34]              z←(parent,'pgSlice.fSlice.cktier2defined') ⎕wi 'value'
+[35]              ((parent,'pgTier2') ⎕wi 'children') MultiWI 'enabled' z
+[36]              →lab
+[37]          :case 'cktier3defined'
+[38]              z←×/(parent,'pgSlice.fSlice.cktier3defined') ⎕wi 'Ref' 'value' 'enabled'
+[39]              ((parent,'pgTier3') ⎕wi 'children') MultiWI 'enabled' z
+[40]              →lab
+[41]          :else
+[42]  lab:        (↑field) Win∆FormValidation 'Change'
+[43]              (parent,'pgSlice.fSlice.cktier2defined') ⎕wi 'enabled' (~×/(parent,'pgSlice.fSlice.cktier3defined') ⎕wi 'Ref' 'value' 'enabled')
+[44]          :endselect
+[45]      :until mt field←1↓field
+[46]  
+[47]  :case 'Valid' ⍝ Routine specific validation
+[48]  
+[49]      :repeat
+[50]          :select page←DLTMB ↑field
+[51]          :case 'All'
+[52]              :for page :in 'pgSlice' 'pgTier1' 'pgTier2X' 'pgTier3X'
+[53]                  :if ~mt res←(⊂page) Edit_IndSlice 'Valid' ⋄ :leave ⋄ :endif
+[54]              :endfor
+[55]          :case 'pgSlice'
+[56]              res←((FormFields for↑¨(⊂parent,page)⍷¨FormFields at 'control')at 'variable')Win∆FormValidation 'Valid' ⍝ fields on this form
+[57]  
+[58]          :caselist 'pgTier1' 'pgTier2X' 'pgTier3X'
+[59]              res←((FormFields for↑¨(⊂parent,page~'X')⍷¨FormFields at 'control')at 'variable')Win∆FormValidation 'Valid' ⍝ fields on this form
+[60]  
+[61]              :if Sliceput≠1 ⋄ :andif 'C'=↑accbasis ⋄ :andif ^/' '=,FIXED
+[62]                  res←'Benefit Basis is CARE but no Pension Data Item specified'
+[63]              :endif
+[64]  
+[65]          :caselist 'pgTier2' 'pgTier3'
+[66]              ⍝ Only checked on Save - see pgTier?X
+[67]          :endselect
+[68]      :until mt field←1↓field
+[69]  
+[70]      :if mt res
+[71]      :andif ~mt SLICEDESC
+[72]      :andif ~mt IndSliceDesc[(⍳1↑⍴IndSliceDesc)~Sliceput;] ExactTLU SLICEDESC
+[73]           res←'AlreadyDesc' ⋄ Win∆SetFocus parent,'pgSlice.edSLICEDESC' ⋄ :return
+[74]      :endif
+[75]  
+[76]  :case 'Run'
+[77]      Sliceput←sliceput
+[78]      IndSliceAssign
+[79]      :if mt res←(Sliceget≠Sliceput)/'Quit'
+[80]          parent ⎕wi 'modified' 0
+[81]          MDISPLAY 'Independent Slice ',(⍕Sliceput),' parameters changed'
+[82]      :endif
+[83]      parent ⎕wi '∆modified' 1
+[84]  
+[85]  :case 'Quit' ⍝ Deleting "other" variables
+[86]      0 0⍴⎕ex 'sliceput'
+[87]  
+[88]  :endselect
+    ∇

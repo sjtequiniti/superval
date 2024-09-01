@@ -1,1 +1,60 @@
-    ∇ DISC∆OUTPUT∆DB PROPT;NO;BENS;V1pcSAL;CONTS;EXP;VAB;conts;res;size;SALS[1]   ⍝ CONSWIN.sf#11[2]   [3]   1 XL_ActivateWorksheet 'FundingRates'[4]   [5]   size←80⌊SIZE[6]   0 0⍴('Discounted at ',('¯-' REPL ⍕100×i-1),'% per annum') XL_Data 'D7'[7]   [8]   :if PROPT[9]       (17 2 17 21) XL_PasteAll 18 2 (16+size) 21[10]  :else[11]      'U' XL_RangeDelete 14 ⍬ 17 ⍬[12]  :endif[13]  [14]  SALS←⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ResultsData_NoIndex WHERE ContingencyID=19 AND LiabilityTypeID=13 AND DataItemID=7 AND ResultsCategoryID IN (",(0 ⍙DBNumList runsA),")",(sqlDatabase/" AND DatabaseID=",DBID)," GROUP BY SVYear"[15]  [16]  :for NO :in (-1+PROPT)↑2 1[17]      :if NO=1[18]          'D↓' XL_RangeInsert 13 ⍬ (11+size) ⍬[19]          ((12+size) 2 (12+size) 21) XL_PasteAll 13 2 (11+size) 21[20]      :endif[21]  [22]      ⍝ Normal Retirement and Leaving Cash are "start-year"[23]      BENS←0,+\+/GTOTS[⍳size;10,(⍳13)~10]×v[⍳size],v[⍳size],⍉11⌿MATRIX vMP[⍳size][24]      conts←0,+\vMP[⍳size]×GTOTS[⍳size;14][25]      V1pcSAL←100×0,+\vMP[⍳size]×size↑+/PVCONTS1pc[26]      EXP←0,+\vMP[⍳size]×GTOTS[⍳size;16]-size↑amort∆exp[27]  [28]      VAB←v[⍳size+1]×(ABTOT⍪0)[⍳size+1;NO] ⋄ CONTS←0[29]  [30]      res←(⍉MATRIX 0,⍳size),0.01×V1pcSAL ⋄ res←(res,conts),VAB[31]      res←(res,BENS+EXP),VAB+BENS+EXP[32]      ⍝ Company Funding Rates[33]      res←res,0,0 FUNDING∆RATES ⍳size[34]      res←res,0,(0,⍳size-1) FUNDING∆RATES ⍳size[35]      res←res,0,size↑(80⍴4 1 /0 1)\(size⌊5×0,⍳15) FUNDING∆RATES size⌊5×⍳16[36]      res←res,0,size↑(80⍴9 1 /0 1)\(size⌊10×0,⍳7) FUNDING∆RATES size⌊10×⍳8[37]      res←res,0,size↑(80⍴19 1 /0 1)\(size⌊20×0,⍳3) FUNDING∆RATES size⌊20×⍳4[38]      ⍝ Total Funding Rates[39]      res←res,VAB+BENS+EXP-CONTS←conts[40]      res←res,0,0 FUNDING∆RATES ⍳size[41]      res←res,0,(0,⍳size-1) FUNDING∆RATES ⍳size[42]      res←res,0,size↑(80⍴4 1 /0 1)\(size⌊5×0,⍳15) FUNDING∆RATES size⌊5×⍳16[43]      res←res,0,size↑(80⍴9 1 /0 1)\(size⌊10×0,⍳7) FUNDING∆RATES size⌊10×⍳8[44]      res←res,0,size↑(80⍴19 1 /0 1)\(size⌊20×0,⍳3) FUNDING∆RATES size⌊20×⍳4[45]      ⍝ Godwins Columns[46]      ⍝ EOY Past Service Liability Amortisation Rates[47]      res←res,(1+EXPCC)×(VAB[1]-ASSETS[1]) CDIV 1,1↓V1pcSAL[48]      res←res,VAB CDIV (size+1)↑SALS ⍝ Liability/Salary Ratio[49]  [50]      0 0⍴(res[1;4]) XL_Data RCtoA1 (7+4×NO) 6 ⋄ 0 0⍴(res[1;18]) XL_Data RCtoA1 (7+4×NO) 20[51]      0 0⍴(1 0↓res) XL_Data RCtoA1 (9+4×NO) 3 (8+size+4×NO) 21[52]  [53]  :endfor[54]  [55]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on[56]  XL_AutoFit 5 4 (15+2×size) 21[57]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off[58]  'FundingRates' XL_ProtectSheet 1    ∇
+    ∇ DISC∆OUTPUT∆DB PROPT;NO;BENS;V1pcSAL;CONTS;EXP;VAB;conts;res;size;SALS
+[1]   ⍝ CONSWIN.sf#11
+[2]   
+[3]   1 XL_ActivateWorksheet 'FundingRates'
+[4]   
+[5]   size←80⌊SIZE
+[6]   0 0⍴('Discounted at ',('¯-' REPL ⍕100×i-1),'% per annum') XL_Data 'D7'
+[7]   
+[8]   :if PROPT
+[9]       (17 2 17 21) XL_PasteAll 18 2 (16+size) 21
+[10]  :else
+[11]      'U' XL_RangeDelete 14 ⍬ 17 ⍬
+[12]  :endif
+[13]  
+[14]  SALS←⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ResultsData_NoIndex WHERE ContingencyID=19 AND LiabilityTypeID=13 AND DataItemID=7 AND ResultsCategoryID IN (",(0 ⍙DBNumList runsA),")",(sqlDatabase/" AND DatabaseID=",DBID)," GROUP BY SVYear"
+[15]  
+[16]  :for NO :in (-1+PROPT)↑2 1
+[17]      :if NO=1
+[18]          'D↓' XL_RangeInsert 13 ⍬ (11+size) ⍬
+[19]          ((12+size) 2 (12+size) 21) XL_PasteAll 13 2 (11+size) 21
+[20]      :endif
+[21]  
+[22]      ⍝ Normal Retirement and Leaving Cash are "start-year"
+[23]      BENS←0,+\+/GTOTS[⍳size;10,(⍳13)~10]×v[⍳size],v[⍳size],⍉11⌿MATRIX vMP[⍳size]
+[24]      conts←0,+\vMP[⍳size]×GTOTS[⍳size;14]
+[25]      V1pcSAL←100×0,+\vMP[⍳size]×size↑+/PVCONTS1pc
+[26]      EXP←0,+\vMP[⍳size]×GTOTS[⍳size;16]-size↑amort∆exp
+[27]  
+[28]      VAB←v[⍳size+1]×(ABTOT⍪0)[⍳size+1;NO] ⋄ CONTS←0
+[29]  
+[30]      res←(⍉MATRIX 0,⍳size),0.01×V1pcSAL ⋄ res←(res,conts),VAB
+[31]      res←(res,BENS+EXP),VAB+BENS+EXP
+[32]      ⍝ Company Funding Rates
+[33]      res←res,0,0 FUNDING∆RATES ⍳size
+[34]      res←res,0,(0,⍳size-1) FUNDING∆RATES ⍳size
+[35]      res←res,0,size↑(80⍴4 1 /0 1)\(size⌊5×0,⍳15) FUNDING∆RATES size⌊5×⍳16
+[36]      res←res,0,size↑(80⍴9 1 /0 1)\(size⌊10×0,⍳7) FUNDING∆RATES size⌊10×⍳8
+[37]      res←res,0,size↑(80⍴19 1 /0 1)\(size⌊20×0,⍳3) FUNDING∆RATES size⌊20×⍳4
+[38]      ⍝ Total Funding Rates
+[39]      res←res,VAB+BENS+EXP-CONTS←conts
+[40]      res←res,0,0 FUNDING∆RATES ⍳size
+[41]      res←res,0,(0,⍳size-1) FUNDING∆RATES ⍳size
+[42]      res←res,0,size↑(80⍴4 1 /0 1)\(size⌊5×0,⍳15) FUNDING∆RATES size⌊5×⍳16
+[43]      res←res,0,size↑(80⍴9 1 /0 1)\(size⌊10×0,⍳7) FUNDING∆RATES size⌊10×⍳8
+[44]      res←res,0,size↑(80⍴19 1 /0 1)\(size⌊20×0,⍳3) FUNDING∆RATES size⌊20×⍳4
+[45]      ⍝ Godwins Columns
+[46]      ⍝ EOY Past Service Liability Amortisation Rates
+[47]      res←res,(1+EXPCC)×(VAB[1]-ASSETS[1]) CDIV 1,1↓V1pcSAL
+[48]      res←res,VAB CDIV (size+1)↑SALS ⍝ Liability/Salary Ratio
+[49]  
+[50]      0 0⍴(res[1;4]) XL_Data RCtoA1 (7+4×NO) 6 ⋄ 0 0⍴(res[1;18]) XL_Data RCtoA1 (7+4×NO) 20
+[51]      0 0⍴(1 0↓res) XL_Data RCtoA1 (9+4×NO) 3 (8+size+4×NO) 21
+[52]  
+[53]  :endfor
+[54]  
+[55]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+[56]  XL_AutoFit 5 4 (15+2×size) 21
+[57]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[58]  'FundingRates' XL_ProtectSheet 1
+    ∇

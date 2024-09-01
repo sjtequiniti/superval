@@ -1,0 +1,50 @@
+    ∇ ContingencyID PP∆PostRetLS pp∆row;pp∆upin;pp∆TotBens;pp∆FutBens;pp∆midexit;pp∆midret;pp∆midstart;pp∆Xexit;pp∆xexit;pp∆Xret;pp∆xret;pp∆Xstart;pp∆xstart;pp∆exitdisc;pp∆defdisc;pp∆Texit;pp∆Tret;pp∆Tstart;pp∆def;pp∆startpad;pp∆defInc;pp∆FutCF;pp∆PastCF;pp∆TotCF;pp∆FutPV;pp∆PastPV;pp∆TotPV;pp∆VF;pp∆FVstart;pp∆PVstart;pp∆ResPV;pp∆defLX;pp∆Inconly;pp∆Revonly;pp∆exitprobs;pp∆xprestart;pp∆Xprestart;pp∆midprestart;pp∆Tprestart;pp∆year;pp∆2Dbens;pp∆benyear;pp∆RGP
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Projection of Funeral Benefit Cash Flows
+[3]   ⍝ For Funeral Benefits, there is no Contingent Benefit so ignore pp∆Con and pp∆FCon
+[4]   
+[5]   pp∆2Dbens←'Benefits' PP∆ExtractBens 0
+[6]   pp∆upin←pp∆Upin[pp∆row;0] ⍝ Benefit is Underpinned - doesn't work with Aggregated Benefits
+[7]   pp∆RGP←0
+[8]   
+[9]   PP∆PenIncreases
+[10]  
+[11]  :for pp∆year :in (×∣pp∆TotBens)/⍳pp∆NX ⍝ Process non-zero benefits
+[12]      pp∆benyear←pp∆year
+[13]      PP∆Terms 'S'
+[14]      pp∆size PP∆PenParms pp∆exit
+[15]      :if pp∆top≠0 ⋄ :andif pp∆top≤pp∆Xstart ⋄ :continue ⋄ :endif
+[16]      :if pp∆Xill2D ⋄ :andif (⊂pp∆exit)∊'I ' 'I2' 'P ' 'PD' 'PR' 'P2' ⋄ pp∆xexit PP∆SelectMort 'Xill2D' ⋄ :endif
+[17]      PP∆Deferral 0
+[18]      :if PP∆Payment ⋄ :continue ⋄ :endif
+[19]  
+[20]  ⍝⍝⍝ Assumes that Post Ret Lump Sum is payable during Guarantee Period
+[21]  
+[22]      pp∆VF←pp∆ppfRatio[(pp∆Texit-term)+⍳pp∆size]×pp∆lxAdj×pp∆QX×pp∆defLX×pp∆defInc×pp∆size↑pp∆SIncpost
+[23]      :if neIND
+[24]          pp∆FutPV← pp∆defdisc×pp∆FVstart←(pp∆FutCF←pp∆TotCF←  pp∆TotBens[pp∆benyear]×pp∆VF)          ×pp∆size↑pp∆discpost
+[25]          pp∆PastPV←0 ⋄ pp∆PVstart←0×pp∆FVstart ⋄ pp∆PastCF←0×pp∆FutCF
+[26]      :else
+[27]          pp∆FutPV← pp∆defdisc×pp∆FVstart←(pp∆FutCF←           pp∆FutBens[pp∆benyear]×pp∆VF)          ×pp∆size↑pp∆discpost
+[28]          pp∆PastPV←pp∆defdisc×pp∆PVstart←(pp∆PastCF←(pp∆TotCF←pp∆TotBens[pp∆benyear]×pp∆VF)-pp∆FutCF)×pp∆size↑pp∆discpost
+[29]      :endif
+[30]      pp∆ResPV←pp∆PastPV+pp∆FutPV
+[31]      pp∆TotPV←(pp∆PastPV←+/pp∆PastPV)+(pp∆FutPV←+/pp∆FutPV)
+[32]  
+[33]      :if test ⋄ :andif ClassID≠4 ⋄ pp∆TotBens[pp∆benyear] PP∆StoreAnn 1 ⋄ :endif
+[34]  
+[35]      0 PP∆StoreRes 0
+[36]  :endfor
+[37]  
+[38]  :if ⍙dbresults
+[39]      0 0⍴'Amounts' PP∆ExtractBens 0
+[40]      :if pp∆accrued
+[41]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 3 11) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆TotBens
+[42]              ⍙DBAddAccrued
+[43]      :else
+[44]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 1 11) pp∆dbX0 term) ⍙DBValnRecords (↑,pp∆FutBens)-↑,pp∆TotBens
+[45]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 2 11) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆FutBens
+[46]          ⍙DBAddResults
+[47]      :endif
+[48]  :endif
+    ∇

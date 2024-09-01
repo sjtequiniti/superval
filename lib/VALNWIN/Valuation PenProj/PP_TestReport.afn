@@ -1,0 +1,48 @@
+    ∇ isAccrued PP∆TestReport pp∆TestTab;∆;tab;Ident;exit;year;benyear;type;msk;var;value;pp∆size;dic;h2;part;memorsp;tbl
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Report on the test results
+[3]   
+[4]   pp∆TestTab←pp∆TestTab groupby ('Ident' 'exit') ('part' 'memorsp' 'year' 'benyear' 'var' 'value')
+[5]   :for ∆ :in ↑pp∆TestTab ⋄ (Ident exit)←∆
+[6]       tbl←↑pp∆TestTab at ⊂∆
+[7]   
+[8]       :if 'G'=↑Ident ⋄ Ident←'/G1/Pre 1988 GMP' TEXTREPL '/G2/Post 1988 GMP' TEXTREPL Ident
+[9]       :else          ⋄ type←↑(ClassID=1 3 4)/'Slice ' 'PUP ' 'Pension ' ⋄ ∆←'I'=↑Ident
+[10]                       Ident←(∆/'Independent '),type,∆↓Ident
+[11]      :endif
+[12]      Ident←(exit⊃'Retirement' 'Death' 'Ill-Health Retirement' 'Withdrawal' 'Accrued'),' ',Ident
+[13]      h2←'Projection - ',Ident
+[14]  
+[15]      tbl←tbl groupby ('part' 'memorsp') ('year' 'benyear' 'var' 'value')
+[16]      :for ∆ :in (↑tbl)[⎕av⍋⊃∊¨↑tbl] ⋄ (part memorsp)←∆
+[17]          tab←↑tbl at ⊂∆
+[18]          part←'/DiD/Death in Deferment' TEXTREPL '/memdedSPA/Member SPA Deduction' TEXTREPL '/spdedSPA/Spouse SPA Deduction' TEXTREPL part
+[19]  
+[20]          :if mt memorsp
+[21]              pp∆size←↑(tab for 'var' 'pp∆size') at 'value'
+[22]              tab←tab for (~(tab at 'var')∊⊂'pp∆size')
+[23]              dic←(⊂'Year') push ⊂⍳120
+[24]              (var value)←tab at 'var' 'value'
+[25]              h2 '' FOURDIT dic amend spin var value
+[26]          :else
+[27]              part←((memorsp='S')⊃'Member' 'Reversionary'),' ',part
+[28]              :if ×rowsIn ∆←tab for 'var' 'pp∆size'
+[29]                  pp∆size←↑∆ at 'value'
+[30]                  tab←tab for (~(tab at 'var')∊⊂'pp∆size')
+[31]              :endif
+[32]  
+[33]              msk←∊1=⍴¨,¨tab at 'value' ⍝ Find the scalars
+[34]              (var value)←(tab for msk) at 'var' 'value'
+[35]              h2 part FOURDIT var push value
+[36]  
+[37]              dic←'Year' 'Age' push (⍳pp∆size) (pp∆X0+⍳pp∆size)
+[38]              tab←tab for ~msk ⍝ Now the vectors
+[39]              tab←tab amend 'value' (pp∆size↑¨tab at 'value')
+[40]              (var value)←tab at 'var' 'value'
+[41]              dic←dic amend spin var value
+[42]              h2 part FOURDIT dic
+[43]          :endif
+[44]  
+[45]      :endfor
+[46]  :endfor
+    ∇

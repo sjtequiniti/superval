@@ -1,1 +1,44 @@
-    ∇ index←tieno Decr_MigrateAGA index;CN;TABLE;NewTable;desc;TableType;n;N;DESC;RatesFile;ctie[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Special Migration for the AGA[3]   ⍝  Convert all W and S (age related) Tables to WM and SM (2D) Tables[4]   ⍝  Copy all MEMCONTS Tables as SM Tables[5]   ⍝  Rate Table is currently tied to "tieno" and File Index is "index"[6]   [7]   ('Rate Table:' 'Table:') Win∆ProgressBar 'SetLabels'[8]   'Converting Rate Table Data' Win∆ProgressBar 'Open'[9]   :for TableType :in ' W' ' S'[10]      ((1+TableType≡' S') 3 TableType) Win∆ProgressBar 'FileUpdate'[11]      :for n :in ⍳⍴N←index[;⍳2] TLU TableType[12]          CN←N[n][13]          TABLE←70/⍉MATRIX ⎕fread tieno,CN ⍝ Create 2D Table[14]          NewTable←index[CN;⍳5] ⋄ NewTable[⍳2]←NewTable[2],'M'[15]          (n (⍴N) NewTable) Win∆ProgressBar 'MemberUpdate'[16]          desc←DLTMB (12↓index[CN;]),' Converted to 2D'[17]          ⍝ Append new table to decrement file[18]          index←index OVER NewTable,(,'I5,<  >' ⎕FMT(⎕FSIZE tieno)[2]),desc[19]          0 0⍴TABLE ⎕FAPPEND tieno[20]          index ⎕FREPLACE tieno,1[21]      :endfor[22]  :endfor[23]  [24]  :if RatesFile FTIE ctie←TieNumber RatesFile←LibraryDir,'MEMCONTS.SF'[25]  (3 3 'MC') Win∆ProgressBar 'FileUpdate'[26]      DESC←⎕FREAD ctie,1[27]      :for CN :in 1↓⍳↑⍴DESC[28]          NewTable←'SM1',2↓4↑DESC[CN;][29]          (CN (↑⍴DESC) NewTable) Win∆ProgressBar 'MemberUpdate'[30]          :if 'Member Cont'≡11↑desc←12↓DESC[CN;] ⋄ :continue ⋄ :endif[31]          TABLE←(-15+⍳50)⊖120 50↑⎕FREAD ctie,CN[32]          TABLE←((-+/^\⌽^/TABLE=0),0)↓TABLE[33]          TABLE←(0,-+/^\⌽^⌿TABLE=0)↓TABLE[34]          ⍝ Append new table to decrement file[35]          index←index OVER NewTable,(,'I5,<  >' ⎕FMT(⎕FSIZE tieno)[2]),desc[36]          0 0⍴TABLE ⎕FAPPEND tieno[37]          index ⎕FREPLACE tieno,1[38]      :endfor[39]      ⎕funtie ctie[40]  :endif[41]  [42]  ESC:Win∆ProgressBar 'Close'    ∇
+    ∇ index←tieno Decr_MigrateAGA index;CN;TABLE;NewTable;desc;TableType;n;N;DESC;RatesFile;ctie
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Special Migration for the AGA
+[3]   ⍝  Convert all W and S (age related) Tables to WM and SM (2D) Tables
+[4]   ⍝  Copy all MEMCONTS Tables as SM Tables
+[5]   ⍝  Rate Table is currently tied to "tieno" and File Index is "index"
+[6]   
+[7]   ('Rate Table:' 'Table:') Win∆ProgressBar 'SetLabels'
+[8]   'Converting Rate Table Data' Win∆ProgressBar 'Open'
+[9]   :for TableType :in ' W' ' S'
+[10]      ((1+TableType≡' S') 3 TableType) Win∆ProgressBar 'FileUpdate'
+[11]      :for n :in ⍳⍴N←index[;⍳2] TLU TableType
+[12]          CN←N[n]
+[13]          TABLE←70/⍉MATRIX ⎕fread tieno,CN ⍝ Create 2D Table
+[14]          NewTable←index[CN;⍳5] ⋄ NewTable[⍳2]←NewTable[2],'M'
+[15]          (n (⍴N) NewTable) Win∆ProgressBar 'MemberUpdate'
+[16]          desc←DLTMB (12↓index[CN;]),' Converted to 2D'
+[17]          ⍝ Append new table to decrement file
+[18]          index←index OVER NewTable,(,'I5,<  >' ⎕FMT(⎕FSIZE tieno)[2]),desc
+[19]          0 0⍴TABLE ⎕FAPPEND tieno
+[20]          index ⎕FREPLACE tieno,1
+[21]      :endfor
+[22]  :endfor
+[23]  
+[24]  :if RatesFile FTIE ctie←TieNumber RatesFile←LibraryDir,'MEMCONTS.SF'
+[25]  (3 3 'MC') Win∆ProgressBar 'FileUpdate'
+[26]      DESC←⎕FREAD ctie,1
+[27]      :for CN :in 1↓⍳↑⍴DESC
+[28]          NewTable←'SM1',2↓4↑DESC[CN;]
+[29]          (CN (↑⍴DESC) NewTable) Win∆ProgressBar 'MemberUpdate'
+[30]          :if 'Member Cont'≡11↑desc←12↓DESC[CN;] ⋄ :continue ⋄ :endif
+[31]          TABLE←(-15+⍳50)⊖120 50↑⎕FREAD ctie,CN
+[32]          TABLE←((-+/^\⌽^/TABLE=0),0)↓TABLE
+[33]          TABLE←(0,-+/^\⌽^⌿TABLE=0)↓TABLE
+[34]          ⍝ Append new table to decrement file
+[35]          index←index OVER NewTable,(,'I5,<  >' ⎕FMT(⎕FSIZE tieno)[2]),desc
+[36]          0 0⍴TABLE ⎕FAPPEND tieno
+[37]          index ⎕FREPLACE tieno,1
+[38]      :endfor
+[39]      ⎕funtie ctie
+[40]  :endif
+[41]  
+[42]  ESC:Win∆ProgressBar 'Close'
+    ∇

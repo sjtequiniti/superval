@@ -1,0 +1,18 @@
+    ∇ SSName UKSliceRun slicetype;varlist;OffsetSlice;FirstSlice;IndFirstSlice;AltFirstSlice;⍙store;∆
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Run the Edit Slice Routine
+[3]   ⍝ Revn: sjt10apr15
+[4]   
+[5]   ⍙store←pack (2=⎕nc Validation_Vars)⌿Validation_Vars
+[6]   
+[7]   n∆A∆F←(⊃qtrim¨↑∆) push ∆←(⊂~mt¨↑∆)sel¨∆←(relRules for 'Page' (DLTB slicetype,' Slices')) at 'Alternative' 'Field'
+[8]   
+[9]   FirstSlice←AltFirstSlice←IndFirstSlice←OffsetSlice←0
+[10]  
+[11]  varlist←(lmt qtrim¨m2n SSName ⎕wi '∆name'),(slicetype,'DeductTier11') (slicetype,'DeductTier21') (slicetype,'DeductTier22') 'Formattrick'
+[12]  relRules[WHERE(relRules at 'Field')∊varlist;(keysIn relRules)⍳⊂'Alternative']←⊂''
+[13]  
+[14]  'PARMWIN' CallModule (slicetype≡'Ind') means 'Edit_IndSlice' else 'Edit_UKSlice'
+[15]  
+[16]  pdef ⍙store
+    ∇

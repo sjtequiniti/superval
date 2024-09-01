@@ -1,0 +1,15 @@
+    ∇ schemafiles←⍙DBSchemaFiles InputDir;files;tables;⍙dbini
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Create schema files required for loading Database records from native files
+[3]   
+[4]   files←'\' Win∆Child¨⍙dbfundfile   xl_ndatafile    xl_cdatafile     xl_membfile    ,(aosind/xl_maosfile ⍙dbaosfile  ),fscopt/⊂⍙dbscenfile
+[5]   tables←             'ResultsData' 'NumMemberData' 'CharMemberData' 'MemberResults',(aosind/'AOSMember' 'AOSResults'),fscopt/⊂'AltScenData'
+[6]   
+[7]   :if sqlDatabase
+[8]       schemafiles←files ⍙DBSQLMakeSchemaFiles tables
+[9]   :else ⍝ Turn CSV file into a fixed length file with schema.ini
+[10]      ⍙dbini←NCREATE schemafiles←InputDir,'schema.ini'
+[11]      (↑OVER/files ⍙DBCreateSchemaINI ¨tables) APPEND ⍙dbini
+[12]      ⎕nuntie ⍙dbini
+[13]  :endif
+    ∇

@@ -1,1 +1,82 @@
-    ∇ res←field PPF_Yields_Edit parm;parent;SSName;z;∆[1]   ⍝ PPFWIN.sf#5[2]   ⍝ Function to allow user control on PPF Yields Edit module[3]   [4]   parent←'fmPPFYEdit.' ⋄ res←0⍴'' ⍝ Default response[5]   SSName←parent,'ssYields'[6]   [7]   :select parm[8]   [9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[10]      :if ~mt EditParm[11]          yielddate   ←YIELDDATE   [EditParm;][12]          yieldkey    ←YIELDKey    [EditParm;][13]          ppf55       ←PPF55       [EditParm;][14]          ppf50       ←PPF50       [EditParm;][15]          ppf5_155    ←PPF5_155    [EditParm;][16]          ppf5_150    ←PPF5_150    [EditParm;][17]          ppf155      ←PPF155      [EditParm;][18]          ppf150      ←PPF150      [EditParm;][19]          ppf10       ←PPF10       [EditParm;][20]          ppf15       ←PPF15       [EditParm;][21]          ppf20       ←PPF20       [EditParm;][22]          adjppfi     ←adjPPFi     [EditParm;][23]          adjppfi20   ←adjPPFi20   [EditParm;][24]          adjppfPENpiI←adjPPFPENpiI[EditParm;][25]          adjppfPENpiF←adjPPFPENpiF[EditParm;][26]          adjppfpiI   ←adjPPFpiI   [EditParm;][27]          adjppfpiF   ←adjPPFpiF   [EditParm;][28]      :endif[29]      FormFields←Win∆GetControlList DTDot parent                                ⍝ Get list of fields[30]      ReviseCacheFor FormFields[31]  [32]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[33]      SSName ⎕wi 'xShowRowHeading' (mt EditParm)[34]      SSName Win∆F1SSSetSelection 1 1 1 17[35]      SSName ⎕wi 'xSetAlignment' 4 0 2 0 ⍝ Align Input Right[36]      SSName Win∆F1SSSetSelection 1 1 1 1[37]  [38]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[39]  [40]      :repeat[41]          :select ↑field[42]          :case ' '[43]          :endselect[44]          (↑field) Win∆FormValidation 'Change'[45]      :until mt field←1↓field[46]  [47]  :case 'Valid' ⍝ Routine specific validation[48]  [49]      res←((Win∆GetControlList parent) at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form[50]  [51]      ⍝ Add with multiple of same date[52]      :if mt EditParm ⋄ :andif ~(⍳↑⍴yielddate)≡(⎕split yielddate,yieldkey)⍳⎕split yielddate,yieldkey[53]          res←'Duplicate Yield Dates without unique Secondary Key specified' ⋄ :return[54]      :endif[55]  [56]  :case 'Run'[57]  [58]      ⍝ Edit and change date to existing[59]      :if ~mt z←((YIELDDATE,YIELDKey) ExactTLU yielddate,yieldkey)~EditParm[60]          :if rtAccess[8]>accesslevel[61]              MDISPLAY 'NoAccess' 'modify' ⋄ res←'' ⋄ :return[62]          :elseif 'N'='YN' ASK 'PPF Yields already exist at the following dates: ',(DLTMB ⊃(⎕split YIELDDATE[z;]),¨∆\(∆←∨/' '≠YIELDKey[z;])/('(',¨m2n YIELDKey[z;]),¨')'),'.  Do you want to replace these?'[63]              res←'' ⋄ :return[64]          :endif[65]      :endif[66]  [67]      (ppf55 ppf50 ppf5_155 ppf5_150 ppf155 ppf150 ppf10 ppf15 ppf20)←(⊂'M<->F6.2') ⎕fmt¨MatrixZWB¨ppf55 ppf50 ppf5_155 ppf5_150 ppf155 ppf150 ppf10 ppf15 ppf20[68]      z←∨/' '≠adjppfi      ⋄ adjppfi     ←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfi[69]      z←∨/' '≠adjppfi20    ⋄ adjppfi20   ←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfi20[70]      z←∨/' '≠adjppfPENpiI ⋄ adjppfPENpiI←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfPENpiI[71]      z←∨/' '≠adjppfPENpiF ⋄ adjppfPENpiF←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfPENpiF[72]      z←∨/' '≠adjppfpiI    ⋄ adjppfpiI   ←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfpiI[73]      z←∨/' '≠adjppfpiF    ⋄ adjppfpiF   ←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfpiF[74]      yields←yielddate yieldkey ppf55 ppf50 ppf5_155 ppf5_150 ppf155 ppf150 ppf10 ppf15 ppf20 adjppfi adjppfi20 adjppfPENpiI adjppfPENpiF adjppfpiI adjppfpiF[75]  [76]      res←'Quit'[77]  [78]  :case 'Quit' ⍝ Deleting "other" variables[79]  [80]  :endselect    ∇
+    ∇ res←field PPF_Yields_Edit parm;parent;SSName;z;∆
+[1]   ⍝ PPFWIN.sf#5
+[2]   ⍝ Function to allow user control on PPF Yields Edit module
+[3]   
+[4]   parent←'fmPPFYEdit.' ⋄ res←0⍴'' ⍝ Default response
+[5]   SSName←parent,'ssYields'
+[6]   
+[7]   :select parm
+[8]   
+[9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[10]      :if ~mt EditParm
+[11]          yielddate   ←YIELDDATE   [EditParm;]
+[12]          yieldkey    ←YIELDKey    [EditParm;]
+[13]          ppf55       ←PPF55       [EditParm;]
+[14]          ppf50       ←PPF50       [EditParm;]
+[15]          ppf5_155    ←PPF5_155    [EditParm;]
+[16]          ppf5_150    ←PPF5_150    [EditParm;]
+[17]          ppf155      ←PPF155      [EditParm;]
+[18]          ppf150      ←PPF150      [EditParm;]
+[19]          ppf10       ←PPF10       [EditParm;]
+[20]          ppf15       ←PPF15       [EditParm;]
+[21]          ppf20       ←PPF20       [EditParm;]
+[22]          adjppfi     ←adjPPFi     [EditParm;]
+[23]          adjppfi20   ←adjPPFi20   [EditParm;]
+[24]          adjppfPENpiI←adjPPFPENpiI[EditParm;]
+[25]          adjppfPENpiF←adjPPFPENpiF[EditParm;]
+[26]          adjppfpiI   ←adjPPFpiI   [EditParm;]
+[27]          adjppfpiF   ←adjPPFpiF   [EditParm;]
+[28]      :endif
+[29]      FormFields←Win∆GetControlList DTDot parent                                ⍝ Get list of fields
+[30]      ReviseCacheFor FormFields
+[31]  
+[32]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[33]      SSName ⎕wi 'xShowRowHeading' (mt EditParm)
+[34]      SSName Win∆F1SSSetSelection 1 1 1 17
+[35]      SSName ⎕wi 'xSetAlignment' 4 0 2 0 ⍝ Align Input Right
+[36]      SSName Win∆F1SSSetSelection 1 1 1 1
+[37]  
+[38]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[39]  
+[40]      :repeat
+[41]          :select ↑field
+[42]          :case ' '
+[43]          :endselect
+[44]          (↑field) Win∆FormValidation 'Change'
+[45]      :until mt field←1↓field
+[46]  
+[47]  :case 'Valid' ⍝ Routine specific validation
+[48]  
+[49]      res←((Win∆GetControlList parent) at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[50]  
+[51]      ⍝ Add with multiple of same date
+[52]      :if mt EditParm ⋄ :andif ~(⍳↑⍴yielddate)≡(⎕split yielddate,yieldkey)⍳⎕split yielddate,yieldkey
+[53]          res←'Duplicate Yield Dates without unique Secondary Key specified' ⋄ :return
+[54]      :endif
+[55]  
+[56]  :case 'Run'
+[57]  
+[58]      ⍝ Edit and change date to existing
+[59]      :if ~mt z←((YIELDDATE,YIELDKey) ExactTLU yielddate,yieldkey)~EditParm
+[60]          :if rtAccess[8]>accesslevel
+[61]              MDISPLAY 'NoAccess' 'modify' ⋄ res←'' ⋄ :return
+[62]          :elseif 'N'='YN' ASK 'PPF Yields already exist at the following dates: ',(DLTMB ⊃(⎕split YIELDDATE[z;]),¨∆\(∆←∨/' '≠YIELDKey[z;])/('(',¨m2n YIELDKey[z;]),¨')'),'.  Do you want to replace these?'
+[63]              res←'' ⋄ :return
+[64]          :endif
+[65]      :endif
+[66]  
+[67]      (ppf55 ppf50 ppf5_155 ppf5_150 ppf155 ppf150 ppf10 ppf15 ppf20)←(⊂'M<->F6.2') ⎕fmt¨MatrixZWB¨ppf55 ppf50 ppf5_155 ppf5_150 ppf155 ppf150 ppf10 ppf15 ppf20
+[68]      z←∨/' '≠adjppfi      ⋄ adjppfi     ←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfi
+[69]      z←∨/' '≠adjppfi20    ⋄ adjppfi20   ←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfi20
+[70]      z←∨/' '≠adjppfPENpiI ⋄ adjppfPENpiI←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfPENpiI
+[71]      z←∨/' '≠adjppfPENpiF ⋄ adjppfPENpiF←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfPENpiF
+[72]      z←∨/' '≠adjppfpiI    ⋄ adjppfpiI   ←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfpiI
+[73]      z←∨/' '≠adjppfpiF    ⋄ adjppfpiF   ←z⍀'M<->F5.2' ⎕fmt z/MatrixZWB adjppfpiF
+[74]      yields←yielddate yieldkey ppf55 ppf50 ppf5_155 ppf5_150 ppf155 ppf150 ppf10 ppf15 ppf20 adjppfi adjppfi20 adjppfPENpiI adjppfPENpiF adjppfpiI adjppfpiF
+[75]  
+[76]      res←'Quit'
+[77]  
+[78]  :case 'Quit' ⍝ Deleting "other" variables
+[79]  
+[80]  :endselect
+    ∇

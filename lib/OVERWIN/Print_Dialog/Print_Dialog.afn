@@ -1,1 +1,78 @@
-    ∇ res←field Print_Dialog parm[1]   ⍝ OVERWIN.sf#17[2]   ⍝ Function to allow user control on Main Menu[3]   [4]   res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]       Printer←INIString uSER 'PrinterName' '' PrefINI[11]       orientation←INIString uSER 'Orientation' 'Landscape' PrefINI[12]       topmargin←INIString uSER 'Top Margin' '1' PrefINI[13]       leftmargin←INIString uSER 'Left Margin' '1' PrefINI[14]       FontStyle←INIString uSER 'Font Style' 'APL' PrefINI[15]       FontSize←INIString uSER 'Font Size' 'Normal' PrefINI[16]       :select CallingModule[17]       :case 'Browse'[18]           StartPage←'fmBrowser.edPageNo' ⎕wi 'text'[19]           EndPage←⍕MaxPage[20]       :case 'Help'[21]           StartPage←EndPage←''[22]       :endselect[23]  [24]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[25]  [26]       :select CallingModule[27]       :case 'Browse'[28]           :if ~0∊⍴TextSelection ⍝ if Text selected[29]               'fmPrint.opPrintOpt_4' ⎕wi 'value' 1[30]           :else[31]               'fmPrint.opPrintOpt_4' ⎕wi 'enabled' 0 ⍝ else Multiple Pages[32]               'fmPrint.opPrintOpt_3' ⎕wi 'value' 1[33]           :endif[34]       :case 'Help'[35]           'fmPrint.opPrintOpt_4' ⎕wi 'value' 1 ⍝ Force Selected Text[36]           ((⊂'fmPrint.opPrintOpt_'),¨'1' '2' '3' '4') MultiWI 'enabled' 0[37]       :endselect[38]  [39]       ((⊂'fmPrint.'),¨'cbPrinter' 'forientation') MultiWI 'enabled' (~INIString uSER 'PrinterSetup%' 0 PrefINI)[40]  [41]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[42]  [43]      :repeat[44]          :select ↑field[45]          :case 'cbPrinter'[46]              :if bbar_ok[47]                  'fmBrowser.barBrowser.cbPrinter' ⎕wi 'value' ('fmPrint.cbPrinter' ⎕wi 'value')[48]              :endif[49]          :caselist 'opPrintOpt_1' 'opPrintOpt_2' 'opPrintOpt_3' 'opPrintOpt_4'[50]              'fmPrint.fPages' ⎕wi 'enabled' ('fmPrint.opPrintOpt_3' ⎕wi 'value')[51]          :endselect[52]      :until mt field←1↓field[53]  [54]  :case 'Valid' ⍝ Routine specific validation[55]  [56]     :if 'fmPrint.fPages' ⎕wi 'enabled'[57]     :andif 0>(zwb EndPage)-zwb StartPage ⍝ Check start and end Pages are in order[58]         Win∆SetFocus 'fmPrint.fPages.edStartPage'[59]         res←'1st>2nd' ⋄ :return[60]     :endif[61]  [62]  :case 'Run'[63]      ⍝ Store User printing preferences[64]      Printer INIString uSER 'PrinterName' PrefINI[65]      orientation INIString uSER 'Orientation' PrefINI[66]      topmargin INIString uSER 'Top Margin' PrefINI[67]      leftmargin INIString uSER 'Left Margin' PrefINI[68]      FontStyle INIString uSER 'Font Style' PrefINI[69]      FontSize INIString uSER 'Font Size' PrefINI[70]  [71]      PrintSelection[72]      res←'Quit'[73]  [74]  :case 'Quit'[75]  [76]  :endselect    ∇
+    ∇ res←field Print_Dialog parm
+[1]   ⍝ OVERWIN.sf#17
+[2]   ⍝ Function to allow user control on Main Menu
+[3]   
+[4]   res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]       Printer←INIString uSER 'PrinterName' '' PrefINI
+[11]       orientation←INIString uSER 'Orientation' 'Landscape' PrefINI
+[12]       topmargin←INIString uSER 'Top Margin' '1' PrefINI
+[13]       leftmargin←INIString uSER 'Left Margin' '1' PrefINI
+[14]       FontStyle←INIString uSER 'Font Style' 'APL' PrefINI
+[15]       FontSize←INIString uSER 'Font Size' 'Normal' PrefINI
+[16]       :select CallingModule
+[17]       :case 'Browse'
+[18]           StartPage←'fmBrowser.edPageNo' ⎕wi 'text'
+[19]           EndPage←⍕MaxPage
+[20]       :case 'Help'
+[21]           StartPage←EndPage←''
+[22]       :endselect
+[23]  
+[24]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[25]  
+[26]       :select CallingModule
+[27]       :case 'Browse'
+[28]           :if ~0∊⍴TextSelection ⍝ if Text selected
+[29]               'fmPrint.opPrintOpt_4' ⎕wi 'value' 1
+[30]           :else
+[31]               'fmPrint.opPrintOpt_4' ⎕wi 'enabled' 0 ⍝ else Multiple Pages
+[32]               'fmPrint.opPrintOpt_3' ⎕wi 'value' 1
+[33]           :endif
+[34]       :case 'Help'
+[35]           'fmPrint.opPrintOpt_4' ⎕wi 'value' 1 ⍝ Force Selected Text
+[36]           ((⊂'fmPrint.opPrintOpt_'),¨'1' '2' '3' '4') MultiWI 'enabled' 0
+[37]       :endselect
+[38]  
+[39]       ((⊂'fmPrint.'),¨'cbPrinter' 'forientation') MultiWI 'enabled' (~INIString uSER 'PrinterSetup%' 0 PrefINI)
+[40]  
+[41]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[42]  
+[43]      :repeat
+[44]          :select ↑field
+[45]          :case 'cbPrinter'
+[46]              :if bbar_ok
+[47]                  'fmBrowser.barBrowser.cbPrinter' ⎕wi 'value' ('fmPrint.cbPrinter' ⎕wi 'value')
+[48]              :endif
+[49]          :caselist 'opPrintOpt_1' 'opPrintOpt_2' 'opPrintOpt_3' 'opPrintOpt_4'
+[50]              'fmPrint.fPages' ⎕wi 'enabled' ('fmPrint.opPrintOpt_3' ⎕wi 'value')
+[51]          :endselect
+[52]      :until mt field←1↓field
+[53]  
+[54]  :case 'Valid' ⍝ Routine specific validation
+[55]  
+[56]     :if 'fmPrint.fPages' ⎕wi 'enabled'
+[57]     :andif 0>(zwb EndPage)-zwb StartPage ⍝ Check start and end Pages are in order
+[58]         Win∆SetFocus 'fmPrint.fPages.edStartPage'
+[59]         res←'1st>2nd' ⋄ :return
+[60]     :endif
+[61]  
+[62]  :case 'Run'
+[63]      ⍝ Store User printing preferences
+[64]      Printer INIString uSER 'PrinterName' PrefINI
+[65]      orientation INIString uSER 'Orientation' PrefINI
+[66]      topmargin INIString uSER 'Top Margin' PrefINI
+[67]      leftmargin INIString uSER 'Left Margin' PrefINI
+[68]      FontStyle INIString uSER 'Font Style' PrefINI
+[69]      FontSize INIString uSER 'Font Size' PrefINI
+[70]  
+[71]      PrintSelection
+[72]      res←'Quit'
+[73]  
+[74]  :case 'Quit'
+[75]  
+[76]  :endselect
+    ∇

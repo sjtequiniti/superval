@@ -1,0 +1,16 @@
+    ∇ res←params ⍙DBSQLRead sql;values;n
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Run a SQL Database request on current connection
+[3]   
+[4]   :if '%'∊sql ⍝ Replace %1, %2, etc with parameters (irrespective of ⎕io)
+[5]       :for n :in ((~⎕io)+⍳⍴params←,params)
+[6]           sql←('⊂%',(⍕n),'⊂',0 ⍙DBNumList ⊃params[n-~⎕io]) TEXTREPL sql
+[7]       :endfor
+[8]   :endif
+[9]   
+[10]  ⍝ Expect a two column response - either age or year (minimum value of 1) and then values
+[11]  values←1 ⍙DBadoCONCommand sql
+[12]  res←(⌈/120,1+values[;⎕io])/0
+[13]  res[⎕io+values[;⎕io]]←values[;⎕io+1]
+[14]  res←1↓res ⍝ Results will be ⎕io dependent starting at year/age 1 (results at year/age 0 discarded)
+    ∇

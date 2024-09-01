@@ -1,1 +1,96 @@
-    ∇ N AOS∆TOTS res;Reserve;A;X;I;Mult;Z;QX;QY;last;disc;z;LXY;LX;LY;cf[1]   ⍝ PENWIN.sf#3[2]   ⍝ Calculate AOS Figures at Previous and Current Valuation Dates[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   (Reserve cf)←res[8]   →(~prevind)/LAB ⍝ Skip to Current Valn Date Figures[9]   ⍝⍝⍝ →(0=(ANP,GMP0,GMPE0)[N])/0 ⍝ Exit if no Pension Payable[10]  ⍝ Figures at Previous Valuation Date[11]  [12]  QX←-(DIFF lx,0)CDIV lx ⋄ QY←-(DIFF ly,0)CDIV ly ⋄ LXY←(LX←MID lx,0)×(LY←MID ly,0)[13]  A←PerToEnt/0[14]  [15]  ⍝ Adjust Reserve for New Entrants during the Period[16]  Reserve[;0]←(Reserve,Reserve)[;⍳2]+.× 0 1 + 1 ¯1 ×1↑ResMult~0[17]  [18]  ⍝ Reserve assuming Immortal[19]  ⍝⍝⍝ Reserve[0 1 3 5;]←Reserve[0 1 3 5 ;]CDIV 4⌿MATRIX lx[20]  :if SPMethod=1[21]      z←Reserve[2;][22]      ⍝ Adjust Reserve for Spouse's Reversion that have started previously[23]      ⍝⍝⍝ What about Reserve[3 4 5;] ???[24]      Reserve[2;]←(Reserve[2;]-ResSize↑rev×(0,+\QX[⍳ResSize-1]×PMS[⍳ResSize-1])×(⌽+\⌽vMP×PEN×MID ly,0)[⍳ResSize]÷v[⍳ResSize]×ly[⍳ResSize]) CDIV lx[25]      ⍝ Relaese the reserve for the new Spouse's Reversions[26]      Ind∆AOS[N;2;]←(ResMult-ExitMult)×ResSize↑A,(1↓ResSize↑Reserve[2;]-z)×QX[⍳ResSize-1] CDIV +\QX[⍳ResSize-1][27]  :else[28]  ⍝⍝⍝     Reserve[2 3 4 5;]←Reserve[2 3 4 5 ;]CDIV 4⌿MATRIX ly[29]  :endif[30]  [31]  :if N≠0 ⍝ Not DiD LS[32]      :if GPOverlap ⍝ Expected Pension Payments[33]          Ind∆AOS[N;5;]←(ResMult-ExitMult)×ResSize↑A,cf[0;]CDIV 20↑(RGP↑lx×(1-QX)+QX×LE↑⌽1+⍳RGP),RGP↓LX ⍝ GP as lump sum[34]      :else[35]          Ind∆AOS[N;5;]←(ResMult-ExitMult)×ResSize↑A,cf[0;]CDIV 20↑(RGP/1),RGP↓LX ⍝ If GP not paid as a lump sum[36]  [37]          :if ∨/0≠Reserve[0;] ⋄ :andif 0≠RGP ⍝ Adjustment for Remaining Guarantee Period (if not paid as lump sum)[38]      ⍝⍝⍝        z←1>disc←⍉disc[⍳RGP]∘.÷v[⍳RGP] ⋄ z←z×disc×[1]cf[0;⍳RGP] ⋄ Reserve[0;]←Reserve[0;]-LE↑⎕←+/z×[0]¯1+1 CDIV lx[⍳RGP][39]              Reserve[0;]←Reserve[0;]-ResSize↑+/(0,-RGP)↓(⍳RGP)⌽(⍉(cf[0;⍳RGP]×vMP[⍳RGP])∘.×(¯1+1 CDIV lx[⍳RGP])CDIV v[⍳RGP]),(RGP,RGP)⍴0[40]          :endif[41]      :endif[42]  :endif[43]  [44]  X←ResSize↑A,+⌿Reserve ⋄ Z←(⍳ResSize)⌊(×ExitMult)⍳1[45]  ⍝⍝ This doesn't work for New Ent and Exit in same year[46]  Mult←ResMult-0,¯1↓1∣-ExitMult[47]  [48]  Ind∆AOS[N;0;]←ResSize OVERTAKE(1++/Z=⍳ResSize)↑(Mult×X[Z])+(1↓X,0)[Z]×1-Mult[49]  [50]  Reserve←(0 1 ↓Reserve,0)×4⌿MATRIX ResSize↑vMP CDIV v[51]  [52]  :if N≠0 ⍝ Limited Calcs required for Lump Sum on Death on Deferment[53]      ⍝ Release of Foregone Pension Payments[54]      Ind∆AOS[N;2;]←Ind∆AOS[N;2;]+0.5×Ind∆AOS[N;5;]×ResSize↑A,QX⌊LE OVERTAKE(RGP/0),1[55]  [56]      :if GPOverlap[57]          Ind∆AOS[N;2;]←Ind∆AOS[N;2;]-Ind∆AOS[N;5;]×ResSize↑A,QX×LE↑⌽⍳RGP[58]      :else[59]          Ind∆AOS[N;2;]←Ind∆AOS[N;2;]-(ResSize↑A,RGP>1+⍳⌈ValPer)×(ResMult-ExitMult)×ResSize↑A,QX[⍳0⌈RGP-1]×(⌽+\⌽1↓RGP↑cf[0;]×20↑vMP)CDIV vMP[⍳0⌈RGP-1] ⍝ (if GP not paid as a lump sum)[60]      :endif[61]  [62]      ⍝ Reserve Release for Death - Single Life[63]      Ind∆AOS[N;2;]←Ind∆AOS[N;2;]+(ResMult-ExitMult)×ResSize↑A,Reserve[0;]×ResSize↑QX[64]  [65]      :if SPMethod≠1 ⍝ Reserve Release for Death - Reversion[66]          X←(Reserve[2;]×ResSize↑QY)-Reserve[3;]×ResSize↑(QX×QY)-QX+QY[67]          Ind∆AOS[N;3;]←(ResMult-ExitMult)×ResSize↑A,X[68]          Ind∆AOS[N;3;]←Ind∆AOS[N;3;]+(ResMult-ExitMult)×ResSize↑A,0.5×(cf[3;] CDIV 20↑LXY)×20↑QX×1-0.5×QY[69]      :endif[70]  :endif[71]  [72]  ⍝ Reserve Release for Death Lump Sum - Subtract Expected Payment on Death[73]  ⍝  Including Death In Deferment Lump Sum[74]  Ind∆AOS[N;4;]←(ResMult-ExitMult)×ResSize↑A,(Reserve[1;]×ResSize↑QX)-ResSize↑(N=0)×cf[1;]CDIV 20↑lx[75]  [76]  Ind∆AOS[N;0;0]←Ind∆AOS[N;0;PerToEnt] ⍝ Starting Reserve[77]  [78]  ⍝ Now go onto Calculation of Expected Interest[79]  I←ResSize↑(PerToEnt/1),v CDIV 1↓v,0[80]  Ind∆AOS[N;6;]←Ind∆AOS[N;6;]-0,¯1↓Ind∆AOS[N;6;]←(1↓(I*ResMult) ROLLUP Ind∆AOS[N;0;0],0×ResMult)-Ind∆AOS[N;0;0] ⍝ Interest to VDate[81]  Ind∆AOS[N;7;]←Ind∆AOS[N;7;]-0,¯1↓Ind∆AOS[N;7;]←(1↓(I*ExitMult) ROLLUP Ind∆AOS[N;0;ResSize-1],0×ResMult)-Ind∆AOS[N;0;ResSize-1] ⍝ Interest from Exit to VDate[82]  [83]  ⍝⍝⍝⍝ Ind∆AOS[N;8;]←Ind∆AOS[N;8;]-¯1↓0,Ind∆AOS[N;8;]←(1↓(I*ResMult) ROLLUP 0,Ind∆AOS[N;1;]×I*0.5×ResMult)-+\Ind∆AOS[N;1;] ⍝ Start Year NR Releases[84]  Ind∆AOS[N;9+⍳4;]←Ind∆AOS[N;9+⍳4;]-0 ¯1↓0,Ind∆AOS[N;9+⍳4;]←(⊃1↓¨(⊂I*ResMult) ROLLUP ¨⎕split 0,(I*0.5×ExitMult)×[1]Ind∆AOS[N;2+⍳4;])-+\Ind∆AOS[N;2+⍳4;][85]  [86]  →0[87]  ⍝ AOS Actual Reserve at Current Valuation Date[88]  LAB:Ind∆AOS[N;13;last]←Reserve+Ind∆AOS[N;0;last←ResSize-1]×0=Reserve←+/Reserve[;0][89]  [90]  :if ^/0=Ind∆AOS[N;5;][91]      Ind∆AOS[N;5;]←ResSize↑((PerToEnt+def)/0),(PerToEnt+def)↓(ResMult-ExitMult)×ResSize⍴(0,(+/GMP0 GMPE0×preADJ postADJ),ANP×ADJ)[N][92]      I←ResSize↑(PerToEnt/1),v CDIV 1↓v,0[93]      Ind∆AOS[N;12;]←Ind∆AOS[N;12;]-0,¯1↓Ind∆AOS[N;12;]←(1↓(I*ResMult) ROLLUP 0,Ind∆AOS[N;5;]×I*0.5×ExitMult)-+\Ind∆AOS[N;5;][94]  :endif    ∇
+    ∇ N AOS∆TOTS res;Reserve;A;X;I;Mult;Z;QX;QY;last;disc;z;LXY;LX;LY;cf
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ Calculate AOS Figures at Previous and Current Valuation Dates
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   (Reserve cf)←res
+[8]   →(~prevind)/LAB ⍝ Skip to Current Valn Date Figures
+[9]   ⍝⍝⍝ →(0=(ANP,GMP0,GMPE0)[N])/0 ⍝ Exit if no Pension Payable
+[10]  ⍝ Figures at Previous Valuation Date
+[11]  
+[12]  QX←-(DIFF lx,0)CDIV lx ⋄ QY←-(DIFF ly,0)CDIV ly ⋄ LXY←(LX←MID lx,0)×(LY←MID ly,0)
+[13]  A←PerToEnt/0
+[14]  
+[15]  ⍝ Adjust Reserve for New Entrants during the Period
+[16]  Reserve[;0]←(Reserve,Reserve)[;⍳2]+.× 0 1 + 1 ¯1 ×1↑ResMult~0
+[17]  
+[18]  ⍝ Reserve assuming Immortal
+[19]  ⍝⍝⍝ Reserve[0 1 3 5;]←Reserve[0 1 3 5 ;]CDIV 4⌿MATRIX lx
+[20]  :if SPMethod=1
+[21]      z←Reserve[2;]
+[22]      ⍝ Adjust Reserve for Spouse's Reversion that have started previously
+[23]      ⍝⍝⍝ What about Reserve[3 4 5;] ???
+[24]      Reserve[2;]←(Reserve[2;]-ResSize↑rev×(0,+\QX[⍳ResSize-1]×PMS[⍳ResSize-1])×(⌽+\⌽vMP×PEN×MID ly,0)[⍳ResSize]÷v[⍳ResSize]×ly[⍳ResSize]) CDIV lx
+[25]      ⍝ Relaese the reserve for the new Spouse's Reversions
+[26]      Ind∆AOS[N;2;]←(ResMult-ExitMult)×ResSize↑A,(1↓ResSize↑Reserve[2;]-z)×QX[⍳ResSize-1] CDIV +\QX[⍳ResSize-1]
+[27]  :else
+[28]  ⍝⍝⍝     Reserve[2 3 4 5;]←Reserve[2 3 4 5 ;]CDIV 4⌿MATRIX ly
+[29]  :endif
+[30]  
+[31]  :if N≠0 ⍝ Not DiD LS
+[32]      :if GPOverlap ⍝ Expected Pension Payments
+[33]          Ind∆AOS[N;5;]←(ResMult-ExitMult)×ResSize↑A,cf[0;]CDIV 20↑(RGP↑lx×(1-QX)+QX×LE↑⌽1+⍳RGP),RGP↓LX ⍝ GP as lump sum
+[34]      :else
+[35]          Ind∆AOS[N;5;]←(ResMult-ExitMult)×ResSize↑A,cf[0;]CDIV 20↑(RGP/1),RGP↓LX ⍝ If GP not paid as a lump sum
+[36]  
+[37]          :if ∨/0≠Reserve[0;] ⋄ :andif 0≠RGP ⍝ Adjustment for Remaining Guarantee Period (if not paid as lump sum)
+[38]      ⍝⍝⍝        z←1>disc←⍉disc[⍳RGP]∘.÷v[⍳RGP] ⋄ z←z×disc×[1]cf[0;⍳RGP] ⋄ Reserve[0;]←Reserve[0;]-LE↑⎕←+/z×[0]¯1+1 CDIV lx[⍳RGP]
+[39]              Reserve[0;]←Reserve[0;]-ResSize↑+/(0,-RGP)↓(⍳RGP)⌽(⍉(cf[0;⍳RGP]×vMP[⍳RGP])∘.×(¯1+1 CDIV lx[⍳RGP])CDIV v[⍳RGP]),(RGP,RGP)⍴0
+[40]          :endif
+[41]      :endif
+[42]  :endif
+[43]  
+[44]  X←ResSize↑A,+⌿Reserve ⋄ Z←(⍳ResSize)⌊(×ExitMult)⍳1
+[45]  ⍝⍝ This doesn't work for New Ent and Exit in same year
+[46]  Mult←ResMult-0,¯1↓1∣-ExitMult
+[47]  
+[48]  Ind∆AOS[N;0;]←ResSize OVERTAKE(1++/Z=⍳ResSize)↑(Mult×X[Z])+(1↓X,0)[Z]×1-Mult
+[49]  
+[50]  Reserve←(0 1 ↓Reserve,0)×4⌿MATRIX ResSize↑vMP CDIV v
+[51]  
+[52]  :if N≠0 ⍝ Limited Calcs required for Lump Sum on Death on Deferment
+[53]      ⍝ Release of Foregone Pension Payments
+[54]      Ind∆AOS[N;2;]←Ind∆AOS[N;2;]+0.5×Ind∆AOS[N;5;]×ResSize↑A,QX⌊LE OVERTAKE(RGP/0),1
+[55]  
+[56]      :if GPOverlap
+[57]          Ind∆AOS[N;2;]←Ind∆AOS[N;2;]-Ind∆AOS[N;5;]×ResSize↑A,QX×LE↑⌽⍳RGP
+[58]      :else
+[59]          Ind∆AOS[N;2;]←Ind∆AOS[N;2;]-(ResSize↑A,RGP>1+⍳⌈ValPer)×(ResMult-ExitMult)×ResSize↑A,QX[⍳0⌈RGP-1]×(⌽+\⌽1↓RGP↑cf[0;]×20↑vMP)CDIV vMP[⍳0⌈RGP-1] ⍝ (if GP not paid as a lump sum)
+[60]      :endif
+[61]  
+[62]      ⍝ Reserve Release for Death - Single Life
+[63]      Ind∆AOS[N;2;]←Ind∆AOS[N;2;]+(ResMult-ExitMult)×ResSize↑A,Reserve[0;]×ResSize↑QX
+[64]  
+[65]      :if SPMethod≠1 ⍝ Reserve Release for Death - Reversion
+[66]          X←(Reserve[2;]×ResSize↑QY)-Reserve[3;]×ResSize↑(QX×QY)-QX+QY
+[67]          Ind∆AOS[N;3;]←(ResMult-ExitMult)×ResSize↑A,X
+[68]          Ind∆AOS[N;3;]←Ind∆AOS[N;3;]+(ResMult-ExitMult)×ResSize↑A,0.5×(cf[3;] CDIV 20↑LXY)×20↑QX×1-0.5×QY
+[69]      :endif
+[70]  :endif
+[71]  
+[72]  ⍝ Reserve Release for Death Lump Sum - Subtract Expected Payment on Death
+[73]  ⍝  Including Death In Deferment Lump Sum
+[74]  Ind∆AOS[N;4;]←(ResMult-ExitMult)×ResSize↑A,(Reserve[1;]×ResSize↑QX)-ResSize↑(N=0)×cf[1;]CDIV 20↑lx
+[75]  
+[76]  Ind∆AOS[N;0;0]←Ind∆AOS[N;0;PerToEnt] ⍝ Starting Reserve
+[77]  
+[78]  ⍝ Now go onto Calculation of Expected Interest
+[79]  I←ResSize↑(PerToEnt/1),v CDIV 1↓v,0
+[80]  Ind∆AOS[N;6;]←Ind∆AOS[N;6;]-0,¯1↓Ind∆AOS[N;6;]←(1↓(I*ResMult) ROLLUP Ind∆AOS[N;0;0],0×ResMult)-Ind∆AOS[N;0;0] ⍝ Interest to VDate
+[81]  Ind∆AOS[N;7;]←Ind∆AOS[N;7;]-0,¯1↓Ind∆AOS[N;7;]←(1↓(I*ExitMult) ROLLUP Ind∆AOS[N;0;ResSize-1],0×ResMult)-Ind∆AOS[N;0;ResSize-1] ⍝ Interest from Exit to VDate
+[82]  
+[83]  ⍝⍝⍝⍝ Ind∆AOS[N;8;]←Ind∆AOS[N;8;]-¯1↓0,Ind∆AOS[N;8;]←(1↓(I*ResMult) ROLLUP 0,Ind∆AOS[N;1;]×I*0.5×ResMult)-+\Ind∆AOS[N;1;] ⍝ Start Year NR Releases
+[84]  Ind∆AOS[N;9+⍳4;]←Ind∆AOS[N;9+⍳4;]-0 ¯1↓0,Ind∆AOS[N;9+⍳4;]←(⊃1↓¨(⊂I*ResMult) ROLLUP ¨⎕split 0,(I*0.5×ExitMult)×[1]Ind∆AOS[N;2+⍳4;])-+\Ind∆AOS[N;2+⍳4;]
+[85]  
+[86]  →0
+[87]  ⍝ AOS Actual Reserve at Current Valuation Date
+[88]  LAB:Ind∆AOS[N;13;last]←Reserve+Ind∆AOS[N;0;last←ResSize-1]×0=Reserve←+/Reserve[;0]
+[89]  
+[90]  :if ^/0=Ind∆AOS[N;5;]
+[91]      Ind∆AOS[N;5;]←ResSize↑((PerToEnt+def)/0),(PerToEnt+def)↓(ResMult-ExitMult)×ResSize⍴(0,(+/GMP0 GMPE0×preADJ postADJ),ANP×ADJ)[N]
+[92]      I←ResSize↑(PerToEnt/1),v CDIV 1↓v,0
+[93]      Ind∆AOS[N;12;]←Ind∆AOS[N;12;]-0,¯1↓Ind∆AOS[N;12;]←(1↓(I*ResMult) ROLLUP 0,Ind∆AOS[N;5;]×I*0.5×ExitMult)-+\Ind∆AOS[N;5;]
+[94]  :endif
+    ∇

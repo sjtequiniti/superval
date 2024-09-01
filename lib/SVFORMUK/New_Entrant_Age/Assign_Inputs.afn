@@ -1,1 +1,83 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "New_Entrant_Age" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "New_Entrant_Age" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "FileSelections" Win∆Inherits "fILESelections"[10]  "fmSV.fNew_Entrant_Age.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)[11]  "FILES" Win∆Inherits "Actsfile"[12]  "fmSV.fNew_Entrant_Age.fData.edFILES" ⎕wi "text" (DLTB FILES)[13]  "fILENAME" Win∆Inherits "Actsfile"[14]  GetAbsFileList "Fund"[15]  warnings←warnings OVER "Investigation Data File" Win∆FileRelative "fILENAME" "lrfILENAME"[16]  "fmSV.fNew_Entrant_Age.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)[17]  "Format" Win∆Inherits "FormatA"[18]  PickList←"fmSV.fNew_Entrant_Age.fData.cbFormat" ⎕wi "list"[19]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"[20]  selection←(StripText PickList) ExactTLU DLTB StripText Format[21]  :if mt selection[22]      modified←⌈/modified,1[23]  :endif[24]  "fmSV.fNew_Entrant_Age.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)[25]  "fmSV.fNew_Entrant_Age.fData.ckUseSex" ⎕wi "value" (zwb UseSex)[26]  "fmSV.fNew_Entrant_Age.fData.ckUseCat" ⎕wi "value" (zwb UseCat)[27]  PickList←"fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "list"[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels[29]      "fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)[30]      modified←⌈/modified,"fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "value"[31]  :else[32]      "fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "visible" ¯1[33]      "fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "value" selection[34]      "fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "visible" 1[35]  :endif[36]  "fmSV.fNew_Entrant_Age.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)[37]  "fmSV.fNew_Entrant_Age.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)[38]  PickList←"fmSV.fNew_Entrant_Age.fParms.cbBDATE" ⎕wi "list"[39]  warnings←warnings OVER "Start Date" Win∆DateRelative "BDATE" "lrBDATE"[40]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE[41]  :if mt selection[42]          "fmSV.fNew_Entrant_Age.fParms.cbBDATE" ⎕wi "text" (DLTB BDATE)[43]  :else[44]      "fmSV.fNew_Entrant_Age.fParms.cbBDATE" ⎕wi "value" selection[45]  :endif[46]  PickList←"fmSV.fNew_Entrant_Age.fParms.cbEDATE" ⎕wi "list"[47]  warnings←warnings OVER "End Date" Win∆DateRelative "EDATE" "lrEDATE"[48]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE[49]  :if mt selection[50]          "fmSV.fNew_Entrant_Age.fParms.cbEDATE" ⎕wi "text" (DLTB EDATE)[51]  :else[52]      "fmSV.fNew_Entrant_Age.fParms.cbEDATE" ⎕wi "value" selection[53]  :endif[54]  "fmSV.fNew_Entrant_Age.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)[55]  "fmSV.fNew_Entrant_Age.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)[56]  "fmSV.fNew_Entrant_Age.fParms.edGROUP" ⎕wi "text" (DLTB GROUP)[57]  no←1↑⍴PickList←SStoMAT ("fmSV.fNew_Entrant_Age.fParms.fservind.opservind_1" ⎕wi "∆lastoption") ⎕wi "∆options"[58]  value←¯1↑1,selection←PickList ExactTLU servind[59]  :if 0∊⍴selection[60]      modified←⌈/modified,×value[61]  :endif[62]  :for nn :in ⍳no[63]      ("fmSV.fNew_Entrant_Age.fParms.fservind.opservind_",⍕nn) ⎕wi "value" (value=nn)[64]  :endfor[65]  "fmSV.fNew_Entrant_Age.fParms.cksave" ⎕wi "value" (zwb save)[66]  0 0⍴GetDecrList "List"[67]  warnings←warnings OVER "Expected Table" Win∆CheckDecr (TABXX[1;]) (lrTABXX1)[68]  "fmSV.fNew_Entrant_Age.fTable.edTABXX1" ⎕wi "text" (DLTB TABXX[1;])[69]  "fmSV.fNew_Entrant_Age.fTable.edTABXX2" ⎕wi "text" (DLTB TABXX[2;])[70]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_New_Entrant_Age[71]      :for var :in spin Comment_New_Entrant_Age at "variable" "row" ⋄ (var row)←var[72]          "New_Entrant_Age" ParmColor ((FormFields for "variable" var) at "control"),var row 1[73]      :endfor[74]  :endif[75]  :if ~0∊⍴,warnings[76]      MDISPLAY DLTMB warnings,⎕tcnl[77]      Win∆AssignVars "fmSV.fNew_Entrant_Age"[78]  :endif[79]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "New_Entrant_Age" "" "Names"[80]      "fmSV.fNew_Entrant_Age" ⎕wi "modified" 0[81]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "New_Entrant_Age" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "New_Entrant_Age" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "FileSelections" Win∆Inherits "fILESelections"
+[10]  "fmSV.fNew_Entrant_Age.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)
+[11]  "FILES" Win∆Inherits "Actsfile"
+[12]  "fmSV.fNew_Entrant_Age.fData.edFILES" ⎕wi "text" (DLTB FILES)
+[13]  "fILENAME" Win∆Inherits "Actsfile"
+[14]  GetAbsFileList "Fund"
+[15]  warnings←warnings OVER "Investigation Data File" Win∆FileRelative "fILENAME" "lrfILENAME"
+[16]  "fmSV.fNew_Entrant_Age.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[17]  "Format" Win∆Inherits "FormatA"
+[18]  PickList←"fmSV.fNew_Entrant_Age.fData.cbFormat" ⎕wi "list"
+[19]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"
+[20]  selection←(StripText PickList) ExactTLU DLTB StripText Format
+[21]  :if mt selection
+[22]      modified←⌈/modified,1
+[23]  :endif
+[24]  "fmSV.fNew_Entrant_Age.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)
+[25]  "fmSV.fNew_Entrant_Age.fData.ckUseSex" ⎕wi "value" (zwb UseSex)
+[26]  "fmSV.fNew_Entrant_Age.fData.ckUseCat" ⎕wi "value" (zwb UseCat)
+[27]  PickList←"fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "list"
+[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels
+[29]      "fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)
+[30]      modified←⌈/modified,"fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "value"
+[31]  :else
+[32]      "fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "visible" ¯1
+[33]      "fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "value" selection
+[34]      "fmSV.fNew_Entrant_Age.fData.lsCatSels" ⎕wi "visible" 1
+[35]  :endif
+[36]  "fmSV.fNew_Entrant_Age.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)
+[37]  "fmSV.fNew_Entrant_Age.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)
+[38]  PickList←"fmSV.fNew_Entrant_Age.fParms.cbBDATE" ⎕wi "list"
+[39]  warnings←warnings OVER "Start Date" Win∆DateRelative "BDATE" "lrBDATE"
+[40]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE
+[41]  :if mt selection
+[42]          "fmSV.fNew_Entrant_Age.fParms.cbBDATE" ⎕wi "text" (DLTB BDATE)
+[43]  :else
+[44]      "fmSV.fNew_Entrant_Age.fParms.cbBDATE" ⎕wi "value" selection
+[45]  :endif
+[46]  PickList←"fmSV.fNew_Entrant_Age.fParms.cbEDATE" ⎕wi "list"
+[47]  warnings←warnings OVER "End Date" Win∆DateRelative "EDATE" "lrEDATE"
+[48]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE
+[49]  :if mt selection
+[50]          "fmSV.fNew_Entrant_Age.fParms.cbEDATE" ⎕wi "text" (DLTB EDATE)
+[51]  :else
+[52]      "fmSV.fNew_Entrant_Age.fParms.cbEDATE" ⎕wi "value" selection
+[53]  :endif
+[54]  "fmSV.fNew_Entrant_Age.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)
+[55]  "fmSV.fNew_Entrant_Age.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)
+[56]  "fmSV.fNew_Entrant_Age.fParms.edGROUP" ⎕wi "text" (DLTB GROUP)
+[57]  no←1↑⍴PickList←SStoMAT ("fmSV.fNew_Entrant_Age.fParms.fservind.opservind_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[58]  value←¯1↑1,selection←PickList ExactTLU servind
+[59]  :if 0∊⍴selection
+[60]      modified←⌈/modified,×value
+[61]  :endif
+[62]  :for nn :in ⍳no
+[63]      ("fmSV.fNew_Entrant_Age.fParms.fservind.opservind_",⍕nn) ⎕wi "value" (value=nn)
+[64]  :endfor
+[65]  "fmSV.fNew_Entrant_Age.fParms.cksave" ⎕wi "value" (zwb save)
+[66]  0 0⍴GetDecrList "List"
+[67]  warnings←warnings OVER "Expected Table" Win∆CheckDecr (TABXX[1;]) (lrTABXX1)
+[68]  "fmSV.fNew_Entrant_Age.fTable.edTABXX1" ⎕wi "text" (DLTB TABXX[1;])
+[69]  "fmSV.fNew_Entrant_Age.fTable.edTABXX2" ⎕wi "text" (DLTB TABXX[2;])
+[70]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_New_Entrant_Age
+[71]      :for var :in spin Comment_New_Entrant_Age at "variable" "row" ⋄ (var row)←var
+[72]          "New_Entrant_Age" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[73]      :endfor
+[74]  :endif
+[75]  :if ~0∊⍴,warnings
+[76]      MDISPLAY DLTMB warnings,⎕tcnl
+[77]      Win∆AssignVars "fmSV.fNew_Entrant_Age"
+[78]  :endif
+[79]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "New_Entrant_Age" "" "Names"
+[80]      "fmSV.fNew_Entrant_Age" ⎕wi "modified" 0
+[81]  :endif
+    ∇

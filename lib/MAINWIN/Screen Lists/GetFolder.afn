@@ -1,0 +1,21 @@
+    ∇ Folder←Title GetFolder Folder;z
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a Folder - return current Folder if cancelled
+[3]   
+[4]   :if 4096=⎕wi 'style' ⋄ :return ⋄ :endif
+[5]   
+[6]   :if mt DLTB Folder
+[7]       z←InputDir
+[8]   :else
+[9]   ⍝⍝⍝    elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ z←InputDir ⋄ →invalid'
+[10]  ⍝⍝⍝    0 0⍴⎕xlib z←FullFolder Folder ⋄ ⎕elx←elx ⍝⍝⍝ Could use FileExist?
+[11]      :if ~FolderExist z←FullFolder Folder ⍝ Check Existence of Folder
+[12]          z←InputDir
+[13]      :endif
+[14]  :endif
+[15]  
+[16]  ⍝⍝⍝ invalid:
+[17]  :if ~mt ,z←UPPERCASE Title GetDir95 z
+[18]      Folder←FullFolder z
+[19]  :endif
+    ∇

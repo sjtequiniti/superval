@@ -1,1 +1,21 @@
-    ∇ UKClientMigration;SelectedDir[1]   ⍝ OVERWIN.sf#10[2]   ⍝ Get Details of the S21 Migration Folder[3]   [4]   S21Migrate←⍕'Y'='YN' ASK 'Do you want to migrate Basis Parameters from S21 files?'[5]   migrated←'1' ⍝ Have been here[6]   [7]   :if zwb S21Migrate[8]   Top:[9]       :if ''≡SelectedDir←UPPERCASE 'Select Migration Folder' GetDir95 InputDir[10]          :return[11]      :endif[12]      :if InputDir≡SelectedDir←FullFolder SelectedDir[13]          MDISPLAY 'NotInputDir' 'Migration' ⋄ →Top[14]      :endif[15]      :if mt ⎕xlib SelectedDir,'*.?pf'[16]          MDISPLAY 'No S21 Basis Files in ',¯1↓SelectedDir ⋄ →Top[17]      :endif[18]      MigFolder←SelectedDir[19]  :endif    ∇
+    ∇ UKClientMigration;SelectedDir
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ Get Details of the S21 Migration Folder
+[3]   
+[4]   S21Migrate←⍕'Y'='YN' ASK 'Do you want to migrate Basis Parameters from S21 files?'
+[5]   migrated←'1' ⍝ Have been here
+[6]   
+[7]   :if zwb S21Migrate
+[8]   Top:
+[9]       :if ''≡SelectedDir←UPPERCASE 'Select Migration Folder' GetDir95 InputDir
+[10]          :return
+[11]      :endif
+[12]      :if InputDir≡SelectedDir←FullFolder SelectedDir
+[13]          MDISPLAY 'NotInputDir' 'Migration' ⋄ →Top
+[14]      :endif
+[15]      :if mt ⎕xlib SelectedDir,'*.?pf'
+[16]          MDISPLAY 'No S21 Basis Files in ',¯1↓SelectedDir ⋄ →Top
+[17]      :endif
+[18]      MigFolder←SelectedDir
+[19]  :endif
+    ∇

@@ -1,0 +1,19 @@
+    ∇ Z←composeToC tbl;lis;toc;allgroups
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ HTML Table of Contents for Varprint4
+[3]   ⍝ Vern: sjt21sep15
+[4]   ⍝ Revn: sjt15nov15 * point a.href to div.id
+[5]   ⍝       sjt06sep16 * groups not table
+[6]   allgroups←nub lmt tbl at 'title'
+[7]   lis←xmlEscape¨aplEscape¨allgroups
+[8]   lis←('a' xattr¨(⊂'href')pr¨(⊂'#group'),¨⍕¨⍳⍴lis) xtag¨lis
+[9]   :if ∨/tbl at 'missing'
+[10]      lis←lis,⊂('a' xattr 'href' '#missing') xtag 'Missing elements'
+[11]  :endif
+[12]  :if ∨/tbl at 'surprise'
+[13]      lis←lis,⊂('a' xattr 'href' '#surprises') xtag 'Surprise value changes'
+[14]  :endif
+[15]  toc←('ul' xattr 'id' 'toc') xtag (⊂'li')xtag¨lis
+[16]  
+[17]  Z←allgroups toc
+    ∇

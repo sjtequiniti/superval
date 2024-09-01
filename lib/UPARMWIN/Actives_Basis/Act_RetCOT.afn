@@ -1,0 +1,46 @@
+    ∇ field Act_RetCOT parm;page;isActive;MESS;sex
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Do Initialisation, Changes and Validation of Retirement COT Page
+[3]   
+[4]   page←'pgRetCOT.'
+[5]   
+[6]   :select parm
+[7]   :case 'Init'
+[8]       (parent,page,'fButtons.bnActives_BasisEditRC') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[9]       (parent,page,'fButtons.bnActives_BasisEditRF') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[10]  
+[11]  :case 'Change'
+[12]      :select field
+[13]      :caselist 'cbm_ERTABParmC' 'cbf_ERTABParmC'
+[14]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fCOT.',field) ⎕wi 'text'),'"'
+[15]              isActive←1
+[16]              sex←(↑('M' 'Fem')[1+'f'=field[3]]),'ale '
+[17]              MESS←2⊃((sex,'COT Retirement Factors Parameter Set') 0) GET∆RetFactGlobals 2↓field
+[18]              :if ~openParameters∨changedParm
+[19]                  changedParm←1
+[20]                  (parent,page,'fCOT.',field) ⎕wi 'suppress' 1
+[21]                  Assign_Inputs 1
+[22]                  (parent,page,'fCOT.',field) ⎕wi 'suppress' 0
+[23]                  changedParm←0
+[24]              :endif
+[25]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[26]          :endif
+[27]      :case 'cbCashParm2'
+[28]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fCOT.',field) ⎕wi 'text'),'"'
+[29]              isActive←1
+[30]              MESS←2⊃('Retirement Cash on Top Parameter Set' 0) GET∆RetCashGlobals 2↓field
+[31]              :if ~openParameters∨changedParm
+[32]                  changedParm←1
+[33]                  (parent,page,'fCOT.',field) ⎕wi 'suppress' 1
+[34]                  Assign_Inputs 1
+[35]                  (parent,page,'fCOT.',field) ⎕wi 'suppress' 0
+[36]                  changedParm←0
+[37]              :endif
+[38]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[39]          :endif
+[40]      :endselect
+[41]  
+[42]  :case 'Valid'
+[43]  
+[44]  :endselect
+    ∇

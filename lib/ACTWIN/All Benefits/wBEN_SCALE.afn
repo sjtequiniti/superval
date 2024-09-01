@@ -1,1 +1,75 @@
-    ∇ wBEN_SCALE;preterm;termfrac;servstart;servend;PreNRAACC;IACC;DACC;startterm;endterm;SERVNOMAX;ProRate∆l[1]   ⍝ ACTWIN.sf#4[2]   ⍝⍝⍝ SERV←SERV∆SLICE ⋄ SERVSY←SERV∆SLICESY[3]   [4]   :IF ~⍬≡ACCMLT∆L,ACCDATA∆L      ⍝ Calculate accrual rate if applicable[5]       :IF ~⍬≡ACCDATA∆L ⋄ ACCRATE←ACCDATA∆L[6]       :ELSE            ⋄ ACCRATE←ACCMLT∆L CDIV ACCDIV∆L[7]       :ENDIF[8]   :ENDIF[9]   [10]  :IF ~⍬≡(,ASTAB∆L),(,ARTAB∆L),(,FIXPEN∆L),(,SRATAB∆L)[11]      :SELECT (,ASTAB∆L),(,ARTAB∆L),(,FIXPEN∆L),(,SRATAB∆L)[12]      :CASE ASTAB∆L ⍝ ET Table[13]          testline←'d'[14]                     PreNRAACC←IACC←DACC←ACC←ACCRATE×UPSERV←(ASTAB∆L[⌊ SERV       ]×1-1∣ SERV       )+ASTAB∆L[⌈ SERV       ]×1∣ SERV[15]          :if ~ISERV       ≡SERV ⋄      IACC←ACCRATE×       (ASTAB∆L[⌊ISERV       ]×1-1∣ISERV       )+ASTAB∆L[⌈ISERV       ]×1∣ISERV        ⋄ :endif[16]          :if ~DSERV       ≡SERV ⋄      DACC←ACCRATE×       (ASTAB∆L[⌊DSERV       ]×1-1∣DSERV       )+ASTAB∆L[⌈DSERV       ]×1∣DSERV        ⋄ :endif[17]          :if ~ SERV∆PreNRA≡SERV ⋄ PreNRAACC←ACCRATE×       (ASTAB∆L[⌊ SERV∆PreNRA]×1-1∣ SERV∆PreNRA)+ASTAB∆L[⌈ SERV∆PreNRA]×1∣ SERV∆PreNRA ⋄ :endif[18]      :CASE ARTAB∆L ⍝ HT or HX table[19]          ACCRATE←PreNRAACC←IACC←DACC←ACC←ARTAB∆L[20]          :IF ARTAB∆XT='X'[21]              ACCRATE←ARTAB∆L[X][22]                              ACC←            (+\        ACCRATE)-0.5×        ACCRATE×1+IsAccrued∨XMP≥NRA[23]              PreNRAACC←IACC←DACC←NX↑(NX-SNX) OVERTAKE (+\(X<NRA)/ACCRATE)-0.5×(X<NRA)/ACCRATE×1+IsAccrued[24]          :ELSE[25]              SALADJ←1 ⋄ testline←'e'[26]              ACCRATE←DIFF 0,PreNRAACC←IACC←DACC←ACC←ARTAB∆L[⌊ SERV][27]              :if ~ISERV       ≡SERV ⋄          IACC←ARTAB∆L[⌊ISERV       ] ⋄ :endif[28]              :if ~DSERV       ≡SERV ⋄          DACC←ARTAB∆L[⌊DSERV       ] ⋄ :endif[29]              :if ~ SERV∆PreNRA≡SERV ⋄     PreNRAACC←ARTAB∆L[⌊ SERV∆PreNRA] ⋄ :endif[30]          :ENDIF[31]      :CASE FIXPEN∆L ⍝ Fixed Pension or CARE Accrued[32]          :if accind ⋄ CARE∆CALC ⍝ CARE[33]          :else      ⋄ PEN←NX↑(NX-SNX)⍴FIXPEN∆L ⋄ SALADJ←1 ⋄ testline←'c'[34]          :endif[35]      :CASE SRATAB∆L ⍝ Service related accrual rate[36]          SRATAB∆Accrual[37]      :ENDSELECT[38]  :ELSE ⍝ Scale Accrual[39]            ACC←ACCRATE× SERV[40]      PreNRAACC←ACCRATE× SERV∆PreNRA[41]           IACC←ACCRATE×ISERV[42]           DACC←ACCRATE×DSERV[43]  :ENDIF[44]  [45]  :IF ⍬≡FIXPEN∆L[46]      :if bGAD ⋄ FASMP←,( ENX_1        ↑FASMPvec[;SALCOD∆L]), ENX_1        ↓FASvec[;SALCOD∆L][47]      :else    ⋄ FASMP←,((ENX-×LNX-SNX)↑FASMPvec[;SALCOD∆L]),(ENX-×LNX-SNX)↓FASvec[;SALCOD∆L][48]      :endif[49]      :if slice=0 ⋄ :andif accind ⍝ CARE future accrual[50]          CARE∆CALC[51]          :if PHI               ⋄ PHICARE∆CALC          ⋄ :endif[52]          :if ∨/CAREProspective ⋄ UNITPEN←FASMP×ACCRATE ⋄ :endif[53]      :else[54]          PEN      ←FASMP×ACC[55]          UNITPEN  ←FASMP×ACCRATE[56]          PEN∆NRA  ←FASMP×ACC[ENX_1][57]          PreNRAPEN←FASMP×PreNRAACC[58]          IPEN     ←FASMP×IACC×(ENX_1,LNX+1)/1 0[59]          DPEN     ←FASMP×DACC×(ENX_1,LNX+1)/1 0[60]          SALADJ←SALvec[0;SALCOD∆L] CDIV FASMP[0][61]          :if PHI[62]              FASMPPHI←         (ENX-×LNX-SNX)↑[1]'FASMP' PHISALS SALCOD∆L,(×PROBS[;2])/⍳NX[63]              FASMPPHI←FASMPPHI,(ENX-×LNX-SNX)↓[1]'FAS'   PHISALS SALCOD∆L,(×PROBS[;2])/⍳NX[64]              PHIPEN      ←ACC                     ×[1]FASMPPHI[65]              PHIUNITPEN  ←ACCRATE                 ×[1]FASMPPHI[66]              PHIPreNRAPEN←PreNRAACC               ×[1]FASMPPHI[67]              PHIDPEN     ←(DACC×(ENX_1,LNX+1)/1 0)×[1]FASMPPHI[68]          :endif[69]      :endif[70]  :ELSE[71]      PEN∆NRA←IPEN←DPEN←PreNRAPEN←PEN[72]      :if PHI ⋄ PHIDPEN←PHIPEN←PHIPreNRAPEN←PHISYBen×[1]PEN ⋄ :endif[73]  :ENDIF    ∇
+    ∇ wBEN_SCALE;preterm;termfrac;servstart;servend;PreNRAACC;IACC;DACC;startterm;endterm;SERVNOMAX;ProRate∆l
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝⍝⍝ SERV←SERV∆SLICE ⋄ SERVSY←SERV∆SLICESY
+[3]   
+[4]   :IF ~⍬≡ACCMLT∆L,ACCDATA∆L      ⍝ Calculate accrual rate if applicable
+[5]       :IF ~⍬≡ACCDATA∆L ⋄ ACCRATE←ACCDATA∆L
+[6]       :ELSE            ⋄ ACCRATE←ACCMLT∆L CDIV ACCDIV∆L
+[7]       :ENDIF
+[8]   :ENDIF
+[9]   
+[10]  :IF ~⍬≡(,ASTAB∆L),(,ARTAB∆L),(,FIXPEN∆L),(,SRATAB∆L)
+[11]      :SELECT (,ASTAB∆L),(,ARTAB∆L),(,FIXPEN∆L),(,SRATAB∆L)
+[12]      :CASE ASTAB∆L ⍝ ET Table
+[13]          testline←'d'
+[14]                     PreNRAACC←IACC←DACC←ACC←ACCRATE×UPSERV←(ASTAB∆L[⌊ SERV       ]×1-1∣ SERV       )+ASTAB∆L[⌈ SERV       ]×1∣ SERV
+[15]          :if ~ISERV       ≡SERV ⋄      IACC←ACCRATE×       (ASTAB∆L[⌊ISERV       ]×1-1∣ISERV       )+ASTAB∆L[⌈ISERV       ]×1∣ISERV        ⋄ :endif
+[16]          :if ~DSERV       ≡SERV ⋄      DACC←ACCRATE×       (ASTAB∆L[⌊DSERV       ]×1-1∣DSERV       )+ASTAB∆L[⌈DSERV       ]×1∣DSERV        ⋄ :endif
+[17]          :if ~ SERV∆PreNRA≡SERV ⋄ PreNRAACC←ACCRATE×       (ASTAB∆L[⌊ SERV∆PreNRA]×1-1∣ SERV∆PreNRA)+ASTAB∆L[⌈ SERV∆PreNRA]×1∣ SERV∆PreNRA ⋄ :endif
+[18]      :CASE ARTAB∆L ⍝ HT or HX table
+[19]          ACCRATE←PreNRAACC←IACC←DACC←ACC←ARTAB∆L
+[20]          :IF ARTAB∆XT='X'
+[21]              ACCRATE←ARTAB∆L[X]
+[22]                              ACC←            (+\        ACCRATE)-0.5×        ACCRATE×1+IsAccrued∨XMP≥NRA
+[23]              PreNRAACC←IACC←DACC←NX↑(NX-SNX) OVERTAKE (+\(X<NRA)/ACCRATE)-0.5×(X<NRA)/ACCRATE×1+IsAccrued
+[24]          :ELSE
+[25]              SALADJ←1 ⋄ testline←'e'
+[26]              ACCRATE←DIFF 0,PreNRAACC←IACC←DACC←ACC←ARTAB∆L[⌊ SERV]
+[27]              :if ~ISERV       ≡SERV ⋄          IACC←ARTAB∆L[⌊ISERV       ] ⋄ :endif
+[28]              :if ~DSERV       ≡SERV ⋄          DACC←ARTAB∆L[⌊DSERV       ] ⋄ :endif
+[29]              :if ~ SERV∆PreNRA≡SERV ⋄     PreNRAACC←ARTAB∆L[⌊ SERV∆PreNRA] ⋄ :endif
+[30]          :ENDIF
+[31]      :CASE FIXPEN∆L ⍝ Fixed Pension or CARE Accrued
+[32]          :if accind ⋄ CARE∆CALC ⍝ CARE
+[33]          :else      ⋄ PEN←NX↑(NX-SNX)⍴FIXPEN∆L ⋄ SALADJ←1 ⋄ testline←'c'
+[34]          :endif
+[35]      :CASE SRATAB∆L ⍝ Service related accrual rate
+[36]          SRATAB∆Accrual
+[37]      :ENDSELECT
+[38]  :ELSE ⍝ Scale Accrual
+[39]            ACC←ACCRATE× SERV
+[40]      PreNRAACC←ACCRATE× SERV∆PreNRA
+[41]           IACC←ACCRATE×ISERV
+[42]           DACC←ACCRATE×DSERV
+[43]  :ENDIF
+[44]  
+[45]  :IF ⍬≡FIXPEN∆L
+[46]      :if bGAD ⋄ FASMP←,( ENX_1        ↑FASMPvec[;SALCOD∆L]), ENX_1        ↓FASvec[;SALCOD∆L]
+[47]      :else    ⋄ FASMP←,((ENX-×LNX-SNX)↑FASMPvec[;SALCOD∆L]),(ENX-×LNX-SNX)↓FASvec[;SALCOD∆L]
+[48]      :endif
+[49]      :if slice=0 ⋄ :andif accind ⍝ CARE future accrual
+[50]          CARE∆CALC
+[51]          :if PHI               ⋄ PHICARE∆CALC          ⋄ :endif
+[52]          :if ∨/CAREProspective ⋄ UNITPEN←FASMP×ACCRATE ⋄ :endif
+[53]      :else
+[54]          PEN      ←FASMP×ACC
+[55]          UNITPEN  ←FASMP×ACCRATE
+[56]          PEN∆NRA  ←FASMP×ACC[ENX_1]
+[57]          PreNRAPEN←FASMP×PreNRAACC
+[58]          IPEN     ←FASMP×IACC×(ENX_1,LNX+1)/1 0
+[59]          DPEN     ←FASMP×DACC×(ENX_1,LNX+1)/1 0
+[60]          SALADJ←SALvec[0;SALCOD∆L] CDIV FASMP[0]
+[61]          :if PHI
+[62]              FASMPPHI←         (ENX-×LNX-SNX)↑[1]'FASMP' PHISALS SALCOD∆L,(×PROBS[;2])/⍳NX
+[63]              FASMPPHI←FASMPPHI,(ENX-×LNX-SNX)↓[1]'FAS'   PHISALS SALCOD∆L,(×PROBS[;2])/⍳NX
+[64]              PHIPEN      ←ACC                     ×[1]FASMPPHI
+[65]              PHIUNITPEN  ←ACCRATE                 ×[1]FASMPPHI
+[66]              PHIPreNRAPEN←PreNRAACC               ×[1]FASMPPHI
+[67]              PHIDPEN     ←(DACC×(ENX_1,LNX+1)/1 0)×[1]FASMPPHI
+[68]          :endif
+[69]      :endif
+[70]  :ELSE
+[71]      PEN∆NRA←IPEN←DPEN←PreNRAPEN←PEN
+[72]      :if PHI ⋄ PHIDPEN←PHIPEN←PHIPreNRAPEN←PHISYBen×[1]PEN ⋄ :endif
+[73]  :ENDIF
+    ∇

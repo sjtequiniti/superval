@@ -1,1 +1,36 @@
-    ∇ CAP∆ACTIVE;PRE97;PRE97∆DID;POST97;POST97∆DID;CALCCASH;EXCESS;FUT;CAPincPre∆l;POST09;POST09∆DID;capadj[1]   ⍝ ACTWIN.sf#4[2]   ⍝[3]   INIT∆GMP ⍝ Need start year figures for PreGMP and PostGMP[4]   PRE97←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN∆DID)[⎕io;][5]   EXCESS←0⌈PreGMP+PostGMP-PRE97[6]   PRE97←PRE97+EXCESS[7]   TPEN∆DID[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]←TPEN∆DID[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]+EXCESS[8]   PRE97∆DID←PRE97[9]   POST97∆DID←POST97←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN∆DID)[⎕io+1;][10]  POST09←0×POST97[11]  POST09∆DID←0×POST97∆DID[12]  :if ClntCode=3[13]      STPEN∆DID[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]←STPEN∆DID[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]+WARFRAC∆l×EXCESS[14]  :endif[15]  LTONTOP←LTONTOP∆DID←LTONTOPPOST←LTONTOPPRE←LTONTOPPOST∆DID←LTONTOPPRE∆DID←0×PRE97[16]  ⍝ Redefine with Barber adjustments added[17]  PRE97 ←((+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io  ;⎕io+1;])+SBARBADJ×(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io  ;⎕io;][18]  POST97←((+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io+1;⎕io+1;])+MBARBADJ×(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io+1;⎕io;][19]  FUT   ←((+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io+2;⎕io+1;])+MBARBADJ×(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io+2;⎕io;][20]  POST97←POST97+FUT[21]  :if CONTOP ⋄ :orif ClntCode=3 ⋄ :orif bBuck ⋄ CASH∆ONTOP∆PPF ⋄ :endif[22]  capratio←1 ⋄ capadj←0.9*X0<NRA[23]  DIDTPEN←TPEN∆DID ⍝ Save the uncapped amount for DID LS based on pension[24]  :if X0<NRA ⋄ :andif ~^/0=,PRE97+POST97+LTONTOP ⍝ ⎕io is 0 here[25]      CAPincPre∆l←CAPincPre[2×⍳NX][26]      :if NX>1+0⌈'YD' DURN VDATE,LRD[27]          CAPincPre∆l←¯1↓CAPincPre∆l[28]          CAPincPre∆l←CAPincPre∆l,¯1↑CAPincPre∆l[29]      :endif[30]      capratio←0⌈1⌊1 CDIV (PRE97+POST97+(LTONTOPPOST CDIV PPFCASHFAC[NRA])+LTONTOPPRE CDIV PPFCASHFAC2[NRA]) CDIV PPFCAP×PPFCAPADJ[NRA]×CAPinc[2×0⌈NRA-X]×CAPincPre∆l[31]  :endif[32]  REVPEN←capadj×capratio×[6]TPEN∆DID[33]  :if ClntCode=3 ⋄ SREVPEN←capadj×capratio×[6]STPEN∆DID ⋄ :endif[34]  capflag←↑capratio<1    ∇
+    ∇ CAP∆ACTIVE;PRE97;PRE97∆DID;POST97;POST97∆DID;CALCCASH;EXCESS;FUT;CAPincPre∆l;POST09;POST09∆DID;capadj
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝
+[3]   INIT∆GMP ⍝ Need start year figures for PreGMP and PostGMP
+[4]   PRE97←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN∆DID)[⎕io;]
+[5]   EXCESS←0⌈PreGMP+PostGMP-PRE97
+[6]   PRE97←PRE97+EXCESS
+[7]   TPEN∆DID[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]←TPEN∆DID[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]+EXCESS
+[8]   PRE97∆DID←PRE97
+[9]   POST97∆DID←POST97←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN∆DID)[⎕io+1;]
+[10]  POST09←0×POST97
+[11]  POST09∆DID←0×POST97∆DID
+[12]  :if ClntCode=3
+[13]      STPEN∆DID[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]←STPEN∆DID[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]+WARFRAC∆l×EXCESS
+[14]  :endif
+[15]  LTONTOP←LTONTOP∆DID←LTONTOPPOST←LTONTOPPRE←LTONTOPPOST∆DID←LTONTOPPRE∆DID←0×PRE97
+[16]  ⍝ Redefine with Barber adjustments added
+[17]  PRE97 ←((+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io  ;⎕io+1;])+SBARBADJ×(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io  ;⎕io;]
+[18]  POST97←((+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io+1;⎕io+1;])+MBARBADJ×(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io+1;⎕io;]
+[19]  FUT   ←((+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io+2;⎕io+1;])+MBARBADJ×(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN∆DID)[⎕io+2;⎕io;]
+[20]  POST97←POST97+FUT
+[21]  :if CONTOP ⋄ :orif ClntCode=3 ⋄ :orif bBuck ⋄ CASH∆ONTOP∆PPF ⋄ :endif
+[22]  capratio←1 ⋄ capadj←0.9*X0<NRA
+[23]  DIDTPEN←TPEN∆DID ⍝ Save the uncapped amount for DID LS based on pension
+[24]  :if X0<NRA ⋄ :andif ~^/0=,PRE97+POST97+LTONTOP ⍝ ⎕io is 0 here
+[25]      CAPincPre∆l←CAPincPre[2×⍳NX]
+[26]      :if NX>1+0⌈'YD' DURN VDATE,LRD
+[27]          CAPincPre∆l←¯1↓CAPincPre∆l
+[28]          CAPincPre∆l←CAPincPre∆l,¯1↑CAPincPre∆l
+[29]      :endif
+[30]      capratio←0⌈1⌊1 CDIV (PRE97+POST97+(LTONTOPPOST CDIV PPFCASHFAC[NRA])+LTONTOPPRE CDIV PPFCASHFAC2[NRA]) CDIV PPFCAP×PPFCAPADJ[NRA]×CAPinc[2×0⌈NRA-X]×CAPincPre∆l
+[31]  :endif
+[32]  REVPEN←capadj×capratio×[6]TPEN∆DID
+[33]  :if ClntCode=3 ⋄ SREVPEN←capadj×capratio×[6]STPEN∆DID ⋄ :endif
+[34]  capflag←↑capratio<1
+    ∇

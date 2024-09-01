@@ -1,0 +1,62 @@
+    ∇ XL_FitPages no;NoFields;NoMembers;col;max;fmt;pos
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ AutoFit and (some formattting of) the results on each page
+[3]   ⍝ no is the number of members in this group
+[4]   
+[5]   ⍝ Member Data Page
+[6]   NoFields←XL_Data 'NoFields' ⋄ NoMembers←XL_Data 'NoMembers'
+[7]   0 XL_ActivateWorksheet 'Members'
+[8]   
+[9]   :for col :in 12↓(~⎕io)+⍳(NoFields+10) ⍝ Reset Formats
+[10]      :if 'N'=↑XL_Data RCtoA1 11 col ⋄ :andif 0≠⌈/0,max←∣XL_Data RCtoA1 5 col
+[11]          fmt←(max<1000)/'.0',(+/max<100 10 1)/'0'
+[12]          (5 col) XL_NumberFormat '#,##0',fmt,'_ ;-#,##0',fmt,' '
+[13]          (7 col 10 col) XL_NumberFormat '#,##0',fmt,'_ ;[Red]-#,##0',fmt,' '
+[14]      :endif
+[15]  :endfor
+[16]  (7 13 7 (NoFields+10)) XL_PasteFormats 14 13 (13+NoMembers) (NoFields+10)
+[17]  
+[18]  XL_AutoFit 1 13 (13+NoMembers) (NoFields+10)
+[19]  :if ~(('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'Members') ⎕wi 'xAutoFilterMode' ⍝ Reset AutoFilter on Member Data, if required
+[20]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 13 6 13 (NoFields+10)) ⋄ 0 0⍴'XL.Rng' ⎕wi 'XAutoFilter'
+[21]  :endif
+[22]  'Members' XL_ProtectSheet 1
+[23]  
+[24]  ⍝ Individual Results Page
+[25]  0 XL_ActivateWorksheet 'IndivRes'
+[26]  :select ClassID ⍝ AutoFit allowing for deleted columns
+[27]  :caselist 1 2 ⋄ XL_AutoFit 1 11 14,235-189×ppf
+[28]  :case 3       ⋄ XL_AutoFit 1 11 14,157-114×ppf
+[29]  :case 4       ⋄ XL_AutoFit 1 11 14,227- 92×ppf+~bencap
+[30]                  'XL' ⎕wi 'Range>.Rng' (RCtoA1 ⍬ 13 ⍬ 14) ⋄ ('XL.Rng' ⎕wi 'xEntireColumn') ⎕wi 'xHidden' 1 ⍝ Hide some columns
+[31]  :endselect
+[32]  'IndivRes' XL_ProtectSheet 1
+[33]  
+[34]  ⍝ (Hidden) Statistics Calculations Page
+[35]  0 XL_ActivateWorksheet 'StatCalc'
+[36]  :select ClassID ⍝ Fix "static" values
+[37]  :caselist 1 2 ⋄ pos←(14+NoMembers-no) 13 (13+NoMembers) (40-16×summopt∨csvind∨aggopt[0])
+[38]  :case 3       ⋄ pos←(14+NoMembers-no)  5 (13+NoMembers) 7
+[39]  :case 4       ⋄ pos←(14+NoMembers-no)  5 (13+NoMembers) (120-(56×ppf)+54×~bencap)
+[40]  :endselect
+[41]  XL_PasteValues pos
+[42]  'StatCalc' XL_ProtectSheet ¯1
+[43]  
+[44]  ⍝ Cash Flow Page
+[45]  :if ClntCode=3 ⋄ :andif ~ppf
+[46]      1 XL_ActivateWorksheet 'CashFlow'
+[47]      XL_AutoFit 1 4 131 20
+[48]      'CashFlow' XL_ProtectSheet 1
+[49]  :endif
+[50]  
+[51]  ⍝ Individual AOS Results page
+[52]  :if aosind
+[53]      0 XL_ActivateWorksheet 'IndivAOS'
+[54]      :select ClassID ⍝ AutoFit allowing for ClassID
+[55]      :caselist 1 2 ⋄ XL_AutoFit 1 58 14 71
+[56]      :case 3       ⋄ XL_AutoFit 1 35 14 42
+[57]      :case 4       ⋄ XL_AutoFit 1 31 14 38
+[58]      :endselect
+[59]      'IndivAOS' XL_ProtectSheet 1
+[60]  :endif
+    ∇

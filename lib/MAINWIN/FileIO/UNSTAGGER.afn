@@ -1,0 +1,16 @@
+    ∇ SUMMREC←UNSTAGGER SUMM;A;B;res
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Unstagger a Multi Line Output Record
+[3]   ⍝ Keep all Initial Blank Lines, then
+[4]   ⍝ (if possible) blend each subsequent pair of Lines
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   →(0=1↑⍴SUMMREC←SUMM)/0
+[8]   res←(A←^\^/SUMM=' ')⌿SUMMREC ⋄ SUMM←((+/A),0)↓SUMM
+[9]   ⍝ Select Non Gaps in Row 1 (inc 1 in front of each)
+[10]  LOOP:A←(1↓A,0)∨A←SUMM[0;]≠' '
+[11]  B←(1↓B,0)∨B←SUMM[1;]≠' ' ⍝ Non Gaps in Row 2
+[12]  →(∨/A^B)/0 ⍝ Exit if it can't be unstaggered
+[13]  SUMM[0;A]←SUMM[1;A←(SUMM[1;]≠' ')/⍳¯1↑⍴SUMM] ⍝ Blend Lines
+[14]  res←res⍪SUMM[0;] ⋄ →(~0∊⍴SUMM← 2 0 ↓SUMM)/LOOP ⋄ SUMMREC←res
+    ∇

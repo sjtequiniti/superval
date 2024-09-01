@@ -1,0 +1,9 @@
+    ∇ SchemeDetailsAsHtm htmPath;∆;xslPath
+[1]   ⍝ MAINWIN.sf#15
+[2]   xslPath←StyleDir,'scheme-details.xsl'
+[3]   ∆←'<?xml version="1.0" encoding="US-ASCII" ?>'                                  ⍝ XML declaration
+[4]   ∆←∆ push 'environment' xtag SiteDetailsAsXml,SchemeDetailsAsXml
+[5]   ∆←xslPath xslTransform join ∆
+[6]   ∆←importCss ∆
+[7]   ∆ nfile_put_contents htmPath
+    ∇

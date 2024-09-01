@@ -1,0 +1,36 @@
+    ∇ inerror←MembGroup VALN_Valid parms;relRules
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Valuation Validation Function
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕nuntie (⎕nnums,⎕xnnums)~tpL,⍙⍙hpcLogTie ⋄ RunTime←26↑DLTMB 1 DATESPELL ValnTimeStamp←⎕ts
+[8]   IFbasischanged←0
+[9]   
+[10]  :if ~inerror←aosenabled BASIS∆CHECK MembGroup
+[11]      inerror←PREPARE ⍝ Modify Variables/Validation
+[12]  :endif
+[13]  
+[14]  :if ~unattended ⋄ :andif ∨/∊('ERROR:' 'WARNING:' 'NOTE:' 'Note:')⍷¨⊂,VALN∆Errors
+[15]      VALN∆LOG 'TempCreate'
+[16]      BROWSE 'ß',InputDir,'VALN$LOG.tmp'
+[17]      'fmProgressBar' ⎕wi 'Focus'
+[18]  :endif
+[19]  
+[20]  :if inerror
+[21]      VALN∆LOG 'Write'
+[22]  ⍝⍝⍝    ⎕NUNTIE (⎕xnnums,⎕nnums)~tpL,⍙⍙hpcLogTie ⍝ Close all files
+[23]  ⍝⍝⍝    CLEARVARS
+[24]  :else
+[25]      suppressText←hpcenabled⌈suppresstext×~aosind∨test∨csvind ⍝ Must have text output for AOS or test run or csv output
+[26]      PREP∆TextOutput ClassID
+[27]      :if XLCtl ⋄ SaveConsBasis ⋄ :endif
+[28]  
+[29]      :if ⍙dbopt ⍝ Close down Database connection
+[30]          0 0⍴'ADOrst' ⎕wi 'Delete'
+[31]          0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[32]          0 0⍴'ADOcon' ⎕wi 'XClose' ⋄ 0 0⍴'ADOcon' ⎕wi 'Delete'
+[33]      :endif
+[34]  :endif
+    ∇

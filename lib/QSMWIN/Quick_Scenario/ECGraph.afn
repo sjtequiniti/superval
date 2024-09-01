@@ -1,1 +1,47 @@
-    ∇ ECView←ECGraph;cfs;bb;new_cfs;tab;ppt[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Graph the Employer Contributions[3]   [4]   :if mt ECView←(parent,currentpage,'picGraph') ⎕wi 'self'[5]       :return ⍝ Graph Control doesn't exist yet!![6]   :endif[7]   psWipe parent,currentpage,'picGraph'[8]   [9]   :if ~inccont[10]      MDISPLAY "To produce this Graph, Contributions must be selected" ⋄ :return[11]  :endif[12]  [13]  tab←amorttab append fundind means fundtab else conttab[14]  [15]  cfs    ←-(maxyr⌊GraphTerm)↑↑+/+⌿¨tab at 'CashFlow'[16]  new_cfs←-(maxyr⌊GraphTerm)↑↑+/+⌿¨tab at 'RFCashFlow'[17]  [18]  chSet('STYLE' 'NOWIPE')('NFONT' 'TI,6')[19]  chNote GraphType (90 0.5)[20]  [21]  chSet 'HMargin' 60 36[22]  chSet 'Heading' ('Contributions Cash Flows',(0=rfperiod)/VDATEtxt)[23]  chSet 'HFont' 'tii,12,blue'[24]  chSet 'XCaption' 'Year'[25]  ⍝⍝⍝ chSet 'YCaption' (DLTMB scale[1+sfac;])[26]  chSet 'XLab' (⍕¨⍳maxyr)[27]  chSet 'YRange' (⌊/0,cfs,new_cfs),(⌈/0,(1.1×cfs),new_cfs)[28]  chSet 'QFmt' ("<",pound,">,CLI20")[29]  chSet 'colour' (',' join (GraphType≡'Multi-Line')↓(⊂'WH'),((GraphType≡'Changes')⌽'GR' 'BL'),⊂'RE')[30]  chSet 'pattern' 15[31]  chSet 'Style' 'lines,nomarkers'[32]  chSet 'Key' (',' join (GraphType≡'Multi-Line')↓(⊂''),((GraphType≡'Changes')⌽('Reduced Contributions',(0≠rfperiod)/RFDatetxt) ('Original Contributions',(0≠rfperiod)/VDATEtxt)),⊂'Increased Contributions',(0≠rfperiod)/RFDatetxt)[33]  chSet 'KFont' 'he,8'[34]  :if GraphType≡'Multi-Line' ⋄ chSet 'Gap' ¯0.5[35]  :else                      ⋄ chSet 'Style' 'stacked,Relative'[36]  :endif[37]  chBar (GraphType ShowZeroes) StackedValues cfs new_cfs[38]  [39]  :if ~mt ECView←chClose[40]      bb←psReadHeader ECView '%%BoundingBox:' ⍝ Bounding Box[41]      ppt←.5+.×(((parent,currentpage,'picGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point[42]      ps_exec ECView (parent,currentpage,'picGraph') ppt ps∆cmap 1[43]  :endif[44]  [45]      ∇
+    ∇ ECView←ECGraph;cfs;bb;new_cfs;tab;ppt
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Graph the Employer Contributions
+[3]   
+[4]   :if mt ECView←(parent,currentpage,'picGraph') ⎕wi 'self'
+[5]       :return ⍝ Graph Control doesn't exist yet!!
+[6]   :endif
+[7]   psWipe parent,currentpage,'picGraph'
+[8]   
+[9]   :if ~inccont
+[10]      MDISPLAY "To produce this Graph, Contributions must be selected" ⋄ :return
+[11]  :endif
+[12]  
+[13]  tab←amorttab append fundind means fundtab else conttab
+[14]  
+[15]  cfs    ←-(maxyr⌊GraphTerm)↑↑+/+⌿¨tab at 'CashFlow'
+[16]  new_cfs←-(maxyr⌊GraphTerm)↑↑+/+⌿¨tab at 'RFCashFlow'
+[17]  
+[18]  chSet('STYLE' 'NOWIPE')('NFONT' 'TI,6')
+[19]  chNote GraphType (90 0.5)
+[20]  
+[21]  chSet 'HMargin' 60 36
+[22]  chSet 'Heading' ('Contributions Cash Flows',(0=rfperiod)/VDATEtxt)
+[23]  chSet 'HFont' 'tii,12,blue'
+[24]  chSet 'XCaption' 'Year'
+[25]  ⍝⍝⍝ chSet 'YCaption' (DLTMB scale[1+sfac;])
+[26]  chSet 'XLab' (⍕¨⍳maxyr)
+[27]  chSet 'YRange' (⌊/0,cfs,new_cfs),(⌈/0,(1.1×cfs),new_cfs)
+[28]  chSet 'QFmt' ("<",pound,">,CLI20")
+[29]  chSet 'colour' (',' join (GraphType≡'Multi-Line')↓(⊂'WH'),((GraphType≡'Changes')⌽'GR' 'BL'),⊂'RE')
+[30]  chSet 'pattern' 15
+[31]  chSet 'Style' 'lines,nomarkers'
+[32]  chSet 'Key' (',' join (GraphType≡'Multi-Line')↓(⊂''),((GraphType≡'Changes')⌽('Reduced Contributions',(0≠rfperiod)/RFDatetxt) ('Original Contributions',(0≠rfperiod)/VDATEtxt)),⊂'Increased Contributions',(0≠rfperiod)/RFDatetxt)
+[33]  chSet 'KFont' 'he,8'
+[34]  :if GraphType≡'Multi-Line' ⋄ chSet 'Gap' ¯0.5
+[35]  :else                      ⋄ chSet 'Style' 'stacked,Relative'
+[36]  :endif
+[37]  chBar (GraphType ShowZeroes) StackedValues cfs new_cfs
+[38]  
+[39]  :if ~mt ECView←chClose
+[40]      bb←psReadHeader ECView '%%BoundingBox:' ⍝ Bounding Box
+[41]      ppt←.5+.×(((parent,currentpage,'picGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+[42]      ps_exec ECView (parent,currentpage,'picGraph') ppt ps∆cmap 1
+[43]  :endif
+[44]  
+[45]  
+    ∇

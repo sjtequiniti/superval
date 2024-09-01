@@ -1,1 +1,40 @@
-    ∇ res←field BulkInsert parm;parent[1]   ⍝ DECRWIN.sf#25[2]   ⍝ Function to allow user control on Database Size[3]   [4]   parent←'fmBulkInsert.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[11]      IncludedRanges←'ERDecrements' 'IRDecrements' 'WdlDecrements' 'PromSalIncreases' 'ProportionMarried' 'CommFac' 'LRUF' 'REF',¨⊂'_Table'[12]  [13]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[14]  [15]      :repeat[16]          :select ↑field[17]          :case 'edXLFile'[18]              :if ∨/'.XLS'⍷UPPERCASE ¯5↑XLFile←(parent,'edXLFile') ⎕wi 'text'[19]              :andif FileExist XLFile[20]                  0 0⍴BulkInsert 'Run'[21]              :endif[22]          :case 'ckcheckident'[23]              checkident←⍕(parent,'ckcheckident') ⎕wi 'value'[24]          :endselect[25]      :until mt field←1↓field[26]  [27]  :case 'Valid' ⍝ Routine specific validation[28]  [29]  :case 'Run'[30]      ((⊂parent),¨'bnBulkInsertSave' 'bnBulkInsertQuit' 'bnBulkInsertHelp') MultiWI 'visible' 0[31]      RunBulkInsert XLFile[32]      ((⊂parent),¨'bnBulkInsertSave' 'bnBulkInsertQuit' 'bnBulkInsertHelp') MultiWI 'visible' 1[33]      0 0⍴⎕ex 'Range'[34]  [35]  :case 'Quit' ⍝ Deleting "other" variables[36]      0 0⍴⎕ex 'IncludedRanges'[37]  [38]  :endselect    ∇
+    ∇ res←field BulkInsert parm;parent
+[1]   ⍝ DECRWIN.sf#25
+[2]   ⍝ Function to allow user control on Database Size
+[3]   
+[4]   parent←'fmBulkInsert.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]      IncludedRanges←'ERDecrements' 'IRDecrements' 'WdlDecrements' 'PromSalIncreases' 'ProportionMarried' 'CommFac' 'LRUF' 'REF',¨⊂'_Table'
+[12]  
+[13]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[14]  
+[15]      :repeat
+[16]          :select ↑field
+[17]          :case 'edXLFile'
+[18]              :if ∨/'.XLS'⍷UPPERCASE ¯5↑XLFile←(parent,'edXLFile') ⎕wi 'text'
+[19]              :andif FileExist XLFile
+[20]                  0 0⍴BulkInsert 'Run'
+[21]              :endif
+[22]          :case 'ckcheckident'
+[23]              checkident←⍕(parent,'ckcheckident') ⎕wi 'value'
+[24]          :endselect
+[25]      :until mt field←1↓field
+[26]  
+[27]  :case 'Valid' ⍝ Routine specific validation
+[28]  
+[29]  :case 'Run'
+[30]      ((⊂parent),¨'bnBulkInsertSave' 'bnBulkInsertQuit' 'bnBulkInsertHelp') MultiWI 'visible' 0
+[31]      RunBulkInsert XLFile
+[32]      ((⊂parent),¨'bnBulkInsertSave' 'bnBulkInsertQuit' 'bnBulkInsertHelp') MultiWI 'visible' 1
+[33]      0 0⍴⎕ex 'Range'
+[34]  
+[35]  :case 'Quit' ⍝ Deleting "other" variables
+[36]      0 0⍴⎕ex 'IncludedRanges'
+[37]  
+[38]  :endselect
+    ∇

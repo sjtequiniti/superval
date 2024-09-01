@@ -1,1 +1,63 @@
-    ∇ TVDP1∆BENEFIT;Upin∆pp;BenType∆pp;IncType∆pp;Inc∆pp;SL∆pp;Con∆pp;∆;D;N;P3;P4;UN;UD;UP3;UP4;DP3;DP2;DP4;DP5;UDP4;UDP5;UDP2;UDP3;DP1Pre;DP1Post;RevOnly∆pp;End∆pp;Mat;Rev3;Rev2;Rev4;Rev5[1]   ⍝ DEFWIN.sf#10[2]   ⍝ v8.50 [EnhDef] RJW/SJT 2010[3]   ⍝ Death Benefits[4]   ⍝ ⎕IO≡0[5]   [6]   DP1Pre ←PreGMP ×(' YNL'⍳↑MOOPre )⊃0 0 WOFRAC (0.5×Male)[7]   DP1Post←PostGMP×(' YNL'⍳↑MOOPost)⊃0 0 WOFRAC  0.5[8]   ∆←FID × (⍉⊃DP1Pre DP1Post) +.× (mpreIND mpostIND)∘.='SM34'[9]    (DP3 DP2 DP4 DP5)←0 ⌈ (N D P3 P4)←⊂[0](⍉POST[;↑iWho;↑iPen;↑iDbr;]) D_SWITCH ∆ ⍝ SV5000169[10]  ⍝ CHECK LOGIC OF LINE BELOW[11]   (UDP3 UDP2 UDP4 UDP5)←0 ⌈ (UN UD UP3 UP4)←N D P3 P4 × ⎕SPLIT CDIV/[1]+/STDPUP[;iUnd,iWho;↑iPen;↑iRet;;↑iWto;][12]  [13]  BenType∆pp←'P' ⋄ RevOnly∆pp←1 ⍝ Reversion Only[14]  End∆pp←⍬ ⍝⍝⍝ SL∆pp←⍬ SL∆pp assigned for Valuation Factor calculation only[15]  [16]  Mat←(⍳NX)∘.≤⍳NX[17]  [18]  IncType∆pp←'G1' ⋄ Inc∆pp←TVB88GMPINC[19]  SL∆pp←2×Con∆pp←Mat×[1]DP1Pre ×1-GFRAC1 ⋄ Upin∆pp←0 ⍝ Not "underpinned"[20]  PP∆CreateInterface[21]  [22]  SL∆pp←2×Con∆pp←Mat×[1]DP1Pre ×  GFRAC1 ⋄ Upin∆pp←1 ⍝ "Underpinned"[23]  PP∆CreateInterface[24]  [25]  IncType∆pp←'G2' ⋄ Inc∆pp←TVA88GMPINC[26]  SL∆pp←2×Con∆pp←Mat×[1]DP1Post×1-GFRAC2 ⋄ Upin∆pp←0 ⍝ Not "underpinned"[27]  PP∆CreateInterface[28]  [29]  SL∆pp←2×Con∆pp←Mat×[1]DP1Post×  GFRAC2 ⋄ Upin∆pp←1 ⍝ "Underpinned"[30]  PP∆CreateInterface[31]  [32]  ∆←+/+/PRE                                    ⍝ Calculate Reversions for Valuation Factor calculation[33]  (Rev3 Rev2 Rev4 Rev5)←⎕split ∆[;↑iWho;↑iPen;↑iDbr;] CDIV ∆[;↑iWho;↑iPen;↑iRet;][34]  [35]  IncType∆pp←'M' ⋄ Inc∆pp←TVDYNINC[36]  SL∆pp←(Con∆pp←Mat×[1]DP2-UDP2)×[0]1 ZDIV Rev2 ⋄ Upin∆pp←0 ⍝ Not "underpinned"[37]  PP∆CreateInterface[38]  [39]  SL∆pp←(Con∆pp←Mat×[1]    UDP2)×[0]1 ZDIV Rev2 ⋄ Upin∆pp←1 ⍝ "Underpinned"[40]  PP∆CreateInterface[41]  [42]  IncType∆pp←'S' ⋄ Inc∆pp←TVNDYNINC[43]  SL∆pp←(Con∆pp←Mat×[1]DP3-UDP3)×[0]1 ZDIV Rev3 ⋄ Upin∆pp←0 ⍝ Not "underpinned"[44]  PP∆CreateInterface[45]  [46]  SL∆pp←(Con∆pp←Mat×[1]    UDP3)×[0]1 ZDIV Rev3 ⋄ Upin∆pp←1 ⍝ "Underpinned"[47]  PP∆CreateInterface[48]  [49]  IncType∆pp←'P3' ⋄ Inc∆pp←TVDYNINC3[50]  SL∆pp←(Con∆pp←Mat×[1]DP4-UDP4)×[0]1 ZDIV Rev4 ⋄ Upin∆pp←0 ⍝ Not "underpinned"[51]  PP∆CreateInterface[52]  [53]  SL∆pp←(Con∆pp←Mat×[1]    UDP4)×[0]1 ZDIV Rev4 ⋄ Upin∆pp←1 ⍝ "Underpinned"[54]  PP∆CreateInterface[55]  [56]  IncType∆pp←'P4' ⋄ Inc∆pp←TVDYNINC4[57]  SL∆pp←(Con∆pp←Mat×[1]DP5-UDP5)×[0]1 ZDIV Rev5 ⋄ Upin∆pp←0 ⍝ Not "underpinned"[58]  PP∆CreateInterface[59]  [60]  SL∆pp←(Con∆pp←Mat×[1]    UDP5)×[0]1 ZDIV Rev5 ⋄ Upin∆pp←1 ⍝ "Underpinned"[61]  PP∆CreateInterface    ∇
+    ∇ TVDP1∆BENEFIT;Upin∆pp;BenType∆pp;IncType∆pp;Inc∆pp;SL∆pp;Con∆pp;∆;D;N;P3;P4;UN;UD;UP3;UP4;DP3;DP2;DP4;DP5;UDP4;UDP5;UDP2;UDP3;DP1Pre;DP1Post;RevOnly∆pp;End∆pp;Mat;Rev3;Rev2;Rev4;Rev5
+[1]   ⍝ DEFWIN.sf#10
+[2]   ⍝ v8.50 [EnhDef] RJW/SJT 2010
+[3]   ⍝ Death Benefits
+[4]   ⍝ ⎕IO≡0
+[5]   
+[6]   DP1Pre ←PreGMP ×(' YNL'⍳↑MOOPre )⊃0 0 WOFRAC (0.5×Male)
+[7]   DP1Post←PostGMP×(' YNL'⍳↑MOOPost)⊃0 0 WOFRAC  0.5
+[8]   ∆←FID × (⍉⊃DP1Pre DP1Post) +.× (mpreIND mpostIND)∘.='SM34'
+[9]    (DP3 DP2 DP4 DP5)←0 ⌈ (N D P3 P4)←⊂[0](⍉POST[;↑iWho;↑iPen;↑iDbr;]) D_SWITCH ∆ ⍝ SV5000169
+[10]  ⍝ CHECK LOGIC OF LINE BELOW
+[11]   (UDP3 UDP2 UDP4 UDP5)←0 ⌈ (UN UD UP3 UP4)←N D P3 P4 × ⎕SPLIT CDIV/[1]+/STDPUP[;iUnd,iWho;↑iPen;↑iRet;;↑iWto;]
+[12]  
+[13]  BenType∆pp←'P' ⋄ RevOnly∆pp←1 ⍝ Reversion Only
+[14]  End∆pp←⍬ ⍝⍝⍝ SL∆pp←⍬ SL∆pp assigned for Valuation Factor calculation only
+[15]  
+[16]  Mat←(⍳NX)∘.≤⍳NX
+[17]  
+[18]  IncType∆pp←'G1' ⋄ Inc∆pp←TVB88GMPINC
+[19]  SL∆pp←2×Con∆pp←Mat×[1]DP1Pre ×1-GFRAC1 ⋄ Upin∆pp←0 ⍝ Not "underpinned"
+[20]  PP∆CreateInterface
+[21]  
+[22]  SL∆pp←2×Con∆pp←Mat×[1]DP1Pre ×  GFRAC1 ⋄ Upin∆pp←1 ⍝ "Underpinned"
+[23]  PP∆CreateInterface
+[24]  
+[25]  IncType∆pp←'G2' ⋄ Inc∆pp←TVA88GMPINC
+[26]  SL∆pp←2×Con∆pp←Mat×[1]DP1Post×1-GFRAC2 ⋄ Upin∆pp←0 ⍝ Not "underpinned"
+[27]  PP∆CreateInterface
+[28]  
+[29]  SL∆pp←2×Con∆pp←Mat×[1]DP1Post×  GFRAC2 ⋄ Upin∆pp←1 ⍝ "Underpinned"
+[30]  PP∆CreateInterface
+[31]  
+[32]  ∆←+/+/PRE                                    ⍝ Calculate Reversions for Valuation Factor calculation
+[33]  (Rev3 Rev2 Rev4 Rev5)←⎕split ∆[;↑iWho;↑iPen;↑iDbr;] CDIV ∆[;↑iWho;↑iPen;↑iRet;]
+[34]  
+[35]  IncType∆pp←'M' ⋄ Inc∆pp←TVDYNINC
+[36]  SL∆pp←(Con∆pp←Mat×[1]DP2-UDP2)×[0]1 ZDIV Rev2 ⋄ Upin∆pp←0 ⍝ Not "underpinned"
+[37]  PP∆CreateInterface
+[38]  
+[39]  SL∆pp←(Con∆pp←Mat×[1]    UDP2)×[0]1 ZDIV Rev2 ⋄ Upin∆pp←1 ⍝ "Underpinned"
+[40]  PP∆CreateInterface
+[41]  
+[42]  IncType∆pp←'S' ⋄ Inc∆pp←TVNDYNINC
+[43]  SL∆pp←(Con∆pp←Mat×[1]DP3-UDP3)×[0]1 ZDIV Rev3 ⋄ Upin∆pp←0 ⍝ Not "underpinned"
+[44]  PP∆CreateInterface
+[45]  
+[46]  SL∆pp←(Con∆pp←Mat×[1]    UDP3)×[0]1 ZDIV Rev3 ⋄ Upin∆pp←1 ⍝ "Underpinned"
+[47]  PP∆CreateInterface
+[48]  
+[49]  IncType∆pp←'P3' ⋄ Inc∆pp←TVDYNINC3
+[50]  SL∆pp←(Con∆pp←Mat×[1]DP4-UDP4)×[0]1 ZDIV Rev4 ⋄ Upin∆pp←0 ⍝ Not "underpinned"
+[51]  PP∆CreateInterface
+[52]  
+[53]  SL∆pp←(Con∆pp←Mat×[1]    UDP4)×[0]1 ZDIV Rev4 ⋄ Upin∆pp←1 ⍝ "Underpinned"
+[54]  PP∆CreateInterface
+[55]  
+[56]  IncType∆pp←'P4' ⋄ Inc∆pp←TVDYNINC4
+[57]  SL∆pp←(Con∆pp←Mat×[1]DP5-UDP5)×[0]1 ZDIV Rev5 ⋄ Upin∆pp←0 ⍝ Not "underpinned"
+[58]  PP∆CreateInterface
+[59]  
+[60]  SL∆pp←(Con∆pp←Mat×[1]    UDP5)×[0]1 ZDIV Rev5 ⋄ Upin∆pp←1 ⍝ "Underpinned"
+[61]  PP∆CreateInterface
+    ∇

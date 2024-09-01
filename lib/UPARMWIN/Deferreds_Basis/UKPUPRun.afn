@@ -1,0 +1,16 @@
+    ∇ UKPUPRun puptype;varlist;⍙store;∆
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Run the Edit PUP Routine
+[3]   ⍝ Revn: sjt10apr15
+[4]   
+[5]   ⍙store←pack (2=⎕nc Validation_Vars)⌿Validation_Vars
+[6]   
+[7]   n∆A∆F←(⊃qtrim¨↑∆) push ∆←(⊂~mt¨↑∆)sel¨∆←(relRules for 'Page' (DLTB puptype,' PUPs')) at 'Alternative' 'Field'
+[8]   
+[9]   varlist←(lmt qtrim¨m2n SSName ⎕wi '∆name'),⊂'Formattrick'
+[10]  relRules[WHERE(relRules at 'Field')∊varlist;(keysIn relRules)⍳⊂'Alternative']←⊂''
+[11]  
+[12]  'PARMWIN' CallModule (puptype≡'Ind') means 'Edit_IndPUP' else 'Edit_UKPUP'
+[13]  
+[14]  pdef ⍙store
+    ∇

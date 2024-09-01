@@ -1,0 +1,56 @@
+    ∇ MembGroup VALN_START parms;desc
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝⍝⍝ ;IFbasischanged;comments;newrecsize;schemafiles ⍝⍝⍝ Local here or BatchRun???
+[3]   ⍝ Valuation Start Function
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝
+[7]   ⍝ V2.50u RE 1/11/93 Standardised
+[8]   newrecsize←VALN_LOOP MembGroup
+[9]   
+[10]  WRITE∆RES ⍝ Results to a file for later consolidation
+[11]  
+[12]  Win∆ProgressBar2 'Hide'
+[13]  
+[14]  :if MembGroup≡'Pensioners' ⋄ :andif summopt ⋄ (OutputDir,'TEMPSSSS.SF') ⎕xferase summtie ⋄ :endif ⍝ Pensioners only
+[15]  
+[16]  :if ~suppressText ⋄ :andif csvind
+[17]      OutPutFile APPEND tpE  ⍝ Add name of valuation output file to csv file
+[18]      ⎕nuntie tpE
+[19]  :endif
+[20]  
+[21]  :if MembGroup≡'Actives' ⋄ :andif newent ⍝ If New Entrant Run
+[22]      :if ⍙dbopt
+[23]          ValuationRunList←ValuationRunList OVER BatchRow ResultsCategoryID BasisCategoryID ScenarioID ClassID vDATE excelDelay ((~BasisCategoryID∊ValuationRunList at 'VFmissing')×VFmissing×BasisCategoryID) 0
+[24]      :endif
+[25]      (BatchRow TotalRuns ('New Entrant Model for ',DLTMB ⊃(BatchedNest[BatchRow;])[0 1 2])) Win∆ProgressBar 'FileUpdate'
+[26]  
+[27]      AgeMult←neIND←1 ⋄ aggopt←0,netie←summopt←aosind←IndCashFlow←VFtables←CFmissing←MItables←0
+[28]      0 0⍴(⊂SystemDir,'VALNWIN') ReadFile¨'New Entrant General' 'New Entrant Finish'
+[29]  
+[30]      :if ~NEMAIN 'New Entrants' ⋄ :andif ⍙dbopt
+[31]          ValuationRunList←ValuationRunList OVER BatchRow ResultsCategoryID BasisCategoryID ScenarioID ClassID vDATE excelDelay 0 0
+[32]          0 0⍴⎕ex 'ResultsCategoryID ScenarioID ClassID'
+[33]      :endif
+[34]  
+[35]      0 0⍴(⊂SystemDir,'VALNWIN') DeleteModule¨'New Entrant General' 'New Entrant Finish'
+[36]  :endif
+[37]  
+[38]  ⍝⍝⍝:if ~unattended ⋄ :andif ∨/∊('ERROR:' 'WARNING:' 'NOTE:' 'Note:')⍷¨⊂,VALN∆Errors if needed use TempCreate abd TempDelete
+[39]  ⍝⍝⍝    :if ∆ ⋄ BROWSE 'ß',InputDir,'VALN.$LOG' ⋄ :endif
+[40]  ⍝⍝⍝    :if tpL∊⎕xnnums ⋄ VALN∆LOG 'FileReset'
+[41]  ⍝⍝⍝    :else           ⋄ VALN∆LOG 'Create'
+[42]  ⍝⍝⍝    :endif
+[43]  ⍝⍝⍝:endif
+[44]  VALN∆LOG 'Write'
+[45]  
+[46]  :if ~suppressText
+[47]      desc←DLTMB ValName,' for ',basisDesc,' at ',RunTime
+[48]      :if ~unattended ⋄ :andif ~scenario ⋄ :andif TotalRuns=1 ⋄ desc BROWSE tpr1
+[49]      :else                                                   ⋄ desc UpdateBrowserHistory OutPutFile
+[50]      :endif
+[51]  :endif
+[52]  
+[53]  end:⎕NUNTIE (⎕xnnums,⎕nnums)~tpL,⍙⍙hpcLogTie ⍝ Close all files
+[54]  CLEARVARS
+    ∇

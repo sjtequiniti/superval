@@ -1,0 +1,24 @@
+    ∇ ACC∆TOTALS;SUMMREC;TOTS;NN;N
+[1]   ⍝ VALNWIN.sf#4
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   →(~summopt)/END ⋄ N←¯1 ⋄ NN←1↑⍴TOTS←ATOTS_summary
+[7]   TOTS←TOTALS_summary[; 18 0 11 21 22],(TOTS,0),0 ⋄ ARECN←pAGE
+[8]   LOOP:→(NN=N←N+1)/END ⋄ →(^/0=TOTS[N;])/⎕LC
+[9]   SUMMREC←' '⍪'I3,CI8,CM<->I16,CM<->I23,3CM<->I22,BCM<->I16' ⎕FMT(N+16),TOTS[,N; 0 2 5 7 9 11 13]
+[10]  SUMMREC←SUMMREC⍪132↑(,'BCM<->I19' ⎕FMT TOTS[N;1]),(¯20↑(~IsDeferred)/DECTOYYMM TOTS[N; 3 4]CDIV TOTS[N;0]),,('3CM<->I22,BCM<->I', 2 0 ⍕27-8×ValMeth≡'UCM')⎕FMT TOTS[,N; 6 8 10 12]
+[11]  ⍎(N=NN-1)/'SUMMREC[1;⍳3]←''I2,<+>'' ⎕FMT N+16'
+[12]  SUMMREC←UNSTAGGER SUMMREC ⋄ (APAGE ARECN)←H3 OUTPUT tpA,APAGE,ARECN ⋄ →LOOP
+[13]  ⍝ Print out results of Accrued Benefits
+[14]  END:ATOTS←TOTALS[1;0],TOTALS[0; 0 11],(,ATOTS), 0 0
+[15]  SUMMREC←' '⍪'Q< Members>CLI14,CM<->I13,CM<->I23,3CM<->I22,BCM<->I16' ⎕FMT MATRIX ATOTS[0 2 3 5 7 9 11]
+[16]  SUMMREC←SUMMREC⍪132↑,('CM<->I19,CM<->I42,2CM<->I22,BCM<->I', 2 0 ⍕27-8×ValMeth≡'UCM')⎕FMT MATRIX ATOTS[1 4 6 8 10]
+[17]  SUMMREC←UNSTAGGER SUMMREC
+[18]  :if csvind
+[19]      EXTRACT∆CSV 4-2×ppf
+[20]  :endif
+[21]  (APAGE ARECN)←H3 OUTPUT tpA,APAGE,ARECN
+[22]  NTRANSFER tpA ⍝ Create just one print file
+    ∇

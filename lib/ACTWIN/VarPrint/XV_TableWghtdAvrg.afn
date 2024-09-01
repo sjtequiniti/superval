@@ -1,1 +1,54 @@
-    ∇ Z←XV_TableWghtdAvrg lines;∆;cap;cmmt;ttl;next;dep;pts;bdy;tgs;thd;tbd;cnt;rws;xxx;find;hds;l2[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag a Weitghted Averages table in lines, if there. SJT 18jan10[3]   ⍝ Return number of lines read and rws of an HTML table.[4]   ⍝ Reads ext vars: MAX_DEPTH STYLE_THR[5]   ⍝ eg[6]   ⍝Weighted Averages[7]   ⍝        Age  Salary     Past Serv  Memb    Total Serv  Memb     Future Memb    Age at Entry to Company Scheme[8]   ⍝Number:  54 100,000         34y 0 34y 0         45y 0 45y 0           11y 0                       20y 0 20y 0[9]   ⍝MC Sal:  54                 34y 0 34y 0         45y 0 45y 0           11y 0                       20y 0 20y 0[10]  ⍝CC Sal:  54                 34y 0 34y 0         45y 0 45y 0           11y 0                       20y 0 20y 0[11]  [12]  [13]  :If ttl≡(⍴ttl←'Weighted Averages')↑↑lines[14]  :AndIf ':'∊3⊃lines[15]  [16]      ∆←  ⊂"Z←L find R;∆"[17]      ∆←∆,⊂":If ×⍴R"[18]      ∆←∆,⊂"    ∆←(⍴↑R)+↑∆/⍳⍴∆←L ⎕SS↑R"[19]      ∆←∆,⊂"    Z←∆,(∆↓L) find 1↓R"[20]      ∆←∆,⊂":Else"[21]      ∆←∆,⊂"    Z←⍬"[22]      ∆←∆,⊂":EndIf"[23]      xxx←⎕FX⊃∆[24]  [25]     ⍝ Note trailing space in penultimate col hd[26]      hds←1↓¨(+\∆='/')⊂∆←'//Age/Salary/Past Serv/Memb/Total Serv/Memb/Future Memb/Age at Entry to Company /Scheme'[27]      l2←2⊃lines[28]      pts←1,1↓(⍳⍴l2)∊+\l2 find 1↓hds                                              ⍝ find R-edges of col hds[29]      pts[↑∆/⍳⍴∆←l2 ⎕SS 2⊃hds]←1                                                  ⍝ special case: R-edge of col 1[30]  [31]      cmmt←⊂'<!-- XV_TableWghtdAvrg -->'[32]  [33]      next←MAX_DEPTH↑2↓lines                                                      ⍝ candidate data rows[34]      ∆←↑(↑next)⍳':'[35]      dep←+/^⍀(⊃next)[;∆]=':'                                                     ⍝ follow separators down[36]  [37]      bdy←(+\pts)⊂[2]⊃dep↑next[38]      tgs←(⍴bdy)⍴(1,¯1+2⊃⍴bdy)/'td class="lbl"' 'td class="val"'[39]      tbd←'tbody' xtag ↑,/(⊂'tr')xtag¨ ⊂[2] tgs xtag¨DLTB¨bdy[40]  [41]      cap←⊂'h2' xtag ttl[42]  [43]      thd←'thead' xtag (⊂'tr')xtag¨,/(⊂'th',STYLE_THR)xtag¨DLTB¨hds[44]  [45]      rws←cap,'table' xtag cmmt,thd,tbd[46]      cnt←2+dep[47]  [48]  :Else[49]      (cnt rws)←0 ''                                                              ⍝ no table found[50]  :EndIf[51]  [52]  Z←cnt rws    ∇
+    ∇ Z←XV_TableWghtdAvrg lines;∆;cap;cmmt;ttl;next;dep;pts;bdy;tgs;thd;tbd;cnt;rws;xxx;find;hds;l2
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag a Weitghted Averages table in lines, if there. SJT 18jan10
+[3]   ⍝ Return number of lines read and rws of an HTML table.
+[4]   ⍝ Reads ext vars: MAX_DEPTH STYLE_THR
+[5]   ⍝ eg
+[6]   ⍝Weighted Averages
+[7]   ⍝        Age  Salary     Past Serv  Memb    Total Serv  Memb     Future Memb    Age at Entry to Company Scheme
+[8]   ⍝Number:  54 100,000         34y 0 34y 0         45y 0 45y 0           11y 0                       20y 0 20y 0
+[9]   ⍝MC Sal:  54                 34y 0 34y 0         45y 0 45y 0           11y 0                       20y 0 20y 0
+[10]  ⍝CC Sal:  54                 34y 0 34y 0         45y 0 45y 0           11y 0                       20y 0 20y 0
+[11]  
+[12]  
+[13]  :If ttl≡(⍴ttl←'Weighted Averages')↑↑lines
+[14]  :AndIf ':'∊3⊃lines
+[15]  
+[16]      ∆←  ⊂"Z←L find R;∆"
+[17]      ∆←∆,⊂":If ×⍴R"
+[18]      ∆←∆,⊂"    ∆←(⍴↑R)+↑∆/⍳⍴∆←L ⎕SS↑R"
+[19]      ∆←∆,⊂"    Z←∆,(∆↓L) find 1↓R"
+[20]      ∆←∆,⊂":Else"
+[21]      ∆←∆,⊂"    Z←⍬"
+[22]      ∆←∆,⊂":EndIf"
+[23]      xxx←⎕FX⊃∆
+[24]  
+[25]     ⍝ Note trailing space in penultimate col hd
+[26]      hds←1↓¨(+\∆='/')⊂∆←'//Age/Salary/Past Serv/Memb/Total Serv/Memb/Future Memb/Age at Entry to Company /Scheme'
+[27]      l2←2⊃lines
+[28]      pts←1,1↓(⍳⍴l2)∊+\l2 find 1↓hds                                              ⍝ find R-edges of col hds
+[29]      pts[↑∆/⍳⍴∆←l2 ⎕SS 2⊃hds]←1                                                  ⍝ special case: R-edge of col 1
+[30]  
+[31]      cmmt←⊂'<!-- XV_TableWghtdAvrg -->'
+[32]  
+[33]      next←MAX_DEPTH↑2↓lines                                                      ⍝ candidate data rows
+[34]      ∆←↑(↑next)⍳':'
+[35]      dep←+/^⍀(⊃next)[;∆]=':'                                                     ⍝ follow separators down
+[36]  
+[37]      bdy←(+\pts)⊂[2]⊃dep↑next
+[38]      tgs←(⍴bdy)⍴(1,¯1+2⊃⍴bdy)/'td class="lbl"' 'td class="val"'
+[39]      tbd←'tbody' xtag ↑,/(⊂'tr')xtag¨ ⊂[2] tgs xtag¨DLTB¨bdy
+[40]  
+[41]      cap←⊂'h2' xtag ttl
+[42]  
+[43]      thd←'thead' xtag (⊂'tr')xtag¨,/(⊂'th',STYLE_THR)xtag¨DLTB¨hds
+[44]  
+[45]      rws←cap,'table' xtag cmmt,thd,tbd
+[46]      cnt←2+dep
+[47]  
+[48]  :Else
+[49]      (cnt rws)←0 ''                                                              ⍝ no table found
+[50]  :EndIf
+[51]  
+[52]  Z←cnt rws
+    ∇

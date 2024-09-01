@@ -1,0 +1,27 @@
+    ∇ RFProj_RowsAdd;∆;date;num;MaxRow
+[1]   ⍝ QSMWIN.sf#8
+[2]   ⍝ Add the Rows to the Grid
+[3]   
+[4]   date←"DD/MM/YYYY" DATEEXP (∆=⌈/∆←,JUL "DD/MM/YYYY" DATEEXP rfDate)⌿rfDate
+[5]   num←zwb NumRows
+[6]   
+[7]   :select frequency
+[8]   :case 'Quarterly'   ⋄ date←(num⌿MATRIX date)+num 3⍴↑,/0 1 0\¨3×⍳num
+[9]   :case 'Monthly'     ⋄ date←(num⌿MATRIX date)+num 3⍴↑,/0 1 0\¨  ⍳num
+[10]  :case 'Fortnightly' ⋄ date←(14×⍳num) DATEOFFSET date
+[11]  :case 'Weekly'      ⋄ date←( 7×⍳num) DATEOFFSET date
+[12]  :case 'Daily'       ⋄ date←(   ⍳num) DATEOFFSET date
+[13]  :endselect
+[14]  
+[15]  :while ∨/∆←12<date[;2] ⍝ Fix dates with months greater then 12
+[16]      date[;2]←date[;2]-12×∆ ⋄ date[;3]←date[;3]+∆
+[17]  :endwhile
+[18]  
+[19]  :while ∨/∆←~DATECHECK date ⍝ Fix dates beyond end of month
+[20]      date[;1]←date[;1]-∆
+[21]  :endwhile
+[22]  
+[23]  date←'DD/MM/YYYY' DATE∆FMT date
+[24]  SSName ⎕wi 'MaxRow' (num+MaxRow←SSName ⎕wi 'MaxRow')
+[25]  SSName ⎕wi "TextRC[]" (⎕mix ,(MaxRow+⍳↑num)∘.,1) (m2n date)
+    ∇

@@ -1,0 +1,38 @@
+    ∇ tieno←access NCREATE fILENAME;⎕ELX;elx;fail
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Create an empty native file called 'fILENAME'. If this file already exists, resize to 0
+[3]   ⍝ If not already tied, ties the file using the next available tieno
+[4]   ⍝ Any failure return tieno 0,
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   elx←⎕elx ⋄ fail←0
+[8]   
+[9]   :if 0=⎕nc 'access' ⋄ access←2 ⋄ :endif ⍝ Use default access if not specified
+[10]  tieno←'Native' TieNumber fILENAME ⍝ Tie number currently in use or next available
+[11]  
+[12]  :if FileExist fILENAME
+[13]      :if tieno∊⎕xnnums,⎕nnums
+[14]      :andif 0≠⎕nsize tieno
+[15]          ⎕elx←'→next' ⍝ If incorrect access to resize, retry later
+[16]          0 ⎕nresize tieno
+[17]  next:   ⎕elx←elx
+[18]      :endif
+[19]      ⎕nuntie tieno
+[20]  
+[21]      :if ∣×tieno←tieno×fILENAME NTIE tieno,access ⍝ Retie with specified access
+[22]          :if 0≠⎕nsize tieno
+[23]              ⎕elx←'fail←1 ⋄ →next1' ⍝ If incorrect access to resize, retry later
+[24]              0 ⎕nresize tieno
+[25]  next1:      ⎕elx←elx
+[26]              :if fail
+[27]                  fILENAME NERASE tieno ⋄ →new ⍝ If unable to resize, delete the file and re-create
+[28]              :endif
+[29]          :endif
+[30]      :endif
+[31]  
+[32]  :else ⍝ File doesn't exist
+[33]  new:⎕elx←'→tieno←0'
+[34]      fILENAME ⎕xncreate tieno
+[35]      tieno←tieno×fILENAME NTIE tieno,access ⍝ Retie with specified access
+[36]  :endif
+    ∇

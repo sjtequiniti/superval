@@ -1,0 +1,14 @@
+    ∇ XL_StoreData
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Call the functions that store data for Excel
+[3]   
+[4]   :if ∨/EXIT[1 2] ⋄ :andif ClassID≠4 ⍝ Only for Enders at current valuation date
+[5]       :if ppf∨bencap ⋄ :andif capflag ⍝ Capped Benefits Indicator
+[6]           ⍙dbbenres←⍙dbbenres⍪((0 0 3 24) dbXe 0) ⍙DBValnRecords capflag
+[7]       :endif
+[8]       :if IsDeferred
+[9]           ⍙dbbenres←⍙dbbenres⍪((0 0 7 25) dbXe 0) ⍙DBValnRecords NRAPUP ⍝ NRA PUP
+[10]      :endif
+[11]      ⍙DBAddRecords
+[12]  :endif
+    ∇

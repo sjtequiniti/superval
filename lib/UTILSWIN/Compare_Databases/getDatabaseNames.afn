@@ -1,0 +1,37 @@
+    ∇ Z←getDatabaseNames;xxx;∆;⎕WSELF;ok
+[1]   ⍝ UTILSWIN.sf#8
+[2]   ⍝ Names of databases in local SQL Server instance
+[3]   ⍝ Side effects: creates and destroys objects #.ADOcon #.ADOcmd #.rst
+[4]   ⍝ Vern: sjt12mar16
+[5]   
+[6]   ⎕WSELF←'ADOcon' ⎕WI 'New' 'ADODB.Connection'
+[7]   'ADOcon' ⎕wi 'xConnectionTimeout' 600               ⍝ 10 min time out
+[8]   'ADOcon' ⎕wi 'xCommandTimeout' 600                  ⍝ 10 min time out
+[9]   
+[10]  :try
+[11]      ⍙DBSQLOpen 'Database' 'Master'
+[12]      ok←1
+[13]  :catchall
+[14]      ok←0
+[15]  :endtry
+[16]  
+[17]  :if ok
+[18]      ⎕WSELF←'ADOcmd' ⎕WI 'New' 'ADODB.Command'
+[19]      'ADOcmd' ⎕wi 'xCommandTimeout' 600                  ⍝ 10 min time out
+[20]      ⎕WI 'xActiveConnection' ('ADOcon' ⎕WI 'obj')
+[21]      ⎕WI 'xCommandText' "SELECT Name FROM SysDatabases"
+[22]      xxx←⎕WI 'XExecute > rst'
+[23]  
+[24]      Z←,'rst' ⎕WI 'XGetRows'
+[25]  
+[26]      ⍝ exclude names of internal databases
+[27]      ∆←'master' 'tempdb' 'model' 'msdb'
+[28]      ∆←∆,(⊂'ReportServer$SQLEXPRESS'),¨ '' 'TempDB'
+[29]      Z←Z~∆
+[30]  
+[31]      xxx←'ADOcon' 'ADOcmd' 'rst' ∘.⎕WI 'Close' 'Delete'
+[32]  :else ⍝ failed to connect to SQL Server
+[33]      Z←''
+[34]      ⎕WI¨'Close' 'Delete'
+[35]  :endif
+    ∇

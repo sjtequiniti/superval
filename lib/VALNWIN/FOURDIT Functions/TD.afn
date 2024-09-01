@@ -1,0 +1,21 @@
+    ∇ Z←class TD R;tag
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Local syntax sweetener
+[3]   ⍝ Vern: sjt21sep15
+[4]   ⍝ Revn dnp05oct15 - added unit tests and removed indentation
+[5]   ⍝ Revn dnp06oct15 - simplification
+[6]   ⍝?⍝ '<td>txt</td>'               ≡ '' TD 'txt'
+[7]   ⍝?⍝ '<td class="table">txt</td>' ≡ 'table' TD 'txt'
+[8]   ⍝?⍝ '<td>txt</td>'               ≡ TD 'txt'
+[9]   ⍝?⍝ '<td></td>'               ≡ TD ''
+[10]  
+[11]  
+[12]  :if 2=⎕NC 'class' ⋄ :andif ~mt class
+[13]      tag←'td' xattr 'class' class
+[14]  :else
+[15]      tag←'td'
+[16]  :endif
+[17]  ⍝Z←⊃,/ (⊃,/0 ((~mt R)/2) 0)↓¨ tag xtag ⊂ aplEscape R ⍝ removes the indentation '  ' and flattens the result
+[18]  Z←'<',tag,'>',(aplEscape R),'</td>' ⍝ FIXME substitute xtag when refactored
+[19]  ⍝ Z←⎕ENLIST tag xtag ⊂ aplEscape R ⍝ removes the indentation '  ' and flattens the result
+    ∇

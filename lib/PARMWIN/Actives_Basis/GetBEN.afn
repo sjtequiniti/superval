@@ -1,1 +1,17 @@
-    ∇ GetBEN;list;desc;selection;field;pos;no[1]   ⍝ PARMWIN.sf#6[2]   ⍝ Get a "Standard" Benenfit Definition[3]   [4]   :if 2≠⎕warg[3] ⋄ :return ⋄ :endif ⍝ Must be Right Click[5]   [6]   :if 0∊⍴list←⍙POPUPSdict ReadDictFile 'BENDesc' ⋄ :return ⋄ :endif[7]   [8]   desc←0 7↓list←1 0↓list ⋄ list←list[;⍳5][9]   [10]  :if 0∊⍴selection←Win∆SelectionBox desc list ⋄ :return ⋄ :endif[11]  [12]  field←'fmSV.sActives_Basis.pgBenefits.fStandard.edBenCode'[13]  (pos no)←field ⎕wi 'selection' ⋄ text←(pos⌈⍴text)↑text←field ⎕wi 'text'[14]  [15]  field ⎕wi 'text' (text[⍳pos],selection,(pos+no)↓text)    ∇
+    ∇ GetBEN;list;desc;selection;field;pos;no
+[1]   ⍝ PARMWIN.sf#6
+[2]   ⍝ Get a "Standard" Benenfit Definition
+[3]   
+[4]   :if 2≠⎕warg[3] ⋄ :return ⋄ :endif ⍝ Must be Right Click
+[5]   
+[6]   :if 0∊⍴list←⍙POPUPSdict ReadDictFile 'BENDesc' ⋄ :return ⋄ :endif
+[7]   
+[8]   desc←0 7↓list←1 0↓list ⋄ list←list[;⍳5]
+[9]   
+[10]  :if 0∊⍴selection←Win∆SelectionBox desc list ⋄ :return ⋄ :endif
+[11]  
+[12]  field←'fmSV.sActives_Basis.pgBenefits.fStandard.edBenCode'
+[13]  (pos no)←field ⎕wi 'selection' ⋄ text←(pos⌈⍴text)↑text←field ⎕wi 'text'
+[14]  
+[15]  field ⎕wi 'text' (text[⍳pos],selection,(pos+no)↓text)
+    ∇

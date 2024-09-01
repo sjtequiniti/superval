@@ -1,0 +1,24 @@
+    ∇ COCR←CR∆CALCS;TOTS;PVCONTS1pc;PVC;EXPPM;MCEXP;SALEXP;TVRB;TVMB;TVDB;TVWB;MTInd;MP1;MP2;MTC;DP1;DP2;DTC;WP1;WP2;WTC;WPC;RP1;RP2;RP3;RP4;RP5;RTC;DP3;DP4;DP5;IP1;IP2;IP3;IP4;IP5;ITC;LP1;LP2;LP3;LP4;LP5;LTC;NO
+[1]   ⍝ VALNWIN.sf#6
+[2]   ⍝ Benefit Functions
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   MP1←MP2←MTC←DP1←DP2←DTC←WP1←WP2←WTC←WPC←RP1←RP2←RP3←RP4←RP5←RTC←DP3←DP4←DP5←IP1←IP2←IP3←IP4←IP5←ITC←LP1←LP2←LP3←LP4←LP5←LTC←⎕IO←0
+[8]   ⍝ Set up probabilities of exiting in year t(rows) due to cause x(cols)
+[9]   (MXX DXX) PROCESS∆BENS 'Exit'
+[10]  CR∆CALCS∆ver ⋄ →(~cssspread)/F1
+[11]  PENret ⋄ PENdeath ⋄ PENdis ⋄ PENwith
+[12]  F1:TVRB←PROBS[;0]×+/TVRB ⋄ TVMB←PROBS[;1]×+/TVMB ⍝ Probs of benefits
+[13]  TVDB←PROBS[;2]×+/TVDB ⋄ TVWB←PROBS[;3]×+/TVWB
+[14]  TOTS←+/vMP×TVRB+TVMB+TVDB+TVWB ⍝ Present value of benefits
+[15]  →(~defind)/L1 ⋄ TOTS←TOTS++/vMP×VDD×DDT
+[16]  ⍝ Calculate the value of a contribution of 1% of salary
+[17]  ⍝ The second half allows for conts from exits
+[18]  L1:SALEXP←EXPSAL×PVCONTS1pc←+/0.01×((¯1↓vMP×SALMPvec[;V1pcSAL])×1↓tPx)+vQ×(0.25×¯1↓SALMPvec[;V1pcSAL]+SALvec[;V1pcSAL])×DIFF-tPx
+[19]  MCEXP←EXPMC×CONTS←+/CONTS×vMP×(MID tPx),0
+[20]  EXPPM←PMEXP×+/(¯1↓vMP)×MID tPx×NX↑1,×\F ⍝ Per member expenses
+[21]  ⍝ Co Cont Rate after expenses
+[22]  COCR←((TOTS+MCEXP+EXPPM+SALEXP-CONTS)×1+EXPCC)CDIV PVCONTS1pc
+    ∇

@@ -1,0 +1,36 @@
+    ∇ PP∆Pen_Primary;pp∆VF;pp∆FutCF;pp∆TotCF;pp∆PastCF;pp∆FVstart;pp∆PVstart;pp∆FutPV;pp∆PastPV;pp∆TotPV;pp∆ResPV;pp∆totBen
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Projection of the Primary Pension
+[3]   
+[4]   ⍝⍝⍝ FIXME:  pp∆PropFY should allow for Pension Payment/Frequency
+[5]   pp∆VF←pp∆ppfRatio[(pp∆Texit-term)+⍳pp∆size]×(pp∆LXgpadd+pp∆PropFY×pp∆lxAdj)×pp∆size↑pp∆MIncpost×pp∆defLX×pp∆defInc
+[6]   
+[7]   :if pp∆exitcol=2 ⋄ 1   ILLMEMB PP∆ValuationFactors pp∆VF
+[8]   :else            ⋄ 1 PPOSTMEMB PP∆ValuationFactors pp∆VF
+[9]   :endif
+[10]  
+[11]  :if neIND
+[12]      pp∆FutPV← pp∆defdisc×pp∆FVstart←(pp∆FutCF←pp∆TotCF←  pp∆TotBen[pp∆benyear]×pp∆VF)          ×pp∆size↑pp∆discpost
+[13]      pp∆PastPV←0 ⋄ pp∆PVstart←0×pp∆FVstart ⋄ pp∆PastCF←0×pp∆FutCF
+[14]  :else
+[15]      pp∆FutPV← pp∆defdisc×pp∆FVstart←(pp∆FutCF←           pp∆FutBen[pp∆benyear]×pp∆VF)          ×pp∆size↑pp∆discpost
+[16]      pp∆PastPV←pp∆defdisc×pp∆PVstart←(pp∆PastCF←(pp∆TotCF←pp∆TotBen[pp∆benyear]×pp∆VF)-pp∆FutCF)×pp∆size↑pp∆discpost
+[17]  :endif
+[18]  pp∆ResPV←pp∆PastPV+pp∆FutPV
+[19]  pp∆TotPV←(pp∆PastPV←+/pp∆PastPV)+(pp∆FutPV←+/pp∆FutPV)
+[20]  
+[21]  ⍝⍀⍝ pp∆totBen←pp∆TotBen[pp∆benyear] ⋄ pp∆futBen←pp∆FutBen[pp∆benyear]
+[22]  ⍝⍀⍝ VARIABLE_ALIASES←VARIABLE_ALIASES amend ('SL∆pp' 'pp∆totBen') ('Con∆pp' 'pp∆futBen')
+[23]  ⍝⍀⍝ 'M' PP∆TestUpdate 'pp∆totBen←' 'pp∆TotCF←' 'pp∆TotPV←' 'pp∆futBen←' 'pp∆FutCF←' 'pp∆FutPV←'
+[24]  
+[25]  :if aosind ⋄ :andif ClassID=4
+[26]      aos∆cf[pp∆bencol;0;]←aos∆cf[pp∆bencol;0;]+20↑pp∆TotCF
+[27]      aos∆results[pp∆bencol;0;]←aos∆results[pp∆bencol;0;]+ResSize↑(⌽+\⌽pp∆ResPV)÷(pp∆size↑pp∆vPost)×(pp∆size↑pp∆X0↓pp∆LX÷pp∆LX[pp∆X0])
+[28]  :endif
+[29]  
+[30]  :if test ⋄ :andif ClassID≠4 ⋄ :andif ~comflag ⋄ pp∆TotBen[pp∆benyear] PP∆StoreAnn 0 ⋄ :endif
+[31]  
+[32]  :if comflag ⋄ comfacs[pp∆row;pp∆benyear;0]←pp∆TotPV÷pp∆defdisc
+[33]  :else       ⋄ 0 PP∆StoreRes 0
+[34]  :endif
+    ∇

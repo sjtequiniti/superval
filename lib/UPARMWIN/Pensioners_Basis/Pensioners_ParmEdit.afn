@@ -1,0 +1,19 @@
+    ∇ type Pensioners_ParmEdit field;globalsPkg;Module
+[1]   ⍝ UPARMWIN.sf#9
+[2]   ⍝ Cover function of the calling of Parameter Editing functions
+[3]   
+[4]   :select type
+[5]   :case 'ParmsW' ⋄ Module←'Spouse_Parameters'
+[6]   :endselect
+[7]   
+[8]   :if ~0≡field←field ⎕wi '∆focusfield'
+[9]       globalsPkg←(Module field 'Pensioners') GlobalsPkg (MigDir,'SVMIGT',Win∆CountryCode) ReadFile 'Globals Migration'
+[10]  :endif
+[11]  
+[12]  'PARMWIN' CallModule Module
+[13]  
+[14]  UpdateVarLists ⊂Module
+[15]  
+[16]  ⍝ Perform onChange for all relevanrt fields in case the parameters underlying a Parameter Set being used have changed
+[17]  0 0⍴((FormFields for (⊂'variable'),(relRules for 'Type' type) at 'Field') at 'shortname') Pensioners_Basis 'Change'
+    ∇

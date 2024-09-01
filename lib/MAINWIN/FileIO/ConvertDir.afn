@@ -1,0 +1,44 @@
+    ∇ Dir←Dir ConvertDir parm;size;Folder;z;tail;index;i;len
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Conversion of a Directory to either:
+[3]   ⍝  a "shortened" version (parm = ShortDir), or
+[4]   ⍝  a "relative" version (parm = Relative), or
+[5]   ⍝  a "absolute" version (parm = Absolute).
+[6]   ⍝ Dir is a directory for ShortDir or 2 Directories for Relative/Absolute
+[7]   
+[8]   :select parm
+[9]   :case 'ShortDir'
+[10]      (len Dir)←Dir
+[11]      :if len>⍴Dir ⋄ :return ⋄ :endif ⍝ Already Short
+[12]      :if 4≥size←⍴Folder←(Dir='\') ⎕penclose Dir←'\',Dir ⋄ :return ⋄ :endif
+[13]      index←(1 2,¯1 0+size)-~⎕io ⋄ z←,⍉z,[⎕io-0.5]⌽z←2↓¯2↓⍳size ⋄ size←,⊃⍴¨Folder
+[14]      :while (len-5)>+/size[index,1↑z] ⋄ index←index,1↑z ⋄ z←1↓z ⋄ :endwhile
+[15]      z←1,DIFF index←index[⍋index] ⋄ Dir←''
+[16]  
+[17]      :for i :in ⍳⍴index
+[18]          Dir←Dir,((1≠z[i])/'\....'),DLTB ⊃Folder[index[i]]
+[19]      :endfor
+[20]      Dir←1↓Dir
+[21]  
+[22]  :case 'Absolute'
+[23]      size←⊃⌈/⍴¨,¨Dir ⋄ (Dir Folder)←UPPERCASE¨size↑¨Dir
+[24]      :if ^/' '=Dir ⋄ →end ⋄ :endif
+[25]      :if (DLTB '.')≡DLTB Dir ⋄ Dir←Folder ⋄ →end ⋄ :endif
+[26]      :if 0=z←+/^\(size⍴1 0 0)/Dir ⎕ss '..\'
+[27]      :andif ':'∊Dir
+[28]          →end
+[29]      :endif
+[30]      Dir←((z<⌽+\⌽Folder='\')/Folder),(3×z)↓Dir
+[31]  
+[32]  :case 'Relative'
+[33]      size←⊃⌈/⍴¨,¨Dir ⋄ (Dir Folder)←UPPERCASE¨size↑¨Dir
+[34]      :if Dir≡Folder ⋄ Dir←'.' ⋄ →end ⋄ :endif
+[35]      :if ~∨/z←^\Dir=Folder ⋄ →end ⋄ :endif ⍝ Different Drives!!
+[36]      z←size↑⌽∨\⌽'\'=z/Dir ⍝ Find last \ matching!
+[37]      size←+/'\'=(~z)/Folder ⋄ tail←(~z)/Dir
+[38]      Dir←((3×size)⍴'..\'),tail
+[39]  
+[40]  :endselect
+[41]  
+[42]  end:Dir←DLTB Dir
+    ∇

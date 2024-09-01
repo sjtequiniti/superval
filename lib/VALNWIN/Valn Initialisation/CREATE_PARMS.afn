@@ -1,0 +1,42 @@
+    ∇ CREATE∆PARMS
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Adjust the Valuation parameters
+[3]   
+[4]   vDATEind←'P'≠↑vDATEind ⍝ Valuation Date Indicator
+[5]   :if testall←2=test←(2×'F'=↑test)+(↑test)∊'LY' ⋄ test←1 ⋄ :endif ⍝ Test Valuation Run 0, 1 or 2 (testall=1) for UK
+[6]   PROPT←(uk=1)⌈'Y'=↑PROPT
+[7]   newent←(~test)^'Y'=↑newent ⍝ New Entrant Model Replacement
+[8]   NEparms←DLTB NEparms
+[9]   contper←(1+(99×1+newent)×~(⊂ValMeth)∊'PUC' 'UCM' 'DAB' 'SUR' 'NOT')⌈zwb contper ⍝ Control Period
+[10]  insind←((⊂ValMeth)∊'SUR' 'NOT')⌈((⊂ValMeth)∊'PUC' 'UCM')×'Y'=↑insind ⍝ Insurance Indicator
+[11]  abNO←(ValMeth≡'DAB')×'D'=↑abNO ⍝ Target Accrued Benefit
+[12]  ⍝⍝⍝ abNO←(ValMeth≡'DAB')×zwb ¯1↑DLTMB abNO ⍝ Target Accrued Benefit
+[13]  aosind←(~scenario)^vDATEind^aosenabled^'Y'=↑aosind ⍝ AOS Indicator
+[14]  decopt←(uk≠1)⌊'Y'=↑decopt ⍝ Decrement Listing Indicator
+[15]  pbens←(uk≠1)⌊'Y'=↑pbens ⍝ Benefits Listing Indicator
+[16]  dataind←test⊃dataind 'None' ⍝ Data File Listing Indicator
+[17]  summopt←(~test)^'Y'=↑summopt ⍝ Age Summarised Listing Option
+[18]  memsumm←(~test)^'Y'=↑memsumm ⍝ Member Summarised Listing Option
+[19]  valout←'Y'=↑valout ⍝ PUC Valuation Output for Surcharge
+[20]  keepfile←(~(⊂ValMeth)∊'NEC' 'NOT')⌈(ValMeth≡'NOT')^'Y'=↑keepfile ⍝ Keep "Notional" Member file
+[21]  SSexport←csvind←'Y'=↑csvind
+[22]  ⍝⍝⍝ SSexport←(~test)^(~(⊂ValMeth)∊'NEC' 'NOT' 'SUR')^'Y'=↑SSexport ⍝ Spreadsheet Export
+[23]  ⍝⍝⍝ :if uk=2 ⋄ SSexpparms←'Y'=↑SSexpparms ⋄ :endif ⍝⍝⍝
+[24]  KeepResult←(~test)^(~(⊂ValMeth)∊'ABC' 'SUR' 'NOT' 'NEC')^'Y'=↑KeepResult ⍝ Store Valuation Results
+[25]  fscopt←'Y'=↑fscopt
+[26]  aggopt←2↑'Y'=↑aggopt ⍝ Second indicates if in AGG∆CALCS
+[27]  AgeInterp←'Y'=↑AgeInterp ⋄ AgeMult←1 ⍝ Interpolate to Exact Age
+[28]  IndCashFlow←'Y'=↑IndCashFlow ⍝ Individual (Total) Cash Flows
+[29]  bencap←'Y'=↑bencap
+[30]  s143←'Y'=↑s143
+[31]  SelSex←↑SelSex
+[32]  
+[33]  neIND←IsAccrued←0
+[34]  ⍙dbresults←⍙dbopt←XLCtl^KeepResult^~test
+[35]  fscopt←⍙dbopt^fscopt ⍝ Only if Database Option
+[36]  VFtables←⍙dbopt^'Y'=↑VFtables ⍝ Valuation Factors in Database
+[37]  
+[38]  term←0
+[39]  necr←ValMeth≡'NEC' ⍝ New Ent Cont Rate Indicator
+[40]  termAdjFin←(~aosind)×TermAdjFin ⍝ Term for adjusting Financials Assumptions
+    ∇

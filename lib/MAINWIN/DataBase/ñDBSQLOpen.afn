@@ -1,0 +1,11 @@
+    ∇ ⍙DBSQLOpen db;⎕elx;n;elx
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Executing an SQL Open command with retries
+[3]   
+[4]   n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"⍙DBSQLOpen ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5 ⋄ →retry'
+[5]   retry:
+[6]   :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[7]   
+[8]   'ADOcon' ⎕WI 'XOpen' (⍙DBconnectionString sql_properties OVER db)
+[9]   ⎕elx←elx
+    ∇

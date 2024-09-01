@@ -1,1 +1,162 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Edit_UKPension" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Edit_UKPension" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "Formattrick" Win∆Inherits "FormatP"[10]  PickList←"fmEditUKPension.cbFormattrick" ⎕wi "list"[11]  selection←PickList ExactTLU DLTB Formattrick[12]  :if mt selection[13]      modified←⌈/modified,0[14]  :endif[15]  "fmEditUKPension.cbFormattrick" ⎕wi "value" (¯1↑0,selection)[16]  "fmEditUKPension.edPENDESC" ⎕wi "text" (DLTB PENDESC)[17]  PickList←"fmEditUKPension.fPens.cbcsorp" ⎕wi "list"[18]  selection←PickList ExactTLU DLTB csorp[19]  :if mt selection[20]      :if ~mt DLTB csorp[21]          warnings←warnings OVER "Previous Selection for 'Cash Sum or Pension' is no longer available"[22]      :endif[23]      modified←⌈/modified,1[24]  :endif[25]  "fmEditUKPension.fPens.cbcsorp" ⎕wi "value" (¯1↑1,selection)[26]  PickList←"fmEditUKPension.fPens.cbpendata" ⎕wi "list"[27]  selection←(StripText PickList) ExactTLU DLTB StripText pendata[28]  :if mt selection[29]      :if ~mt DLTB pendata[30]          warnings←warnings OVER "Previous Selection for 'Pension Amount' is no longer available"[31]      :endif[32]      modified←⌈/modified,0[33]  :endif[34]  "fmEditUKPension.fPens.cbpendata" ⎕wi "value" (¯1↑0,selection)[35]  "fmEditUKPension.fPens.edwarfrac" ⎕wi "text" (DLTB warfrac)[36]  PickList←"fmEditUKPension.fPens.cbspendata" ⎕wi "list"[37]  selection←(StripText PickList) ExactTLU DLTB StripText spendata[38]  :if mt selection[39]      :if ~mt DLTB spendata[40]          warnings←warnings OVER "Previous Selection for 'Spouse's Pension Amount' is no longer available"[41]      :endif[42]      modified←⌈/modified,0[43]  :endif[44]  "fmEditUKPension.fPens.cbspendata" ⎕wi "value" (¯1↑0,selection)[45]  PickList←"fmEditUKPension.fPens.cbadjfac" ⎕wi "list"[46]  warnings←warnings OVER "Adjustment Factor" Win∆NumRelative "adjfac" "lradjfac" ('Scalar')[47]  selection←(StripText PickList) ExactTLU DLTB StripText adjfac[48]  :if mt selection[49]          "fmEditUKPension.fPens.cbadjfac" ⎕wi "text" (DLTB adjfac)[50]  :else[51]      "fmEditUKPension.fPens.cbadjfac" ⎕wi "value" selection[52]  :endif[53]  PickList←"fmEditUKPension.fPenPay.cbbage" ⎕wi "list"[54]  selection←(StripText PickList) ExactTLU DLTB StripText bage[55]  :if mt selection[56]          "fmEditUKPension.fPenPay.cbbage" ⎕wi "text" (DLTB bage)[57]  :else[58]      "fmEditUKPension.fPenPay.cbbage" ⎕wi "value" selection[59]  :endif[60]  PickList←"fmEditUKPension.fPenPay.cbeage" ⎕wi "list"[61]  selection←(StripText PickList) ExactTLU DLTB StripText eage[62]  :if mt selection[63]          "fmEditUKPension.fPenPay.cbeage" ⎕wi "text" (DLTB eage)[64]  :else[65]      "fmEditUKPension.fPenPay.cbeage" ⎕wi "value" selection[66]  :endif[67]  "fmEditUKPension.fPenPay.ckdidind" ⎕wi "value" (zwb didind)[68]  PickList←"fmEditUKPension.fPenPay.cbdefinc" ⎕wi "list"[69]  warnings←warnings OVER "Revaluation In Deferment" Win∆FinRelative "definc" "lrdefinc" 0[70]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText definc[71]  :if mt selection[72]      modified←⌈/modified,0[73]  :endif[74]  "fmEditUKPension.fPenPay.cbdefinc" ⎕wi "value" (¯1↑0,selection)[75]  PickList←"fmEditUKPension.fPenPay.cbpayinc" ⎕wi "list"[76]  warnings←warnings OVER "Pension Increases in Payment" Win∆FinRelative "payinc" "lrpayinc" 0[77]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText payinc[78]  :if mt selection[79]      modified←⌈/modified,0[80]  :endif[81]  "fmEditUKPension.fPenPay.cbpayinc" ⎕wi "value" (¯1↑0,selection)[82]  "fmEditUKPension.fPenInd.ckponly" ⎕wi "value" (zwb ponly)[83]  "fmEditUKPension.fPenInd.cksponly" ⎕wi "value" (zwb sponly)[84]  "fmEditUKPension.fGMP.ckgmpadj" ⎕wi "value" (zwb gmpadj)[85]  PickList←"fmEditUKPension.fGMP.cbretpup" ⎕wi "list"[86]  selection←(StripText PickList) ExactTLU DLTB StripText retpup[87]  :if mt selection[88]      :if ~mt DLTB retpup[89]          warnings←warnings OVER "Previous Selection for 'Pension at Retirement' is no longer available"[90]      :endif[91]      modified←⌈/modified,0[92]  :endif[93]  "fmEditUKPension.fGMP.cbretpup" ⎕wi "value" (¯1↑0,selection)[94]  PickList←"fmEditUKPension.fGMP.cbpreret" ⎕wi "list"[95]  selection←(StripText PickList) ExactTLU DLTB StripText preret[96]  :if mt selection[97]      :if ~mt DLTB preret[98]          warnings←warnings OVER "Previous Selection for 'Pre 1988 Included at Retirement' is no longer available"[99]      :endif[100]     modified←⌈/modified,0[101] :endif[102] "fmEditUKPension.fGMP.cbpreret" ⎕wi "value" (¯1↑0,selection)[103] PickList←"fmEditUKPension.fGMP.cbpostret" ⎕wi "list"[104] selection←(StripText PickList) ExactTLU DLTB StripText postret[105] :if mt selection[106]     :if ~mt DLTB postret[107]         warnings←warnings OVER "Previous Selection for 'Post 1988 Included at Retirement' is no longer available"[108]     :endif[109]     modified←⌈/modified,0[110] :endif[111] "fmEditUKPension.fGMP.cbpostret" ⎕wi "value" (¯1↑0,selection)[112] PickList←"fmEditUKPension.fGMP.cbprevd" ⎕wi "list"[113] selection←(StripText PickList) ExactTLU DLTB StripText prevd[114] :if mt selection[115]     :if ~mt DLTB prevd[116]         warnings←warnings OVER "Previous Selection for 'Pre 1988 Included at Valuation Date' is no longer available"[117]     :endif[118]     modified←⌈/modified,0[119] :endif[120] "fmEditUKPension.fGMP.cbprevd" ⎕wi "value" (¯1↑0,selection)[121] PickList←"fmEditUKPension.fGMP.cbpostvd" ⎕wi "list"[122] selection←(StripText PickList) ExactTLU DLTB StripText postvd[123] :if mt selection[124]     :if ~mt DLTB postvd[125]         warnings←warnings OVER "Previous Selection for 'Post 1988 Included at Valuation Date' is no longer available"[126]     :endif[127]     modified←⌈/modified,0[128] :endif[129] "fmEditUKPension.fGMP.cbpostvd" ⎕wi "value" (¯1↑0,selection)[130] "fmEditUKPension.fPPF.edm_ppfnra" ⎕wi "text" (DLTB m_ppfnra)[131] "fmEditUKPension.fPPF.edf_ppfnra" ⎕wi "text" (DLTB f_ppfnra)[132] PickList←"fmEditUKPension.fPPF.cbppfpayinc" ⎕wi "list"[133] selection←PickList ExactTLU DLTB ppfpayinc[134] :if mt selection[135]     :if ~mt DLTB ppfpayinc[136]         warnings←warnings OVER "Previous Selection for 'PPF Service Period' is no longer available"[137]     :endif[138]     modified←⌈/modified,0[139] :endif[140] "fmEditUKPension.fPPF.cbppfpayinc" ⎕wi "value" (¯1↑0,selection)[141] PickList←"fmEditUKPension.fPPF.cbppfdefinc" ⎕wi "list"[142] warnings←warnings OVER "PPF Revaluation in Deferment" Win∆FinRelative "ppfdefinc" "lrppfdefinc" 0[143] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText ppfdefinc[144] :if mt selection[145]     modified←⌈/modified,0[146] :endif[147] "fmEditUKPension.fPPF.cbppfdefinc" ⎕wi "value" (¯1↑0,selection)[148] "fmEditUKPension.fPPF.ckcapinclude" ⎕wi "value" (zwb capinclude)[149] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Edit_UKPension[150]     :for var :in spin Comment_Edit_UKPension at "variable" "row" ⋄ (var row)←var[151]         "Edit_UKPension" ParmColor ((FormFields for "variable" var) at "control"),var row 1[152]     :endfor[153] :endif[154] :if ~0∊⍴,warnings[155]     MDISPLAY DLTMB warnings,⎕tcnl[156]     Win∆AssignVars "fmEditUKPension"[157] :endif[158] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Edit_UKPension" "" "Names"[159]     "fmEditUKPension" ⎕wi "modified" 0[160] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Edit_UKPension" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Edit_UKPension" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "Formattrick" Win∆Inherits "FormatP"
+[10]  PickList←"fmEditUKPension.cbFormattrick" ⎕wi "list"
+[11]  selection←PickList ExactTLU DLTB Formattrick
+[12]  :if mt selection
+[13]      modified←⌈/modified,0
+[14]  :endif
+[15]  "fmEditUKPension.cbFormattrick" ⎕wi "value" (¯1↑0,selection)
+[16]  "fmEditUKPension.edPENDESC" ⎕wi "text" (DLTB PENDESC)
+[17]  PickList←"fmEditUKPension.fPens.cbcsorp" ⎕wi "list"
+[18]  selection←PickList ExactTLU DLTB csorp
+[19]  :if mt selection
+[20]      :if ~mt DLTB csorp
+[21]          warnings←warnings OVER "Previous Selection for 'Cash Sum or Pension' is no longer available"
+[22]      :endif
+[23]      modified←⌈/modified,1
+[24]  :endif
+[25]  "fmEditUKPension.fPens.cbcsorp" ⎕wi "value" (¯1↑1,selection)
+[26]  PickList←"fmEditUKPension.fPens.cbpendata" ⎕wi "list"
+[27]  selection←(StripText PickList) ExactTLU DLTB StripText pendata
+[28]  :if mt selection
+[29]      :if ~mt DLTB pendata
+[30]          warnings←warnings OVER "Previous Selection for 'Pension Amount' is no longer available"
+[31]      :endif
+[32]      modified←⌈/modified,0
+[33]  :endif
+[34]  "fmEditUKPension.fPens.cbpendata" ⎕wi "value" (¯1↑0,selection)
+[35]  "fmEditUKPension.fPens.edwarfrac" ⎕wi "text" (DLTB warfrac)
+[36]  PickList←"fmEditUKPension.fPens.cbspendata" ⎕wi "list"
+[37]  selection←(StripText PickList) ExactTLU DLTB StripText spendata
+[38]  :if mt selection
+[39]      :if ~mt DLTB spendata
+[40]          warnings←warnings OVER "Previous Selection for 'Spouse's Pension Amount' is no longer available"
+[41]      :endif
+[42]      modified←⌈/modified,0
+[43]  :endif
+[44]  "fmEditUKPension.fPens.cbspendata" ⎕wi "value" (¯1↑0,selection)
+[45]  PickList←"fmEditUKPension.fPens.cbadjfac" ⎕wi "list"
+[46]  warnings←warnings OVER "Adjustment Factor" Win∆NumRelative "adjfac" "lradjfac" ('Scalar')
+[47]  selection←(StripText PickList) ExactTLU DLTB StripText adjfac
+[48]  :if mt selection
+[49]          "fmEditUKPension.fPens.cbadjfac" ⎕wi "text" (DLTB adjfac)
+[50]  :else
+[51]      "fmEditUKPension.fPens.cbadjfac" ⎕wi "value" selection
+[52]  :endif
+[53]  PickList←"fmEditUKPension.fPenPay.cbbage" ⎕wi "list"
+[54]  selection←(StripText PickList) ExactTLU DLTB StripText bage
+[55]  :if mt selection
+[56]          "fmEditUKPension.fPenPay.cbbage" ⎕wi "text" (DLTB bage)
+[57]  :else
+[58]      "fmEditUKPension.fPenPay.cbbage" ⎕wi "value" selection
+[59]  :endif
+[60]  PickList←"fmEditUKPension.fPenPay.cbeage" ⎕wi "list"
+[61]  selection←(StripText PickList) ExactTLU DLTB StripText eage
+[62]  :if mt selection
+[63]          "fmEditUKPension.fPenPay.cbeage" ⎕wi "text" (DLTB eage)
+[64]  :else
+[65]      "fmEditUKPension.fPenPay.cbeage" ⎕wi "value" selection
+[66]  :endif
+[67]  "fmEditUKPension.fPenPay.ckdidind" ⎕wi "value" (zwb didind)
+[68]  PickList←"fmEditUKPension.fPenPay.cbdefinc" ⎕wi "list"
+[69]  warnings←warnings OVER "Revaluation In Deferment" Win∆FinRelative "definc" "lrdefinc" 0
+[70]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText definc
+[71]  :if mt selection
+[72]      modified←⌈/modified,0
+[73]  :endif
+[74]  "fmEditUKPension.fPenPay.cbdefinc" ⎕wi "value" (¯1↑0,selection)
+[75]  PickList←"fmEditUKPension.fPenPay.cbpayinc" ⎕wi "list"
+[76]  warnings←warnings OVER "Pension Increases in Payment" Win∆FinRelative "payinc" "lrpayinc" 0
+[77]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText payinc
+[78]  :if mt selection
+[79]      modified←⌈/modified,0
+[80]  :endif
+[81]  "fmEditUKPension.fPenPay.cbpayinc" ⎕wi "value" (¯1↑0,selection)
+[82]  "fmEditUKPension.fPenInd.ckponly" ⎕wi "value" (zwb ponly)
+[83]  "fmEditUKPension.fPenInd.cksponly" ⎕wi "value" (zwb sponly)
+[84]  "fmEditUKPension.fGMP.ckgmpadj" ⎕wi "value" (zwb gmpadj)
+[85]  PickList←"fmEditUKPension.fGMP.cbretpup" ⎕wi "list"
+[86]  selection←(StripText PickList) ExactTLU DLTB StripText retpup
+[87]  :if mt selection
+[88]      :if ~mt DLTB retpup
+[89]          warnings←warnings OVER "Previous Selection for 'Pension at Retirement' is no longer available"
+[90]      :endif
+[91]      modified←⌈/modified,0
+[92]  :endif
+[93]  "fmEditUKPension.fGMP.cbretpup" ⎕wi "value" (¯1↑0,selection)
+[94]  PickList←"fmEditUKPension.fGMP.cbpreret" ⎕wi "list"
+[95]  selection←(StripText PickList) ExactTLU DLTB StripText preret
+[96]  :if mt selection
+[97]      :if ~mt DLTB preret
+[98]          warnings←warnings OVER "Previous Selection for 'Pre 1988 Included at Retirement' is no longer available"
+[99]      :endif
+[100]     modified←⌈/modified,0
+[101] :endif
+[102] "fmEditUKPension.fGMP.cbpreret" ⎕wi "value" (¯1↑0,selection)
+[103] PickList←"fmEditUKPension.fGMP.cbpostret" ⎕wi "list"
+[104] selection←(StripText PickList) ExactTLU DLTB StripText postret
+[105] :if mt selection
+[106]     :if ~mt DLTB postret
+[107]         warnings←warnings OVER "Previous Selection for 'Post 1988 Included at Retirement' is no longer available"
+[108]     :endif
+[109]     modified←⌈/modified,0
+[110] :endif
+[111] "fmEditUKPension.fGMP.cbpostret" ⎕wi "value" (¯1↑0,selection)
+[112] PickList←"fmEditUKPension.fGMP.cbprevd" ⎕wi "list"
+[113] selection←(StripText PickList) ExactTLU DLTB StripText prevd
+[114] :if mt selection
+[115]     :if ~mt DLTB prevd
+[116]         warnings←warnings OVER "Previous Selection for 'Pre 1988 Included at Valuation Date' is no longer available"
+[117]     :endif
+[118]     modified←⌈/modified,0
+[119] :endif
+[120] "fmEditUKPension.fGMP.cbprevd" ⎕wi "value" (¯1↑0,selection)
+[121] PickList←"fmEditUKPension.fGMP.cbpostvd" ⎕wi "list"
+[122] selection←(StripText PickList) ExactTLU DLTB StripText postvd
+[123] :if mt selection
+[124]     :if ~mt DLTB postvd
+[125]         warnings←warnings OVER "Previous Selection for 'Post 1988 Included at Valuation Date' is no longer available"
+[126]     :endif
+[127]     modified←⌈/modified,0
+[128] :endif
+[129] "fmEditUKPension.fGMP.cbpostvd" ⎕wi "value" (¯1↑0,selection)
+[130] "fmEditUKPension.fPPF.edm_ppfnra" ⎕wi "text" (DLTB m_ppfnra)
+[131] "fmEditUKPension.fPPF.edf_ppfnra" ⎕wi "text" (DLTB f_ppfnra)
+[132] PickList←"fmEditUKPension.fPPF.cbppfpayinc" ⎕wi "list"
+[133] selection←PickList ExactTLU DLTB ppfpayinc
+[134] :if mt selection
+[135]     :if ~mt DLTB ppfpayinc
+[136]         warnings←warnings OVER "Previous Selection for 'PPF Service Period' is no longer available"
+[137]     :endif
+[138]     modified←⌈/modified,0
+[139] :endif
+[140] "fmEditUKPension.fPPF.cbppfpayinc" ⎕wi "value" (¯1↑0,selection)
+[141] PickList←"fmEditUKPension.fPPF.cbppfdefinc" ⎕wi "list"
+[142] warnings←warnings OVER "PPF Revaluation in Deferment" Win∆FinRelative "ppfdefinc" "lrppfdefinc" 0
+[143] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText ppfdefinc
+[144] :if mt selection
+[145]     modified←⌈/modified,0
+[146] :endif
+[147] "fmEditUKPension.fPPF.cbppfdefinc" ⎕wi "value" (¯1↑0,selection)
+[148] "fmEditUKPension.fPPF.ckcapinclude" ⎕wi "value" (zwb capinclude)
+[149] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Edit_UKPension
+[150]     :for var :in spin Comment_Edit_UKPension at "variable" "row" ⋄ (var row)←var
+[151]         "Edit_UKPension" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[152]     :endfor
+[153] :endif
+[154] :if ~0∊⍴,warnings
+[155]     MDISPLAY DLTMB warnings,⎕tcnl
+[156]     Win∆AssignVars "fmEditUKPension"
+[157] :endif
+[158] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Edit_UKPension" "" "Names"
+[159]     "fmEditUKPension" ⎕wi "modified" 0
+[160] :endif
+    ∇

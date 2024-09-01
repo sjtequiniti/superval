@@ -1,1 +1,56 @@
-    ∇ wREAD∆SLICE∆VARS sliceind[1]   ⍝ ACTWIN.sf#4[2]   [3]   :IF sliceind[4]       :IF ∨/0≠STDATE∆L←slice⊃STDATE ⋄ FNDATE∆L←slice⊃FNDATE[5]       :ELSE                            ⋄ STDATE∆L←FNDATE∆L←⍬[6]       :ENDIF[7]       MINSDAT∆L←MINSDAT[slice;]  ⋄ MAXFDAT∆L←MAXFDAT[slice;][8]       SERVRND∆L←SERVRND[slice;]  ⋄ ADDYRS∆L←slice⊃ADDYRS[9]       WARFRAC∆SL←WARFRAC2[slice][10]      DYNIND∆L←DYNIND[slice][11]      :if ppf[12]          dynind←PPFNRAALL⍳PPFNRA[slice] ⍝ Redefine dynamism plane according to PPF NRA[13]      :elseif isNPCR[14]          dynind←slice<SLICEUP-1[15]      :else[16]          dynind←'SM34'⍳DYNIND∆L[17]      :endif[18]      irind←~IRIND[slice] ⍝⍝⍝ Yes is 0, No is 1[19]      SERVINDM∆L←SERVINDM[slice][20]      revdefind←(1 2 3)⍳REVDEFIND[slice][21]      barbind←(1 2)⍳BARBIND[slice][22]      upinslind←~UPINSLIND[slice] ⍝⍝⍝ Yes is 0, No is 1[23]      accind←'C'=ACCBASIS∆L←ACCBASIS[slice][24]      CAREInc∆L←accind^~CAREInc[slice]∨^/CAREProspective ⍝ 1 if CARE and CAREInc is not Yes (ie not ignored!!)[25]      :if ppf[26]          :if slice=0 ⋄ sliceup←2[27]          :else       ⋄ sliceup←'1203'⍳PPFPAYINCA[slice] ⍝ redefine slicing index according to PPFPAYINCA[28]          :endif[29]      :else[30]          sliceup←↑WHERE (slice≥SLICEUP-1),((slice<SLICEUP-1)^slice≠0),slice=0 ⍝ NEW PARAMETER[31]      :endif[32]  :ELSE[33]      SALCOD∆L←⊃SALCOD[slice;tier][34]      ACCMLT∆L←↑⊃ACCMLT[slice;tier] ⋄ ACCDIV∆L←↑⊃ACCDIV[slice;tier][35]      ACCDATA∆L←,⊃(tier+3×slice)⊃ACCDATA[36]      FIXPEN∆L←,⊃(tier+3×slice)⊃FIXPEN[37]      ASTAB∆L←⊃ASTAB[slice;tier][38]      ARTAB∆XT←ARTAB∆xt[slice;tier][39]      ARTAB∆L←⊃ARTAB[slice;tier][40]      SRATAB∆L←⊃SRATAB[slice;tier][41]      DEDTIER∆L←DEDTIER∆L∆NRA←DEDTIER∆L∆PreNRA←DEDTIER∆L∆I←DEDTIER∆L∆D←PHIDEDTIER∆L←PHIDEDTIER∆L∆PreNRA←PHIDEDTIER∆L∆D←⍬[42]      :select DeductTier[slice;tier][43]      :case 1 ⋄    DEDTIER∆L←   Tier1  ⋄    DEDTIER∆L∆PreNRA←   Tier1∆PreNRA  ⋄    DEDTIER∆L∆D←   Tier1∆D  ⋄ DEDTIER∆L∆NRA←Tier1∆NRA  ⋄ DEDTIER∆L∆I←Tier1∆I[44]         :if PHI ⋄ PHIDEDTIER∆L←PHITier1  ⋄ PHIDEDTIER∆L∆PreNRA←PHITier1∆PreNRA  ⋄ PHIDEDTIER∆L∆D←PHITier1∆D  ⋄ :endif[45]      :case 2 ⋄    DEDTIER∆L←   Tier12 ⋄    DEDTIER∆L∆PreNRA←   Tier12∆PreNRA ⋄    DEDTIER∆L∆D←   Tier12∆D ⋄ DEDTIER∆L∆NRA←Tier12∆NRA ⋄ DEDTIER∆L∆I←Tier12∆I[46]         :if PHI ⋄ PHIDEDTIER∆L←PHITier12 ⋄ PHIDEDTIER∆L∆PreNRA←PHITier12∆PreNRA ⋄ PHIDEDTIER∆L∆D←PHITier12∆D ⋄ :endif[47]      :endselect[48]      MINPEN∆L←NX↑(NX-SNX)⍴↑(,⊃(tier+3×slice)⊃MINPEN),NOM×-10*12[49]      MAXPEN∆L←            ↑(,⊃(tier+3×slice)⊃MAXPEN),NOM× 10*12[50]      PENADJ∆L←            ↑(,⊃(tier+3×slice)⊃PENADJ),1[51]      :IF ppf ⋄   PPFADJ∆L←↑(,⊃(tier+3×slice)⊃PPFADJ),1[52]      :ELSE   ⋄   PPFADJ∆L←⍬[53]      :ENDIF[54]  :ENDIF    ∇
+    ∇ wREAD∆SLICE∆VARS sliceind
+[1]   ⍝ ACTWIN.sf#4
+[2]   
+[3]   :IF sliceind
+[4]       :IF ∨/0≠STDATE∆L←slice⊃STDATE ⋄ FNDATE∆L←slice⊃FNDATE
+[5]       :ELSE                            ⋄ STDATE∆L←FNDATE∆L←⍬
+[6]       :ENDIF
+[7]       MINSDAT∆L←MINSDAT[slice;]  ⋄ MAXFDAT∆L←MAXFDAT[slice;]
+[8]       SERVRND∆L←SERVRND[slice;]  ⋄ ADDYRS∆L←slice⊃ADDYRS
+[9]       WARFRAC∆SL←WARFRAC2[slice]
+[10]      DYNIND∆L←DYNIND[slice]
+[11]      :if ppf
+[12]          dynind←PPFNRAALL⍳PPFNRA[slice] ⍝ Redefine dynamism plane according to PPF NRA
+[13]      :elseif isNPCR
+[14]          dynind←slice<SLICEUP-1
+[15]      :else
+[16]          dynind←'SM34'⍳DYNIND∆L
+[17]      :endif
+[18]      irind←~IRIND[slice] ⍝⍝⍝ Yes is 0, No is 1
+[19]      SERVINDM∆L←SERVINDM[slice]
+[20]      revdefind←(1 2 3)⍳REVDEFIND[slice]
+[21]      barbind←(1 2)⍳BARBIND[slice]
+[22]      upinslind←~UPINSLIND[slice] ⍝⍝⍝ Yes is 0, No is 1
+[23]      accind←'C'=ACCBASIS∆L←ACCBASIS[slice]
+[24]      CAREInc∆L←accind^~CAREInc[slice]∨^/CAREProspective ⍝ 1 if CARE and CAREInc is not Yes (ie not ignored!!)
+[25]      :if ppf
+[26]          :if slice=0 ⋄ sliceup←2
+[27]          :else       ⋄ sliceup←'1203'⍳PPFPAYINCA[slice] ⍝ redefine slicing index according to PPFPAYINCA
+[28]          :endif
+[29]      :else
+[30]          sliceup←↑WHERE (slice≥SLICEUP-1),((slice<SLICEUP-1)^slice≠0),slice=0 ⍝ NEW PARAMETER
+[31]      :endif
+[32]  :ELSE
+[33]      SALCOD∆L←⊃SALCOD[slice;tier]
+[34]      ACCMLT∆L←↑⊃ACCMLT[slice;tier] ⋄ ACCDIV∆L←↑⊃ACCDIV[slice;tier]
+[35]      ACCDATA∆L←,⊃(tier+3×slice)⊃ACCDATA
+[36]      FIXPEN∆L←,⊃(tier+3×slice)⊃FIXPEN
+[37]      ASTAB∆L←⊃ASTAB[slice;tier]
+[38]      ARTAB∆XT←ARTAB∆xt[slice;tier]
+[39]      ARTAB∆L←⊃ARTAB[slice;tier]
+[40]      SRATAB∆L←⊃SRATAB[slice;tier]
+[41]      DEDTIER∆L←DEDTIER∆L∆NRA←DEDTIER∆L∆PreNRA←DEDTIER∆L∆I←DEDTIER∆L∆D←PHIDEDTIER∆L←PHIDEDTIER∆L∆PreNRA←PHIDEDTIER∆L∆D←⍬
+[42]      :select DeductTier[slice;tier]
+[43]      :case 1 ⋄    DEDTIER∆L←   Tier1  ⋄    DEDTIER∆L∆PreNRA←   Tier1∆PreNRA  ⋄    DEDTIER∆L∆D←   Tier1∆D  ⋄ DEDTIER∆L∆NRA←Tier1∆NRA  ⋄ DEDTIER∆L∆I←Tier1∆I
+[44]         :if PHI ⋄ PHIDEDTIER∆L←PHITier1  ⋄ PHIDEDTIER∆L∆PreNRA←PHITier1∆PreNRA  ⋄ PHIDEDTIER∆L∆D←PHITier1∆D  ⋄ :endif
+[45]      :case 2 ⋄    DEDTIER∆L←   Tier12 ⋄    DEDTIER∆L∆PreNRA←   Tier12∆PreNRA ⋄    DEDTIER∆L∆D←   Tier12∆D ⋄ DEDTIER∆L∆NRA←Tier12∆NRA ⋄ DEDTIER∆L∆I←Tier12∆I
+[46]         :if PHI ⋄ PHIDEDTIER∆L←PHITier12 ⋄ PHIDEDTIER∆L∆PreNRA←PHITier12∆PreNRA ⋄ PHIDEDTIER∆L∆D←PHITier12∆D ⋄ :endif
+[47]      :endselect
+[48]      MINPEN∆L←NX↑(NX-SNX)⍴↑(,⊃(tier+3×slice)⊃MINPEN),NOM×-10*12
+[49]      MAXPEN∆L←            ↑(,⊃(tier+3×slice)⊃MAXPEN),NOM× 10*12
+[50]      PENADJ∆L←            ↑(,⊃(tier+3×slice)⊃PENADJ),1
+[51]      :IF ppf ⋄   PPFADJ∆L←↑(,⊃(tier+3×slice)⊃PPFADJ),1
+[52]      :ELSE   ⋄   PPFADJ∆L←⍬
+[53]      :ENDIF
+[54]  :ENDIF
+    ∇

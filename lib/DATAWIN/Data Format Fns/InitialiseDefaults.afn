@@ -1,1 +1,59 @@
-    ∇ InitialiseDefaults;⎕io;TotNumVarsdefined;size;row;ROW;MAT;index;DateVarsdefined[1]   ⍝ DATAWIN.sf#2[2]   ⍝ Initialisation of Data Defaults[3]   ⎕io←1[4]   :if 0∊⍴Format ⋄ :return ⋄ :endif[5]   0 CREATEDATADESC Format[6]   [7]   ⍝ Numeric Non-Standard[8]   :select uk[9]   :case 0[10]      TotNumVarsdefined←((×⍴fBM)⌿MATRIX 'Benefit Multiple') OVER TotNumVars[11]      TotNumVarsdefined←((×⍴fPCR)⌿MATRIX 'Preserved Cont Rate') OVER TotNumVarsdefined[12]      TotNumVarsdefined←((×⍴fDCR)⌿MATRIX 'Deemed Cont Rate') OVER TotNumVarsdefined[13]      TotNumVarsdefined←((×⍴fPACW)⌿MATRIX 'Accum Preserved Conts') OVER TotNumVarsdefined[14]      TotNumVarsdefined←((×⍴fACWO)⌿MATRIX 'Accum Conts w/o Int') OVER TotNumVarsdefined[15]      TotNumVarsdefined←((×⍴fACW)⌿MATRIX 'Accum Conts with Int') OVER TotNumVarsdefined[16]  :case 1[17]      TotNumVarsdefined←((×⍴fGMPE0)⌿MATRIX 'Post 1988 GMP') OVER TotNumVars[18]      TotNumVarsdefined←((×⍴fGMP0)⌿MATRIX 'Pre 1988 GMP') OVER TotNumVarsdefined[19]  :case 2 ⍝ None for SA (all zero at entry!!)[20]      TotNumVarsdefined←0 0⍴''[21]  :endselect[22]  [23]  TotNumVarsdefined←(∨/' '≠TotNumVarsdefined)⌿TotNumVarsdefined[24]  [25]  size←↑⍴MATRIX TotNumVarsdefined ⋄ DataNumVars←MATRIX DataNumVars[26]  row←DataNumVars ExactTLU TotNumVarsdefined ⋄ ROW←TotNumVarsdefined ExactTLU DataNumVars[27]  MAT←(size,¯1↑⍴DataNumValue)⍴' ' ⋄ MAT[ROW;]←DataNumValue[row;][28]  DataNumValue←(1 1⌈⍴MAT)↑MAT[29]  MAT←(size,¯1↑⍴DataNumDecP)⍴' ' ⋄ MAT[ROW;]←DataNumDecP[row;][30]  DataNumDecP←(1 1⌈⍴MAT)↑MAT ⋄ DataNumDecP[(^/' '=DataNumDecP)/⍳size;1]←'0'[31]  DataNumType←⎕split (size,5)⍴'Total'[32]  DataNumType[TotNumVarsdefined ExactTLU 'Benefit Multiple' OVER 'Preserved Cont Rate' OVER 'Deemed Cont Rate' OVER AvNumVars]←⊂'Average'[33]  DataNumType←(1 0⌈⍴DataNumType)↑DataNumType←⊃DataNumType ⋄ DataNumVars←(1 0⌈⍴TotNumVarsdefined)↑TotNumVarsdefined[34]  [35]  ⍝ Character Non-Standard[36]  size←↑⍴MATRIX CharVars ⋄ DataCharVars←MATRIX DataCharVars[37]  row←DataCharVars ExactTLU CharVars ⋄ ROW←CharVars ExactTLU DataCharVars[38]  MAT←(size,¯1↑⍴DataCharValue)⍴' ' ⋄ MAT[ROW;]←DataCharValue[row;][39]  DataCharValue←(1 1⌈⍴MAT)↑MAT ⋄ DataCharVars←(1 0⌈⍴CharVars)↑CharVars[40]  [41]  ⍝ Date Non-Standard[42]  DateVarsdefined←((×⍴fDJF)⌿MATRIX 'Date Joined ',¯6↑'Fund  ',(×uk)/'Scheme') OVER DateVars[43]  DateVarsdefined←((×⍴fDJS)⌿MATRIX 'Date Joined ',¯7↑'Service',(×uk)/'Company') OVER DateVarsdefined[44]  size←↑⍴MATRIX DateVarsdefined ⋄ DataDateVars←MATRIX DataDateVars[45]  row←DataDateVars ExactTLU DateVarsdefined ⋄ ROW←DateVarsdefined ExactTLU DataDateVars[46]  MAT←(size,¯1↑⍴DataDateAbs)⍴' ' ⋄ MAT[ROW;]←DataDateAbs[row;][47]  DataDateAbs←(1 1⌈⍴MAT)↑MAT[48]  MAT←(size,¯1↑⍴DataDateRel)⍴' ' ⋄ MAT[ROW;]←DataDateRel[row;][49]  DataDateRel←(1 2⌈⍴MAT)↑MAT[50]  index←(^/' '=DataDateAbs,DataDateRel)/⍳size[51]  DataDateRel[index;1]←'+' ⋄ DataDateRel[index;2]←'0'[52]  :if uk=0[53]      MAT←(size,¯1↑⍴DataDateAdj)⍴' ' ⋄ MAT[ROW;]←DataDateAdj[row;][54]      DataDateAdj←(1 1⌈⍴MAT)↑MAT[55]      DataDateAdj[(^/' '=DataDateAdj)/⍳size;1]←'Y'[56]  :endif[57]  DataDateVars←(1 0⌈⍴DateVarsdefined)↑DateVarsdefined    ∇
+    ∇ InitialiseDefaults;⎕io;TotNumVarsdefined;size;row;ROW;MAT;index;DateVarsdefined
+[1]   ⍝ DATAWIN.sf#2
+[2]   ⍝ Initialisation of Data Defaults
+[3]   ⎕io←1
+[4]   :if 0∊⍴Format ⋄ :return ⋄ :endif
+[5]   0 CREATEDATADESC Format
+[6]   
+[7]   ⍝ Numeric Non-Standard
+[8]   :select uk
+[9]   :case 0
+[10]      TotNumVarsdefined←((×⍴fBM)⌿MATRIX 'Benefit Multiple') OVER TotNumVars
+[11]      TotNumVarsdefined←((×⍴fPCR)⌿MATRIX 'Preserved Cont Rate') OVER TotNumVarsdefined
+[12]      TotNumVarsdefined←((×⍴fDCR)⌿MATRIX 'Deemed Cont Rate') OVER TotNumVarsdefined
+[13]      TotNumVarsdefined←((×⍴fPACW)⌿MATRIX 'Accum Preserved Conts') OVER TotNumVarsdefined
+[14]      TotNumVarsdefined←((×⍴fACWO)⌿MATRIX 'Accum Conts w/o Int') OVER TotNumVarsdefined
+[15]      TotNumVarsdefined←((×⍴fACW)⌿MATRIX 'Accum Conts with Int') OVER TotNumVarsdefined
+[16]  :case 1
+[17]      TotNumVarsdefined←((×⍴fGMPE0)⌿MATRIX 'Post 1988 GMP') OVER TotNumVars
+[18]      TotNumVarsdefined←((×⍴fGMP0)⌿MATRIX 'Pre 1988 GMP') OVER TotNumVarsdefined
+[19]  :case 2 ⍝ None for SA (all zero at entry!!)
+[20]      TotNumVarsdefined←0 0⍴''
+[21]  :endselect
+[22]  
+[23]  TotNumVarsdefined←(∨/' '≠TotNumVarsdefined)⌿TotNumVarsdefined
+[24]  
+[25]  size←↑⍴MATRIX TotNumVarsdefined ⋄ DataNumVars←MATRIX DataNumVars
+[26]  row←DataNumVars ExactTLU TotNumVarsdefined ⋄ ROW←TotNumVarsdefined ExactTLU DataNumVars
+[27]  MAT←(size,¯1↑⍴DataNumValue)⍴' ' ⋄ MAT[ROW;]←DataNumValue[row;]
+[28]  DataNumValue←(1 1⌈⍴MAT)↑MAT
+[29]  MAT←(size,¯1↑⍴DataNumDecP)⍴' ' ⋄ MAT[ROW;]←DataNumDecP[row;]
+[30]  DataNumDecP←(1 1⌈⍴MAT)↑MAT ⋄ DataNumDecP[(^/' '=DataNumDecP)/⍳size;1]←'0'
+[31]  DataNumType←⎕split (size,5)⍴'Total'
+[32]  DataNumType[TotNumVarsdefined ExactTLU 'Benefit Multiple' OVER 'Preserved Cont Rate' OVER 'Deemed Cont Rate' OVER AvNumVars]←⊂'Average'
+[33]  DataNumType←(1 0⌈⍴DataNumType)↑DataNumType←⊃DataNumType ⋄ DataNumVars←(1 0⌈⍴TotNumVarsdefined)↑TotNumVarsdefined
+[34]  
+[35]  ⍝ Character Non-Standard
+[36]  size←↑⍴MATRIX CharVars ⋄ DataCharVars←MATRIX DataCharVars
+[37]  row←DataCharVars ExactTLU CharVars ⋄ ROW←CharVars ExactTLU DataCharVars
+[38]  MAT←(size,¯1↑⍴DataCharValue)⍴' ' ⋄ MAT[ROW;]←DataCharValue[row;]
+[39]  DataCharValue←(1 1⌈⍴MAT)↑MAT ⋄ DataCharVars←(1 0⌈⍴CharVars)↑CharVars
+[40]  
+[41]  ⍝ Date Non-Standard
+[42]  DateVarsdefined←((×⍴fDJF)⌿MATRIX 'Date Joined ',¯6↑'Fund  ',(×uk)/'Scheme') OVER DateVars
+[43]  DateVarsdefined←((×⍴fDJS)⌿MATRIX 'Date Joined ',¯7↑'Service',(×uk)/'Company') OVER DateVarsdefined
+[44]  size←↑⍴MATRIX DateVarsdefined ⋄ DataDateVars←MATRIX DataDateVars
+[45]  row←DataDateVars ExactTLU DateVarsdefined ⋄ ROW←DateVarsdefined ExactTLU DataDateVars
+[46]  MAT←(size,¯1↑⍴DataDateAbs)⍴' ' ⋄ MAT[ROW;]←DataDateAbs[row;]
+[47]  DataDateAbs←(1 1⌈⍴MAT)↑MAT
+[48]  MAT←(size,¯1↑⍴DataDateRel)⍴' ' ⋄ MAT[ROW;]←DataDateRel[row;]
+[49]  DataDateRel←(1 2⌈⍴MAT)↑MAT
+[50]  index←(^/' '=DataDateAbs,DataDateRel)/⍳size
+[51]  DataDateRel[index;1]←'+' ⋄ DataDateRel[index;2]←'0'
+[52]  :if uk=0
+[53]      MAT←(size,¯1↑⍴DataDateAdj)⍴' ' ⋄ MAT[ROW;]←DataDateAdj[row;]
+[54]      DataDateAdj←(1 1⌈⍴MAT)↑MAT
+[55]      DataDateAdj[(^/' '=DataDateAdj)/⍳size;1]←'Y'
+[56]  :endif
+[57]  DataDateVars←(1 0⌈⍴DateVarsdefined)↑DateVarsdefined
+    ∇

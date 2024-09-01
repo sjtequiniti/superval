@@ -1,1 +1,61 @@
-    ∇ Z←ProcessExiters data;mapping;keys;flg;r;∆;exiters;hdr;exit;∆Ident1;∆Ident2;∆Identifier1;∆Identifier2;∆DoE;∆MoE;∆datatype;∆NAMES;∆ExitLiab;order;InDx;⍙⍙;⍙[1]   ⍝ DATAWIN.sf#23[2]   ⍝ Amends the data where there are new members or exiters[3]   [4]   ⍝ Revn dnp17nov17 * copes with optional MoE field[5]   ⍝ Revn dnp22nov17 * $: new special character to identify Estimated Liability exiters (previously ⎕av[2])[6]   ⍝ Revn dnp14dec17 * make the Header for the Date of Exit field in the Pensioners CSV "DOT" rather than "DOE"[7]   ⍝ Revn dnp23jan18 * Fix for DOE/DOT column[8]   ⍝ Revn dnp23jan18 * Remove the InDx column from exiters too[9]   [10]  (∆Ident1 ∆Ident2 ∆Identifier1 ∆Identifier2) ← Ident1 Ident2 Identifier1 Identifier2 ⍝ Keep unlocalised variables away[11]  (∆DoE ∆MoE  ∆datatype ∆NAMES)               ← DoE MoE  datatype NAMES               ⍝ Keep unlocalised variables away[12]  ∆ExitLiab ← zwb ExitLiab[13]  [14]  hdr←(∆Ident1 ∆Ident2), 'DoE' 'MoE'[15]  exit←hdr OVER ⍉⊃m2n¨ ∆Identifier1 ∆Identifier2 ∆DoE ∆MoE                            ⍝ exit - a table of with exit criteria[16]  exit← (~^/mt¨exit)⌿exit                                                             ⍝ Lose the mt rows from exit[17]  [18]  :if ~ mt ↑ exit at ∆Ident1                                                          ⍝ Exiters[19]      ⍙   ←↑(∆datatype ≡ 'Pensioners') ⌽ 'MOE' 'MOT'[20]      ⍙⍙  ←↑(∆datatype ≡ 'Pensioners') ⌽ 'DOE' 'DOT'                                  ⍝ dnp14dec17[21]  [22]      :if (∆ExitLiab) ^⍱/('MOE' 'MOT')∊keysIn data                                    ⍝ Don't forget MOT[23]          data← data amend (⊂⍙) ,⊂((⊂,'C'),(¯1+rowsIn data) ↑ '')[24]          ∆   ←⍳2⊃⍴data[25]          data← data[;(¯2↓∆),⌽¯2↑∆]                                                   ⍝ set the 'no header' col as the last col[26]      :endif[27]  [28]      :if ~(⊂⍙⍙)∊keysIn data[29]          data← data amend (⊂⍙⍙) ,⊂((⊂'DD/MM/YYYY'),(¯1+rowsIn data) ↑ '')            ⍝ Add DoE col if it doesn't already exist[30]          ∆←⍳2⊃⍴data ⋄ data← data[;(¯2↓∆),⌽¯2↑∆]                                      ⍝ set the 'no header' col as the last col[31]      :endif[32]  [33]      InDx    ← 'InDx'[34]      mapping ← ((m2n ⊃'(' StripText¨ m2n ∆NAMES)(keysIn data))                       ⍝ Map keys in screen tables to keys in Data file.[35]      keys    ← ↑¨(⊂mapping) map¨ ⊂¨ lmt ∆Ident1 ∆Ident2[36]      data    ← data amend (InDx (⍳rowsIn data))                                      ⍝ Add an index column to the data file[37]      exiters ← MATRIX order ← keysIn data[38]  [39]      :for r :in (⊂hdr),[.5]¨⎕split valsIn exit[40]          flg ← 0,1↓⊃^/(~mt¨⊃¨∆)/ (data at keys) ∊¨∆←r at  lmt ∆Ident1 ∆Ident2        ⍝ lmt copes with Identifier# being filled when Ident# is mt[41]          :if 0=+/flg[42]              ('fail_criterion' r) ⎕FAPPEND AuditTie[43]          :endif[44]          ∆   ← (data for flg) amend  ⍙⍙ ((+/flg)⍴r at 'DoE')[45]          :if (~mt ↑r at 'MoE')^ ∆ExitLiab[46]              ∆ ← ∆ amend ⍙ ((+/flg)⍴⊂ '$',↑r at 'MoE')                               ⍝ dnp22nov17 Special Character is $[47]              exiters ← exiters ⍪ valsIn ∆ select order[48]          :else[49]              exiters ← exiters ⍪ valsIn ∆ select order[50]          :endif[51]      :endfor[52]      data[1+exiters at InDx;]←valsIn exiters                                         ⍝ Amend exited records in original data[53]      data←data select order ~ ⊂InDx                                                  ⍝ Remove the InDx column[54]      :if 0< rowsIn exiters[55]          exiters←exiters select order ~ ⊂InDx                                        ⍝ dnp23jan18 Remove the InDx column[56]          ('exiters' exiters) ⎕FAPPEND AuditTie[57]      :endif[58]  :endif[59]  Z←data    ∇
+    ∇ Z←ProcessExiters data;mapping;keys;flg;r;∆;exiters;hdr;exit;∆Ident1;∆Ident2;∆Identifier1;∆Identifier2;∆DoE;∆MoE;∆datatype;∆NAMES;∆ExitLiab;order;InDx;⍙⍙;⍙
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ Amends the data where there are new members or exiters
+[3]   
+[4]   ⍝ Revn dnp17nov17 * copes with optional MoE field
+[5]   ⍝ Revn dnp22nov17 * $: new special character to identify Estimated Liability exiters (previously ⎕av[2])
+[6]   ⍝ Revn dnp14dec17 * make the Header for the Date of Exit field in the Pensioners CSV "DOT" rather than "DOE"
+[7]   ⍝ Revn dnp23jan18 * Fix for DOE/DOT column
+[8]   ⍝ Revn dnp23jan18 * Remove the InDx column from exiters too
+[9]   
+[10]  (∆Ident1 ∆Ident2 ∆Identifier1 ∆Identifier2) ← Ident1 Ident2 Identifier1 Identifier2 ⍝ Keep unlocalised variables away
+[11]  (∆DoE ∆MoE  ∆datatype ∆NAMES)               ← DoE MoE  datatype NAMES               ⍝ Keep unlocalised variables away
+[12]  ∆ExitLiab ← zwb ExitLiab
+[13]  
+[14]  hdr←(∆Ident1 ∆Ident2), 'DoE' 'MoE'
+[15]  exit←hdr OVER ⍉⊃m2n¨ ∆Identifier1 ∆Identifier2 ∆DoE ∆MoE                            ⍝ exit - a table of with exit criteria
+[16]  exit← (~^/mt¨exit)⌿exit                                                             ⍝ Lose the mt rows from exit
+[17]  
+[18]  :if ~ mt ↑ exit at ∆Ident1                                                          ⍝ Exiters
+[19]      ⍙   ←↑(∆datatype ≡ 'Pensioners') ⌽ 'MOE' 'MOT'
+[20]      ⍙⍙  ←↑(∆datatype ≡ 'Pensioners') ⌽ 'DOE' 'DOT'                                  ⍝ dnp14dec17
+[21]  
+[22]      :if (∆ExitLiab) ^⍱/('MOE' 'MOT')∊keysIn data                                    ⍝ Don't forget MOT
+[23]          data← data amend (⊂⍙) ,⊂((⊂,'C'),(¯1+rowsIn data) ↑ '')
+[24]          ∆   ←⍳2⊃⍴data
+[25]          data← data[;(¯2↓∆),⌽¯2↑∆]                                                   ⍝ set the 'no header' col as the last col
+[26]      :endif
+[27]  
+[28]      :if ~(⊂⍙⍙)∊keysIn data
+[29]          data← data amend (⊂⍙⍙) ,⊂((⊂'DD/MM/YYYY'),(¯1+rowsIn data) ↑ '')            ⍝ Add DoE col if it doesn't already exist
+[30]          ∆←⍳2⊃⍴data ⋄ data← data[;(¯2↓∆),⌽¯2↑∆]                                      ⍝ set the 'no header' col as the last col
+[31]      :endif
+[32]  
+[33]      InDx    ← 'InDx'
+[34]      mapping ← ((m2n ⊃'(' StripText¨ m2n ∆NAMES)(keysIn data))                       ⍝ Map keys in screen tables to keys in Data file.
+[35]      keys    ← ↑¨(⊂mapping) map¨ ⊂¨ lmt ∆Ident1 ∆Ident2
+[36]      data    ← data amend (InDx (⍳rowsIn data))                                      ⍝ Add an index column to the data file
+[37]      exiters ← MATRIX order ← keysIn data
+[38]  
+[39]      :for r :in (⊂hdr),[.5]¨⎕split valsIn exit
+[40]          flg ← 0,1↓⊃^/(~mt¨⊃¨∆)/ (data at keys) ∊¨∆←r at  lmt ∆Ident1 ∆Ident2        ⍝ lmt copes with Identifier# being filled when Ident# is mt
+[41]          :if 0=+/flg
+[42]              ('fail_criterion' r) ⎕FAPPEND AuditTie
+[43]          :endif
+[44]          ∆   ← (data for flg) amend  ⍙⍙ ((+/flg)⍴r at 'DoE')
+[45]          :if (~mt ↑r at 'MoE')^ ∆ExitLiab
+[46]              ∆ ← ∆ amend ⍙ ((+/flg)⍴⊂ '$',↑r at 'MoE')                               ⍝ dnp22nov17 Special Character is $
+[47]              exiters ← exiters ⍪ valsIn ∆ select order
+[48]          :else
+[49]              exiters ← exiters ⍪ valsIn ∆ select order
+[50]          :endif
+[51]      :endfor
+[52]      data[1+exiters at InDx;]←valsIn exiters                                         ⍝ Amend exited records in original data
+[53]      data←data select order ~ ⊂InDx                                                  ⍝ Remove the InDx column
+[54]      :if 0< rowsIn exiters
+[55]          exiters←exiters select order ~ ⊂InDx                                        ⍝ dnp23jan18 Remove the InDx column
+[56]          ('exiters' exiters) ⎕FAPPEND AuditTie
+[57]      :endif
+[58]  :endif
+[59]  Z←data
+    ∇

@@ -1,1 +1,36 @@
-    ∇ Def_Change field;SSName;ExtraFields;MaxRow;text;z[1]   ⍝ DATAWIN.sf#4[2]   ⍝ OnChange Routine for Deferreds Format[3]   [4]   :select field[5]   :caselist 'ssTotNumNonS' 'ssCharNonS' 'ssDateNonS' ⍝⍝⍝ 'ssAvNumNonS'[6]       :if Win∆F1SSFilled SSName←parent,'pgNon_Standard.',field[7]           MaxRow←SSName ⎕wi 'xMaxRow'[8]           text←⊃(SSName Win∆F1SSGetTextArray 1 1 MaxRow 1)[;1][9]           :if uk=1 ⍝ For UK put "q" at the start if not already!![10]              z←((text,' ')[;1]≠'q')^∨/' '≠text[11]              text←(z\z/'q'),text[12]          :endif[13]          SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,1) (m2n text)[14]  [15]          :if 'ssDateNonS'≡field[16]              text←UPPERCASE ⊃(SSName Win∆F1SSGetTextArray 1 4 MaxRow 1)[;1][17]              SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,4) (m2n text)[18]          :endif[19]      :endif[20]      :if (⊂field)∊'ssTotNumNonS' 'ssAvNumNonS'[21]          Win∆AssignVars ControlName[22]          (⊂((2+7 0 19)[1+uk]) (parent,'pgValidation.ssValidation')) Format∆ValidParms¨'SetUp' 'Write'[23]      :endif[24]  [25]  :caselist 'cbppupfreq' 'cbppenfreq'[26]      Def_PageChange 'pgCurrent'[27]  [28]  :caselist ⊃VarNumFields[2][29]      :return[30]  :else[31]      :if ~0∊⍴ExtraFields←'DefFormat' Format∆Change ⊂field[32]          0 0⍴'DefFormat' Format∆Change ExtraFields,'edRECL' ((1+uk≠1)⊃'cbpupfreq' 'cbpenfreq')[33]      :endif[34]  :endselect    ∇
+    ∇ Def_Change field;SSName;ExtraFields;MaxRow;text;z
+[1]   ⍝ DATAWIN.sf#4
+[2]   ⍝ OnChange Routine for Deferreds Format
+[3]   
+[4]   :select field
+[5]   :caselist 'ssTotNumNonS' 'ssCharNonS' 'ssDateNonS' ⍝⍝⍝ 'ssAvNumNonS'
+[6]       :if Win∆F1SSFilled SSName←parent,'pgNon_Standard.',field
+[7]           MaxRow←SSName ⎕wi 'xMaxRow'
+[8]           text←⊃(SSName Win∆F1SSGetTextArray 1 1 MaxRow 1)[;1]
+[9]           :if uk=1 ⍝ For UK put "q" at the start if not already!!
+[10]              z←((text,' ')[;1]≠'q')^∨/' '≠text
+[11]              text←(z\z/'q'),text
+[12]          :endif
+[13]          SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,1) (m2n text)
+[14]  
+[15]          :if 'ssDateNonS'≡field
+[16]              text←UPPERCASE ⊃(SSName Win∆F1SSGetTextArray 1 4 MaxRow 1)[;1]
+[17]              SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,4) (m2n text)
+[18]          :endif
+[19]      :endif
+[20]      :if (⊂field)∊'ssTotNumNonS' 'ssAvNumNonS'
+[21]          Win∆AssignVars ControlName
+[22]          (⊂((2+7 0 19)[1+uk]) (parent,'pgValidation.ssValidation')) Format∆ValidParms¨'SetUp' 'Write'
+[23]      :endif
+[24]  
+[25]  :caselist 'cbppupfreq' 'cbppenfreq'
+[26]      Def_PageChange 'pgCurrent'
+[27]  
+[28]  :caselist ⊃VarNumFields[2]
+[29]      :return
+[30]  :else
+[31]      :if ~0∊⍴ExtraFields←'DefFormat' Format∆Change ⊂field
+[32]          0 0⍴'DefFormat' Format∆Change ExtraFields,'edRECL' ((1+uk≠1)⊃'cbpupfreq' 'cbpenfreq')
+[33]      :endif
+[34]  :endselect
+    ∇

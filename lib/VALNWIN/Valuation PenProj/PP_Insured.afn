@@ -1,0 +1,44 @@
+    ∇ ContingencyID PP∆Insured pp∆row;pp∆Texit;contper;pos;InsInd;pp∆normc;z;FSterm;⍙dbdata;rows;pp∆FutBens;pp∆exitprobs;pp∆TotBens
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Projection of Insured Costs
+[3]   ⍝ For Insured Benefits, there is no Contingent Benefit so ignore pp∆Con and pp∆FCon
+[4]   
+[5]   :if 'Benefits' PP∆ExtractBens 0 ⋄ pp∆TotBens←+⌿pp∆TotBens ⋄ :endif
+[6]   
+[7]   pp∆Texit←⌊pp∆Age[pp∆row;]-pp∆X0 ⋄ InsInd←insind^~NotPUC
+[8]   contper←⍳(1,pp∆CP)[InsInd] ⋄ pos←(2×pp∆exit≡'I ')+'P'=↑pp∆inctype
+[9]   :if ~suppressText ⋄ pp∆CashFlow[pp∆Texit;2]←pp∆CashFlow[pp∆Texit;2]+pp∆TotBens ⋄ :endif
+[10]  
+[11]  :if uk=1 ⋄ INS[pos]←INS[pos]++/pp∆TotBens[contper]×(~InsInd)⌈pp∆vPre  [term+contper]
+[12]  :else    ⋄ INS[pos]←INS[pos]++/pp∆TotBens[contper]×(~InsInd)⌈pp∆vMPPre[term+contper]
+[13]  :endif
+[14]  
+[15]  :if uk=1 ⋄ pp∆normc←pp∆TotBens×pp∆NX↑term↓pp∆vPre
+[16]  :else    ⋄ pp∆normc←pp∆TotBens×pp∆NX↑term↓pp∆vMPPre
+[17]  :endif
+[18]  
+[19]  :if InsInd
+[20]      NORMC←NORMC+pp∆normc
+[21]      pp∆NormC[;pp∆bencol]←pp∆NormC[;pp∆bencol]+pp∆NX↑pp∆normc[⍳pp∆CP]
+[22]  :endif
+[23]  
+[24]  :if ⍙dbresults
+[25]      :if bQSM ⍝ Total FS figures for QSM
+[26]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 2 93) pp∆dbX0 term) ⍙DBValnRecords -+/pp∆normc
+[27]      :endif
+[28]      :if InsInd
+[29]          ⍙dbbenres ←⍙dbbenres ⍪((BenefitTypeID ContingencyID 2 13) pp∆dbXe term) ⍙DBValnRecords -+/pp∆normc[⍳pp∆CP]
+[30]      :elseif term=0
+[31]          ⍙dbbenres ←⍙dbbenres ⍪((BenefitTypeID ContingencyID 2 13) pp∆dbXe 0) ⍙DBValnRecords -(↑,pp∆TotBens)×1↑pp∆vPre
+[32]      :endif
+[33]      ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords -pp∆TotBens
+[34]      :if fscopt ⍝⍝⍝ Should (perhaps) allow for different Year came into Payment??
+[35]          FSterm←ALMLDIterm[1++/(⍳pp∆NX)∘.≥1↓ALMLDIterm] ⋄ z←×∣pp∆TotBens
+[36]          ⍙dbdata←BenefitTypeID,ContingencyID,8,z⌿FSterm,(1+term+(⍳pp∆NX),(⍳pp∆NX),[0.5]⍳pp∆NX),-pp∆TotBens
+[37]          :if ⍙dbscenmax<⍙dbscenrow+rows←↑⍴⍙dbdata ⋄ ⍙dbscendata←(⍙dbscenrow+rows)↑[⎕io]⍙dbscendata ⋄ :endif
+[38]          ⍙dbscendata[⍙dbscenrow+⍳rows;]←⍙dbdata ⋄ ⍙dbscenrow←⍙dbscenrow+rows
+[39]      :endif
+[40]      0 0⍴'Amounts' PP∆ExtractBens 0
+[41]      ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 2 11) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆TotBens ⍝⍝⍝ This includes the premium rate
+[42]  :endif
+    ∇

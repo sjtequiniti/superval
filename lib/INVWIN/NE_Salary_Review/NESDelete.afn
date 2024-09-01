@@ -1,1 +1,25 @@
-    ∇ NESDelete;cn;Desc;Index;tieno;n;File;PickList[1]   ⍝ INVWIN.sf#12[2]   ⍝ Delete the currently selected investigation results[3]   [4]   cn←'fmNESalaryReview.lvRUNDESC' ⎕wi 'value'[5]   PickList←'fmNESalaryReview.lvRUNDESC' ⎕wi 'list'[6]   Desc←'- ','/-' REPL ,⊃(cn=PickList[;1])⌿PickList[;3][7]   [8]   :if 'N'='YN' ASK 'DeleteInvRes' Desc ⋄ :return ⋄ :endif[9]   [10]  Index←File ReadFile 1[11]  →(0≠File FSTIE tieno←TieNumber File←OutputDir,'SVINVRES')/0[12]  n←↑Index[;Index[1;]⍳⊂'∆_CompNo']⍳cn[13]  Index←Index UpdateIndex 'Delete' n[14]  Index ⎕freplace tieno,1[15]  ⎕funtie tieno[16]  0 0⍴⎕ex 'PageView' ⋄ psWipe 'fmNESalaryReview.picResults' ⍝ Clear Picture[17]  ('fmNESalaryReview.lvRUNDESC' 'NE_Salary_Review') Win∆UpdateListview InvResults 'NE_Salary_Review'[18]  [19]  :if 0∊⍴PickList[20]      'fmNESalaryReview' ⎕wi '∆modified' 1[21]      MDISPLAY 'NoResults'[22]      'Quit' EndModule 'NE_Salary_Review'[23]  :endif    ∇
+    ∇ NESDelete;cn;Desc;Index;tieno;n;File;PickList
+[1]   ⍝ INVWIN.sf#12
+[2]   ⍝ Delete the currently selected investigation results
+[3]   
+[4]   cn←'fmNESalaryReview.lvRUNDESC' ⎕wi 'value'
+[5]   PickList←'fmNESalaryReview.lvRUNDESC' ⎕wi 'list'
+[6]   Desc←'- ','/-' REPL ,⊃(cn=PickList[;1])⌿PickList[;3]
+[7]   
+[8]   :if 'N'='YN' ASK 'DeleteInvRes' Desc ⋄ :return ⋄ :endif
+[9]   
+[10]  Index←File ReadFile 1
+[11]  →(0≠File FSTIE tieno←TieNumber File←OutputDir,'SVINVRES')/0
+[12]  n←↑Index[;Index[1;]⍳⊂'∆_CompNo']⍳cn
+[13]  Index←Index UpdateIndex 'Delete' n
+[14]  Index ⎕freplace tieno,1
+[15]  ⎕funtie tieno
+[16]  0 0⍴⎕ex 'PageView' ⋄ psWipe 'fmNESalaryReview.picResults' ⍝ Clear Picture
+[17]  ('fmNESalaryReview.lvRUNDESC' 'NE_Salary_Review') Win∆UpdateListview InvResults 'NE_Salary_Review'
+[18]  
+[19]  :if 0∊⍴PickList
+[20]      'fmNESalaryReview' ⎕wi '∆modified' 1
+[21]      MDISPLAY 'NoResults'
+[22]      'Quit' EndModule 'NE_Salary_Review'
+[23]  :endif
+    ∇

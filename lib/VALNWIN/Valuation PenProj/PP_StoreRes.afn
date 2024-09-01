@@ -1,0 +1,82 @@
+    ∇ ⍙dbspouse PP∆StoreRes pp∆cash;pp∆normc;pp∆PBO;pp∆ABval;pp∆ABres;pp∆PRate
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Store the various results in files
+[3]   ⍝ pp∆cash is 0 for pension, 1 for cash benefit and 2 for underpin
+[4]   
+[5]   :if pp∆upin
+[6]       pp∆Underpinned[pp∆year;]←pp∆Underpinned[pp∆year;]+(pp∆TotPV,pp∆FutPV) CDIV pp∆exitdisc
+[7]       :if test ⋄ pp∆UFUND[pp∆year;]←pp∆UFUND[pp∆year;]+(pp∆TotPV,pp∆FutPV)CDIV pp∆exitdisc×pp∆exitprobs[pp∆year] ⋄ :endif
+[8]   :endif
+[9]   
+[10]  :if pp∆accrued
+[11]      pp∆Accrued[pp∆year]←pp∆Accrued[pp∆year]+pp∆ABval←pp∆TotPV CDIV pp∆discSY[pp∆Texit]
+[12]      :if ⍙dbresults ⋄ ⍙DBAccumAccrued 1 ⋄ :endif
+[13]      :return
+[14]  :endif
+[15]  
+[16]  :if ClassID=4
+[17]      :if ⍙dbresults ⋄ :andif ~bencap ⍝ Pensioners Accrueds ⍝⍝⍝ ⍙dbopt???
+[18]          pp∆ABval←pp∆TotPV CDIV pp∆discSY[pp∆Texit]
+[19]          ⍙DBAccumAccrued 0
+[20]      :endif
+[21]      :if test ⍝ Pensioners "individual" results
+[22]          ⍙dbspouse PP∆PenIndResults pp∆cash
+[23]      :endif
+[24]  :else
+[25]      pp∆PresValue[;pp∆year;pp∆bencol]←pp∆PresValue[;pp∆year;pp∆bencol]+pp∆TotPV,pp∆PastPV
+[26]  :endif
+[27]  
+[28]  :if ×pp∆cash ⍝ Results for "Cash" Benefits
+[29]      :if pp∆capind ⋄ :andif isTOut
+[30]          pp∆ResPV←pp∆size↑((pp∆Texit-1)/0),pp∆TotPV
+[31]          pp∆FutCF← pp∆startdisc×pp∆FutCF
+[32]          pp∆PastCF←pp∆startdisc×pp∆PastCF
+[33]          pp∆TotCF←pp∆PastCF+pp∆FutCF
+[34]          pp∆ABres←120↑((pp∆year+1)/0),pp∆TotPV CDIV pp∆discSY[pp∆Texit]
+[35]          :if ~suppressText
+[36]              pp∆Reserve←pp∆Reserve+pp∆ABres
+[37]              pp∆CashFlow[pp∆Texit-term;pp∆cash-1]←pp∆CashFlow[pp∆Texit-term;pp∆cash-1]+pp∆TotCF
+[38]          :endif
+[39]      :else
+[40]          pp∆ABres←120↑((pp∆benyear+1)/0),(pp∆Texit+1)↓pp∆TotPV CDIV (pp∆Tstart+1)↑pp∆discSY
+[41]          :if ~suppressText
+[42]              pp∆Reserve←pp∆Reserve+pp∆ABres
+[43]              pp∆CashFlow[pp∆Tstart-term;pp∆cash-1]←pp∆CashFlow[pp∆Tstart-term;pp∆cash-1]+pp∆TotCF
+[44]          :endif
+[45]      :endif
+[46]  
+[47]      :if test^ClassID≠4 ⋄ :orif aosind^prevind ⋄ (pp∆cash=1) PP∆StoreInd 1 ⋄ :endif
+[48]  
+[49]  :else ⍝ Results for "Pension" Benefits
+[50]      :if pp∆capind
+[51]          pp∆ResPV←pp∆size↑pp∆retpad,+/pp∆ResPV
+[52]          pp∆FutCF←pp∆size↑pp∆retpad,pp∆startdisc×+/pp∆FVstart
+[53]          pp∆PastCF←pp∆size↑pp∆retpad,pp∆startdisc×+/pp∆PVstart
+[54]          pp∆TotCF←pp∆PastCF+pp∆FutCF
+[55]      :endif
+[56]  
+[57]      pp∆ABres←120↑(pp∆benyear/0),(⌽+\⌽pp∆ResPV) CDIV pp∆size↑0,(pp∆Texit+1)↓pp∆discSY
+[58]      :if ~suppressText
+[59]          pp∆Reserve←pp∆Reserve+pp∆ABres
+[60]          pp∆CashFlow[pp∆benyear+⍳pp∆size;1-pp∆capind]←pp∆CashFlow[pp∆benyear+⍳pp∆size;1-pp∆capind]+pp∆TotCF
+[61]      :endif
+[62]  
+[63]      :if aosind^prevind ⋄ penvals[pp∆year;pp∆exitcol]←penvals[pp∆year;pp∆exitcol]+pp∆TotPV CDIV pp∆exitdisc ⋄ :endif
+[64]      :if test^ClassID≠4 ⋄ :orif aosind^prevind ⋄ 0 PP∆StoreInd 1 ⋄ :endif
+[65]  
+[66]  :endif
+[67]  
+[68]  :if 0≠pp∆FutPV
+[69]      pp∆PRate←pp∆NX↑(DIFF (-pp∆SNX)↓pp∆PRate) CDIV ¯1↑pp∆PRate←pp∆PRateAll[pp∆year;]
+[70]      NORMC←NORMC+pp∆NX↑pp∆normc←(pp∆year+1)↑pp∆FutPV×pp∆PRate
+[71]      pp∆NormC[pp∆year;pp∆bencol]←pp∆NormC[pp∆year;pp∆bencol]++/pp∆normc[⍳pp∆CP⌊pp∆year+1]
+[72]  :else
+[73]      pp∆normc←(pp∆year+1)⍴0
+[74]  :endif
+[75]  
+[76]  pp∆VAB←pp∆VAB+pp∆NX↑pp∆PBO←pp∆PastPV++\¯1↓0,pp∆normc-(-pp∆year+1)↑pp∆TotPV
+[77]  
+[78]  :if ⍙dbresults ⋄ ⍙DBAccumResults pp∆cash ⋄ :endif
+[79]  
+[80]  :if test ⋄ :andif ClassID≠4 ⋄ PP∆StoreInd 0 ⋄ :endif
+    ∇

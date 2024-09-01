@@ -1,1 +1,18 @@
-    ∇ res←tab ⍙WebCashType BenID;∆;IDs;desc[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Encode the type of Cash Benefit (using Actives Cash Codes)[3]   [4]   :if ∨/res←BenID=∊tab at 'BenefitTypeID'[5]       IDs←⍬[6]       :for desc :in (tab for res) at 'BenefitBasis'[7]           :if     ∨/('IR Maximum'      )⍷desc ⋄ IDs←IDs,3[8]           :elseif ∨/('Accrual x Salary')⍷desc ⋄ IDs←IDs,5[9]           :elseif ∨/('Mult of Pension' )⍷desc ⋄ IDs←IDs,7[10]          :elseif ∨/('% of Pension'    )⍷desc ⋄ IDs←IDs,8[11]          :elseif ∨/('% of A-Day Cash' )⍷desc ⋄ IDs←IDs,9[12]          :else                               ⋄ IDs←IDs,0[13]          :endif[14]      :endfor[15]      res←res\IDs[16]  :endif    ∇
+    ∇ res←tab ⍙WebCashType BenID;∆;IDs;desc
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Encode the type of Cash Benefit (using Actives Cash Codes)
+[3]   
+[4]   :if ∨/res←BenID=∊tab at 'BenefitTypeID'
+[5]       IDs←⍬
+[6]       :for desc :in (tab for res) at 'BenefitBasis'
+[7]           :if     ∨/('IR Maximum'      )⍷desc ⋄ IDs←IDs,3
+[8]           :elseif ∨/('Accrual x Salary')⍷desc ⋄ IDs←IDs,5
+[9]           :elseif ∨/('Mult of Pension' )⍷desc ⋄ IDs←IDs,7
+[10]          :elseif ∨/('% of Pension'    )⍷desc ⋄ IDs←IDs,8
+[11]          :elseif ∨/('% of A-Day Cash' )⍷desc ⋄ IDs←IDs,9
+[12]          :else                               ⋄ IDs←IDs,0
+[13]          :endif
+[14]      :endfor
+[15]      res←res\IDs
+[16]  :endif
+    ∇

@@ -1,1 +1,30 @@
-    ∇ HPC_Prepare;msk[1]   ⍝ HPCWIN.sf#5[2]   ⍝ Preparatory Calcs fo HPC[3]   [4]   0 0⍴⍙VALUESdict ReadDictFile 'Config_MultiProc'[5]   0 0⍴PrefFile ReadFile 'Config_MultiProc' ''[6]   [7]   ⍙⍙MethSubProc←↑('AHM'=↑MethSubProc)/'APL' 'HTTP' 'HPC'[8]   ⍝⍝⍝ ⍙⍙OrderSubProc←'B'=↑OrderSubProc[9]   ⍙⍙SubProcTab←⍙⍙SubProcKeys←MATRIX 'worker' 'ResCatID' 'InputDir' 'InputUNC' 'Split' 'StartRec' 'EndRec' 'NewEnt' 'CurrentRec' 'Repeats' 'RunDesc' 'HTTPtid' 'MembGroup' 'ClassID' 'SelSex' 'basisDesc' 'ScenarioDesc' 'HeldTie' 'Finished'[10]  :if hpcHTTP←⍙⍙MethSubProc≡'HTTP'[11]      msk←(m2n HTTPnames)∊⊂HPCbroker[12]      :if 'My Machine'≡⍙⍙httpIPADDR←DLTB msk⌿HTTPipaddr ⍝ Could also be "localhost"[13]          ⍙⍙httpIPADDR←'127.0.0.1'[14]      :elseif (⊂⍙⍙httpIPADDR)∊'Local IP Address' 'My Local IP Address'  ⍝ Get the current local address[15]          ⍙⍙httpIPADDR←MyAddress[16]      :endif[17]      ⍙⍙httpPORT     ← ⎕fi ,msk⌿HTTPport[18]      ⍙⍙httpRESPLIMIT←(⎕fi ,msk⌿HTTPresplimit)×1000 ⍝ Convert to milliseconds[19]      MaxSubProc←msk⌿HTTPmaxproc[20]  ⍝⍝⍝    ⍙⍙HTTPFolder←msk⌿HTTPfolder[21]  :endif[22]  ⍙⍙MaxSubProc←zwb MaxSubProc[23]  ⍙⍙MinSubProcMemb←zwb MinSubProcMemb[24]  ⍙⍙MaxSubProcMemb←zwb MaxSubProcMemb[25]  ⍙⍙MembTable←HPC_BatchMembers ⍙⍙MaxSubProc ⍙⍙MinSubProcMemb ⍙⍙MaxSubProcMemb[26]  [27]  :if 0=⎕nc 'SVRBGLOBALS' ⋄ SVRBGLOBALS←'' ⋄ :endif[28]  0 0⍴DeleteVars 'Config_MultiProc'    ∇
+    ∇ HPC_Prepare;msk
+[1]   ⍝ HPCWIN.sf#5
+[2]   ⍝ Preparatory Calcs fo HPC
+[3]   
+[4]   0 0⍴⍙VALUESdict ReadDictFile 'Config_MultiProc'
+[5]   0 0⍴PrefFile ReadFile 'Config_MultiProc' ''
+[6]   
+[7]   ⍙⍙MethSubProc←↑('AHM'=↑MethSubProc)/'APL' 'HTTP' 'HPC'
+[8]   ⍝⍝⍝ ⍙⍙OrderSubProc←'B'=↑OrderSubProc
+[9]   ⍙⍙SubProcTab←⍙⍙SubProcKeys←MATRIX 'worker' 'ResCatID' 'InputDir' 'InputUNC' 'Split' 'StartRec' 'EndRec' 'NewEnt' 'CurrentRec' 'Repeats' 'RunDesc' 'HTTPtid' 'MembGroup' 'ClassID' 'SelSex' 'basisDesc' 'ScenarioDesc' 'HeldTie' 'Finished'
+[10]  :if hpcHTTP←⍙⍙MethSubProc≡'HTTP'
+[11]      msk←(m2n HTTPnames)∊⊂HPCbroker
+[12]      :if 'My Machine'≡⍙⍙httpIPADDR←DLTB msk⌿HTTPipaddr ⍝ Could also be "localhost"
+[13]          ⍙⍙httpIPADDR←'127.0.0.1'
+[14]      :elseif (⊂⍙⍙httpIPADDR)∊'Local IP Address' 'My Local IP Address'  ⍝ Get the current local address
+[15]          ⍙⍙httpIPADDR←MyAddress
+[16]      :endif
+[17]      ⍙⍙httpPORT     ← ⎕fi ,msk⌿HTTPport
+[18]      ⍙⍙httpRESPLIMIT←(⎕fi ,msk⌿HTTPresplimit)×1000 ⍝ Convert to milliseconds
+[19]      MaxSubProc←msk⌿HTTPmaxproc
+[20]  ⍝⍝⍝    ⍙⍙HTTPFolder←msk⌿HTTPfolder
+[21]  :endif
+[22]  ⍙⍙MaxSubProc←zwb MaxSubProc
+[23]  ⍙⍙MinSubProcMemb←zwb MinSubProcMemb
+[24]  ⍙⍙MaxSubProcMemb←zwb MaxSubProcMemb
+[25]  ⍙⍙MembTable←HPC_BatchMembers ⍙⍙MaxSubProc ⍙⍙MinSubProcMemb ⍙⍙MaxSubProcMemb
+[26]  
+[27]  :if 0=⎕nc 'SVRBGLOBALS' ⋄ SVRBGLOBALS←'' ⋄ :endif
+[28]  0 0⍴DeleteVars 'Config_MultiProc'
+    ∇

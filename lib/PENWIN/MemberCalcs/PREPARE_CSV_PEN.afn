@@ -1,1 +1,18 @@
-    ∇ PREPARE∆CSV∆PEN;csvfile;csvhead;vars[1]   ⍝ PENWIN.sf#3[2]   ⍝ Preparatory Work for Valuation Extract Program[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝[7]   ⍝ Create .CSV Extract File[8]   csvfile←OutputDir,('.' StripText FILES),'.CSV'[9]   ⍝ If file exists erase it and create new one[10]  tpE←NCREATE csvfile[11]  [12]  ⍝ Assign Column Headings[13]  0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' CSV'[14]  [15]  vars←DLTMB ',',(SStoMAT CharStandNames) OVER CharDesc OVER (SStoMAT DateStandNames) OVER DateDesc OVER (SStoMAT FixNumStandNames,VarNumStandNames) OVER TotNumDesc[16]  ('Run TimeStamp',vars,',',csvhead) APPEND tpE    ∇
+    ∇ PREPARE∆CSV∆PEN;csvfile;csvhead;vars
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ Preparatory Work for Valuation Extract Program
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝
+[7]   ⍝ Create .CSV Extract File
+[8]   csvfile←OutputDir,('.' StripText FILES),'.CSV'
+[9]   ⍝ If file exists erase it and create new one
+[10]  tpE←NCREATE csvfile
+[11]  
+[12]  ⍝ Assign Column Headings
+[13]  0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' CSV'
+[14]  
+[15]  vars←DLTMB ',',(SStoMAT CharStandNames) OVER CharDesc OVER (SStoMAT DateStandNames) OVER DateDesc OVER (SStoMAT FixNumStandNames,VarNumStandNames) OVER TotNumDesc
+[16]  ('Run TimeStamp',vars,',',csvhead) APPEND tpE
+    ∇

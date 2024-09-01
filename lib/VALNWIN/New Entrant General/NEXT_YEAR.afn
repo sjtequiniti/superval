@@ -1,0 +1,78 @@
+    ∇ res←NEXT∆YEAR;SUMMREC;N;NAME;MULT;v;F;Z
+[1]   ⍝ VALNWIN.sf#13
+[2]   ⍝ Print some Totals in the First Year
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   TOP:
+[8]   :select ↑RepMeth ⍝ Calculate New Entrants on Various Methods
+[9]   :caselist ' ' 'N' ⍝ Replacement by Number
+[10]     NOM←((AllowNegNE×-1E40)⌈1↑FUNDTOT-TPX)CDIV TOTALS[1;0] ⋄ TPX←TPX+(⍴TPX)↑NOM×CFTOT[2;;0]
+[11]  :case 'S' ⍝ Replacement by Salaries
+[12]     NOM←((AllowNegNE×-1E40)⌈1↑FUNDTOT-TPX)CDIV TOTALS[0;0] ⋄ TPX←TPX+(⍴TPX)↑NOM×CFTOT[2;;7]
+[13]  :case 'R' ⍝ Replacing Retiree's Salaries
+[14]     NOM←(1↑FUNDTOT)CDIV TOTALS[0;0] ⋄ TPX←TPX+(⍴TPX)↑NOM×CFTOT[2;;7]
+[15]  :endselect
+[16]  :if 0=NOM ⋄ FUNDTOT[0]←TPX[0] ⋄ :endif
+[17]  SUMMREC←3 FORMAT∆OUT NOM×TOTALS ⋄ (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN
+[18]  FUNDTOT←1↓FUNDTOT ⋄ TPX←1↓TPX
+[19]  
+[20]  ⍝ Update Totals Variables
+[21]  ((NOM×TOTALS)+⎕FREAD summtie,1)⎕FREPLACE summtie,1
+[22]  ((3 170 16 ↑NOM×((3,term,16)↑0),[1]CFTOT)+⎕FREAD summtie,2)⎕FREPLACE summtie,2
+[23]  :if ⍙dbopt
+[24]      ⍙DBAddRecords
+[25]      :if NOM=0
+[26]          ⍙dbfundres←(⍙dbfundmax,1+⍙dbfundnokeys)⍴⍙dbfundrow←0 ⋄ xl_membres←(xl_membmax,1+xl_membnokeys)⍴xl_membrow←0
+[27]          :if fscopt ⋄ ⍙dbscendata←⍙dbscendata×⍙dbscenrow←0 ⋄ :endif
+[28]      :else
+[29]          ⍙dbfundres←(⍙dbfundrow↑[0]⍙dbfundres)⍪0 1↓xl_membrow↑[0]xl_membres
+[30]          ⍙dbfundrow←⍙dbfundrow+xl_membrow                     ⋄ xl_membres←(xl_membmax,1+xl_membnokeys)⍴xl_membrow←0
+[31]          ⍙dbfundres[;⍙dbfundnokeys]←NOM×⍙dbfundres[;⍙dbfundnokeys]
+[32]          ⍙DBWriteTempDB 1
+[33]          :if fscopt
+[34]              ⍙dbscendata[;⍙dbscennokeys]←NOM×⍙dbscendata[;⍙dbscennokeys] ⋄ XL_StoreScen
+[35]          :endif
+[36]      :endif
+[37]  :endif
+[38]  :if uk=0 ⋄ :andif cssspread
+[39]      ((200 4 ↑NOM×((term,4)↑0)⍪PENAMTS)+⎕FREAD summtie,3)⎕FREPLACE summtie,3
+[40]      ((200↑NOM×(term↑0)⍪PENVALS)+⎕FREAD summtie,4)⎕FREPLACE summtie,4
+[41]  :else
+[42]      ((100 4 ↑NOM×((term,4)↑0)⍪PENAMTS)+⎕FREAD summtie,3)⎕FREPLACE summtie,3
+[43]      ((100 4 ↑NOM×((term,4)↑0)⍪PENVALS)+⎕FREAD summtie,4)⎕FREPLACE summtie,4
+[44]  :endif
+[45]  
+[46]  →(term=projTerm)/res←0
+[47]  
+[48]  MULT←(F←1↑term↓projTerm OVERTAKE f)×v←÷1↑term↓projTerm OVERTAKE i
+[49]  res←RUN∆CHECK CHECKTOT ⍝ Check whether to get out of Loop
+[50]  ((term←term+1) projTerm) Win∆ProgressBar2 'FileUpdate'
+[51]  
+[52]  →res/L1 ⍝ Need to do another year
+[53]  
+[54]  TOTALS[0 2 3 ;]←TOTALS[0 2 3 ;]×F ⍝ Update Last Years Figures
+[55]  TOTALS[4;(⍳8), 16 17]←TOTALS[4;(⍳8), 16 17]× 4 4 2 /F,MULT,F
+[56]  TOTALS[5+⍳3+No∆Bens;]←TOTALS[5+⍳3+No∆Bens;]×MULT
+[57]  CFTOT[0 1 ;;]←CFTOT[0 1 ;;]×F ⋄ CFTOT[2;;7+⍳8]←CFTOT[2;;7+⍳8]×F
+[58]  PENAMTS←PENAMTS×F ⋄ PENVALS←PENVALS×F ⋄ →TOP
+[59]  
+[60]  L1:V←1↓V ⋄ VMP←1↓VMP ⋄ VQ←1↓VQ
+[61]  ValDATE←VDATE←VDATE+0 0 1 ⋄ ldate←ldate+MATRIX 0 0 1 ⋄ DJF←DJF+0 0 1 ⋄ DJS←DJS+0 0 1
+[62]  UPDATENEDECK ⍝ Reset New Entrant Records DOB, DJF, DJS and Variable Dates
+[63]  :for N :in ⍳1↑⍴DateVars ⍝ Non-Standard Date Fields
+[64]      NAME←⍕DateVars[N;] ⋄ ⍎NAME,'←',NAME,'+ 0 0 1'
+[65]  :endfor
+[66]  CFTOT←CFTOT×0 ⋄ TOTALS←TOTALS×0 ⋄ PENVALS←PENVALS×0
+[67]  PENAMTS←PENAMTS×recn←0
+[68]  
+[69]  :if uk=0 ⋄ :andif cssspread
+[70]      ∆∆disc←1⌊Z[⍳NRA-15]∘.÷Z←1 MID 1,×\term↓(100+term)OVERTAKE pi
+[71]      ∆∆disc←∆∆disc×(-⍳NRA-15)⌽(term↓(term+NRA-15)OVERTAKE pi*0.25),((NRA-15),99)⍴1
+[72]      pvm←PVMCALC pvmR1 ⋄ pvm←pvm⍪PVMCALC pvmR2 ⋄ pvm←pvm⍪PVMCALC pvmM1
+[73]      pvm←pvm⍪PVMCALC pvmM2 ⋄ pvm←pvm⍪PVMCALC pvmD1 ⋄ pvm←pvm⍪PVMCALC pvmD2
+[74]      pvm←pvm⍪PVMCALC pvmW1def ⋄ pvm←pvm⍪PVMCALC pvmW2def
+[75]      pvm←pvm⍪PVMCALC pvmW1 ⋄ pvm←pvm⍪PVMCALC pvmW2
+[76]  :endif
+    ∇

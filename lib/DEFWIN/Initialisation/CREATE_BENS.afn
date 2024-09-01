@@ -1,1 +1,147 @@
-    ∇ CREATE∆BENS;msk;∆[1]   ⍝ DEFWIN.sf#2[2]   ⍝ Assign all the Benefit Variables[3]   [4]   :If bBuck∨ClntCode=3 ⋄ ertnms←ERTAB ERTAB2 ERTABC ERTAB2C ⍝ CC3 has separate ER factor tables for pension and COT[5]   :Else                ⋄ ertnms←ERTAB ERTAB2 ERTAB  ERTAB2  ⍝ CC0 uses the same tables[6]   :EndIf[7]    msk←~×↑¨⍴¨,ertnms ⋄ (msk/ertnms)←⊂'{none}'         ⍝ mark specified tables[8]    ertnms←2 1⌿ 2 2⍴ertnms                             ⍝ ER table names [aTYP 1:2][9]   [10]  ⍝ Retirement Pension[11]  ⍝⍝⍝ WARFRAC∆l←WARFRAC←,0.01×zwb WARFRAC[12]  ⍝⍝⍝ WARFRAC←,'Def' DescToVariableUK WARFRAC ⍝⍝⍝ Needed for PUPs - see CREATE∆PUPS[13]  WARERFind←zwb WARERFind[14]  WARCOMind←zwb WARCOMind[15]  :if ¯1=↑ERTAB ←¯1 DEC∆CHECK ERTAB  ⋄ ERTAB ←120/1[16]  :elseif 2=⍴⍴ERTAB                  ⋄ ERTAB ←120↑ERTAB  AgeSelect NRA[17]  :else                              ⋄ ERTAB ←120↑ERTAB[18]  :endif[19]  :if ¯1=↑ERTAB2←¯1 DEC∆CHECK ERTAB2 ⋄ ERTAB2←120/1[20]  :elseif 2=⍴⍴ERTAB2                 ⋄ ERTAB2←120↑ERTAB2 AgeSelect NRA[21]  :else                              ⋄ ERTAB2←120↑ERTAB2[22]  :endif[23]  :if zwb ERTABExactAge[24]      ERTAB←NRA PREP∆RATE ERTAB ⋄ ERTAB2←NRA PREP∆RATE ERTAB2[25]  :endif[26]  [27]  ⍝ Retirement Cash[28]  CTYPE←('' 'Neutral or Nil' 'x' 'x' 'x' 'x' 'x' 'Multiple of Pension' '% of Pension' '% of A-Day Cash')⍳⊂DLTB CTYPE ⍝ Use same CTYPE numbers as Actives[29]  CASHIND←↑CASHIND[30]  MULTPENCASH←,'Def' DescToVariableUK COMMULT[31]  PERPENCASH ←,'Def' DescToVariableUK COMPER[32]  COMADaySep←zwb COMADaySep[33]  COMADayInd←zwb COMADayInd[34]  :If CTYPE=9 ⋄ COMADayPer←PERPENCASH ⋄ :else ⋄ COMADayPer←'100' ⋄ :endif[35]  CASHP←↑(COMADaySep/'D'),' PR'[('' 'Pro Rata' 'Priority')⍳⊂DLTB CASHP][36]  [37]  :if COMValBas←zwb COMValBas[38]      comtnms←4/⊂'{',COMValpc,'% of Valn Basis}'[39]      COMValpc←0.01×zwb COMValpc[40]      ⍝ Relevance Rules for Commutation Tables - msk for relevant Tables[41]      COMValmsk←(~(⊂COMPER)∊'' '0') ∨ (~(⊂COMPER2)∊'' '0') ∨ (CASHIND='C') ^ ~(⊂COMMULT)∊'' '0'[42]      COMValmsk←COMValmsk^'SM34'∊(mpreIND,mpostIND,DYNDBR1,DYNDBR2,DYNDAR1,DYNDAR2,(,DYNIND),,IndPUPs⌿IndDYNIND,IndDYNIND2)[43]  :else[44]      msk←~×↑¨⍴¨comtnms←COMTAB1 COMTAB2 COMTAB3 COMTAB4 ⋄ (msk/comtnms)←⊂'{none}'[45]      :if ¯1=↑COMTAB1←¯1 DEC∆CHECK COMTAB1 ⋄ COMTAB1←100/0[46]      :elseif 2=⍴⍴COMTAB1                  ⋄ COMTAB1←100↑COMTAB1 AgeSelect NRA[47]      :else                                ⋄ COMTAB1←100↑COMTAB1[48]      :endif[49]      :if ¯1=↑COMTAB2←¯1 DEC∆CHECK COMTAB2 ⋄ COMTAB2←100/0[50]      :elseif 2=⍴⍴COMTAB2                  ⋄ COMTAB2←100↑COMTAB2 AgeSelect NRA[51]      :else                                ⋄ COMTAB2←100↑COMTAB2[52]      :endif[53]      :if ¯1=↑COMTAB3←¯1 DEC∆CHECK COMTAB3 ⋄ COMTAB3←100/0[54]      :elseif 2=⍴⍴COMTAB3                  ⋄ COMTAB3←100↑COMTAB3 AgeSelect NRA[55]      :else                                ⋄ COMTAB3←100↑COMTAB3[56]      :endif[57]      :if ¯1=↑COMTAB4←¯1 DEC∆CHECK COMTAB4 ⋄ COMTAB4←100/0[58]      :elseif 2=⍴⍴COMTAB4                  ⋄ COMTAB4←100↑COMTAB4 AgeSelect NRA[59]      :else                                ⋄ COMTAB4←100↑COMTAB4[60]      :endif[61]      :if zwb COMTABExactAge[62]          COMTAB1←NRA PREP∆RATE COMTAB1 ⋄ COMTAB2←NRA PREP∆RATE COMTAB2[63]          COMTAB3←NRA PREP∆RATE COMTAB3 ⋄ COMTAB4←NRA PREP∆RATE COMTAB4[64]      :endif[65]  :endif[66]  COMAdjbyEx←zwb COMAdjbyEx[67]  [68]  :if COMValBas∨COMAdjbyEx ⋄ :andif ~test[69]      :if ~mt PPOSTMEMB ⋄ :orif ~mt (~WARCOMind)/SPOSTMEMB[70]          ('Note: Retirement ',(↑COMValBas COMAdjbyEx/'Valuation Basis' 'Life Expectancy Adjusted'),' Commutation Factors not output due to member-specific Mortality Loadings') VALN∆LOG 'Add'[71]      :elseif basischanged∨CFmissing[72]          RETcomfacs←(100 4,LatestAge-10)⍴0 ⍝ Store Commutation Factors for Database[73]      :endif[74]  :endif[75]  [76]  CTYPE2←('' 'Neutral or Nil' 'x' 'x' 'x' 'x' 'x' 'Multiple of Pension' '% of Pension')⍳⊂DLTB CTYPE2 ⍝ Use same CTYPE numbers as Actives[77]  MULTPENCASH2←,'Def' DescToVariableUK COMMULT2[78]  PERPENCASH2 ←,'Def' DescToVariableUK COMPER2[79]  COTDATA     ←,'Def' DescToVariableUK COTDATA[80]  ⍝ CC0 uses the same tables for Pension and COT[81]  :if (~bBuck)^ClntCode=0 ⋄ :orif ¯1=↑ERTABC ←¯1 DEC∆CHECK ERTABC[82]      ERTABC ←ERTAB[83]  :else[84]      :if 2=⍴⍴ERTABC  ⋄ ERTABC ←120↑ERTABC  AgeSelect NRA[85]      :else           ⋄ ERTABC ←120↑ERTABC[86]      :endif[87]      :if zwb ERTABExactAgeC ⋄ ERTABC ←NRA PREP∆RATE ERTABC  ⋄ :endif[88]  :endif[89]  :if (~bBuck)^ClntCode=0 ⋄ :orif ¯1=↑ERTAB2C←¯1 DEC∆CHECK ERTAB2C[90]      ERTAB2C←ERTAB2[91]  :else[92]      :if 2=⍴⍴ERTAB2C ⋄ ERTAB2C←120↑ERTAB2C AgeSelect NRA[93]      :else           ⋄ ERTAB2C←120↑ERTAB2C[94]      :endif[95]      :if zwb ERTABExactAgeC ⋄ ERTAB2C←NRA PREP∆RATE ERTAB2C ⋄ :endif[96]  :endif[97]  [98]  ⍝ Cash Cap[99]  :if 0∊⍴DLTB DataCASHCAP←,'Def' DescToVariableUK DATACASHCAP ⋄ DataCASHCAP←'⍬' ⋄ :endif ⍝ Default Cash Cap[100] PERCENTCASHCAP←0.01×zwb '100 ',PERCENTCASHCAP[101] :if ^/' '=REVCASHCAP ⋄ REVCASHCAP←REVN[102] :else[103]                      ⍝⍀⍝  '' 'Revaluation' FOURDIT 'sCEN_REVCASHCAP REVCASHCAP'[104]                      ⋄ REVCASHCAP←termAdjFin BlendRates REVCASHCAP sCEN_REVCASHCAP[105] :endif[106] FinAdjTable←FinAdjTable OVER 'REVCASHCAP' 'REVCASHCAP' REVCASHCAP[107] ⍝⍀⍝ '' '' FOURDIT 'REVCASHCAP←'[108] [109] PreNRAEXITCASHCAP←(0 1,REVYRS)['NY '⍳↑PreNRAEXITCASHCAP][110] :if ^/' '=NRAEXITCASHCAP←,SelectRounding NRAEXITCASHCAP ⋄ NRAEXITCASHCAP←NRARND ⋄ :endif[111] ERFCASHCAP←↑⍕(('None' 'ERF1' 'ERF2')⍳⊂DLTB ERFCASHCAP)-⎕io[112] CASHCAPADJ←+/ZWB¨sCEN_CASHCAPADJ CASHCAPADJ[113] [114] ⍝ Death Pension[115] WOFRAC←0.01×zwb WOFRAC[116] [117] ⍝ Death Cash[118] GLBENMULT←zwb GLBENMULT[119] GLPUP←↑GLPUP[120] DCONTS1←,'Def' DescToVariableUK DCONTS1[121] DCONTS2←,'Def' DescToVariableUK DCONTS2[122] ⍝⍀⍝ '' 'Contributions Interest' FOURDIT 'sCEN_iDCONTS1 iDCONTS1 sCEN_iDCONTS2 iDCONTS2'[123] FinAdjTable←FinAdjTable OVER 'iDCONTS1' 'iDCONTS1' (iDCONTS1←termAdjFin BlendRates iDCONTS1 sCEN_iDCONTS1)[124] FinAdjTable←FinAdjTable OVER 'iDCONTS2' 'iDCONTS2' (iDCONTS2←termAdjFin BlendRates iDCONTS2 sCEN_iDCONTS2)[125] ⍝⍀⍝ '' '' FOURDIT 'iDCONTS1← iDCONTS2←'[126] [127] ⍝ Underpin[128] mpuflag←zwb mpuflag[129] mpuDATE←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrmpuDATE mpuDATE[130] ⍝⍀⍝ '' 'Contributions Interest' FOURDIT 'sCEN_jmpu jmpu'[131] FinAdjTable←FinAdjTable OVER 'jmpu' 'jmpu' (jmpu←termAdjFin BlendRates jmpu sCEN_jmpu)[132] ⍝⍀⍝ '' '' FOURDIT 'jmpu←'[133] jmpu←×\1,(2/NRA OVERTAKE jmpu)*0.5[134] [135] :if ~test ⋄ :andif VFtables←VFtables×VFmissing⌈basischanged[136]     VFDBtab←MATRIX 'X0' 'BenID' 'ContID' 'DataID' 'Age' 'Year' 'Ident' 'ValueNoRev'[137]     :if ∨/∆←~mt¨PPOSTMEMB SPOSTMEMB[138]         ('Note: ',(' and ' join ∆/'Member' 'Spouse'),' Retirement Valuation Factors not output due to member-specific Mortality Loadings') VALN∆LOG 'Add'[139]         :if 1↓∆[140]             'Note: Death in Deferment Valuation Factors not output due to member-specific Mortality Loadings' VALN∆LOG 'Add'[141]         :endif[142]     :endif[143] :endif[144] [145] PHI←0    ∇
+    ∇ CREATE∆BENS;msk;∆
+[1]   ⍝ DEFWIN.sf#2
+[2]   ⍝ Assign all the Benefit Variables
+[3]   
+[4]   :If bBuck∨ClntCode=3 ⋄ ertnms←ERTAB ERTAB2 ERTABC ERTAB2C ⍝ CC3 has separate ER factor tables for pension and COT
+[5]   :Else                ⋄ ertnms←ERTAB ERTAB2 ERTAB  ERTAB2  ⍝ CC0 uses the same tables
+[6]   :EndIf
+[7]    msk←~×↑¨⍴¨,ertnms ⋄ (msk/ertnms)←⊂'{none}'         ⍝ mark specified tables
+[8]    ertnms←2 1⌿ 2 2⍴ertnms                             ⍝ ER table names [aTYP 1:2]
+[9]   
+[10]  ⍝ Retirement Pension
+[11]  ⍝⍝⍝ WARFRAC∆l←WARFRAC←,0.01×zwb WARFRAC
+[12]  ⍝⍝⍝ WARFRAC←,'Def' DescToVariableUK WARFRAC ⍝⍝⍝ Needed for PUPs - see CREATE∆PUPS
+[13]  WARERFind←zwb WARERFind
+[14]  WARCOMind←zwb WARCOMind
+[15]  :if ¯1=↑ERTAB ←¯1 DEC∆CHECK ERTAB  ⋄ ERTAB ←120/1
+[16]  :elseif 2=⍴⍴ERTAB                  ⋄ ERTAB ←120↑ERTAB  AgeSelect NRA
+[17]  :else                              ⋄ ERTAB ←120↑ERTAB
+[18]  :endif
+[19]  :if ¯1=↑ERTAB2←¯1 DEC∆CHECK ERTAB2 ⋄ ERTAB2←120/1
+[20]  :elseif 2=⍴⍴ERTAB2                 ⋄ ERTAB2←120↑ERTAB2 AgeSelect NRA
+[21]  :else                              ⋄ ERTAB2←120↑ERTAB2
+[22]  :endif
+[23]  :if zwb ERTABExactAge
+[24]      ERTAB←NRA PREP∆RATE ERTAB ⋄ ERTAB2←NRA PREP∆RATE ERTAB2
+[25]  :endif
+[26]  
+[27]  ⍝ Retirement Cash
+[28]  CTYPE←('' 'Neutral or Nil' 'x' 'x' 'x' 'x' 'x' 'Multiple of Pension' '% of Pension' '% of A-Day Cash')⍳⊂DLTB CTYPE ⍝ Use same CTYPE numbers as Actives
+[29]  CASHIND←↑CASHIND
+[30]  MULTPENCASH←,'Def' DescToVariableUK COMMULT
+[31]  PERPENCASH ←,'Def' DescToVariableUK COMPER
+[32]  COMADaySep←zwb COMADaySep
+[33]  COMADayInd←zwb COMADayInd
+[34]  :If CTYPE=9 ⋄ COMADayPer←PERPENCASH ⋄ :else ⋄ COMADayPer←'100' ⋄ :endif
+[35]  CASHP←↑(COMADaySep/'D'),' PR'[('' 'Pro Rata' 'Priority')⍳⊂DLTB CASHP]
+[36]  
+[37]  :if COMValBas←zwb COMValBas
+[38]      comtnms←4/⊂'{',COMValpc,'% of Valn Basis}'
+[39]      COMValpc←0.01×zwb COMValpc
+[40]      ⍝ Relevance Rules for Commutation Tables - msk for relevant Tables
+[41]      COMValmsk←(~(⊂COMPER)∊'' '0') ∨ (~(⊂COMPER2)∊'' '0') ∨ (CASHIND='C') ^ ~(⊂COMMULT)∊'' '0'
+[42]      COMValmsk←COMValmsk^'SM34'∊(mpreIND,mpostIND,DYNDBR1,DYNDBR2,DYNDAR1,DYNDAR2,(,DYNIND),,IndPUPs⌿IndDYNIND,IndDYNIND2)
+[43]  :else
+[44]      msk←~×↑¨⍴¨comtnms←COMTAB1 COMTAB2 COMTAB3 COMTAB4 ⋄ (msk/comtnms)←⊂'{none}'
+[45]      :if ¯1=↑COMTAB1←¯1 DEC∆CHECK COMTAB1 ⋄ COMTAB1←100/0
+[46]      :elseif 2=⍴⍴COMTAB1                  ⋄ COMTAB1←100↑COMTAB1 AgeSelect NRA
+[47]      :else                                ⋄ COMTAB1←100↑COMTAB1
+[48]      :endif
+[49]      :if ¯1=↑COMTAB2←¯1 DEC∆CHECK COMTAB2 ⋄ COMTAB2←100/0
+[50]      :elseif 2=⍴⍴COMTAB2                  ⋄ COMTAB2←100↑COMTAB2 AgeSelect NRA
+[51]      :else                                ⋄ COMTAB2←100↑COMTAB2
+[52]      :endif
+[53]      :if ¯1=↑COMTAB3←¯1 DEC∆CHECK COMTAB3 ⋄ COMTAB3←100/0
+[54]      :elseif 2=⍴⍴COMTAB3                  ⋄ COMTAB3←100↑COMTAB3 AgeSelect NRA
+[55]      :else                                ⋄ COMTAB3←100↑COMTAB3
+[56]      :endif
+[57]      :if ¯1=↑COMTAB4←¯1 DEC∆CHECK COMTAB4 ⋄ COMTAB4←100/0
+[58]      :elseif 2=⍴⍴COMTAB4                  ⋄ COMTAB4←100↑COMTAB4 AgeSelect NRA
+[59]      :else                                ⋄ COMTAB4←100↑COMTAB4
+[60]      :endif
+[61]      :if zwb COMTABExactAge
+[62]          COMTAB1←NRA PREP∆RATE COMTAB1 ⋄ COMTAB2←NRA PREP∆RATE COMTAB2
+[63]          COMTAB3←NRA PREP∆RATE COMTAB3 ⋄ COMTAB4←NRA PREP∆RATE COMTAB4
+[64]      :endif
+[65]  :endif
+[66]  COMAdjbyEx←zwb COMAdjbyEx
+[67]  
+[68]  :if COMValBas∨COMAdjbyEx ⋄ :andif ~test
+[69]      :if ~mt PPOSTMEMB ⋄ :orif ~mt (~WARCOMind)/SPOSTMEMB
+[70]          ('Note: Retirement ',(↑COMValBas COMAdjbyEx/'Valuation Basis' 'Life Expectancy Adjusted'),' Commutation Factors not output due to member-specific Mortality Loadings') VALN∆LOG 'Add'
+[71]      :elseif basischanged∨CFmissing
+[72]          RETcomfacs←(100 4,LatestAge-10)⍴0 ⍝ Store Commutation Factors for Database
+[73]      :endif
+[74]  :endif
+[75]  
+[76]  CTYPE2←('' 'Neutral or Nil' 'x' 'x' 'x' 'x' 'x' 'Multiple of Pension' '% of Pension')⍳⊂DLTB CTYPE2 ⍝ Use same CTYPE numbers as Actives
+[77]  MULTPENCASH2←,'Def' DescToVariableUK COMMULT2
+[78]  PERPENCASH2 ←,'Def' DescToVariableUK COMPER2
+[79]  COTDATA     ←,'Def' DescToVariableUK COTDATA
+[80]  ⍝ CC0 uses the same tables for Pension and COT
+[81]  :if (~bBuck)^ClntCode=0 ⋄ :orif ¯1=↑ERTABC ←¯1 DEC∆CHECK ERTABC
+[82]      ERTABC ←ERTAB
+[83]  :else
+[84]      :if 2=⍴⍴ERTABC  ⋄ ERTABC ←120↑ERTABC  AgeSelect NRA
+[85]      :else           ⋄ ERTABC ←120↑ERTABC
+[86]      :endif
+[87]      :if zwb ERTABExactAgeC ⋄ ERTABC ←NRA PREP∆RATE ERTABC  ⋄ :endif
+[88]  :endif
+[89]  :if (~bBuck)^ClntCode=0 ⋄ :orif ¯1=↑ERTAB2C←¯1 DEC∆CHECK ERTAB2C
+[90]      ERTAB2C←ERTAB2
+[91]  :else
+[92]      :if 2=⍴⍴ERTAB2C ⋄ ERTAB2C←120↑ERTAB2C AgeSelect NRA
+[93]      :else           ⋄ ERTAB2C←120↑ERTAB2C
+[94]      :endif
+[95]      :if zwb ERTABExactAgeC ⋄ ERTAB2C←NRA PREP∆RATE ERTAB2C ⋄ :endif
+[96]  :endif
+[97]  
+[98]  ⍝ Cash Cap
+[99]  :if 0∊⍴DLTB DataCASHCAP←,'Def' DescToVariableUK DATACASHCAP ⋄ DataCASHCAP←'⍬' ⋄ :endif ⍝ Default Cash Cap
+[100] PERCENTCASHCAP←0.01×zwb '100 ',PERCENTCASHCAP
+[101] :if ^/' '=REVCASHCAP ⋄ REVCASHCAP←REVN
+[102] :else
+[103]                      ⍝⍀⍝  '' 'Revaluation' FOURDIT 'sCEN_REVCASHCAP REVCASHCAP'
+[104]                      ⋄ REVCASHCAP←termAdjFin BlendRates REVCASHCAP sCEN_REVCASHCAP
+[105] :endif
+[106] FinAdjTable←FinAdjTable OVER 'REVCASHCAP' 'REVCASHCAP' REVCASHCAP
+[107] ⍝⍀⍝ '' '' FOURDIT 'REVCASHCAP←'
+[108] 
+[109] PreNRAEXITCASHCAP←(0 1,REVYRS)['NY '⍳↑PreNRAEXITCASHCAP]
+[110] :if ^/' '=NRAEXITCASHCAP←,SelectRounding NRAEXITCASHCAP ⋄ NRAEXITCASHCAP←NRARND ⋄ :endif
+[111] ERFCASHCAP←↑⍕(('None' 'ERF1' 'ERF2')⍳⊂DLTB ERFCASHCAP)-⎕io
+[112] CASHCAPADJ←+/ZWB¨sCEN_CASHCAPADJ CASHCAPADJ
+[113] 
+[114] ⍝ Death Pension
+[115] WOFRAC←0.01×zwb WOFRAC
+[116] 
+[117] ⍝ Death Cash
+[118] GLBENMULT←zwb GLBENMULT
+[119] GLPUP←↑GLPUP
+[120] DCONTS1←,'Def' DescToVariableUK DCONTS1
+[121] DCONTS2←,'Def' DescToVariableUK DCONTS2
+[122] ⍝⍀⍝ '' 'Contributions Interest' FOURDIT 'sCEN_iDCONTS1 iDCONTS1 sCEN_iDCONTS2 iDCONTS2'
+[123] FinAdjTable←FinAdjTable OVER 'iDCONTS1' 'iDCONTS1' (iDCONTS1←termAdjFin BlendRates iDCONTS1 sCEN_iDCONTS1)
+[124] FinAdjTable←FinAdjTable OVER 'iDCONTS2' 'iDCONTS2' (iDCONTS2←termAdjFin BlendRates iDCONTS2 sCEN_iDCONTS2)
+[125] ⍝⍀⍝ '' '' FOURDIT 'iDCONTS1← iDCONTS2←'
+[126] 
+[127] ⍝ Underpin
+[128] mpuflag←zwb mpuflag
+[129] mpuDATE←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrmpuDATE mpuDATE
+[130] ⍝⍀⍝ '' 'Contributions Interest' FOURDIT 'sCEN_jmpu jmpu'
+[131] FinAdjTable←FinAdjTable OVER 'jmpu' 'jmpu' (jmpu←termAdjFin BlendRates jmpu sCEN_jmpu)
+[132] ⍝⍀⍝ '' '' FOURDIT 'jmpu←'
+[133] jmpu←×\1,(2/NRA OVERTAKE jmpu)*0.5
+[134] 
+[135] :if ~test ⋄ :andif VFtables←VFtables×VFmissing⌈basischanged
+[136]     VFDBtab←MATRIX 'X0' 'BenID' 'ContID' 'DataID' 'Age' 'Year' 'Ident' 'ValueNoRev'
+[137]     :if ∨/∆←~mt¨PPOSTMEMB SPOSTMEMB
+[138]         ('Note: ',(' and ' join ∆/'Member' 'Spouse'),' Retirement Valuation Factors not output due to member-specific Mortality Loadings') VALN∆LOG 'Add'
+[139]         :if 1↓∆
+[140]             'Note: Death in Deferment Valuation Factors not output due to member-specific Mortality Loadings' VALN∆LOG 'Add'
+[141]         :endif
+[142]     :endif
+[143] :endif
+[144] 
+[145] PHI←0
+    ∇

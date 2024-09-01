@@ -1,0 +1,27 @@
+    ∇ desc BROWSE OutPutFILE;⎕io;History;FilesDesc;FilesList;fILENAME;lrfILENAME;focus
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⎕io←1 ⍝ Function used to Browse Output Files
+[3]   
+[4]   :if 0≠⍴'fmBrowser' ⎕wi 'self' ⍝ Browser already loaded
+[5]   :orif 0≠⍴'fmLogOn' ⎕wi 'self' ⍝ Can't load from Log On
+[6]       :return
+[7]   :endif
+[8]   
+[9]   :if ~82=⎕dr OutPutFILE
+[10]      OutPutFILE←,(OutPutFILE=⎕nnums,⎕xnnums)⌿⎕nnames OVER ⎕xnnames
+[11]  :endif
+[12]  
+[13]  :if 0≠⎕nc 'desc'
+[14]      desc UpdateBrowserHistory OutPutFILE
+[15]      0 0⍴⎕ex 'FilesDesc FilesList'
+[16]      GetAbsFileList 'History'
+[17]  :endif
+[18]  
+[19]  :if 0∊⍴focus←'#' ⎕wi 'focus' ⍝ Remember "focus"
+[20]      focus←FormName
+[21]  :else
+[22]      focus←'.' StripText focus ⍝ Get the parent "Form"
+[23]  :endif
+[24]  'OVERWIN' CallModule 'Browser' ⍝ Will start with "OutPutFILE" loaded
+[25]  0 Win∆SetFocus focus ⍝ Refocus
+    ∇

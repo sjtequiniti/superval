@@ -1,1 +1,65 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Batch_Display" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Batch_Display" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmBatchDisplay.fDisplay.lvRuns" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX Runs) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX Runs[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmBatchDisplay.fDisplay.lvRuns" ⎕wi "value" value[25]  0 0⍴"fmBatchDisplay.fDisplay.lvRuns" ⎕wi "EnsureVisible" ((1↑value),1)[26]  "fmBatchDisplay.fDisplay.ckorigValnRun" ⎕wi "value" (zwb origValnRun)[27]  "fmBatchDisplay.fDisplay.ckexcelOutput" ⎕wi "value" (zwb excelOutput)[28]  "fmBatchDisplay.fDisplay.ckexcelDelay" ⎕wi "value" (zwb excelDelay)[29]  "fmBatchDisplay.fDisplay.ckHPCenabled" ⎕wi "value" (zwb HPCenabled)[30]  PickList←"fmBatchDisplay.fDisplay.cbHPCbroker" ⎕wi "list"[31]  selection←PickList ExactTLU DLTB HPCbroker[32]  :if mt selection[33]      :if ~mt DLTB HPCbroker[34]          warnings←warnings OVER "Previous Selection for 'HTTP Request Broker' is no longer available"[35]      :endif[36]      modified←⌈/modified,0[37]  :endif[38]  "fmBatchDisplay.fDisplay.cbHPCbroker" ⎕wi "value" (¯1↑0,selection)[39]  "fmBatchDisplay.fDisplay.edfinCurrent" ⎕wi "text" (DLTB finCurrent)[40]  "fmBatchDisplay.fConsolid.ckconsolidate" ⎕wi "value" (zwb consolidate)[41]  PickList←"fmBatchDisplay.fConsolid.cbConsolidParms" ⎕wi "list"[42]  selection←PickList ExactTLU DLTB ConsolidParms[43]  :if mt selection[44]      :if ~mt DLTB ConsolidParms[45]          warnings←warnings OVER "Previous Selection for 'Consolidation Parameters' is no longer available"[46]      :endif[47]      modified←⌈/modified,1[48]  :endif[49]  "fmBatchDisplay.fConsolid.cbConsolidParms" ⎕wi "value" (¯1↑1,selection)[50]  "fmBatchDisplay.fConsolid.edconsDBName" ⎕wi "text" (DLTB consDBName)[51]  "fmBatchDisplay.edBatchtrick" ⎕wi "text" (DLTB Batchtrick)[52]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Batch_Display[53]      :for var :in spin Comment_Batch_Display at "variable" "row" ⋄ (var row)←var[54]          "Batch_Display" ParmColor ((FormFields for "variable" var) at "control"),var row 1[55]      :endfor[56]  :endif[57]  :if ~0∊⍴,warnings[58]      MDISPLAY DLTMB warnings,⎕tcnl[59]      Win∆AssignVars "fmBatchDisplay"[60]  :endif[61]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Batch_Display" "" "Names"[62]      "fmBatchDisplay" ⎕wi "modified" 0[63]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Batch_Display" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Batch_Display" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmBatchDisplay.fDisplay.lvRuns" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX Runs) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX Runs
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmBatchDisplay.fDisplay.lvRuns" ⎕wi "value" value
+[25]  0 0⍴"fmBatchDisplay.fDisplay.lvRuns" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  "fmBatchDisplay.fDisplay.ckorigValnRun" ⎕wi "value" (zwb origValnRun)
+[27]  "fmBatchDisplay.fDisplay.ckexcelOutput" ⎕wi "value" (zwb excelOutput)
+[28]  "fmBatchDisplay.fDisplay.ckexcelDelay" ⎕wi "value" (zwb excelDelay)
+[29]  "fmBatchDisplay.fDisplay.ckHPCenabled" ⎕wi "value" (zwb HPCenabled)
+[30]  PickList←"fmBatchDisplay.fDisplay.cbHPCbroker" ⎕wi "list"
+[31]  selection←PickList ExactTLU DLTB HPCbroker
+[32]  :if mt selection
+[33]      :if ~mt DLTB HPCbroker
+[34]          warnings←warnings OVER "Previous Selection for 'HTTP Request Broker' is no longer available"
+[35]      :endif
+[36]      modified←⌈/modified,0
+[37]  :endif
+[38]  "fmBatchDisplay.fDisplay.cbHPCbroker" ⎕wi "value" (¯1↑0,selection)
+[39]  "fmBatchDisplay.fDisplay.edfinCurrent" ⎕wi "text" (DLTB finCurrent)
+[40]  "fmBatchDisplay.fConsolid.ckconsolidate" ⎕wi "value" (zwb consolidate)
+[41]  PickList←"fmBatchDisplay.fConsolid.cbConsolidParms" ⎕wi "list"
+[42]  selection←PickList ExactTLU DLTB ConsolidParms
+[43]  :if mt selection
+[44]      :if ~mt DLTB ConsolidParms
+[45]          warnings←warnings OVER "Previous Selection for 'Consolidation Parameters' is no longer available"
+[46]      :endif
+[47]      modified←⌈/modified,1
+[48]  :endif
+[49]  "fmBatchDisplay.fConsolid.cbConsolidParms" ⎕wi "value" (¯1↑1,selection)
+[50]  "fmBatchDisplay.fConsolid.edconsDBName" ⎕wi "text" (DLTB consDBName)
+[51]  "fmBatchDisplay.edBatchtrick" ⎕wi "text" (DLTB Batchtrick)
+[52]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Batch_Display
+[53]      :for var :in spin Comment_Batch_Display at "variable" "row" ⋄ (var row)←var
+[54]          "Batch_Display" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[55]      :endfor
+[56]  :endif
+[57]  :if ~0∊⍴,warnings
+[58]      MDISPLAY DLTMB warnings,⎕tcnl
+[59]      Win∆AssignVars "fmBatchDisplay"
+[60]  :endif
+[61]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Batch_Display" "" "Names"
+[62]      "fmBatchDisplay" ⎕wi "modified" 0
+[63]  :endif
+    ∇

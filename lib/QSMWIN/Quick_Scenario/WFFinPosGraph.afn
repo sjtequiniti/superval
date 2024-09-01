@@ -1,1 +1,65 @@
-    ∇ WFView←WFFinPosGraph;liability;bb;data;∆;colours;values;class;tbl;ContID;ppt[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Graph the Liability Build Up[3]   [4]   :if mt WFView←(parent,currentpage,'picGraph') ⎕wi 'self'[5]       :return ⍝ Graph Control doesn't exist yet!![6]   :endif[7]   psWipe parent,currentpage,'picGraph'[8]   [9]   :if Assets=0[10]  :orif 1≠(parent,controlpage,'fFilter.cbclasses'       ) ⎕wi 'value'[11]  :orif 1≠(parent,controlpage,'fFilter.ckincconts'      ) ⎕wi 'value'[12]  :orif 1 0≡(parent,controlpage,'fFilter.ckincexpense'  ) ⎕wi 'Ref' 'enabled' 'value'[13]  :orif 1 0≡(parent,controlpage,'fFilter.ckincadditliab') ⎕wi 'Ref' 'enabled' 'value'[14]      MDISPLAY "To produce this Graph, Consolidation Assets must be non-zero and all Membership Classes and all Liability/Asset types must be selected"[15]      :return[16]  :endif[17]  [18]  liability←2 0⍴0[19]  :for class :in 'Pensioner' 'Deferred' 'Active' 'Active New Entrant' 'Expenses' ⍝ 'Additional Liability'[20]      tbl←(restab for 'ClassName' class) append amorttab for 'ClassName' class[21]      :if ~(⊂class)∊'Active New Entrant' 'Expenses'[22]          liability←liability,∊+/¨(tbl for (∊1=tbl at 'PastService')) at 'LiabilityValue' 'NewLiabilityValue'[23]      :endif[24]      :if (⊂class)∊'Active' 'Active New Entrant' 'Expenses'[25]          liability←liability,∊+/¨(tbl for (∊0=tbl at 'PastService')) at 'LiabilityValue' 'NewLiabilityValue'[26]      :endif[27]  :endfor[28]  [29]  tbl←(restab for 'ClassName' 'Contributions') append amorttab for 'ClassName' 'Contributions'[30]  tbl←tbl append fundind means fundtab else conttab[31]  :for ContID :in (⊂8) (9 15) (⊂10) (⊂28)[32]      liability←liability,∊+/¨(tbl for (⊂'ContingencyID'),,¨ContID) at 'LiabilityValue' 'NewLiabilityValue'[33]  :endfor[34]  [35]  values←⌊0.5+(+/liability[1;],-Assets),(-⌿⊖liability),+/liability[2;],-(⎕io+rfperiod≠0)⊃Assets rfAssets[36]  [37]  data←0,(¯2↓+\values),0[38]  data←data,(∆∘.=∆←⍳⍴values)×[1]values[39]  colours←',' join m2n (2 2⍴'GRRE')[1+1=×1↓¯1↓values;][40]  colours←colours,',',,(3 2⍴'REBLGR')[2+×DIFF 2↑¯1⌽values;][41]  [42]  chSet 'QFmt' ("<",pound,">,CLI20")[43]  chSet 'HMargin' 60 36[44]  chSet 'Heading' ('Waterfall Financial Position',(0=rfperiod)/VDATEtxt)[45]  chSet 'HFont' 'tii,12,blue'[46]  chSet 'Style' 'fbar,stacked,boxed,ForceZero,Values,Floating,nomarkers'[47]  chSet 'YRange' (⌊/0,∆),⌈/0,∆,1.1×↑∆←+/data[48]  chSet ('XS' 'angled') ('XA' 25)[49]  chSet ('colour' ('BL,',colours)) ('pattern' 15)[50]  [51]  chSet 'XLab' ('Original Liability',((0≠rfperiod)/';',VDATEtxt),',Pensioners,Deferreds,Actives;Past Service,Actives;Future Service,New Entrants,Expenses,Member;Contributions,Employer;Contributions,1st Deficit;Contributions,2nd Deficit;Contributions,New Liability',((0≠rfperiod)/';',RFDatetxt))[52]  ⍝⍝⍝ chSet 'Key' 'Reduced Cash Flows,Original Cash Flows,Increased Cash Flows'[53]  ⍝⍝⍝ chSet 'KFont' 'he,8'[54]  chSet 'Values' values[55]  ⍝⍝⍝ chSet 'vpic' (pound,"###,###,###,###,###,##0")[56]  chSet 'vstyle' 'transparent'[57]  chBar data[58]  [59]  :if ~mt WFView←chClose[60]      bb←psReadHeader WFView '%%BoundingBox:' ⍝ Bounding Box[61]      ppt←.5+.×(((parent,currentpage,'picGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point[62]      ps_exec WFView (parent,currentpage,'picGraph') ppt ps∆cmap 1[63]  :endif    ∇
+    ∇ WFView←WFFinPosGraph;liability;bb;data;∆;colours;values;class;tbl;ContID;ppt
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Graph the Liability Build Up
+[3]   
+[4]   :if mt WFView←(parent,currentpage,'picGraph') ⎕wi 'self'
+[5]       :return ⍝ Graph Control doesn't exist yet!!
+[6]   :endif
+[7]   psWipe parent,currentpage,'picGraph'
+[8]   
+[9]   :if Assets=0
+[10]  :orif 1≠(parent,controlpage,'fFilter.cbclasses'       ) ⎕wi 'value'
+[11]  :orif 1≠(parent,controlpage,'fFilter.ckincconts'      ) ⎕wi 'value'
+[12]  :orif 1 0≡(parent,controlpage,'fFilter.ckincexpense'  ) ⎕wi 'Ref' 'enabled' 'value'
+[13]  :orif 1 0≡(parent,controlpage,'fFilter.ckincadditliab') ⎕wi 'Ref' 'enabled' 'value'
+[14]      MDISPLAY "To produce this Graph, Consolidation Assets must be non-zero and all Membership Classes and all Liability/Asset types must be selected"
+[15]      :return
+[16]  :endif
+[17]  
+[18]  liability←2 0⍴0
+[19]  :for class :in 'Pensioner' 'Deferred' 'Active' 'Active New Entrant' 'Expenses' ⍝ 'Additional Liability'
+[20]      tbl←(restab for 'ClassName' class) append amorttab for 'ClassName' class
+[21]      :if ~(⊂class)∊'Active New Entrant' 'Expenses'
+[22]          liability←liability,∊+/¨(tbl for (∊1=tbl at 'PastService')) at 'LiabilityValue' 'NewLiabilityValue'
+[23]      :endif
+[24]      :if (⊂class)∊'Active' 'Active New Entrant' 'Expenses'
+[25]          liability←liability,∊+/¨(tbl for (∊0=tbl at 'PastService')) at 'LiabilityValue' 'NewLiabilityValue'
+[26]      :endif
+[27]  :endfor
+[28]  
+[29]  tbl←(restab for 'ClassName' 'Contributions') append amorttab for 'ClassName' 'Contributions'
+[30]  tbl←tbl append fundind means fundtab else conttab
+[31]  :for ContID :in (⊂8) (9 15) (⊂10) (⊂28)
+[32]      liability←liability,∊+/¨(tbl for (⊂'ContingencyID'),,¨ContID) at 'LiabilityValue' 'NewLiabilityValue'
+[33]  :endfor
+[34]  
+[35]  values←⌊0.5+(+/liability[1;],-Assets),(-⌿⊖liability),+/liability[2;],-(⎕io+rfperiod≠0)⊃Assets rfAssets
+[36]  
+[37]  data←0,(¯2↓+\values),0
+[38]  data←data,(∆∘.=∆←⍳⍴values)×[1]values
+[39]  colours←',' join m2n (2 2⍴'GRRE')[1+1=×1↓¯1↓values;]
+[40]  colours←colours,',',,(3 2⍴'REBLGR')[2+×DIFF 2↑¯1⌽values;]
+[41]  
+[42]  chSet 'QFmt' ("<",pound,">,CLI20")
+[43]  chSet 'HMargin' 60 36
+[44]  chSet 'Heading' ('Waterfall Financial Position',(0=rfperiod)/VDATEtxt)
+[45]  chSet 'HFont' 'tii,12,blue'
+[46]  chSet 'Style' 'fbar,stacked,boxed,ForceZero,Values,Floating,nomarkers'
+[47]  chSet 'YRange' (⌊/0,∆),⌈/0,∆,1.1×↑∆←+/data
+[48]  chSet ('XS' 'angled') ('XA' 25)
+[49]  chSet ('colour' ('BL,',colours)) ('pattern' 15)
+[50]  
+[51]  chSet 'XLab' ('Original Liability',((0≠rfperiod)/';',VDATEtxt),',Pensioners,Deferreds,Actives;Past Service,Actives;Future Service,New Entrants,Expenses,Member;Contributions,Employer;Contributions,1st Deficit;Contributions,2nd Deficit;Contributions,New Liability',((0≠rfperiod)/';',RFDatetxt))
+[52]  ⍝⍝⍝ chSet 'Key' 'Reduced Cash Flows,Original Cash Flows,Increased Cash Flows'
+[53]  ⍝⍝⍝ chSet 'KFont' 'he,8'
+[54]  chSet 'Values' values
+[55]  ⍝⍝⍝ chSet 'vpic' (pound,"###,###,###,###,###,##0")
+[56]  chSet 'vstyle' 'transparent'
+[57]  chBar data
+[58]  
+[59]  :if ~mt WFView←chClose
+[60]      bb←psReadHeader WFView '%%BoundingBox:' ⍝ Bounding Box
+[61]      ppt←.5+.×(((parent,currentpage,'picGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+[62]      ps_exec WFView (parent,currentpage,'picGraph') ppt ps∆cmap 1
+[63]  :endif
+    ∇

@@ -1,0 +1,43 @@
+    ∇ done←worker ⍙DBSummariseCOM tno;⎕WSELF;xxx;waited;until;File
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Untie native file tied to tno;
+[3]   ⍝ instruct worker to finish; wait for it to confirm.
+[4]   ⍝ Should be able to use handler for SysNotify event to discover when worker finished
+[5]   ⍝ but handler not firing, so using XExec to read Alldone flag in worker
+[6]   ⍝ Revn: sjt01sep15
+[7]   ⍝       sjt17may16 * return done
+[8]   
+[9]   done←0 ⋄ File←DLTB (tno=⎕xnnums)⌿⎕xnnames
+[10]  
+[11]  :if (⊂worker)∊'#' ⎕wi 'children'
+[12]      (waited until)← 0 600                       ⍝ 600-sec timeout (90 sec will summarise 2Gb)
+[13]      ⎕NUNTIE tno                                 ⍝ flushes file buffers
+[14]  
+[15]      ⎕WSELF←worker
+[16]      ⍝⎕WI 'onSysNotify' 'done←1'                 ⍝ Defer method will raise SysNotify event
+[17]      ⍝⍝⍝:try
+[18]          ⎕WI 'xVariable' 'Finished' 1            ⍝ tell worker to finish
+[19]          ⎕←'Told' worker 'to finish'
+[20]          :while ~done←⎕WI 'XExec' 'Alldone'      ⍝ ask worker if done
+[21]              waited←waited+⎕DL 0.1               ⍝ 100 msec loop
+[22]              ⎕WGIVE 0                            ⍝ let Windows events fire
+[23]          :until waited≥until
+[24]          ⎕←(done means 'Waited ' else 'Timed out after waiting '),(⍕waited),' secs for worker task'
+[25]      ⍝⍝⍝:catchall
+[26]      ⍝⍝⍝    done←0
+[27]      ⍝⍝⍝:endtry
+[28]  
+[29]      xxx←⎕WI¨'Close' 'Delete'                   ⍝ kill worker
+[30]      :if ~done
+[31]          ('Note:  Parallelisation Task for "',worker,'" timed out during Summarising') VALN∆LOG 'Add'
+[32]      :endif
+[33]      File ⎕xntie tno                             ⍝ Retie the file for alternate Summarising
+[34]  :else
+[35]      ('Note:  Parallelisation Task "',worker,'" did not exist when attempting to Summarise') VALN∆LOG 'Add'
+[36]  :endif
+[37]  ⍝⍝⍝
+[38]  ⍝⍝⍝:if ~mt VALN∆Errors ⍝ Write out Worker Task errors to VALN.$LOG
+[39]  ⍝⍝⍝    :if unattended ⋄ VALN∆Errors APPEND tpL ⋄ :endif
+[40]  ⍝⍝⍝    VALN∆LOG 'VarReset'
+[41]  ⍝⍝⍝:endif
+    ∇

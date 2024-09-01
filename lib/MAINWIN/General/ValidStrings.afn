@@ -1,0 +1,19 @@
+    ∇ res←ValidStrings Value;value;valid
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Create the Validation Strings that the values satisfy
+[3]   
+[4]   res←0⍴⊂⊂0⍴''
+[5]   
+[6]   :for value :in ⎕split Value
+[7]       valid←⊂(~^/value∊' ¯-0123456789.')/'Formula'
+[8]       :if ~^/' '=value
+[9]           value←⍎value
+[10]          valid←valid,⊂(value≡⌊value)/'Int'
+[11]          valid←valid,⊂(1=+/⍴value)/'Rating'
+[12]          valid←valid,⊂(1=+/⍴,value)/'Scalar'
+[13]          valid←valid,⊂(^/value>0)/'+' ⍝⍝⍝ Must be Scalar which leaves a space when not true???
+[14]          valid←valid,⊂(^/value≥0)/'0+'
+[15]      :endif
+[16]      res←res,⊂lmt valid
+[17]  :endfor
+    ∇

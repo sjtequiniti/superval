@@ -1,0 +1,28 @@
+    ∇ PUPs_Vars arg;i;n;warnings
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation of PUPs - arg is 'PUPs' or 'IndPUPs'
+[3]   
+[4]   warnings←0 0⍴''
+[5]   :select arg
+[6]   :case 'PUPs'
+[7]       :for i :in ⍳↑⍴MATRIX PUPDesc
+[8]           warnings←warnings OVER ("PUP Adjustment Factor ",⍕i)                   Win∆NumRelative  "PUPADJ[i;]"    "lrPUPADJ[i;]"   "Scalar"
+[9]           warnings←warnings OVER ("PUP Start Date ",⍕i)                          Win∆DateRelative "INDSTART[i;]"  "lrINDSTART[i;]"
+[10]          warnings←warnings OVER ("PUP Finish Date ",⍕i)                         Win∆DateRelative "INDFINISH[i;]" "lrINDFINISH[i;]"
+[11]          warnings←warnings OVER ("PUP Revaluation Rate Override ",⍕i)           Win∆FinRelative  "INDREV[i;]"    "lrINDREV[i;]"
+[12]  ⍝⍝⍝        warnings←warnings OVER ("PUP Transfers Revaluation Rate Override ",⍕i) Win∆FinRelative  "TVINDREV[i;]"  "lrTVINDREV[i;]"
+[13]      :endfor
+[14]  :case 'IndPUPs'
+[15]      :for i :in ⍳↑⍴MATRIX IndPUPDesc
+[16]          warnings←warnings OVER ("Independent PUP Adjustment Factor ",⍕i)                   Win∆NumRelative  "IndPUPADJ[i;]"    "lrIndPUPADJ[i;]"   "Scalar"
+[17]          warnings←warnings OVER ("Independent PUP Start Date ",⍕i)                          Win∆DateRelative "IndINDSTART[i;]"  "lrIndINDSTART[i;]"
+[18]          warnings←warnings OVER ("Independent PUP Finish Date ",⍕i)                         Win∆DateRelative "IndINDFINISH[i;]" "lrIndINDFINISH[i;]"
+[19]          warnings←warnings OVER ("Independent PUP Revaluation Rate Override ",⍕i)           Win∆FinRelative  "IndINDREV[i;]"    "lrIndINDREV[i;]"
+[20]  ⍝⍝⍝        warnings←warnings OVER ("Independent PUP Transfers Revaluation Rate Override ",⍕i) Win∆FinRelative  "IndTVINDREV[i;]"  "lrTVIndINDREV[i;]"
+[21]      :endfor
+[22]  :endselect
+[23]  
+[24]  :if ~0∊⍴,warnings
+[25]      MDISPLAY DLTMB warnings,⎕tcnl
+[26]  :endif
+    ∇

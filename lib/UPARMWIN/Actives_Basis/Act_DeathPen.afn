@@ -1,0 +1,36 @@
+    ∇ field Act_DeathPen parm;page;MESS
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Do Initialisation, Changes and Validation of Death Pension Page
+[3]   
+[4]   page←'pgDeathPen.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]   
+[9]   :case 'Init'
+[10]      (parent,page,'fButtons.bnActives_BasisEditSD') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[11]  
+[12]  :case 'Change'
+[13]      :select field
+[14]      :case 'cbWOSTYPE'
+[15]          :if ~ClntCode=3 ⍝ Non-CC3 use the same Spreading Method for both
+[16]              (parent,'pgDeathCash.fDthPros.cbGLSTYPE') ⎕wi 'text' (GLSTYPE←(parent,page,'fDthPros.cbWOSTYPE') ⎕wi 'text')
+[17]          :endif
+[18]      :case 'cbWOSDParm'
+[19]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fDthPros.',field) ⎕wi 'text'),'"'
+[20]              MESS←2⊃('Death Pension Spreading Dates Parameter Set' 0) GET∆SpDateGlobals 2↓field
+[21]              :if ~openParameters∨changedParm
+[22]                  changedParm←1
+[23]                  (parent,page,'fDthPros.',field) ⎕wi 'suppress' 1
+[24]                  Assign_Inputs 1
+[25]                  (parent,page,'fDthPros.',field) ⎕wi 'suppress' 0
+[26]                  changedParm←0
+[27]              :endif
+[28]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[29]          :endif
+[30]      :endselect
+[31]  
+[32]  :case 'Valid'
+[33]  
+[34]  :endselect
+    ∇

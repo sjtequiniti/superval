@@ -1,0 +1,117 @@
+    ∇ Z←⍙DBRunIDs;filter;data;Valnts;new;MESS;z;ResID;x;y
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Determine the current database IDs for the particular valuation run
+[3]   ⍝ Returns
+[4]   ⍝       flag of whether it is a "new" run (1 is brand new, -1 is unfinalised or -2 if needs re-ruuning for extra options)
+[5]   ⍝       the Valuation Timestamp
+[6]   ⍝       Mesages about extra options required
+[7]   ⍝ Also global ResultsCategoryID, BasisCategoryID, ScenarioID, DBResID (all DB Res ID's), DBBasisID (all DB Basis ID's) and OtherResID (ResultsCategoryID for other sex run)
+[8]   
+[9]   Valnts←0 ⋄ MESS←0 0⍴'' ⋄ VFmissing←VFtables
+[10]  
+[11]  :if ~new←0='ADOrst' ⎕wi 'xRecordCount' ⍝ if any records
+[12]      ResultsCategoryID←¯1 ⋄ DBResID←  10,10000∣,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",DBID ⍝ Get all Results ID's and start with default ResultsCategoryID number
+[13]      BasisCategoryID  ←¯1 ⋄ DBBasisID←10,10000∣,1 ⍙DBadoCONCommand "SELECT BasisCategoryID   FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",DBID ⍝ Get all Basis ID's and start with default BasisCategoryID number
+[14]  
+[15]      :if 10000∣ScenarioID←DatabaseID+~ScenarioDesc≡'Primary Basis'
+[16]      :andif new←mt DLTB ScenarioID←↑1 ⍙DBadoCONCommand "SELECT TOP 1 ScenarioID FROM ResultsCategory WHERE ScenarioDescription=",(1 ⍙DBString ScenarioDesc),sqlDatabase/" AND DatabaseID=",DBID
+[17]          ScenarioID←DatabaseID+1 ⍙DBNextID 'ScenarioID' ⋄ OtherResID←⍳0
+[18]      :else
+[19]          filter←       (sqlDatabase/"DatabaseID=",DBID," AND "),"BasisDescription=",(1 ⍙DBString basisDesc)," AND ValuationDate=",sqlDatabase ⍙DBString 1 ⍙DBTimeStamp ¯3↑pvDATE,vDATEind/vDATE
+[20]          filter←filter," AND ValnMethod=",(1 ⍙DBString ValType)," AND ControlPeriod",((contper>99)⊃("=",⍕contper) ">99")," AND IncInsured=",(⍕insind)," AND BenCap=",⍕bencap
+[21]          filter←filter," AND BasisFile=",(1 ⍙DBString basisFile)," AND ScenarioDescription=",(1 ⍙DBString ScenarioDesc)," AND ExactAge=",⍕AgeInterp
+[22]  
+[23]          'ADOrst' ⎕wi 'xFilter' ("ClassID=",(⍕ClassID)," AND ",filter," AND Sex=",1 ⍙DBString SelSex) ⍝ find primary run record
+[24]          :if ~new←0='ADOrst' ⎕wi 'xRecordCount' ⍝ Not previously run if 0
+[25]              data←'ADOrst' ⎕wi 'XGetRows'
+[26]              :if uSERisRSE ⋄ :andif 1≠↑⍴data ⋄ crash ⋄ :endif
+[27]              ResultsCategoryID←10000∣↑data[;rstFields⍳⊂"ResultsCategoryID"]
+[28]              BasisCategoryID  ←10000∣↑data[;rstFields⍳⊂"BasisCategoryID"]
+[29]  
+[30]              :if fscopt
+[31]                  x←y←z←0
+[32]                  :if   z←fscopt  >↑data[;rstFields⍳⊂"AltScenario"]        ⍝ ALM/LDI when none previously
+[33]                  :orif y←HLDII   >↑data[;rstFields⍳⊂"AltScenLeftService"] ⍝  or Extra dimension required
+[34]                  :orif x←SpouseCF>↑data[;rstFields⍳⊂"AltScenSpouseCF"]    ⍝  or Spouse Cash Flows required
+[35]                      new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to produce ALM/LDI cashflows',(y/' with Date Left Service data'),x/' with separate Spouse Cash Flows'
+[36]                  :endif
+[37]              :endif
+[38]              :if ClassID≠2 ⍝⍝⍝ FIXME:  Skip re-run of Actives if unchanged
+[39]                  :if ClassID≠4
+[40]                  :andif sepComCot≠↑data[;rstFields⍳⊂"SeparateComCot"]   ⍝ Separate Com and Cot different to previously
+[41]                      new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to produce consistent Commutation and Cash on Top results'
+[42]                  :endif
+[43]                  :if ClassID≠4
+[44]                  :andif splitCombyPI≠↑data[;rstFields⍳⊂"SplitCombyPI"]  ⍝ Split Com by PI different to previously
+[45]                      new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to produce Commutation split by Pension Increase results'
+[46]                  :endif
+[47]                  :if IndCashFlow>↑data[;rstFields⍳⊂"IndivCashFlow"]     ⍝ Individual Cash Flows when none previously
+[48]                      new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to produce Individual Cash Flows'
+[49]                  :endif
+[50]                  :if VFmissing←VFtables>↑data[;rstFields⍳⊂"ValuationFactors"]     ⍝ Valuation Factors when none previously
+[51]                      new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to produce Valuation Factors'
+[52]                  :endif
+[53]                  :if  newent    >↑data[;rstFields⍳⊂"IncNewEntrants"]    ⍝ New Entrants when none previously
+[54]                      new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to produce New Emtrant Model results'
+[55]                  :endif
+[56]                  :if  summopt   <↑data[;rstFields⍳⊂"AgeSummary"]        ⍝ Age Summarised previously, Member by Member required
+[57]                  :orif csvind   <↑data[;rstFields⍳⊂"CSVFile"   ]        ⍝ CSV File previously, Member by Member required
+[58]                      new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to produce Individual Member results'
+[59]                  :endif
+[60]                  :if (↑aggopt)  <↑data[;rstFields⍳⊂"AggValuation"]      ⍝ Aggregated Benefits previously, Member by Member required
+[61]                      new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to value (un-Aggregated) Individual Member benefits'
+[62]                  :endif
+[63]                  :if aosind
+[64]                      :if z←aosind >↑data[;rstFields⍳⊂"AOSCalcs"]      ⍝ AOS when none previously
+[65]                      :orif ~pvDATE≡⌽DATEREP ¯2+↑data[;rstFields⍳⊂"PrevValnDate"] ⍝  or Different PrevValnDate (Microsoft 2 day error)
+[66]                          new←¯2 ⋄ MESS←MESS OVER 'Note:  Valuation re-run to produce Analyisis of Surplus results',(~z)/' at Different Previous Valuation Date'
+[67]                      :endif
+[68]                  :endif
+[69]              :endif
+[70]              :if    0=new
+[71]              :andif 0=new←-0=↑data[;rstFields⍳⊂"Finalised"]       ⍝ Previous Run not finalised
+[72]                  Valnts←↑data[;rstFields⍳⊂"ValnTimeStamp"]
+[73]              :elseif 0=↑data[;rstFields⍳⊂"Finalised"]             ⍝ Previous Run not finalised
+[74]                  MESS←MESS OVER 'Note:  Valuation re-run because Previous Run was not completed'
+[75]              :endif
+[76]          :endif
+[77]  
+[78]          OtherResID←⍳0
+[79]          :if 1=new ⋄ :orif ClassID≠2 ⍝ find other sex/in-force run record
+[80]              :if ClassID=2 ⋄ filter←"ClassID=1 AND ",filter," AND Sex=",1 ⍙DBString SelSex
+[81]              :else         ⋄ filter←"ClassID=",(⍕ClassID)," AND ",filter," AND Sex=",1 ⍙DBString 'MF'~SelSex
+[82]              :endif
+[83]  
+[84]              'ADOrst' ⎕wi 'xFilter' filter
+[85]              :if ~0='ADOrst' ⎕wi 'xRecordCount' ⍝ Not previously run if 0
+[86]                  data←'ADOrst' ⎕wi 'XGetRows'
+[87]                  :if uSERisRSE ⋄ :andif 1≠↑⍴data ⋄ crash ⋄ :endif
+[88]                  ResID←10000∣↑data[;rstFields⍳⊂"ResultsCategoryID"]
+[89]                  :if 1=new
+[90]                      :if (ResultsCategoryID←↑((ResID+(neIND∨~SelSex='M')⌽¯1 1)~DBResID),ResultsCategoryID)>⌈/DBResID
+[91]                          ResultsCategoryID←(1 (ResultsCategoryID-1)) ⍙DBNextID 'ResultsCategoryID'
+[92]                      :endif
+[93]                      BasisCategoryID←10000∣↑data[;rstFields⍳⊂"BasisCategoryID"]
+[94]                  :endif
+[95]                  OtherResID←(ClassID≠2)/ResID
+[96]              :endif
+[97]          :endif
+[98]          'ADOrst' ⎕wi 'xFilter' ''
+[99]      :endif
+[100] :else ⍝ if no records currently in results database
+[101]     ResultsCategoryID←BasisCategoryID←¯1 ⋄ DBResID←DBBasisID←10 ⋄ OtherResID←⍳0 ⋄ ScenarioID←DatabaseID
+[102] :endif
+[103] 
+[104] VFmissing←VFtables×VFmissing⌈ResultsCategoryID=¯1
+[105] 
+[106] :select ClassID
+[107] :case 1 ⋄ CFmissing←(1=∣new)^∨/zwb¨m_COMValBas f_COMValBas m_ILLCOMValBas f_ILLCOMValBas m_COMAdjbyEx f_COMAdjbyEx m_ILLCOMAdjbyEx f_ILLCOMAdjbyEx
+[108]         ⋄ MItables←∨/~mt¨m_DPREORIG f_DPREORIG m_DPOSTORIG f_DPOSTORIG m_DILLORIG f_DILLORIG m_SDPOSTORIG f_SDPOSTORIG
+[109] :case 3 ⋄ CFmissing←(1=∣new)^∨/zwb¨m_COMValBas f_COMValBas                               m_COMAdjbyEx f_COMAdjbyEx
+[110]         ⋄ MItables←∨/~mt¨m_DPREORIG f_DPREORIG m_DPOSTORIG f_DPOSTORIG                       m_SDPOSTORIG f_SDPOSTORIG
+[111] :else   ⋄ CFmissing←0
+[112]         ⋄ MItables←∨/~mt¨                      m_DPOSTORIG f_DPOSTORIG                       m_SDPOSTORIG f_SDPOSTORIG
+[113] :endselect
+[114] 
+[115] Z←(×new) Valnts MESS
+    ∇

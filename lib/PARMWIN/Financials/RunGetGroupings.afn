@@ -1,1 +1,20 @@
-    ∇ RunGetGroupings field;SSName;row;col;popup;∆[1]   ⍝ PARMWIN.sf#28[2]   ⍝ Produce a selection list of Groupings[3]   [4]   (SSName row col)←field[5]   :if ∨/'Interest'⍷SSName ⋄ ∆←~(m2n groupName)∊m2n infGroup OVER revGroup OVER incGroup[6]   :else                   ⋄ ∆←~(m2n groupName)∊m2n intGroup[7]   :endif[8]   [9]   :if ~mt ∆⌿groupName[10]      :if ~0∊⍴popup←DLTB Win∆SelectionBox (⊂∆) sel1¨(((⍴groupDesc)⌈⍴popup)↑groupDesc) (popup←groupName)[11]          SSName ⎕wi "TextRC" row col (⎕av[209 151] REPL popup)[12]          SSName ⎕wi 'xmodified' 0[13]          SSName ⎕wi 'xmodified' 1[14]      :endif[15]      SSName ⎕wi "SetColWidthAuto" ¯1 1 ¯1 col 0[16]  :else[17]      MDISPLAY 'Specify Groupings Name(s) first'[18]  :endif    ∇
+    ∇ RunGetGroupings field;SSName;row;col;popup;∆
+[1]   ⍝ PARMWIN.sf#28
+[2]   ⍝ Produce a selection list of Groupings
+[3]   
+[4]   (SSName row col)←field
+[5]   :if ∨/'Interest'⍷SSName ⋄ ∆←~(m2n groupName)∊m2n infGroup OVER revGroup OVER incGroup
+[6]   :else                   ⋄ ∆←~(m2n groupName)∊m2n intGroup
+[7]   :endif
+[8]   
+[9]   :if ~mt ∆⌿groupName
+[10]      :if ~0∊⍴popup←DLTB Win∆SelectionBox (⊂∆) sel1¨(((⍴groupDesc)⌈⍴popup)↑groupDesc) (popup←groupName)
+[11]          SSName ⎕wi "TextRC" row col (⎕av[209 151] REPL popup)
+[12]          SSName ⎕wi 'xmodified' 0
+[13]          SSName ⎕wi 'xmodified' 1
+[14]      :endif
+[15]      SSName ⎕wi "SetColWidthAuto" ¯1 1 ¯1 col 0
+[16]  :else
+[17]      MDISPLAY 'Specify Groupings Name(s) first'
+[18]  :endif
+    ∇

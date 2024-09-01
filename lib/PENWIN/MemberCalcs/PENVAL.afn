@@ -1,1 +1,96 @@
-    ∇ PENVAL;N;RGP;PEN;def;yop;SL∆pp;Con∆pp;Start∆pp;End∆pp;GP∆pp;RevOnly∆pp;IncOnly∆pp;BenType∆pp;IncType∆pp;Inc∆pp;BenefitTypeID;Dec∆pp;ExitProbs∆pp;RetAge∆pp;Age∆pp;rev;ABno∆pp;row;AltABno∆pp;eot;Identifier∆pp;EOT[1]   ⍝ PENWIN.sf#3[2]   ⍝ Calculate the value of the single life and reversion for Pension N[3]   ⍝[4]   ⍝[5]   ⍝[6]   def←DEF⌈BAGE-X0[7]   yop←(0⌈X0-BAGE)⌊YOP×0=def[8]   RGP←NotSpouse×0⌈GP-def+YOP[9]   eot←0⌈EAGE-X0[10]  EOT←0⌈EAGE-Xe[11]  rev←PENind×NotSpouse×REV[12]  [13]  :if ∨/def>0 ⋄ PEN←ANP PEN∆PROJ +⌿gmpVD[14]  :else       ⋄ PEN←⍉⊃NX↑¨ANP×ADJ[15]  :endif[16]  [17]  Age∆pp←,X0+⍳NX[18]  [19]  :for N :in ⍳No∆Pens[20]  ⍝⍝⍝    :if PENind[N]^0=eot[N] ⋄ :continue ⋄ :endif[21]      :if ppf[22]          BenefitTypeID←(0,¯3↑12 13 34,(~PENind[N])/38 39 40)[PPFPAYINC[N]][23]      :else[24]      ⍝⍝⍝    :if PENind[N] ⋄[25]              BenefitTypeID←⍬⍴((14+⍳16),2 3)[N] ⍝ Pension[26]      ⍝⍝⍝    :else         ⋄ BenefitTypeID←1 ⍝ Cash stored under its original Pension number - to be reviewed[27]      ⍝⍝⍝    :endif[28]      :endif[29]      BenID←BenID,BenefitTypeID[30]  [31]      :if ~aosind^prevind[32]          :if ppf ⋄ row←PPFPAYINC[N][33]                    OutputMat[row;⍳3]←OutputMat[row;⍳3]+(NOM×0=OutputMat[row;0]), ADJ[N]×nzANP[N]×ANP[N]×1,X0[34]          :else   ⋄ OutputMat[N+3;⍳7]←                   NOM                    ,(ADJ[N]×nzANP[N]×ANP[N]×1,X0),(100×rev[N]),RGP[N],yop[N],def[N][35]          :endif[36]      :endif[37]      :if ⍙dbresults[38]          :if PENind[N][39]              ⍙dbbenres←⍙dbbenres⍪((BenefitTypeID,2,(7-4×bencap^IsAccrued),10-×DEF⌈BAGE[N]-Xe) dbXe 0) ⍙DBValnRecords ADJ[N]×nzANP[N]×ANP[N]××EOT[N] ⍝ 10 or 9 if Deferred[40]          :else[41]              ⍙dbbenres←⍙dbbenres⍪((BenefitTypeID,2,(7-4×bencap^IsAccrued),41                ) dbXe 0) ⍙DBValnRecords ADJ[N]×nzANP[N]×ANP[N][42]          :endif[43]      :endif[44]  [45]      :if IsAccrued[46]          ABno∆pp←ppf↓'2',⍕PPFPAYINC[N] ⍝⍝⍝ (BenefitTypeID=12 13 34 38 39 40)/'123123'[47]          AltABno∆pp←ppf/'4'[48]      :endif[49]      Dec∆pp←'NR' ⋄ ExitProbs∆pp←NX↑⌈/(~PENind[N]),(×eot[N]),(eot[N]=0)×(↑vMP)×EOT[N] ⍝ The probability of receipt of this benefit[50]      ⍝ the type of benefit eg Lump Sum, Funeral, Pension, etc and[51]      ⍝ the increase "description" eg M for Main, S for Special, etc[52]      BenType∆pp←↑(PENind[N]××eot[N])↓'LP'[53]      :if 'L'=BenType∆pp       ⋄ Inc∆pp←⍬[54]      :elseif bencap^IsAccrued ⋄ Inc∆pp←⊃(DYNINCPost DYNINCPre)[1=PPFPAYINC[N]][55]      :else                    ⋄ Inc∆pp←⊃PIR[N] ⍝ the rate of increase for this benefit[56]      :endif[57]      Identifier∆pp←¯2↑'0',IncType∆pp←⍕N+1[58]  [59]      Start∆pp←,(X0+def[N])⌈RetAge∆pp←,(X0+DEF)⌈Age∆pp[60]      :if ~0∊⍴,End∆pp←(PENind[N]^(EAGE[N]<120))/EAGE[N] ⋄ End∆pp←Start∆pp⌈End∆pp ⋄ :endif[61]      GP∆pp←NX↑,RGP[N][62]      RevOnly∆pp←REVind[N][63]      IncOnly∆pp←PENind[N]×pvmind[N][64]  [65]      Con∆pp←(×eot[N])×,rev[N]×SL∆pp←PEN[;N][def[N]][66]  [67]      PP∆CreateInterface[68]  [69]      :if ~bencap^IsAccrued ⋄ :andif ~0>KnownExit[70]          Start∆pp←,(NotSpouse×SPA)⌈Start∆pp ⋄ GP∆pp←NX↑,NotSpouse×0⌈GP-ToSPA+YOP[71]          SL∆pp←NX↑-,memdedSPA[ToSPA;N] ⋄ Con∆pp←NX↑-,NotSpouse×spded[ToSPA;N][72]          Identifier∆pp←Identifier∆pp,' memdedSPA'[73]  [74]          PP∆CreateInterface[75]  [76]          Dec∆pp←'N2' ⋄ SL∆pp←(NX,NX)⍴0 ⋄ GP∆pp←⍬ ⋄ Start∆pp←RetAge∆pp←Age∆pp ⋄ RevOnly∆pp←1[77]  [78]          :if def[N]≠0 ⋄ :andif REVdef[N][79]              Con∆pp←(NX,NX)↑MATRIX def[N]↑rev[N]×PEN[;N][80]              Identifier∆pp←(' ' StripText Identifier∆pp),' DiD'[81]              PP∆CreateInterface[82]          :endif[83]  [84]          Con∆pp←(NX,NX)↑MATRIX NotSpouse×-,ToSPA↑spded[;N][85]          Identifier∆pp←(' ' StripText Identifier∆pp),' spdedSPA'[86]  [87]          PP∆CreateInterface[88]      :endif[89]  [90]      ⍝⍀⍝ ⍙indmembres←⍙indmembres⍪(N+14),1,0,ANP[N][91]      ⍝⍀⍝ ⍙indmembres←⍙indmembres⍪(N+14),2,0,ADJ[N][92]      ⍝⍀⍝ ⍙indmembres←⍙indmembres⍪(N+14),3,0,rev[N][93]      ⍝⍀⍝ ⍙indmembres←⍙indmembres⍪(N+14),4,0,BAGE[N][94]  :endfor    ∇
+    ∇ PENVAL;N;RGP;PEN;def;yop;SL∆pp;Con∆pp;Start∆pp;End∆pp;GP∆pp;RevOnly∆pp;IncOnly∆pp;BenType∆pp;IncType∆pp;Inc∆pp;BenefitTypeID;Dec∆pp;ExitProbs∆pp;RetAge∆pp;Age∆pp;rev;ABno∆pp;row;AltABno∆pp;eot;Identifier∆pp;EOT
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ Calculate the value of the single life and reversion for Pension N
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   def←DEF⌈BAGE-X0
+[7]   yop←(0⌈X0-BAGE)⌊YOP×0=def
+[8]   RGP←NotSpouse×0⌈GP-def+YOP
+[9]   eot←0⌈EAGE-X0
+[10]  EOT←0⌈EAGE-Xe
+[11]  rev←PENind×NotSpouse×REV
+[12]  
+[13]  :if ∨/def>0 ⋄ PEN←ANP PEN∆PROJ +⌿gmpVD
+[14]  :else       ⋄ PEN←⍉⊃NX↑¨ANP×ADJ
+[15]  :endif
+[16]  
+[17]  Age∆pp←,X0+⍳NX
+[18]  
+[19]  :for N :in ⍳No∆Pens
+[20]  ⍝⍝⍝    :if PENind[N]^0=eot[N] ⋄ :continue ⋄ :endif
+[21]      :if ppf
+[22]          BenefitTypeID←(0,¯3↑12 13 34,(~PENind[N])/38 39 40)[PPFPAYINC[N]]
+[23]      :else
+[24]      ⍝⍝⍝    :if PENind[N] ⋄
+[25]              BenefitTypeID←⍬⍴((14+⍳16),2 3)[N] ⍝ Pension
+[26]      ⍝⍝⍝    :else         ⋄ BenefitTypeID←1 ⍝ Cash stored under its original Pension number - to be reviewed
+[27]      ⍝⍝⍝    :endif
+[28]      :endif
+[29]      BenID←BenID,BenefitTypeID
+[30]  
+[31]      :if ~aosind^prevind
+[32]          :if ppf ⋄ row←PPFPAYINC[N]
+[33]                    OutputMat[row;⍳3]←OutputMat[row;⍳3]+(NOM×0=OutputMat[row;0]), ADJ[N]×nzANP[N]×ANP[N]×1,X0
+[34]          :else   ⋄ OutputMat[N+3;⍳7]←                   NOM                    ,(ADJ[N]×nzANP[N]×ANP[N]×1,X0),(100×rev[N]),RGP[N],yop[N],def[N]
+[35]          :endif
+[36]      :endif
+[37]      :if ⍙dbresults
+[38]          :if PENind[N]
+[39]              ⍙dbbenres←⍙dbbenres⍪((BenefitTypeID,2,(7-4×bencap^IsAccrued),10-×DEF⌈BAGE[N]-Xe) dbXe 0) ⍙DBValnRecords ADJ[N]×nzANP[N]×ANP[N]××EOT[N] ⍝ 10 or 9 if Deferred
+[40]          :else
+[41]              ⍙dbbenres←⍙dbbenres⍪((BenefitTypeID,2,(7-4×bencap^IsAccrued),41                ) dbXe 0) ⍙DBValnRecords ADJ[N]×nzANP[N]×ANP[N]
+[42]          :endif
+[43]      :endif
+[44]  
+[45]      :if IsAccrued
+[46]          ABno∆pp←ppf↓'2',⍕PPFPAYINC[N] ⍝⍝⍝ (BenefitTypeID=12 13 34 38 39 40)/'123123'
+[47]          AltABno∆pp←ppf/'4'
+[48]      :endif
+[49]      Dec∆pp←'NR' ⋄ ExitProbs∆pp←NX↑⌈/(~PENind[N]),(×eot[N]),(eot[N]=0)×(↑vMP)×EOT[N] ⍝ The probability of receipt of this benefit
+[50]      ⍝ the type of benefit eg Lump Sum, Funeral, Pension, etc and
+[51]      ⍝ the increase "description" eg M for Main, S for Special, etc
+[52]      BenType∆pp←↑(PENind[N]××eot[N])↓'LP'
+[53]      :if 'L'=BenType∆pp       ⋄ Inc∆pp←⍬
+[54]      :elseif bencap^IsAccrued ⋄ Inc∆pp←⊃(DYNINCPost DYNINCPre)[1=PPFPAYINC[N]]
+[55]      :else                    ⋄ Inc∆pp←⊃PIR[N] ⍝ the rate of increase for this benefit
+[56]      :endif
+[57]      Identifier∆pp←¯2↑'0',IncType∆pp←⍕N+1
+[58]  
+[59]      Start∆pp←,(X0+def[N])⌈RetAge∆pp←,(X0+DEF)⌈Age∆pp
+[60]      :if ~0∊⍴,End∆pp←(PENind[N]^(EAGE[N]<120))/EAGE[N] ⋄ End∆pp←Start∆pp⌈End∆pp ⋄ :endif
+[61]      GP∆pp←NX↑,RGP[N]
+[62]      RevOnly∆pp←REVind[N]
+[63]      IncOnly∆pp←PENind[N]×pvmind[N]
+[64]  
+[65]      Con∆pp←(×eot[N])×,rev[N]×SL∆pp←PEN[;N][def[N]]
+[66]  
+[67]      PP∆CreateInterface
+[68]  
+[69]      :if ~bencap^IsAccrued ⋄ :andif ~0>KnownExit
+[70]          Start∆pp←,(NotSpouse×SPA)⌈Start∆pp ⋄ GP∆pp←NX↑,NotSpouse×0⌈GP-ToSPA+YOP
+[71]          SL∆pp←NX↑-,memdedSPA[ToSPA;N] ⋄ Con∆pp←NX↑-,NotSpouse×spded[ToSPA;N]
+[72]          Identifier∆pp←Identifier∆pp,' memdedSPA'
+[73]  
+[74]          PP∆CreateInterface
+[75]  
+[76]          Dec∆pp←'N2' ⋄ SL∆pp←(NX,NX)⍴0 ⋄ GP∆pp←⍬ ⋄ Start∆pp←RetAge∆pp←Age∆pp ⋄ RevOnly∆pp←1
+[77]  
+[78]          :if def[N]≠0 ⋄ :andif REVdef[N]
+[79]              Con∆pp←(NX,NX)↑MATRIX def[N]↑rev[N]×PEN[;N]
+[80]              Identifier∆pp←(' ' StripText Identifier∆pp),' DiD'
+[81]              PP∆CreateInterface
+[82]          :endif
+[83]  
+[84]          Con∆pp←(NX,NX)↑MATRIX NotSpouse×-,ToSPA↑spded[;N]
+[85]          Identifier∆pp←(' ' StripText Identifier∆pp),' spdedSPA'
+[86]  
+[87]          PP∆CreateInterface
+[88]      :endif
+[89]  
+[90]      ⍝⍀⍝ ⍙indmembres←⍙indmembres⍪(N+14),1,0,ANP[N]
+[91]      ⍝⍀⍝ ⍙indmembres←⍙indmembres⍪(N+14),2,0,ADJ[N]
+[92]      ⍝⍀⍝ ⍙indmembres←⍙indmembres⍪(N+14),3,0,rev[N]
+[93]      ⍝⍀⍝ ⍙indmembres←⍙indmembres⍪(N+14),4,0,BAGE[N]
+[94]  :endfor
+    ∇

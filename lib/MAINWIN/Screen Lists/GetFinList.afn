@@ -1,0 +1,54 @@
+    ∇ res←larg GetFinList arg;z;incConsDyn;incDesc;incName;incValue;infDesc;infName;infValue;intDesc;intName;intValue;revDesc;revName;revValue;rows;MESS;xxx;FinNumName;FinNumValue;FinNumComment;FinNumDesc;Comment_Financials;intGroup;infGroup;revGroup;incGroup;intCap;infCap;revCap;incCap;intCollar;infCollar;revCollar;incCollar;nos;label;∆;sep;groupName;groupDesc
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get List of Default Global Financial Assumptions
+[3]   
+[4]   :if ~(⊂arg)∊'Int' 'Inf' 'Inc' 'Rev'
+[5]       res←MATRIX 'Key' 'Name' 'Value' 'Desc' 'ConsDyn' 'Group' 'Cap' 'Collar' 'List' 'Label'
+[6]       :if ''≡arg ⍝ Create new ⍙FinAssdict whenever Financials changed
+[7]           :if 1∊⍴,ClientFile ReadFile 'Financials_Display' ⍝ Read Financials default if not passed
+[8]               arg←FinDefault
+[9]               0 0⍴DeleteVars 'Financials_Display'
+[10]          :else
+[11]              :return
+[12]          :endif
+[13]      :endif
+[14]      ⍝ Read Financials Defaults
+[15]      :if ~↑(xxx MESS xxx)←ClientFile ReadModule 'Financials' arg ⍝⍝⍝ FIXME: Report Any Error
+[16]          :return
+[17]      :endif
+[18]  
+[19]      AbsDict←AbsDict UpdateAbsDict 'Financials'
+[20]  
+[21]      nos←↑¨⍴¨intName infName revName incName
+[22]      rows←nos/'Int' 'Inf' 'Rev' 'Inc'
+[23]      rows←rows,[⎕io+0.5]m2n intName  OVER infName  OVER revName  OVER incName
+[24]      rows←rows,         m2n intValue OVER infValue OVER revValue OVER incValue
+[25]      rows←rows,         m2n intDesc  OVER infDesc  OVER revDesc  OVER incDesc
+[26]      rows←rows,         ((¯1↓nos)/'' '' ''),m2n incConsDyn
+[27]      rows←rows,m2n ↑OVER/nos↑[⎕io]¨intGroup  infGroup  revGroup  incGroup
+[28]      rows←rows,m2n ↑OVER/nos↑[⎕io]¨intCap    infCap    revCap    incCap
+[29]      rows←rows,m2n ↑OVER/nos↑[⎕io]¨intCollar infCollar revCollar incCollar
+[30]      :if ×↑⍴rows←(~^/¨' '=¨rows[;⎕io+1])⌿rows
+[31]          z←∨/¨' '≠¨rows[;⎕io+3] ⋄ rows←rows,DLTB¨rows[;⎕io+1],¨(z\z/⊂' ',⎕av[⎕io+208],' '),¨rows[;⎕io+3]             ⍝ "List" entries
+[32]          z←∨/¨' '≠¨rows[;⎕io+4] ⋄ label←DLTB¨rows[;⎕io+2],¨(z\z/⊂' {'),¨rows[;⎕io+4],¨z\z/⊂'}'                       ⍝ "Label" entries
+[33]          z←∨/¨' '≠¨rows[;⎕io+6] ⋄ label←label,¨DLTB¨(z\z/⊂'⋄Cap: '),¨rows[;⎕io+6]                                    ⍝ Cap details
+[34]          sep←z∨∆←∨/¨' '≠¨rows[;⎕io+7] ⋄ z←(~z)^∆ ⋄ label←label,¨(' ⋄'[⎕io+z]),¨DLTB¨(∆\∆/⊂'Collar: '),¨rows[;⎕io+7]  ⍝ Collar details
+[35]          z←(~sep)^∆←∨/¨' '≠¨rows[;⎕io+5] ⋄ rows←rows,label,¨(' ⋄'[⎕io+z]),¨DLTB¨(∆\∆/⊂' ['),¨rows[;⎕io+5],¨∆\∆/⊂']'  ⍝ Group details
+[36]      :else
+[37]          rows←10↑[⎕io+1]rows
+[38]      :endif
+[39]      res←res⍪rows
+[40]  :else
+[41]      :select arg
+[42]      :case 'Int' ⋄ res←'Interest'
+[43]      :case 'Inf' ⋄ res←'Inflation'
+[44]      :case 'Inc' ⋄ res←'Increase'
+[45]      :case 'Rev' ⋄ res←'Revaluation'
+[46]      :endselect
+[47]  
+[48]      res←(res,' Globals') OVER ⊃(⍙FinAssdict for 'Key' arg) at 'List'
+[49]      :if 0≠⎕nc 'larg'
+[50]          res←res OVER larg
+[51]      :endif
+[52]  :endif
+    ∇

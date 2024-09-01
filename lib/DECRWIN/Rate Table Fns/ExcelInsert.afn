@@ -1,1 +1,30 @@
-    ∇ nums←standard ExcelInsert XLFile;ExcelRunButton;AGES;max[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Get data from an Excel range[3]   ⍝ standard does additional checks and returns globals, otherwise return the values in range[4]   [5]   ⍝ The ExcelInsert function is run from the click of a Button to enable the deletion of the Excel COM object[6]   ExcelRunButton←(FormName,'.bntemp') ⎕wi 'Create' 'Button' ('visible' 0) ('onClick' 'nums←ExcelRange XLFile')[7]   ExcelRunButton ⎕wi 'Click'[8]   0 0⍴ExcelRunButton ⎕wi 'Delete'[9]   [10]  :if 0=⎕nc 'Range' ⋄ :return ⋄ :endif[11]  [12]  :if standard[13]      :if Ind2D ⍝ Check they are all numeric[14]          0 0⍴1+values←nums[15]          new←1[16]      :else[17]          :if 2≠¯1↑⍴nums ⍝ must be 2 column data[18]          :orif ~AGES≡⌊AGES←nums[;1] ⍝ Age/Durns must be integral[19]               MDISPLAY 'InvStructure' ('Named Range ',Range,' in ',XLFile) ⋄ nums←1 ⋄ :return[20]          :endif[21]  [22]          new←0,⍳max←59+60×~code[2]∊'Tt'[23]          :if ∨/~z←AGES∊new ⋄ AGES←z/AGES ⋄ nums←z⌿nums ⋄ :endif[24]          values←(max+1)⍴code[2]∊'Tt' ⋄ values[AGES+1]←nums[;2][25]      :endif[26]  [27]      nums←0 ⍝ Success[28]  :endif    ∇
+    ∇ nums←standard ExcelInsert XLFile;ExcelRunButton;AGES;max
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Get data from an Excel range
+[3]   ⍝ standard does additional checks and returns globals, otherwise return the values in range
+[4]   
+[5]   ⍝ The ExcelInsert function is run from the click of a Button to enable the deletion of the Excel COM object
+[6]   ExcelRunButton←(FormName,'.bntemp') ⎕wi 'Create' 'Button' ('visible' 0) ('onClick' 'nums←ExcelRange XLFile')
+[7]   ExcelRunButton ⎕wi 'Click'
+[8]   0 0⍴ExcelRunButton ⎕wi 'Delete'
+[9]   
+[10]  :if 0=⎕nc 'Range' ⋄ :return ⋄ :endif
+[11]  
+[12]  :if standard
+[13]      :if Ind2D ⍝ Check they are all numeric
+[14]          0 0⍴1+values←nums
+[15]          new←1
+[16]      :else
+[17]          :if 2≠¯1↑⍴nums ⍝ must be 2 column data
+[18]          :orif ~AGES≡⌊AGES←nums[;1] ⍝ Age/Durns must be integral
+[19]               MDISPLAY 'InvStructure' ('Named Range ',Range,' in ',XLFile) ⋄ nums←1 ⋄ :return
+[20]          :endif
+[21]  
+[22]          new←0,⍳max←59+60×~code[2]∊'Tt'
+[23]          :if ∨/~z←AGES∊new ⋄ AGES←z/AGES ⋄ nums←z⌿nums ⋄ :endif
+[24]          values←(max+1)⍴code[2]∊'Tt' ⋄ values[AGES+1]←nums[;2]
+[25]      :endif
+[26]  
+[27]      nums←0 ⍝ Success
+[28]  :endif
+    ∇

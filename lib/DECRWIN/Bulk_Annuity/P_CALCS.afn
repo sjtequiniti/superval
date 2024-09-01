@@ -1,1 +1,76 @@
-    ∇ res←P∆CALCS;An;vMP;v;PVM;RGP;Y;DEF;H;PVPB;EDEF;vdef;PVMdef;M;L;V;Ay;LXdef;P;penmult;LX;LY;ukGPO;qy;LE[1]   ⍝ DECRWIN.sf#8[2]   ⍝ Calc value of the single life pension and reversion[3]   P←((0⊃penfreq)='ASQMLFWC')/ 1 2 4 12 13 26 52 10000000[4]   penfreq←1⊃penfreq ⋄ penmult←(P+¯1+2×penfreq)÷2×P ⋄ P←200⌊P[5]   res←⍳ukGPO←0[6]   HOME:Y←X-∆[7]   :select uk ⍝ Sets up vectors of LX and LY[8]   :case 0[9]       LX←(121-X)↑1,×\1-(X↓(   def   ↑QXdef),   def   ↓QX)×(X↓MIX)*MIBase+⍳120-X[10]      LY←(121-Y)↑1,×\1-(Y↓((0⌈def-∆)↑QYdef),(0⌈def-∆)↓QY)×(Y↓MIY)*MIBase+⍳120-Y[11]      qy←QY×MIY*MIBase+(⍳120)-Y[12]  :case 1[13]  ⍝⍝⍝    :if 'A'=↑P_miDPENMORTIMPR ⋄ PostImpP[4]←⊂",CalcYr-X"   ⋄ :endif[14]  ⍝⍝⍝    :if 'A'=↑S_miDPENMORTIMPR ⋄ PostImpS[4]←⊂",CalcYr-X-∆" ⋄ :endif[15]  ⍝⍝⍝    :if 'A'=↑P_miDDEFMORTIMPR ⋄ PreImpP [4]←⊂",CalcYr-X"   ⋄ :endif[16]  ⍝⍝⍝    :if 'A'=↑S_miDDEFMORTIMPR ⋄ PreImpS [4]←⊂",CalcYr-X-∆" ⋄ :endif[17]  ⍝⍝⍝    LX←(121-X)↑1,×\1-X↓(   def   ↑QXdef×(⍴QXdef) OVERTAKE (↑P_miDDEFMORTIMPR) RedFact PreImpP,X),   def   ↓   QX×(⍴QX) OVERTAKE (↑P_miDPENMORTIMPR) RedFact PostImpP,X[18]  ⍝⍝⍝    LY←(121-Y)↑1,×\1-Y↓((0⌈def-∆)↑QYdef×(⍴QYdef) OVERTAKE (↑S_miDDEFMORTIMPR) RedFact PreImpS,Y),(0⌈def-∆)↓qy←QY×(⍴QY) OVERTAKE (↑S_miDPENMORTIMPR) RedFact PostImpS,Y[19]      LX←      def   ↑   QXdef×(⍴QXdef) OVERTAKE ((↑P_miDDEFMORTIMPR) 0) RedFactCalc PreImpP ,X[20]      LX←LX,   def   ↓   QX   ×(⍴QX)    OVERTAKE ((↑P_miDPENMORTIMPR) 0) RedFactCalc PostImpP,X[21]      LX←(121-X)↑1,×\1-X↓LX[22]      LY←   (0⌈def-∆)↑   QYdef×(⍴QYdef) OVERTAKE ((↑S_miDDEFMORTIMPR) 0) RedFactCalc PreImpS, Y[23]      LY←LY,(0⌈def-∆)↓qy←QY   ×(⍴QY)    OVERTAKE ((↑S_miDPENMORTIMPR) 0) RedFactCalc PostImpS,Y[24]      LY←(121-Y)↑1,×\1-Y↓LY[25]  :case 2[26]      LX←(121-X)↑1,×\1-X↓(   def   ↑QXdef),   def   ↓   QX×Malpha+(1-Malpha)×*-Mbeta×MBase[27]      LY←(121-Y)↑1,×\1-Y↓((0⌈def-∆)↑QYdef),(0⌈def-∆)↓qy←QY×Falpha+(1-Falpha)×*-Fbeta×FBase[28]  :endselect[29]  LX←(LE←(⍴LY)⌈⍴LX)↑LX ⋄ LY←LE↑LY[30]  REVdef←REVdef××DEF←0⌈def-X ⋄ RGP←0⌈(GP-(def≠0)×0⌈X-def)⌊EDEF←TOP-X[31]  :if uk=0 ⍝ OVERTAKE i, PVM to allow for sliding-scale vectors and set up vectors[32]      v←(vdef÷1,¯1↓vdef←1÷1+(¯1+1↑i)×+\                           ×\  DEF OVERTAKE 1,pi),DEF↓(LE-1) OVERTAKE ÷i[33]  :else[34]      v←(vdef÷1,¯1↓vdef←1÷1+(¯1+1↑i)×+⌿((⍳DEF)∘.≤⍳DEF)×(÷I)∘.×I←1,×\1↓DEF OVERTAKE   pi),DEF↓(LE-1) OVERTAKE ÷i[35]  :endif[36]  PVM←(PVMdef←DEF OVERTAKE pvmdef),DEF↓(LE-1) OVERTAKE pvm[37]  [38]  An←PVPB←0 ⍝ Calculate the value of the single life pension[39]  :if ~REVind ⋄ :andif RGP≠0 ⋄ An←ANCALC ⋄ :endif[40]  vMP←1↓(v←1,×\v)×PVM←(1,×\PVM)-pvmind[41]  [42]  :if ~REVind[43]      :if uk=0[44]          PVPB←(An×v[DEF]×PVM[DEF])       +(+/(RGP+DEF)↓EDEF↑vMP×1↓LX)+penmult×-/(v×PVM×LX)[(DEF+RGP),EDEF][45]      :else[46]          PVPB←(An×v[DEF]×PVM[DEF]+pvmind)+(+/(RGP+DEF)↓EDEF↑vMP×1↓LX)+penmult×-/(v×PVM×LX)[(DEF+RGP),EDEF][47]      :endif[48]  :endif[49]  [50]  :if REV≠0 ⍝ Calculate the value of the reversion if applic.[51]      EDEF←LE⌊((120-X),EDEF)[REVterm] ⍝⍝⍝ No Good if Y much less than X[52]      H←(1⌈EDEF) OVERTAKE HXX[X+⍳DEF+1] ⍝ Proportion Married[53]      :if REVdef ⍝ Reversion in Deferment[54]          :if uk=1[55]              Ay←                DEF↑MID  penmult          +(⌽+\⌽L  )CDIV 1,¯1↓ L←    (×\1-LE↑Y↓qy)×  ×\(LE OVERTAKE pvm)÷LE OVERTAKE i[56]              :if pvmind ⋄ Ay←Ay-DEF↑MID  penmult          +(⌽+\⌽L  )CDIV 1,¯1↓ L←    (×\1-LE↑Y↓qy)÷  ×\                  LE OVERTAKE i ⋄ :endif[57]          :else[58]              Ay←                DEF↑MID (penmult×1-¯1↑L×V)+(⌽+\⌽L×V)CDIV 1,¯1↓(L←EDEF↑×\1-LE↑Y↓qy)×V←×\( EDEF  ↑pvm)÷ EDEF  ↑i[59]              :if pvmind ⋄ Ay←Ay-DEF↑MID (penmult×1-¯1↑L×V)+(⌽+\⌽L×V)CDIV 1,¯1↓ L                  ÷V←×\               EDEF  ↑i ⋄ :endif[60]          :endif[61]          :if uk=0[62]              PVPB←PVPB++/(MID 1,vdef××\PVMdef)×REV×(DEF↑H)×(×\1,1-¯1↓M)×(M←DEF↑X↓QXdef)×(MID 1,×\1-DEF↑Y↓QYdef)×Ay[63]          :else[64]              PVPB←PVPB++/(MID 1,vdef××\PVMdef)×REV×(DEF↑H)             ×( -DEF↑DIFF LX)×(DEF↑MID LY)×Ay[65]          :endif[66]      :endif[67]      LXdef←LX[DEF][68]      :if uk=0[69]          PVPB←PVPB+H[DEF]×REV×(+/(EDEF↑vMP×1↓LY×LXdef-LX)× EDEF  OVERTAKE((DEF,RGP)/0,ukGPO ),1)+penmult×-/(v×PVM×  LY×LXdef-LX         )[(DEF+RGP×~ukGPO ),EDEF][70]      :else[71]          PVPB←PVPB+H[DEF]×REV×(+/(     vMP×1↓L          )×(LE-1) OVERTAKE((DEF,RGP)/0,GPOlap),1)+penmult×  (v×PVM×L←LY×LXdef-LX⌈LX[EDEF])[ DEF+RGP×~GPOlap][72]      :endif[73]  :endif[74]  res←res,PVPB ⋄ →((¯1↑InsertAGES)≥X←X+1)/HOME    ∇
+    ∇ res←P∆CALCS;An;vMP;v;PVM;RGP;Y;DEF;H;PVPB;EDEF;vdef;PVMdef;M;L;V;Ay;LXdef;P;penmult;LX;LY;ukGPO;qy;LE
+[1]   ⍝ DECRWIN.sf#8
+[2]   ⍝ Calc value of the single life pension and reversion
+[3]   P←((0⊃penfreq)='ASQMLFWC')/ 1 2 4 12 13 26 52 10000000
+[4]   penfreq←1⊃penfreq ⋄ penmult←(P+¯1+2×penfreq)÷2×P ⋄ P←200⌊P
+[5]   res←⍳ukGPO←0
+[6]   HOME:Y←X-∆
+[7]   :select uk ⍝ Sets up vectors of LX and LY
+[8]   :case 0
+[9]       LX←(121-X)↑1,×\1-(X↓(   def   ↑QXdef),   def   ↓QX)×(X↓MIX)*MIBase+⍳120-X
+[10]      LY←(121-Y)↑1,×\1-(Y↓((0⌈def-∆)↑QYdef),(0⌈def-∆)↓QY)×(Y↓MIY)*MIBase+⍳120-Y
+[11]      qy←QY×MIY*MIBase+(⍳120)-Y
+[12]  :case 1
+[13]  ⍝⍝⍝    :if 'A'=↑P_miDPENMORTIMPR ⋄ PostImpP[4]←⊂",CalcYr-X"   ⋄ :endif
+[14]  ⍝⍝⍝    :if 'A'=↑S_miDPENMORTIMPR ⋄ PostImpS[4]←⊂",CalcYr-X-∆" ⋄ :endif
+[15]  ⍝⍝⍝    :if 'A'=↑P_miDDEFMORTIMPR ⋄ PreImpP [4]←⊂",CalcYr-X"   ⋄ :endif
+[16]  ⍝⍝⍝    :if 'A'=↑S_miDDEFMORTIMPR ⋄ PreImpS [4]←⊂",CalcYr-X-∆" ⋄ :endif
+[17]  ⍝⍝⍝    LX←(121-X)↑1,×\1-X↓(   def   ↑QXdef×(⍴QXdef) OVERTAKE (↑P_miDDEFMORTIMPR) RedFact PreImpP,X),   def   ↓   QX×(⍴QX) OVERTAKE (↑P_miDPENMORTIMPR) RedFact PostImpP,X
+[18]  ⍝⍝⍝    LY←(121-Y)↑1,×\1-Y↓((0⌈def-∆)↑QYdef×(⍴QYdef) OVERTAKE (↑S_miDDEFMORTIMPR) RedFact PreImpS,Y),(0⌈def-∆)↓qy←QY×(⍴QY) OVERTAKE (↑S_miDPENMORTIMPR) RedFact PostImpS,Y
+[19]      LX←      def   ↑   QXdef×(⍴QXdef) OVERTAKE ((↑P_miDDEFMORTIMPR) 0) RedFactCalc PreImpP ,X
+[20]      LX←LX,   def   ↓   QX   ×(⍴QX)    OVERTAKE ((↑P_miDPENMORTIMPR) 0) RedFactCalc PostImpP,X
+[21]      LX←(121-X)↑1,×\1-X↓LX
+[22]      LY←   (0⌈def-∆)↑   QYdef×(⍴QYdef) OVERTAKE ((↑S_miDDEFMORTIMPR) 0) RedFactCalc PreImpS, Y
+[23]      LY←LY,(0⌈def-∆)↓qy←QY   ×(⍴QY)    OVERTAKE ((↑S_miDPENMORTIMPR) 0) RedFactCalc PostImpS,Y
+[24]      LY←(121-Y)↑1,×\1-Y↓LY
+[25]  :case 2
+[26]      LX←(121-X)↑1,×\1-X↓(   def   ↑QXdef),   def   ↓   QX×Malpha+(1-Malpha)×*-Mbeta×MBase
+[27]      LY←(121-Y)↑1,×\1-Y↓((0⌈def-∆)↑QYdef),(0⌈def-∆)↓qy←QY×Falpha+(1-Falpha)×*-Fbeta×FBase
+[28]  :endselect
+[29]  LX←(LE←(⍴LY)⌈⍴LX)↑LX ⋄ LY←LE↑LY
+[30]  REVdef←REVdef××DEF←0⌈def-X ⋄ RGP←0⌈(GP-(def≠0)×0⌈X-def)⌊EDEF←TOP-X
+[31]  :if uk=0 ⍝ OVERTAKE i, PVM to allow for sliding-scale vectors and set up vectors
+[32]      v←(vdef÷1,¯1↓vdef←1÷1+(¯1+1↑i)×+\                           ×\  DEF OVERTAKE 1,pi),DEF↓(LE-1) OVERTAKE ÷i
+[33]  :else
+[34]      v←(vdef÷1,¯1↓vdef←1÷1+(¯1+1↑i)×+⌿((⍳DEF)∘.≤⍳DEF)×(÷I)∘.×I←1,×\1↓DEF OVERTAKE   pi),DEF↓(LE-1) OVERTAKE ÷i
+[35]  :endif
+[36]  PVM←(PVMdef←DEF OVERTAKE pvmdef),DEF↓(LE-1) OVERTAKE pvm
+[37]  
+[38]  An←PVPB←0 ⍝ Calculate the value of the single life pension
+[39]  :if ~REVind ⋄ :andif RGP≠0 ⋄ An←ANCALC ⋄ :endif
+[40]  vMP←1↓(v←1,×\v)×PVM←(1,×\PVM)-pvmind
+[41]  
+[42]  :if ~REVind
+[43]      :if uk=0
+[44]          PVPB←(An×v[DEF]×PVM[DEF])       +(+/(RGP+DEF)↓EDEF↑vMP×1↓LX)+penmult×-/(v×PVM×LX)[(DEF+RGP),EDEF]
+[45]      :else
+[46]          PVPB←(An×v[DEF]×PVM[DEF]+pvmind)+(+/(RGP+DEF)↓EDEF↑vMP×1↓LX)+penmult×-/(v×PVM×LX)[(DEF+RGP),EDEF]
+[47]      :endif
+[48]  :endif
+[49]  
+[50]  :if REV≠0 ⍝ Calculate the value of the reversion if applic.
+[51]      EDEF←LE⌊((120-X),EDEF)[REVterm] ⍝⍝⍝ No Good if Y much less than X
+[52]      H←(1⌈EDEF) OVERTAKE HXX[X+⍳DEF+1] ⍝ Proportion Married
+[53]      :if REVdef ⍝ Reversion in Deferment
+[54]          :if uk=1
+[55]              Ay←                DEF↑MID  penmult          +(⌽+\⌽L  )CDIV 1,¯1↓ L←    (×\1-LE↑Y↓qy)×  ×\(LE OVERTAKE pvm)÷LE OVERTAKE i
+[56]              :if pvmind ⋄ Ay←Ay-DEF↑MID  penmult          +(⌽+\⌽L  )CDIV 1,¯1↓ L←    (×\1-LE↑Y↓qy)÷  ×\                  LE OVERTAKE i ⋄ :endif
+[57]          :else
+[58]              Ay←                DEF↑MID (penmult×1-¯1↑L×V)+(⌽+\⌽L×V)CDIV 1,¯1↓(L←EDEF↑×\1-LE↑Y↓qy)×V←×\( EDEF  ↑pvm)÷ EDEF  ↑i
+[59]              :if pvmind ⋄ Ay←Ay-DEF↑MID (penmult×1-¯1↑L×V)+(⌽+\⌽L×V)CDIV 1,¯1↓ L                  ÷V←×\               EDEF  ↑i ⋄ :endif
+[60]          :endif
+[61]          :if uk=0
+[62]              PVPB←PVPB++/(MID 1,vdef××\PVMdef)×REV×(DEF↑H)×(×\1,1-¯1↓M)×(M←DEF↑X↓QXdef)×(MID 1,×\1-DEF↑Y↓QYdef)×Ay
+[63]          :else
+[64]              PVPB←PVPB++/(MID 1,vdef××\PVMdef)×REV×(DEF↑H)             ×( -DEF↑DIFF LX)×(DEF↑MID LY)×Ay
+[65]          :endif
+[66]      :endif
+[67]      LXdef←LX[DEF]
+[68]      :if uk=0
+[69]          PVPB←PVPB+H[DEF]×REV×(+/(EDEF↑vMP×1↓LY×LXdef-LX)× EDEF  OVERTAKE((DEF,RGP)/0,ukGPO ),1)+penmult×-/(v×PVM×  LY×LXdef-LX         )[(DEF+RGP×~ukGPO ),EDEF]
+[70]      :else
+[71]          PVPB←PVPB+H[DEF]×REV×(+/(     vMP×1↓L          )×(LE-1) OVERTAKE((DEF,RGP)/0,GPOlap),1)+penmult×  (v×PVM×L←LY×LXdef-LX⌈LX[EDEF])[ DEF+RGP×~GPOlap]
+[72]      :endif
+[73]  :endif
+[74]  res←res,PVPB ⋄ →((¯1↑InsertAGES)≥X←X+1)/HOME
+    ∇

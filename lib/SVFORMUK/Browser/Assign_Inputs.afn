@@ -1,1 +1,26 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Browser" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Browser" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmBrowser.edText" ⎕wi "text" (1↓,⎕tcnl,Text)[10]  GetAbsFileList "History"[11]  "fmBrowser.edfILENAME" ⎕wi "text" (DLTB fILENAME)[12]  "fmBrowser.edPageNo" ⎕wi "text" (DLTB PageNo)[13]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Browser[14]      :for var :in spin Comment_Browser at "variable" "row" ⋄ (var row)←var[15]          "Browser" ParmColor ((FormFields for "variable" var) at "control"),var row 1[16]      :endfor[17]  :endif[18]  :if ~0∊⍴,warnings[19]      MDISPLAY DLTMB warnings,⎕tcnl[20]      Win∆AssignVars "fmBrowser"[21]  :endif[22]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Browser" "" "Names"[23]      "fmBrowser" ⎕wi "modified" 0[24]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Browser" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Browser" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmBrowser.edText" ⎕wi "text" (1↓,⎕tcnl,Text)
+[10]  GetAbsFileList "History"
+[11]  "fmBrowser.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[12]  "fmBrowser.edPageNo" ⎕wi "text" (DLTB PageNo)
+[13]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Browser
+[14]      :for var :in spin Comment_Browser at "variable" "row" ⋄ (var row)←var
+[15]          "Browser" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[16]      :endfor
+[17]  :endif
+[18]  :if ~0∊⍴,warnings
+[19]      MDISPLAY DLTMB warnings,⎕tcnl
+[20]      Win∆AssignVars "fmBrowser"
+[21]  :endif
+[22]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Browser" "" "Names"
+[23]      "fmBrowser" ⎕wi "modified" 0
+[24]  :endif
+    ∇

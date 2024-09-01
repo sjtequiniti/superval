@@ -1,0 +1,53 @@
+    ∇ Error←user ClientSetup Folder;File;FileList;z;n;Index;tieno
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Establish New Client Set-Up
+[3]   
+[4]   Error←'' ⍝ Default response
+[5]   
+[6]   :if mt (Folder user) FolderHeld 'Start'
+[7]       Error←'DirInUse' (INIString 'UserName' 'CurrentUser' '?' (Folder,'svscheme.ini')) ⋄ :return
+[8]   :endif
+[9]   
+[10]  :if ~mt ClientFile←DLTB UPPERCASE INIString 'SV Parameter Files' 'ClientFile' '' (Folder,'svscheme.ini')
+[11]      :if ~FileExist Folder,ClientFile,'.SF'
+[12]          ClientFile←'' ⍝ Must have been deleted!!
+[13]      :else
+[14]          ClientFile←Folder,ClientFile
+[15]      :endif
+[16]  :endif
+[17]  
+[18]  InputDir←Folder
+[19]  AbsDict←MATRIX 'Module' 'Type' 'Description' 'Variable' 'Parameter' 'Valid' 'List'
+[20]  :if ''≡ClientFile
+[21]      :select ↑⍴File←1 0↓'ClientFile' GetParmFiles 1
+[22]      :case 0
+[23]          :if uk=1
+[24]              FileList←UPPERCASE '.' StripText ⎕xlib InputDir,'*.sf' ⋄ z←⍳0
+[25]              :for File :in m2n FileList
+[26]                  :if n←(InputDir,File) FTIE tieno←TieNumber InputDir,File
+[27]                  :andif n←1=≡Index←⎕fread tieno,1
+[28]                  :andif n←2=⍴⍴Index
+[29]                  :andif n←'ClientFileUK'≡12↑Index[1;]
+[30]                  :endif
+[31]                  ⎕funtie tieno ⋄ z←z,n
+[32]              :endfor
+[33]              :if ~0∊⍴FileList←z⌿FileList ⍝ Take the first one
+[34]              :andif (InputDir,FileList) FTIE tieno←TieNumber InputDir,FileList←DLTB 1↑[1]FileList
+[35]                  :if ~0∊⍴Index←(⎕fread tieno,1) ConvertIndex tieno
+[36]                      (InputDir,(File←'SV',FileList),'.sf') ⎕xfdup tieno ⋄ ⎕funtie tieno
+[37]                      0 0⍴((ClientFile←InputDir,File),'.sf') FTIE tieno
+[38]                      Index ⎕freplace tieno,1 ⋄ ⎕funtie tieno
+[39]                      File INIString 'SV Parameter Files' 'ClientFile' (InputDir,'svscheme.ini')
+[40]                  :endif
+[41]              :endif
+[42]          :endif
+[43]      :case 1
+[44]          ClientFile←InputDir,DLTB File
+[45]          File INIString 'SV Parameter Files' 'ClientFile' (InputDir,'svscheme.ini')
+[46]      :endselect
+[47]  :endif
+[48]  
+[49]  :if development ⋄ ⎕wsid←InputDir,'SuperVal',((uk≠1)/'+Win'),' Error'
+[50]  :else           ⋄ ⎕wsid←SystemDir,'SuperVal',(uk≠1)/'+Win'
+[51]  :endif
+    ∇

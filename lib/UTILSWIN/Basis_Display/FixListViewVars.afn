@@ -1,0 +1,16 @@
+    ∇ res←folder FixListViewVars res;PickList;NameList;sortorder;SortList
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ Add the Folder column to Listview variables
+[3]   
+[4]   (PickList NameList sortorder SortList)←res
+[5]   
+[6]   PickList←1 1 0 1 1 1 1 1\PickList ⋄ PickList[;3]←⊂folder
+[7]   NameList[;4 5]←NameList[;4 5]+1
+[8]   NameList←folderrow OVER NameList
+[9]   sortorder←'⍺Alpha',sortorder
+[10]  :if ~folder≡InputDir
+[11]     PickList[;1]←SortList←SortList+1000000+¯6 gRound ⌈/∊foldertab at 'SortList'
+[12]  :endif
+[13]  
+[14]  res←PickList NameList sortorder SortList
+    ∇

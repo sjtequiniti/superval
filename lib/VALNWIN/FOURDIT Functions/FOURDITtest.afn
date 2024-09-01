@@ -1,0 +1,108 @@
+    ∇ FOURDITtest;⎕IO;∆;S1;S2;S3;S4;S5;S6;S7;S8;M31;M32;M33;M34;M81;M82;M83;M84;Two1;Two2;Two3;Two4;VARDESC;M11;M15;M16;M12;M13;M17;M18;M14
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Exercise Varprint4 audit code
+[3]   ⍝ lacuna (n.), pl. lacunae -- something missing or omitted
+[4]   ⍝ Vern: sjt21sep15
+[5]   ⍝ Revn: dnp29sep15 * new test case for scalar vals on their own
+[6]   ⍝       dnp01oct15 * include multiple values with a single value
+[7]   ⍝       sjt06sep16 * groups
+[8]   ⎕IO←0
+[9]   FOURDITopen
+[10]  
+[11]  ⍝ Set variables
+[12]  (S1 S2 S3 S4)←  100+1 2 3.3 4.45                                    ⍝ single values (int, float)
+[13]  (S5 S6 S7 S8)←⍕¨100+⍳4                                              ⍝ single values (txt)
+[14]  (M11 M12 M13 M14)←  (⊂1 1)⍴¨(100+1 2 3.3 4.45)                      ⍝ multiple values with single value! (int, float)
+[15]  (M15 M16 M17 M18)←  ('I',¨'1') ⎕FMT¨ 1 2 3 4                        ⍝ multiple values with single value! (txt)
+[16]  (M31 M32 M33 M34)←                   ⎕SPLIT[0] 0.5+(⍳3)∘.+10*⍳4     ⍝ 3-value variables (float)
+[17]  (M81 M82 M83 M84)←('I',¨'1234') ⎕FMT¨⎕SPLIT[0]     (⍳8)∘.+10*⍳4     ⍝ 8-value variables (txt)
+[18]  (Two1 Two2)←   0 1000.5+⊂(⍳10)∘.+⍳10                                ⍝ 2D variables (num)
+[19]  (Two3 Two4)←⍕¨¨0 1000  +⊂(⍳10)∘.+⍳10                                ⍝ 2D variables (txt)
+[20]  
+[21]  ⍝ Set variable descriptions
+[22]  ⎕IO←1
+[23]  ∆←,[0.5] 'name' 'description' 'fmt'
+[24]  ∆←∆⍪⍉⊃('S',¨⍕¨1↓⍳7)((⊂'Single-value variable '),¨⍕¨⍳6)(⊂'')         ⍝ S1 S8 missing
+[25]  ∆←∆⍪'S1' 'Special code' 'G<XXXZ-Z-9>'                               ⍝ S1 with custom format
+[26]  ∆←∆⍪⍉⊃('M',¨⍕¨30+⍳4)((⊂'3-value variable '),¨⍕¨⍳4)(⊂'')
+[27]  ∆←∆⍪⍉⊃('M',¨⍕¨80+⍳4)((⊂'8-value variable '),¨⍕¨⍳4)(⊂'')
+[28]  ∆←∆⍪⍉⊃((⊂'Two'),¨⍕¨⍳4)((⊂'2D-value variable '),¨⍕¨⍳4)(⊂'')
+[29]  ∆←∆⍪'foo' 'Foo Fighters' 'ZI13'
+[30]  FOURDITVARDESC←∆
+[31]  
+[32]  ⎕IO←0                                                               ⍝ as per valuation environment
+[33]  ⍝ Specify tables
+[34]  
+[35]  'Part 1' FOURDIT 'Section I' 'S1 S2 S3 S4 S5 S6 S7 S8'                       ⍝ all single values (num,txt)
+[36]  ⍝ No Defn and no Prev links
+[37]  ⍝ Next links on S1 S3 S5 S7 to Section VI
+[38]  
+[39]  FOURDIT 'Section II' 'M31 M32 M33 M34'                              ⍝ all 3 values (num)
+[40]  ⍝ No Defn and no Prev links
+[41]  ⍝ Next links on M31 M32 to Section III; on M33 to Section VI
+[42]  
+[43]  FOURDIT 'Section III' 'M31 M32 M81 M82'                             ⍝ mixed depths; 2 back refs  (num,txt)
+[44]  ⍝ Prev and Defn links on M31 M32 to Section II;
+[45]  ⍝ No Prev or Defn links for M81 M82
+[46]  ⍝ Next links on all to Section IV
+[47]  
+[48]  M31←M31×-○1                                                         ⍝ redefined
+[49]  'Part 2' FOURDIT 'Section IV' 'M31← M32 M81 M82'                             ⍝ mixed depths; 4 back refs, 1 redef (num,txt)
+[50]  ⍝ Prev links should all point to Section III;
+[51]  ⍝ No Defn link on M31;
+[52]  ⍝ Defn link on M32 should point to Section II; on M81 M82 to Section III
+[53]  ⍝ Next links on all to Section V
+[54]  
+[55]  FOURDIT 'Section V' 'M31 M32 M81 M82 foo'                           ⍝ mixed depths; 2 back refs (num,txt); 1 lacuna
+[56]  ⍝ Prev links should all point to Section IV;
+[57]  ⍝ Defn link on M31 should point to Section IV
+[58]  ⍝ Defn link on M32 should point to Section II; on M81 M82 to Section III
+[59]  ⍝ Next links on M31 M81 to Section VI
+[60]  
+[61]  M31←M31×0                                                           ⍝ var reset but redefinition not specified
+[62]  M33←M33+0                                                           ⍝ var reset but to same value
+[63]  FOURDIT 'Section VI' 'S1 S3 S5 S7 M31 M33← M81 M84 Two1 Two2 Two3'  ⍝ singles (num,txt); multiples (num,txt); 2D vars
+[64]  ⍝ Prev links on S1 S3 S5 S7 to Section I
+[65]  ⍝ on M31 M81 to Section V; none on M33 M84 Two1 Two3
+[66]  ⍝ Defn links on S1 S3 S5 S7 to Section I
+[67]  ⍝ on M31 to Section IV; on M81 to Section III;
+[68]  ⍝ none on M84 Two1 Two2;
+[69]  ⍝ Next link on Two1 only to Section VIII
+[70]  ⍝ Change in value of M31 highlighted
+[71]  
+[72]  FOURDIT 'Section VII' 'S1'                                          ⍝ just this
+[73]  ⍝ Prev link to Section VI
+[74]  ⍝ Defn link to Section I
+[75]  ⍝ No next links
+[76]  
+[77]  'Part 3' FOURDIT 'Section VIII' 'Two1 Three1'                                ⍝ lacuna
+[78]  ⍝ Defn link on Two1 to Section VI
+[79]  ⍝ Prev link on Two1 to Section VI
+[80]  ⍝ No next links
+[81]  
+[82]  'Part 4' FOURDIT 'Section IX' 'M11 M12 M13 M14 M15 M16 M17 M18'
+[83]  ⍝ No Defn and no Prev links
+[84]  ⍝ Tests multiple values with single value!
+[85]  ⍝ Looks at implicit tables on their own
+[86]  
+[87]  'Part 5' FOURDIT 'Section X' 'M15 M16 M17 M18 S1 S2 S3 S4'
+[88]  ⍝ Prev links for (S1:Section VII) (S3: Section VI)
+[89]  ⍝ Defn links for (M15 M16 M17 M18 : Section IX) (S2 S4: Section I)
+[90]  ⍝ Tests multiple values with single value!
+[91]  ⍝ Looks at implicit tables mixed with singletons
+[92]  
+[93]  FOURDIT 'Section XI' 'M31[1] M32 M33 M34'                           ⍝ all 3 values (num)
+[94]  ⍝ Test le indexing
+[95]  ⍝ No Defn and no Prev links
+[96]  ⍝ Next links on M31 M32 to Section III; on M33 to Section VI
+[97]  
+[98]  FOURDITclose
+[99]  
+[100] ⍝ Second Test Case- tests scalar vals on their own with no 2d tables - dnp29sep15
+[101] 
+[102] FOURDITopen
+[103] 'Part 1' FOURDIT 'Section I' 'S1 S2 S3 S4 S5 S6 S7 S8'                       ⍝ all single values (num,txt)
+[104] ⍝ No Defn and no Prev links
+[105] ⍝ Next links on S1 S3 S5 S7 to Section VI
+[106] FOURDITclose
+    ∇

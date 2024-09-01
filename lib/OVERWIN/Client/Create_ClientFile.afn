@@ -1,1 +1,28 @@
-    ∇ res←Create_ClientFile ind;z;ParmFileList[1]   ⍝ OVERWIN.sf#10[2]   ⍝ Create the Client File if it does not already exist[3]   res←0⍴'' ⍝ Default response[4]   [5]   :if mt DLTB clientFile[6]       res←MESS∆TRANS 'NoClientFile'                ⋄ →ind×err[7]   :endif[8]   [9]   ⍝ Must be New or in the current ParmFile List[10]  ParmFileList←↑('ClientFile' Win∆CountryCode) GetParmFileList InputDir[11]  z←FileExist InputDir,clientFile,'.sf'[12]  :if 1=z←+/z,×⍴ParmFileList ExactTLU clientFile[13]      res←MESS∆TRANS 'InvFile' clientFile          ⋄ →ind×err[14]  :endif[15]  [16]  :if 0='ClientFile' CreateFile (InputDir,clientFile) 'Scheme Level Paramters File'[17]      :if ×z ⋄ res←MESS∆TRANS 'DirInUse' (INIString 'UserName' 'CurrentUser' '?' (InputDir,'svscheme.ini')) ⋄ →ind×err[18]      :else  ⋄ res←MESS∆TRANS 'InvFile' clientFile ⋄ →ind×err[19]      :endif[20]  :else[21]      ClientFile←InputDir,clientFile[22]      0 0⍴ClientFile SaveToFile 'BrowserHistory' 'History of Browsed Files' (0 2⍴'') 0[23]  :endif[24]  :return[25]  [26]  err:Win∆SetFocus 'fmClient.sClient.pgFiles.fFiles.cbclientFile'    ∇
+    ∇ res←Create_ClientFile ind;z;ParmFileList
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ Create the Client File if it does not already exist
+[3]   res←0⍴'' ⍝ Default response
+[4]   
+[5]   :if mt DLTB clientFile
+[6]       res←MESS∆TRANS 'NoClientFile'                ⋄ →ind×err
+[7]   :endif
+[8]   
+[9]   ⍝ Must be New or in the current ParmFile List
+[10]  ParmFileList←↑('ClientFile' Win∆CountryCode) GetParmFileList InputDir
+[11]  z←FileExist InputDir,clientFile,'.sf'
+[12]  :if 1=z←+/z,×⍴ParmFileList ExactTLU clientFile
+[13]      res←MESS∆TRANS 'InvFile' clientFile          ⋄ →ind×err
+[14]  :endif
+[15]  
+[16]  :if 0='ClientFile' CreateFile (InputDir,clientFile) 'Scheme Level Paramters File'
+[17]      :if ×z ⋄ res←MESS∆TRANS 'DirInUse' (INIString 'UserName' 'CurrentUser' '?' (InputDir,'svscheme.ini')) ⋄ →ind×err
+[18]      :else  ⋄ res←MESS∆TRANS 'InvFile' clientFile ⋄ →ind×err
+[19]      :endif
+[20]  :else
+[21]      ClientFile←InputDir,clientFile
+[22]      0 0⍴ClientFile SaveToFile 'BrowserHistory' 'History of Browsed Files' (0 2⍴'') 0
+[23]  :endif
+[24]  :return
+[25]  
+[26]  err:Win∆SetFocus 'fmClient.sClient.pgFiles.fFiles.cbclientFile'
+    ∇

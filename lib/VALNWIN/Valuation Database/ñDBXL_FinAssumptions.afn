@@ -1,0 +1,42 @@
+    ∇ rows←⍙DBXL_FinAssumptions;ID;desc;ts;recs;type;order;rng;text;rq;lq;value;msk
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Output Financial Assumptions to Excel Output
+[3]   
+[4]   ⍝ Description/Timestamp of Financials
+[5]   (ID desc ts)←DLTB¨,1 ⍙DBadoCONCommand "SELECT FinancialsID, FinancialsSavedDesc, ",("FinancialsTimeStamp" ⍙DBDateFormat 'dd/mm/yyyy hh:mm:ss')," FROM FinancialsGroups WHERE BasisCategoryID=",⍕BasisCategoryID
+[6]   text←'Financial Assumptions - ',desc,' ','[]' embrace ts
+[7]   
+[8]   :if bASM
+[9]   :andif ~mt ↑(desc ts)←DLTB¨,1 ⍙DBadoCONCommand "SELECT ScenarioSavedDesc, ",("ScenarioTimeStamp" ⍙DBDateFormat 'dd/mm/yyyy hh:mm:ss')," FROM FinancialsGroups WHERE BasisCategoryID=",⍕BasisCategoryID
+[10]      ts←(~mt ts)/' ','[]' embrace ts
+[11]      text←text,' ','{}' embrace desc,ts
+[12]  :endif
+[13]  0 0⍴text XL_Data RCtoA1 10 2
+[14]  
+[15]  ⍝ Financials pointers/values
+[16]  rows←↑⍴recs←DLTB¨((7/1),bQSM,bASM)\1 ⍙DBadoCONCommand "SELECT FinancialsType, FinancialsName, FinancialsValue, FinancialsConsDesc, FinancialsDesc, FinancialsCap, FinancialsCollar",(bQSM/", FinancialsGroup"),(bASM/", FinancialsScenValue")," FROM FinancialsValues WHERE FinancialsID=",⍕ID
+[17]  ⍝ Re-order by type
+[18]  order←⍋('Interest' 'Inflation' 'Revaluation' 'Increase' 'Constant')⍳type←recs[;0]
+[19]  type←type[order] ⋄ recs←(0 1↓recs)[order;]
+[20]  
+[21]  :if ∨/msk←(~mt¨recs[;1])^~mt¨value←recs[;7] ⋄ :andif ∨/msk←msk^~∨/¨(⊂'.CSV')⍷¨UPPERCASE¨value
+[22]      (msk/value)←(⊂'/+-/-') TEXTREPL¨(⊂'/ / +') TEXTREPL¨'+',¨DLTMB¨msk/value
+[23]      recs[;7]←value
+[24]  :endif
+[25]  
+[26]  ⍝ display as FinancialsValue «FinancialsScenValue» FinancialsCap FinancialsCollar [FinancialsGroup] {FinancialsConsDesc} <FinancialsName - FinancialsDesc>
+[27]  (lq rq)←⎕av[⎕io+174 175] ⍝ «» signs to enclose Scenario values
+[28]  desc←recs[;1],¨ ' ',¨(⊂lq,rq) embrace¨recs[;7]
+[29]  desc←desc    ,¨((~mt¨recs[;4]) sel¨⊂' Cap: '),¨recs[;4]
+[30]  desc←desc    ,¨((~mt¨recs[;5]) sel¨⊂' Collar: '),¨recs[;5]
+[31]  desc←desc    ,¨ ' ',¨(⊂'[]') embrace¨recs[;6]
+[32]  desc←desc    ,¨(' ',¨(⊂'{}') embrace¨recs[;2]),¨' '
+[33]  desc←desc    ,¨ '<',¨recs[;0],¨((~mt¨recs[;3]) sel¨⊂' - '),¨recs[;3],¨'>'
+[34]  desc←DLTMB¨(⊂rq,⎕av[187]) REPL¨(⊂lq,⎕av[171]) REPL¨desc ⍝ Convert «» signs
+[35]  
+[36]  (11 2 11 3) XL_PasteAll rng←141 2 (140+rows) 3
+[37]  0 0⍴(type,[0.5]desc) XL_Data RCtoA1 rng←141 2 (140+rows) 3
+[38]  'XL' ⎕wi 'Range>.Rng' (RCtoA1 rng) ⋄  0 0⍴('XL.Rng' ⎕wi 'xRows') ⎕wi 'XGroup' ⍝⍝⍝ ⋄ 'XL.Rng' ⎕wi 'Delete'
+[39]  
+[40]  rows←rows+1 ⍝ Add Header row
+    ∇

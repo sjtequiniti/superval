@@ -1,0 +1,23 @@
+    ∇ GetAbsFileList parm;History;var;text;tab;File
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get List of "Standard" Files and descriptions
+[3]   
+[4]   FilesDesc←FilesList←0 0⍴''
+[5]   
+[6]   :select parm
+[7]   :case 'Fund'
+[8]       :for var :in 'Actsfile' 'Defsfile' 'Pensfile'
+[9]           :if ~mt File←DLTB ↑(tab←AbsDict for 'Variable' var) at 'Parameter'
+[10]              text←⊂(DLTB StripText ↑tab at 'Description'),' - ',WGetFileTime InputDir,File
+[11]              AbsDict←AbsDict insert ((AbsDict at 'Variable')∊⊂var) 'Description' text
+[12]          :endif
+[13]      :endfor
+[14]  
+[15]      (FilesList FilesDesc)←⊃¨(AbsDict for 'Type' 'File') at 'Parameter' 'Description'
+[16]  
+[17]  :case 'History'
+[18]      :if mt History←ClientFile ReadFile 'BrowserHistory' ⋄ :return ⋄ :endif
+[19]      FilesList←⊃History[;⎕io] ⋄ FilesDesc←⊃History[;⎕io+1]
+[20]  
+[21]  :endselect
+    ∇

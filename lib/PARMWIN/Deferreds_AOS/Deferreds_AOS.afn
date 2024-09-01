@@ -1,1 +1,61 @@
-    ∇ res←field Deferreds_AOS parm;parent;list[1]   ⍝ PARMWIN.sf#17[2]   ⍝ Function to allow user control on Editing Deferreds AOS Paramters[3]   [4]   parent←'fmSV.fDefAOS.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       (parent,'fData.') ⎕wi '∆moe' (0 0 ⍴'')[10]      (parent,'fData.') ⎕wi '∆top' (0 0 ⍴'')[11]  [12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[13]  [14]      Display∆Access basAccess[1 2][15]      :if ~0≡list←(parent,'fData') ⎕wi '∆moe'[16]          :for field :in 'RetCode' 'DISCode'[17]              :if mt list ⋄ (parent,'fExit.ls',field) ⎕wi 'value' ⍬[18]              :else       ⋄ (parent,'fExit.ls',field) MakeSelections list (SStoMAT ⍎field)[19]              :endif[20]              Sel∆LabelUpdate parent,'fExit.ls',field[21]          :endfor[22]      :endif[23]  [24]      :if uk≠1 ⋄ :andif ~0≡list←(parent,'fData') ⎕wi '∆top'[25]          :for field :in 'RetType' 'DISType' 'IllType' 'WthType'[26]              :if mt list ⋄ (parent,'fTypes.ls',field) ⎕wi 'value' ⍬[27]              :else       ⋄ (parent,'fTypes.ls',field) MakeSelections list (SStoMAT ⍎field)[28]              :endif[29]              Sel∆LabelUpdate parent,'fTypes.ls',field[30]          :endfor[31]      :endif[32]  [33]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[34]  [35]      :repeat[36]          :select ↑field[37]          :case 'edFILES'[38]              (parent,'fData.') Win∆FileChanges 'MOE'[39]              (parent,'fData.') Win∆FileChanges 'TOP'[40]              0 0⍴Deferreds_AOS 'Init'[41]          :case 'cbFormat'[42]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format[43]              Format←(parent,'fData.cbFormat')⎕wi 'text'[44]              0 0⍴(⊂'edFILES') Deferreds_AOS 'Change'[45]          :endselect[46]          (↑field) Win∆FormValidation 'Change'[47]      :until mt field←1↓field[48]  [49]  :case 'Valid' ⍝ Routine specific validation[50]  [51]      res←((Win∆GetControlList parent) at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form[52]  [53]  :case 'Run'[54]  [55]      res←'Quit'[56]  [57]  :case 'Quit' ⍝ Deleting "other" variables[58]  [59]  :endselect    ∇
+    ∇ res←field Deferreds_AOS parm;parent;list
+[1]   ⍝ PARMWIN.sf#17
+[2]   ⍝ Function to allow user control on Editing Deferreds AOS Paramters
+[3]   
+[4]   parent←'fmSV.fDefAOS.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       (parent,'fData.') ⎕wi '∆moe' (0 0 ⍴'')
+[10]      (parent,'fData.') ⎕wi '∆top' (0 0 ⍴'')
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]  
+[14]      Display∆Access basAccess[1 2]
+[15]      :if ~0≡list←(parent,'fData') ⎕wi '∆moe'
+[16]          :for field :in 'RetCode' 'DISCode'
+[17]              :if mt list ⋄ (parent,'fExit.ls',field) ⎕wi 'value' ⍬
+[18]              :else       ⋄ (parent,'fExit.ls',field) MakeSelections list (SStoMAT ⍎field)
+[19]              :endif
+[20]              Sel∆LabelUpdate parent,'fExit.ls',field
+[21]          :endfor
+[22]      :endif
+[23]  
+[24]      :if uk≠1 ⋄ :andif ~0≡list←(parent,'fData') ⎕wi '∆top'
+[25]          :for field :in 'RetType' 'DISType' 'IllType' 'WthType'
+[26]              :if mt list ⋄ (parent,'fTypes.ls',field) ⎕wi 'value' ⍬
+[27]              :else       ⋄ (parent,'fTypes.ls',field) MakeSelections list (SStoMAT ⍎field)
+[28]              :endif
+[29]              Sel∆LabelUpdate parent,'fTypes.ls',field
+[30]          :endfor
+[31]      :endif
+[32]  
+[33]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[34]  
+[35]      :repeat
+[36]          :select ↑field
+[37]          :case 'edFILES'
+[38]              (parent,'fData.') Win∆FileChanges 'MOE'
+[39]              (parent,'fData.') Win∆FileChanges 'TOP'
+[40]              0 0⍴Deferreds_AOS 'Init'
+[41]          :case 'cbFormat'
+[42]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[43]              Format←(parent,'fData.cbFormat')⎕wi 'text'
+[44]              0 0⍴(⊂'edFILES') Deferreds_AOS 'Change'
+[45]          :endselect
+[46]          (↑field) Win∆FormValidation 'Change'
+[47]      :until mt field←1↓field
+[48]  
+[49]  :case 'Valid' ⍝ Routine specific validation
+[50]  
+[51]      res←((Win∆GetControlList parent) at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[52]  
+[53]  :case 'Run'
+[54]  
+[55]      res←'Quit'
+[56]  
+[57]  :case 'Quit' ⍝ Deleting "other" variables
+[58]  
+[59]  :endselect
+    ∇

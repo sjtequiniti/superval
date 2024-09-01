@@ -1,0 +1,33 @@
+    ∇ Z←ProcRegRead R;L
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ System Building With APL+Win - written by Ajay Askoolum
+[3]   R[R⍳'\']←⎕tcnul
+[4]   :if '\'∊R ⋄ ((⌽R)[(⌽R)⍳'\'])←⎕tcnul ⋄ :endif
+[5]   R←3↑((R≠⎕tcnul)⊂R),⊂''
+[6]   
+[7]   :if 0=↑Z←⎕wcall (⊂'RegOpenKeyEx'),R[⍳2],0 'KEY_READ' ⍬
+[8]       Z[⎕io+1]←⊂⍬⍴323 ⎕dr (⎕io+1)⊃Z
+[9]       L←(⎕io+1)⊃Z ⍝ Handle to open key
+[10]      R←(⎕io+2)⊃R
+[11]      :if 0=↑Z←⎕wcall 'RegQueryValueEx' L R ⍬ 0 ⍬
+[12]          :select ⍬⍴(⎕io+1)⊃Z
+[13]              :case 1 ⍝ REG_SZ
+[14]                  Z←¯1↓(⎕io+2)⊃⎕wcall 'RegQueryValueEx' L R ⍬ (((⎕io+3)⊃Z)⍴⎕tcnul) ((⎕io+3)⊃Z)
+[15]              :case 2 ⍝ REG_EXPAND_SZ
+[16]                  Z←¯1↓(⎕io+2)⊃⎕wcall 'RegQueryValueEx' L R ⍬ (((⎕io+3)⊃Z)⍴⎕tcnul) ((⎕io+3)⊃Z)
+[17]                  Z←↑↑/⎕wcall 'ExpandEnvironmentStrings' Z (256⍴⎕tcnul) 256
+[18]              :case 3 ⍝ REG_BINARY
+[19]                  Z←2⊥11 ⎕dr(⎕io+2)⊃⎕wcall 'RegQueryValueEx' L R ⍬ (((⎕io+3)⊃Z)/⎕tcnul) ((⎕io+3)⊃Z)
+[20]              :case 4 ⍝ REG_DWORD
+[21]                  Z←↑¯1↓(⎕io+2)⊃⎕wcall 'RegQueryValueEx' L R ⍬ Z (323 ⎕dr (⎕io+3)⊃Z)
+[22]              :else
+[23]                  Z←⍬
+[24]          :endselect
+[25]      :else
+[26]          Z←⍬
+[27]      :endif
+[28]      0 0⍴⎕wcall 'RegCloseKey' L
+[29]  :else
+[30]      Z←⍬
+[31]  :endif
+    ∇

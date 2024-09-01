@@ -1,1 +1,419 @@
-    ∇ QS_Change field;text;∆;classes;rate∆;fldmsk;rfdate;yy;mm;dd;vdate;lrRFDate;LTOT;tab;NetCF;drop;caption[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Handle the onChange/onExit Windows calls[3]   [4]   :select field[5]   :case 'cbdummymdbFile'[6]       :if ~initial_load[7]           ∆←'text' (dummymdbFile←(parent,currentpage,field) ⎕wi 'text')[8]           1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'cbdummymdbFile'),¨⊂∆[9]           (parent,controlpage,'cbmdbFile') ⎕wi ∆[10]      :endif[11]  :case 'cbdummysqlDBase'[12]      :if ~initial_load[13]          ∆←'text' (dummysqlDBase←(parent,currentpage,field) ⎕wi 'text')[14]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'cbdummysqlDBase'),¨⊂∆[15]          (parent,controlpage,'cbsqlDBase') ⎕wi ∆[16]      :endif[17]  :caselist 'cbmdbFile' 'cbsqlDBase'[18]      :if ~mt text←(parent,controlpage,field) ⎕wi 'text'[19]      :andif ~currentdbase≡text[20]          :if ~mt ↑(restab conttab fundtab amorttab v1pctab maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk)←ConsolidDir ⍙WebCallInit currentdbase←text[21]              0 ⍙WebShowControls groupings mortadj decadj[22]              ⍙WebAmortisation 'Update'[23]              0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[24]              CleanDBaseLists ''[25]          :endif[26]      :elseif savedresults[27]          (maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk)←⍙WebVariables 0 0[28]          1 ⍙WebShowControls groupings mortadj decadj[29]          savedresults←0[30]          ⍙WebAmortisation 'Update'[31]          0 0⍴('cbclasses' 'cbGraph') Quick_Scenario 'Change'[32]          CleanDBaseLists ''[33]      :endif[34]  :case 'cbdummyGraph'[35]      :if ~initial_load[36]          ∆←'text' (dummyGraph←(parent,currentpage,field) ⎕wi 'text')[37]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'cbdummyGraph'),¨⊂∆[38]          (parent,controlpage,'cbGraph') ⎕wi ∆[39]      :endif[40]  :case 'cbGraph'[41]      :if ~mt restab[42]          :select ∆←DLTB (parent,controlpage,field) ⎕wi 'text'[43]          :case 'Liabilities'                  ⋄ GraphView←LiabGraph[44]          :case 'WaterFall Liabilities'        ⋄ GraphView←WFLiabGraph[45]          :case 'Financial Position'           ⋄ GraphView←FinPosGraph[46]          :case 'WaterFall Financial Position' ⋄ GraphView←WFFinPosGraph[47]          :case 'Cash Flows'                   ⋄ GraphView←CFGraph[48]          :case 'Employer Contributions'       ⋄ GraphView←ECGraph[49]          :case 'Employer Funding Rate'        ⋄ GraphView←EFRGraph[50]          :endselect[51]  ⍝⍝⍝        (parent,currentpage,'edgraphterm') ⎕wi 'enabled' ((⊂∆)∊'Cash Flows' 'Employer Contributions' 'Employer Funding Rate')[52]          (((⊂parent),¨dummypages~currentpage) pr¨ ⊂'eddummygraphterm') Win∆SetRelated¨⊂'enabled' ((⊂∆)∊'Cash Flows' 'Employer Contributions' 'Employer Funding Rate')[53]      :endif[54]  :case 'eddummygraphterm'[55]      :if ~initial_load[56]          ∆←'text' (dummygraphterm←(parent,currentpage,field) ⎕wi 'text')[57]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'eddummygraphterm'),¨⊂∆[58]          (parent,controlpage,'edgraphterm') ⎕wi ∆[59]      :endif[60]  :case 'edgraphterm'[61]          GraphTerm←1⌈zwb (parent,controlpage,'edgraphterm') ⎕wi 'text'[62]          0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[63]  :case 'cbdummyclasses'[64]      :if ~initial_load[65]          ∆←'text' (dummyclasses←(parent,currentpage,'fFilter.',field) ⎕wi 'text')[66]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'fFilter.cbdummyclasses'),¨⊂∆[67]          (parent,controlpage,'fFilter.cbclasses') ⎕wi ∆[68]      :endif[69]  :case 'cbclasses'[70]      :if ~mt restab ⋄ :andif ~savedresults[71]          :if 'All'≡classes←(parent,controlpage,'fFilter.cbclasses') ⎕wi 'text'[72]              classes←'/' join (nub restab at 'ClassName')~'Contributions' 'Expenses' 'Additional Liability'[73]          :endif[74]          classsel←(restab at 'ClassName')∊nub m2n SStoMAT '/',classes[75]          0 0⍴('ckincconts' 'ckfunding') Quick_Scenario 'Change'[76]      :endif[77]  :case 'ckdummyincconts'[78]      :if ~initial_load[79]          ∆←'value' ((parent,currentpage,'fFilter.',field) ⎕wi 'value')[80]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'fFilter.ckdummyincconts'),¨⊂∆[81]          (parent,controlpage,'fFilter.ckincconts') ⎕wi ∆[82]      :endif[83]  :case 'ckincconts'[84]      :if ~mt restab ⋄ :andif ~savedresults[85]          :if inccont←(parent,controlpage,'fFilter.ckincconts') ⎕wi 'value'[86]              classsel←classsel∨(restab at 'ClassName')∊⊂'Contributions'[87]          :else[88]              classsel←classsel^~(restab at 'ClassName')∊⊂'Contributions'[89]          :endif[90]          0 0⍴(⊂'ckincexpense') Quick_Scenario 'Change'[91]      :endif[92]  :case 'ckdummyincexpense'[93]      :if ~initial_load[94]          ∆←'value' ((parent,currentpage,'fFilter.',field) ⎕wi 'value')[95]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'fFilter.ckdummyincexpense'),¨⊂∆[96]          (parent,controlpage,'fFilter.ckincexpense') ⎕wi ∆[97]      :endif[98]  :case 'ckincexpense'[99]      :if ~mt restab ⋄ :andif ~savedresults[100]         :if incexp←(parent,controlpage,'fFilter.ckincexpense') ⎕wi 'value'[101]             classsel←classsel∨(restab at 'ClassName')∊⊂'Expenses'[102]         :else[103]             classsel←classsel^~(restab at 'ClassName')∊⊂'Expenses'[104]         :endif[105]         0 0⍴(⊂'ckincadditliab') Quick_Scenario 'Change'[106]     :endif[107] :case 'ckdummyincadditliab'[108]     :if ~initial_load[109]         ∆←'value' ((parent,currentpage,'fFilter.',field) ⎕wi 'value')[110]         1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'fFilter.ckdummyincadditliab'),¨⊂∆[111]         (parent,controlpage,'fFilter.ckincadditliab') ⎕wi ∆[112]     :endif[113] :case 'ckincadditliab'[114]     :if ~mt restab ⋄ :andif ~savedresults[115]         :if incaddit←(parent,controlpage,'fFilter.ckincadditliab') ⎕wi 'value'[116]             classsel←classsel∨(restab at 'ClassName')∊⊂'Additional Liability'[117]         :else[118]             classsel←classsel^~(restab at 'ClassName')∊⊂'Additional Liability'[119]         :endif[120]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[121]     :endif[122] ⍝⍝⍝:case 'ckfinRFDate'[123] ⍝⍝⍝    :if ~mt restab ⋄ :andif ~savedresults[124] ⍝⍝⍝        finRF←(×rfperiod)×(parent,'pgFinancial.fFinAss.',field) ⎕wi 'value'[125] ⍝⍝⍝        0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[126] ⍝⍝⍝    :endif[127] :caselist 'ckfinRelative' 'ckfinAbsolute' 'ckfinPCChange' 'ckfinPerCent'[128]     :if ~mt restab ⋄ :andif ~savedresults[129]         :if ~∨/((⊂parent,'pgFinancial.fFinAss.'),¨∆←'ckfinRelative' 'ckfinAbsolute' 'ckfinPCChange' 'ckfinPerCent') MultiWI 'value'[130]             1 ⍙WebUpdateControls (parent,'pgFinancial.fFinAss.',field) 'value' 1[131]         :else[132]             0 ⍙WebUpdateControls ⊃(⊂¨(⊂parent,'pgFinancial.fFinAss.'),¨∆~⊂field),¨⊂'value' 0[133]             (finRelative finAbsolute finPCChange finPerCent)←⍕¨finMethod←((⊂parent,'pgFinancial.fFinAss.'),¨∆) MultiWI 'value'[134]             caption←(1+zwb finAbsolute)⊃'Adjustment to ' 'New Value for '[135]             ∆←(⊂'llrate'),¨m2n 'ZI2' ⎕fmt (~mt¨groupings)/⍳15[136]             ((⊂parent,'pgFinancial.fFinAss.'),¨∆) ⎕wi¨(⊂⊂'caption'),¨⊂¨((⊂caption),¨(~mt¨groupings)/groupings)[137] ⍝⍝⍝        :for ∆ :in (~mt¨groupings)/spin (⍳15) groupings ⋄ (no group)←∆[138] ⍝⍝⍝            ∆←,'<rate>,ZI2' ⎕fmt no[139] ⍝⍝⍝            (parent,'pgFinancial.fFinAss.ll',∆) ⎕wi 'caption' (caption,group)[140] ⍝⍝⍝        :endfor[141]             ∆←(⊂'cbrate'),¨m2n 'ZI2' ⎕fmt (~mt¨groupings)/⍳15[142] ⍝⍝⍝            :if      field≡'ckfinAbsolute'[143] ⍝⍝⍝                0 0⍴⍙WebFinancialChange¨∆[144] ⍝⍝⍝                0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[145]             :if      field≡'ckfinPerCent' ⋄ :andif ∨/fldmsk←(⊂ ,'0')≡¨DLTB¨((⊂parent,'pgFinancial.fFinAss.'),¨∆) ⎕wi¨⊂'text'[146]                 1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent,'pgFinancial.fFinAss.'),¨fldmsk/∆),¨⊂'text' '100'[147]             :elseif ~field≡'ckfinPerCent' ⋄ :andif ∨/fldmsk←(⊂'100')≡¨DLTB¨((⊂parent,'pgFinancial.fFinAss.'),¨∆) ⎕wi¨⊂'text'[148]                 1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent,'pgFinancial.fFinAss.'),¨fldmsk/∆),¨⊂'text' '0'[149]             :endif[150]             :if ∨/⍙WebFinancialChange¨∆[151]                 0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[152]             :endif[153]         :endif[154]         ∆←×rfperiod[155]         :if 2⊃finMethod[156]             (parent,'pgFinancial.fFinAss.lfinRFDisc') ⎕wi 'caption' (∆/'Roll-Forward Discount:  Adjustment at ',(⎕io+1↓discRF)⊃'Valuation Date' 'Roll-Forward Date')[157]             (parent,'pgFinancial.fFinAss.lfinRFEsc') ⎕wi 'caption' (∆/'Roll-Forward Escalation:  Adjustment at ',(⎕io+1↓escRF)⊃'Valuation Date' 'Roll-Forward Date')[158]         :else[159]             (parent,'pgFinancial.fFinAss.lfinRFDisc') ⎕wi 'caption' (∆/'Roll-Forward Discount:  Original at ',', Adjustment at ' join (⎕io+discRF)⊃¨⊂'Valuation Date' 'Roll-Forward Date')[160]             (parent,'pgFinancial.fFinAss.lfinRFEsc') ⎕wi 'caption' (∆/'Roll-Forward Escalation:  Original at ',', Adjustment at ' join (⎕io+escRF)⊃¨⊂'Valuation Date' 'Roll-Forward Date')[161]         :endif[162]     :endif[163] :caselist 'cbrate01' 'cbrate02' 'cbrate03' 'cbrate04' 'cbrate05' 'cbrate06' 'cbrate07' 'cbrate08' 'cbrate09' 'cbrate10' 'cbrate11' 'cbrate12' 'cbrate13' 'cbrate14' 'cbrate15'[164]     :if ~mt restab ⋄ :andif ~savedresults[165]         :if ⍙WebFinancialChange field[166]             0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[167]         :endif[168]     :endif[169] :caselist 'edmortality' 'ckperannum'[170]     :if ~mt restab ⋄ :andif ~savedresults[171]     :andif ^/1=⎕vi rate∆←((parent,'pgDemographic.fPostRetAss.edmortality') ⎕wi 'text')~'+'[172]         :if ∨/0.10<∣rate∆←maxyr OVERTAKE 0.01×EXECUTE rate∆[173]             MDISPLAY 'Mortality Adjustment greater than 10% specified' ⋄ :return[174]         :endif[175]         ((parent,'pgDemographic.fPostRetAss.ckperannum') ⎕wi 'value') ⍙WebMortality 1+rate∆[176]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[177]     :endif[178] :case 'edpropmarried'[179]     :if ~mt restab ⋄ :andif ~savedresults[180]     :andif ^/1=⎕vi (propmarried←(parent,'pgDemographic.fPostRetAss.edpropmarried') ⎕wi 'text')~'+'[181]         ⍙WebPropMarried 1+0.01×EXECUTE propmarried~'+'[182]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[183]     :endif[184] :case 'Service Table'[185]         ⍝ Divide Cash Flow by PROBS (salary weighted)[186]         ⍝ Store qx's[187]         ⊃(⎕split b)÷¨1+¯0.5×+⌿¨(⎕split (⍳4)∘.≠⍳4)×[1]¨⊂b←⍉PROBS÷[1]tPx[188]         ⍝ Adjust and recalculate PROBS[189]         zzz[0;]←zzz[0;]÷1.2[190]         rrr←⍉⊃(⎕split zzz)×¨1+¯0.5×+⌿¨(⎕split (⍳4)∘.≠⍳4)×[0]¨⊂zzz[191]         ⎕←LX←1 CDIV ⌽×\⌽1-+/rrr[192]         qqq← LX,rrr×[0]LX[193]         (qqq÷qqq[0;0]) aa[194] [195] :case 'ckfunding'[196]     :if ~mt restab ⋄ :andif ~savedresults[197]         fundind←^/(parent,'pgFunding.fFunding.',field) ⎕wi 'Ref' 'value' 'enabled'[198]         (parent,'pgFunding.fFunding.edcontper') ⎕wi 'enabled' (fundind^ValMeth≡'PUC')[199]         :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif[200]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[201]     :endif[202] :case 'edcontper'[203]     :if ~mt restab ⋄ :andif ~savedresults[204]         ContPer←(maxpay-1)⌊zwb (parent,'pgFunding.fFunding.',field) ⎕wi 'text'[205]         :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif[206]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[207]     :endif[208] :caselist 'opamortconstant_1' 'opamortconstant_2' 'opamortconstant_3'[209]     :if ~mt amorttab ⋄ :andif ~savedresults[210]         amortconstant←↑('123'=¯1↑field)/'Rate' 'Term' 'Amount'[211]         QS_AmortChange field[212]     :endif[213]     field←'opamortconstant_3' ⍝ For Relevance Rules[214] :caselist 'cbameth1' 'cbameth2'[215]     :if ~mt amorttab ⋄ :andif ~savedresults[216]         ((parent,'pgFunding.fAmort',(¯1↑field),'.',field) ⎕wi 'text') ASSIGN∆Dict 2↓field[217]         QS_AmortChange field[218]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[219]     :endif[220] :caselist 'edRatepc1' 'edCont1' 'edTERMAM1' 'edamortamount1' 'edRatepc2' 'edCont2' 'edTERMAM2' 'edamortamount2'[221]     :if ~mt amorttab ⋄ :andif ~savedresults[222]     :andif (,1)≡⎕vi (∆←(parent,'pgFunding.fAmort',(¯1↑field),'.',field) ⎕wi 'text')~'+'[223]         ∆ ASSIGN∆Dict 2↓field[224]         QS_AmortChange field[225]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[226]     :endif[227] :case 'edaccrual'[228]     :if ~mt restab ⋄ :andif ~savedresults[229]         ⍙WebAccrual accruallimit←zwb (parent,'pgBenefits.fBenefits.edaccrual') ⎕wi 'text'[230]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[231]     :endif[232] :case 'edfutaccrual'[233]     :if ~mt restab ⋄ :andif ~savedresults[234]     :andif ^/1=⎕vi (futaccrual←(parent,'pgBenefits.fBenefits.edfutaccrual') ⎕wi 'text')~'+'[235]         ⍙WebFutAccrual 1+0.01×EXECUTE futaccrual~'+'[236]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[237]     :endif[238] :case 'edspouserev'[239]     :if ~mt restab ⋄ :andif ~savedresults[240]     :andif ^/1=⎕vi (spouserev←(parent,'pgBenefits.fBenefits.edspouserev') ⎕wi 'text')~'+'[241]         ⍙WebSpouseRev 1+0.01×EXECUTE spouserev~'+'[242]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[243]     :endif[244] :case 'edcommfact'[245]     :if ~mt restab ⋄ :andif ~savedresults[246]     :andif ^/1=⎕vi (commfact←(parent,'pgBenefits.fCash.edcommfact') ⎕wi 'text')~'+'[247]         'factor' ⍙WebCash 0,1+0.01×EXECUTE commfact~'+'[248]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[249]     :endif[250] :case 'edcommpc'[251]     :if ~mt restab ⋄ :andif ~savedresults[252]     :andif ^/1=⎕vi (commpc←(parent,'pgBenefits.fCash.edcommpc') ⎕wi 'text')~'+'[253]         'amount' ⍙WebCash 35,1+0.01×EXECUTE commpc~'+'[254]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[255]     :endif[256] :case 'edcotpc'[257]     :if ~mt restab ⋄ :andif ~savedresults[258]     :andif ^/1=⎕vi (cotpc←(parent,'pgBenefits.fCash.edcotpc') ⎕wi 'text')~'+'[259]         'amount' ⍙WebCash 36,1+0.01×EXECUTE cotpc~'+'[260]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[261]     :endif[262] :case 'ckTVcapind'[263]     :if ~mt restab ⋄ :andif ~savedresults[264]         'capind' ⍙WebTransferValue zwb TVcapind←⍕(parent,'pgBenefits.fTransValue.ckTVcapind') ⎕wi 'value'[265]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[266]     :endif[267] :case 'edTVpc'[268]     :if ~mt restab ⋄ :andif ~savedresults[269]     :andif ^/1=⎕vi (TVpc←(parent,'pgBenefits.fTransValue.edTVpc') ⎕wi 'text')~'+'[270]         'pc' ⍙WebTransferValue 1+0.01×EXECUTE TVpc~'+'[271]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[272]     :endif[273] :case 'edTVprop'[274]     :if ~mt restab ⋄ :andif ~savedresults[275]     :andif ^/1=⎕vi (TVprop←(parent,'pgBenefits.fTransValue.edTVprop') ⎕wi 'text')~'+'[276]         'prop' ⍙WebTransferValue 1+0.01×EXECUTE TVprop~'+'[277]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[278]     :endif[279] :case 'ckcapind'[280]     Capind←(parent,'pgBenefits.fCashFlow.ckcapind') ⎕wi 'value'[281]     (parent,'pgBenefits.fCashFlow.edprofit') ⎕wi 'enabled' Capind[282]     :if ~mt restab ⋄ :andif ~savedresults[283]         restab←0 ⍙WebRecalculate restab[284]         :if Capind ⋄ :andif ~(parent,'pgBenefits.fTransValue.ckTVcapind') ⎕wi 'value'[285]             (parent,'pgBenefits.fTransValue.ckTVcapind') ⎕wi 'value' 1[286]         :endif[287]         :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif[288]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[289]     :endif[290] :case 'edprofit'[291]     :if ~mt restab ⋄ :andif ~savedresults[292]         Profit←1+0.01×Capind×zwb (parent,'pgBenefits.fCashFlow.edprofit') ⎕wi 'text'[293]         restab←0 ⍙WebRecalculate restab[294]         :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif[295]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[296]     :endif[297] :case 'cbRFDate'[298]     :if ~mt restab ⋄ :andif ~savedresults[299]         RFDate←(parent,'pgRollForward.fRollForward.cbRFDate') ⎕wi 'text'[300]         lrRFDate←(parent,'pgRollForward.fRollForward.lrRFDate') ⎕wi 'caption'[301]         :if DATECHECK rfdate←'DD/MM/YYYY' DATEEXP RFDatetxt←↑⌽'Date' SwapRelFields lrRFDate RFDate[302]         :andif 5>∣'YN' DURN rfdate,ValDATE[303]             RFDatetxt←' ','()' embrace RFDatetxt[304]             :if 0>rfperiod←'DN' DURN ValDATE,rfdate[305]                 MDISPLAY 'Roll-Forward Date must be after Valuation Date'[306]                 rfperiod←0 ⋄ rfdate←ValDATE[307]             :elseif rfperiod>0 ⋄ :andif Capind[308]                 (parent,'pgBenefits.fCashFlow.ckcapind') ⎕wi 'value' (Capind←0)[309]                 MDISPLAY 'Capitalisation of Benefits is not supported for Roll-Forward calculations'[310]             :endif[311]             yy←'YD' DURN ValDATE,¯1 DATEOFFSET rfdate[312]             mm←12×'MD' DURN ValDATE,¯1 DATEOFFSET rfdate-0 0,yy[313]             :if 12<(vdate←ValDATE+0,mm,yy)[2] ⋄ vdate←vdate+0 ¯12 1 ⋄ :endif[314]             dd←0⌈vdate DAYS rfdate[315]             (parent,'pgBenefits.fCashFlow.ckcapind') ⎕wi 'enabled' (∆←(rfperiod=0)^∨/0=∊restab at 'CashBenefit')[316]             ((⊂parent,'pgBenefits.fCashFlow.'),¨'ed' 'll' 'lr',¨⊂'profit') MultiWI 'enabled' ∆[317]             (parent,'pgRollForward.fRollForward.lRFPeriod') ⎕wi 'caption' ((×rfperiod)/'Roll-Forward Period:  ',((×yy)/(⍕yy),' year',((1≠yy)/'s'),' '),((×mm)/(⍕mm),' month',((1≠mm)/'s'),' '),(×dd)/(⍕dd),' day',(1≠dd)/'s')[318]             (parent,'pgRollForward.fAssets') ⎕wi 'visible' ((rfperiod=0)∨∆←Assets≠0)[319]             (parent,'pgRollForward.fAssets') ⎕wi 'enabled' ∆[320] ⍝⍝⍝            (parent,'pgRollForward.fOtherLiab') ⎕wi 'visible' ((rfperiod=0)∨∆←(⊂'Additional Liability')∊nub restab at 'ClassName')[321]             (parent,'pgRollForward.fOtherLiab') ⎕wi 'enabled' ∆[322]             ∆←×rfperiod[323]             :if 2⊃finMethod[324]                 (parent,'pgFinancial.fFinAss.lfinRFDisc') ⎕wi 'caption' (∆/'Roll-Forward Discount:  Adjustment at ',(⎕io+1↓discRF)⊃'Valuation Date' 'Roll-Forward Date')[325]                 (parent,'pgFinancial.fFinAss.lfinRFEsc') ⎕wi 'caption' (∆/'Roll-Forward Escalation:  Adjustment at ',(⎕io+1↓escRF)⊃'Valuation Date' 'Roll-Forward Date')[326]             :else[327]                 (parent,'pgFinancial.fFinAss.lfinRFDisc') ⎕wi 'caption' (∆/'Roll-Forward Discount:  Original at ',', Adjustment at ' join (⎕io+discRF)⊃¨⊂'Valuation Date' 'Roll-Forward Date')[328]                 (parent,'pgFinancial.fFinAss.lfinRFEsc') ⎕wi 'caption' (∆/'Roll-Forward Escalation:  Original at ',', Adjustment at ' join (⎕io+escRF)⊃¨⊂'Valuation Date' 'Roll-Forward Date')[329]             :endif[330]             0 0⍴('ckRFrollup' 'ckRFrollupOL') Quick_Scenario 'Change'[331] [332]             ⍝ Update ungrouped Financials for Roll Forward[333]             restab  ←(⊂'' 0) ⍙WebFinancials restab 0[334]             amorttab←(⊂'' 0) ⍙WebFinancials amorttab 1[335]             :if ×rowsIn conttab ⋄ conttab←(⊂'' 0) ⍙WebFinancials conttab 0 ⋄ :endif[336]             :if ×rowsIn fundtab ⋄ fundtab←(⊂'' 0) ⍙WebFinancials fundtab 0 ⋄ :endif[337]             :if ×rowsIn v1pctab ⋄ v1pctab←(⊂'' 0) ⍙WebFinancials v1pctab 0 ⋄ :endif[338] [339]             0 0⍴((~mt¨groupings)/'cbrate01' 'cbrate02' 'cbrate03' 'cbrate04' 'cbrate05' 'cbrate06' 'cbrate07' 'cbrate08' 'cbrate09' 'cbrate10' 'cbrate11' 'cbrate12' 'cbrate13' 'cbrate14' 'cbrate15') Quick_Scenario 'Change'[340]             'fmQuickSM.bnQuick_ScenarioConfigRF' ⎕wi 'enabled' (×rfperiod)[341]             (parent,'pgRollForward.fRollForward.edRFPeriod') ⎕wi 'text' (RFPeriod←⍕rfperiod)[342]         :endif[343]     :endif[344] :case 'edRFPeriod'[345]     :if ~mt restab ⋄ :andif ~savedresults[346]         rfperiod←zwb (parent,'pgRollForward.fRollForward.edRFPeriod') ⎕wi 'text'[347] ⍝⍝⍝        restab←0 ⍙WebRecalculate restab[348] ⍝⍝⍝        amorttab←1 ⍙WebRecalculate amorttab[349] ⍝⍝⍝        conttab←0 ⍙WebRecalculate conttab[350] ⍝⍝⍝        v1pctab←0 ⍙WebRecalculate v1pctab[351] ⍝⍝⍝        :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif[352]         :if 0=rfperiod ⋄ ((⊂parent,'pgRollForward.fAssets.'),¨'edRFBenCFs' 'edRFContCFs') MultiWI 'text' ' '[353]         :else[354]             ∆←∊-/+/¨+⌿¨¨ restab                   at 'NewCashFlow' 'RFCashFlow'[355]             (parent,'pgRollForward.fAssets.edRFBenCFs' ) ⎕wi 'text' (DLTB '¯-' REPL 0⍕(1,1↓0.5<∣∆)/∆)[356]             ∆←∊-/+/¨+⌿¨¨(amorttab append conttab) at 'NewCashFlow' 'RFCashFlow'[357]             (parent,'pgRollForward.fAssets.edRFContCFs') ⎕wi 'text' (DLTB '¯-' REPL 0⍕(1,1↓0.5<∣∆)/∆)[358]         :endif[359] ⍝⍝⍝[360] ⍝⍝⍝        0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[361]     :endif[362] :case 'edRFASSETS'[363]     :if ~mt restab ⋄ :andif ~savedresults[364]         :if ^/1=⎕vi RFASSETS←((parent,'pgRollForward.fAssets.edRFASSETS') ⎕wi 'text')~'+'[365]             rfAssets←zwb RFASSETS[366]             0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'[367]         :endif[368]     :endif[369] :case 'ckRFrollup'[370]     :if ~mt restab ⋄ :andif ~savedresults[371]         :if (parent,'pgRollForward.fAssets.ckRFrollup') ⎕wi 'value'[372]             0 0⍴(⊂'cbRFIR') Quick_Scenario 'Change'[373]         :else[374]             0 0⍴(⊂'edRFASSETS') Quick_Scenario 'Change'[375]         :endif[376]     :endif[377] :case 'cbRFIR'[378]     :if ~mt restab ⋄ :andif ~savedresults[379]         :if ^/1=⎕vi rate∆←(READTBL (parent,'pgRollForward.fAssets.',field) ⎕wi 'text')~'+'[380]             rate∆←1+.01×(drop↑rate∆),(1∣rfperiod)×↑(drop←⌊rfperiod)↓rate∆←(⌈rfperiod) OVERTAKE EXECUTE rate∆[381]             (parent,'pgRollForward.fAssets.edRFASSETS') ⎕wi 'text' (⍙WebAssetRollup rate∆)[382]         :endif[383]     :endif[384] :case 'edRFLTOT'[385]     :if ~mt restab ⋄ :andif ~savedresults[386]         :if ^/1=⎕vi LTOT←((parent,'pgRollForward.fOtherLiab.edRFLTOT') ⎕wi 'text')~'+'[387]             :if 0≠rfperiod ⋄ LTOT←zwb LTOT[388]             :else          ⋄ LTOT←↑(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue'[389]             :endif[390]             ∆←(restab at 'ClassName')∊⊂'Additional Liability'[391]             tab←restab for ∆[392]             tab←tab amend 'NewLiabilityValue' LTOT[393]             tab←tab amend 'NewCashFlow' (LTOT←⊂MATRIX maxyr↑LTOT)[394]             tab←tab amend 'RFCashFlow' LTOT[395]             tab←tab amend 'RawMemberCF' LTOT[396]             restab←(restab for ~∆) append tab[397]             0 0⍴('cbclasses' 'cbGraph') Quick_Scenario 'Change'[398]         :endif[399]     :endif[400] :case 'ckRFrollupOL'[401]     :if (parent,'pgRollForward.fOtherLiab.ckRFrollupOL') ⎕wi 'value'[402]         0 0⍴(⊂'cbRFIROL') Quick_Scenario 'Change'[403]     :else[404]         0 0⍴(⊂'edRFLTOT') Quick_Scenario 'Change'[405]     :endif[406] :caselist 'cbRFIROL' 'edRFNetCFOL' ⍝ Roll Additional Liabilities forward[407]     :if ~mt restab ⋄ :andif ~savedresults[408]         :if ^/1=⎕vi RFNetCFOL←((parent,'pgRollForward.fOtherLiab.edRFNetCFOL') ⎕wi 'text')~'+'[409]         :andif ^/1=⎕vi rate∆←(READTBL (parent,'pgRollForward.fOtherLiab.cbRFIROL') ⎕wi 'text')~'+'[410]             LTOT←↑(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue'[411]             NetCF←zwb RFNetCFOL[412]             rate∆←×/1+.01×(drop↑rate∆),(1∣rfperiod)×↑(drop←⌊rfperiod)↓rate∆←(⌈rfperiod) OVERTAKE EXECUTE rate∆[413]             (parent,'pgRollForward.fOtherLiab.edRFLTOT') ⎕wi 'text' ('¯-' REPL ⍕0 gRound (LTOT×rate∆)+NetCF×rate∆*0.5)[414]         :endif[415]     :endif[416] :endselect[417] field Win∆FormValidation 'Change'    ∇
+    ∇ QS_Change field;text;∆;classes;rate∆;fldmsk;rfdate;yy;mm;dd;vdate;lrRFDate;LTOT;tab;NetCF;drop;caption
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Handle the onChange/onExit Windows calls
+[3]   
+[4]   :select field
+[5]   :case 'cbdummymdbFile'
+[6]       :if ~initial_load
+[7]           ∆←'text' (dummymdbFile←(parent,currentpage,field) ⎕wi 'text')
+[8]           1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'cbdummymdbFile'),¨⊂∆
+[9]           (parent,controlpage,'cbmdbFile') ⎕wi ∆
+[10]      :endif
+[11]  :case 'cbdummysqlDBase'
+[12]      :if ~initial_load
+[13]          ∆←'text' (dummysqlDBase←(parent,currentpage,field) ⎕wi 'text')
+[14]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'cbdummysqlDBase'),¨⊂∆
+[15]          (parent,controlpage,'cbsqlDBase') ⎕wi ∆
+[16]      :endif
+[17]  :caselist 'cbmdbFile' 'cbsqlDBase'
+[18]      :if ~mt text←(parent,controlpage,field) ⎕wi 'text'
+[19]      :andif ~currentdbase≡text
+[20]          :if ~mt ↑(restab conttab fundtab amorttab v1pctab maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk)←ConsolidDir ⍙WebCallInit currentdbase←text
+[21]              0 ⍙WebShowControls groupings mortadj decadj
+[22]              ⍙WebAmortisation 'Update'
+[23]              0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[24]              CleanDBaseLists ''
+[25]          :endif
+[26]      :elseif savedresults
+[27]          (maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk)←⍙WebVariables 0 0
+[28]          1 ⍙WebShowControls groupings mortadj decadj
+[29]          savedresults←0
+[30]          ⍙WebAmortisation 'Update'
+[31]          0 0⍴('cbclasses' 'cbGraph') Quick_Scenario 'Change'
+[32]          CleanDBaseLists ''
+[33]      :endif
+[34]  :case 'cbdummyGraph'
+[35]      :if ~initial_load
+[36]          ∆←'text' (dummyGraph←(parent,currentpage,field) ⎕wi 'text')
+[37]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'cbdummyGraph'),¨⊂∆
+[38]          (parent,controlpage,'cbGraph') ⎕wi ∆
+[39]      :endif
+[40]  :case 'cbGraph'
+[41]      :if ~mt restab
+[42]          :select ∆←DLTB (parent,controlpage,field) ⎕wi 'text'
+[43]          :case 'Liabilities'                  ⋄ GraphView←LiabGraph
+[44]          :case 'WaterFall Liabilities'        ⋄ GraphView←WFLiabGraph
+[45]          :case 'Financial Position'           ⋄ GraphView←FinPosGraph
+[46]          :case 'WaterFall Financial Position' ⋄ GraphView←WFFinPosGraph
+[47]          :case 'Cash Flows'                   ⋄ GraphView←CFGraph
+[48]          :case 'Employer Contributions'       ⋄ GraphView←ECGraph
+[49]          :case 'Employer Funding Rate'        ⋄ GraphView←EFRGraph
+[50]          :endselect
+[51]  ⍝⍝⍝        (parent,currentpage,'edgraphterm') ⎕wi 'enabled' ((⊂∆)∊'Cash Flows' 'Employer Contributions' 'Employer Funding Rate')
+[52]          (((⊂parent),¨dummypages~currentpage) pr¨ ⊂'eddummygraphterm') Win∆SetRelated¨⊂'enabled' ((⊂∆)∊'Cash Flows' 'Employer Contributions' 'Employer Funding Rate')
+[53]      :endif
+[54]  :case 'eddummygraphterm'
+[55]      :if ~initial_load
+[56]          ∆←'text' (dummygraphterm←(parent,currentpage,field) ⎕wi 'text')
+[57]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'eddummygraphterm'),¨⊂∆
+[58]          (parent,controlpage,'edgraphterm') ⎕wi ∆
+[59]      :endif
+[60]  :case 'edgraphterm'
+[61]          GraphTerm←1⌈zwb (parent,controlpage,'edgraphterm') ⎕wi 'text'
+[62]          0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[63]  :case 'cbdummyclasses'
+[64]      :if ~initial_load
+[65]          ∆←'text' (dummyclasses←(parent,currentpage,'fFilter.',field) ⎕wi 'text')
+[66]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'fFilter.cbdummyclasses'),¨⊂∆
+[67]          (parent,controlpage,'fFilter.cbclasses') ⎕wi ∆
+[68]      :endif
+[69]  :case 'cbclasses'
+[70]      :if ~mt restab ⋄ :andif ~savedresults
+[71]          :if 'All'≡classes←(parent,controlpage,'fFilter.cbclasses') ⎕wi 'text'
+[72]              classes←'/' join (nub restab at 'ClassName')~'Contributions' 'Expenses' 'Additional Liability'
+[73]          :endif
+[74]          classsel←(restab at 'ClassName')∊nub m2n SStoMAT '/',classes
+[75]          0 0⍴('ckincconts' 'ckfunding') Quick_Scenario 'Change'
+[76]      :endif
+[77]  :case 'ckdummyincconts'
+[78]      :if ~initial_load
+[79]          ∆←'value' ((parent,currentpage,'fFilter.',field) ⎕wi 'value')
+[80]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'fFilter.ckdummyincconts'),¨⊂∆
+[81]          (parent,controlpage,'fFilter.ckincconts') ⎕wi ∆
+[82]      :endif
+[83]  :case 'ckincconts'
+[84]      :if ~mt restab ⋄ :andif ~savedresults
+[85]          :if inccont←(parent,controlpage,'fFilter.ckincconts') ⎕wi 'value'
+[86]              classsel←classsel∨(restab at 'ClassName')∊⊂'Contributions'
+[87]          :else
+[88]              classsel←classsel^~(restab at 'ClassName')∊⊂'Contributions'
+[89]          :endif
+[90]          0 0⍴(⊂'ckincexpense') Quick_Scenario 'Change'
+[91]      :endif
+[92]  :case 'ckdummyincexpense'
+[93]      :if ~initial_load
+[94]          ∆←'value' ((parent,currentpage,'fFilter.',field) ⎕wi 'value')
+[95]          1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'fFilter.ckdummyincexpense'),¨⊂∆
+[96]          (parent,controlpage,'fFilter.ckincexpense') ⎕wi ∆
+[97]      :endif
+[98]  :case 'ckincexpense'
+[99]      :if ~mt restab ⋄ :andif ~savedresults
+[100]         :if incexp←(parent,controlpage,'fFilter.ckincexpense') ⎕wi 'value'
+[101]             classsel←classsel∨(restab at 'ClassName')∊⊂'Expenses'
+[102]         :else
+[103]             classsel←classsel^~(restab at 'ClassName')∊⊂'Expenses'
+[104]         :endif
+[105]         0 0⍴(⊂'ckincadditliab') Quick_Scenario 'Change'
+[106]     :endif
+[107] :case 'ckdummyincadditliab'
+[108]     :if ~initial_load
+[109]         ∆←'value' ((parent,currentpage,'fFilter.',field) ⎕wi 'value')
+[110]         1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent),¨(dummypages~⊂currentpage),¨⊂'fFilter.ckdummyincadditliab'),¨⊂∆
+[111]         (parent,controlpage,'fFilter.ckincadditliab') ⎕wi ∆
+[112]     :endif
+[113] :case 'ckincadditliab'
+[114]     :if ~mt restab ⋄ :andif ~savedresults
+[115]         :if incaddit←(parent,controlpage,'fFilter.ckincadditliab') ⎕wi 'value'
+[116]             classsel←classsel∨(restab at 'ClassName')∊⊂'Additional Liability'
+[117]         :else
+[118]             classsel←classsel^~(restab at 'ClassName')∊⊂'Additional Liability'
+[119]         :endif
+[120]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[121]     :endif
+[122] ⍝⍝⍝:case 'ckfinRFDate'
+[123] ⍝⍝⍝    :if ~mt restab ⋄ :andif ~savedresults
+[124] ⍝⍝⍝        finRF←(×rfperiod)×(parent,'pgFinancial.fFinAss.',field) ⎕wi 'value'
+[125] ⍝⍝⍝        0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[126] ⍝⍝⍝    :endif
+[127] :caselist 'ckfinRelative' 'ckfinAbsolute' 'ckfinPCChange' 'ckfinPerCent'
+[128]     :if ~mt restab ⋄ :andif ~savedresults
+[129]         :if ~∨/((⊂parent,'pgFinancial.fFinAss.'),¨∆←'ckfinRelative' 'ckfinAbsolute' 'ckfinPCChange' 'ckfinPerCent') MultiWI 'value'
+[130]             1 ⍙WebUpdateControls (parent,'pgFinancial.fFinAss.',field) 'value' 1
+[131]         :else
+[132]             0 ⍙WebUpdateControls ⊃(⊂¨(⊂parent,'pgFinancial.fFinAss.'),¨∆~⊂field),¨⊂'value' 0
+[133]             (finRelative finAbsolute finPCChange finPerCent)←⍕¨finMethod←((⊂parent,'pgFinancial.fFinAss.'),¨∆) MultiWI 'value'
+[134]             caption←(1+zwb finAbsolute)⊃'Adjustment to ' 'New Value for '
+[135]             ∆←(⊂'llrate'),¨m2n 'ZI2' ⎕fmt (~mt¨groupings)/⍳15
+[136]             ((⊂parent,'pgFinancial.fFinAss.'),¨∆) ⎕wi¨(⊂⊂'caption'),¨⊂¨((⊂caption),¨(~mt¨groupings)/groupings)
+[137] ⍝⍝⍝        :for ∆ :in (~mt¨groupings)/spin (⍳15) groupings ⋄ (no group)←∆
+[138] ⍝⍝⍝            ∆←,'<rate>,ZI2' ⎕fmt no
+[139] ⍝⍝⍝            (parent,'pgFinancial.fFinAss.ll',∆) ⎕wi 'caption' (caption,group)
+[140] ⍝⍝⍝        :endfor
+[141]             ∆←(⊂'cbrate'),¨m2n 'ZI2' ⎕fmt (~mt¨groupings)/⍳15
+[142] ⍝⍝⍝            :if      field≡'ckfinAbsolute'
+[143] ⍝⍝⍝                0 0⍴⍙WebFinancialChange¨∆
+[144] ⍝⍝⍝                0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[145]             :if      field≡'ckfinPerCent' ⋄ :andif ∨/fldmsk←(⊂ ,'0')≡¨DLTB¨((⊂parent,'pgFinancial.fFinAss.'),¨∆) ⎕wi¨⊂'text'
+[146]                 1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent,'pgFinancial.fFinAss.'),¨fldmsk/∆),¨⊂'text' '100'
+[147]             :elseif ~field≡'ckfinPerCent' ⋄ :andif ∨/fldmsk←(⊂'100')≡¨DLTB¨((⊂parent,'pgFinancial.fFinAss.'),¨∆) ⎕wi¨⊂'text'
+[148]                 1 ⍙WebUpdateControls ⊃(⊂¨(⊂parent,'pgFinancial.fFinAss.'),¨fldmsk/∆),¨⊂'text' '0'
+[149]             :endif
+[150]             :if ∨/⍙WebFinancialChange¨∆
+[151]                 0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[152]             :endif
+[153]         :endif
+[154]         ∆←×rfperiod
+[155]         :if 2⊃finMethod
+[156]             (parent,'pgFinancial.fFinAss.lfinRFDisc') ⎕wi 'caption' (∆/'Roll-Forward Discount:  Adjustment at ',(⎕io+1↓discRF)⊃'Valuation Date' 'Roll-Forward Date')
+[157]             (parent,'pgFinancial.fFinAss.lfinRFEsc') ⎕wi 'caption' (∆/'Roll-Forward Escalation:  Adjustment at ',(⎕io+1↓escRF)⊃'Valuation Date' 'Roll-Forward Date')
+[158]         :else
+[159]             (parent,'pgFinancial.fFinAss.lfinRFDisc') ⎕wi 'caption' (∆/'Roll-Forward Discount:  Original at ',', Adjustment at ' join (⎕io+discRF)⊃¨⊂'Valuation Date' 'Roll-Forward Date')
+[160]             (parent,'pgFinancial.fFinAss.lfinRFEsc') ⎕wi 'caption' (∆/'Roll-Forward Escalation:  Original at ',', Adjustment at ' join (⎕io+escRF)⊃¨⊂'Valuation Date' 'Roll-Forward Date')
+[161]         :endif
+[162]     :endif
+[163] :caselist 'cbrate01' 'cbrate02' 'cbrate03' 'cbrate04' 'cbrate05' 'cbrate06' 'cbrate07' 'cbrate08' 'cbrate09' 'cbrate10' 'cbrate11' 'cbrate12' 'cbrate13' 'cbrate14' 'cbrate15'
+[164]     :if ~mt restab ⋄ :andif ~savedresults
+[165]         :if ⍙WebFinancialChange field
+[166]             0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[167]         :endif
+[168]     :endif
+[169] :caselist 'edmortality' 'ckperannum'
+[170]     :if ~mt restab ⋄ :andif ~savedresults
+[171]     :andif ^/1=⎕vi rate∆←((parent,'pgDemographic.fPostRetAss.edmortality') ⎕wi 'text')~'+'
+[172]         :if ∨/0.10<∣rate∆←maxyr OVERTAKE 0.01×EXECUTE rate∆
+[173]             MDISPLAY 'Mortality Adjustment greater than 10% specified' ⋄ :return
+[174]         :endif
+[175]         ((parent,'pgDemographic.fPostRetAss.ckperannum') ⎕wi 'value') ⍙WebMortality 1+rate∆
+[176]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[177]     :endif
+[178] :case 'edpropmarried'
+[179]     :if ~mt restab ⋄ :andif ~savedresults
+[180]     :andif ^/1=⎕vi (propmarried←(parent,'pgDemographic.fPostRetAss.edpropmarried') ⎕wi 'text')~'+'
+[181]         ⍙WebPropMarried 1+0.01×EXECUTE propmarried~'+'
+[182]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[183]     :endif
+[184] :case 'Service Table'
+[185]         ⍝ Divide Cash Flow by PROBS (salary weighted)
+[186]         ⍝ Store qx's
+[187]         ⊃(⎕split b)÷¨1+¯0.5×+⌿¨(⎕split (⍳4)∘.≠⍳4)×[1]¨⊂b←⍉PROBS÷[1]tPx
+[188]         ⍝ Adjust and recalculate PROBS
+[189]         zzz[0;]←zzz[0;]÷1.2
+[190]         rrr←⍉⊃(⎕split zzz)×¨1+¯0.5×+⌿¨(⎕split (⍳4)∘.≠⍳4)×[0]¨⊂zzz
+[191]         ⎕←LX←1 CDIV ⌽×\⌽1-+/rrr
+[192]         qqq← LX,rrr×[0]LX
+[193]         (qqq÷qqq[0;0]) aa
+[194] 
+[195] :case 'ckfunding'
+[196]     :if ~mt restab ⋄ :andif ~savedresults
+[197]         fundind←^/(parent,'pgFunding.fFunding.',field) ⎕wi 'Ref' 'value' 'enabled'
+[198]         (parent,'pgFunding.fFunding.edcontper') ⎕wi 'enabled' (fundind^ValMeth≡'PUC')
+[199]         :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif
+[200]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[201]     :endif
+[202] :case 'edcontper'
+[203]     :if ~mt restab ⋄ :andif ~savedresults
+[204]         ContPer←(maxpay-1)⌊zwb (parent,'pgFunding.fFunding.',field) ⎕wi 'text'
+[205]         :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif
+[206]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[207]     :endif
+[208] :caselist 'opamortconstant_1' 'opamortconstant_2' 'opamortconstant_3'
+[209]     :if ~mt amorttab ⋄ :andif ~savedresults
+[210]         amortconstant←↑('123'=¯1↑field)/'Rate' 'Term' 'Amount'
+[211]         QS_AmortChange field
+[212]     :endif
+[213]     field←'opamortconstant_3' ⍝ For Relevance Rules
+[214] :caselist 'cbameth1' 'cbameth2'
+[215]     :if ~mt amorttab ⋄ :andif ~savedresults
+[216]         ((parent,'pgFunding.fAmort',(¯1↑field),'.',field) ⎕wi 'text') ASSIGN∆Dict 2↓field
+[217]         QS_AmortChange field
+[218]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[219]     :endif
+[220] :caselist 'edRatepc1' 'edCont1' 'edTERMAM1' 'edamortamount1' 'edRatepc2' 'edCont2' 'edTERMAM2' 'edamortamount2'
+[221]     :if ~mt amorttab ⋄ :andif ~savedresults
+[222]     :andif (,1)≡⎕vi (∆←(parent,'pgFunding.fAmort',(¯1↑field),'.',field) ⎕wi 'text')~'+'
+[223]         ∆ ASSIGN∆Dict 2↓field
+[224]         QS_AmortChange field
+[225]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[226]     :endif
+[227] :case 'edaccrual'
+[228]     :if ~mt restab ⋄ :andif ~savedresults
+[229]         ⍙WebAccrual accruallimit←zwb (parent,'pgBenefits.fBenefits.edaccrual') ⎕wi 'text'
+[230]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[231]     :endif
+[232] :case 'edfutaccrual'
+[233]     :if ~mt restab ⋄ :andif ~savedresults
+[234]     :andif ^/1=⎕vi (futaccrual←(parent,'pgBenefits.fBenefits.edfutaccrual') ⎕wi 'text')~'+'
+[235]         ⍙WebFutAccrual 1+0.01×EXECUTE futaccrual~'+'
+[236]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[237]     :endif
+[238] :case 'edspouserev'
+[239]     :if ~mt restab ⋄ :andif ~savedresults
+[240]     :andif ^/1=⎕vi (spouserev←(parent,'pgBenefits.fBenefits.edspouserev') ⎕wi 'text')~'+'
+[241]         ⍙WebSpouseRev 1+0.01×EXECUTE spouserev~'+'
+[242]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[243]     :endif
+[244] :case 'edcommfact'
+[245]     :if ~mt restab ⋄ :andif ~savedresults
+[246]     :andif ^/1=⎕vi (commfact←(parent,'pgBenefits.fCash.edcommfact') ⎕wi 'text')~'+'
+[247]         'factor' ⍙WebCash 0,1+0.01×EXECUTE commfact~'+'
+[248]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[249]     :endif
+[250] :case 'edcommpc'
+[251]     :if ~mt restab ⋄ :andif ~savedresults
+[252]     :andif ^/1=⎕vi (commpc←(parent,'pgBenefits.fCash.edcommpc') ⎕wi 'text')~'+'
+[253]         'amount' ⍙WebCash 35,1+0.01×EXECUTE commpc~'+'
+[254]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[255]     :endif
+[256] :case 'edcotpc'
+[257]     :if ~mt restab ⋄ :andif ~savedresults
+[258]     :andif ^/1=⎕vi (cotpc←(parent,'pgBenefits.fCash.edcotpc') ⎕wi 'text')~'+'
+[259]         'amount' ⍙WebCash 36,1+0.01×EXECUTE cotpc~'+'
+[260]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[261]     :endif
+[262] :case 'ckTVcapind'
+[263]     :if ~mt restab ⋄ :andif ~savedresults
+[264]         'capind' ⍙WebTransferValue zwb TVcapind←⍕(parent,'pgBenefits.fTransValue.ckTVcapind') ⎕wi 'value'
+[265]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[266]     :endif
+[267] :case 'edTVpc'
+[268]     :if ~mt restab ⋄ :andif ~savedresults
+[269]     :andif ^/1=⎕vi (TVpc←(parent,'pgBenefits.fTransValue.edTVpc') ⎕wi 'text')~'+'
+[270]         'pc' ⍙WebTransferValue 1+0.01×EXECUTE TVpc~'+'
+[271]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[272]     :endif
+[273] :case 'edTVprop'
+[274]     :if ~mt restab ⋄ :andif ~savedresults
+[275]     :andif ^/1=⎕vi (TVprop←(parent,'pgBenefits.fTransValue.edTVprop') ⎕wi 'text')~'+'
+[276]         'prop' ⍙WebTransferValue 1+0.01×EXECUTE TVprop~'+'
+[277]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[278]     :endif
+[279] :case 'ckcapind'
+[280]     Capind←(parent,'pgBenefits.fCashFlow.ckcapind') ⎕wi 'value'
+[281]     (parent,'pgBenefits.fCashFlow.edprofit') ⎕wi 'enabled' Capind
+[282]     :if ~mt restab ⋄ :andif ~savedresults
+[283]         restab←0 ⍙WebRecalculate restab
+[284]         :if Capind ⋄ :andif ~(parent,'pgBenefits.fTransValue.ckTVcapind') ⎕wi 'value'
+[285]             (parent,'pgBenefits.fTransValue.ckTVcapind') ⎕wi 'value' 1
+[286]         :endif
+[287]         :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif
+[288]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[289]     :endif
+[290] :case 'edprofit'
+[291]     :if ~mt restab ⋄ :andif ~savedresults
+[292]         Profit←1+0.01×Capind×zwb (parent,'pgBenefits.fCashFlow.edprofit') ⎕wi 'text'
+[293]         restab←0 ⍙WebRecalculate restab
+[294]         :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif
+[295]         0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[296]     :endif
+[297] :case 'cbRFDate'
+[298]     :if ~mt restab ⋄ :andif ~savedresults
+[299]         RFDate←(parent,'pgRollForward.fRollForward.cbRFDate') ⎕wi 'text'
+[300]         lrRFDate←(parent,'pgRollForward.fRollForward.lrRFDate') ⎕wi 'caption'
+[301]         :if DATECHECK rfdate←'DD/MM/YYYY' DATEEXP RFDatetxt←↑⌽'Date' SwapRelFields lrRFDate RFDate
+[302]         :andif 5>∣'YN' DURN rfdate,ValDATE
+[303]             RFDatetxt←' ','()' embrace RFDatetxt
+[304]             :if 0>rfperiod←'DN' DURN ValDATE,rfdate
+[305]                 MDISPLAY 'Roll-Forward Date must be after Valuation Date'
+[306]                 rfperiod←0 ⋄ rfdate←ValDATE
+[307]             :elseif rfperiod>0 ⋄ :andif Capind
+[308]                 (parent,'pgBenefits.fCashFlow.ckcapind') ⎕wi 'value' (Capind←0)
+[309]                 MDISPLAY 'Capitalisation of Benefits is not supported for Roll-Forward calculations'
+[310]             :endif
+[311]             yy←'YD' DURN ValDATE,¯1 DATEOFFSET rfdate
+[312]             mm←12×'MD' DURN ValDATE,¯1 DATEOFFSET rfdate-0 0,yy
+[313]             :if 12<(vdate←ValDATE+0,mm,yy)[2] ⋄ vdate←vdate+0 ¯12 1 ⋄ :endif
+[314]             dd←0⌈vdate DAYS rfdate
+[315]             (parent,'pgBenefits.fCashFlow.ckcapind') ⎕wi 'enabled' (∆←(rfperiod=0)^∨/0=∊restab at 'CashBenefit')
+[316]             ((⊂parent,'pgBenefits.fCashFlow.'),¨'ed' 'll' 'lr',¨⊂'profit') MultiWI 'enabled' ∆
+[317]             (parent,'pgRollForward.fRollForward.lRFPeriod') ⎕wi 'caption' ((×rfperiod)/'Roll-Forward Period:  ',((×yy)/(⍕yy),' year',((1≠yy)/'s'),' '),((×mm)/(⍕mm),' month',((1≠mm)/'s'),' '),(×dd)/(⍕dd),' day',(1≠dd)/'s')
+[318]             (parent,'pgRollForward.fAssets') ⎕wi 'visible' ((rfperiod=0)∨∆←Assets≠0)
+[319]             (parent,'pgRollForward.fAssets') ⎕wi 'enabled' ∆
+[320] ⍝⍝⍝            (parent,'pgRollForward.fOtherLiab') ⎕wi 'visible' ((rfperiod=0)∨∆←(⊂'Additional Liability')∊nub restab at 'ClassName')
+[321]             (parent,'pgRollForward.fOtherLiab') ⎕wi 'enabled' ∆
+[322]             ∆←×rfperiod
+[323]             :if 2⊃finMethod
+[324]                 (parent,'pgFinancial.fFinAss.lfinRFDisc') ⎕wi 'caption' (∆/'Roll-Forward Discount:  Adjustment at ',(⎕io+1↓discRF)⊃'Valuation Date' 'Roll-Forward Date')
+[325]                 (parent,'pgFinancial.fFinAss.lfinRFEsc') ⎕wi 'caption' (∆/'Roll-Forward Escalation:  Adjustment at ',(⎕io+1↓escRF)⊃'Valuation Date' 'Roll-Forward Date')
+[326]             :else
+[327]                 (parent,'pgFinancial.fFinAss.lfinRFDisc') ⎕wi 'caption' (∆/'Roll-Forward Discount:  Original at ',', Adjustment at ' join (⎕io+discRF)⊃¨⊂'Valuation Date' 'Roll-Forward Date')
+[328]                 (parent,'pgFinancial.fFinAss.lfinRFEsc') ⎕wi 'caption' (∆/'Roll-Forward Escalation:  Original at ',', Adjustment at ' join (⎕io+escRF)⊃¨⊂'Valuation Date' 'Roll-Forward Date')
+[329]             :endif
+[330]             0 0⍴('ckRFrollup' 'ckRFrollupOL') Quick_Scenario 'Change'
+[331] 
+[332]             ⍝ Update ungrouped Financials for Roll Forward
+[333]             restab  ←(⊂'' 0) ⍙WebFinancials restab 0
+[334]             amorttab←(⊂'' 0) ⍙WebFinancials amorttab 1
+[335]             :if ×rowsIn conttab ⋄ conttab←(⊂'' 0) ⍙WebFinancials conttab 0 ⋄ :endif
+[336]             :if ×rowsIn fundtab ⋄ fundtab←(⊂'' 0) ⍙WebFinancials fundtab 0 ⋄ :endif
+[337]             :if ×rowsIn v1pctab ⋄ v1pctab←(⊂'' 0) ⍙WebFinancials v1pctab 0 ⋄ :endif
+[338] 
+[339]             0 0⍴((~mt¨groupings)/'cbrate01' 'cbrate02' 'cbrate03' 'cbrate04' 'cbrate05' 'cbrate06' 'cbrate07' 'cbrate08' 'cbrate09' 'cbrate10' 'cbrate11' 'cbrate12' 'cbrate13' 'cbrate14' 'cbrate15') Quick_Scenario 'Change'
+[340]             'fmQuickSM.bnQuick_ScenarioConfigRF' ⎕wi 'enabled' (×rfperiod)
+[341]             (parent,'pgRollForward.fRollForward.edRFPeriod') ⎕wi 'text' (RFPeriod←⍕rfperiod)
+[342]         :endif
+[343]     :endif
+[344] :case 'edRFPeriod'
+[345]     :if ~mt restab ⋄ :andif ~savedresults
+[346]         rfperiod←zwb (parent,'pgRollForward.fRollForward.edRFPeriod') ⎕wi 'text'
+[347] ⍝⍝⍝        restab←0 ⍙WebRecalculate restab
+[348] ⍝⍝⍝        amorttab←1 ⍙WebRecalculate amorttab
+[349] ⍝⍝⍝        conttab←0 ⍙WebRecalculate conttab
+[350] ⍝⍝⍝        v1pctab←0 ⍙WebRecalculate v1pctab
+[351] ⍝⍝⍝        :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif
+[352]         :if 0=rfperiod ⋄ ((⊂parent,'pgRollForward.fAssets.'),¨'edRFBenCFs' 'edRFContCFs') MultiWI 'text' ' '
+[353]         :else
+[354]             ∆←∊-/+/¨+⌿¨¨ restab                   at 'NewCashFlow' 'RFCashFlow'
+[355]             (parent,'pgRollForward.fAssets.edRFBenCFs' ) ⎕wi 'text' (DLTB '¯-' REPL 0⍕(1,1↓0.5<∣∆)/∆)
+[356]             ∆←∊-/+/¨+⌿¨¨(amorttab append conttab) at 'NewCashFlow' 'RFCashFlow'
+[357]             (parent,'pgRollForward.fAssets.edRFContCFs') ⎕wi 'text' (DLTB '¯-' REPL 0⍕(1,1↓0.5<∣∆)/∆)
+[358]         :endif
+[359] ⍝⍝⍝
+[360] ⍝⍝⍝        0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[361]     :endif
+[362] :case 'edRFASSETS'
+[363]     :if ~mt restab ⋄ :andif ~savedresults
+[364]         :if ^/1=⎕vi RFASSETS←((parent,'pgRollForward.fAssets.edRFASSETS') ⎕wi 'text')~'+'
+[365]             rfAssets←zwb RFASSETS
+[366]             0 0⍴(⊂'cbGraph') Quick_Scenario 'Change'
+[367]         :endif
+[368]     :endif
+[369] :case 'ckRFrollup'
+[370]     :if ~mt restab ⋄ :andif ~savedresults
+[371]         :if (parent,'pgRollForward.fAssets.ckRFrollup') ⎕wi 'value'
+[372]             0 0⍴(⊂'cbRFIR') Quick_Scenario 'Change'
+[373]         :else
+[374]             0 0⍴(⊂'edRFASSETS') Quick_Scenario 'Change'
+[375]         :endif
+[376]     :endif
+[377] :case 'cbRFIR'
+[378]     :if ~mt restab ⋄ :andif ~savedresults
+[379]         :if ^/1=⎕vi rate∆←(READTBL (parent,'pgRollForward.fAssets.',field) ⎕wi 'text')~'+'
+[380]             rate∆←1+.01×(drop↑rate∆),(1∣rfperiod)×↑(drop←⌊rfperiod)↓rate∆←(⌈rfperiod) OVERTAKE EXECUTE rate∆
+[381]             (parent,'pgRollForward.fAssets.edRFASSETS') ⎕wi 'text' (⍙WebAssetRollup rate∆)
+[382]         :endif
+[383]     :endif
+[384] :case 'edRFLTOT'
+[385]     :if ~mt restab ⋄ :andif ~savedresults
+[386]         :if ^/1=⎕vi LTOT←((parent,'pgRollForward.fOtherLiab.edRFLTOT') ⎕wi 'text')~'+'
+[387]             :if 0≠rfperiod ⋄ LTOT←zwb LTOT
+[388]             :else          ⋄ LTOT←↑(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue'
+[389]             :endif
+[390]             ∆←(restab at 'ClassName')∊⊂'Additional Liability'
+[391]             tab←restab for ∆
+[392]             tab←tab amend 'NewLiabilityValue' LTOT
+[393]             tab←tab amend 'NewCashFlow' (LTOT←⊂MATRIX maxyr↑LTOT)
+[394]             tab←tab amend 'RFCashFlow' LTOT
+[395]             tab←tab amend 'RawMemberCF' LTOT
+[396]             restab←(restab for ~∆) append tab
+[397]             0 0⍴('cbclasses' 'cbGraph') Quick_Scenario 'Change'
+[398]         :endif
+[399]     :endif
+[400] :case 'ckRFrollupOL'
+[401]     :if (parent,'pgRollForward.fOtherLiab.ckRFrollupOL') ⎕wi 'value'
+[402]         0 0⍴(⊂'cbRFIROL') Quick_Scenario 'Change'
+[403]     :else
+[404]         0 0⍴(⊂'edRFLTOT') Quick_Scenario 'Change'
+[405]     :endif
+[406] :caselist 'cbRFIROL' 'edRFNetCFOL' ⍝ Roll Additional Liabilities forward
+[407]     :if ~mt restab ⋄ :andif ~savedresults
+[408]         :if ^/1=⎕vi RFNetCFOL←((parent,'pgRollForward.fOtherLiab.edRFNetCFOL') ⎕wi 'text')~'+'
+[409]         :andif ^/1=⎕vi rate∆←(READTBL (parent,'pgRollForward.fOtherLiab.cbRFIROL') ⎕wi 'text')~'+'
+[410]             LTOT←↑(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue'
+[411]             NetCF←zwb RFNetCFOL
+[412]             rate∆←×/1+.01×(drop↑rate∆),(1∣rfperiod)×↑(drop←⌊rfperiod)↓rate∆←(⌈rfperiod) OVERTAKE EXECUTE rate∆
+[413]             (parent,'pgRollForward.fOtherLiab.edRFLTOT') ⎕wi 'text' ('¯-' REPL ⍕0 gRound (LTOT×rate∆)+NetCF×rate∆*0.5)
+[414]         :endif
+[415]     :endif
+[416] :endselect
+[417] field Win∆FormValidation 'Change'
+    ∇

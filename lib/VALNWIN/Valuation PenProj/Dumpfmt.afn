@@ -1,0 +1,23 @@
+    ∇ txt←Dumpfmt Y;f;dot;R;Z
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ V8.50 VALNWIN.23
+[3]   ⍝ format a column for the interface dump
+[4]   :If    2=⍴⍴Y    ⍝ matrix
+[5]   :AndIf 0=↑0↑↑Y  ⍝ numeric
+[6]       txt←(2↑↑⍴Y)⍴''
+[7]       :For R :In ⊂[⎕IO] Y
+[8]           f←↑(R≡⌊R)⌽('F20.',⍕4+2×1∨.>,R)('I20')
+[9]           Z←('M<->C',f)⎕FMT R                                                         ⍝ format
+[10]          Z←(0,+/^⌿^\Z=' ')↓Z                                                         ⍝ remove leading blanks
+[11]          :If 'F'=↑f
+[12]              dot←Z='.'
+[13]              ((,(∨\dot)^⌽^\⌽Z='0')/,Z)←' '                                           ⍝ blank trailing 0s
+[14]              ((,dot^' '=1⌽Z)/,Z)←' '                                                 ⍝ blank trailing dots
+[15]              Z←(0,-+/^⌿^\⌽Z=' ')↓Z                                                   ⍝ remove trailing blanks
+[16]          :EndIf
+[17]          txt←txt,Z,' '
+[18]      :EndFor
+[19]  :Else
+[20]      txt←⍕Y
+[21]  :EndIf
+    ∇

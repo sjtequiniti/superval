@@ -1,0 +1,23 @@
+    ∇ Z←field ⍙DBDateFormat df
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Return the SQL command for Converting a Date number to a formatted date for Access and SQL Server
+[3]   ⍝   field is the Field Name
+[4]   ⍝   df is the required date format
+[5]   
+[6]   :if sqlDatabase
+[7]       :if     df≡"dd/mm/yyyy hh:mm:ss"
+[8]           Z←" (CONVERT(VarChar,",field,",103) + ' ' + CONVERT(VarChar,",field,",108))"
+[9]       :elseif df≡"yyyy/mm/dd hh:mm:ss"
+[10]          Z←" (CONVERT(VarChar,",field,",111) + ' ' + CONVERT(VarChar,",field,",108))"
+[11]      :else
+[12]          :select df
+[13]          :case "yyyymmdd"   ⋄ df←"112"
+[14]          :case "yyyy/mm/dd" ⋄ df←"111"
+[15]          :case "dd/mm/yyyy" ⋄ df←"103"
+[16]          :endselect
+[17]          Z←" CONVERT(VarChar,",field,",",df,")"
+[18]      :endif
+[19]  :else
+[20]      Z←" Format(",field,", ",(1 ⍙DBString df),")"
+[21]  :endif
+    ∇

@@ -1,0 +1,20 @@
+    ∇ parm←READTBL parm;File;tieno;data;length
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Assign Financial Assumptions parameter values
+[3]   
+[4]   :if ^/⎕vi '+ ' str_replace1 parm ⋄ :return ⋄ :endif ⍝ Already numeric
+[5]   
+[6]   ⍝ Therefore, must be csv file
+[7]   :if ~mt parm←'{' StripText parm
+[8]   :andif FileExist File←YieldDir,parm
+[9]       :if File NTIE tieno←'Native' TieNumber File
+[10]          length←(-⎕io)+↑(⎕tcnl=data)/⍳⍴data←'ASCII' Read∆DataFile tieno,¯1,0,(⎕nsize tieno),0
+[11]          parm←DLTMB (SStoMAT ',',length↑data),' '
+[12]          ⎕nuntie tieno
+[13]      :else
+[14]          parm←''
+[15]      :endif
+[16]  :else
+[17]      parm←''
+[18]  :endif
+    ∇

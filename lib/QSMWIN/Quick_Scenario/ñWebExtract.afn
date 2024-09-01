@@ -1,1 +1,19 @@
-    ∇ ⍙WebExtract;∆[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Extract Information required later from Database[3]   [4]   ValDATE←'DD/MM/YYYY' DATEEXP RFDate←↑1 ⍙DBadoCONCommand "SELECT DISTINCT ",("ValuationDate" ⍙DBDateFormat 'dd/mm/yyyy')," FROM ResultsCategory",dbid[5]   ValMeth←3↑↑1 ⍙DBadoCONCommand "SELECT DISTINCT ValnMethod FROM ResultsCategory WHERE ClassID=1",anddbid[6]   contper←⍕ContPer←99⌊zwb ⍕↑1 ⍙DBadoCONCommand "SELECT DISTINCT ControlPeriod FROM ResultsCategory WHERE ClassID=1",anddbid[7]   insind←∣zwb ⍕↑1 ⍙DBadoCONCommand "SELECT DISTINCT IncInsured FROM ResultsCategory WHERE ClassID=1",anddbid[8]   Assets←zwb GetConsBasis 'ASSETS'[9]   benTypes←spin ⎕split (1 ⍙DBFixedData 'BenefitType') OVER 1 ⍙DBadoCONCommand 'SELECT * FROM BenefitType WHERE BenefitTypeID > 100'[10]  ContIDs←spin ⎕split (0 'All Benefits') OVER 1 ⍙DBFixedData 'Contingency'[11]  SexMap←spin ⎕split (0 'Scheme') OVER 1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, Sex FROM ResultsCategory",dbid[12]  ResIDDesc←spin ⎕split (0 'Scheme') OVER 1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory",dbid[13]  (maxpay maxyr)←,1 ⍙DBadoCONCommand 'SELECT MAX(YearIntoPayment), MAX(SVYear) FROM AltScenData WHERE LiabilityTypeID=8',anddbid[14]  graphterm←⍕maxyr[15]  ∆←'Module' 'Type' 'Description' 'Variable' 'Parameter' 'Valid' 'List'[16]  ∆←∆ OVER 'QSM' 'Date' 'Consolidation Date' 'ValDATE' ('DD/MM/YYYY' DATE∆FMT ValDATE) '' 'Consolidation Date'[17]  AbsDict←AbsDict append ∆    ∇
+    ∇ ⍙WebExtract;∆
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Extract Information required later from Database
+[3]   
+[4]   ValDATE←'DD/MM/YYYY' DATEEXP RFDate←↑1 ⍙DBadoCONCommand "SELECT DISTINCT ",("ValuationDate" ⍙DBDateFormat 'dd/mm/yyyy')," FROM ResultsCategory",dbid
+[5]   ValMeth←3↑↑1 ⍙DBadoCONCommand "SELECT DISTINCT ValnMethod FROM ResultsCategory WHERE ClassID=1",anddbid
+[6]   contper←⍕ContPer←99⌊zwb ⍕↑1 ⍙DBadoCONCommand "SELECT DISTINCT ControlPeriod FROM ResultsCategory WHERE ClassID=1",anddbid
+[7]   insind←∣zwb ⍕↑1 ⍙DBadoCONCommand "SELECT DISTINCT IncInsured FROM ResultsCategory WHERE ClassID=1",anddbid
+[8]   Assets←zwb GetConsBasis 'ASSETS'
+[9]   benTypes←spin ⎕split (1 ⍙DBFixedData 'BenefitType') OVER 1 ⍙DBadoCONCommand 'SELECT * FROM BenefitType WHERE BenefitTypeID > 100'
+[10]  ContIDs←spin ⎕split (0 'All Benefits') OVER 1 ⍙DBFixedData 'Contingency'
+[11]  SexMap←spin ⎕split (0 'Scheme') OVER 1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, Sex FROM ResultsCategory",dbid
+[12]  ResIDDesc←spin ⎕split (0 'Scheme') OVER 1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory",dbid
+[13]  (maxpay maxyr)←,1 ⍙DBadoCONCommand 'SELECT MAX(YearIntoPayment), MAX(SVYear) FROM AltScenData WHERE LiabilityTypeID=8',anddbid
+[14]  graphterm←⍕maxyr
+[15]  ∆←'Module' 'Type' 'Description' 'Variable' 'Parameter' 'Valid' 'List'
+[16]  ∆←∆ OVER 'QSM' 'Date' 'Consolidation Date' 'ValDATE' ('DD/MM/YYYY' DATE∆FMT ValDATE) '' 'Consolidation Date'
+[17]  AbsDict←AbsDict append ∆
+    ∇

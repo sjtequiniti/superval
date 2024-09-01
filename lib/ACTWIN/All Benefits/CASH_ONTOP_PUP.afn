@@ -1,1 +1,99 @@
-    ∇ CASH∆ONTOP∆PUP GROSSPUPNRA;temp;∆d1;∆d2;∆d3;∆d4;T;F;G;∆CASHMULT;SERV∆CASHNOMAX;∆;CALCCASH;f∆;g∆;∆bb;∆cc[1]   ⍝ ACTWIN.sf#4[2]   :if isNPCR ⋄ :andif CTYPE∆L ∊1 2 3 8[3]       :return[4]   :endif[5]   ∆←GROSSPUPNRA[6]   ∆a←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]∆[7]   ∆bb←0⌈((NRA∆G⌈XMP)≥SPA)×RGMPR-GMP×1+GMPREV ⍝ PUPNRA contains the 'pseudo' GMP[8]   ⍝ Spread the balance over the first tranche[9]   temp←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]∆[;⎕io;;;;;][10]  ∆[;⎕io;;;;;]←∆[;⎕io;;;;;]×[⎕io+5]1+∆bb CDIV temp[11]  ⍝ Sum over all but escalation rate and term for total, future and gteed part[12]  g∆←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]∆[;     ;;⎕io;;;][13]  f∆←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]∆[;⎕io+2;;   ;;;][14]  ∆←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]∆[15]  ⍝ Sum TPEN into total, future and gteed part - used for spliting and '∆L' variables - DID cash[16]  T←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN[17]  F←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN[;⎕io+2;;   ;;;][18]  G←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN[;     ;;⎕io;;;][19]  :if IsAccrued ⋄ ∆d1←COMTAB1∆G  [X] ⋄ ∆d2←COMTAB2∆G  [X] ⋄ ∆d3←COMTAB3∆G  [X] ⋄ ∆d4←COMTAB4∆G  [X][20]  :else         ⋄ ∆d1←COMTAB1∆GMP[X] ⋄ ∆d2←COMTAB2∆GMP[X] ⋄ ∆d3←COMTAB3∆GMP[X] ⋄ ∆d4←COMTAB4∆GMP[X][21]  :endif[22]  :select CTYPE∆L   ⍝ ∆L variables are used for DID cash[23]  :case 1[24]      :return[25]  :case 3[26]      CALCCASH←IRCASH×∆cc←(+/[⎕io]∆) CDIV +/[⎕io]T[27]      :if bGAD ⍝⍝⍝ FIXME[28]          LFONTOP←IRCASH×((PMMP-1↑PM) CDIV PMMP)×(+/[⎕io]f∆) CDIV +/[⎕io]F[29]      :else[30]          LFONTOP←IRCASH×((PMMP-1↑PM) ZDIV PMMP)×(+/[⎕io]f∆) ZDIV +/[⎕io]F[31]      :endif[32]      GONTOP←CALCCASH×(+/[⎕io]G) CDIV +/[⎕io]T[33]      LTONTOP∆L←IRCASH[34]      CALCCASH←MATRIX CALCCASH[35]      ⍝:if DDIND=10  ⍝ TO DO[36]      ⍝    LFONTOP∆L←IRCASH×FSERV∆CASH ZDIV SERV∆CASH[37]      ⍝:endif[38]  :case 5[39]      :if IsAccrued[40]          FASMP∆CASH←((ENX-×LNX-SNX)↑FASMPvec[;COMSAL∆L]),(ENX-×LNX-SNX)↓FASvec[;COMSAL∆L][41]          :if 0=+/,TPEN[;⎕io+2;;;;;] ⍝ No Future Pension[42]              SERV∆CASH←((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)⌊1↑⍎'P',COMDAT∆L ⋄ FSERV∆CASH←0[43]          :else[44]              SERV∆CASHNOMAX←((ENX-×LNX-SNX)↑⍎'P',COMDAT∆L,'MP'),(ENX-×LNX-SNX)↓⍎'P',COMDAT∆L ⍝⍝⍝ Accrued only so why 'MP' variable[45]              FSERV∆CASH←0⌈SERV∆CASHNOMAX-1↑⍎'P',COMDAT∆L[46]              SERV∆CASH←SERV∆CASHNOMAX⌊(ENX_1↑SRVMAXMP),ENX_1↓SRVMAX[47]              :if CapAccrual ⋄ FSERV∆CASH←0⌈FSERV∆CASH×SERV∆CASH ZDIV SERV∆CASHNOMAX[48]              :else          ⋄ FSERV∆CASH←0⌈SERV∆CASH-1↑⍎'P',COMDAT∆L[49]              :endif[50]          :endif[51]      :else[52]          :if bGAD ⋄ FASMP∆CASH←( ENX_1        ↑FASMPvec[;COMSAL∆L]), ENX_1        ↓FASvec[;COMSAL∆L] ⍝⍝⍝ FIXME[53]          :else    ⋄ FASMP∆CASH←((ENX-×LNX-SNX)↑FASMPvec[;COMSAL∆L]),(ENX-×LNX-SNX)↓FASvec[;COMSAL∆L][54]          :endif[55]          :if 0=+/,TPEN[;⎕io+2;;;;;] ⍝ No Future Pension[56]              SERV∆CASH←((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)⌊1↑⍎'P',COMDAT∆L ⋄ FSERV∆CASH←0[57]          :else[58]              :if bGAD ⋄ SERV∆CASHNOMAX← (ENX_1        ↑⍎'P',COMDAT∆L,'MP'), ENX_1        ↓⍎'P',COMDAT∆L ⍝⍝⍝ FIXME[59]              :else    ⋄ SERV∆CASHNOMAX←((ENX-×LNX-SNX)↑⍎'P',COMDAT∆L,'MP'),(ENX-×LNX-SNX)↓⍎'P',COMDAT∆L[60]              :endif[61]              FSERV∆CASH←0⌈SERV∆CASHNOMAX-1↑⍎'P',COMDAT∆L[62]              SERV∆CASH←SERV∆CASHNOMAX⌊(ENX_1↑SRVMAXMP),ENX_1↓SRVMAX[63]              :if CapAccrual ⋄ FSERV∆CASH←0⌈FSERV∆CASH×SERV∆CASH ZDIV SERV∆CASHNOMAX[64]              :else          ⋄ FSERV∆CASH←0⌈SERV∆CASH-1↑⍎'P',COMDAT∆L[65]              :endif[66]          :endif[67]  [68]      :endif[69]      ∆fc←CALCCASH←COMACC∆L×SERV∆CASH×FASMP∆CASH×∆cc←(+/[⎕io]∆) CDIV +/[⎕io]T[70]      LFONTOP←COMACC∆L×FSERV∆CASH×FASMP∆CASH×(+/[⎕io]f∆) ZDIV +/[⎕io]F[71]      GONTOP←CALCCASH×(+/[⎕io]G) CDIV +/[⎕io]T[72]      LTONTOP∆L←COMACC∆L× SERV∆CASH×FASMP∆CASH[73]      LFONTOP∆L←COMACC∆L×FSERV∆CASH×FASMP∆CASH[74]      :if isNPCR[75]          CALCCASH←0.9×capratio×CALCCASH[76]      :endif[77]      CALCCASH←MATRIX CALCCASH[78]  :caselist 4 6 7[79]      ∆CASHMULT←COMMULT∆L[80]  ∆fb←+⌿CALCCASH←∆CASHMULT×∆[81]       LFONTOP  ←∆CASHMULT×+/[⎕io]f∆[82]       GONTOP   ←∆CASHMULT×+/[⎕io]g∆[83]       LTONTOP∆L←∆CASHMULT×+/[⎕io]T[84]       LFONTOP∆L←∆CASHMULT×+/[⎕io]F[85]  :caselist 2 8[86]      ∆CASHMULT←COMPER∆L[87]  ∆fa←+⌿CALCCASH←∆CASHMULT×( ∆[⎕io;]×∆d1)⍪( ∆[⎕io+1;]×∆d2)⍪( ∆[⎕io+2;]×∆d3)⍪ ∆[,⎕io+3;]×[⎕io+1]∆d4[88]       LFONTOP  ←∆CASHMULT×(f∆[⎕io;]×∆d1)+(f∆[⎕io+1;]×∆d2)+(f∆[⎕io+2;]×∆d3)+f∆[ ⎕io+3;]×       ∆d4[89]       GONTOP   ←∆CASHMULT×(g∆[⎕io;]×∆d1)+(g∆[⎕io+1;]×∆d2)+(g∆[⎕io+2;]×∆d3)+g∆[ ⎕io+3;]×       ∆d4[90]       LTONTOP∆L←∆CASHMULT×( T[⎕io;]×∆d1)+( T[⎕io+1;]×∆d2)+( T[⎕io+2;]×∆d3)+ T[ ⎕io+3;]×       ∆d4[91]       LFONTOP∆L←∆CASHMULT×( F[⎕io;]×∆d1)+( F[⎕io+1;]×∆d2)+( F[⎕io+2;]×∆d3)+ F[ ⎕io+3;]×       ∆d4[92]  :endselect[93]  ⍝[94]  LTONTOP←+⌿LCASHONTOP←CALCCASH[95]  ⍝⍝⍝ :if test[96]  ⍝⌿⍝ AUDIT '2685a' ⋄ AUDIT '2690','abcdefgh'[¯1+CTYPE∆L-~⎕IO] ⋄ AUDIT '2695',mpuflag↑'a'[97]  ⍝⍝⍝ :endif    ∇
+    ∇ CASH∆ONTOP∆PUP GROSSPUPNRA;temp;∆d1;∆d2;∆d3;∆d4;T;F;G;∆CASHMULT;SERV∆CASHNOMAX;∆;CALCCASH;f∆;g∆;∆bb;∆cc
+[1]   ⍝ ACTWIN.sf#4
+[2]   :if isNPCR ⋄ :andif CTYPE∆L ∊1 2 3 8
+[3]       :return
+[4]   :endif
+[5]   ∆←GROSSPUPNRA
+[6]   ∆a←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]∆
+[7]   ∆bb←0⌈((NRA∆G⌈XMP)≥SPA)×RGMPR-GMP×1+GMPREV ⍝ PUPNRA contains the 'pseudo' GMP
+[8]   ⍝ Spread the balance over the first tranche
+[9]   temp←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]∆[;⎕io;;;;;]
+[10]  ∆[;⎕io;;;;;]←∆[;⎕io;;;;;]×[⎕io+5]1+∆bb CDIV temp
+[11]  ⍝ Sum over all but escalation rate and term for total, future and gteed part
+[12]  g∆←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]∆[;     ;;⎕io;;;]
+[13]  f∆←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]∆[;⎕io+2;;   ;;;]
+[14]  ∆←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]∆
+[15]  ⍝ Sum TPEN into total, future and gteed part - used for spliting and '∆L' variables - DID cash
+[16]  T←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN
+[17]  F←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN[;⎕io+2;;   ;;;]
+[18]  G←+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]TPEN[;     ;;⎕io;;;]
+[19]  :if IsAccrued ⋄ ∆d1←COMTAB1∆G  [X] ⋄ ∆d2←COMTAB2∆G  [X] ⋄ ∆d3←COMTAB3∆G  [X] ⋄ ∆d4←COMTAB4∆G  [X]
+[20]  :else         ⋄ ∆d1←COMTAB1∆GMP[X] ⋄ ∆d2←COMTAB2∆GMP[X] ⋄ ∆d3←COMTAB3∆GMP[X] ⋄ ∆d4←COMTAB4∆GMP[X]
+[21]  :endif
+[22]  :select CTYPE∆L   ⍝ ∆L variables are used for DID cash
+[23]  :case 1
+[24]      :return
+[25]  :case 3
+[26]      CALCCASH←IRCASH×∆cc←(+/[⎕io]∆) CDIV +/[⎕io]T
+[27]      :if bGAD ⍝⍝⍝ FIXME
+[28]          LFONTOP←IRCASH×((PMMP-1↑PM) CDIV PMMP)×(+/[⎕io]f∆) CDIV +/[⎕io]F
+[29]      :else
+[30]          LFONTOP←IRCASH×((PMMP-1↑PM) ZDIV PMMP)×(+/[⎕io]f∆) ZDIV +/[⎕io]F
+[31]      :endif
+[32]      GONTOP←CALCCASH×(+/[⎕io]G) CDIV +/[⎕io]T
+[33]      LTONTOP∆L←IRCASH
+[34]      CALCCASH←MATRIX CALCCASH
+[35]      ⍝:if DDIND=10  ⍝ TO DO
+[36]      ⍝    LFONTOP∆L←IRCASH×FSERV∆CASH ZDIV SERV∆CASH
+[37]      ⍝:endif
+[38]  :case 5
+[39]      :if IsAccrued
+[40]          FASMP∆CASH←((ENX-×LNX-SNX)↑FASMPvec[;COMSAL∆L]),(ENX-×LNX-SNX)↓FASvec[;COMSAL∆L]
+[41]          :if 0=+/,TPEN[;⎕io+2;;;;;] ⍝ No Future Pension
+[42]              SERV∆CASH←((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)⌊1↑⍎'P',COMDAT∆L ⋄ FSERV∆CASH←0
+[43]          :else
+[44]              SERV∆CASHNOMAX←((ENX-×LNX-SNX)↑⍎'P',COMDAT∆L,'MP'),(ENX-×LNX-SNX)↓⍎'P',COMDAT∆L ⍝⍝⍝ Accrued only so why 'MP' variable
+[45]              FSERV∆CASH←0⌈SERV∆CASHNOMAX-1↑⍎'P',COMDAT∆L
+[46]              SERV∆CASH←SERV∆CASHNOMAX⌊(ENX_1↑SRVMAXMP),ENX_1↓SRVMAX
+[47]              :if CapAccrual ⋄ FSERV∆CASH←0⌈FSERV∆CASH×SERV∆CASH ZDIV SERV∆CASHNOMAX
+[48]              :else          ⋄ FSERV∆CASH←0⌈SERV∆CASH-1↑⍎'P',COMDAT∆L
+[49]              :endif
+[50]          :endif
+[51]      :else
+[52]          :if bGAD ⋄ FASMP∆CASH←( ENX_1        ↑FASMPvec[;COMSAL∆L]), ENX_1        ↓FASvec[;COMSAL∆L] ⍝⍝⍝ FIXME
+[53]          :else    ⋄ FASMP∆CASH←((ENX-×LNX-SNX)↑FASMPvec[;COMSAL∆L]),(ENX-×LNX-SNX)↓FASvec[;COMSAL∆L]
+[54]          :endif
+[55]          :if 0=+/,TPEN[;⎕io+2;;;;;] ⍝ No Future Pension
+[56]              SERV∆CASH←((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)⌊1↑⍎'P',COMDAT∆L ⋄ FSERV∆CASH←0
+[57]          :else
+[58]              :if bGAD ⋄ SERV∆CASHNOMAX← (ENX_1        ↑⍎'P',COMDAT∆L,'MP'), ENX_1        ↓⍎'P',COMDAT∆L ⍝⍝⍝ FIXME
+[59]              :else    ⋄ SERV∆CASHNOMAX←((ENX-×LNX-SNX)↑⍎'P',COMDAT∆L,'MP'),(ENX-×LNX-SNX)↓⍎'P',COMDAT∆L
+[60]              :endif
+[61]              FSERV∆CASH←0⌈SERV∆CASHNOMAX-1↑⍎'P',COMDAT∆L
+[62]              SERV∆CASH←SERV∆CASHNOMAX⌊(ENX_1↑SRVMAXMP),ENX_1↓SRVMAX
+[63]              :if CapAccrual ⋄ FSERV∆CASH←0⌈FSERV∆CASH×SERV∆CASH ZDIV SERV∆CASHNOMAX
+[64]              :else          ⋄ FSERV∆CASH←0⌈SERV∆CASH-1↑⍎'P',COMDAT∆L
+[65]              :endif
+[66]          :endif
+[67]  
+[68]      :endif
+[69]      ∆fc←CALCCASH←COMACC∆L×SERV∆CASH×FASMP∆CASH×∆cc←(+/[⎕io]∆) CDIV +/[⎕io]T
+[70]      LFONTOP←COMACC∆L×FSERV∆CASH×FASMP∆CASH×(+/[⎕io]f∆) ZDIV +/[⎕io]F
+[71]      GONTOP←CALCCASH×(+/[⎕io]G) CDIV +/[⎕io]T
+[72]      LTONTOP∆L←COMACC∆L× SERV∆CASH×FASMP∆CASH
+[73]      LFONTOP∆L←COMACC∆L×FSERV∆CASH×FASMP∆CASH
+[74]      :if isNPCR
+[75]          CALCCASH←0.9×capratio×CALCCASH
+[76]      :endif
+[77]      CALCCASH←MATRIX CALCCASH
+[78]  :caselist 4 6 7
+[79]      ∆CASHMULT←COMMULT∆L
+[80]  ∆fb←+⌿CALCCASH←∆CASHMULT×∆
+[81]       LFONTOP  ←∆CASHMULT×+/[⎕io]f∆
+[82]       GONTOP   ←∆CASHMULT×+/[⎕io]g∆
+[83]       LTONTOP∆L←∆CASHMULT×+/[⎕io]T
+[84]       LFONTOP∆L←∆CASHMULT×+/[⎕io]F
+[85]  :caselist 2 8
+[86]      ∆CASHMULT←COMPER∆L
+[87]  ∆fa←+⌿CALCCASH←∆CASHMULT×( ∆[⎕io;]×∆d1)⍪( ∆[⎕io+1;]×∆d2)⍪( ∆[⎕io+2;]×∆d3)⍪ ∆[,⎕io+3;]×[⎕io+1]∆d4
+[88]       LFONTOP  ←∆CASHMULT×(f∆[⎕io;]×∆d1)+(f∆[⎕io+1;]×∆d2)+(f∆[⎕io+2;]×∆d3)+f∆[ ⎕io+3;]×       ∆d4
+[89]       GONTOP   ←∆CASHMULT×(g∆[⎕io;]×∆d1)+(g∆[⎕io+1;]×∆d2)+(g∆[⎕io+2;]×∆d3)+g∆[ ⎕io+3;]×       ∆d4
+[90]       LTONTOP∆L←∆CASHMULT×( T[⎕io;]×∆d1)+( T[⎕io+1;]×∆d2)+( T[⎕io+2;]×∆d3)+ T[ ⎕io+3;]×       ∆d4
+[91]       LFONTOP∆L←∆CASHMULT×( F[⎕io;]×∆d1)+( F[⎕io+1;]×∆d2)+( F[⎕io+2;]×∆d3)+ F[ ⎕io+3;]×       ∆d4
+[92]  :endselect
+[93]  ⍝
+[94]  LTONTOP←+⌿LCASHONTOP←CALCCASH
+[95]  ⍝⍝⍝ :if test
+[96]  ⍝⌿⍝ AUDIT '2685a' ⋄ AUDIT '2690','abcdefgh'[¯1+CTYPE∆L-~⎕IO] ⋄ AUDIT '2695',mpuflag↑'a'
+[97]  ⍝⍝⍝ :endif
+    ∇

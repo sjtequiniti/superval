@@ -1,1 +1,13 @@
-    ∇ hDC←opts P_GetDC args;devmode;devnames[1]   ⍝ MAINWIN.sf#2[2]   ⍝∇ hDC←opts P_GetDC args - Create device context handle <hDC> ⍝∇ {*:⎕error 'INVALID PRINTER SPECIFICATION'}[3]   ⍝∇ <args> are (DEVMODE DEVNAMES) windows structures[4]   ⍝∇ <opts> are DEVMODE changes (see P_DevMode)[5]   :if 0=⍴args ⋄ args←P_Default ⋄ :endif ⍝∇ {*:⎕error 'NO DEFAULT PRINTER'}[6]   hDC←0 ⋄ (devmode devnames)←args[7]   :if 2=⎕nc 'opts' ⋄ devmode←opts P_DevMode devmode ⋄ :endif[8]   devnames←P_DevNames devnames[9]   →(0≠hDC←⎕wcall (⊂'CreateDC'),devnames,⊂devmode)/0[10]  ⎕error 'Unable to Open Printer: ',(2⊃devnames),' on ',(3⊃devnames)[11]      ∇
+    ∇ hDC←opts P_GetDC args;devmode;devnames
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝∇ hDC←opts P_GetDC args - Create device context handle <hDC> ⍝∇ {*:⎕error 'INVALID PRINTER SPECIFICATION'}
+[3]   ⍝∇ <args> are (DEVMODE DEVNAMES) windows structures
+[4]   ⍝∇ <opts> are DEVMODE changes (see P_DevMode)
+[5]   :if 0=⍴args ⋄ args←P_Default ⋄ :endif ⍝∇ {*:⎕error 'NO DEFAULT PRINTER'}
+[6]   hDC←0 ⋄ (devmode devnames)←args
+[7]   :if 2=⎕nc 'opts' ⋄ devmode←opts P_DevMode devmode ⋄ :endif
+[8]   devnames←P_DevNames devnames
+[9]   →(0≠hDC←⎕wcall (⊂'CreateDC'),devnames,⊂devmode)/0
+[10]  ⎕error 'Unable to Open Printer: ',(2⊃devnames),' on ',(3⊃devnames)
+[11]  
+    ∇

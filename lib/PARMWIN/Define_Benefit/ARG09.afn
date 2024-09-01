@@ -1,1 +1,25 @@
-    ∇ var ARG09 parm;R[1]   ⍝ PARMWIN.sf#14[2]   ⍝ Fn to get Parameters required for BEN09 and write the code[3]   [4]   :select parm[5]   :case 'Vars'[6]       ⍝ Conversion of Parameters (if any)[7]       :if ~0∊⍴R←SStoMAT 1↓ALLparms SSINDEX BENno ⍝ Assign Parameters[8]           R ASSIGN∆Dict SStoMAT '⍺BenConst⍺BenConstf'[9]      :endif[10]  [11]  :case 'Write' ⍝ Write Code and comments[12]      R←BenConst OVER BenConstf[13]      NEWparms←NEWparms,'ß',DLTMB '⍵',R[14]  [15]      :if ^/⎕vi R[1;] ⋄ R[1;]←'-¯' REPL R[1;] ⋄ :endif[16]      :if ^/⎕vi R[2;] ⋄ R[2;]←'-¯' REPL R[2;] ⋄ :endif[17]      R←StripText R[18]  [19]      fncode←fncode OVER ' ' OVER DLTMB var,'←(',R[2;],') BEN09 ',R[1;][20]      fncode←fncode OVER '⍝ Benefit of Benefit Multiple x Constant of ',DLTMB R[1;][21]      fncode←fncode OVER '⍝ Inflating at Rates (%) ',DLTMB R[2;][22]  [23]  :endselect    ∇
+    ∇ var ARG09 parm;R
+[1]   ⍝ PARMWIN.sf#14
+[2]   ⍝ Fn to get Parameters required for BEN09 and write the code
+[3]   
+[4]   :select parm
+[5]   :case 'Vars'
+[6]       ⍝ Conversion of Parameters (if any)
+[7]       :if ~0∊⍴R←SStoMAT 1↓ALLparms SSINDEX BENno ⍝ Assign Parameters
+[8]           R ASSIGN∆Dict SStoMAT '⍺BenConst⍺BenConstf'
+[9]      :endif
+[10]  
+[11]  :case 'Write' ⍝ Write Code and comments
+[12]      R←BenConst OVER BenConstf
+[13]      NEWparms←NEWparms,'ß',DLTMB '⍵',R
+[14]  
+[15]      :if ^/⎕vi R[1;] ⋄ R[1;]←'-¯' REPL R[1;] ⋄ :endif
+[16]      :if ^/⎕vi R[2;] ⋄ R[2;]←'-¯' REPL R[2;] ⋄ :endif
+[17]      R←StripText R
+[18]  
+[19]      fncode←fncode OVER ' ' OVER DLTMB var,'←(',R[2;],') BEN09 ',R[1;]
+[20]      fncode←fncode OVER '⍝ Benefit of Benefit Multiple x Constant of ',DLTMB R[1;]
+[21]      fncode←fncode OVER '⍝ Inflating at Rates (%) ',DLTMB R[2;]
+[22]  
+[23]  :endselect
+    ∇

@@ -1,1 +1,29 @@
-    ∇ res←field Spouse_Parameters parm;parent[1]   ⍝ PARMWIN.sf#37[2]   ⍝ Function to allow user control on Spouse Parameters Module[3]   [4]   parent←'fmSpouseParm.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[8]       :if 0≠⎕nc 'globalsPkg' ⍝ Default values from form[9]           :if ~mt pnames globalsPkg ⋄ pdef globalsPkg ⋄ :endif[10]          0 0⍴⎕ex 'globalsPkg'[11]      :endif[12]  [13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[14]      Display∆Access basAccess[1 2][15]  [16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[17]      (↑field) Win∆FormValidation 'Change'[18]  [19]  :case 'Valid' ⍝ Routine specific validation[20]      res←(FormFields at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form[21]  [22]  :case 'Run'[23]      res←'Quit'[24]  [25]  :case 'Quit' ⍝ Deleting "other" variables[26]  [27]  :endselect    ∇
+    ∇ res←field Spouse_Parameters parm;parent
+[1]   ⍝ PARMWIN.sf#37
+[2]   ⍝ Function to allow user control on Spouse Parameters Module
+[3]   
+[4]   parent←'fmSpouseParm.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[8]       :if 0≠⎕nc 'globalsPkg' ⍝ Default values from form
+[9]           :if ~mt pnames globalsPkg ⋄ pdef globalsPkg ⋄ :endif
+[10]          0 0⍴⎕ex 'globalsPkg'
+[11]      :endif
+[12]  
+[13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[14]      Display∆Access basAccess[1 2]
+[15]  
+[16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[17]      (↑field) Win∆FormValidation 'Change'
+[18]  
+[19]  :case 'Valid' ⍝ Routine specific validation
+[20]      res←(FormFields at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[21]  
+[22]  :case 'Run'
+[23]      res←'Quit'
+[24]  
+[25]  :case 'Quit' ⍝ Deleting "other" variables
+[26]  
+[27]  :endselect
+    ∇

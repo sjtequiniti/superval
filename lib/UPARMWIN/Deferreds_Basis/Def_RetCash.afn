@@ -1,0 +1,45 @@
+    ∇ field Def_RetCash parm;page;z;isActive;MESS;sex
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Retirement Cash Page
+[3]   
+[4]   page←'pgRetCash.'
+[5]   
+[6]   :select parm
+[7]   :case 'Init'
+[8]       (parent,page,'fButtons.bnDeferreds_BasisEditCT') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[9]       (parent,page,'fButtons.bnDeferreds_BasisEditRC') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[10]  
+[11]  :case 'Change'
+[12]      :select field
+[13]      :caselist 'cbm_COMTABParm' 'cbf_COMTABParm'
+[14]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fCommF.',field) ⎕wi 'text'),'"'
+[15]              sex←(↑('M' 'Fem')[1+'f'=field[3]]),'ale '
+[16]              MESS←2⊃((sex,'Retirement Commutation Tables Parameter Set') 0) GET∆CommTabGlobals 2↓field
+[17]              :if ~openParameters∨changedParm
+[18]                  changedParm←1
+[19]                  (parent,page,'fCommF.',field) ⎕wi 'suppress' 1
+[20]                  Assign_Inputs 1
+[21]                  (parent,page,'fCommF.',field) ⎕wi 'suppress' 0
+[22]                  changedParm←0
+[23]              :endif
+[24]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[25]          :endif
+[26]      :case 'cbCashParm'
+[27]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fCash.',field) ⎕wi 'text'),'"'
+[28]              isActive←0
+[29]              MESS←2⊃('Retirement Cash Parameter Set' 0) GET∆RetCashGlobals 2↓field
+[30]              :if ~openParameters∨changedParm
+[31]                  changedParm←1
+[32]                  (parent,page,'fCash.',field) ⎕wi 'suppress' 1
+[33]                  Assign_Inputs 1
+[34]                  (parent,page,'fCash.',field) ⎕wi 'suppress' 0
+[35]                  changedParm←0
+[36]              :endif
+[37]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[38]          :endif
+[39]      :endselect
+[40]  
+[41]  :case 'Valid'
+[42]  
+[43]  :endselect
+    ∇

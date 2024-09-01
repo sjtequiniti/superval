@@ -1,1 +1,17 @@
-    ∇ res←GetCashType variable[1]   ⍝ CONSWIN.sf#18[2]   ⍝ Get a generalised Cash Description[3]   [4]   :if ~mt res←0 GetBasisData variable[5]       :select res[6]       :case 'Neutral or Nil'                 ⋄ res←''[7]       :case 'Accrual x Salary for each year' ⋄ res←'Accrual x Salary'[8]       :case '2.25 x Pension'                 ⋄ res←'Mult of Pension'[9]       :case '3 x Pension'                    ⋄ res←'Mult of Pension'[10]      :case 'Multiple of Pension'            ⋄ res←'Mult of Pension'[11]      :case '25% Pension'                    ⋄ res←'% of Pension'[12]      :case '% of A-Day Cash'                ⋄ res←(0 GetBasisData '/CTYPE/COMPER' TEXTREPL variable),res ⍝ Get A-Day % as well[13]      :else ⍝ No Change required for IR Maximum and % of Pension[14]      :endselect[15]  :endif    ∇
+    ∇ res←GetCashType variable
+[1]   ⍝ CONSWIN.sf#18
+[2]   ⍝ Get a generalised Cash Description
+[3]   
+[4]   :if ~mt res←0 GetBasisData variable
+[5]       :select res
+[6]       :case 'Neutral or Nil'                 ⋄ res←''
+[7]       :case 'Accrual x Salary for each year' ⋄ res←'Accrual x Salary'
+[8]       :case '2.25 x Pension'                 ⋄ res←'Mult of Pension'
+[9]       :case '3 x Pension'                    ⋄ res←'Mult of Pension'
+[10]      :case 'Multiple of Pension'            ⋄ res←'Mult of Pension'
+[11]      :case '25% Pension'                    ⋄ res←'% of Pension'
+[12]      :case '% of A-Day Cash'                ⋄ res←(0 GetBasisData '/CTYPE/COMPER' TEXTREPL variable),res ⍝ Get A-Day % as well
+[13]      :else ⍝ No Change required for IR Maximum and % of Pension
+[14]      :endselect
+[15]  :endif
+    ∇

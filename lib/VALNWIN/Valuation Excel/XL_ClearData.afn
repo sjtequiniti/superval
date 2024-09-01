@@ -1,0 +1,14 @@
+    ∇ NUMRECS←ID XL_ClearData sheet;data;z
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Delete Data/Results rows
+[3]   
+[4]   :if NUMRECS←~mt ID
+[5]       (sheet≡'StatCalc') XL_ActivateWorksheet sheet
+[6]       data←XL_Data RCtoA1 14 1 (13+NoMembers) 1
+[7]   
+[8]       :if 0=NUMRECS←+/z←,data∊ID ⋄ :return ⋄ :endif
+[9]   
+[10]      sheet XL_SheetCustomise (14-⎕io)+WHERE z
+[11]      sheet XL_ProtectSheet 1-2×sheet≡'StatCalc'
+[12]  :endif
+    ∇

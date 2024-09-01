@@ -1,0 +1,13 @@
+    ∇ variable∆ blankIrrelevant∆ status∆
+[1]   ⍝ UTILSWIN.sf#5
+[2]   ⍝ remove value/s from variable∆ according to Relevant flag/s in status∆
+[3]   ⍝ Lord preserve us from name conflicts
+[4]   
+[5]   :select ↑⍴⍴status∆
+[6]   :case 1
+[7]     :if '['∊variable∆ ⋄ ⍎variable∆,"←(' ' OVER ",variable∆,")[⎕io+status∆[1];]" ⍝ blank where not relevant
+[8]     :else             ⋄ ⍎variable∆,"←status∆[1]/",variable∆   ⍝ empty where not relevant
+[9]     :endif
+[10]  :case 2 ⋄ ⍎"((~status∆[;1])⌿",variable∆,")←' '" ⍝ blank where not relevant
+[11]  :endselect
+    ∇

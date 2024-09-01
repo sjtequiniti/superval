@@ -1,0 +1,38 @@
+    ∇ Z←tag xtag R;opn;cls;ind;elm
+[1]   ⍝ VALNWIN.sf#18
+[2]   ⍝ Mark up string/s with XHTML tag. SJT 12feb10
+[3]   ⍝ eg 'p class="title"' tag 'Two Merchant of Venice'
+[4]   ⍝ or 'tr' tag '<td>123</td>' '<td>456</td>'
+[5]   
+[6]   :If 0=⍴,tag
+[7]       Z←''                                                                        ⍝ no tag, no markup
+[8]   :Else
+[9]   
+[10]      opn←'<',tag,'>'                                                             ⍝ opening tag
+[11]      elm←(^\tag≠' ')/tag                                                         ⍝ HTML element
+[12]      cls←'</',elm,'>'                                                            ⍝ closing tag
+[13]      ind←'  '                                                                    ⍝ indent multi-row contents
+[14]  
+[15]      :Select ≡R
+[16]  
+[17]      :Case 0
+[18]          Z←''                                                                    ⍝ no markup
+[19]      :Case 1
+[20]          :Select elm                                                             ⍝ primitive XML character escaping
+[21]          :CaseList 'em' 'strong' 'td' 'th'                                       ⍝ ASSUME no mixed content
+[22]              :If ×⎕NC 'XTAG_NO_ESCAPE' ⋄ :AndIf XTAG_NO_ESCAPE                   ⍝ honour override
+[23]                  Z←opn,R,cls
+[24]              :Else
+[25]                  Z←opn,(xmlEscape R),cls
+[26]              :EndIf
+[27]          :Else
+[28]              Z←opn,R,cls                                                         ⍝ ASSUME already handled for other tags
+[29]          :EndSelect
+[30]  
+[31]      :Case 2
+[32]          Z←(⊂opn),((⊂ind),¨(×↑¨⍴¨R~¨' ')/R),⊂cls                                 ⍝ return indented block, without empty lines
+[33]  
+[34]      :EndSelect
+[35]  
+[36]  :EndIf
+    ∇

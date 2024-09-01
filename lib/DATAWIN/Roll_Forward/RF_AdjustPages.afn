@@ -1,1 +1,41 @@
-    ∇ pages RF_AdjustPages parm;page;parent;valid;∆[1]   ⍝ DATAWIN.sf#23[2]   ⍝ Adjust the Roll-Forward Pages[3]   [4]   parent←'fmRoll_Forward.sRoll_Forward.'[5]   [6]   :select parm[7]   :case 'Define'[8]       :for page :in ⌽3↓parent ⎕wi 'pages'[9]           ⍎page,'←"',parent,page,'" ⎕wi "def"'[10]      :endfor[11]  [12]  :case 'Open'[13]      valid←0⍴''[14]      :for page :in parent ⎕wi 'pages' ⍝ Remove onValidate to stop it firing[15]          valid←valid,⊂(parent,page) ⎕wi 'onValidate'[16]          (parent,page) ⎕wi 'onValidate' ''[17]      :endfor[18]      :for page :in pages[19]          (parent,'pgAdjustment',⍕page) ⎕wi 'def' (⍎'pgAdjustment',⍕page)[20]          (Win∆Parent DTDot parent) ⎕wi 'suppress' 1[21]          parent ⎕wi 'value' (page+2)[22]          (Win∆Parent DTDot parent) ⎕wi 'suppress' 0[23]          valid←valid,⊂(parent,'pgAdjustment',⍕page) ⎕wi 'onValidate'[24]      :endfor[25]      :for ∆ :in spin (parent ⎕wi 'pages') valid ⋄ (page valid)←∆ ⍝ Reset onValidate[26]          (parent,page) ⎕wi 'onValidate' valid[27]      :endfor[28]  [29]  :case 'Reset'[30]      RF_AdjustPages 'Define'[31]      RF_AdjustPages 'Close'[32]      pages RF_AdjustPages 'Open'[33]  [34]  :case 'Close'[35]      :for page :in ⌽3↓parent ⎕wi 'pages'[36]          (parent,page) ⎕wi 'Delete'[37]      :endfor[38]  [39]  :endselect    ∇
+    ∇ pages RF_AdjustPages parm;page;parent;valid;∆
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ Adjust the Roll-Forward Pages
+[3]   
+[4]   parent←'fmRoll_Forward.sRoll_Forward.'
+[5]   
+[6]   :select parm
+[7]   :case 'Define'
+[8]       :for page :in ⌽3↓parent ⎕wi 'pages'
+[9]           ⍎page,'←"',parent,page,'" ⎕wi "def"'
+[10]      :endfor
+[11]  
+[12]  :case 'Open'
+[13]      valid←0⍴''
+[14]      :for page :in parent ⎕wi 'pages' ⍝ Remove onValidate to stop it firing
+[15]          valid←valid,⊂(parent,page) ⎕wi 'onValidate'
+[16]          (parent,page) ⎕wi 'onValidate' ''
+[17]      :endfor
+[18]      :for page :in pages
+[19]          (parent,'pgAdjustment',⍕page) ⎕wi 'def' (⍎'pgAdjustment',⍕page)
+[20]          (Win∆Parent DTDot parent) ⎕wi 'suppress' 1
+[21]          parent ⎕wi 'value' (page+2)
+[22]          (Win∆Parent DTDot parent) ⎕wi 'suppress' 0
+[23]          valid←valid,⊂(parent,'pgAdjustment',⍕page) ⎕wi 'onValidate'
+[24]      :endfor
+[25]      :for ∆ :in spin (parent ⎕wi 'pages') valid ⋄ (page valid)←∆ ⍝ Reset onValidate
+[26]          (parent,page) ⎕wi 'onValidate' valid
+[27]      :endfor
+[28]  
+[29]  :case 'Reset'
+[30]      RF_AdjustPages 'Define'
+[31]      RF_AdjustPages 'Close'
+[32]      pages RF_AdjustPages 'Open'
+[33]  
+[34]  :case 'Close'
+[35]      :for page :in ⌽3↓parent ⎕wi 'pages'
+[36]          (parent,page) ⎕wi 'Delete'
+[37]      :endfor
+[38]  
+[39]  :endselect
+    ∇

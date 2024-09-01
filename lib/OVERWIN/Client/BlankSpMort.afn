@@ -1,1 +1,32 @@
-    ∇ BlankSpMort;basisfile;index;cn;list;∆;packold;m_SDPOST;m_SDPOSTMEMB;m_miSDPOST;f_SDPOST;f_SDPOSTMEMB;f_miSDPOST;m_TVSDPOST;m_TVSDPOSTMEMB;m_TVmiSDPOST;f_TVSDPOST;f_TVSDPOSTMEMB;f_TVmiSDPOST;var;packnew;AuditLog;AuditCN;Auditdescription;SavedModule;saveVersion;SpMortCheck[1]   ⍝ OVERWIN.sf#10[2]   ⍝ Check that all Spouse Mortality is blank (so that it will be automatically updated with other-sex Post Retirement Mortality)[3]   [4]   list←'m_SDPOST' 'm_SDPOSTMEMB' 'm_miSDPOST' 'f_SDPOST' 'f_SDPOSTMEMB' 'f_miSDPOST' 'm_TVSDPOST' 'm_TVSDPOSTMEMB' 'm_TVmiSDPOST' 'f_TVSDPOST' 'f_TVSDPOSTMEMB' 'f_TVmiSDPOST'[5]   [6]   :for basisfile :in m2n 1 0↓'BasisFile' GetParmFiles 1[7]       basisfile←InputDir,basisfile[8]       index←basisfile ReadFile 'Index'[9]       :for cn :in (index for '∆_Name' 'Actives_Basis' 'Deferreds_Basis' 'Pensioners_Basis') at '∆_CompNo'[10]          ∆←list∊m2n basisfile ReadFile cn '' 'Names'[11]          0 0⍴basisfile ReadFile cn '' (⊃∆/list)[12]          packold←pack ⊃∆/list[13]          :for var :in ∆/list[14]              '' ASSIGN∆Dict MATRIX var[15]          :endfor[16]          :if ~packold≡packnew←pack ⊃∆/list[17]              0 0⍴basisfile SaveToFile cn '' (pack ⊃∆/list) 1[18]              SavedModule     ←↑(index for '∆_CompNo' cn) at '∆_Name'[19]              Auditdescription←↑(index for '∆_CompNo' cn) at '∆_Description'[20]              saveVersion←↑basisfile ReadFile cn '' 'VERSION'[21]              AuditLog←packold Win∆AuditLog packnew[22]              AuditCN←basisfile AddToFile ('⊂⊃' embrace ⍕cn) Auditdescription[23]              0 0⍴basisfile SaveToFile AuditCN Auditdescription (pack 'AuditLog') 0[24]          :endif[25]      :endfor[26]  :endfor[27]  :if ~mt ClientFile[28]      SpMortCheck←'0'[29]      0 0⍴ClientFile SaveToFile 'Client' '' (pack 'SpMortCheck') 1[30]  :endif    ∇
+    ∇ BlankSpMort;basisfile;index;cn;list;∆;packold;m_SDPOST;m_SDPOSTMEMB;m_miSDPOST;f_SDPOST;f_SDPOSTMEMB;f_miSDPOST;m_TVSDPOST;m_TVSDPOSTMEMB;m_TVmiSDPOST;f_TVSDPOST;f_TVSDPOSTMEMB;f_TVmiSDPOST;var;packnew;AuditLog;AuditCN;Auditdescription;SavedModule;saveVersion;SpMortCheck
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ Check that all Spouse Mortality is blank (so that it will be automatically updated with other-sex Post Retirement Mortality)
+[3]   
+[4]   list←'m_SDPOST' 'm_SDPOSTMEMB' 'm_miSDPOST' 'f_SDPOST' 'f_SDPOSTMEMB' 'f_miSDPOST' 'm_TVSDPOST' 'm_TVSDPOSTMEMB' 'm_TVmiSDPOST' 'f_TVSDPOST' 'f_TVSDPOSTMEMB' 'f_TVmiSDPOST'
+[5]   
+[6]   :for basisfile :in m2n 1 0↓'BasisFile' GetParmFiles 1
+[7]       basisfile←InputDir,basisfile
+[8]       index←basisfile ReadFile 'Index'
+[9]       :for cn :in (index for '∆_Name' 'Actives_Basis' 'Deferreds_Basis' 'Pensioners_Basis') at '∆_CompNo'
+[10]          ∆←list∊m2n basisfile ReadFile cn '' 'Names'
+[11]          0 0⍴basisfile ReadFile cn '' (⊃∆/list)
+[12]          packold←pack ⊃∆/list
+[13]          :for var :in ∆/list
+[14]              '' ASSIGN∆Dict MATRIX var
+[15]          :endfor
+[16]          :if ~packold≡packnew←pack ⊃∆/list
+[17]              0 0⍴basisfile SaveToFile cn '' (pack ⊃∆/list) 1
+[18]              SavedModule     ←↑(index for '∆_CompNo' cn) at '∆_Name'
+[19]              Auditdescription←↑(index for '∆_CompNo' cn) at '∆_Description'
+[20]              saveVersion←↑basisfile ReadFile cn '' 'VERSION'
+[21]              AuditLog←packold Win∆AuditLog packnew
+[22]              AuditCN←basisfile AddToFile ('⊂⊃' embrace ⍕cn) Auditdescription
+[23]              0 0⍴basisfile SaveToFile AuditCN Auditdescription (pack 'AuditLog') 0
+[24]          :endif
+[25]      :endfor
+[26]  :endfor
+[27]  :if ~mt ClientFile
+[28]      SpMortCheck←'0'
+[29]      0 0⍴ClientFile SaveToFile 'Client' '' (pack 'SpMortCheck') 1
+[30]  :endif
+    ∇

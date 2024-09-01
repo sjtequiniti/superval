@@ -1,1 +1,81 @@
-    ∇ res←field Cohort_Salary parm;parent;Z;SaveCN;bdate;edate[1]   ⍝ INVWIN.sf#4[2]   ⍝ Function to allow user control on Cohort Salary Investigation[3]   [4]   parent←'fmSV.fCohort_Salary.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       TotNumVars←CharVars←DateVars←0 0⍴''[10]      Format←HyphenSwap Format[11]      (BDATE lrBDATE)←'Date' SwapRelFields BDATE lrBDATE[12]      (EDATE lrEDATE)←'Date' SwapRelFields EDATE lrEDATE[13]  [14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[15]  [16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[17]  [18]      :repeat[19]          :select ↑field[20]          :caselist 'ckFileSelections' 'edfILENAME' 'ckUseSex' 'ckUseCat' 'lsCatSels' 'ckUseSubs'[21]              (parent,'fData.') Win∆FileChanges ↑field[22]          :case 'cbFormat'[23]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format[24]              Format←(parent,'fData.cbFormat') ⎕wi 'text'[25]              (parent,'fData.') Win∆FileChanges ↑field[26]          :endselect[27]      :until mt field←1↓field[28]  [29]  :case 'Valid' ⍝ Routine specific validation[30]  [31]     ⍝ Check dates are in right order[32]     bdate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrBDATE BDATE[33]     edate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrEDATE EDATE[34]     :if 0≥'MN' DURN bdate,edate[35]        Win∆SetFocus parent,'fParms.cbBDATE'[36]         res←'DateOrder' ⋄ :return[37]     :endif[38]  [39]     :if 0.5>((zwb EAGE)-zwb BAGE)÷zwb GROUP ⍝ Check Begin and end ages are in order[40]        Win∆SetFocus parent,'fParms.edBAGE'[41]         res←'AgeOrder' ⋄ :return[42]     :endif[43]  [44]     CREATEDATADESC Format ⍝ Create data format[45]     :if 0≠⍴,Z←((0≠⍴fDJF)/'FS'[1+×uk]),(0≠⍴fDJS)/'SC'[1+×uk] ⍝ Check Service field is specified[46]     :andif ~(1↑servind)∊Z[47]         Win∆SetFocus parent,'fParms.fservind.opservind_1'[48]          res←'NoDJS' ⋄ :return[49]     :endif[50]  [51]     :if (0=⍴fPSAL)∨(0=⍴fSAL) ⍝ Check Both Salary Fields are specified[52]         Win∆SetFocus parent,'fData.cbFormat'[53]          res←'BothSal' ⋄ :return[54]     :endif[55]  [56]  :case 'Run'[57]  [58]      :if FileSelections←zwb FileSelections[59]          (parent,'fData.lsCatSels') MakeFileSelections 'Create'[60]          :if 0∊⍴FILES ⋄ MDISPLAY 'UserAbort' 'Cohort Salary Investigation' ⋄ :return ⋄ :endif[61]      :endif[62]      SaveCN←parent ⎕wi '∆savecn'[63]      'res←CHS∆INV' Win∆ProgressBar 'Start'[64]      :if ''≡res ⍝ If Successful Run[65]          res←'Quit'[66]      :else[67]          Win∆SetFocus res ⋄ res←''[68]      :endif[69]  [70]  :case 'Quit' ⍝ Deleting "other" variables[71]  [72]      :if 0≠⎕nc 'DateVars'[73]          0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars[74]          0 0⍴⎕ex 'd','f',DateVars[75]      :endif[76]      0 0⍴DeleteVars 'ActFormat'[77]      0 0⍴⎕ex 'FormatType Filesettings'[78]  [79]  :endselect    ∇
+    ∇ res←field Cohort_Salary parm;parent;Z;SaveCN;bdate;edate
+[1]   ⍝ INVWIN.sf#4
+[2]   ⍝ Function to allow user control on Cohort Salary Investigation
+[3]   
+[4]   parent←'fmSV.fCohort_Salary.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       TotNumVars←CharVars←DateVars←0 0⍴''
+[10]      Format←HyphenSwap Format
+[11]      (BDATE lrBDATE)←'Date' SwapRelFields BDATE lrBDATE
+[12]      (EDATE lrEDATE)←'Date' SwapRelFields EDATE lrEDATE
+[13]  
+[14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[15]  
+[16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[17]  
+[18]      :repeat
+[19]          :select ↑field
+[20]          :caselist 'ckFileSelections' 'edfILENAME' 'ckUseSex' 'ckUseCat' 'lsCatSels' 'ckUseSubs'
+[21]              (parent,'fData.') Win∆FileChanges ↑field
+[22]          :case 'cbFormat'
+[23]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[24]              Format←(parent,'fData.cbFormat') ⎕wi 'text'
+[25]              (parent,'fData.') Win∆FileChanges ↑field
+[26]          :endselect
+[27]      :until mt field←1↓field
+[28]  
+[29]  :case 'Valid' ⍝ Routine specific validation
+[30]  
+[31]     ⍝ Check dates are in right order
+[32]     bdate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrBDATE BDATE
+[33]     edate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrEDATE EDATE
+[34]     :if 0≥'MN' DURN bdate,edate
+[35]        Win∆SetFocus parent,'fParms.cbBDATE'
+[36]         res←'DateOrder' ⋄ :return
+[37]     :endif
+[38]  
+[39]     :if 0.5>((zwb EAGE)-zwb BAGE)÷zwb GROUP ⍝ Check Begin and end ages are in order
+[40]        Win∆SetFocus parent,'fParms.edBAGE'
+[41]         res←'AgeOrder' ⋄ :return
+[42]     :endif
+[43]  
+[44]     CREATEDATADESC Format ⍝ Create data format
+[45]     :if 0≠⍴,Z←((0≠⍴fDJF)/'FS'[1+×uk]),(0≠⍴fDJS)/'SC'[1+×uk] ⍝ Check Service field is specified
+[46]     :andif ~(1↑servind)∊Z
+[47]         Win∆SetFocus parent,'fParms.fservind.opservind_1'
+[48]          res←'NoDJS' ⋄ :return
+[49]     :endif
+[50]  
+[51]     :if (0=⍴fPSAL)∨(0=⍴fSAL) ⍝ Check Both Salary Fields are specified
+[52]         Win∆SetFocus parent,'fData.cbFormat'
+[53]          res←'BothSal' ⋄ :return
+[54]     :endif
+[55]  
+[56]  :case 'Run'
+[57]  
+[58]      :if FileSelections←zwb FileSelections
+[59]          (parent,'fData.lsCatSels') MakeFileSelections 'Create'
+[60]          :if 0∊⍴FILES ⋄ MDISPLAY 'UserAbort' 'Cohort Salary Investigation' ⋄ :return ⋄ :endif
+[61]      :endif
+[62]      SaveCN←parent ⎕wi '∆savecn'
+[63]      'res←CHS∆INV' Win∆ProgressBar 'Start'
+[64]      :if ''≡res ⍝ If Successful Run
+[65]          res←'Quit'
+[66]      :else
+[67]          Win∆SetFocus res ⋄ res←''
+[68]      :endif
+[69]  
+[70]  :case 'Quit' ⍝ Deleting "other" variables
+[71]  
+[72]      :if 0≠⎕nc 'DateVars'
+[73]          0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars
+[74]          0 0⍴⎕ex 'd','f',DateVars
+[75]      :endif
+[76]      0 0⍴DeleteVars 'ActFormat'
+[77]      0 0⍴⎕ex 'FormatType Filesettings'
+[78]  
+[79]  :endselect
+    ∇

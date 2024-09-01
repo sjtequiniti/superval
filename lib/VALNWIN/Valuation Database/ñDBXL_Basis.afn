@@ -1,0 +1,163 @@
+    ∇ basischanged←⍙DBXL_Basis;newbasis;⍙dbXLbasis;oldbasis;z;tab;ExcelParms;tscol;namecol;ts;name;DESC;Module;parms;FiLe;∆;field;MESS;newparm;oldparm;kold;knew;del;ins;common;no;lq;rq;comments;order;rows;neBasisIDs;⍙tables;vals
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Compare/Update the basis
+[3]   
+[4]   ⍝ Excel Basis Items (will be different to Database due to PPF/AOS fields)
+[5]   newbasis←'basis' XL_BasisDetails ClassID
+[6]   
+[7]   ExcelParms←newbasis amend 'Value' (m2n ⍙DBXL_Execute newbasis at 'APL')
+[8]   neBasisIDs←((⊂'New Entrants')≡¨ExcelParms at 'Page')/ExcelParms at 'ItemID' ⍝ Basis items that relate to New Entrants
+[9]   
+[10]  vals←ExcelParms at 'Value'
+[11]  :if ppf ⍝ Put Timestamps on PPF parameters
+[12]      :for z :in WHERE ∊'P'=ExcelParms at 'Type'
+[13]          (Module parms)←⍎¨⊃1↓¨¨(⎕split '@'='@',name) ⎕penclose ¨⎕split '@',name←z⊃vals
+[14]          ts←DLTMB SVPPFFile ReadFile Module parms 'TSTAMP'
+[15]          vals[z]←⊂parms,' [',ts,']'
+[16]      :endfor
+[17]  :endif
+[18]  
+[19]  ⍝ Put Timestamps on Scheme parameters
+[20]  :for z :in WHERE ∊'S'=ExcelParms at 'Type'
+[21]      (Module parms)←⍎¨⊃1↓¨¨(⎕split '@'='@',name) ⎕penclose ¨⎕split '@',name←z⊃vals
+[22]  
+[23]      tab←1 DropEther DLTB parms ⋄ parms←0 DropEther parms
+[24]      :if '{Library}'≡9↑tab ⋄ FiLe←GlobalsFile ⋄ tab←10↓tab
+[25]      :else                 ⋄ FiLe←ClientFile
+[26]      :endif
+[27]  
+[28]      :if Module≡'PPF_Details'
+[29]          vals[z]←⊂DLTMB FiLe ReadFile Module tab 'TSTAMP'
+[30]      :elseif 'None'≡tab ⋄ :orif mt tab
+[31]          vals[z]←⊂parms
+[32]      :else
+[33]          :if     'Format'  ≡'@' Win∆Child name ⋄ tab←6↓1 HyphenSwap tab ⋄ parms←1 HyphenSwap parms
+[34]          :elseif '[Select]'≡8↑tab              ⋄ tab←9↓tab ⋄ Module←Module,'_Select'
+[35]          :endif
+[36]          ts←DLTMB FiLe ReadFile Module tab 'TSTAMP'
+[37]          vals[z]←⊂DLTMB parms,' ','[]' embrace ts
+[38]      :endif
+[39]  :endfor
+[40]  
+[41]  z←∨/¨' '≠¨vals ⋄ ExcelParms←ExcelParms for z ⍝ Remove blank parameters
+[42]  vals←z/vals
+[43]  
+[44]  ⍝ Put Timestamps on Rate Tables
+[45]  DESC←DECRFile ReadFile 'Index' ⍝ Index of Decrement File
+[46]  (namecol tscol)←DESC[0;]⍳'∆_Name' '∆_TSModified'
+[47]  ⍙tables←MATRIX 'Type' 'Name' 'TS' 'Dir'
+[48]  
+[49]  :for z :in WHERE ∊'T'=ExcelParms at 'Type'
+[50]      ts←DLTB ⊃DESC[DESC[;namecol]⍳⊂name←¯5↑DLTB 5↑tab←z⊃vals;tscol]
+[51]      vals[z]←⊂tab,' [',ts,']'
+[52]      ⍙tables←⍙tables OVER 'T' name ts ''
+[53]  :endfor
+[54]  
+[55]  ⍝ Put Timestamps on files
+[56]  :for z :in WHERE ∊'F'=ExcelParms at 'Type' ⍝ Files in Input Folder
+[57]      vals[z]←⊂tab,1 1 WGetFileTime InputDir,tab←z⊃vals
+[58]  :endfor
+[59]  
+[60]  :for z :in WHERE ∊'M'=ExcelParms at 'Type' ⍝ Mort Imp csv files in MIcsvDir
+[61]      vals[z]←⊂tab,'[]' embrace ts←1 0 WGetFileTime MIcsvDir,tab←z⊃vals
+[62]      ⍙tables←⍙tables OVER 'M' tab ts MIcsvDir
+[63]  :endfor
+[64]  
+[65]  (lq rq)←⎕av[⎕io+174 175] ⍝ «» signs to enclose Scenario values
+[66]  :for z :in WHERE ∊'Y'=ExcelParms at 'Type' ⍝ Yield Curve Files in YieldDir
+[67]      :if ∨/'.CSV'⍷UPPERCASE tab←z⊃vals
+[68]          :if lq∊tab ⋄  :andif ∨/'.CSV'⍷UPPERCASE '<' StripText name←lq Win∆Child tab
+[69]              tab←('⍝',rq,'⍝',('[]' embrace ts←1 0 WGetFileTime YieldDir,name←rq StripText name),rq) TEXTREPL tab
+[70]              ⍙tables←⍙tables OVER 'Y' name ts YieldDir
+[71]          :endif
+[72]          :if 'PPF Override {'≡14↑tab
+[73]          :andif ~mt no←4+↑WHERE '.CSV'⍷UPPERCASE lq StripText '<' StripText tab
+[74]              tab←(no↑tab),('[]' embrace ts←1 0 WGetFileTime YieldDir,name←'{' Win∆Child no↑tab),no↓tab
+[75]              ⍙tables←⍙tables OVER 'Y' name ts YieldDir
+[76]          :elseif ~mt no←4+WHERE '.CSV'⍷UPPERCASE lq StripText '<' StripText tab
+[77]              tab←(no↑tab),('[]' embrace ts←1 0 WGetFileTime YieldDir,name←'<' StripText no↑tab),(no←⌊/no)↓tab
+[78]              ⍙tables←⍙tables OVER 'Y' name ts YieldDir
+[79]          :endif
+[80]          vals[z]←⊂tab
+[81]      :endif
+[82]  :endfor
+[83]  
+[84]  :if uk=1 ⋄ vals←(⊂pound,⎕av[163]) REPL¨vals ⋄ :endif ⍝ Convert £ signs
+[85]  vals←(⊂rq,⎕av[187]) REPL¨(⊂lq,⎕av[171]) REPL¨vals ⍝ Convert «» signs
+[86]  :if 255<⌈/z←,⊃⍴¨vals
+[87]      z←z>255
+[88]      (z/vals)←(251↑¨z/vals),¨⊂' ...'
+[89]  :endif
+[90]  
+[91]  ExcelParms←ExcelParms amend 'Value' vals
+[92]  
+[93]  ⍝ Add Comments to the Basis
+[94]  :if ×rowsIn comments←⍎'Comment_',MembGroup,'_Basis'
+[95]      order←⍋rows←1+((ExcelParms at 'Excel')⍳((⊂'') join¨⍕¨¨spin comments at 'variable' 'row')~¨⊂'[;]')~(~uSERisRSE)×↑⍴ExcelParms ⍝ Ignore mismatches (Used by other Groups/Deleted parameters?)
+[96]      :for z :in order
+[97]          tab←ExcelParms[0,rows[z];]
+[98]          tab←tab amend 'ItemID' (1000000+tab at 'ItemID')                ⍝ Add 1,000,000 for BasisID
+[99]          tab←tab amend 'Type' (,'C')                                     ⍝ Change to Character
+[100]         tab←tab amend 'FieldDesc' (⊂'Comment on ',↑tab at 'FieldDesc')  ⍝ Change description
+[101]         tab←tab amend 'Value' ((comments at 'comment')[z])              ⍝ Include Comment
+[102]         ExcelParms←ExcelParms append tab
+[103]     :endfor
+[104] :endif
+[105] 
+[106] :if ~mt oldbasis←1 ⍙DBadoCONCommand "SELECT BasisItemID, BasisItemData FROM BasisData WHERE BasisCategoryID=",(⍕∣DatabaseID+BasisCategoryID)," ORDER BY BasisItemID"
+[107]     oldbasis←(0 (DLTB ,⊃1 ⍙DBadoCONCommand "SELECT BasisDescription FROM ResultsCategory WHERE ResultsCategoryID=",⍕¯1↑DatabaseID+ResultsCategoryID,(DBnew=1)/OtherResID)) OVER oldbasis
+[108]     oldbasis[;1]←DLTB¨oldbasis[;1]
+[109] :endif
+[110] 
+[111] newbasis←(0 basisDesc) OVER ⊃spin ExcelParms at 'ItemID' 'Value'
+[112] 
+[113] basischanged←~((~oldbasis[;0]∊neBasisIDs)⌿oldbasis)≡(~newbasis[;0]∊neBasisIDs)⌿newbasis
+[114] 
+[115] :if ↑basischanged←(~oldbasis≡newbasis),basischanged
+[116] 
+[117]     0 0⍴0 ⍙DBadoCONCommand "DELETE FROM BasisData WHERE BasisCategoryID=",⍕∣DatabaseID+BasisCategoryID
+[118]     0 0⍴'ADOrst' ⎕wi 'XClose'
+[119]     'ADOrst' ⎕wi 'XOpen' 'BasisData' ('ADOcon' ⎕wi 'obj') cursor lock
+[120]     ⍙DBInsertData (~sqlDatabase)↓[⎕io+1]DatabaseID,(DatabaseID+BasisCategoryID),1 0↓newbasis
+[121]     'ADOrst' ⎕wi 'XClose'
+[122] 
+[123]     ⍙DBRateTables ⍙tables
+[124]     ⍙DBFinAssumptions
+[125] 
+[126]     'ADOrst' ⎕wi 'XOpen' 'ResultsCategory' ('ADOcon' ⎕wi 'obj') cursor lock
+[127] 
+[128] ⍝⍝⍝ FIXME:  Do we want all this?
+[129] ⍝⍝⍝    :if uSERisRSE ⋄ :andif ~mt oldbasis
+[130]     :if ecflag ⋄ :andif ~mt oldbasis
+[131]         oldbasis←(⊂⎕av[171],lq) REPL¨(⊂⎕av[187],rq) REPL¨oldbasis
+[132]         newbasis←(⊂⎕av[171],lq) REPL¨(⊂⎕av[187],rq) REPL¨newbasis
+[133]         newparm←(⊂'Basis Description'),ExcelParms at 'FieldDesc'
+[134] 
+[135]         MESS←0 0⍴''
+[136]         (kold knew)←(oldbasis[;0]) (newbasis[;0])       ⍝ Keys in old and new bases
+[137]         (del ins)←kold knew~¨⊂common←(kold∊knew)/kold   ⍝ parms common, deleted or inserted
+[138] 
+[139]         :if ~mt del
+[140]             :for ∆ :in spin del (DLTB¨,1 ⍙DBadoCONCommand "SELECT BasisItemName FROM BasisItem WHERE BasisItemID IN (",(0 ⍙DBNumList del),")") ⋄ (no field)←∆
+[141]                 MESS←MESS OVER 'Database and Excel Category Results deleted because ',field,' changed from "',(↑(oldbasis[;0]=no)⌿oldbasis[;1]),'" to blank.'
+[142]             :endfor
+[143]         :endif
+[144] 
+[145]         :if ~mt ins
+[146]             :for no :in ins
+[147]                 no←(ExcelParms at 'ItemID')⍳no
+[148]                 MESS←MESS OVER 'Database and Excel Category Results deleted because ',(no⊃newparm),' changed from blank to "',(no⊃ExcelParms at 'Value'),'".'
+[149]             :endfor
+[150]         :endif
+[151] 
+[152]         oldbasis←(  oldbasis[;0]∊common)⌿oldbasis
+[153]         newbasis←(z←newbasis[;0]∊common)⌿newbasis ⋄ newparm←z⌿(⊂'Basis Description'),ExcelParms at 'FieldDesc'
+[154] 
+[155]         z←∨/~oldbasis≡¨newbasis
+[156]         :for ∆ :in ⎕split z⌿newparm,newbasis[;,1],oldbasis[;1] ⋄ (field newparm oldparm)←DLTB¨∆
+[157]             MESS←MESS OVER 'Database and Excel Category Results deleted because ',field,' changed from "',oldparm,'" to "',newparm,'"'
+[158]         :endfor
+[159]         MESS VALN∆LOG 'Warning'
+[160]     :endif
+[161] :endif
+    ∇

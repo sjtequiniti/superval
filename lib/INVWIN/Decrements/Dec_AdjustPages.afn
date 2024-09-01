@@ -1,1 +1,31 @@
-    ∇ pages Dec∆AdjustPages parm;page;parent[1]   ⍝ INVWIN.sf#2[2]   ⍝ Adjust the Decrements Pages[3]   [4]   parent←'fmSV.sDecrements.'[5]   [6]   :select parm[7]   :case 'Define'[8]       :for page :in 1↓parent ⎕wi 'pages'[9]           page←⊃page[10]          ⍎page,'←"',parent,page,'" ⎕wi "def"'[11]      :endfor[12]  [13]  :case 'Open'[14]      :for page :in pages[15]          (parent,'pgDecrement',⍕page) ⎕wi 'def' (⍎'pgDecrement',⍕page)[16]      :endfor[17]  [18]  :case 'Reset'[19]      Dec∆AdjustPages 'Close'[20]      pages Dec∆AdjustPages 'Open'[21]  [22]  :case 'Close'[23]      Dec∆AdjustPages 'Define'[24]      :for page :in 1↓parent ⎕wi 'pages'[25]          page←⊃page[26]          (parent,page) ⎕wi 'Delete'[27]      :endfor[28]  [29]  :endselect    ∇
+    ∇ pages Dec∆AdjustPages parm;page;parent
+[1]   ⍝ INVWIN.sf#2
+[2]   ⍝ Adjust the Decrements Pages
+[3]   
+[4]   parent←'fmSV.sDecrements.'
+[5]   
+[6]   :select parm
+[7]   :case 'Define'
+[8]       :for page :in 1↓parent ⎕wi 'pages'
+[9]           page←⊃page
+[10]          ⍎page,'←"',parent,page,'" ⎕wi "def"'
+[11]      :endfor
+[12]  
+[13]  :case 'Open'
+[14]      :for page :in pages
+[15]          (parent,'pgDecrement',⍕page) ⎕wi 'def' (⍎'pgDecrement',⍕page)
+[16]      :endfor
+[17]  
+[18]  :case 'Reset'
+[19]      Dec∆AdjustPages 'Close'
+[20]      pages Dec∆AdjustPages 'Open'
+[21]  
+[22]  :case 'Close'
+[23]      Dec∆AdjustPages 'Define'
+[24]      :for page :in 1↓parent ⎕wi 'pages'
+[25]          page←⊃page
+[26]          (parent,page) ⎕wi 'Delete'
+[27]      :endfor
+[28]  
+[29]  :endselect
+    ∇

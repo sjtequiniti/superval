@@ -1,0 +1,66 @@
+    ∇ ContingencyID PP∆Cash pp∆row;pp∆upin;pp∆TotBen;pp∆FutBen;pp∆midexit;pp∆midret;pp∆midstart;pp∆Xexit;pp∆xexit;pp∆Xret;pp∆xret;pp∆Xstart;pp∆xstart;pp∆exitdisc;pp∆defdisc;pp∆Texit;pp∆Tret;pp∆Tstart;pp∆def;pp∆startpad;pp∆defInc;pp∆FutCF;pp∆PastCF;pp∆TotCF;pp∆FutPV;pp∆PastPV;pp∆TotPV;pp∆top;pp∆VF;pp∆defLX;pp∆exitprobs;pp∆xprestart;pp∆Xprestart;pp∆midprestart;pp∆Tprestart;pp∆year;pp∆2Dbens;pp∆TotBens;pp∆FutBens;pp∆years;pp∆Probs;pp∆benyear;pp∆RGP;pp∆ResPV;pp∆size;pp∆Ben;pp∆totBen;pp∆futBen
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Projection of Cash Benefit Cash Flows
+[3]   ⍝ For Cash Benefits, there is no Contingent Benefit so ignore pp∆Con and pp∆FCon
+[4]   
+[5]   ⍝⍀⍝ 0 0⍴'Amounts' PP∆ExtractBens 0
+[6]   ⍝⍀⍝ 'M' PP∆TestUpdate 'pp∆TotBen' 'pp∆FutBen'
+[7]   
+[8]   :if pp∆2Dbens←'Benefits' PP∆ExtractBens 0 ⋄ pp∆Probs←(⍴pp∆TotBens)⍴pp∆exitprobs ⋄ :endif
+[9]   
+[10]  pp∆upin←pp∆Upin[pp∆row;0] ⍝ Benefit is Underpinned - doesn't work with Aggregated Benefits
+[11]  ⍝⍝⍝ ⍝⍀⍝ :if ClassID≠4 ⋄ 'M' PP∆TestUpdate ⊂'pp∆upin' ⋄ :endif
+[12]  pp∆RGP←0
+[13]  
+[14]  :for pp∆year :in ⍳pp∆NX ⍝ Process each "exit" year
+[15]      :if pp∆2Dbens ⍝ Only process non-zero benefits
+[16]          :if 0∊⍴pp∆years←(×∣pp∆TotBen←pp∆TotBens[pp∆year;])/⍳pp∆NX ⋄ :continue ⋄ :endif
+[17]                             pp∆FutBen←pp∆FutBens[pp∆year;]
+[18]                             pp∆exitprobs←pp∆Probs[pp∆year;]
+[19]      :elseif 0≠(pp∆TotBen←pp∆TotBens)[pp∆years←pp∆year]
+[20]                 pp∆FutBen←pp∆FutBens
+[21]      :else ⋄ :continue
+[22]      :endif
+[23]  
+[24]      ⍝⍀⍝ 'M' PP∆TestUpdate 'pp∆exitprobs←' 'pp∆TotBen←' 'pp∆FutBen←'
+[25]      :for pp∆benyear :in pp∆years ⍝ Process each benefit year
+[26]          PP∆Terms 'M'
+[27]          :if pp∆Xill2D ⋄ :andif (⊂pp∆exit)∊'I ' 'I2' 'P ' 'PD' 'PR' 'P2' ⋄ pp∆xexit PP∆SelectMort 'Xill2D' ⋄ :endif
+[28]          PP∆Deferral ~isTOut
+[29]          :if test ⋄ :andif ~pp∆2Dbens ⋄ :andif pp∆accrued∨'W'=↑pp∆exit
+[30]              DNRADX[pp∆year]←pp∆defdisc×pp∆defLX CDIV pp∆exitdisc
+[31]          :endif
+[32]  
+[33]          pp∆ResPV←pp∆size↑((pp∆Tstart-1)/0),pp∆TotPV←pp∆defdisc×pp∆TotCF←pp∆TotBen[pp∆benyear]×pp∆VF←pp∆defInc×pp∆defLX×pp∆ppfRatio[pp∆Tstart-term]
+[34]  ⍝⍀⍝        pp∆totBen←pp∆TotBen[pp∆benyear]
+[35]  ⍝⍀⍝        'M' PP∆TestUpdate 'pp∆totBen←' 'pp∆TotCF←' 'pp∆TotPV←'
+[36]  
+[37]          :if ~pp∆accrued ⋄ :orif pp∆upin
+[38]              :if neIND ⋄ pp∆FutPV←pp∆TotPV ⋄ pp∆FutCF←pp∆TotCF
+[39]              :else     ⋄ pp∆FutPV←pp∆defdisc×pp∆FutCF←pp∆FutBen[pp∆benyear]×pp∆VF
+[40]              :endif
+[41]              pp∆PastPV←pp∆TotPV-pp∆FutPV ⋄ pp∆PastCF←pp∆TotCF-pp∆FutCF
+[42]  ⍝⍀⍝            pp∆futBen←pp∆FutBen[pp∆benyear]
+[43]  ⍝⍀⍝            'M' PP∆TestUpdate 'pp∆futBen←' 'pp∆FutCF←' 'pp∆FutPV←'
+[44]          :endif
+[45]  
+[46]          0 PP∆StoreRes 1
+[47]      :endfor
+[48]  :endfor
+[49]  
+[50]  :if ⍙dbresults
+[51]      0 0⍴'Amounts' PP∆ExtractBens 0
+[52]      :if pp∆accrued
+[53]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 3 11) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆TotBens
+[54]          :if BenefitTypeID=8 ⍝ Don't add Underpin records yet
+[55]              ⍙dbABmpu←⍙dbABres ⋄ ⍙dbCFmpu←⍙dbCFres ⍝⍝⍝ Assumes there is only one underpin
+[56]          :else
+[57]              ⍙DBAddAccrued
+[58]          :endif
+[59]      :else
+[60]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 1 11) pp∆dbX0 term) ⍙DBValnRecords (↑,pp∆FutBens)-↑,pp∆TotBens
+[61]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 2 11) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆FutBens
+[62]          ⍙DBAddResults
+[63]      :endif
+[64]  :endif
+    ∇

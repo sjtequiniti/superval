@@ -1,0 +1,22 @@
+    ∇ ⍙DBAccumAccrued arg;⍙dbspouse;⍙dbdata;z;values;rows
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Accums Accrued Benefits and, if requested, (1st year) Cash Flow results
+[3]   
+[4]   :if BenefitTypeID=¯1 ⋄ :return ⋄ :endif
+[5]   ⍙dbspouse←ContingencyID∊6 7 12 13 14 22 27 34 35 36 40 41 42 ⍝ Positioning of DAR Spouse results
+[6]   
+[7]   ⍙dbABres[pp∆year;⍙dbspouse]←⍙dbABres[pp∆year;⍙dbspouse]+pp∆ABval
+[8]   :if ClassID=4 ⋄ :andif bencap
+[9]       ⍙dbRESres←⍙dbRESres+120↑(pp∆benyear/0),(⌽+\⌽pp∆ResPV) CDIV pp∆size↑0,(pp∆Texit+1)↓pp∆discSY
+[10]  :endif
+[11]  
+[12]  :if arg ⋄ :andif 0=term+pp∆year
+[13]      :if ×pp∆cash ⋄ ⍙dbCFres[pp∆Tstart;0]←⍙dbCFres[pp∆Tstart;0]+pp∆TotCF
+[14]      :else        ⋄ ⍙dbCFres[pp∆year+⍳pp∆size;⍙dbspouse]←⍙dbCFres[pp∆year+⍳pp∆size;⍙dbspouse]+pp∆TotCF
+[15]      :endif
+[16]  
+[17]      :if fscopt ⋄ :andif HLDII ⋄ :andif ClassID≠4 ⍝⍝⍝ ⋄ :andif ∨/z←×∣values←-pp∆TotCF
+[18]          5 ⍙DBAddScenData ,⊂-pp∆TotCF
+[19]      :endif
+[20]  :endif
+    ∇

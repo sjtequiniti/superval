@@ -1,0 +1,59 @@
+    ∇ CREATE∆MPUCONT;var;mpufn;fn;F
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Fn to create the Underpin Conts Variables
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   mpuflag←zwb mpuflag
+[8]   mpuDATE←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrmpuDATE mpuDATE
+[9]   :if uk=0 ⋄ jmpu←j
+[10]  :else    ⋄ FinAdjTable←FinAdjTable OVER 'jmpu' 'jmpu' (jmpu←termAdjFin BlendRates jmpu sCEN_jmpu)
+[11]  :endif
+[12]  
+[13]  →(IsDeferred∨~mpuflag)/0 ⍝ Not needed for Enhanced Deferreds
+[14]  
+[15]  mpuSAL←↑¯1+SALdesc ExactTLU mpuSAL
+[16]  ⍝ Money Purchase Underpin interest rate or Preserved Int in Aust
+[17]  var←(zwb mpuCease),(↑mpuCeaseDate)='FS'[×uk]
+[18]  :if 0∊⍴DLTB mpuAdditCR←DescToVariableUK mpuAdditCR ⋄ mpuAdditCR←'0' ⋄ :endif
+[19]  
+[20]  :select mpuDEF
+[21]  :caselist '' 'None'
+[22]      mpur←0,0 ⋄ mpul←var ⋄ mpufn←1
+[23]  
+[24]  :case 'Fixed Percentage of Salary'
+[25]      mpur←(0.01×zwb mpuCR),0 ⋄ mpul←var ⋄ mpufn←1
+[26]  
+[27]  :case 'Differing Percentages on up to 10 Salary Bands'
+[28]      mpul←var ⋄ mpur←(10↑0.01×MatrixZWB mpuBandCR),('B'=↑mpuBandmeth),0 ⋄ mpufn←2
+[29]      ⍝ 9 Band Limits (and infinity)
+[30]      mpulimits←10 OVERTAKE (1↓MatrixZWB mpuBand),1E20
+[31]      ⍝ Apply Inflation Vector for Limits to create Limits Array
+[32]      FinAdjTable←FinAdjTable OVER 'mpuF' 'mpuF' (mpuF←termAdjFin BlendRates (~ValMeth≡'UCM')/¨mpuF sCEN_mpuF)
+[33]      mpulimits←mpulimits∘.×(×\F)÷(F←(LatestRA+newent×projTerm) OVERTAKE mpuF)*0.5
+[34]  
+[35]  :case 'Varying Percentage of Salary based on Attained Age'
+[36]      mpur←var,0 ⋄ mpufn←3
+[37]      mpul←100↑0.01×¯1 DEC∆CHECK mpuAgeTab
+[38]  
+[39]  :case 'Varying Percentage of Salary based on Age at Entry'
+[40]      mpur←((↑mpuEntryDate)='FS'[×uk]),var,0 ⋄ mpufn←4
+[41]      mpul←100↑0.01×¯1 DEC∆CHECK mpuAgeTab
+[42]  
+[43]  :case 'Varying Percentage of Salary based on Duration from Valn Date'
+[44]      contsr←var,0 ⋄ mpufn←5
+[45]      contsl←100↑0.01×¯1 DEC∆CHECK mpuDurnTab
+[46]  
+[47]  :case 'Salary Bands Table with Differing Percentages'
+[48]      mpur←('B'=↑mpuBandmeth),(VDATE[2]-zwb mpuSalBase),var,0,(0.01×MatrixZWB mpuBandCR) ⋄ mpufn←8
+[49]      :if ^/0=1↑[0]mpul←⊃(LatestAge+newent×projTerm) OVERTAKE¨1 MID¨DTZ¨⎕split ¯1 DEC∆CHECK mpuSalTab
+[50]          mpul←1↓[0]mpul
+[51]      :endif
+[52]      mpul←mpul⍪1E20
+[53]  
+[54]  :endselect
+[55]  
+[56]  fn←⍎,'<CONT>,ZI2' ⎕FMT mpufn ⋄ fn[0;12+⍳4]←' MPU'
+[57]  0 0⍴⎕DEF SStoMAT '/⍺/mpu' TEXTREPL '⍵',fn
+    ∇

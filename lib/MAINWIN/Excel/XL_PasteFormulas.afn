@@ -1,0 +1,16 @@
+    ∇ rng XL_PasteFormulas range;formula;cols;col
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Copy formula from source "rng" (single cell or single row) and apply to target "range" (multiple cells in the same column(s))
+[3]   ⍝  Both "ranges" are 2 or 4 element RC cell references
+[4]   ⍝  Process each column individually (multiple columns fails???)
+[5]   
+[6]   rng←4⍴rng ⋄ cols←(rng[⎕io+1]+⍳1+-/rng[⎕io+3 1])-⎕io
+[7]   rng←1 0 1 0×rng ⋄ range←1 0 1 0×4⍴range
+[8]   
+[9]   :for col :in cols
+[10]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 rng+4⍴0 col)
+[11]      formula←'XL.Rng' ⎕wi 'xFormulaR1C1'
+[12]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 range+4⍴0 col)
+[13]      0 0⍴'XL.Rng' ⎕wi 'xFormulaR1C1' formula
+[14]  :endfor
+    ∇

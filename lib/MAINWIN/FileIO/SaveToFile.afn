@@ -1,0 +1,56 @@
+    ∇ ∆_CompNo←File SaveToFile Component;tieno;∆_Index;package;list;insert;size;∆_Name;∆_Description;indexrow;z
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Save a Component to File
+[3]   ⍝ "File" should be the File name with full path
+[4]   ⍝ Component can be either:
+[5]   ⍝    the Number of the component OR
+[6]   ⍝    the "type" of Component (looked up in columns 9-28 of "old" 2D ∆_Index)
+[7]   ⍝     followed by (optional) Description of Component ('' if not used)
+[8]   ⍝     followed by a package of Objects or "an object"
+[9]   ⍝     followed by a flag indicating if package is to be inserted (default =insert)
+[10]  
+[11]  ⍝ The result ∆_CompNo is:
+[12]  ⍝    ⍬ if operation fails (ie File not tied or Component doesn't exist)
+[13]  ⍝    component number if the Component is a package (and the package has been packed)
+[14]  
+[15]  ∆_CompNo←⍬ ⍝ Default to Error result
+[16]  
+[17]  (∆_Name ∆_Description package insert)←4↑Component,1 ⍝ 1 is Default Insert Flag
+[18]  
+[19]  ⍝⍝⍝ :if '{Library}'≡9↑File ⋄ File←GlobalsFile ⋄ :endif ⍝⍝⍝ LibraryDir,9↓File
+[20]  
+[21]  ∆_Index←File ReadFile 1 ⍝ Find component number for Module
+[22]  :if (⎕dr ∆_Name)∊11 323 ⍝ Numeric Argument
+[23]      z←0,1↓(~∨/¨'Y'=∆_Index[;∆_Index[⎕io;]⍳⊂'∆_Deleted'])^∆_Index[;∆_Index[⎕io;]⍳⊂'∆_CompNo']=∆_CompNo←,∆_Name
+[24]  :else
+[25]      :if 0∊⍴∆_Description ⋄ z←(⊂∆_Name               '')≡¨⎕split ∆_Index[;∆_Index[⎕io;]⍳'∆_Name'                 '∆_Deleted']
+[26]      :else                ⋄ z←(⊂∆_Name ∆_Description '')≡¨⎕split ∆_Index[;∆_Index[⎕io;]⍳'∆_Name' '∆_Description' '∆_Deleted']
+[27]      :endif
+[28]      ∆_CompNo←(1↓z)/1↓∆_Index[;∆_Index[⎕io;]⍳⊂'∆_CompNo']
+[29]  :endif
+[30]  indexrow←z⍳1
+[31]  
+[32]  tieno←TieNumber File
+[33]  →(0≠File FSTIE tieno)/⎕LC  ⍝ Repeat until successful
+[34]  :if ∆_CompNo≡⍬ ⍝ Lookup for Component Failed
+[35]  :orif ∆_CompNo≥(⎕fsize tieno)[⎕io+1] ⍝ Trying beyond EOF
+[36]      ∆_CompNo←File AddToFile ∆_Name ∆_Description
+[37]      ∆_Index←File ReadFile 1
+[38]      indexrow←∆_Index[;∆_Index[⎕io;]⍳⊂'∆_CompNo']⍳∆_CompNo
+[39]      →(0≠File FSTIE tieno)/⎕LC  ⍝ Retie File - repeat until successful
+[40]  :endif
+[41]  
+[42]  :if insert ⋄ :andif pchk package
+[43]      package←(⎕fread tieno,∆_CompNo) pins package
+[44]  :endif
+[45]  
+[46]  package ⎕freplace tieno,∆_CompNo ⍝ Save Variables to Component
+[47]  
+[48]  ∆_Index←∆_Index UpdateIndex 'Update' indexrow
+[49]  :if ~0∊⍴∆_Description ⋄ ∆_Index[indexrow;∆_Index[⎕io;]⍳⊂'∆_Description']←⊂∆_Description ⋄ :endif
+[50]  ∆_Index ⎕freplace tieno,1
+[51]  
+[52]  :if ~File≡DECRFile
+[53]      FDUP File                  ⍝ Compress File (without force!!) and untie!!
+[54]  :endif
+    ∇

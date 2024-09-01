@@ -1,0 +1,28 @@
+    ∇ PP∆PenIncreases
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Create the Pension Increase variables
+[3]   
+[4]   ⍝ Increases in Payment - allow for spouse of 15yo new entrant in "term" years
+[5]   pp∆postInc←×\1,(130+term)OVERTAKE DTZ ,pp∆Inc[pp∆row;]
+[6]   
+[7]   :if ClassID=4
+[8]       pp∆postIncMP←(1-pp∆incprop) PP∆FreqGeoAdjust pp∆postInc
+[9]   :else
+[10]      pp∆postIncMP←(1-pp∆incprop) PP∆FreqAdjust pp∆postInc
+[11]  :endif
+[12]  pp∆MidpostInc←0.5 PP∆FreqGeoAdjust pp∆postInc
+[13]  
+[14]  :if ~pp∆preInc←pp∆preIncMP←uk=1
+[15]      ⍝ Increases in Deferment - allow for 15yo new entrant in "term" years
+[16]      pp∆preInc←×\1,(60+term)OVERTAKE DTZ ,pp∆IncDef[pp∆row;]
+[17]  
+[18]      ⍝ At midpoints allowing for increase review dates and payment frequency
+[19]      :if ClassID=4
+[20]          pp∆preIncMP←(1-pp∆incprop) PP∆FreqGeoAdjust pp∆preInc
+[21]      :else
+[22]          pp∆preIncMP←(1-pp∆incprop) PP∆FreqAdjust pp∆preInc
+[23]      :endif
+[24]  :endif
+[25]  
+[26]  ⍝⍀⍝ '' PP∆TestUpdate 'pp∆postInc←' 'pp∆postIncMP←'
+    ∇

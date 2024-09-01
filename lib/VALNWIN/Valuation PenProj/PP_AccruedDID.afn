@@ -1,0 +1,33 @@
+    ∇ pp∆Probs PP∆AccruedDID pp∆row;pp∆benyear;pp∆years;pp∆year;pp∆RGP;pp∆incdef;LiabID;pp∆TotBen;pp∆FutBen;pp∆exitprobs
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ For Death, skip the primary pension and set up vars for reversion
+[3]   ⍝ Just set variables to do spouse's pension
+[4]   ⍝ Calculations similar to PP∆Pen_Spouse
+[5]   
+[6]   :for pp∆year :in ⍳pp∆NX-1 ⍝ Process each "exit" year
+[7]       pp∆TotBen←pp∆TotCons[pp∆year;]
+[8]       :if 0∊⍴pp∆years←(×∣pp∆TotBen)/⍳pp∆NX ⋄ :continue ⋄ :endif
+[9]       pp∆FutBen←pp∆FutCons[pp∆year;]
+[10]      pp∆exitprobs←pp∆Probs[pp∆year;]
+[11]  
+[12]      :for pp∆benyear :in pp∆years ⍝ Process each benefit year
+[13]          pp∆RGP←pp∆GP[pp∆row;pp∆year]
+[14]          PP∆Terms 'M'
+[15]          pp∆size PP∆PenParms pp∆exit
+[16]          :if pp∆top≠0 ⋄ :andif pp∆top≤pp∆Xstart ⋄ :continue ⋄ :endif
+[17]          :if pp∆exit≡'I ' ⋄ :andif pp∆Xill2D ⋄ pp∆xexit PP∆SelectMort 'Xill2D' ⋄ :endif
+[18]          PP∆Deferral 0
+[19]          :if PP∆Payment ⋄ :continue ⋄ :endif
+[20]  
+[21]          :if pp∆year=pp∆benyear
+[22]              :if pp∆benyear=↑pp∆VFYear[pp∆row;] ⋄ :orif VFtables
+[23]                  LiabID←((∨/0≠,pp∆TotBen-pp∆FutBen),∨/0≠,pp∆FutBen)/1 2
+[24]                  pp∆incdef←PP∆FactorsIncDef
+[25]              :endif
+[26]          :endif
+[27]  
+[28]          :if pp∆Ydis2D ⋄ (29+pp∆∆) PP∆SelectMort 'Ydis2D' ⋄ :endif
+[29]          PP∆Death
+[30]      :endfor
+[31]  :endfor
+    ∇

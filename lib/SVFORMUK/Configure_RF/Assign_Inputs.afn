@@ -1,1 +1,58 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Configure_RF" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Configure_RF" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmRFConfig.fDiscount.cbDiscOrig" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB DiscOrig[11]  :if mt selection[12]      :if ~mt DLTB DiscOrig[13]          warnings←warnings OVER "Previous Selection for 'Valuation Discount Rates apply from' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmRFConfig.fDiscount.cbDiscOrig" ⎕wi "value" (¯1↑1,selection)[18]  PickList←"fmRFConfig.fDiscount.cbDiscAdj" ⎕wi "list"[19]  selection←PickList ExactTLU DLTB DiscAdj[20]  :if mt selection[21]      :if ~mt DLTB DiscAdj[22]          warnings←warnings OVER "Previous Selection for 'Discount Rate Adjustments apply from' is no longer available"[23]      :endif[24]      modified←⌈/modified,1[25]  :endif[26]  "fmRFConfig.fDiscount.cbDiscAdj" ⎕wi "value" (¯1↑1,selection)[27]  PickList←"fmRFConfig.fEscalation.cbEscOrig" ⎕wi "list"[28]  selection←PickList ExactTLU DLTB EscOrig[29]  :if mt selection[30]      :if ~mt DLTB EscOrig[31]          warnings←warnings OVER "Previous Selection for 'Valuation Escalation Rates apply from' is no longer available"[32]      :endif[33]      modified←⌈/modified,1[34]  :endif[35]  "fmRFConfig.fEscalation.cbEscOrig" ⎕wi "value" (¯1↑1,selection)[36]  PickList←"fmRFConfig.fEscalation.cbEscAdj" ⎕wi "list"[37]  selection←PickList ExactTLU DLTB EscAdj[38]  :if mt selection[39]      :if ~mt DLTB EscAdj[40]          warnings←warnings OVER "Previous Selection for 'Escalation Rate Adjustments apply from' is no longer available"[41]      :endif[42]      modified←⌈/modified,1[43]  :endif[44]  "fmRFConfig.fEscalation.cbEscAdj" ⎕wi "value" (¯1↑1,selection)[45]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Configure_RF[46]      :for var :in spin Comment_Configure_RF at "variable" "row" ⋄ (var row)←var[47]          "Configure_RF" ParmColor ((FormFields for "variable" var) at "control"),var row 1[48]      :endfor[49]  :endif[50]  :if ~0∊⍴,warnings[51]      MDISPLAY DLTMB warnings,⎕tcnl[52]      Win∆AssignVars "fmRFConfig"[53]  :endif[54]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Configure_RF" "" "Names"[55]      "fmRFConfig" ⎕wi "modified" 0[56]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Configure_RF" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Configure_RF" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmRFConfig.fDiscount.cbDiscOrig" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB DiscOrig
+[11]  :if mt selection
+[12]      :if ~mt DLTB DiscOrig
+[13]          warnings←warnings OVER "Previous Selection for 'Valuation Discount Rates apply from' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmRFConfig.fDiscount.cbDiscOrig" ⎕wi "value" (¯1↑1,selection)
+[18]  PickList←"fmRFConfig.fDiscount.cbDiscAdj" ⎕wi "list"
+[19]  selection←PickList ExactTLU DLTB DiscAdj
+[20]  :if mt selection
+[21]      :if ~mt DLTB DiscAdj
+[22]          warnings←warnings OVER "Previous Selection for 'Discount Rate Adjustments apply from' is no longer available"
+[23]      :endif
+[24]      modified←⌈/modified,1
+[25]  :endif
+[26]  "fmRFConfig.fDiscount.cbDiscAdj" ⎕wi "value" (¯1↑1,selection)
+[27]  PickList←"fmRFConfig.fEscalation.cbEscOrig" ⎕wi "list"
+[28]  selection←PickList ExactTLU DLTB EscOrig
+[29]  :if mt selection
+[30]      :if ~mt DLTB EscOrig
+[31]          warnings←warnings OVER "Previous Selection for 'Valuation Escalation Rates apply from' is no longer available"
+[32]      :endif
+[33]      modified←⌈/modified,1
+[34]  :endif
+[35]  "fmRFConfig.fEscalation.cbEscOrig" ⎕wi "value" (¯1↑1,selection)
+[36]  PickList←"fmRFConfig.fEscalation.cbEscAdj" ⎕wi "list"
+[37]  selection←PickList ExactTLU DLTB EscAdj
+[38]  :if mt selection
+[39]      :if ~mt DLTB EscAdj
+[40]          warnings←warnings OVER "Previous Selection for 'Escalation Rate Adjustments apply from' is no longer available"
+[41]      :endif
+[42]      modified←⌈/modified,1
+[43]  :endif
+[44]  "fmRFConfig.fEscalation.cbEscAdj" ⎕wi "value" (¯1↑1,selection)
+[45]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Configure_RF
+[46]      :for var :in spin Comment_Configure_RF at "variable" "row" ⋄ (var row)←var
+[47]          "Configure_RF" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[48]      :endfor
+[49]  :endif
+[50]  :if ~0∊⍴,warnings
+[51]      MDISPLAY DLTMB warnings,⎕tcnl
+[52]      Win∆AssignVars "fmRFConfig"
+[53]  :endif
+[54]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Configure_RF" "" "Names"
+[55]      "fmRFConfig" ⎕wi "modified" 0
+[56]  :endif
+    ∇

@@ -1,0 +1,52 @@
+    ∇ res←res ⍙DBadoCSVCommand sql;⎕elx;elx;cstr;n
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Executing an SQL command on a CSV file in the Client Folder
+[3]   ⍝ res is 0 if no records expected to be returned
+[4]   ⍝        1 if RecordSet records expected to be returned
+[5]   ⍝        2 if CSV records expected to be returned
+[6]   
+[7]   :if uSERisRSE ⋄ :andif '"'∊sql
+[8]       (⎕si[1+⎕io;]) sql
+[9]   :endif
+[10]  :if ~';'∊¯5↑DLTB sql ⋄ sql←sql,';' ⋄ :endif
+[11]  elx←⎕elx
+[12]  
+[13]  :if mt 'ADOcsvcmd' ⎕wi 'self'
+[14]      0 0⍴'ADOcsvcmd' ⎕wi 'Create' 'ADODB.Command'
+[15]      'ADOcsvcmd' ⎕wi 'xCommandType' ('ADOcsvcmd' ⎕wi 'adCmdText')
+[16]      'ADOcsvcmd' ⎕wi 'xCommandTimeout' sqlTimeout
+[17]      cstr←'Provider=',progid,';Data Source=',InputDir,';Extended Properties="text;HDR=NO;FMT=Delimited"'
+[18]  
+[19]      n←1 ⋄ ⎕elx←'"⍙DBadoCSVCommand(1) ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry1'
+[20]      retry1:
+[21]      :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[22]      'ADOcsvcmd' ⎕wi 'xActiveConnection' cstr
+[23]      ⎕elx←elx
+[24]  
+[25]  :endif
+[26]  'ADOcsvcmd' ⎕wi 'xCommandText' sql
+[27]  
+[28]  n←10×ecflag ⋄ ⎕elx←'"⍙DBadoCSVCommand(2) ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry'
+[29]  retry:
+[30]  :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[31]  
+[32]  :if ×res ⍝ If results expected, put them in RecordSet and retrieve
+[33]      :if ~mt 'rst' ⎕wi 'self' ⍝ Delete the RecordSet in the case of a retry
+[34]          0 0⍴'rst' ⎕wi 'XClose' ⋄ 0 0⍴'rst' ⎕wi 'Delete'
+[35]      :endif
+[36]      0 0⍴'ADOcsvcmd' ⎕wi 'XExecute > rst'
+[37]      :if 0='rst' ⎕wi 'xBOF' ⋄ :orif 0='rst' ⎕wi 'xEOF'
+[38]          :select res
+[39]          :case 1 ⋄ res←'rst' ⎕wi 'XGetRows'
+[40]          :case 2 ⋄ res←'rst' ⎕wi 'XGetString' ('rst' ⎕wi 'adClipString') ¯1 ',' (⎕tcnl,⎕tclf)
+[41]          :endselect
+[42]      :else ⍝ No Records retrieved - XGetRows fails
+[43]          res←(0,('rst' ⎕wi 'xFields') ⎕wi 'xCount')⍴''
+[44]      :endif
+[45]      0 0⍴'rst' ⎕wi 'XClose'
+[46]      0 0⍴'rst' ⎕wi 'Delete'
+[47]  :else
+[48]      0 0⍴'ADOcsvcmd' ⎕wi 'XExecute'
+[49]  :endif
+[50]  ⎕elx←elx
+    ∇

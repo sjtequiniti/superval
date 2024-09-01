@@ -1,0 +1,58 @@
+    ∇ res←field Config_LoadShare parm;parent;∆;value
+[1]   ⍝ WLSWIN.sf#3
+[2]   ⍝ Function to allow user control on Sub-Processing Configuration
+[3]   
+[4]   parent←'fmMultiConfig.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]   
+[9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[10]      :if (∆←↑⍴HTTPnames)≠↑⍴HTTPresplimit
+[11]          (HTTPresplimit HTTPwssize HTTPabandon HTTPcheck HTTPshutdown HTTPeditable HTTPactive)←∆⌿¨HTTPresplimit HTTPwssize HTTPabandon HTTPcheck HTTPshutdown HTTPeditable HTTPactive
+[12]          :if ~mt parent ⎕wi '∆savecn'
+[13]              0 0⍴PrefFile SaveToFile 'Config_LoadShare' '' (pack ⍙VALUESdict ReadDictFile 'Config_LoadShare' '' 'names')
+[14]          :endif
+[15]      :endif
+[16]  
+[17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[18]      :repeat
+[19]          0 0⍴PrefFile ReadFile 'Config_LoadShare'
+[20]      :until 82=⎕dr 'EditMultiProc' ⋄ :orif 0=EditMultiProc ⋄ :orif 60<1E¯6×(TIMEBASE ⎕ts)-EditMultiProc ⋄ :orif 0=⎕dl 0.25
+[21]      :if ~mt parent ⎕wi '∆savecn'
+[22]          EditMultiProc←TIMEBASE ⎕ts
+[23]          0 0⍴PrefFile SaveToFile 'Config_LoadShare' '' (pack ⍙VALUESdict ReadDictFile 'Config_LoadShare' '' 'names')
+[24]      :endif
+[25]  
+[26]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[27]  
+[28]      :repeat
+[29]          :select ↑field
+[30]          :case 'cbMethSubProc'
+[31]              (parent,'fConfig.lvHTTPs') ⎕wi 'enabled' (∆←'H'=↑(parent,'fConfig.cbMethSubProc') ⎕wi 'text')
+[32]              ((parent,'fConfig.') ('edMaxSubProc' 'llMaxSubProc')) Win∆SetRelated 'visible' (~∆)
+[33]              ((parent,'fConfig.lvHTTPs') 'Config_LoadShare') Win∆UpdateListview GetHTTPBrokers
+[34]              0 0⍴(⊂'lvHTTPs') Config_LoadShare 'Change'
+[35]          :case 'lvHTTPs'
+[36]              value←(parent,'fConfig.lvHTTPs') ⎕wi 'value'
+[37]              (parent,'bnConfig_LoadShareAddBroker' ) ⎕wi 'enabled' (∆←'H'=↑(parent,'fConfig.cbMethSubProc') ⎕wi 'text')
+[38]              (parent,'bnConfig_LoadShareEditBroker') ⎕wi 'enabled' (∆^(1=⍴value)^∨/MatrixZWB HTTPeditable[value;])
+[39]              (parent,'bnConfig_LoadShareDelBroker' ) ⎕wi 'enabled' (∆^~mt value)
+[40]          :endselect
+[41]      :until mt field←1↓field
+[42]  
+[43]  :case 'Valid' ⍝ Routine specific validation
+[44]  
+[45]  :case 'Run'
+[46]      'fmSV.mMainTools.mSubProc.mBroker' ⎕wi 'enabled' ('H'=↑MethSubProc)
+[47]      0 0⍴PrefFile SaveToFile 'Config_LoadShare' '' (pack ⍙VALUESdict ReadDictFile 'Config_LoadShare' '' 'names')
+[48]      res←'Quit'
+[49]  
+[50]  :case 'Quit' ⍝ Deleting "other" variables
+[51]      :if ~mt parent ⎕wi '∆savecn'
+[52]          EditMultiProc←0
+[53]          0 0⍴PrefFile SaveToFile 'Config_LoadShare' '' (pack 'EditMultiProc') 1
+[54]      :endif
+[55]  
+[56]  :endselect
+    ∇

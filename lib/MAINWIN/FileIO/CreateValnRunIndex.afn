@@ -1,0 +1,90 @@
+    ∇ res←DBFile CreateValnRunIndex arg;index;mat;dic;∆;DBID;xxx;found;flag
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝   arg is a flag to indicate if just a header required
+[3]   ⍝ Returns a dictionary of possible runs for Consolidation selection
+[4]   ⍝  with the following key columns for selection:
+[5]   ⍝       method/capped/contper/insinc/target ben/vdate/exact age/fscopt(DB only)/leftservice/neind/aosind/prev vdate/s143/scenario/scenarioID
+[6]   ⍝  and the following columns for display:
+[7]   ⍝       Identifier/Basis Description/Output filename/Valuation timestamp/User/version&build/NEM Parent ID/numeric timestamp/Basis ID/Scheme Name
+[8]   ⍝  and, finally, a Chronology inidcator
+[9]   ⍝  from either (old) VALRES or (new) Database
+[10]  ⍝ Some fields don't exist in one or other sources or must be made from two fields
+[11]  
+[12]  :if XLCtl
+[13]      res←MATRIX 'method' 'capped' 'contper' 'insinc' 'vdate' 'exact age' 'fscopt' 'leftservice' 'aosind' 'prev vdate' 'scenario' 'scenarioID' 'neActID' 'classid' 'cat' 'summopt' 'csvind' 'aggopt' 'targetAB' 'newent' 's143' 'ID' 'outfile' 'outime' 'user' 'version' 'timestamp' 'BasisID' 'BasisCat' 'basisfile' 'sex' 'basisdesc' 'indcashflow' 'spousecf' 'valnfactor' 'desc' 'scheme'
+[14]  
+[15]      ⍝ Open Connection to Main Database
+[16]      :if arg ⋄ →end ⋄ :endif                 ⍝ Header only required
+[17]      :if flag←0=⎕nc 'DBFile' ⋄ DBFile←ValnResultsDB ⋄ :endif
+[18]      :if ~↑2↓(xxx DBID found)←DBFile ⍙DBOpen ¯1 ⋄ MDISPLAY (flag/'Valuation '),'Database not found' ⋄ →end ⋄ :endif
+[19]  
+[20]      0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'
+[21]      'ADOrst' ⎕wi 'XOpen' 'ResultsCategory' ('ADOcon' ⎕wi 'obj') ('ADOrst' ⎕wi 'adOpenStatic') ('ADOrst' ⎕wi 'adLockOptimistic')
+[22]      :if sqlDatabase ⋄ 'ADOrst' ⎕wi 'xFilter' ("DatabaseID=",⍕DBID) ⋄ :endif ⍝ find Scheme runs only record
+[23]      :if 0='ADOrst' ⎕wi 'xRecordCount' ⍝ Invalid Database
+[24]          MDISPLAY 'Not a compatible Valuation Database - no Stored Results found' ⋄ →end
+[25]      :elseif 9.2>zwb ↑1 ⍙DBadoCONCommand "SELECT SVVersion FROM Version" ⍝ Out-of-Date Database
+[26]          MDISPLAY 'Not a compatible Valuation Database - Stored Results changed in version 9.20' ⋄ →end
+[27]      :endif
+[28]  
+[29]      ⍝ selection columns (and ID)
+[30]      dic←(18↑[⎕io+1]res) OVER '' ⍙DBRemoveNulls 1 ⍙DBadoCONCommand "SELECT ValnMethod,BenCap,ControlPeriod,IncInsured,",("ValuationDate" ⍙DBDateFormat 'dd/mm/yyyy'),",ExactAge,AltScenario,AltScenLeftService,AOSCalcs,",("PrevValnDate" ⍙DBDateFormat 'dd/mm/yyyy'),",ScenarioDescription,ScenarioID,ActResultsID,ClassID,DataCategory,AgeSummary,AggValuation,CSVFile FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[31]      dic←dic amend 'targetAB' (((,' ') 'Past Service Liability ' 'Discontinuance Benefit ')[' PD'⍳∊¯1↑¨dic at 'method'])
+[32]  ⍝⍝⍝    dic←dic amend 'propt' ((rowsIn dic)/⊂'Yes')
+[33]      dic←dic amend 'newent' (('No' 'Yes')[⎕io+×dic at 'neActID'])
+[34]      dic←dic amend 'method' (3↑¨dic at 'method')
+[35]      dic←dic amend 's143' (('No' 'Yes')[⎕io+×'3'=¯1↑¨dic at 'method'])
+[36]      dic←dic amend 'contper' (,¨(⊂'BLI3') ⎕fmt¨∆×100>∆←dic at 'contper')
+[37]      dic←dic amend 'capped' (('No' 'Yes')[⎕io+×dic at 'capped'])
+[38]      dic←dic amend 'insinc' (('No' 'Yes')[⎕io+×dic at 'insinc'])
+[39]      dic←dic amend 'exact age' (('No' 'Yes')[⎕io+×dic at 'exact age'])
+[40]      dic←dic amend 'fscopt' (('No' 'Exclude Left Service' 'Include Left Service')[⎕io+∆×(∆←×dic at 'fscopt')+×dic at 'leftservice'])
+[41]      dic←dic amend 'aosind' (('No' 'Yes')[⎕io+×dic at 'aosind'])
+[42]      dic←dic amend 'summopt' (('No' 'Yes')[⎕io+×dic at 'summopt'])
+[43]      dic←dic amend 'csvind' (('No' 'Yes')[⎕io+×dic at 'csvind'])
+[44]      dic←dic amend 'aggopt' (('No' 'Yes')[⎕io+×dic at 'aggopt'])
+[45]      dic←dic amend 'scenario' (DLTB¨dic at 'scenario')
+[46]  ⍝⍝⍝    :if ∨/∆←(z←dic at 'prev vdate')∊⊂'#' ⎕wi 'null'
+[47]  ⍝⍝⍝        (∆/z)←⊂'' ⋄ dic←dic amend 'prev vdate' z
+[48]  ⍝⍝⍝    :endif
+[49]  
+[50]      dic←dic,(8↑[⎕io+1]21↓[⎕io+1]res) OVER 1 ⍙DBadoCONCommand "SELECT ResultsCategoryID,OutputFilename,",("ValnTimeStamp" ⍙DBDateFormat 'dd/mm/yyyy hh:mm:ss'),",UserName,RunVersion,ValnTimeStamp,BasisCategoryID,BasisCategory FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[51]      dic←dic,(6↑[⎕io+1]29↓[⎕io+1]res) OVER mat←DLTB¨1 ⍙DBadoCONCommand "SELECT BasisFile,Sex,BasisDescription,IndivCashFlow,AltScenSpouseCF,ValuationFactors FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[52]      mat[;⎕io+1]←('Females ' 'Males ')[⎕io+∊'M'=mat[;⎕io+1]]
+[53]      ∆←×dic at 'neActID'
+[54]      dic←dic amend 'desc' ((DLTB¨∆\∆/⊂':...........'),¨(' ' join ¨⎕split mat[;⍳3]),¨(~∆)\(~∆)/('' ' Interpolated')[⎕io+'Y'=↑¨dic at 'exact age'])
+[55]      dic←dic amend 'outfile' (DLTB¨dic at 'outfile')
+[56]      dic←dic amend 'user' (DLTB¨dic at 'user')
+[57]      dic←dic amend 'scheme' ((rowsIn dic)/⊂DLTB ↑1 ⍙DBadoCONCommand "SELECT ",(sqlDatabase/"SV"),"Scheme FROM Identification",sqlDatabase/" WHERE DatabaseID=",⍕DBID)
+[58]  
+[59]      ⍝ Create a filter to exclude those not finalised
+[60]      dic←dic for ∣,1 ⍙DBadoCONCommand "SELECT Finalised FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[61]  
+[62]      res←dic select ,res ⍝⍝⍝ ORDER is IMPORTANT (as matches are performed on the keys) - Not sure this is true anymore but ...
+[63]  
+[64]  end:0 0⍴'ADOrst' ⎕wi 'Delete'
+[65]      0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[66]      0 0⍴'ADOcon' ⎕wi 'Delete'
+[67]  
+[68]  :else
+[69]      res←0 17⍴''
+[70]      :if arg
+[71]      :orif 0∊⍴index←(ConsolidDir,'VALRES') ReadFile 'Index'
+[72]          :return
+[73]      :endif
+[74]  
+[75]  ??? add capped and user!
+[76]  
+[77]      ⍝ Extract columns from VALRES index - selection columns
+[78]      res←((⎕split index[;⍳3]),(m2n index[;120+⍳80]),(⎕split index[;60+⍳3]),'Y'=index[;,71]),' '
+[79]      res←res,(⎕split index[;10+⍳10]),('Y'=index[;,21]),0,('Y'=index[;,41]),('Y'=index[;,51])×(⊂index[;466+⍳26]) TLU¨⎕split index[;466+⍳26]
+[80]  
+[81]      ⍝ Add display columns
+[82]      res←res,⍳↑⍴index ⍝ Component Numbers
+[83]      z←'Y'=index[;51] ⍝ Identify New Entrant Runs
+[84]      res←res,(z sel¨':...........',¨m2n index[;280+⍳80]),¨(~z) sel¨m2n index[;200+⍳80]
+[85]      res←res,(m2n¨index[;360+⍳80]),(m2n index[;440+⍳26]),[1.5]m2n index[;492+⍳5]
+[86]  
+[87]      res←(res,0),0,(⊂ClientFile) ReadFile ¨(1↓⍳↑⍴index),¨⊂'' 'FRDCI'
+[88]  :endif
+    ∇

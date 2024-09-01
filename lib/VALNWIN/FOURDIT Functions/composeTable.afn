@@ -1,0 +1,116 @@
+    ∇ section←composeTable R;⎕IO;∆;is2D;counts;height;labels;descns;vl;seln;dn;lb;folds;t;tid;html;sc;sp;surprises;missing;ms;multi;tbl;X0;LONG;ages;CUTOFF;is2row;td;th;title;subtitle;firsts;vars;vals;vr;fr;cl;refs;vl∆
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Audit entry table t composed in HTML for page width PW under heading hdr
+[3]   ⍝ Result may contain multiple HTML tables
+[4]   ⍝ R: key & t
+[5]   ⍝ key: title & subtitle
+[6]   ⍝ t: (table) with keys: count desc first is2D label val var
+[7]   ⍝ Reads: AGEVARS AllGroups AllTables PW
+[8]   ⍝ Vern: sjt21sep15
+[9]   ⍝ Revn: dnp02oct15 * differentiates between implicit tables and singletons
+[10]  ⍝       sjt04nov15 * group all variables with 80+ values; use X0 to insert column
+[11]  ⍝       dnp04nov15 * age cols to tables
+[12]  ⍝       sjt09nov15 * cut off tables after age 119
+[13]  ⍝       sjt10nov15 * transpose 2-row tables
+[14]  ⍝       sjt14nov15 * HTML5 bookmark
+[15]  ⍝       sjt15nov15 * HTML5: use div.id as target of a.href
+[16]  ⍝       sjt06sep16 * groups as H2; table titles as H3
+[17]  ⍝       sjt09sep16 * subtitles sorted within titles
+[18]  ⍝       sjt16sep16 * bookmark first references
+[19]  ⍝       dnp07nov17 * Allows a table with just one entry
+[20]  ⎕IO←1
+[21]  LONG←41                                                                         ⍝ group long vars eg yield curves
+[22]  CUTOFF←120                                                                      ⍝ truncate tables after age 119
+[23]  (title subtitle)←↑(∆ t)←R
+[24]  ∆←'multi' 'count' 'desc' 'first' 'is2D' 'label' 'missing' 'surprise' 'txt' 'var'
+[25]  (multi counts descns firsts is2D labels missing surprises vals vars)←t at ∆     ⍝ values are formatted
+[26]  :if mt title ⋄ :orif (⊂title)∊usedtitles
+[27]      html←''
+[28]  :else
+[29]      html←⊂('a' xattr 'name' ('group',⍕AllGroups⍳⊂title)) xtag ,' '              ⍝ bookmark for title
+[30]      html←html, ⊂'h2' xtag xmlEscape aplEscape title                             ⍝ H2 title
+[31]      usedtitles←usedtitles,⊂title
+[32]  :endif
+[33]  :if ~mt subtitle
+[34]      html←html,⊂'h3' xtag xmlEscape aplEscape subtitle                           ⍝ H3 title
+[35]  :endif
+[36]  
+[37]  ⍝ 09nov15 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[38]  :if mt X0←(mt ∆) means ⍬ else ↑∆←(t for 'var' 'X0') at 'val'
+[39]      X0←(mt ∆) means ⍬ else ↑↑∆←(t for 'var' push AGEVARS) at 'val'
+[40]  :endif
+[41]  
+[42]  ⍝ Singleton Values
+[43]  :if ∨/seln←~multi∨is2D
+[44]      :if (+/seln)>1 ⋄ :orif ~LONG∊counts ⋄ :orif ~'X0'≡↑vars                     ⍝ exclude X0 provided solely for yield curves 04nov15
+[45]          (dn fr lb ms sp vl vr)←seln/¨descns firsts labels missing surprises vals vars
+[46]          folds←(+/seln)⌊⌊PW÷2⊃⍴⍕dn,[1.5] vl                                      ⍝ # folds
+[47]          ∆←('' 'missing' 'surprise')[⎕IO+2⊥⎕MIX sp ms]                           ⍝ classes for variables
+[48]          cl←((⊂'th'),¨((~mt¨∆)⎕REPL¨' '),¨∆) ,[1.5] ∆                            ⍝ classes for all cells
+[49]          vl∆←firstRef¨spin fr vl vr                                              ⍝ bookmark first references
+[50]          :if ∨/refs←'→'=↑¨vr                                                           ⍝ flag references to 1st values
+[51]              (refs/vl∆)←⊂''                                                          ⍝ suppress their current values
+[52]              (refs/lb)←('a' xattr¨ (⊂'href')pr¨((⊂'#first'),¨refs/vr~¨'→')) xtag¨ vr ⍝ link to first values
+[53]          :endif
+[54]          html←html,tableToHtml folds fold cl TD¨ lb ,[1.5] vl∆
+[55]      :endif
+[56]  :endif
+[57]  
+[58]  ⍝ 09nov15 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[59]  ⍝ Implicit tables
+[60]  counts←counts⌊LONG
+[61]  :for height :in srt nub (multi^~is2D)/counts                                    ⍝ tallest tables last
+[62]      seln←(counts=height) ^ multi ^ ~is2D
+[63]      :if (+/seln)>0                                                              ⍝  dnp07nov17 * previously (+/seln)>1
+[64]      :orif (AGEVARS∊vars) ≡ 0 0                                 ⍝ don't list ages alone
+[65]          (dn fr lb ms sp vl vr)←seln/¨descns firsts labels missing surprises vals vars
+[66]  
+[67]          ⍝ outbound references instead of displayed values
+[68]          :if ∨/refs←'→'=↑¨vr                                                           ⍝ flag references
+[69]              (refs/lb)←('a' xattr¨(⊂'href')pr¨((⊂'#first'),¨refs/vr))xtag¨refs/lb    ⍝ link col head to first reference
+[70]              (refs/sp)←0^refs/sp                                                     ⍝ reference => no surprise
+[71]              (refs/vl)←((tally¨refs/vl),¨1)⍴¨' '                                     ⍝ reference => no value displayed
+[72]          :endif
+[73]          sc←sp ⎕REPL¨⊂'surprise'
+[74]          tbl←⍉⊃m2n¨vl
+[75]          :if height=LONG
+[76]          :andif ~mt X0                                                           ⍝ we know what the ages are
+[77]              ages←(X0-1)+⍳tally tbl
+[78]  ⍝⍝⍝            :if ~∨/AGEVARS∊vars
+[79]  ⍝⍝⍝                tbl←(⍕¨ages), tbl                                              FIXME ⍝ prefix with ages?
+[80]  ⍝⍝⍝                (sc lb)←'' 'Age' push¨ sc lb                                   FIXME:  sc and lb get one extra value and rest don't
+[81]  ⍝⍝⍝            :endif                                                             FIXME:  spin crashes on [87]
+[82]              :if CUTOFF∊ages
+[83]                  tbl←(^\ages<CUTOFF)⌿tbl                                         ⍝ truncate
+[84]                  tbl←tbl⍪('' '...')[2-mt¨tbl[tally tbl;]~¨' ']
+[85]              :endif
+[86]          :endif
+[87]          vl∆←firstRef¨spin fr (sc TH¨lb) (vr~¨'←')                               ⍝ bookmark first references (inbound links)
+[88]          html←html,tableToHtml (((⍴tbl)⍴sc) TD¨tbl) vl∆
+[89]      :endif
+[90]  :endfor
+[91]  ⍝ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 09nov15
+[92]  
+[93]  ⍝ 2-row and 2-D tables
+[94]  :if ∨/is2D
+[95]      is2row←is2D\2=tally¨(t for is2D) at 'val'                                   ⍝ special case: 2 rows
+[96]      :if ∨/is2row
+[97]          th←(⊂'TH colspan="2"')xtag¨(t for is2row) at 'desc'
+[98]          td←⍉⊃m2n¨(⍙⍙fmt¨∆)⎕FMT¨∆←↑,/⎕SPLIT¨(t for is2row) at 'val'
+[99]          :if ~mt X0
+[100]             ages←(X0-1)+⍳tally td
+[101]             td←(^\ages<CUTOFF)⌿(⍕¨ages),td
+[102]             th←'<TH>Age</TH>' push th
+[103]         :endif
+[104]         td←TD¨td
+[105]         html←html,tableToHtml td th '2-row tables'
+[106]     :endif
+[107]     :for ∆ :in WHERE is2D ^ ~is2row                                             ⍝ individual values that are 2D tables
+[108]         html←html,tableToHtml (TD¨∆⊃vals) '' (∆⊃labels)
+[109]     :endfor
+[110] :endif
+[111] 
+[112] ⍝ enclosing DIV
+[113] tid←⍕AllTables⍳⊂subtitle
+[114] section←('div' xattr ('id' ('table',tid)) ('class' 'section')) xtag html        ⍝ container: DIV.section #table99
+    ∇

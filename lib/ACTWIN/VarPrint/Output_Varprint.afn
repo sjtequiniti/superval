@@ -1,1 +1,258 @@
-    ∇ Output∆Varprint IsAccrued;RP4;RF4;LP4;LF4;∆A;OLDAGES;idx;code1;code2;∆A;∆B;∆∆A;∆∆B;∆∆C;∆∆D;∆∆F;∆C[1]   ⍝ ACTWIN.sf#12[2]   [3]   :if ~IsAccrued[4]       vtpr1←↑(↑¨(⊂'VARPRINT.')⍷¨'\' Win∆Child¨m2n ⎕xnnames)⌿⎕xnnums ⍝ Get VarPrint File[5]       ⍝ Retirement Benefits[6]   [7]       OLDAGES←AGES[8]       AGES←AGES~(~⌈\0≠PROBS[;0])/X[9]       :if ~^/(RVD3+RVD4)=0[10]          AUDIT '3000' ⋄ AUDIT '3010' ⋄ AUDIT '3015'[11]      :endif[12]      :if ~^/(RVT2+RVD2)=0[13]          AUDIT '3100' ⋄ AUDIT '3110' ⋄ AUDIT '3115'[14]      :endif[15]      :if ~^/(RFT2+RFD2)=0[16]          AUDIT '3120' ⋄ AUDIT '3130'[17]      :endif[18]      :if ~^/(RVT1+RVD1)=0[19]          AUDIT '3200' ⋄ AUDIT '3210' ⋄ AUDIT '3215'[20]      :endif[21]      :if ~^/(RFT1+RFD1)=0[22]          AUDIT '3220' ⋄ AUDIT '3230'[23]      :endif[24]      :if ~^/(RVT6+RVD6)=0[25]          AUDIT '3300' ⋄ AUDIT '3310' ⋄ AUDIT '3315'[26]      :endif[27]      :if ~^/(RFT6+RFD6)=0[28]          AUDIT '3320' ⋄ AUDIT '3330'[29]      :endif[30]      :if ~^/(RVT7+RVD7)=0[31]          AUDIT '3400' ⋄ AUDIT '3410' ⋄ AUDIT '3415'[32]      :endif[33]      :if ~^/(RFT7+RFD7)=0[34]          AUDIT '3420' ⋄ AUDIT '3430'[35]      :endif[36]      RP4←0⌈UFUNDMP-UFUNDR ⋄ RF4←0⌈FUFUNDMP-FUFUNDR[37]      :if ~^/RP4=0[38]          AUDIT '3600'[39]      :endif[40]      AGES←OLDAGES[41]  [42]      ⍝ Death In Service Benefits[43]      :if WOBAS≠0 ⋄ :andif ~ValMeth≡'EAN'[44]          OLDAGES←AGES[45]          :if WINSDIS ⍝ Insured[46]              AGES←X0+⍳WOAVPER[47]              ∆A←,'I2' ⎕FMT WOAVPER[48]              :select WOBAS[49]                  :case 2[50]                      AUDIT '4020a' ⋄ AUDIT '4021a'[51]                  :case 3[52]                      AUDIT '4020b' ⋄ AUDIT '4021b'[53]                  :case 4[54]                      AUDIT '4020c' ⋄ AUDIT '4021c'[55]                  :case 5[56]                      AUDIT '4020d' ⋄ AUDIT '4021d' ⋄ AUDIT '4022'[57]              :endselect[58]              AUDIT '4100'[59]          :else[60]              AUDIT '4000' ⋄ AUDIT '4010'[61]              :select WOBAS[62]                  :case 2[63]                      AUDIT '4020a' ⋄ AUDIT '4021a'[64]                  :case 3[65]                      AUDIT '4020b' ⋄ AUDIT '4021b'[66]                  :case 4[67]                      AUDIT '4020c' ⋄ AUDIT '4021c'[68]                  :case 5[69]                      AUDIT '4020c' ⋄ AUDIT '4021c'[70]                      ⍝AUDIT '4020d' ⋄ AUDIT '4021d' ⋄ AUDIT '4022'[71]              :endselect[72]              AUDIT '4030' ⋄ AUDIT '4031' ⋄ AUDIT '4035'[73]          :endif[74]          AGES←OLDAGES[75]      :endif[76]      :if ~ValMeth≡'EAN'[77]          :select DISRCT[78]              :case 1[79]                  AUDIT '4200' ⋄ AUDIT '4205'[80]              :case 2[81]                  AUDIT '4201' ⋄ AUDIT '4205'[82]          :endselect[83]      :endif[84]      :if (GLMULT≠0)^LSINSDIS[85]          ∆A←,'I2' ⎕FMT GLAVPER[86]          OLDAGES←AGES ⋄ AGES←X0+⍳GLAVPER[87]          AUDIT '4300'[88]          AGES←OLDAGES[89]      :endif[90]  [91]      ⍝ Ill Health Benefits[92]      OLDAGES←AGES ⋄ AGES←AGES~(~⌈\0≠PROBS[;2])/X[93]      :if ~^/(IVD3+IVD4)=0[94]          AUDIT '5000' ⋄ AUDIT '5010' ⋄ AUDIT '5015'[95]      :endif[96]      :if ~^/(IVT2+IVD2)=0[97]          AUDIT '5200' ⋄ AUDIT '5210' ⋄ AUDIT '5215'[98]      :endif[99]      :if ~^/(IFT2+IFD2)=0[100]         AUDIT '5220' ⋄ AUDIT '5230'[101]     :endif[102]     :if ~^/(IVT1+IVD1)=0[103]         AUDIT '5400' ⋄ AUDIT '5410' ⋄ AUDIT '5415'[104]     :endif[105]     :if ~^/(IFT1+IFD1)=0[106]         AUDIT '5420' ⋄ AUDIT '5430'[107]     :endif[108]     :if ~^/(IVT6+IVD6)=0[109]         AUDIT '5500' ⋄ AUDIT '5510' ⋄ AUDIT '5515'[110]     :endif[111]     :if ~^/(IFT6+IFD6)=0[112]         AUDIT '5520' ⋄ AUDIT '5530'[113]     :endif[114]     :if ~^/(IVT7+IVD7)=0[115]         AUDIT '5600' ⋄ AUDIT '5610' ⋄ AUDIT '5615'[116]     :endif[117]     :if ~^/(IFT7+IFD7)=0[118]         AUDIT '5620' ⋄ AUDIT '5630'[119]     :endif[120]     AGES←OLDAGES[121] :endif[122] [123] ⍝ Leaving Service Benefits[124] [125] DOVERD←DOVERD2←0[126] [127] :if ~^/(WVD3+WVD4)=0[128]     AUDIT '6000' ⋄ AUDIT '6010' ⋄ AUDIT '6015'[129] :endif[130] :if ~^/(WVT2+WVD2)=0[131]     AUDIT '6200' ⋄ AUDIT '6210' ⋄ AUDIT '6215'[132] :endif[133] :if ~^/(WFT2+WFD2)=0[134]     AUDIT '6220' ⋄ AUDIT '6230'[135] :endif[136] :if ~^/(WVT2+WVD2)=0[137]     AUDIT '6240'[138] :endif[139] :if ~^/(WVT1+WVD1)=0[140]     AUDIT '6300' ⋄ AUDIT '6310' ⋄ AUDIT '6315'[141] :endif[142] :if ~^/(WFT1+WFD1)=0[143]     AUDIT '6320' ⋄ AUDIT '6330'[144] :endif[145] :if ~^/(WVT1+WVD1)=0[146]     AUDIT '6340'[147] :endif[148] :if ~^/(WVT6+WVD6)=0[149]     AUDIT '6350' ⋄ AUDIT '6360' ⋄ AUDIT '6365'[150] :endif[151] :if ~^/(WFT6+WFD6)=0[152]     AUDIT '6370' ⋄ AUDIT '6380'[153] :endif[154] :if ~^/(WVT6+WVD6)=0[155]     AUDIT '6390'[156] :endif[157] :if ~^/(WVT7+WVD7)=0[158]     AUDIT '6400' ⋄ AUDIT '6410' ⋄ AUDIT '6415'[159] :endif[160] :if ~^/(WFT7+WFD7)=0[161]     AUDIT '6420' ⋄ AUDIT '6430'[162] :endif[163] :if ~^/(WVT7+WVD7)=0[164]     AUDIT '6440'[165] :endif[166] :if 0≠DDINDS[167]     ∆C←'Dyn: ',DIDDYN,'  Rev: ',⍕DIDREVDEF[168]     AUDIT '6490'[169]     AUDIT '6491' ⋄ AUDIT '6492'[170]     :if DIDBAS=1[171]         AUDIT '6493' ⋄ AUDIT '6494' ⋄ AUDIT '6503' ⋄ AUDIT '6504'[172]     :else[173]         AUDIT '6502'[174]     :endif[175] :endif[176] :select DDINDL[177]     :case 1[178]         :if ~IsAccrued ⋄ AUDIT '6505a' ⋄ :endif[179]     :case 2[180]         :if ~IsAccrued ⋄ AUDIT '6505b' ⋄ :endif[181]     :case 3[182]         AUDIT '6505c'[183]     :case 4[184]         AUDIT '6505e' ⋄ AUDIT '6508' ⋄ AUDIT '6509'[185] :endselect[186] :if CONTOP ⋄ :andif ~^/LTONTOP=0[187]     AUDIT '6510' ⋄ AUDIT '6510a'[188] :endif[189] :if ~CONTOP ⋄ :andif ~^/LCASH=0[190]     AUDIT '6510' ⋄ AUDIT '6510c'[191] :endif[192] :if IsAccrued[193]     LP4←0⌈UFUND-(UFUNDW-FUFUNDW)[194]     :if ~^/LP4=0[195]         AUDIT '6600b'[196]     :endif[197]     AUDIT '7000' ⋄ AUDIT '7010' ⋄ AUDIT '7020'[198] :else[199]     LP4←0⌈UFUNDMP-UFUNDW ⋄ LF4←0⌈FUFUNDMP-FUFUNDW[200]     :if ~^/LP4=0[201]         AUDIT '6600a'[202]     :endif[203] :endif[204] ⍝[205] :if ClntCode=3[206]     AUDIT 'IR00'[207]     :for idx :in 1+⍳16[208]         ∆∆F←(⍎'RVTI',¯2↑'0',⍕idx)+⍎'RVDI',¯2↑'0',⍕idx[209]         :if ~^/∆∆F=0[210]             ∆∆A←⍎'IPEN',¯2↑'0',⍕idx[211]             ∆∆B←⍎'ISPEN',¯2↑'0',⍕idx[212]             ∆∆C←(⍎'RAAI',¯2↑'0',⍕idx)+⍎'RATI',¯2↑'0',⍕idx[213]             ∆∆D←(⍎'LAAI',¯2↑'0',⍕idx)+⍎'LATI',¯2↑'0',⍕idx[214]             ∆A←,↑¯2↑'0',⍕idx[215]             ∆B←,¯1↑⍕idx[216]             AUDIT 'IR⍺ß'[217]         :endif[218]     :endfor[219]     :if ~ILLIND=0[220]         :for idx :in 1+⍳16[221]             ∆∆F←(⍎'IVTI',¯2↑'0',⍕idx)+⍎'IVDI',¯2↑'0',⍕idx[222]             :if ~^/∆∆F=0[223]                 ∆∆A←⍎'IIPEN',¯2↑'0',⍕idx[224]                 ∆∆B←⍎'IISPEN',¯2↑'0',⍕idx[225]                 ∆∆C←(⍎'IAAI',¯2↑'0',⍕idx)+⍎'IATI',¯2↑'0',⍕idx[226]                 ∆∆D←(⍎'ISAI',¯2↑'0',⍕idx)+⍎'ISTI',¯2↑'0',⍕idx[227]                 ∆A←,↑¯2↑'0',⍕idx[228]                 ∆B←,¯1↑⍕idx[229]                 AUDIT 'II⍺ß'[230]                 ∆∆F←(⍎'IFTI',¯2↑'0',⍕idx)+⍎'IFDI',¯2↑'0',⍕idx[231]                 :if ~^/∆∆F=0[232]                     ∆∆A←⍎'IIFPEN',¯2↑'0',⍕idx[233]                     ∆∆B←⍎'IISFPEN',¯2↑'0',⍕idx[234]                     AUDIT 'IF⍺ß'[235]                 :endif[236]             :endif[237]         :endfor[238]     :endif[239]     :for idx :in 1+⍳16[240]         ∆∆F←(⍎'WVTI',¯2↑'0',⍕idx)+⍎'WVDI',¯2↑'0',⍕idx[241]         :if ~^/∆∆F=0[242]             ∆∆A←⍎'IPUP',¯2↑'0',⍕idx[243]             ∆∆B←⍎'ISPUP',¯2↑'0',⍕idx[244]             ∆∆C←(⍎'RWAI',¯2↑'0',⍕idx)+⍎'RWTI',¯2↑'0',⍕idx[245]             ∆∆D←(⍎'LWAI',¯2↑'0',⍕idx)+⍎'LWTI',¯2↑'0',⍕idx[246]             ∆A←,↑¯2↑'0',⍕idx[247]             ∆B←,¯1↑⍕idx[248]             AUDIT 'IW⍺ß'[249]         :endif[250]     :endfor[251] :endif[252] :if XLCtl ⍝ Only for non-limited users[253]     XV_VarPrint vtpr1[254] :endif[255] ⎕NUNTIE vtpr1[256] vtpr1←↑(↑¨(⊂'ACCPRINT.')⍷¨'\' Win∆Child¨m2n ⎕xnnames)⌿⎕xnnums ⍝ Get AccPrint File    ∇
+    ∇ Output∆Varprint IsAccrued;RP4;RF4;LP4;LF4;∆A;OLDAGES;idx;code1;code2;∆A;∆B;∆∆A;∆∆B;∆∆C;∆∆D;∆∆F;∆C
+[1]   ⍝ ACTWIN.sf#12
+[2]   
+[3]   :if ~IsAccrued
+[4]       vtpr1←↑(↑¨(⊂'VARPRINT.')⍷¨'\' Win∆Child¨m2n ⎕xnnames)⌿⎕xnnums ⍝ Get VarPrint File
+[5]       ⍝ Retirement Benefits
+[6]   
+[7]       OLDAGES←AGES
+[8]       AGES←AGES~(~⌈\0≠PROBS[;0])/X
+[9]       :if ~^/(RVD3+RVD4)=0
+[10]          AUDIT '3000' ⋄ AUDIT '3010' ⋄ AUDIT '3015'
+[11]      :endif
+[12]      :if ~^/(RVT2+RVD2)=0
+[13]          AUDIT '3100' ⋄ AUDIT '3110' ⋄ AUDIT '3115'
+[14]      :endif
+[15]      :if ~^/(RFT2+RFD2)=0
+[16]          AUDIT '3120' ⋄ AUDIT '3130'
+[17]      :endif
+[18]      :if ~^/(RVT1+RVD1)=0
+[19]          AUDIT '3200' ⋄ AUDIT '3210' ⋄ AUDIT '3215'
+[20]      :endif
+[21]      :if ~^/(RFT1+RFD1)=0
+[22]          AUDIT '3220' ⋄ AUDIT '3230'
+[23]      :endif
+[24]      :if ~^/(RVT6+RVD6)=0
+[25]          AUDIT '3300' ⋄ AUDIT '3310' ⋄ AUDIT '3315'
+[26]      :endif
+[27]      :if ~^/(RFT6+RFD6)=0
+[28]          AUDIT '3320' ⋄ AUDIT '3330'
+[29]      :endif
+[30]      :if ~^/(RVT7+RVD7)=0
+[31]          AUDIT '3400' ⋄ AUDIT '3410' ⋄ AUDIT '3415'
+[32]      :endif
+[33]      :if ~^/(RFT7+RFD7)=0
+[34]          AUDIT '3420' ⋄ AUDIT '3430'
+[35]      :endif
+[36]      RP4←0⌈UFUNDMP-UFUNDR ⋄ RF4←0⌈FUFUNDMP-FUFUNDR
+[37]      :if ~^/RP4=0
+[38]          AUDIT '3600'
+[39]      :endif
+[40]      AGES←OLDAGES
+[41]  
+[42]      ⍝ Death In Service Benefits
+[43]      :if WOBAS≠0 ⋄ :andif ~ValMeth≡'EAN'
+[44]          OLDAGES←AGES
+[45]          :if WINSDIS ⍝ Insured
+[46]              AGES←X0+⍳WOAVPER
+[47]              ∆A←,'I2' ⎕FMT WOAVPER
+[48]              :select WOBAS
+[49]                  :case 2
+[50]                      AUDIT '4020a' ⋄ AUDIT '4021a'
+[51]                  :case 3
+[52]                      AUDIT '4020b' ⋄ AUDIT '4021b'
+[53]                  :case 4
+[54]                      AUDIT '4020c' ⋄ AUDIT '4021c'
+[55]                  :case 5
+[56]                      AUDIT '4020d' ⋄ AUDIT '4021d' ⋄ AUDIT '4022'
+[57]              :endselect
+[58]              AUDIT '4100'
+[59]          :else
+[60]              AUDIT '4000' ⋄ AUDIT '4010'
+[61]              :select WOBAS
+[62]                  :case 2
+[63]                      AUDIT '4020a' ⋄ AUDIT '4021a'
+[64]                  :case 3
+[65]                      AUDIT '4020b' ⋄ AUDIT '4021b'
+[66]                  :case 4
+[67]                      AUDIT '4020c' ⋄ AUDIT '4021c'
+[68]                  :case 5
+[69]                      AUDIT '4020c' ⋄ AUDIT '4021c'
+[70]                      ⍝AUDIT '4020d' ⋄ AUDIT '4021d' ⋄ AUDIT '4022'
+[71]              :endselect
+[72]              AUDIT '4030' ⋄ AUDIT '4031' ⋄ AUDIT '4035'
+[73]          :endif
+[74]          AGES←OLDAGES
+[75]      :endif
+[76]      :if ~ValMeth≡'EAN'
+[77]          :select DISRCT
+[78]              :case 1
+[79]                  AUDIT '4200' ⋄ AUDIT '4205'
+[80]              :case 2
+[81]                  AUDIT '4201' ⋄ AUDIT '4205'
+[82]          :endselect
+[83]      :endif
+[84]      :if (GLMULT≠0)^LSINSDIS
+[85]          ∆A←,'I2' ⎕FMT GLAVPER
+[86]          OLDAGES←AGES ⋄ AGES←X0+⍳GLAVPER
+[87]          AUDIT '4300'
+[88]          AGES←OLDAGES
+[89]      :endif
+[90]  
+[91]      ⍝ Ill Health Benefits
+[92]      OLDAGES←AGES ⋄ AGES←AGES~(~⌈\0≠PROBS[;2])/X
+[93]      :if ~^/(IVD3+IVD4)=0
+[94]          AUDIT '5000' ⋄ AUDIT '5010' ⋄ AUDIT '5015'
+[95]      :endif
+[96]      :if ~^/(IVT2+IVD2)=0
+[97]          AUDIT '5200' ⋄ AUDIT '5210' ⋄ AUDIT '5215'
+[98]      :endif
+[99]      :if ~^/(IFT2+IFD2)=0
+[100]         AUDIT '5220' ⋄ AUDIT '5230'
+[101]     :endif
+[102]     :if ~^/(IVT1+IVD1)=0
+[103]         AUDIT '5400' ⋄ AUDIT '5410' ⋄ AUDIT '5415'
+[104]     :endif
+[105]     :if ~^/(IFT1+IFD1)=0
+[106]         AUDIT '5420' ⋄ AUDIT '5430'
+[107]     :endif
+[108]     :if ~^/(IVT6+IVD6)=0
+[109]         AUDIT '5500' ⋄ AUDIT '5510' ⋄ AUDIT '5515'
+[110]     :endif
+[111]     :if ~^/(IFT6+IFD6)=0
+[112]         AUDIT '5520' ⋄ AUDIT '5530'
+[113]     :endif
+[114]     :if ~^/(IVT7+IVD7)=0
+[115]         AUDIT '5600' ⋄ AUDIT '5610' ⋄ AUDIT '5615'
+[116]     :endif
+[117]     :if ~^/(IFT7+IFD7)=0
+[118]         AUDIT '5620' ⋄ AUDIT '5630'
+[119]     :endif
+[120]     AGES←OLDAGES
+[121] :endif
+[122] 
+[123] ⍝ Leaving Service Benefits
+[124] 
+[125] DOVERD←DOVERD2←0
+[126] 
+[127] :if ~^/(WVD3+WVD4)=0
+[128]     AUDIT '6000' ⋄ AUDIT '6010' ⋄ AUDIT '6015'
+[129] :endif
+[130] :if ~^/(WVT2+WVD2)=0
+[131]     AUDIT '6200' ⋄ AUDIT '6210' ⋄ AUDIT '6215'
+[132] :endif
+[133] :if ~^/(WFT2+WFD2)=0
+[134]     AUDIT '6220' ⋄ AUDIT '6230'
+[135] :endif
+[136] :if ~^/(WVT2+WVD2)=0
+[137]     AUDIT '6240'
+[138] :endif
+[139] :if ~^/(WVT1+WVD1)=0
+[140]     AUDIT '6300' ⋄ AUDIT '6310' ⋄ AUDIT '6315'
+[141] :endif
+[142] :if ~^/(WFT1+WFD1)=0
+[143]     AUDIT '6320' ⋄ AUDIT '6330'
+[144] :endif
+[145] :if ~^/(WVT1+WVD1)=0
+[146]     AUDIT '6340'
+[147] :endif
+[148] :if ~^/(WVT6+WVD6)=0
+[149]     AUDIT '6350' ⋄ AUDIT '6360' ⋄ AUDIT '6365'
+[150] :endif
+[151] :if ~^/(WFT6+WFD6)=0
+[152]     AUDIT '6370' ⋄ AUDIT '6380'
+[153] :endif
+[154] :if ~^/(WVT6+WVD6)=0
+[155]     AUDIT '6390'
+[156] :endif
+[157] :if ~^/(WVT7+WVD7)=0
+[158]     AUDIT '6400' ⋄ AUDIT '6410' ⋄ AUDIT '6415'
+[159] :endif
+[160] :if ~^/(WFT7+WFD7)=0
+[161]     AUDIT '6420' ⋄ AUDIT '6430'
+[162] :endif
+[163] :if ~^/(WVT7+WVD7)=0
+[164]     AUDIT '6440'
+[165] :endif
+[166] :if 0≠DDINDS
+[167]     ∆C←'Dyn: ',DIDDYN,'  Rev: ',⍕DIDREVDEF
+[168]     AUDIT '6490'
+[169]     AUDIT '6491' ⋄ AUDIT '6492'
+[170]     :if DIDBAS=1
+[171]         AUDIT '6493' ⋄ AUDIT '6494' ⋄ AUDIT '6503' ⋄ AUDIT '6504'
+[172]     :else
+[173]         AUDIT '6502'
+[174]     :endif
+[175] :endif
+[176] :select DDINDL
+[177]     :case 1
+[178]         :if ~IsAccrued ⋄ AUDIT '6505a' ⋄ :endif
+[179]     :case 2
+[180]         :if ~IsAccrued ⋄ AUDIT '6505b' ⋄ :endif
+[181]     :case 3
+[182]         AUDIT '6505c'
+[183]     :case 4
+[184]         AUDIT '6505e' ⋄ AUDIT '6508' ⋄ AUDIT '6509'
+[185] :endselect
+[186] :if CONTOP ⋄ :andif ~^/LTONTOP=0
+[187]     AUDIT '6510' ⋄ AUDIT '6510a'
+[188] :endif
+[189] :if ~CONTOP ⋄ :andif ~^/LCASH=0
+[190]     AUDIT '6510' ⋄ AUDIT '6510c'
+[191] :endif
+[192] :if IsAccrued
+[193]     LP4←0⌈UFUND-(UFUNDW-FUFUNDW)
+[194]     :if ~^/LP4=0
+[195]         AUDIT '6600b'
+[196]     :endif
+[197]     AUDIT '7000' ⋄ AUDIT '7010' ⋄ AUDIT '7020'
+[198] :else
+[199]     LP4←0⌈UFUNDMP-UFUNDW ⋄ LF4←0⌈FUFUNDMP-FUFUNDW
+[200]     :if ~^/LP4=0
+[201]         AUDIT '6600a'
+[202]     :endif
+[203] :endif
+[204] ⍝
+[205] :if ClntCode=3
+[206]     AUDIT 'IR00'
+[207]     :for idx :in 1+⍳16
+[208]         ∆∆F←(⍎'RVTI',¯2↑'0',⍕idx)+⍎'RVDI',¯2↑'0',⍕idx
+[209]         :if ~^/∆∆F=0
+[210]             ∆∆A←⍎'IPEN',¯2↑'0',⍕idx
+[211]             ∆∆B←⍎'ISPEN',¯2↑'0',⍕idx
+[212]             ∆∆C←(⍎'RAAI',¯2↑'0',⍕idx)+⍎'RATI',¯2↑'0',⍕idx
+[213]             ∆∆D←(⍎'LAAI',¯2↑'0',⍕idx)+⍎'LATI',¯2↑'0',⍕idx
+[214]             ∆A←,↑¯2↑'0',⍕idx
+[215]             ∆B←,¯1↑⍕idx
+[216]             AUDIT 'IR⍺ß'
+[217]         :endif
+[218]     :endfor
+[219]     :if ~ILLIND=0
+[220]         :for idx :in 1+⍳16
+[221]             ∆∆F←(⍎'IVTI',¯2↑'0',⍕idx)+⍎'IVDI',¯2↑'0',⍕idx
+[222]             :if ~^/∆∆F=0
+[223]                 ∆∆A←⍎'IIPEN',¯2↑'0',⍕idx
+[224]                 ∆∆B←⍎'IISPEN',¯2↑'0',⍕idx
+[225]                 ∆∆C←(⍎'IAAI',¯2↑'0',⍕idx)+⍎'IATI',¯2↑'0',⍕idx
+[226]                 ∆∆D←(⍎'ISAI',¯2↑'0',⍕idx)+⍎'ISTI',¯2↑'0',⍕idx
+[227]                 ∆A←,↑¯2↑'0',⍕idx
+[228]                 ∆B←,¯1↑⍕idx
+[229]                 AUDIT 'II⍺ß'
+[230]                 ∆∆F←(⍎'IFTI',¯2↑'0',⍕idx)+⍎'IFDI',¯2↑'0',⍕idx
+[231]                 :if ~^/∆∆F=0
+[232]                     ∆∆A←⍎'IIFPEN',¯2↑'0',⍕idx
+[233]                     ∆∆B←⍎'IISFPEN',¯2↑'0',⍕idx
+[234]                     AUDIT 'IF⍺ß'
+[235]                 :endif
+[236]             :endif
+[237]         :endfor
+[238]     :endif
+[239]     :for idx :in 1+⍳16
+[240]         ∆∆F←(⍎'WVTI',¯2↑'0',⍕idx)+⍎'WVDI',¯2↑'0',⍕idx
+[241]         :if ~^/∆∆F=0
+[242]             ∆∆A←⍎'IPUP',¯2↑'0',⍕idx
+[243]             ∆∆B←⍎'ISPUP',¯2↑'0',⍕idx
+[244]             ∆∆C←(⍎'RWAI',¯2↑'0',⍕idx)+⍎'RWTI',¯2↑'0',⍕idx
+[245]             ∆∆D←(⍎'LWAI',¯2↑'0',⍕idx)+⍎'LWTI',¯2↑'0',⍕idx
+[246]             ∆A←,↑¯2↑'0',⍕idx
+[247]             ∆B←,¯1↑⍕idx
+[248]             AUDIT 'IW⍺ß'
+[249]         :endif
+[250]     :endfor
+[251] :endif
+[252] :if XLCtl ⍝ Only for non-limited users
+[253]     XV_VarPrint vtpr1
+[254] :endif
+[255] ⎕NUNTIE vtpr1
+[256] vtpr1←↑(↑¨(⊂'ACCPRINT.')⍷¨'\' Win∆Child¨m2n ⎕xnnames)⌿⎕xnnums ⍝ Get AccPrint File
+    ∇

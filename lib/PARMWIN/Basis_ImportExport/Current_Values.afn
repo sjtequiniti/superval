@@ -1,1 +1,22 @@
-    ∇ Current_Values;SSName;MaxRow;MaxCol;z;value;i[1]   ⍝ PARMWIN.sf#19[2]   [3]   SSName←parent,"ssParms"[4]   [5]   (MaxRow MaxCol)←⍴CurrValue[6]   SSName ⎕wi "MaxRow" MaxRow[7]   SSName Win∆F1SSSetSelection 1 1 MaxRow MaxCol[8]   SSName ⎕wi 'XFontColor' 0 ⍝(256⊥0 0 0)[9]   :for i :in ⍳MaxCol[10]      value←⊃CurrValue[;i][11]      SSName ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,i) (m2n ⎕av[209 151] REPL value)[12]      :for z :in WHERE (⊂'*Invalid Target*')≡¨m2n value[13]          SSName Win∆F1SSSetSelection 4⍴z i[14]          SSName ⎕wi 'XFontColor' (256⊥0 0 255)[15]      :endfor[16]  :endfor[17]  SSName ⎕wi "SetColWidthAuto" ¯1 1 MaxRow MaxCol 0[18]  (MaxRow MaxCol)←SSName ⎕wi "xGetActiveCell" 0 0[19]  SSName ⎕wi "xSetActiveCell" (MaxRow⌊SSName ⎕wi "xMaxRow") (MaxCol⌊SSName ⎕wi "xMaxCol")[20]  :if 1<↑⍴CurrValue ⋄ SSName ⎕wi 'xFixedRows' 1 ⋄ :endif    ∇
+    ∇ Current_Values;SSName;MaxRow;MaxCol;z;value;i
+[1]   ⍝ PARMWIN.sf#19
+[2]   
+[3]   SSName←parent,"ssParms"
+[4]   
+[5]   (MaxRow MaxCol)←⍴CurrValue
+[6]   SSName ⎕wi "MaxRow" MaxRow
+[7]   SSName Win∆F1SSSetSelection 1 1 MaxRow MaxCol
+[8]   SSName ⎕wi 'XFontColor' 0 ⍝(256⊥0 0 0)
+[9]   :for i :in ⍳MaxCol
+[10]      value←⊃CurrValue[;i]
+[11]      SSName ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,i) (m2n ⎕av[209 151] REPL value)
+[12]      :for z :in WHERE (⊂'*Invalid Target*')≡¨m2n value
+[13]          SSName Win∆F1SSSetSelection 4⍴z i
+[14]          SSName ⎕wi 'XFontColor' (256⊥0 0 255)
+[15]      :endfor
+[16]  :endfor
+[17]  SSName ⎕wi "SetColWidthAuto" ¯1 1 MaxRow MaxCol 0
+[18]  (MaxRow MaxCol)←SSName ⎕wi "xGetActiveCell" 0 0
+[19]  SSName ⎕wi "xSetActiveCell" (MaxRow⌊SSName ⎕wi "xMaxRow") (MaxCol⌊SSName ⎕wi "xMaxCol")
+[20]  :if 1<↑⍴CurrValue ⋄ SSName ⎕wi 'xFixedRows' 1 ⋄ :endif
+    ∇

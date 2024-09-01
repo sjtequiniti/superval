@@ -1,0 +1,178 @@
+    ∇ res←field Deferreds_Basis parm;SSName;parent;page;Error
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Function to allow user control on Deferreds Basis
+[3]   
+[4]   parent←'fmSV.sDefBasis.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'TabOrder'
+[8]       :if basisTabOrder
+[9]           (parent,'pgPUPs') ⎕wi 'order' (¯0.5+(parent,'pgUnderpin') ⎕wi 'order')
+[10]      :endif
+[11]  
+[12]  :case 'Pre-Audit' ⍝ Adjustments to screen variables (particularly S21 Migration)
+[13]      S21Migration 'Deferreds'
+[14]      CashMigration 'Deferreds'
+[15]      FixRelFields 'Deferreds'
+[16]      'Deferreds' TVBasisUpdate 'All'
+[17]  
+[18]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[19]      changedParm←0
+[20]      0 0⍴Deferreds_Basis 'Lock' ⍝ Lock Spreadsheet Cells
+[21]      Def_Main 'Vars'
+[22]      Def_Financial 'Vars'
+[23]      Def_Legislation 'Vars'
+[24]      Def_PPF 'Vars'
+[25]      Def_Mortality 'Vars'
+[26]      Def_Demographic 'Vars'
+[27]      Def_Spouse 'Vars'
+[28]      Def_PUPs 'Vars'
+[29]      Def_Membership 'Vars'
+[30]      Def_RetPension 'Vars'
+[31]      Def_RetCash 'Vars'
+[32]      Def_RetCOT 'Vars'
+[33]      Def_Death 'Vars'
+[34]      Def_TVBasis 'Vars'
+[35]      Def_TVMortality 'Vars'
+[36]      Def_Underpin 'Vars'
+[37]      Def_IndPUPs 'Vars'
+[38]      Def_NSPUPs 'Vars'
+[39]      comment_var←'Comment_Deferreds_Basis'
+[40]      TVSameSuppress 1
+[41]  
+[42]  :case 'Init' ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[43]      Display∆Access basAccess[1 2]
+[44]      Def_Main 'Init'
+[45]      Def_Financial 'Init'
+[46]      Def_Legislation 'Init'
+[47]      Def_PPF 'Init'
+[48]      Def_Mortality 'Init'
+[49]      Def_Demographic 'Init'
+[50]      Def_Spouse 'Init'
+[51]      Def_PUPs 'Init'
+[52]      Def_Membership 'Init'
+[53]      Def_RetPension 'Init'
+[54]      Def_RetCash 'Init'
+[55]      Def_RetCOT 'Init'
+[56]      Def_Death 'Init'
+[57]      Def_TVBasis 'Init'
+[58]      Def_TVMortality 'Init'
+[59]      Def_Underpin 'Init'
+[60]      Def_IndPUPs 'Init'
+[61]      Def_NSPUPs 'Init'
+[62]  
+[63]  :case 'Lock'
+[64]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[65]      :else             ⋄ SSName←(⊂parent),¨'pgPUPs.fPUPs.ssPUPs' 'pgIndPUPs.fIndPUPs.ssIndPUPs'
+[66]      :endif
+[67]      :for SSName :in SSName
+[68]          :if ~mt SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1) ⋄ :endif
+[69]      :endfor
+[70]  
+[71]  :case 'Unlock'
+[72]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[73]      :else             ⋄ SSName←(⊂parent),¨'pgPUPs.fPUPs.ssPUPs' 'pgIndPUPs.fIndPUPs.ssIndPUPs'
+[74]      :endif
+[75]      :for SSName :in SSName
+[76]          :if ~mt SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells 'Unlock' ⋄ :endif
+[77]      :endfor
+[78]  
+[79]  :case 'PostAssign'
+[80]      TVSameSuppress 0
+[81]      0 0⍴('ssPUPs' 'ssIndPUPs') Deferreds_Basis 'Change'
+[82]  
+[83]  :case 'PageChange'
+[84]  
+[85]      :select page←DLTMB ↑field
+[86]      :case 'pgFinancial'   ⋄ Def_Financial 'PageChange'
+[87]      :case 'pgLegislation' ⋄ Def_Legislation 'PageChange'
+[88]      :case 'pgMortality'   ⋄ Def_Mortality 'PageChange'
+[89]      :case 'pgSpouse'      ⋄ Def_Spouse 'PageChange'
+[90]      :endselect
+[91]  
+[92]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[93]  
+[94]      :repeat
+[95]          :select ↑field
+[96]              :caselist 'edfILENAME' 'cbFormat' 'lsCatSels' 'ckIndPUPs'
+[97]                  (↑field) Def_Main 'Change'
+[98]              :case ' '
+[99]                  (↑field) Def_Financial 'Change'
+[100]             :case ' '
+[101]                 (↑field) Def_Legislation 'Change'
+[102]             :caselist 'edm_PPFNRAtab4' 'edf_PPFNRAtab4'
+[103]                 (↑field) Def_PPF 'Change'
+[104]             :caselist 'cbm_miDPRE' 'cbm_miDPOST' 'cbm_miSDPOST' 'cbf_miDPRE' 'cbf_miDPOST' 'cbf_miSDPOST'
+[105]                 (↑field) Def_Mortality 'Change'
+[106]             :caselist 'cbm_DRateParm' 'cbf_DRateParm' 'edm_TOXX1' 'edm_TPXX1'  'edf_TOXX1' 'edf_TPXX1'
+[107]                 (↑field) Def_Demographic 'Change'
+[108]             :case 'cbSpouseParm'
+[109]                 (↑field) Def_Spouse 'Change'
+[110]             :case 'ssPUPs'
+[111]                 (↑field) Def_PUPs 'Change'
+[112]             :caselist 'cbm_RAParm' 'cbf_RAParm'
+[113]                 (↑field) Def_Membership 'Change'
+[114]             :caselist 'cbm_ERTABParm' 'cbf_ERTABParm'
+[115]                 (↑field) Def_RetPension 'Change'
+[116]             :caselist 'cbm_COMTABParm' 'cbf_COMTABParm' 'cbCashParm'
+[117]                 (↑field) Def_RetCash 'Change'
+[118]             :caselist 'cbm_ERTABParmC' 'cbf_ERTABParmC' 'cbCashParm2' ⍝⍝⍝ 'cbCOMMULT2' 'cbCOMPER2' 'cbCOTDATA'
+[119]                 (↑field) Def_RetCOT 'Change'
+[120]             :case ' '
+[121]                 (↑field) Def_Death 'Change'
+[122]             :caselist 'ckTVCFSame' 'ckTVIntSame' 'ckTVEscSame' 'ckTVSpouseSame' 'cbTVSpouseParm' ⍝⍝⍝ 'ckTVRevSame'
+[123]                 (↑field) Def_TVBasis 'Change'
+[124]             :caselist 'ckTVDPreSame' 'ckTVDPostSame' 'ckTVSDPostSame'
+[125]                 (↑field) Def_TVMortality 'Change'
+[126]             :case ' '
+[127]                 (↑field) Def_Underpin 'Change'
+[128]             :case 'ssIndPUPs'
+[129]                 (↑field) Def_IndPUPs 'Change'
+[130]             :case ' ' ⍝⍝⍝ list 'cbREVDBR1' 'cbREVDBR2' 'cbREVDAR1' 'cbREVDAR2'
+[131]                 (↑field) Def_NSPUPs 'Change'
+[132]         :endselect
+[133]         (↑field) Win∆FormValidation 'Change'
+[134]     :until mt field←1↓field
+[135] 
+[136] :case 'Valid' ⍝ Routine specific validation
+[137] 
+[138]     :repeat
+[139]         :select page←DLTMB ↑field
+[140]         :case 'All'
+[141]             PIsenabled←0
+[142]             :for page :in 'pgMain' 'pgFinancial' 'pgLegislation' 'pgPPF' 'pgMortality' 'pgDemographic' 'pgSpouse' 'pgPUPsonSave' 'pgMembership' 'pgRetPension' 'pgRetCash' 'pgRetCOT' 'pgDeath' 'pgTVBasis' 'pgTVMortality' 'pgUnderpin' 'pgIndPUPsonSave' 'pgNSPUPs'
+[143]                 :if ~mt res←(⊂page) Deferreds_Basis 'Valid' ⋄ :leave ⋄ :endif
+[144]             :endfor
+[145]             PIsenabled←enablePIs
+[146]             :if mt res ⋄ :andif ~mt res←valsIn Error←'Deferreds' VALIDATE∆Basis 0 0 ⍝ Returns field names and messages
+[147]                 0 Win∆SetFocus ↑(FormFields for 'variable' (↑Error at 'variable')) at 'control'
+[148]                 res←⊃Error at 'message'
+[149]             :endif
+[150]         :caselist 'pgMain' 'pgFinancial' 'pgLegislation' 'pgPPF' 'pgMortality' 'pgDemographic' 'pgSpouse' 'pgMembership' 'pgRetPension' 'pgRetCash' 'pgRetCOT' 'pgDeath' 'pgTVBasis' 'pgTVMortality' 'pgUnderpin' 'pgNSPUPs'
+[151]             res←((FormFields for ↑¨(⊂parent,page)⍷¨FormFields at 'control') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[152]         :case 'pgPUPsonSave'
+[153]             res←((FormFields for 'shortname' 'ssPUPs') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[154]         :case 'pgIndPUPsonSave'
+[155]             :if zwb IndPUPs
+[156]                 res←((FormFields for 'shortname' 'ssIndPUPs') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[157]             :endif
+[158]         :case 'pgPUPs'          ⋄ ⍝⍝⍝ Def_PUPs 'Valid'
+[159]         :case 'pgIndPUPs'       ⋄ ⍝⍝⍝ Def_IndPUPs 'Valid'
+[160]         :endselect
+[161]     :until mt field←1↓field
+[162] 
+[163] :case 'Run'
+[164] 
+[165]     res←'Quit'
+[166] 
+[167] :case 'Quit' ⍝ Deleting "other" variables
+[168] 
+[169]     :if 0≠⎕nc 'DateVars'
+[170]         0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars
+[171]         0 0⍴⎕ex 'd','f',DateVars
+[172]     :endif
+[173]     0 0⍴DeleteVars 'DefFormat'
+[174]     0 0⍴⎕ex 'FormatType Filesettings ValYear BasisFile changedParm comment_var'
+[175] 
+[176] :endselect
+    ∇

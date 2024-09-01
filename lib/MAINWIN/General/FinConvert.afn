@@ -1,0 +1,18 @@
+    ∇ res←FinConvert res;field;consdyn;label;z;∆
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Convert the Financial fields for use
+[3]   ⍝  res (argument) has the Field Value then Label
+[4]   
+[5]   (label field)←⊃¨(⊂×⍴¨m2n ⎕io⊃res)sel¨¨m2n¨res ⍝ Swap the field and label (if field has a value)
+[6]   :if ∨/,z←∨/'{'∊∆←⊃'⋄' StripText¨m2n field
+[7]       consdyn←⊃z\¯1↓¨'{' Win∆Child¨m2n z⌿∆
+[8]       consdyn←((-⍴⍴field)↑⍴consdyn)⍴consdyn ⍝ Keep rank of field
+[9]       :if ∨/z←∨/'⋄'=field ⋄ ∆←z sel¨'⋄',¨'⋄' Win∆Child¨m2n field
+[10]      :else               ⋄ ∆←⊂''
+[11]      :endif
+[12]      field←⊃(DLTB¨'{' StripText¨m2n field),¨∆
+[13]  :else
+[14]      consdyn←0/field
+[15]  :endif
+[16]  res←field label consdyn
+    ∇

@@ -1,0 +1,13 @@
+    ∇ Win∆ValidF1SSExit Module;F1SSError
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ The onExit event for a F1 spreadsheet object
+[3]   
+[4]   F1SSEvent←'Exit' ⋄ ⎕wi 'XEndEdit' ⍝ Process EndEdit (if required)
+[5]   0 0⍴⎕ex 'F1SSEvent'
+[6]   
+[7]   :if 2=⎕nc 'F1SSError' ⋄ :andif ~0∊⍴,F1SSError ⍝ if error from EndEdit
+[8]        ⎕wres←F1SSError
+[9]   :else
+[10]       ⍎'0 0⍴(⊂⎕wi "name") ',Module,' "Change"'
+[11]  :endif
+    ∇

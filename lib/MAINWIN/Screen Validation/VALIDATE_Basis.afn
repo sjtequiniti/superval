@@ -1,1 +1,313 @@
-    ∇ errors←membtype VALIDATE∆Basis flags;Z;dates;shape;values;msk;sex;valn;errflag;FIndex[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Cross Field Basis Validations - not done standardly - for each Membership Type[3]   ⍝ valn indicates it is a valuation run (some tests can only be done at run time)[4]   ⍝ errflag indicates if ERROR/Warning to be appended to messages[5]   [6]   errors←MATRIX 'variable' 'row' 'message' ⋄ (valn errflag)←flags[7]   :if errflag ⋄ FIndex←FactorFile ReadFile 'Index' ⋄ :endif[8]   [9]   :if valn[10]      :if (↑m_miDPOSTMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨m_DPOSTORIG m_miDPOSTBASE ⋄ :andif ~m_DPOSTORIG≡m_miDPOSTBASE[11]          errors←errors OVER 'm_DPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' ("Male Member's Post-Retirement"))[12]      :endif[13]      :if (↑f_miDPOSTMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨f_DPOSTORIG f_miDPOSTBASE ⋄ :andif ~f_DPOSTORIG≡f_miDPOSTBASE[14]          errors←errors OVER 'f_DPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' ("Female Member's Post-Retirement"))[15]      :endif[16]      :if (↑m_miSDPOSTMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨m_SDPOSTORIG m_miSDPOSTBASE ⋄ :andif ~m_SDPOSTORIG≡m_miSDPOSTBASE[17]          errors←errors OVER 'm_SDPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Male Member's Spouse/Partner Post-Retirement")[18]      :endif[19]      :if (↑f_miSDPOSTMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨f_SDPOSTORIG f_miSDPOSTBASE ⋄ :andif ~f_SDPOSTORIG≡f_miSDPOSTBASE[20]          errors←errors OVER 'f_SDPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Female Member's Spouse/Partner Post-Retirement")[21]      :endif[22]      :if '2D'≡2↑m_miDPOSTMORTIMPR ⋄ :andif ~mt m_DPOSTORIG  ⋄ :andif (zwb m_DPOSTORIG)<zwb m_miDPOSTIMPORIG[23]          errors←errors OVER 'm_DPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' ("Male Member's Post-Retirement"))[24]      :endif[25]      :if '2D'≡2↑f_miDPOSTMORTIMPR ⋄ :andif ~mt f_DPOSTORIG  ⋄ :andif (zwb f_DPOSTORIG)<zwb f_miDPOSTIMPORIG[26]          errors←errors OVER 'f_DPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' ("Female Member's Post-Retirement"))[27]      :endif[28]      :if '2D'≡2↑m_miSDPOSTMORTIMPR ⋄ :andif ~mt m_SDPOSTORIG  ⋄ :andif (zwb m_SDPOSTORIG)<zwb m_miSDPOSTIMPORIG[29]          errors←errors OVER 'm_SDPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' "Male Member's Spouse/Partner Post-Retirement")[30]      :endif[31]      :if '2D'≡2↑f_miSDPOSTMORTIMPR ⋄ :andif ~mt f_SDPOSTORIG  ⋄ :andif (zwb f_SDPOSTORIG)<zwb f_miSDPOSTIMPORIG[32]          errors←errors OVER 'f_SDPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' "Female Member's Spouse/Partner Post-Retirement")[33]      :endif[34]      :if ~membtype≡'Pensioners'[35]          :if (↑m_miDPOSTMORTIMPR)∊'SC' ⋄ :andif zwb m_COMAdjbyEx[36]              errors←errors OVER 'm_COMAdjbyEx' ⍬ ((errflag/'ERROR:  '),'Adjustment of Commutation Factors by life expectancy not available with selected method of Mortality Improvement "',m_miDPOSTMORTIMPR,'" for Male Member''s Post-Retirement')[37]          :endif[38]          :if (↑f_miDPOSTMORTIMPR)∊'SC' ⋄ :andif zwb f_COMAdjbyEx[39]              errors←errors OVER 'f_COMAdjbyEx' ⍬ ((errflag/'ERROR:  '),'Adjustment of Commutation Factors by life expectancy not available with selected method of Mortality Improvement "',f_miDPOSTMORTIMPR,'" for Female Member''s Post-Retirement')[40]          :endif[41]          :if (↑m_miDPREMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨m_DPREORIG m_miDPREBASE ⋄ :andif ~m_DPREORIG≡m_miDPREBASE[42]              errors←errors OVER 'm_DPREORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Male Pre-Retirement")[43]          :endif[44]          :if (↑f_miDPREMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨f_DPREORIG f_miDPREBASE ⋄ :andif ~f_DPREORIG≡f_miDPREBASE[45]              errors←errors OVER 'f_DPREORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Female Pre-Retirement")[46]          :endif[47]          :if '2D'≡2↑m_miDPREMORTIMPR ⋄ :andif ~mt m_DPREORIG  ⋄ :andif (zwb m_DPREORIG)<zwb m_miDPREIMPORIG[48]              errors←errors OVER 'm_DPREORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' 'Male Pre-Retirement')[49]          :endif[50]          :if '2D'≡2↑f_miDPREMORTIMPR ⋄ :andif ~mt f_DPREORIG  ⋄ :andif (zwb f_DPREORIG)<zwb f_miDPREIMPORIG[51]              errors←errors OVER 'f_DPREORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' 'Female Pre-Retirement')[52]          :endif[53]      :endif[54]  :endif[55]  [56]  :select membtype[57]  :case 'Actives'[58]  [59]      :if valn[60]          :if (↑m_miDILLMORTIMPR)∊'SC' ⋄ :andif zwb m_ILLCOMAdjbyEx[61]              errors←errors OVER 'm_ILLCOMAdjbyEx' ⍬ ((errflag/'ERROR:  '),'Adjustment of Commutation Factors by life expectancy not available with selected method of Mortality Improvement "',m_miDILLMORTIMPR,'" for Male Ill-Health')[62]          :endif[63]          :if (↑f_miDILLMORTIMPR)∊'SC' ⋄ :andif zwb f_ILLCOMAdjbyEx[64]              errors←errors OVER 'f_ILLCOMAdjbyEx' ⍬ ((errflag/'ERROR:  '),'Adjustment of Commutation Factors by life expectancy not available with selected method of Mortality Improvement "',f_miDILLMORTIMPR,'" for Female Ill-Health')[65]          :endif[66]          :if (↑m_miDILLMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨m_DILLORIG m_miDILLBASE ⋄ :andif ~m_DILLORIG≡m_miDILLBASE[67]              errors←errors OVER 'm_DILLORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Male Ill-Health")[68]          :endif[69]          :if (↑f_miDILLMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨f_DILLORIG f_miDILLBASE ⋄ :andif ~f_DILLORIG≡f_miDILLBASE[70]              errors←errors OVER 'f_DILLORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Female Ill-Health")[71]          :endif[72]          :if '2D'≡2↑m_miDILLMORTIMPR ⋄ :andif ~mt m_DILLORIG  ⋄ :andif (zwb m_DILLORIG)<zwb m_miDILLIMPORIG[73]              errors←errors OVER 'm_DILLORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' 'Male Ill-Health')[74]          :endif[75]          :if '2D'≡2↑f_miDILLMORTIMPR ⋄ :andif ~mt f_DILLORIG  ⋄ :andif (zwb f_DILLORIG)<zwb f_miDILLIMPORIG[76]              errors←errors OVER 'f_DILLORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' 'Female Ill-Health')[77]          :endif[78]      :endif[79]  [80]      :if 'Ignore'≡IRMAXIND ⋄ :andif (⊂'IR Maximum')∊CTYPE CTYPE2 ILLCTYPE ILLCTYPE2[81]          errors←errors OVER 'IRMAXIND' ⍬ ((errflag/'ERROR:  '),'IR Maximum Rules is "Ignore" but Cash is set to IR Maximum')[82]      :endif[83]  ⍝⍝⍝    :if 17≠Z←zwb SLICEUP ⋄ :andif ^/' '=¯1↑[1]Z↑[1]MAXFDAT[84]  ⍝⍝⍝        errors←errors OVER 'MAXFDAT' Z ((errflag/'ERROR:  '),'No Not After Date in Offset Slice No. ',SLICEUP)[85]  ⍝⍝⍝    :endif[86]      :if ^/0∊¨⍴¨SALCOD1 FIXPEN1[87]          errors←errors OVER 'SALCOD1' 1 ((errflag/'ERROR:  '),'No Slice Definitions specified')[88]      :endif[89]      :if ∨/Z←'C'=1↓,1↑[2]ACCBASIS ⋄ :andif ∨/Z←Z^^/' '=1 0↓FIXPEN1,FIXPEN2,FIXPEN3[90]          errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'ACCBASIS'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Benefit Basis is CARE but no Pension Data Item specified in Slice '),¨Z←⍕¨⎕mix 1+WHERE Z[91]      :endif[92]      :if ~(↑AltSw)∊'I ' ⍝ Either Ignore or irrelevant[93]          :if ^/0∊¨⍴¨AltSALCOD1 AltFIXPEN1[94]              errors←errors OVER 'AltSALCOD1' 1 ((errflag/'ERROR:  '),'Alternate Slices Method is ',AltSw,' but no Alternate Slice Definitions specified')[95]          :endif[96]          :if ∨/Z←'C'=1↓,1↑[2]AltACCBASIS ⋄ :andif ∨/Z←Z^^/' '=1 0↓AltFIXPEN1,AltFIXPEN2,AltFIXPEN3[97]              errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'AltACCBASIS'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Benefit Basis is CARE but no Pension Data Item specified in Alternate Slice '),¨Z←⍕¨⎕mix 1+WHERE Z[98]          :endif[99]      :endif[100]     :if bGAD[101]         :if (zwb m_NRA)>zwb m_LRA[102]             errors←errors OVER 'm_LRA' ⍬ ((errflag/'ERROR:  '),'Male Late Retirement Age must be equal to or greater than Normal Retirement Age')[103]         :endif[104]         :if (zwb f_NRA)>zwb f_LRA[105]             errors←errors OVER 'f_LRA' ⍬ ((errflag/'ERROR:  '),'Female Late Retirement Age must be equal to or greater than Normal Retirement Age')[106]         :endif[107]     :endif[108] ⍝⍝⍝    :if ~bGAD ⋄ :andif ~DeferNRA≡'Never'[109] ⍝⍝⍝        :if (zwb m_NRAG)>zwb m_NRA[110] ⍝⍝⍝            errors←errors OVER 'm_NRAG' ⍬ ((errflag/'ERROR:  '),'Male Deferral Age must be equal to or less than Normal Retirement Age')[111] ⍝⍝⍝        :endif[112] ⍝⍝⍝        :if (zwb f_NRAG)>zwb f_NRA[113] ⍝⍝⍝            errors←errors OVER 'f_NRAG' ⍬ ((errflag/'ERROR:  '),'Female Deferral Age must be equal to or less than Normal Retirement Age')[114] ⍝⍝⍝        :endif[115] ⍝⍝⍝    :endif[116]     :if CTYPE≡'% of A-Day Cash' ⋄ :andif 'O'=↑CONTOP[117]         errors←errors OVER 'CONTOP' ⍬ ((errflag/'ERROR:  '),'A-Day Cash cannot be Cash On Top')[118]     :endif[119]     :if CTYPE≡'% of A-Day Cash' ⋄ :andif zwb COMADaySep ⋄ :andif (⊂CTYPE2)∊'IR Maximum' 'Accrual x Salary for each year'[120]         errors←errors OVER 'COMADaySep' ⍬ ((errflag/'ERROR:  '),'Separate A-Day Cash Factors cannot be calculated when COT is ',CTYPE2)[121]     :endif[122]     :if ILLCTYPE≡'% of A-Day Cash' ⋄ :andif 'O'=↑ICONTOP[123]         errors←errors OVER 'ICONTOP' ⍬ ((errflag/'ERROR:  '),'A-Day Cash cannot be Cash On Top')[124]     :endif[125]     :if ILLCTYPE≡'% of A-Day Cash' ⋄ :andif zwb ILLCOMADaySep ⋄ :andif (⊂ILLCTYPE2)∊'IR Maximum' 'Accrual x Salary for each year'[126]         errors←errors OVER 'ILLCOMADaySep' ⍬ ((errflag/'ERROR:  '),'Separate A-Day Cash Factors cannot be calculated when COT is ',ILLCTYPE2)[127]     :endif[128]     :if zwb IndSlices[129]         :if ^/0∊¨⍴¨IndSALCOD1 IndFIXPEN1[130]             errors←errors OVER 'IndSALCOD1' 1 ((errflag/'ERROR:  '),'Independent Slices included but no Independent Slice Definitions specified')[131]         :endif[132]         :if ∨/Z←'C'=1↓,1↑[2]IndACCBASIS ⋄ :andif ∨/Z←Z^^/' '=1 0↓IndFIXPEN1,IndFIXPEN2,IndFIXPEN3[133]             errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'IndACCBASIS'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Benefit Basis is CARE but no Pension Data Item specified in Independent Slice '),¨Z←⍕¨⎕mix 1+WHERE Z[134]         :endif[135]     :endif[136] [137]     :if errflag[138]         :if GREV≡'Fixed' ⋄ :andif ~(⊂'GMPFixed')∊FIndex at '∆_Name'[139]             errors←errors OVER 'GREV' ⍬ ((errflag/'ERROR:  '),'GMPFixed Factors not found in Factors File to apply GMP Fixed Revaluation')[140]         :endif[141]         :if ~(⊂IRMAXIND)∊'' 'Ignore' 'Pre 1987 Rules' ⋄ :andif ~(⊂'MAX')∊FIndex at '∆_Name'[142]             errors←errors OVER 'IRMAXIND' ⍬ ((errflag/'ERROR:  '),'MAX Factors not found in Factors File to apply Inland Revenue Maximum Cash Rules')[143]         :endif[144]         :if ~'Leaving Date'≡DLTB 1↑[1]FNDATE ⋄ :andif ~'C'=↑,1↑[1]ACCBASIS[145]             errors←errors OVER 'FNDATE' 1 ((errflag/'Warning:  '),'Slice End Date is not Leaving Date for Slice 1')[146]         :endif[147]         :if ~(↑AltSw)∊'I ' ⍝ Either Ignore or irrelevant[148]         :andif ~'Leaving Date'≡DLTB 1↑[1]AltFNDATE ⋄ :andif ~'C'=↑,1↑[1]AltACCBASIS[149]             errors←errors OVER 'AltFNDATE' 1 ((errflag/'Warning:  '),'Slice End Date is not Leaving Date for Alternate Slice 1')[150]         :endif[151]         :if zwb IndSlices ⋄ :andif ~'Leaving Date'≡DLTB 1↑[1]IndFNDATE ⋄ :andif ~'C'=↑,1↑[1]IndACCBASIS[152]             errors←errors OVER 'IndFNDATE' 1 ((errflag/'Warning:  '),'Slice End Date is not Leaving Date for Independent Slice 1')[153]         :endif[154]         :if zwb PHI ⋄ :andif ∨/Z←((zwb m_PHIEndAge)>zwb m_NRA),(zwb f_PHIEndAge)>zwb f_NRA[155]             errors←errors OVER Z⌿⊃spin (⊂'m_PHIEndAge' 'f_PHIEndAge'),(⊂2⍴⊂⍬),⊂(⊂errflag/'Warning:  '),¨sex,¨(⊂' PHI End Age is after '),¨(sex←'Male' 'Female'),¨⊂' Normal Retirement Age'[156]         :endif[157] ⍝⍝⍝ FIXME - move validation to GET∆Contributions ??? ⍝⍝⍝[158]         :if 0≠⎕nc 'contsDEF' ⋄ :andif 'Salary'≡6↑contsDEF ⍝ Validate Bands Table with CRs[159]             :if 2=⍴⍴values←DECRFile ReadFile contsSalTab[160]                 :if (↑⍴contsBandCR)≠shape←(Z←∨/0≠values[1;])+↑⍴values[161]                     errors←errors OVER 'contsBandCR' (↑⍴contsBandCR) ((errflag/'ERROR:  '),MESS∆TRANS 'BandsMisMatch' (⍕shape))[162]                 :endif[163]                 :if ∨/1≥∊⍴¨(~Z)↓values←DTZ¨⎕split values[164]                     errors←errors OVER 'contsSalTab' ⍬ ((errflag/'ERROR:  '),'At least 2 values are required in each Salary Band')[165]                 :endif[166]                 :if ∨/0>Z←,values-¯1↓[1]0⍪values←⊃(⌈/⍴¨values) OVERTAKE¨1 MID¨values[167]                     errors←errors OVER 'contsSalTab' ⍬ ((errflag/'ERROR:  '),'Salary Bands in year(s) ',(⍕WHERE ∨⌿Z<0),' are overlapping')[168]                 :endif[169]             :endif[170]         :endif[171]         :if 0≠⎕nc 'V1pcDEF' ⋄ :andif 'Salary'≡6↑V1pcDEF ⍝ Validate Bands Table with CRs[172]             :if 2=⍴⍴values←DECRFile ReadFile V1pcSalTab[173]                 :if (↑⍴V1pcBandCR)≠shape←(Z←∨/0≠values[1;])+↑⍴values[174]                     errors←errors OVER 'V1pcBandCR' (↑⍴V1pcBandCR) ((errflag/'ERROR:  '),MESS∆TRANS 'BandsMisMatch' (⍕shape))[175]                 :endif[176]                 :if ∨/1≥∊⍴¨(~Z)↓values←DTZ¨⎕split values[177]                     errors←errors OVER 'V1pcSalTab' ⍬ ((errflag/'ERROR:  '),'At least 2 values are required in each Salary Band')[178]                 :endif[179]                 :if ∨/0>Z←,values-¯1↓[1]0⍪values←⊃(⌈/⍴¨values) OVERTAKE¨1 MID¨values[180]                     errors←errors OVER 'V1pcSalTab' ⍬ ((errflag/'ERROR:  '),'Salary Bands in year(s) ',(⍕WHERE ∨⌿Z<0),' are overlapping')[181]                 :endif[182]             :endif[183]         :endif[184]         :if 0≠⎕nc 'mpuDEF' ⋄ :andif 'Salary'≡6↑mpuDEF ⍝ Validate Bands Table with CRs[185]             :if 2=⍴⍴values←DECRFile ReadFile mpuSalTab[186]                 :if (↑⍴mpuBandCR)≠shape←(Z←∨/0≠values[1;])+↑⍴values[187]                     errors←errors OVER 'mpuBandCR' (↑⍴mpuBandCR) ((errflag/'ERROR:  '),MESS∆TRANS 'BandsMisMatch' (⍕shape))[188]                 :endif[189]                 :if ∨/1≥∊⍴¨(~Z)↓values←DTZ¨⎕split values[190]                     errors←errors OVER 'mpuSalTab' ⍬ ((errflag/'ERROR:  '),'At least 2 values are required in each Salary Band')[191]                 :endif[192]                 :if ∨/0>Z←,values-¯1↓[1]0⍪values←⊃(⌈/⍴¨values) OVERTAKE¨1 MID¨values[193]                     errors←errors OVER 'mpuSalTab' ⍬ ((errflag/'ERROR:  '),'Salary Bands in year(s) ',(⍕WHERE ∨⌿Z<0),' are overlapping')[194]                 :endif[195]             :endif[196]         :endif[197]     :if valn[198]         :if dab ⋄ :andif 'S'=↑capind  ⍝⍝⍝ Is this true??[199]             errors←errors OVER 'capind' ⍬ ((errflag/'ERROR:  '),'Must use capitalised benefits for DAB runs')[200]         :endif[201]         :if ↑aggopt ⋄ :andif zwb mpuflag[202]             mpuflag←'0'[203]             errors←errors OVER 'mpuflag' ⍬ ((errflag/'Warning:  '),'Underpin not valued with the Aggregate Benefit option')[204]         :endif[205]     :endif[206] ⍝⍝⍝ Needs investigation.[207] ⍝⍝⍝         :if ClntCode=3[208] ⍝⍝⍝             :if (('P'=↑STYPEIH)^(0≠⍴SSDIH)∨0≠⍴SFDIH)∨('P'=↑WOSTYPE)^(0≠⍴WOSSD)∨0≠⍴WOSFD[209] ⍝⍝⍝                 errors←errors OVER 'STYPEIH' ⍬ ((errflag/'Warning:  '),'Spreading Dates will be ignored for projected unit spreading')[210] ⍝⍝⍝             :endif[211] ⍝⍝⍝         :endif[212]     :endif[213] [214] :case 'Deferreds'[215] [216]     :if ^/DATECHECK¨dates←(⊂'DD/MM/YYYY') DATEEXP¨ PreSTART  PreFINISH ⋄ :andif 0>DAYS /dates[217]         errors←errors OVER  'PreSTART' ⍬ ((errflag/'ERROR:  '),'Finish Date precedes Start Date for Pre 1988 GMP')[218]     :endif[219]     :if ^/DATECHECK¨dates←(⊂'DD/MM/YYYY') DATEEXP¨PostSTART PostFINISH ⋄ :andif 0>DAYS /dates[220]         errors←errors OVER 'PostSTART' ⍬ ((errflag/'ERROR:  '),'Finish Date precedes Start Date for Post 1988 GMP')[221]     :endif[222]     :if ^/DATECHECK¨dates←(⊂'DD/MM/YYYY') DATEEXP¨BARBDATE BARBEND ⋄ :andif 0>DAYS /dates[223]         errors←errors OVER 'BARBDATE' ⍬ ((errflag/'ERROR:  '),'Barber End Date precedes Barber Start Date')[224]     :endif[225]     :if CTYPE≡'% of A-Day Cash' ⋄ :andif zwb COMADaySep ⋄ :andif ~mt COTDATA[226]         errors←errors OVER 'COMADaySep' ⍬ ((errflag/'ERROR:  '),'Separate A-Day Cash Factors cannot be calculated when COT Cash Data Field is specified')[227]     :endif[228]     :if ~∨/mt¨INDSTART INDFINISH[229]     :andif ∨/Z←↑^/DATECHECK¨¨dates←(⊂⊂'DD/MM/YYYY') DATEEXP¨¨⊃¨¨↑¨¨⌽¨¨(⊂⊂'Date') SwapRelFields¨¨spin¨((m2n lrINDSTART) (m2n '<' StripText INDSTART)) ((m2n lrINDFINISH) (m2n '<' StripText INDFINISH))[230]     :andif ∨/Z←Z^0>↑DAYS /⊃¨dates[231]         errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'INDFINISH'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Finish Date precedes Start Date for PUPs '),¨Z←⍕¨⎕mix WHERE Z[232]     :endif[233]     :if zwb IndPUPs[234]     :andif ~∨/mt¨IndINDSTART IndINDFINISH[235]     :andif ∨/Z←↑^/DATECHECK¨¨dates←(⊂⊂'DD/MM/YYYY') DATEEXP¨¨⊃¨¨↑¨¨⌽¨¨(⊂⊂'Date') SwapRelFields¨¨spin¨((m2n lrIndINDSTART) (m2n '<' StripText IndINDSTART)) ((m2n lrIndINDFINISH) (m2n '<' StripText IndINDFINISH))[236]     :andif ∨/Z←Z^0>↑DAYS /⊃¨dates[237]         errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'IndINDFINISH'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Finish Date precedes Start Date for Independent PUPs '),¨Z←⍕¨⎕mix WHERE Z[238]     :endif[239]     :if errflag[240]         :if zwb GMPREV2 ⋄ :andif ~(⊂'GMPFixed')∊FIndex at '∆_Name'[241]             errors←errors OVER 'GMPREV2' ⍬ ((errflag/'ERROR:  '),'GMPFixed Factors not found in Factors File to apply GMP Fixed Revaluation')[242]         :endif[243]         :if 's'=↑PASTREV ⋄ :andif ~(⊂DLTB StripText REVSet)∊FIndex at '∆_Name'[244]             errors←errors OVER 'REVSet' ⍬ ((errflag/'ERROR:  "'),REVSet,'" not found in Factors File')[245]         :endif[246]         :if ~mt pastPRESPAREV ⋄ :andif ~(⊂DLTB StripText pastPRESPAREV)∊FIndex at '∆_Name'[247]             errors←errors OVER 'pastPRESPAREV' ⍬ ((errflag/'ERROR:  "'),pastPRESPAREV,'" not found in Factors File')[248]         :endif[249]         :if DATECHECK dates←'DD/MM/YYYY' DATEEXP PreSTART ⋄ :andif 0<dates DAYS 6 4 1978[250]             errors←errors OVER 'PreSTART' ⍬ ((errflag/'Warning:  '),'Pre 1988 GMP Start Date earlier than 6 April 1978, will be taken as latter')[251]         :endif[252]         :if DATECHECK dates←'DD/MM/YYYY' DATEEXP PreFINISH ⋄ :andif 0>dates DAYS 5 4 1988[253]             errors←errors OVER 'PreFINISH' ⍬ ((errflag/'Warning:  '),'Pre 1988 GMP Finish Date later than 5 April 1988, will be taken as latter')[254]         :endif[255]         :if DATECHECK dates←'DD/MM/YYYY' DATEEXP PostSTART ⋄ :andif 0<dates DAYS 6 4 1988[256]             errors←errors OVER 'PostSTART' ⍬ ((errflag/'Warning:  '),'Post 1988 GMP Start Date earlier than 6 April 1988, will be taken as latter')[257]         :endif[258]         :if DATECHECK dates←'DD/MM/YYYY' DATEEXP PostFINISH ⋄ :andif 0>dates DAYS 5 4 1997[259]             errors←errors OVER 'PostFINISH' ⍬ ((errflag/'Warning:  '),'Post 1988 GMP Finish Date later than 5 April 1997, will be taken as latter')[260]         :endif[261] ⍝⍝⍝ FIXME - Move validation to GET∆DecRateGlobals ??? ⍝⍝⍝[262]         :if ∨/Z←(⊂'RM')≡¨UPPERCASE¨2↑¨DLTB¨m_RXX f_RXX[263]             errors←errors OVER Z⌿⊃spin (⊂'m_RXX' 'f_RXX'),(⊂2⍴⊂1),⊂(⊂errflag/'ERROR:  '),¨('Male' 'Female'),¨⊂' Service-Related Retirement Decrement assumption cannot be used with Deferreds'[264]         :endif[265]         :if bBuck∨ClntCode=3 ⋄ :andif ~mt DATACASHCAP ⋄ :andif ~mt COMPER,COMMULT ⋄ :andif ~mt COMPER2,COMMULT2,COTDATA[266]             errors←errors OVER 'DATACASHCAP' ⍬ ((errflag/'Warning:  '),'CASHCAP is applied to Cash on Top and Commuted Cash Separately')[267]         :endif[268] ⍝⍝⍝ FIXME - move check to PPF Overrides in validateInput ??? ⍝⍝⍝[269]         :if s143 ⋄ :andif ~∨/(0,zwb post010514)∊0≥vDATE YDAYS 1 5 2014[270]             errors←errors OVER 'post010514' ⍬ ((errflag/'ERROR:  '),'Post 1 May 2014 s143 Mortality Assumptions are required')[271]         :endif[272]         :if s143 ⋄ :andif 0>vDATE YDAYS 30 4 2021[273]             errors←errors OVER 's143' ⍬ ((errflag/'Note:  '),'*** Post 1 May 2021 s143 Mortality Assumptions (B9 Valuation Guidance) have not been implemented ***')[274]         :endif[275]     :endif[276] [277] :case 'Pensioners'[278] [279]     msk←1≡¨¨⊃^/¨¨⎕vi¨¨⎕split¨BAGE EAGE ⍝ Only check numeric values for BAGE and EAGE[280] [281]     :if ∨/Z←,'P'=1↑[2]CSORP ⋄ :andif ∨/Z←Z^(^⌿msk)^(msk[⎕io;]\MatrixZWB msk[⎕io;]⌿BAGE)>msk[⎕io+1;]\MatrixZWB msk[⎕io+1;]⌿EAGE[282]         errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'BAGE'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Commencing Age is greater than Ceasing Age for Pension '),¨Z←⍕¨⎕mix WHERE Z[283]     :endif[284]     :if ∨/Z←,'P'=1↑[2]CSORP ⋄ :andif ∨/Z←Z^(^⌿msk)^((msk[⎕io+1;]\MatrixZWB msk[⎕io+1;]⌿EAGE)-msk[⎕io;]\MatrixZWB msk[⎕io;]⌿BAGE)<MatrixZWB GPeriod[285]         errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'EAGE'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Commencing Age plus Guarantee Period is greater than Ceasing Age for Pension '),¨Z←⍕¨⎕mix WHERE Z[286]     :endif[287]     :if errflag[288]         :if zwb GMPREV2 ⋄ :andif ~(⊂'GMPFixed')∊FIndex at '∆_Name'[289]             errors←errors OVER 'GMPREV2' ⍬ ((errflag/'ERROR:  '),'GMPFixed Factors not found in Factors File to apply GMP Fixed Revaluation')[290]         :endif[291]     ⍝⍝⍝ :if zwb PUPRDN ⋄ :andif ~∨/,'Y'=1↑[2]GMPADJ[292]     ⍝⍝⍝     errors←errors OVER 'GMPADJ' 1 ((errflag/'Warning:  '),'No Pensions are included in SPA Adjustment')[293]     ⍝⍝⍝ :endif[294]     :endif[295]     :if valn[296]         :if ∨/Z←,'Y'=1↑[2]GMPADJ ⋄ :andif ∨/Z←Z^msk[⎕io;]^(60+5×SelSex='M')<msk[⎕io;]\MatrixZWB msk[⎕io;]⌿BAGE[297]             errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'BAGE'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Pension cannot be included in SPA Adjustment if the Benefit Commencing Age is after SPA for Pension '),¨Z←⍕¨⎕mix WHERE Z[298]         :endif[299]         :if zwb GMPREV2 ⋄ :andif mt fLD[300]             errors←errors OVER 'GMPREV2' ⍬ ((errflag/'ERROR:  '),'Leaving Service Date Required in Data Format if GMP Revaluation is Fixed')[301]         :endif[302]     :endif[303] [304] :endselect[305] [306] :if     ~ppfenabled∨capenabled[307] :elseif valn    ⋄ :andif ~ppf∨bencap[308] :elseif errflag ⋄ :andif ('Y'=↑PPFServiceCap) ∨ ('P'=↑PPFServiceCap)^0>vDATE YDAYS 5 4 2017[309] :andif ∨/Z←mt¨PPFServCapBDate PPFServCapEDate[310]     errors←errors OVER (↑Z/'PPFServCapBDate' 'PPFServCapEDate') ⍬ ((errflag/'ERROR:  '),'Service Cap Dates must be specified to calculate Service Adjusted Cap')[311] :endif    ∇
+    ∇ errors←membtype VALIDATE∆Basis flags;Z;dates;shape;values;msk;sex;valn;errflag;FIndex
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Cross Field Basis Validations - not done standardly - for each Membership Type
+[3]   ⍝ valn indicates it is a valuation run (some tests can only be done at run time)
+[4]   ⍝ errflag indicates if ERROR/Warning to be appended to messages
+[5]   
+[6]   errors←MATRIX 'variable' 'row' 'message' ⋄ (valn errflag)←flags
+[7]   :if errflag ⋄ FIndex←FactorFile ReadFile 'Index' ⋄ :endif
+[8]   
+[9]   :if valn
+[10]      :if (↑m_miDPOSTMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨m_DPOSTORIG m_miDPOSTBASE ⋄ :andif ~m_DPOSTORIG≡m_miDPOSTBASE
+[11]          errors←errors OVER 'm_DPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' ("Male Member's Post-Retirement"))
+[12]      :endif
+[13]      :if (↑f_miDPOSTMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨f_DPOSTORIG f_miDPOSTBASE ⋄ :andif ~f_DPOSTORIG≡f_miDPOSTBASE
+[14]          errors←errors OVER 'f_DPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' ("Female Member's Post-Retirement"))
+[15]      :endif
+[16]      :if (↑m_miSDPOSTMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨m_SDPOSTORIG m_miSDPOSTBASE ⋄ :andif ~m_SDPOSTORIG≡m_miSDPOSTBASE
+[17]          errors←errors OVER 'm_SDPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Male Member's Spouse/Partner Post-Retirement")
+[18]      :endif
+[19]      :if (↑f_miSDPOSTMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨f_SDPOSTORIG f_miSDPOSTBASE ⋄ :andif ~f_SDPOSTORIG≡f_miSDPOSTBASE
+[20]          errors←errors OVER 'f_SDPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Female Member's Spouse/Partner Post-Retirement")
+[21]      :endif
+[22]      :if '2D'≡2↑m_miDPOSTMORTIMPR ⋄ :andif ~mt m_DPOSTORIG  ⋄ :andif (zwb m_DPOSTORIG)<zwb m_miDPOSTIMPORIG
+[23]          errors←errors OVER 'm_DPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' ("Male Member's Post-Retirement"))
+[24]      :endif
+[25]      :if '2D'≡2↑f_miDPOSTMORTIMPR ⋄ :andif ~mt f_DPOSTORIG  ⋄ :andif (zwb f_DPOSTORIG)<zwb f_miDPOSTIMPORIG
+[26]          errors←errors OVER 'f_DPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' ("Female Member's Post-Retirement"))
+[27]      :endif
+[28]      :if '2D'≡2↑m_miSDPOSTMORTIMPR ⋄ :andif ~mt m_SDPOSTORIG  ⋄ :andif (zwb m_SDPOSTORIG)<zwb m_miSDPOSTIMPORIG
+[29]          errors←errors OVER 'm_SDPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' "Male Member's Spouse/Partner Post-Retirement")
+[30]      :endif
+[31]      :if '2D'≡2↑f_miSDPOSTMORTIMPR ⋄ :andif ~mt f_SDPOSTORIG  ⋄ :andif (zwb f_SDPOSTORIG)<zwb f_miSDPOSTIMPORIG
+[32]          errors←errors OVER 'f_SDPOSTORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' "Female Member's Spouse/Partner Post-Retirement")
+[33]      :endif
+[34]      :if ~membtype≡'Pensioners'
+[35]          :if (↑m_miDPOSTMORTIMPR)∊'SC' ⋄ :andif zwb m_COMAdjbyEx
+[36]              errors←errors OVER 'm_COMAdjbyEx' ⍬ ((errflag/'ERROR:  '),'Adjustment of Commutation Factors by life expectancy not available with selected method of Mortality Improvement "',m_miDPOSTMORTIMPR,'" for Male Member''s Post-Retirement')
+[37]          :endif
+[38]          :if (↑f_miDPOSTMORTIMPR)∊'SC' ⋄ :andif zwb f_COMAdjbyEx
+[39]              errors←errors OVER 'f_COMAdjbyEx' ⍬ ((errflag/'ERROR:  '),'Adjustment of Commutation Factors by life expectancy not available with selected method of Mortality Improvement "',f_miDPOSTMORTIMPR,'" for Female Member''s Post-Retirement')
+[40]          :endif
+[41]          :if (↑m_miDPREMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨m_DPREORIG m_miDPREBASE ⋄ :andif ~m_DPREORIG≡m_miDPREBASE
+[42]              errors←errors OVER 'm_DPREORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Male Pre-Retirement")
+[43]          :endif
+[44]          :if (↑f_miDPREMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨f_DPREORIG f_miDPREBASE ⋄ :andif ~f_DPREORIG≡f_miDPREBASE
+[45]              errors←errors OVER 'f_DPREORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Female Pre-Retirement")
+[46]          :endif
+[47]          :if '2D'≡2↑m_miDPREMORTIMPR ⋄ :andif ~mt m_DPREORIG  ⋄ :andif (zwb m_DPREORIG)<zwb m_miDPREIMPORIG
+[48]              errors←errors OVER 'm_DPREORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' 'Male Pre-Retirement')
+[49]          :endif
+[50]          :if '2D'≡2↑f_miDPREMORTIMPR ⋄ :andif ~mt f_DPREORIG  ⋄ :andif (zwb f_DPREORIG)<zwb f_miDPREIMPORIG
+[51]              errors←errors OVER 'f_DPREORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' 'Female Pre-Retirement')
+[52]          :endif
+[53]      :endif
+[54]  :endif
+[55]  
+[56]  :select membtype
+[57]  :case 'Actives'
+[58]  
+[59]      :if valn
+[60]          :if (↑m_miDILLMORTIMPR)∊'SC' ⋄ :andif zwb m_ILLCOMAdjbyEx
+[61]              errors←errors OVER 'm_ILLCOMAdjbyEx' ⍬ ((errflag/'ERROR:  '),'Adjustment of Commutation Factors by life expectancy not available with selected method of Mortality Improvement "',m_miDILLMORTIMPR,'" for Male Ill-Health')
+[62]          :endif
+[63]          :if (↑f_miDILLMORTIMPR)∊'SC' ⋄ :andif zwb f_ILLCOMAdjbyEx
+[64]              errors←errors OVER 'f_ILLCOMAdjbyEx' ⍬ ((errflag/'ERROR:  '),'Adjustment of Commutation Factors by life expectancy not available with selected method of Mortality Improvement "',f_miDILLMORTIMPR,'" for Female Ill-Health')
+[65]          :endif
+[66]          :if (↑m_miDILLMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨m_DILLORIG m_miDILLBASE ⋄ :andif ~m_DILLORIG≡m_miDILLBASE
+[67]              errors←errors OVER 'm_DILLORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Male Ill-Health")
+[68]          :endif
+[69]          :if (↑f_miDILLMORTIMPR)∊'SA' ⋄ :andif ^/~mt¨f_DILLORIG f_miDILLBASE ⋄ :andif ~f_DILLORIG≡f_miDILLBASE
+[70]              errors←errors OVER 'f_DILLORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InconsistentBaseYear' "Female Ill-Health")
+[71]          :endif
+[72]          :if '2D'≡2↑m_miDILLMORTIMPR ⋄ :andif ~mt m_DILLORIG  ⋄ :andif (zwb m_DILLORIG)<zwb m_miDILLIMPORIG
+[73]              errors←errors OVER 'm_DILLORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' 'Male Ill-Health')
+[74]          :endif
+[75]          :if '2D'≡2↑f_miDILLMORTIMPR ⋄ :andif ~mt f_DILLORIG  ⋄ :andif (zwb f_DILLORIG)<zwb f_miDILLIMPORIG
+[76]              errors←errors OVER 'f_DILLORIG' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'InvalidBaseYear' 'Female Ill-Health')
+[77]          :endif
+[78]      :endif
+[79]  
+[80]      :if 'Ignore'≡IRMAXIND ⋄ :andif (⊂'IR Maximum')∊CTYPE CTYPE2 ILLCTYPE ILLCTYPE2
+[81]          errors←errors OVER 'IRMAXIND' ⍬ ((errflag/'ERROR:  '),'IR Maximum Rules is "Ignore" but Cash is set to IR Maximum')
+[82]      :endif
+[83]  ⍝⍝⍝    :if 17≠Z←zwb SLICEUP ⋄ :andif ^/' '=¯1↑[1]Z↑[1]MAXFDAT
+[84]  ⍝⍝⍝        errors←errors OVER 'MAXFDAT' Z ((errflag/'ERROR:  '),'No Not After Date in Offset Slice No. ',SLICEUP)
+[85]  ⍝⍝⍝    :endif
+[86]      :if ^/0∊¨⍴¨SALCOD1 FIXPEN1
+[87]          errors←errors OVER 'SALCOD1' 1 ((errflag/'ERROR:  '),'No Slice Definitions specified')
+[88]      :endif
+[89]      :if ∨/Z←'C'=1↓,1↑[2]ACCBASIS ⋄ :andif ∨/Z←Z^^/' '=1 0↓FIXPEN1,FIXPEN2,FIXPEN3
+[90]          errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'ACCBASIS'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Benefit Basis is CARE but no Pension Data Item specified in Slice '),¨Z←⍕¨⎕mix 1+WHERE Z
+[91]      :endif
+[92]      :if ~(↑AltSw)∊'I ' ⍝ Either Ignore or irrelevant
+[93]          :if ^/0∊¨⍴¨AltSALCOD1 AltFIXPEN1
+[94]              errors←errors OVER 'AltSALCOD1' 1 ((errflag/'ERROR:  '),'Alternate Slices Method is ',AltSw,' but no Alternate Slice Definitions specified')
+[95]          :endif
+[96]          :if ∨/Z←'C'=1↓,1↑[2]AltACCBASIS ⋄ :andif ∨/Z←Z^^/' '=1 0↓AltFIXPEN1,AltFIXPEN2,AltFIXPEN3
+[97]              errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'AltACCBASIS'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Benefit Basis is CARE but no Pension Data Item specified in Alternate Slice '),¨Z←⍕¨⎕mix 1+WHERE Z
+[98]          :endif
+[99]      :endif
+[100]     :if bGAD
+[101]         :if (zwb m_NRA)>zwb m_LRA
+[102]             errors←errors OVER 'm_LRA' ⍬ ((errflag/'ERROR:  '),'Male Late Retirement Age must be equal to or greater than Normal Retirement Age')
+[103]         :endif
+[104]         :if (zwb f_NRA)>zwb f_LRA
+[105]             errors←errors OVER 'f_LRA' ⍬ ((errflag/'ERROR:  '),'Female Late Retirement Age must be equal to or greater than Normal Retirement Age')
+[106]         :endif
+[107]     :endif
+[108] ⍝⍝⍝    :if ~bGAD ⋄ :andif ~DeferNRA≡'Never'
+[109] ⍝⍝⍝        :if (zwb m_NRAG)>zwb m_NRA
+[110] ⍝⍝⍝            errors←errors OVER 'm_NRAG' ⍬ ((errflag/'ERROR:  '),'Male Deferral Age must be equal to or less than Normal Retirement Age')
+[111] ⍝⍝⍝        :endif
+[112] ⍝⍝⍝        :if (zwb f_NRAG)>zwb f_NRA
+[113] ⍝⍝⍝            errors←errors OVER 'f_NRAG' ⍬ ((errflag/'ERROR:  '),'Female Deferral Age must be equal to or less than Normal Retirement Age')
+[114] ⍝⍝⍝        :endif
+[115] ⍝⍝⍝    :endif
+[116]     :if CTYPE≡'% of A-Day Cash' ⋄ :andif 'O'=↑CONTOP
+[117]         errors←errors OVER 'CONTOP' ⍬ ((errflag/'ERROR:  '),'A-Day Cash cannot be Cash On Top')
+[118]     :endif
+[119]     :if CTYPE≡'% of A-Day Cash' ⋄ :andif zwb COMADaySep ⋄ :andif (⊂CTYPE2)∊'IR Maximum' 'Accrual x Salary for each year'
+[120]         errors←errors OVER 'COMADaySep' ⍬ ((errflag/'ERROR:  '),'Separate A-Day Cash Factors cannot be calculated when COT is ',CTYPE2)
+[121]     :endif
+[122]     :if ILLCTYPE≡'% of A-Day Cash' ⋄ :andif 'O'=↑ICONTOP
+[123]         errors←errors OVER 'ICONTOP' ⍬ ((errflag/'ERROR:  '),'A-Day Cash cannot be Cash On Top')
+[124]     :endif
+[125]     :if ILLCTYPE≡'% of A-Day Cash' ⋄ :andif zwb ILLCOMADaySep ⋄ :andif (⊂ILLCTYPE2)∊'IR Maximum' 'Accrual x Salary for each year'
+[126]         errors←errors OVER 'ILLCOMADaySep' ⍬ ((errflag/'ERROR:  '),'Separate A-Day Cash Factors cannot be calculated when COT is ',ILLCTYPE2)
+[127]     :endif
+[128]     :if zwb IndSlices
+[129]         :if ^/0∊¨⍴¨IndSALCOD1 IndFIXPEN1
+[130]             errors←errors OVER 'IndSALCOD1' 1 ((errflag/'ERROR:  '),'Independent Slices included but no Independent Slice Definitions specified')
+[131]         :endif
+[132]         :if ∨/Z←'C'=1↓,1↑[2]IndACCBASIS ⋄ :andif ∨/Z←Z^^/' '=1 0↓IndFIXPEN1,IndFIXPEN2,IndFIXPEN3
+[133]             errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'IndACCBASIS'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Benefit Basis is CARE but no Pension Data Item specified in Independent Slice '),¨Z←⍕¨⎕mix 1+WHERE Z
+[134]         :endif
+[135]     :endif
+[136] 
+[137]     :if errflag
+[138]         :if GREV≡'Fixed' ⋄ :andif ~(⊂'GMPFixed')∊FIndex at '∆_Name'
+[139]             errors←errors OVER 'GREV' ⍬ ((errflag/'ERROR:  '),'GMPFixed Factors not found in Factors File to apply GMP Fixed Revaluation')
+[140]         :endif
+[141]         :if ~(⊂IRMAXIND)∊'' 'Ignore' 'Pre 1987 Rules' ⋄ :andif ~(⊂'MAX')∊FIndex at '∆_Name'
+[142]             errors←errors OVER 'IRMAXIND' ⍬ ((errflag/'ERROR:  '),'MAX Factors not found in Factors File to apply Inland Revenue Maximum Cash Rules')
+[143]         :endif
+[144]         :if ~'Leaving Date'≡DLTB 1↑[1]FNDATE ⋄ :andif ~'C'=↑,1↑[1]ACCBASIS
+[145]             errors←errors OVER 'FNDATE' 1 ((errflag/'Warning:  '),'Slice End Date is not Leaving Date for Slice 1')
+[146]         :endif
+[147]         :if ~(↑AltSw)∊'I ' ⍝ Either Ignore or irrelevant
+[148]         :andif ~'Leaving Date'≡DLTB 1↑[1]AltFNDATE ⋄ :andif ~'C'=↑,1↑[1]AltACCBASIS
+[149]             errors←errors OVER 'AltFNDATE' 1 ((errflag/'Warning:  '),'Slice End Date is not Leaving Date for Alternate Slice 1')
+[150]         :endif
+[151]         :if zwb IndSlices ⋄ :andif ~'Leaving Date'≡DLTB 1↑[1]IndFNDATE ⋄ :andif ~'C'=↑,1↑[1]IndACCBASIS
+[152]             errors←errors OVER 'IndFNDATE' 1 ((errflag/'Warning:  '),'Slice End Date is not Leaving Date for Independent Slice 1')
+[153]         :endif
+[154]         :if zwb PHI ⋄ :andif ∨/Z←((zwb m_PHIEndAge)>zwb m_NRA),(zwb f_PHIEndAge)>zwb f_NRA
+[155]             errors←errors OVER Z⌿⊃spin (⊂'m_PHIEndAge' 'f_PHIEndAge'),(⊂2⍴⊂⍬),⊂(⊂errflag/'Warning:  '),¨sex,¨(⊂' PHI End Age is after '),¨(sex←'Male' 'Female'),¨⊂' Normal Retirement Age'
+[156]         :endif
+[157] ⍝⍝⍝ FIXME - move validation to GET∆Contributions ??? ⍝⍝⍝
+[158]         :if 0≠⎕nc 'contsDEF' ⋄ :andif 'Salary'≡6↑contsDEF ⍝ Validate Bands Table with CRs
+[159]             :if 2=⍴⍴values←DECRFile ReadFile contsSalTab
+[160]                 :if (↑⍴contsBandCR)≠shape←(Z←∨/0≠values[1;])+↑⍴values
+[161]                     errors←errors OVER 'contsBandCR' (↑⍴contsBandCR) ((errflag/'ERROR:  '),MESS∆TRANS 'BandsMisMatch' (⍕shape))
+[162]                 :endif
+[163]                 :if ∨/1≥∊⍴¨(~Z)↓values←DTZ¨⎕split values
+[164]                     errors←errors OVER 'contsSalTab' ⍬ ((errflag/'ERROR:  '),'At least 2 values are required in each Salary Band')
+[165]                 :endif
+[166]                 :if ∨/0>Z←,values-¯1↓[1]0⍪values←⊃(⌈/⍴¨values) OVERTAKE¨1 MID¨values
+[167]                     errors←errors OVER 'contsSalTab' ⍬ ((errflag/'ERROR:  '),'Salary Bands in year(s) ',(⍕WHERE ∨⌿Z<0),' are overlapping')
+[168]                 :endif
+[169]             :endif
+[170]         :endif
+[171]         :if 0≠⎕nc 'V1pcDEF' ⋄ :andif 'Salary'≡6↑V1pcDEF ⍝ Validate Bands Table with CRs
+[172]             :if 2=⍴⍴values←DECRFile ReadFile V1pcSalTab
+[173]                 :if (↑⍴V1pcBandCR)≠shape←(Z←∨/0≠values[1;])+↑⍴values
+[174]                     errors←errors OVER 'V1pcBandCR' (↑⍴V1pcBandCR) ((errflag/'ERROR:  '),MESS∆TRANS 'BandsMisMatch' (⍕shape))
+[175]                 :endif
+[176]                 :if ∨/1≥∊⍴¨(~Z)↓values←DTZ¨⎕split values
+[177]                     errors←errors OVER 'V1pcSalTab' ⍬ ((errflag/'ERROR:  '),'At least 2 values are required in each Salary Band')
+[178]                 :endif
+[179]                 :if ∨/0>Z←,values-¯1↓[1]0⍪values←⊃(⌈/⍴¨values) OVERTAKE¨1 MID¨values
+[180]                     errors←errors OVER 'V1pcSalTab' ⍬ ((errflag/'ERROR:  '),'Salary Bands in year(s) ',(⍕WHERE ∨⌿Z<0),' are overlapping')
+[181]                 :endif
+[182]             :endif
+[183]         :endif
+[184]         :if 0≠⎕nc 'mpuDEF' ⋄ :andif 'Salary'≡6↑mpuDEF ⍝ Validate Bands Table with CRs
+[185]             :if 2=⍴⍴values←DECRFile ReadFile mpuSalTab
+[186]                 :if (↑⍴mpuBandCR)≠shape←(Z←∨/0≠values[1;])+↑⍴values
+[187]                     errors←errors OVER 'mpuBandCR' (↑⍴mpuBandCR) ((errflag/'ERROR:  '),MESS∆TRANS 'BandsMisMatch' (⍕shape))
+[188]                 :endif
+[189]                 :if ∨/1≥∊⍴¨(~Z)↓values←DTZ¨⎕split values
+[190]                     errors←errors OVER 'mpuSalTab' ⍬ ((errflag/'ERROR:  '),'At least 2 values are required in each Salary Band')
+[191]                 :endif
+[192]                 :if ∨/0>Z←,values-¯1↓[1]0⍪values←⊃(⌈/⍴¨values) OVERTAKE¨1 MID¨values
+[193]                     errors←errors OVER 'mpuSalTab' ⍬ ((errflag/'ERROR:  '),'Salary Bands in year(s) ',(⍕WHERE ∨⌿Z<0),' are overlapping')
+[194]                 :endif
+[195]             :endif
+[196]         :endif
+[197]     :if valn
+[198]         :if dab ⋄ :andif 'S'=↑capind  ⍝⍝⍝ Is this true??
+[199]             errors←errors OVER 'capind' ⍬ ((errflag/'ERROR:  '),'Must use capitalised benefits for DAB runs')
+[200]         :endif
+[201]         :if ↑aggopt ⋄ :andif zwb mpuflag
+[202]             mpuflag←'0'
+[203]             errors←errors OVER 'mpuflag' ⍬ ((errflag/'Warning:  '),'Underpin not valued with the Aggregate Benefit option')
+[204]         :endif
+[205]     :endif
+[206] ⍝⍝⍝ Needs investigation.
+[207] ⍝⍝⍝         :if ClntCode=3
+[208] ⍝⍝⍝             :if (('P'=↑STYPEIH)^(0≠⍴SSDIH)∨0≠⍴SFDIH)∨('P'=↑WOSTYPE)^(0≠⍴WOSSD)∨0≠⍴WOSFD
+[209] ⍝⍝⍝                 errors←errors OVER 'STYPEIH' ⍬ ((errflag/'Warning:  '),'Spreading Dates will be ignored for projected unit spreading')
+[210] ⍝⍝⍝             :endif
+[211] ⍝⍝⍝         :endif
+[212]     :endif
+[213] 
+[214] :case 'Deferreds'
+[215] 
+[216]     :if ^/DATECHECK¨dates←(⊂'DD/MM/YYYY') DATEEXP¨ PreSTART  PreFINISH ⋄ :andif 0>DAYS /dates
+[217]         errors←errors OVER  'PreSTART' ⍬ ((errflag/'ERROR:  '),'Finish Date precedes Start Date for Pre 1988 GMP')
+[218]     :endif
+[219]     :if ^/DATECHECK¨dates←(⊂'DD/MM/YYYY') DATEEXP¨PostSTART PostFINISH ⋄ :andif 0>DAYS /dates
+[220]         errors←errors OVER 'PostSTART' ⍬ ((errflag/'ERROR:  '),'Finish Date precedes Start Date for Post 1988 GMP')
+[221]     :endif
+[222]     :if ^/DATECHECK¨dates←(⊂'DD/MM/YYYY') DATEEXP¨BARBDATE BARBEND ⋄ :andif 0>DAYS /dates
+[223]         errors←errors OVER 'BARBDATE' ⍬ ((errflag/'ERROR:  '),'Barber End Date precedes Barber Start Date')
+[224]     :endif
+[225]     :if CTYPE≡'% of A-Day Cash' ⋄ :andif zwb COMADaySep ⋄ :andif ~mt COTDATA
+[226]         errors←errors OVER 'COMADaySep' ⍬ ((errflag/'ERROR:  '),'Separate A-Day Cash Factors cannot be calculated when COT Cash Data Field is specified')
+[227]     :endif
+[228]     :if ~∨/mt¨INDSTART INDFINISH
+[229]     :andif ∨/Z←↑^/DATECHECK¨¨dates←(⊂⊂'DD/MM/YYYY') DATEEXP¨¨⊃¨¨↑¨¨⌽¨¨(⊂⊂'Date') SwapRelFields¨¨spin¨((m2n lrINDSTART) (m2n '<' StripText INDSTART)) ((m2n lrINDFINISH) (m2n '<' StripText INDFINISH))
+[230]     :andif ∨/Z←Z^0>↑DAYS /⊃¨dates
+[231]         errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'INDFINISH'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Finish Date precedes Start Date for PUPs '),¨Z←⍕¨⎕mix WHERE Z
+[232]     :endif
+[233]     :if zwb IndPUPs
+[234]     :andif ~∨/mt¨IndINDSTART IndINDFINISH
+[235]     :andif ∨/Z←↑^/DATECHECK¨¨dates←(⊂⊂'DD/MM/YYYY') DATEEXP¨¨⊃¨¨↑¨¨⌽¨¨(⊂⊂'Date') SwapRelFields¨¨spin¨((m2n lrIndINDSTART) (m2n '<' StripText IndINDSTART)) ((m2n lrIndINDFINISH) (m2n '<' StripText IndINDFINISH))
+[236]     :andif ∨/Z←Z^0>↑DAYS /⊃¨dates
+[237]         errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'IndINDFINISH'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Finish Date precedes Start Date for Independent PUPs '),¨Z←⍕¨⎕mix WHERE Z
+[238]     :endif
+[239]     :if errflag
+[240]         :if zwb GMPREV2 ⋄ :andif ~(⊂'GMPFixed')∊FIndex at '∆_Name'
+[241]             errors←errors OVER 'GMPREV2' ⍬ ((errflag/'ERROR:  '),'GMPFixed Factors not found in Factors File to apply GMP Fixed Revaluation')
+[242]         :endif
+[243]         :if 's'=↑PASTREV ⋄ :andif ~(⊂DLTB StripText REVSet)∊FIndex at '∆_Name'
+[244]             errors←errors OVER 'REVSet' ⍬ ((errflag/'ERROR:  "'),REVSet,'" not found in Factors File')
+[245]         :endif
+[246]         :if ~mt pastPRESPAREV ⋄ :andif ~(⊂DLTB StripText pastPRESPAREV)∊FIndex at '∆_Name'
+[247]             errors←errors OVER 'pastPRESPAREV' ⍬ ((errflag/'ERROR:  "'),pastPRESPAREV,'" not found in Factors File')
+[248]         :endif
+[249]         :if DATECHECK dates←'DD/MM/YYYY' DATEEXP PreSTART ⋄ :andif 0<dates DAYS 6 4 1978
+[250]             errors←errors OVER 'PreSTART' ⍬ ((errflag/'Warning:  '),'Pre 1988 GMP Start Date earlier than 6 April 1978, will be taken as latter')
+[251]         :endif
+[252]         :if DATECHECK dates←'DD/MM/YYYY' DATEEXP PreFINISH ⋄ :andif 0>dates DAYS 5 4 1988
+[253]             errors←errors OVER 'PreFINISH' ⍬ ((errflag/'Warning:  '),'Pre 1988 GMP Finish Date later than 5 April 1988, will be taken as latter')
+[254]         :endif
+[255]         :if DATECHECK dates←'DD/MM/YYYY' DATEEXP PostSTART ⋄ :andif 0<dates DAYS 6 4 1988
+[256]             errors←errors OVER 'PostSTART' ⍬ ((errflag/'Warning:  '),'Post 1988 GMP Start Date earlier than 6 April 1988, will be taken as latter')
+[257]         :endif
+[258]         :if DATECHECK dates←'DD/MM/YYYY' DATEEXP PostFINISH ⋄ :andif 0>dates DAYS 5 4 1997
+[259]             errors←errors OVER 'PostFINISH' ⍬ ((errflag/'Warning:  '),'Post 1988 GMP Finish Date later than 5 April 1997, will be taken as latter')
+[260]         :endif
+[261] ⍝⍝⍝ FIXME - Move validation to GET∆DecRateGlobals ??? ⍝⍝⍝
+[262]         :if ∨/Z←(⊂'RM')≡¨UPPERCASE¨2↑¨DLTB¨m_RXX f_RXX
+[263]             errors←errors OVER Z⌿⊃spin (⊂'m_RXX' 'f_RXX'),(⊂2⍴⊂1),⊂(⊂errflag/'ERROR:  '),¨('Male' 'Female'),¨⊂' Service-Related Retirement Decrement assumption cannot be used with Deferreds'
+[264]         :endif
+[265]         :if bBuck∨ClntCode=3 ⋄ :andif ~mt DATACASHCAP ⋄ :andif ~mt COMPER,COMMULT ⋄ :andif ~mt COMPER2,COMMULT2,COTDATA
+[266]             errors←errors OVER 'DATACASHCAP' ⍬ ((errflag/'Warning:  '),'CASHCAP is applied to Cash on Top and Commuted Cash Separately')
+[267]         :endif
+[268] ⍝⍝⍝ FIXME - move check to PPF Overrides in validateInput ??? ⍝⍝⍝
+[269]         :if s143 ⋄ :andif ~∨/(0,zwb post010514)∊0≥vDATE YDAYS 1 5 2014
+[270]             errors←errors OVER 'post010514' ⍬ ((errflag/'ERROR:  '),'Post 1 May 2014 s143 Mortality Assumptions are required')
+[271]         :endif
+[272]         :if s143 ⋄ :andif 0>vDATE YDAYS 30 4 2021
+[273]             errors←errors OVER 's143' ⍬ ((errflag/'Note:  '),'*** Post 1 May 2021 s143 Mortality Assumptions (B9 Valuation Guidance) have not been implemented ***')
+[274]         :endif
+[275]     :endif
+[276] 
+[277] :case 'Pensioners'
+[278] 
+[279]     msk←1≡¨¨⊃^/¨¨⎕vi¨¨⎕split¨BAGE EAGE ⍝ Only check numeric values for BAGE and EAGE
+[280] 
+[281]     :if ∨/Z←,'P'=1↑[2]CSORP ⋄ :andif ∨/Z←Z^(^⌿msk)^(msk[⎕io;]\MatrixZWB msk[⎕io;]⌿BAGE)>msk[⎕io+1;]\MatrixZWB msk[⎕io+1;]⌿EAGE
+[282]         errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'BAGE'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Commencing Age is greater than Ceasing Age for Pension '),¨Z←⍕¨⎕mix WHERE Z
+[283]     :endif
+[284]     :if ∨/Z←,'P'=1↑[2]CSORP ⋄ :andif ∨/Z←Z^(^⌿msk)^((msk[⎕io+1;]\MatrixZWB msk[⎕io+1;]⌿EAGE)-msk[⎕io;]\MatrixZWB msk[⎕io;]⌿BAGE)<MatrixZWB GPeriod
+[285]         errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'EAGE'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Commencing Age plus Guarantee Period is greater than Ceasing Age for Pension '),¨Z←⍕¨⎕mix WHERE Z
+[286]     :endif
+[287]     :if errflag
+[288]         :if zwb GMPREV2 ⋄ :andif ~(⊂'GMPFixed')∊FIndex at '∆_Name'
+[289]             errors←errors OVER 'GMPREV2' ⍬ ((errflag/'ERROR:  '),'GMPFixed Factors not found in Factors File to apply GMP Fixed Revaluation')
+[290]         :endif
+[291]     ⍝⍝⍝ :if zwb PUPRDN ⋄ :andif ~∨/,'Y'=1↑[2]GMPADJ
+[292]     ⍝⍝⍝     errors←errors OVER 'GMPADJ' 1 ((errflag/'Warning:  '),'No Pensions are included in SPA Adjustment')
+[293]     ⍝⍝⍝ :endif
+[294]     :endif
+[295]     :if valn
+[296]         :if ∨/Z←,'Y'=1↑[2]GMPADJ ⋄ :andif ∨/Z←Z^msk[⎕io;]^(60+5×SelSex='M')<msk[⎕io;]\MatrixZWB msk[⎕io;]⌿BAGE
+[297]             errors←errors OVER ⊃spin (⊂(⍴Z)⍴⊂'BAGE'),(⊂Z),⊂(⊂(errflag/'ERROR:  '),'Pension cannot be included in SPA Adjustment if the Benefit Commencing Age is after SPA for Pension '),¨Z←⍕¨⎕mix WHERE Z
+[298]         :endif
+[299]         :if zwb GMPREV2 ⋄ :andif mt fLD
+[300]             errors←errors OVER 'GMPREV2' ⍬ ((errflag/'ERROR:  '),'Leaving Service Date Required in Data Format if GMP Revaluation is Fixed')
+[301]         :endif
+[302]     :endif
+[303] 
+[304] :endselect
+[305] 
+[306] :if     ~ppfenabled∨capenabled
+[307] :elseif valn    ⋄ :andif ~ppf∨bencap
+[308] :elseif errflag ⋄ :andif ('Y'=↑PPFServiceCap) ∨ ('P'=↑PPFServiceCap)^0>vDATE YDAYS 5 4 2017
+[309] :andif ∨/Z←mt¨PPFServCapBDate PPFServCapEDate
+[310]     errors←errors OVER (↑Z/'PPFServCapBDate' 'PPFServCapEDate') ⍬ ((errflag/'ERROR:  '),'Service Cap Dates must be specified to calculate Service Adjusted Cap')
+[311] :endif
+    ∇

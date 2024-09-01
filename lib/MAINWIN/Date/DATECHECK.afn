@@ -1,0 +1,11 @@
+    ∇ res←larg DATECHECK A;⎕IO;B;R
+[1]   ⍝ MAINWIN.sf#7
+[2]   ⍝ Checks the validity of Dates
+[3]   ⍝ Accept Blank Dates if "larg" is non-zero
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   res←⎕IO←0 ⋄ →(0=⎕NC 'larg')/L1 ⋄ →(0=larg)/L1 ⋄ res←(1900∣A)^.= 100 0 0
+[8]   L1:B←(3≠¯1↑⍴A)⍴'' ⋄ R← 1 0 0 /A ⋄ B← 0 1 0 /A ⋄ A← 0 0 1 /A
+[9]   res←res∨(¯1↓⍴A)⍴(A=⌊A)^(A≥0)^(A<4000)^(R=⌊R)^(R>0)^R≤ 31 28 31 30 31 30 31 31 30 31 30 31 0 [(1↓⍳13)⍳B]+(B=2)^((100⍴ 1 0 0 0),300⍴ 0 0 0 0 ,96⍴ 1 0 0 0)[400∣1⌈⌊A]
+    ∇

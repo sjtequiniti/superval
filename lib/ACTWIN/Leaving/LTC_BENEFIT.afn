@@ -1,1 +1,79 @@
-    ∇ LTC∆BENEFIT;RetAge∆pp;BenType∆pp;Upin∆pp;Start∆pp;SL∆pp;ABno∆pp;IncType∆pp;FSL∆pp;AltABno∆pp;type;com;comF;∆;comFG;comG[1]   ⍝ ACTWIN.sf#9[2]   ⍝ DEATH IN DEFERMENT BENEFITS[3]   DID∆BEN[4]   [5]   ⍝⍝⍝ ExitProbs∆pp for DID Bens[6]   ⍝⍝⍝ tPostx←1,×\1-NX_1↑X0↓QXret[7]   ⍝⍝⍝ ExitProbs∆pp←((NX,NX)↑(⍳ENX_1)∘.≤⍳ENX_1)×(tPx÷tPostx)∘.×tPostx×NX↑X0↓QXret[8]   [9]   ⍝ Pension Projection Variables[10]  BenType∆pp←IncType∆pp←'DD' ⋄ RetAge∆pp←Age∆pp[11]  [12]  Upin∆pp←0 ⍝ Not "underpinned"[13]  Start∆pp←Age∆pp⌈DIDLAGE[X] ⋄ SL∆pp←,CASH∆D ⋄ FSL∆pp←,FCASH∆D[14]  :if IsAccrued ⋄ ABno∆pp←'2' ⋄ AltABno∆pp←'5' ⋄ :endif[15]  [16]  PP∆CreateInterface[17]  ⍝⍝⍝ :if IsAccrued ⋄ ABno∆pp←'5' ⋄ PP∆CreateInterface ⋄ :endif[18]  [19]  Start∆pp←Age∆pp⌈⌈DIDPAGE[X][20]  [21]  SL∆pp←,DIDPreGMP+DIDPostGMP ⋄ FSL∆pp←⍬ ⋄ Upin∆pp←1 ⍝ "underpinned"[22]  :if IsAccrued ⋄ ABno∆pp←'1' ⋄ AltABno∆pp←'4' ⋄ :endif[23]  [24]  PP∆CreateInterface[25]  ⍝⍝⍝ :if IsAccrued ⋄ ABno∆pp←'4' ⋄ Upin∆pp←0 ⋄ PP∆CreateInterface ⋄ :endif[26]  [27]  SL∆pp←,DID-SL∆pp ⋄ FSL∆pp←,FDID ⋄ Upin∆pp←1 ⍝ "underpinned"[28]  :if IsAccrued ⋄ ABno∆pp←'2' ⋄ AltABno∆pp←'5' ⋄ :endif[29]  [30]  PP∆CreateInterface[31]  ⍝⍝⍝ :if IsAccrued ⋄ ABno∆pp←'5' ⋄ Upin∆pp←0 ⋄ PP∆CreateInterface ⋄ :endif[32]  [33]  Start∆pp←RetAge∆pp←Age∆pp⌈NRA∆G[34]  :if IsAccrued ⋄ AltABno∆pp←'' ⋄ :endif[35]  [36]  :if ClntCode=3 ⋄ :orif bBuck ⋄ :orif CONTOP[37]      BenType∆pp←IncType∆pp←'L',sepComCot/'T'[38]      Upin∆pp←1 ⍝ "underpinned"[39]      SL∆pp←,GONTOP ⋄ FSL∆pp←,GONTOP⌊LFONTOP[40]  [41]      PP∆CreateInterface[42]  [43]      Upin∆pp←0 ⍝ Not "underpinned"[44]      SL∆pp←,LTONTOP-SL∆pp ⋄ FSL∆pp←,LFONTOP-FSL∆pp ⍝⍝⍝ ,LFONTOP×^/GONTOP=0[45]  [46]      PP∆CreateInterface[47]  :endif[48]  [49]  :if ~CONTOP[50]      :if splitCombyPI[51]          ∆←  ('S' splitLCASHS splitFLCASHS LGCASH∆S FLGCASH∆S) ('M' splitLCASHM splitFLCASHM LGCASH∆M FLGCASH∆M)[52]          ∆←∆,('3' splitLCASHL splitFLCASHL LGCASH∆L FLGCASH∆L) ('4' splitLCASH4 splitFLCASH4 LGCASH∆4 FLGCASH∆4)[53]          :for ∆ :in ∆ ⋄ (type com comF comG comFG)←∆[54]              BenType∆pp←IncType∆pp←'L',type[55]              Upin∆pp←1 ⍝ "underpinned"[56]              SL∆pp←,comG ⋄ FSL∆pp←,comFG[57]  [58]              PP∆CreateInterface[59]  [60]              Upin∆pp←0 ⍝ Not "underpinned"[61]              SL∆pp←,com-SL∆pp ⋄ FSL∆pp←,comF-FSL∆pp[62]  [63]              PP∆CreateInterface[64]          :endfor[65]      :else[66]          BenType∆pp←IncType∆pp←'L',sepComCot/'C'[67]          Upin∆pp←1 ⍝ "underpinned"[68]          SL∆pp←,LGCASH ⋄ FSL∆pp←,FLGCASH[69]  [70]          PP∆CreateInterface[71]  [72]          Upin∆pp←0 ⍝ Not "underpinned"[73]          SL∆pp←,LCASH-SL∆pp ⋄ FSL∆pp←,FLCASH-FSL∆pp[74]  [75]          PP∆CreateInterface[76]      :endif[77]  :endif    ∇
+    ∇ LTC∆BENEFIT;RetAge∆pp;BenType∆pp;Upin∆pp;Start∆pp;SL∆pp;ABno∆pp;IncType∆pp;FSL∆pp;AltABno∆pp;type;com;comF;∆;comFG;comG
+[1]   ⍝ ACTWIN.sf#9
+[2]   ⍝ DEATH IN DEFERMENT BENEFITS
+[3]   DID∆BEN
+[4]   
+[5]   ⍝⍝⍝ ExitProbs∆pp for DID Bens
+[6]   ⍝⍝⍝ tPostx←1,×\1-NX_1↑X0↓QXret
+[7]   ⍝⍝⍝ ExitProbs∆pp←((NX,NX)↑(⍳ENX_1)∘.≤⍳ENX_1)×(tPx÷tPostx)∘.×tPostx×NX↑X0↓QXret
+[8]   
+[9]   ⍝ Pension Projection Variables
+[10]  BenType∆pp←IncType∆pp←'DD' ⋄ RetAge∆pp←Age∆pp
+[11]  
+[12]  Upin∆pp←0 ⍝ Not "underpinned"
+[13]  Start∆pp←Age∆pp⌈DIDLAGE[X] ⋄ SL∆pp←,CASH∆D ⋄ FSL∆pp←,FCASH∆D
+[14]  :if IsAccrued ⋄ ABno∆pp←'2' ⋄ AltABno∆pp←'5' ⋄ :endif
+[15]  
+[16]  PP∆CreateInterface
+[17]  ⍝⍝⍝ :if IsAccrued ⋄ ABno∆pp←'5' ⋄ PP∆CreateInterface ⋄ :endif
+[18]  
+[19]  Start∆pp←Age∆pp⌈⌈DIDPAGE[X]
+[20]  
+[21]  SL∆pp←,DIDPreGMP+DIDPostGMP ⋄ FSL∆pp←⍬ ⋄ Upin∆pp←1 ⍝ "underpinned"
+[22]  :if IsAccrued ⋄ ABno∆pp←'1' ⋄ AltABno∆pp←'4' ⋄ :endif
+[23]  
+[24]  PP∆CreateInterface
+[25]  ⍝⍝⍝ :if IsAccrued ⋄ ABno∆pp←'4' ⋄ Upin∆pp←0 ⋄ PP∆CreateInterface ⋄ :endif
+[26]  
+[27]  SL∆pp←,DID-SL∆pp ⋄ FSL∆pp←,FDID ⋄ Upin∆pp←1 ⍝ "underpinned"
+[28]  :if IsAccrued ⋄ ABno∆pp←'2' ⋄ AltABno∆pp←'5' ⋄ :endif
+[29]  
+[30]  PP∆CreateInterface
+[31]  ⍝⍝⍝ :if IsAccrued ⋄ ABno∆pp←'5' ⋄ Upin∆pp←0 ⋄ PP∆CreateInterface ⋄ :endif
+[32]  
+[33]  Start∆pp←RetAge∆pp←Age∆pp⌈NRA∆G
+[34]  :if IsAccrued ⋄ AltABno∆pp←'' ⋄ :endif
+[35]  
+[36]  :if ClntCode=3 ⋄ :orif bBuck ⋄ :orif CONTOP
+[37]      BenType∆pp←IncType∆pp←'L',sepComCot/'T'
+[38]      Upin∆pp←1 ⍝ "underpinned"
+[39]      SL∆pp←,GONTOP ⋄ FSL∆pp←,GONTOP⌊LFONTOP
+[40]  
+[41]      PP∆CreateInterface
+[42]  
+[43]      Upin∆pp←0 ⍝ Not "underpinned"
+[44]      SL∆pp←,LTONTOP-SL∆pp ⋄ FSL∆pp←,LFONTOP-FSL∆pp ⍝⍝⍝ ,LFONTOP×^/GONTOP=0
+[45]  
+[46]      PP∆CreateInterface
+[47]  :endif
+[48]  
+[49]  :if ~CONTOP
+[50]      :if splitCombyPI
+[51]          ∆←  ('S' splitLCASHS splitFLCASHS LGCASH∆S FLGCASH∆S) ('M' splitLCASHM splitFLCASHM LGCASH∆M FLGCASH∆M)
+[52]          ∆←∆,('3' splitLCASHL splitFLCASHL LGCASH∆L FLGCASH∆L) ('4' splitLCASH4 splitFLCASH4 LGCASH∆4 FLGCASH∆4)
+[53]          :for ∆ :in ∆ ⋄ (type com comF comG comFG)←∆
+[54]              BenType∆pp←IncType∆pp←'L',type
+[55]              Upin∆pp←1 ⍝ "underpinned"
+[56]              SL∆pp←,comG ⋄ FSL∆pp←,comFG
+[57]  
+[58]              PP∆CreateInterface
+[59]  
+[60]              Upin∆pp←0 ⍝ Not "underpinned"
+[61]              SL∆pp←,com-SL∆pp ⋄ FSL∆pp←,comF-FSL∆pp
+[62]  
+[63]              PP∆CreateInterface
+[64]          :endfor
+[65]      :else
+[66]          BenType∆pp←IncType∆pp←'L',sepComCot/'C'
+[67]          Upin∆pp←1 ⍝ "underpinned"
+[68]          SL∆pp←,LGCASH ⋄ FSL∆pp←,FLGCASH
+[69]  
+[70]          PP∆CreateInterface
+[71]  
+[72]          Upin∆pp←0 ⍝ Not "underpinned"
+[73]          SL∆pp←,LCASH-SL∆pp ⋄ FSL∆pp←,FLCASH-FSL∆pp
+[74]  
+[75]          PP∆CreateInterface
+[76]      :endif
+[77]  :endif
+    ∇

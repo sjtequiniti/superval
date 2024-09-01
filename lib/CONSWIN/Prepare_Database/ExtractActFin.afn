@@ -1,1 +1,232 @@
-    ∇ Z←ExtractActFin arg;ResIDs;val;notes;∆;benrecs;BenID;rec;PSind;rechead;ben;peninc;wHERE;ContID;ContIDs;cont;tab;bentab;row;rows;tbl;contid;REC;incContID;LiabID;benbasis;sql;nonben;liab;BenDesc;benID;commrate;sexrecs;ResID;sex;NotProRata;msk;BenIDs[1]   ⍝ CONSWIN.sf#18[2]   ⍝ Get a summary of the Financial Assumptions for Actives Basis[3]   [4]   (ResIDs bentab PSind)←arg[5]   notes←noteshdr ⋄ benrecs←(0 benFLDS)⍴0[6]   LiabID←(2-PSind),(~PSind)/6 12[7]   [8]   ContIDs←(,1 ⍙DBadoCONCommand "SELECT DISTINCT ContingencyID FROM ResultsData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") AND LiabilityTypeID IN (",(0 ⍙DBNumList LiabID),")")~0[9]   [10]  :for cont :in nub ContTable at 'Contingency'[11]      tab←ContTable for 'Contingency' cont[12]      :if mt ContID←(∊tab at 'Member' 'Spouse') intersect ContIDs ⋄ :continue ⋄ :endif ⍝ Only Contingencies in results[13]  [14]      :if     ∨/'Expense'     ⍷cont ⋄ rechead←⊂'Expenses'      ⋄ LiabID←12[15]      :elseif ∨/'Premium'     ⍷cont ⋄ rechead←⊂'Premiums'      ⋄ LiabID←6[16]      :elseif ∨/'Contribution'⍷cont ⋄ rechead←⊂'Contributions' ⋄ LiabID←6[17]      :else                         ⋄ rechead←⊂ClassName       ⋄ LiabID←2-PSind[18]      :endif[19]  [20]      BenIDs←(          ,1 ⍙DBadoCONCommand "SELECT DISTINCT BenefitTypeID FROM ResultsData   WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") AND ContingencyID IN (",(0 ⍙DBNumList ContID),") AND LiabilityTypeID IN (",(0 ⍙DBNumList LiabID),") ORDER BY BenefitTypeID")~0[21]  [22]      ⍝⍝⍝ Temporary Fix for Cash Split by Pension Increase ⍝⍝⍝[23]      BenIDs←(BenIDs,(∨/44 45 46 47∊BenIDs)/35)~44 45 46 47[24]  [25]      BenIDs←nub BenIDs,,1 ⍙DBadoCONCommand "SELECT DISTINCT BenefitTypeID FROM MemberResults WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") AND ContingencyID IN (",(0 ⍙DBNumList ContID),") AND LiabilityTypeID IN (",(0 ⍙DBNumList LiabID),") AND DataItemID=32"[26]      :select cont[27]      :caselist 'All Benefits' 'Retirement' ⋄ NotProRata←(∨/1 35∊BenIDs)^~'Pro Rata'≡0 GetBasisData 'CASHP' ⍝ Commutation Type indicatror[28]      :case 'Ill Health'                    ⋄ NotProRata←(∨/1 35∊BenIDs)^~'Pro Rata'≡0 GetBasisData 'ICASHP'[29]      :else                                 ⋄ NotProRata←0[30]      :endselect[31]  [32]      :for BenID :in BenIDs[33]          :if 100<benID←∣BenID[34]              BenDesc←↑(benTypes for (⊂'BenNo'),⊂,BenID) at 'BenName'[35]              :if 1<⍴benID←(inctab  for 'ConsDyn' BenDesc) at 'BenID'[36]                  ∆←(pentab for (⊂'BenID'),benID) at 'BenDesc'[37]                  benID←↑(×rowsIn¨(⊂bentab) for¨(⊂⊂'PenInc'),¨⊂¨∆)/benID[38]              :endif[39]              benID←↑benID[40]          :endif[41]          :if     ^/ContID=29 ⋄ benID←9 ⍝ Insurance Premiums have characteristics of Insured benefit[42]          :elseif ^/ContID=30 ⋄ benID←10[43]          :endif[44]  [45]          sexrecs←0 4⍴0 0 '' ''[46]          :for ∆ :in ⎕split catrecs[;1 3] ⋄ (ResID sex)←∆[47]              commrate←''[48]              :if ~PSind ⋄ :andif benID∊1 4 5 6 7 9 10 35 36[49]                  benbasis←↑(bentab for 'Type' 'Slice 1') at 'BenBasis'[50]                  :if benID∊1 35 36[51]                      :if ∨/1 2 5 21 26∊ContID                ⍝ Retirement/Leaving Cash[52]                          benbasis←benbasis,' ',(benID sex) GetCashDetails ''[53]                          :if benID=36 ⋄ commrate←(ResID benID ContID PSind) GetCommRate '' ⋄ :endif[54]                      :elseif ^/ContID=4                      ⍝ Ill Health Cash[55]                          benbasis←benbasis,' ',(benID sex) GetCashDetails 'ILL'[56]                          :if benID=36 ⋄ commrate←(ResID benID ContID PSind) GetCommRate 'ILL' ⋄ :endif[57]                      :elseif ^/ContID=3                      ⍝ Death Cash Salary/RoC[58]                          benbasis←(1+0=zwb 0 GetBasisData 'GLMULT')⊃'Final Salary' 'RoC'[59]                      :endif[60]                  :elseif benID∊4 5 6 7[61]                      commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'[62]                  :endif[63]              :elseif PSind[64]                  benbasis←commrate←''[65]                  :select benID[66]                  :caselist 1 35 36[67]                      :if ∨/1 2 5 21 26∊ContID                ⍝ Retirement/Leaving Cash[68]                          benbasis←(benID sex) GetCashDetails ''[69]                          :if benID=36 ⋄ commrate←(ResID benID ContID PSind) GetCommRate '' ⋄ :endif[70]                      :elseif ^/ContID=4                      ⍝ Ill Health Cash[71]                          benbasis←(benID sex) GetCashDetails 'ILL'[72]                          :if benID=36 ⋄ commrate←(ResID benID ContID PSind) GetCommRate 'ILL' ⋄ :endif[73]                      :elseif ^/ContID=3                      ⍝ Death Cash Salary/RoC[74]                          benbasis←(1+0=zwb 0 GetBasisData 'GLMULT')⊃'Final Salary' 'RoC'[75]                      :else[76]                          benbasis←↑bentab at 'BenBasis'[77]                      :endif[78]                  :case 4 ⋄ benbasis←↑(bentab for 'PenInc' 'Main Pension') at 'BenBasis'[79]                            commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'[80]                  :case 5 ⋄ benbasis←↑(bentab for 'PenInc' 'Special Pension') at 'BenBasis'[81]                            commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'[82]                  :case 6 ⋄ benbasis←↑(bentab for 'PenInc' 'Pension Increase 3') at 'BenBasis'[83]                            commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'[84]                  :case 7 ⋄ benbasis←↑(bentab for 'PenInc' 'Pension Increase 4') at 'BenBasis'[85]                            commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'[86]                  :endselect[87]              :else[88]                  :if     ContID≡,10[89]                      :if ∨/'Salaries'⍷benbasis←0 GetConsData 'ameth1' ⋄ benbasis←'Current Salaries' ⋄ :endif[90]                  :elseif ContID≡,28[91]                      :if ∨/'Salaries'⍷benbasis←0 GetConsData 'ameth2' ⋄ benbasis←'Current Salaries' ⋄ :endif[92]                  :else              ⋄ benbasis←''[93]                  :endif[94]              :endif[95]              sexrecs←sexrecs⍪PSind BenID benbasis commrate   ⍝ Past Service, BenID, Benefit Basis and Commutation Rate[96]          :endfor[97]  [98]          :if     ContID≡,10 ⋄ rec←1,12⍴1 GetConsData 'amorti1'[99]          :elseif ContID≡,28 ⋄ rec←1,12⍴1 GetConsData 'amorti2'[100]         :elseif ContID≡,15 ⋄ rec←1,12⍴1 GetConsData 'IR'[101]         :elseif benID∊1 8 9 10 11 32 33 35 36     ⍝ BenIDs that only use Pre-Ret Interest[102]                            ⋄ rec←1,intrec[103]         :else              ⋄ rec←(intSw⌈~∨/ContID=5),intrec ⍝ Append Interest[104]         :endif[105] [106] ⍝⍝⍝        :if benID∊1 8 9 10 11 32 35 36,intSw/30 ⋄ rec←(¯6↓rec),mtFin ⋄ :endif ⍝ No Post-Retirement Interest for Cash, Underpin, Insured, Conts, DiD or Expenses[107]         :if benID∊8 9 10 11 32,intSw/30 ⋄ rec←(¯6↓rec),mtFin ⋄ :endif ⍝ No Post-Retirement Interest for Underpin, Insured, Conts, DiD or Expenses[108] [109]         ⍝ In-Service Inflation[110]         :if benID∊2 3 ⍝ GMPs[111]             rec←rec,'' 0,1 GetBasisData 's148'    ⍝ S148 in service[112]         :elseif ∨/3∊ContID ⋄ :andif 'S'=↑0 GetBasisData 'm_WOBAS' ⍝ Doesn't cope with different benefit for Females[113]             rec←rec,0 GetInf 0 GetBasisData 'WOSAL'[114]         :else[115]             :select benID                         ⍝ Slice Inflation (by Pension Increase)[116]             :caselist 1 35 36[117]                 :if ^/ContID=3                    ⍝ Death Cash Inflation and Revalaution (Interest)[118]                     :if 0=zwb 0 GetBasisData 'GLMULT'[119]                         :select 5↑0 GetBasisData 'DISRCT'[120]                         :case 'Nothi' ⋄ val←'' 0,mtFin,mtFin ⍝ Nothing[121]                         :case 'Membe' ⋄ val←(0 GetInf 0 GetBasisData 'contsSAL'),1 GetBasisData 'j' ⍝ RoC[122]                         :case 'Money' ⋄ val←(0 GetInf 0 GetBasisData 'mpuSAL'),1 GetBasisData 'jmpu' ⍝ Underpin[123]                         :endselect[124]                     :else[125]                         val←(0 GetInf 0 GetBasisData 'GLSAL'),mtFin[126]                     :endif[127]                 :elseif ∨/ContID∊1 2 5 21[128]                 :andif ~mt ∆←GetRetCashInf benID[129]                     val←∆[130]                 :elseif ∨/ContID=4[131]                 :andif ~mt ∆←GetIHCashInf benID[132]                     val←∆[133]                 :else[134]                     peninc←(((benID≠36)×'Priority'≡0 GetBasisData 'CASHP')⌽'Main Pension' 'Special Pension'),'Pension Increase 3' 'Pension Increase 4'[135]                     peninc←↑(peninc∊bentab at 'PenInc')/peninc[136]                     val←ContID GetInf ↑(bentab for 'PenInc' peninc) at 'Salary'[137]                 :endif[138]             :case 4  ⋄ val←ContID GetInf ↑(bentab for 'PenInc' 'Main Pension') at 'Salary'[139]             :case 5  ⋄ val←ContID GetInf ↑(bentab for 'PenInc' 'Special Pension') at 'Salary'[140]             :case 6  ⋄ val←ContID GetInf ↑(bentab for 'PenInc' 'Pension Increase 3') at 'Salary'[141]             :case 7  ⋄ val←ContID GetInf ↑(bentab for 'PenInc' 'Pension Increase 4') at 'Salary'[142]             :case 8  ⋄ val←0 GetInf 0 GetBasisData 'mpuSAL'[143]             :case 9  ⋄ val←ContID GetInf ↑bentab at 'Salary'[144]             :case 10 ⋄ val←0 GetInf 0 GetBasisData 'GLSAL'[145]             :caselist 11 32[146]                 :if     ContID=8  ⋄ val←0 GetInf 0 GetBasisData 'contsSAL'[147]                 :elseif ContID=16 ⋄ val←'' 0    ,1 GetBasisData 'SALINC'[148]                 :else             ⋄ val←0 GetInf 0 GetBasisData 'V1pcSAL'[149]                 :endif[150]             :case 30 ⍝ Inflation of DiD[151]                 peninc←↑(peninc∊bentab at 'PenInc')/peninc←'Main Pension' 'Special Pension' 'Pension Increase 3' 'Pension Increase 4'[152]                 val←ContID GetInf ↑(bentab for 'PenInc' peninc) at 'Salary'[153]             :endselect[154]             rec←rec,val[155]         :endif[156] [157]         :if benID∊2 3 ⍝ GMPs Revaluation[158]             :select DLTB '[' StripText 0 GetBasisData 'GREV'[159]             :case 'None'    ⋄ val←'GMP None' 'GMP None' '0' '' '' 0[160]             :case 'Fixed'   ⋄ val←'GMP Fixed' 'GMP Fixed' 'Fixed Revaluation' '' '' 0[161]             :case 'Limited' ⋄ val←'GMP Limited 5%' 'GMP Limited 5%' '5' '' '' 0[162]             :case 'S148'    ⋄ val←1 GetBasisData 's148'[163]             :endselect[164]             rec←rec,val[165] [166]             ben←(2 3⍳benID)⊃'Pre 1988 GMP' 'Post 1988 GMP'[167]             notes←notes OVER ResIDs,(⍴ResIDs)⌿MATRIX ben benID 'Revaluation',val,'GMP Revaluation Rate To SPA' 0[168]             :if ~mt ↑∆←1 GetBasisData 'GMPREVALRAT'[169]                 notes←notes OVER ResIDs,(⍴ResIDs)⌿MATRIX ben benID 'Revaluation',∆,'GMP Revaluation Rate to NRA<SPA' 1[170]             :endif[171]         :endif[172] [173]         :select benID[174]         :case 2 ⋄ val←¯1 GetBasisData 'B88GMPINC' ⍝ Pre 88 GMP Increases[175]         :case 3 ⋄ val←¯1 GetBasisData 'A88GMPINC' ⍝ Post 88 GMP Increases[176]         ⍝ Slice Revaluation and Increases[177]         :caselist 1 35 36 ⍝ Cash[178]             :if ^/ContID=3[179]                 val←mtFin,⊂'' ⍝ Revaluation done above[180]             :else[181]                 peninc←(((benID≠36)×'Priority'≡0 GetBasisData 'CASHP')⌽'Main Pension' 'Special Pension'),'Pension Increase 3' 'Pension Increase 4'[182]                 peninc←↑(peninc∊bentab at 'PenInc')/peninc[183]                 val←PSind GetRev bentab for 'PenInc' peninc[184]                 val←val,mtFin,⊂''[185]             :endif[186]         :case 4[187]             val←PSind GetRev bentab for 'PenInc' 'Main Pension'[188]             val←val,¯1 GetBasisData 'DYNINC'  ⍝ Main[189]         :case 5[190]             val←PSind GetRev bentab for 'PenInc' 'Special Pension'[191]             val←val,¯1 GetBasisData 'NDYNINC' ⍝ Special[192]         :case 6[193]             val←PSind GetRev bentab for 'PenInc' 'Pension Increase 3'[194]             val←val,¯1 GetBasisData 'DYNINC3' ⍝ PenInc3[195]         :case 7[196]             val←PSind GetRev bentab for 'PenInc' 'Pension Increase 4'[197]             val←val,¯1 GetBasisData 'DYNINC4' ⍝ PenInc4[198]         :case 8[199]             val←1 GetBasisData 'jmpu'         ⍝ Underpin[200]             val←val,mtFin,⊂''[201]         :case 30[202]             peninc←↑(peninc∊bentab at 'PenInc')/peninc←'Main Pension' 'Special Pension' 'Pension Increase 3' 'Pension Increase 4'[203]             val←PSind GetRev bentab for 'PenInc' peninc[204]             val←val,mtFin,⊂''[205]         :caselist 9 10 11 32[206]             val←mtFin,mtFin,⊂''[207]         :endselect[208]         rec←rec,val[209] [210]         :select benID[211]         :caselist 4 5 6 7 ⋄ val←2/∨/bentab at 'SLICEUP' ⍝ GMP indicators[212]         :else             ⋄ val←0 0 ⍝ Not Cash, GMPs, Underpin, Insured, Conts, DiD or Expenses[213]         :endselect[214]         rec←rec,val[215] [216]         incContID←IncContID∨nonben←∨/∨/¨'Cont' 'Prem' 'Exp'⍷¨⊂cont[217]         :for row :in ⍳rows←rowsIn tab[218]             tbl←tab for row=⍳rows[219]             :if ∨/ContID∊contid←(∊tbl at 'Member' 'Spouse')~0[220]                 REC←rechead,(⊂incContID×↑contid),(⊂((uk=1)^benID∊9 10)⌈↑tbl at 'StartYear'),sexrecs,(↑⍴sexrecs)⌿MATRIX rec[221]                 sql←"SELECT SUM(SVValue) FROM ResultsData WHERE BenefitTypeID=",(DLTB 'M<->I3' ⎕fmt BenID)," AND LiabilityTypeID IN (",(0 ⍙DBNumList LiabID),") AND ContingencyID IN (",(0 ⍙DBNumList contid),") AND DataItemID=%1 AND ResultsCategoryID="[222]                 ⍝ Append Liability Figures[223]                 msk←NotProRata∨0.5<∣liab←0 ⍙DBRemoveNulls ,↑¨1 ⍙DBadoCONCommand¨(⊂'/%1/93' TEXTREPL sql),¨⍕¨ResIDs[224]                 benrecs←benrecs⍪msk⌿⊃ResIDs,¨(⎕split MATRIX REC),¨-liab[225]             :endif[226]         :endfor[227]         :if nonben ⋄ :andif ∨/'Salaries'∊↑rec[2] ⋄ rec[2]←⊂'NE Salaries' ⋄ :endif[228]     :endfor[229] :endfor[230] Z←benrecs notes    ∇
+    ∇ Z←ExtractActFin arg;ResIDs;val;notes;∆;benrecs;BenID;rec;PSind;rechead;ben;peninc;wHERE;ContID;ContIDs;cont;tab;bentab;row;rows;tbl;contid;REC;incContID;LiabID;benbasis;sql;nonben;liab;BenDesc;benID;commrate;sexrecs;ResID;sex;NotProRata;msk;BenIDs
+[1]   ⍝ CONSWIN.sf#18
+[2]   ⍝ Get a summary of the Financial Assumptions for Actives Basis
+[3]   
+[4]   (ResIDs bentab PSind)←arg
+[5]   notes←noteshdr ⋄ benrecs←(0 benFLDS)⍴0
+[6]   LiabID←(2-PSind),(~PSind)/6 12
+[7]   
+[8]   ContIDs←(,1 ⍙DBadoCONCommand "SELECT DISTINCT ContingencyID FROM ResultsData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") AND LiabilityTypeID IN (",(0 ⍙DBNumList LiabID),")")~0
+[9]   
+[10]  :for cont :in nub ContTable at 'Contingency'
+[11]      tab←ContTable for 'Contingency' cont
+[12]      :if mt ContID←(∊tab at 'Member' 'Spouse') intersect ContIDs ⋄ :continue ⋄ :endif ⍝ Only Contingencies in results
+[13]  
+[14]      :if     ∨/'Expense'     ⍷cont ⋄ rechead←⊂'Expenses'      ⋄ LiabID←12
+[15]      :elseif ∨/'Premium'     ⍷cont ⋄ rechead←⊂'Premiums'      ⋄ LiabID←6
+[16]      :elseif ∨/'Contribution'⍷cont ⋄ rechead←⊂'Contributions' ⋄ LiabID←6
+[17]      :else                         ⋄ rechead←⊂ClassName       ⋄ LiabID←2-PSind
+[18]      :endif
+[19]  
+[20]      BenIDs←(          ,1 ⍙DBadoCONCommand "SELECT DISTINCT BenefitTypeID FROM ResultsData   WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") AND ContingencyID IN (",(0 ⍙DBNumList ContID),") AND LiabilityTypeID IN (",(0 ⍙DBNumList LiabID),") ORDER BY BenefitTypeID")~0
+[21]  
+[22]      ⍝⍝⍝ Temporary Fix for Cash Split by Pension Increase ⍝⍝⍝
+[23]      BenIDs←(BenIDs,(∨/44 45 46 47∊BenIDs)/35)~44 45 46 47
+[24]  
+[25]      BenIDs←nub BenIDs,,1 ⍙DBadoCONCommand "SELECT DISTINCT BenefitTypeID FROM MemberResults WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") AND ContingencyID IN (",(0 ⍙DBNumList ContID),") AND LiabilityTypeID IN (",(0 ⍙DBNumList LiabID),") AND DataItemID=32"
+[26]      :select cont
+[27]      :caselist 'All Benefits' 'Retirement' ⋄ NotProRata←(∨/1 35∊BenIDs)^~'Pro Rata'≡0 GetBasisData 'CASHP' ⍝ Commutation Type indicatror
+[28]      :case 'Ill Health'                    ⋄ NotProRata←(∨/1 35∊BenIDs)^~'Pro Rata'≡0 GetBasisData 'ICASHP'
+[29]      :else                                 ⋄ NotProRata←0
+[30]      :endselect
+[31]  
+[32]      :for BenID :in BenIDs
+[33]          :if 100<benID←∣BenID
+[34]              BenDesc←↑(benTypes for (⊂'BenNo'),⊂,BenID) at 'BenName'
+[35]              :if 1<⍴benID←(inctab  for 'ConsDyn' BenDesc) at 'BenID'
+[36]                  ∆←(pentab for (⊂'BenID'),benID) at 'BenDesc'
+[37]                  benID←↑(×rowsIn¨(⊂bentab) for¨(⊂⊂'PenInc'),¨⊂¨∆)/benID
+[38]              :endif
+[39]              benID←↑benID
+[40]          :endif
+[41]          :if     ^/ContID=29 ⋄ benID←9 ⍝ Insurance Premiums have characteristics of Insured benefit
+[42]          :elseif ^/ContID=30 ⋄ benID←10
+[43]          :endif
+[44]  
+[45]          sexrecs←0 4⍴0 0 '' ''
+[46]          :for ∆ :in ⎕split catrecs[;1 3] ⋄ (ResID sex)←∆
+[47]              commrate←''
+[48]              :if ~PSind ⋄ :andif benID∊1 4 5 6 7 9 10 35 36
+[49]                  benbasis←↑(bentab for 'Type' 'Slice 1') at 'BenBasis'
+[50]                  :if benID∊1 35 36
+[51]                      :if ∨/1 2 5 21 26∊ContID                ⍝ Retirement/Leaving Cash
+[52]                          benbasis←benbasis,' ',(benID sex) GetCashDetails ''
+[53]                          :if benID=36 ⋄ commrate←(ResID benID ContID PSind) GetCommRate '' ⋄ :endif
+[54]                      :elseif ^/ContID=4                      ⍝ Ill Health Cash
+[55]                          benbasis←benbasis,' ',(benID sex) GetCashDetails 'ILL'
+[56]                          :if benID=36 ⋄ commrate←(ResID benID ContID PSind) GetCommRate 'ILL' ⋄ :endif
+[57]                      :elseif ^/ContID=3                      ⍝ Death Cash Salary/RoC
+[58]                          benbasis←(1+0=zwb 0 GetBasisData 'GLMULT')⊃'Final Salary' 'RoC'
+[59]                      :endif
+[60]                  :elseif benID∊4 5 6 7
+[61]                      commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'
+[62]                  :endif
+[63]              :elseif PSind
+[64]                  benbasis←commrate←''
+[65]                  :select benID
+[66]                  :caselist 1 35 36
+[67]                      :if ∨/1 2 5 21 26∊ContID                ⍝ Retirement/Leaving Cash
+[68]                          benbasis←(benID sex) GetCashDetails ''
+[69]                          :if benID=36 ⋄ commrate←(ResID benID ContID PSind) GetCommRate '' ⋄ :endif
+[70]                      :elseif ^/ContID=4                      ⍝ Ill Health Cash
+[71]                          benbasis←(benID sex) GetCashDetails 'ILL'
+[72]                          :if benID=36 ⋄ commrate←(ResID benID ContID PSind) GetCommRate 'ILL' ⋄ :endif
+[73]                      :elseif ^/ContID=3                      ⍝ Death Cash Salary/RoC
+[74]                          benbasis←(1+0=zwb 0 GetBasisData 'GLMULT')⊃'Final Salary' 'RoC'
+[75]                      :else
+[76]                          benbasis←↑bentab at 'BenBasis'
+[77]                      :endif
+[78]                  :case 4 ⋄ benbasis←↑(bentab for 'PenInc' 'Main Pension') at 'BenBasis'
+[79]                            commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'
+[80]                  :case 5 ⋄ benbasis←↑(bentab for 'PenInc' 'Special Pension') at 'BenBasis'
+[81]                            commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'
+[82]                  :case 6 ⋄ benbasis←↑(bentab for 'PenInc' 'Pension Increase 3') at 'BenBasis'
+[83]                            commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'
+[84]                  :case 7 ⋄ benbasis←↑(bentab for 'PenInc' 'Pension Increase 4') at 'BenBasis'
+[85]                            commrate←(ResID BenID ContID PSind) GetCommRate (^/ContID=4)/'ILL'
+[86]                  :endselect
+[87]              :else
+[88]                  :if     ContID≡,10
+[89]                      :if ∨/'Salaries'⍷benbasis←0 GetConsData 'ameth1' ⋄ benbasis←'Current Salaries' ⋄ :endif
+[90]                  :elseif ContID≡,28
+[91]                      :if ∨/'Salaries'⍷benbasis←0 GetConsData 'ameth2' ⋄ benbasis←'Current Salaries' ⋄ :endif
+[92]                  :else              ⋄ benbasis←''
+[93]                  :endif
+[94]              :endif
+[95]              sexrecs←sexrecs⍪PSind BenID benbasis commrate   ⍝ Past Service, BenID, Benefit Basis and Commutation Rate
+[96]          :endfor
+[97]  
+[98]          :if     ContID≡,10 ⋄ rec←1,12⍴1 GetConsData 'amorti1'
+[99]          :elseif ContID≡,28 ⋄ rec←1,12⍴1 GetConsData 'amorti2'
+[100]         :elseif ContID≡,15 ⋄ rec←1,12⍴1 GetConsData 'IR'
+[101]         :elseif benID∊1 8 9 10 11 32 33 35 36     ⍝ BenIDs that only use Pre-Ret Interest
+[102]                            ⋄ rec←1,intrec
+[103]         :else              ⋄ rec←(intSw⌈~∨/ContID=5),intrec ⍝ Append Interest
+[104]         :endif
+[105] 
+[106] ⍝⍝⍝        :if benID∊1 8 9 10 11 32 35 36,intSw/30 ⋄ rec←(¯6↓rec),mtFin ⋄ :endif ⍝ No Post-Retirement Interest for Cash, Underpin, Insured, Conts, DiD or Expenses
+[107]         :if benID∊8 9 10 11 32,intSw/30 ⋄ rec←(¯6↓rec),mtFin ⋄ :endif ⍝ No Post-Retirement Interest for Underpin, Insured, Conts, DiD or Expenses
+[108] 
+[109]         ⍝ In-Service Inflation
+[110]         :if benID∊2 3 ⍝ GMPs
+[111]             rec←rec,'' 0,1 GetBasisData 's148'    ⍝ S148 in service
+[112]         :elseif ∨/3∊ContID ⋄ :andif 'S'=↑0 GetBasisData 'm_WOBAS' ⍝ Doesn't cope with different benefit for Females
+[113]             rec←rec,0 GetInf 0 GetBasisData 'WOSAL'
+[114]         :else
+[115]             :select benID                         ⍝ Slice Inflation (by Pension Increase)
+[116]             :caselist 1 35 36
+[117]                 :if ^/ContID=3                    ⍝ Death Cash Inflation and Revalaution (Interest)
+[118]                     :if 0=zwb 0 GetBasisData 'GLMULT'
+[119]                         :select 5↑0 GetBasisData 'DISRCT'
+[120]                         :case 'Nothi' ⋄ val←'' 0,mtFin,mtFin ⍝ Nothing
+[121]                         :case 'Membe' ⋄ val←(0 GetInf 0 GetBasisData 'contsSAL'),1 GetBasisData 'j' ⍝ RoC
+[122]                         :case 'Money' ⋄ val←(0 GetInf 0 GetBasisData 'mpuSAL'),1 GetBasisData 'jmpu' ⍝ Underpin
+[123]                         :endselect
+[124]                     :else
+[125]                         val←(0 GetInf 0 GetBasisData 'GLSAL'),mtFin
+[126]                     :endif
+[127]                 :elseif ∨/ContID∊1 2 5 21
+[128]                 :andif ~mt ∆←GetRetCashInf benID
+[129]                     val←∆
+[130]                 :elseif ∨/ContID=4
+[131]                 :andif ~mt ∆←GetIHCashInf benID
+[132]                     val←∆
+[133]                 :else
+[134]                     peninc←(((benID≠36)×'Priority'≡0 GetBasisData 'CASHP')⌽'Main Pension' 'Special Pension'),'Pension Increase 3' 'Pension Increase 4'
+[135]                     peninc←↑(peninc∊bentab at 'PenInc')/peninc
+[136]                     val←ContID GetInf ↑(bentab for 'PenInc' peninc) at 'Salary'
+[137]                 :endif
+[138]             :case 4  ⋄ val←ContID GetInf ↑(bentab for 'PenInc' 'Main Pension') at 'Salary'
+[139]             :case 5  ⋄ val←ContID GetInf ↑(bentab for 'PenInc' 'Special Pension') at 'Salary'
+[140]             :case 6  ⋄ val←ContID GetInf ↑(bentab for 'PenInc' 'Pension Increase 3') at 'Salary'
+[141]             :case 7  ⋄ val←ContID GetInf ↑(bentab for 'PenInc' 'Pension Increase 4') at 'Salary'
+[142]             :case 8  ⋄ val←0 GetInf 0 GetBasisData 'mpuSAL'
+[143]             :case 9  ⋄ val←ContID GetInf ↑bentab at 'Salary'
+[144]             :case 10 ⋄ val←0 GetInf 0 GetBasisData 'GLSAL'
+[145]             :caselist 11 32
+[146]                 :if     ContID=8  ⋄ val←0 GetInf 0 GetBasisData 'contsSAL'
+[147]                 :elseif ContID=16 ⋄ val←'' 0    ,1 GetBasisData 'SALINC'
+[148]                 :else             ⋄ val←0 GetInf 0 GetBasisData 'V1pcSAL'
+[149]                 :endif
+[150]             :case 30 ⍝ Inflation of DiD
+[151]                 peninc←↑(peninc∊bentab at 'PenInc')/peninc←'Main Pension' 'Special Pension' 'Pension Increase 3' 'Pension Increase 4'
+[152]                 val←ContID GetInf ↑(bentab for 'PenInc' peninc) at 'Salary'
+[153]             :endselect
+[154]             rec←rec,val
+[155]         :endif
+[156] 
+[157]         :if benID∊2 3 ⍝ GMPs Revaluation
+[158]             :select DLTB '[' StripText 0 GetBasisData 'GREV'
+[159]             :case 'None'    ⋄ val←'GMP None' 'GMP None' '0' '' '' 0
+[160]             :case 'Fixed'   ⋄ val←'GMP Fixed' 'GMP Fixed' 'Fixed Revaluation' '' '' 0
+[161]             :case 'Limited' ⋄ val←'GMP Limited 5%' 'GMP Limited 5%' '5' '' '' 0
+[162]             :case 'S148'    ⋄ val←1 GetBasisData 's148'
+[163]             :endselect
+[164]             rec←rec,val
+[165] 
+[166]             ben←(2 3⍳benID)⊃'Pre 1988 GMP' 'Post 1988 GMP'
+[167]             notes←notes OVER ResIDs,(⍴ResIDs)⌿MATRIX ben benID 'Revaluation',val,'GMP Revaluation Rate To SPA' 0
+[168]             :if ~mt ↑∆←1 GetBasisData 'GMPREVALRAT'
+[169]                 notes←notes OVER ResIDs,(⍴ResIDs)⌿MATRIX ben benID 'Revaluation',∆,'GMP Revaluation Rate to NRA<SPA' 1
+[170]             :endif
+[171]         :endif
+[172] 
+[173]         :select benID
+[174]         :case 2 ⋄ val←¯1 GetBasisData 'B88GMPINC' ⍝ Pre 88 GMP Increases
+[175]         :case 3 ⋄ val←¯1 GetBasisData 'A88GMPINC' ⍝ Post 88 GMP Increases
+[176]         ⍝ Slice Revaluation and Increases
+[177]         :caselist 1 35 36 ⍝ Cash
+[178]             :if ^/ContID=3
+[179]                 val←mtFin,⊂'' ⍝ Revaluation done above
+[180]             :else
+[181]                 peninc←(((benID≠36)×'Priority'≡0 GetBasisData 'CASHP')⌽'Main Pension' 'Special Pension'),'Pension Increase 3' 'Pension Increase 4'
+[182]                 peninc←↑(peninc∊bentab at 'PenInc')/peninc
+[183]                 val←PSind GetRev bentab for 'PenInc' peninc
+[184]                 val←val,mtFin,⊂''
+[185]             :endif
+[186]         :case 4
+[187]             val←PSind GetRev bentab for 'PenInc' 'Main Pension'
+[188]             val←val,¯1 GetBasisData 'DYNINC'  ⍝ Main
+[189]         :case 5
+[190]             val←PSind GetRev bentab for 'PenInc' 'Special Pension'
+[191]             val←val,¯1 GetBasisData 'NDYNINC' ⍝ Special
+[192]         :case 6
+[193]             val←PSind GetRev bentab for 'PenInc' 'Pension Increase 3'
+[194]             val←val,¯1 GetBasisData 'DYNINC3' ⍝ PenInc3
+[195]         :case 7
+[196]             val←PSind GetRev bentab for 'PenInc' 'Pension Increase 4'
+[197]             val←val,¯1 GetBasisData 'DYNINC4' ⍝ PenInc4
+[198]         :case 8
+[199]             val←1 GetBasisData 'jmpu'         ⍝ Underpin
+[200]             val←val,mtFin,⊂''
+[201]         :case 30
+[202]             peninc←↑(peninc∊bentab at 'PenInc')/peninc←'Main Pension' 'Special Pension' 'Pension Increase 3' 'Pension Increase 4'
+[203]             val←PSind GetRev bentab for 'PenInc' peninc
+[204]             val←val,mtFin,⊂''
+[205]         :caselist 9 10 11 32
+[206]             val←mtFin,mtFin,⊂''
+[207]         :endselect
+[208]         rec←rec,val
+[209] 
+[210]         :select benID
+[211]         :caselist 4 5 6 7 ⋄ val←2/∨/bentab at 'SLICEUP' ⍝ GMP indicators
+[212]         :else             ⋄ val←0 0 ⍝ Not Cash, GMPs, Underpin, Insured, Conts, DiD or Expenses
+[213]         :endselect
+[214]         rec←rec,val
+[215] 
+[216]         incContID←IncContID∨nonben←∨/∨/¨'Cont' 'Prem' 'Exp'⍷¨⊂cont
+[217]         :for row :in ⍳rows←rowsIn tab
+[218]             tbl←tab for row=⍳rows
+[219]             :if ∨/ContID∊contid←(∊tbl at 'Member' 'Spouse')~0
+[220]                 REC←rechead,(⊂incContID×↑contid),(⊂((uk=1)^benID∊9 10)⌈↑tbl at 'StartYear'),sexrecs,(↑⍴sexrecs)⌿MATRIX rec
+[221]                 sql←"SELECT SUM(SVValue) FROM ResultsData WHERE BenefitTypeID=",(DLTB 'M<->I3' ⎕fmt BenID)," AND LiabilityTypeID IN (",(0 ⍙DBNumList LiabID),") AND ContingencyID IN (",(0 ⍙DBNumList contid),") AND DataItemID=%1 AND ResultsCategoryID="
+[222]                 ⍝ Append Liability Figures
+[223]                 msk←NotProRata∨0.5<∣liab←0 ⍙DBRemoveNulls ,↑¨1 ⍙DBadoCONCommand¨(⊂'/%1/93' TEXTREPL sql),¨⍕¨ResIDs
+[224]                 benrecs←benrecs⍪msk⌿⊃ResIDs,¨(⎕split MATRIX REC),¨-liab
+[225]             :endif
+[226]         :endfor
+[227]         :if nonben ⋄ :andif ∨/'Salaries'∊↑rec[2] ⋄ rec[2]←⊂'NE Salaries' ⋄ :endif
+[228]     :endfor
+[229] :endfor
+[230] Z←benrecs notes
+    ∇

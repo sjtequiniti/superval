@@ -1,1 +1,50 @@
-    ∇ Roll_Data_Forward Format;⎕io;file;tie;size;no;recn;flg;new_exits;exiters;csv;tno;fp;tries;fileformat;xxx;out_created;new_data;data;filename;key[1]   ⍝ DATAWIN.sf#23[2]   ⍝ Cover function for ∆Roll_Data_Forward.[3]   ⍝ to allow use of Read∆DataFile: reading data in chunks rather than all at once.[4]   ⎕io←1[5]   AuditFile←InputDir,'AuditRF',((-1 2 3 4 5 6 7) tsIM ⎕TS),'.sfa' ⍝ Create file to store audit bits for audit[6]   AuditFile ⎕XFCREATE AuditTie←'APL' TieNumber AuditFile[7]   out_created←0[8]   flg←1 (~mt NewFile)[9]   tries←100[10]  top:[11]  :if 0=tno←NCREATE filename←InputDir,OutFile[12]      :if 0≠tries←tries-⌈⎕dl 0.001×101-tries ⋄ ⎕wgive 0 ⋄ →top ⋄ :endif[13]      MDISPLAY filename,' is in use'[14]      :return[15]  :endif[16]  ⎕NUNTIE tno[17]  [18]  :for fileformat :in flg/ ((⊂InputDir),¨fILENAME NewFile) pr¨ Format NewFormat[19]      (file Format)← fileformat[20]      xxx←Format Format_Create 0[21]      0 0 ⍴ file NTIE tie←'Native' TieNumber file[22]      size←⎕nsize tie  ⋄ recn←0 ⋄ no←⌊size÷RECL[23]      :while ~mt data←'ASCII' Read∆DataFile  tie size RECL (no-recn) recn[24]          recn←recn+↑⍴data[25]          :if file≡InputDir,fILENAME                         ⍝ Do not roll forward new records, assumed to have already been rolled forward[26]              new_data ←∆Roll_Data_Forward data[27]          :else[28]              data←MakeDataTable data                                                     ⍝ Makes data table fit for purpose[29]              :for key :in (keysIn new_data)~keysIn data[30]                  data←data amend key ((rowsIn data)⍴⊂'')[31]              :endfor[32]              new_data←(MATRIX keysIn new_data) append data[33]          :endif[34]  [35]          :if out_created[36]              new_data← 2 0 ↓ new_data[37]          :endif[38]          csv← matToCsv new_data[39]          out_created←1[40]          tno←'Native' TieNumber filename←InputDir,OutFile[41]          0 0 ⍴ filename NTIE tno 2[42]          csv ⎕NAPPEND tno[43]          ⎕NUNTIE tno[44]      :endwhile[45]      ⎕nuntie tie[46]  :endfor[47]  [48]  CreateAuditReport AuditTie    ∇
+    ∇ Roll_Data_Forward Format;⎕io;file;tie;size;no;recn;flg;new_exits;exiters;csv;tno;fp;tries;fileformat;xxx;out_created;new_data;data;filename;key
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ Cover function for ∆Roll_Data_Forward.
+[3]   ⍝ to allow use of Read∆DataFile: reading data in chunks rather than all at once.
+[4]   ⎕io←1
+[5]   AuditFile←InputDir,'AuditRF',((-1 2 3 4 5 6 7) tsIM ⎕TS),'.sfa' ⍝ Create file to store audit bits for audit
+[6]   AuditFile ⎕XFCREATE AuditTie←'APL' TieNumber AuditFile
+[7]   out_created←0
+[8]   flg←1 (~mt NewFile)
+[9]   tries←100
+[10]  top:
+[11]  :if 0=tno←NCREATE filename←InputDir,OutFile
+[12]      :if 0≠tries←tries-⌈⎕dl 0.001×101-tries ⋄ ⎕wgive 0 ⋄ →top ⋄ :endif
+[13]      MDISPLAY filename,' is in use'
+[14]      :return
+[15]  :endif
+[16]  ⎕NUNTIE tno
+[17]  
+[18]  :for fileformat :in flg/ ((⊂InputDir),¨fILENAME NewFile) pr¨ Format NewFormat
+[19]      (file Format)← fileformat
+[20]      xxx←Format Format_Create 0
+[21]      0 0 ⍴ file NTIE tie←'Native' TieNumber file
+[22]      size←⎕nsize tie  ⋄ recn←0 ⋄ no←⌊size÷RECL
+[23]      :while ~mt data←'ASCII' Read∆DataFile  tie size RECL (no-recn) recn
+[24]          recn←recn+↑⍴data
+[25]          :if file≡InputDir,fILENAME                         ⍝ Do not roll forward new records, assumed to have already been rolled forward
+[26]              new_data ←∆Roll_Data_Forward data
+[27]          :else
+[28]              data←MakeDataTable data                                                     ⍝ Makes data table fit for purpose
+[29]              :for key :in (keysIn new_data)~keysIn data
+[30]                  data←data amend key ((rowsIn data)⍴⊂'')
+[31]              :endfor
+[32]              new_data←(MATRIX keysIn new_data) append data
+[33]          :endif
+[34]  
+[35]          :if out_created
+[36]              new_data← 2 0 ↓ new_data
+[37]          :endif
+[38]          csv← matToCsv new_data
+[39]          out_created←1
+[40]          tno←'Native' TieNumber filename←InputDir,OutFile
+[41]          0 0 ⍴ filename NTIE tno 2
+[42]          csv ⎕NAPPEND tno
+[43]          ⎕NUNTIE tno
+[44]      :endwhile
+[45]      ⎕nuntie tie
+[46]  :endfor
+[47]  
+[48]  CreateAuditReport AuditTie
+    ∇

@@ -1,1 +1,49 @@
-    ∇ PREPARE∆ndf[1]   ⍝ DEFWIN.sf#2[2]   ⍝ Preamble to NDF valuation outside member loop[3]   ⍝ V8.50 [EnhDef] DT/SJT summer 2010[4]   [5]   ⍝ AXIS and INDEX ENUMERATORS ///////////////////////////////////////////////////[6]   ⍝ Accumulator PRE (pre-commutation) for benefit entitlements, with axis and index enumerators[7]   ⍝ Consider entitlements to be unit-less, converting to either pension (£pa) or cash (£)[8]   ⍝ INDEX ENUMERATORS are vectors, => indexing preserves rank[9]   ⍝ NB all enumerators Origin-0[10]   lD←↑⍴(iRet iDbr iDar)←,¨(⍳3)                                                   ⍝ [D] DECREMENT: retirement, DBR, DAR[11]   lF←↑⍴(iWth iWto iNra)←,¨(⍳3)                                                   ⍝ [F] with/without/@NRA ER FACTORs[12]   lG←↑⍴(iGmp iXtr)←,¨(⍳2)                                                        ⍝ [G] GMP, extra to go to PRE[13]   lI←↑⍴(iS iM i3 i4)←,¨(⍳4)                                                      ⍝ [I] INCREASE rate: special, main, p3, p4[14]   lP←↑⍴(iPre iMid iPos)←,¨(⍳3)                                                   ⍝ [P] PPF PERIOD: pre-97, 97-09, post-09[15]   lR←↑⍴(iRea iNot)←,¨(⍳2)                                                        ⍝ [R] REAL/notional GMP[16]   lT←↑⍴(iPen iCom iCot)←,¨(⍳3)                                                   ⍝ [T] Benefit TYPE: pension, considered for COM, for COT[17]   lU←↑⍴(iWho iUnd)←,¨(⍳2)                                                        ⍝ [U] UNDERPIN: whole, underpinned[18]   l8←↑⍴(iPr8 iPo8)←,¨(⍳2)                                                        ⍝ [8] GMP pre- and post-88[19]  [20]   (iPEN iWAR)←⍳2                                                                 ⍝ [0] decrement: RET, DAR[21]   (iWHO iUND iDIF)←⍳3                                                            ⍝ [1] Underpin: whole, underpinned, dif[22]   (iNRA iSPA)←⍳2                                                                 ⍝ [2] revalued to: NRA, SPA[23]  [24]  ⍝ AXIS ENUMERATORS: order given by construction of factors array in wPUP_EVAL - AVOID CONFLICTS!![25]  ⍝ "0" (zero) used as a placeholder for member-specific lX(≡NX)[26]   (aINC aUND aTYP aDEC aAGE aFAC aPPF)←aALL     ←(⍳⍴lI lU lT lD 0 lF lP)        ⍝ axes for PRE [IUTDXFP][27]   (aINC aUND aTYP aDEC aAGE aFAC aREA aGMX aG88)←(⍳⍴lI lU lT lD 0 lF lR lG l8)  ⍝ axes for GMP [IUTDXFRG8][28]  ⍝ NB no sense summing across axes aUND aTYP aDEC aAGE aREA aFAC! (index or preserve them)[29]  [30]  ⍝ underpin date, defaults to long ago[31]   udate←↑(~mpuflag)⌽(DATEBASE⌽mpuDATE)(0)[32]  [33]  ⍝ Barber dates as day nos[34]   barbdates←DATEBASE¨⌽¨BARBDATE BARBEND[35]  [36]  :if ~COMValBas∨COMAdjbyEx ⍝ commutation tables[37]      comtabs←COMTAB1 COMTAB2 COMTAB3 COMTAB4[38]  :endif[39]  [40]  ⍝ early retirement factor tables 1 & 2 for pension and cash[41]  ertabs←ERTAB ERTAB2 ERTABC ERTAB2C[42]   ertabs←2 1⌿⊃2 2⍴ertabs                                                ⍝ ER tables      [aTYP 1:2 aAGE][43]  [44]  ⍝⍝⍝ FIXME - these should be executed just once before run[45]  ⍝ Interest 1 and 2 on contributions data item[46]  ⍝⍝⍝ i1←×\1,(2/100 OVERTAKE 1+iDCONTS1)*0.5[47]  ⍝⍝⍝ i2←×\1,(2/100 OVERTAKE 1+iDCONTS2)*0.5    ∇
+    ∇ PREPARE∆ndf
+[1]   ⍝ DEFWIN.sf#2
+[2]   ⍝ Preamble to NDF valuation outside member loop
+[3]   ⍝ V8.50 [EnhDef] DT/SJT summer 2010
+[4]   
+[5]   ⍝ AXIS and INDEX ENUMERATORS ///////////////////////////////////////////////////
+[6]   ⍝ Accumulator PRE (pre-commutation) for benefit entitlements, with axis and index enumerators
+[7]   ⍝ Consider entitlements to be unit-less, converting to either pension (£pa) or cash (£)
+[8]   ⍝ INDEX ENUMERATORS are vectors, => indexing preserves rank
+[9]   ⍝ NB all enumerators Origin-0
+[10]   lD←↑⍴(iRet iDbr iDar)←,¨(⍳3)                                                   ⍝ [D] DECREMENT: retirement, DBR, DAR
+[11]   lF←↑⍴(iWth iWto iNra)←,¨(⍳3)                                                   ⍝ [F] with/without/@NRA ER FACTORs
+[12]   lG←↑⍴(iGmp iXtr)←,¨(⍳2)                                                        ⍝ [G] GMP, extra to go to PRE
+[13]   lI←↑⍴(iS iM i3 i4)←,¨(⍳4)                                                      ⍝ [I] INCREASE rate: special, main, p3, p4
+[14]   lP←↑⍴(iPre iMid iPos)←,¨(⍳3)                                                   ⍝ [P] PPF PERIOD: pre-97, 97-09, post-09
+[15]   lR←↑⍴(iRea iNot)←,¨(⍳2)                                                        ⍝ [R] REAL/notional GMP
+[16]   lT←↑⍴(iPen iCom iCot)←,¨(⍳3)                                                   ⍝ [T] Benefit TYPE: pension, considered for COM, for COT
+[17]   lU←↑⍴(iWho iUnd)←,¨(⍳2)                                                        ⍝ [U] UNDERPIN: whole, underpinned
+[18]   l8←↑⍴(iPr8 iPo8)←,¨(⍳2)                                                        ⍝ [8] GMP pre- and post-88
+[19]  
+[20]   (iPEN iWAR)←⍳2                                                                 ⍝ [0] decrement: RET, DAR
+[21]   (iWHO iUND iDIF)←⍳3                                                            ⍝ [1] Underpin: whole, underpinned, dif
+[22]   (iNRA iSPA)←⍳2                                                                 ⍝ [2] revalued to: NRA, SPA
+[23]  
+[24]  ⍝ AXIS ENUMERATORS: order given by construction of factors array in wPUP_EVAL - AVOID CONFLICTS!!
+[25]  ⍝ "0" (zero) used as a placeholder for member-specific lX(≡NX)
+[26]   (aINC aUND aTYP aDEC aAGE aFAC aPPF)←aALL     ←(⍳⍴lI lU lT lD 0 lF lP)        ⍝ axes for PRE [IUTDXFP]
+[27]   (aINC aUND aTYP aDEC aAGE aFAC aREA aGMX aG88)←(⍳⍴lI lU lT lD 0 lF lR lG l8)  ⍝ axes for GMP [IUTDXFRG8]
+[28]  ⍝ NB no sense summing across axes aUND aTYP aDEC aAGE aREA aFAC! (index or preserve them)
+[29]  
+[30]  ⍝ underpin date, defaults to long ago
+[31]   udate←↑(~mpuflag)⌽(DATEBASE⌽mpuDATE)(0)
+[32]  
+[33]  ⍝ Barber dates as day nos
+[34]   barbdates←DATEBASE¨⌽¨BARBDATE BARBEND
+[35]  
+[36]  :if ~COMValBas∨COMAdjbyEx ⍝ commutation tables
+[37]      comtabs←COMTAB1 COMTAB2 COMTAB3 COMTAB4
+[38]  :endif
+[39]  
+[40]  ⍝ early retirement factor tables 1 & 2 for pension and cash
+[41]  ertabs←ERTAB ERTAB2 ERTABC ERTAB2C
+[42]   ertabs←2 1⌿⊃2 2⍴ertabs                                                ⍝ ER tables      [aTYP 1:2 aAGE]
+[43]  
+[44]  ⍝⍝⍝ FIXME - these should be executed just once before run
+[45]  ⍝ Interest 1 and 2 on contributions data item
+[46]  ⍝⍝⍝ i1←×\1,(2/100 OVERTAKE 1+iDCONTS1)*0.5
+[47]  ⍝⍝⍝ i2←×\1,(2/100 OVERTAKE 1+iDCONTS2)*0.5
+    ∇

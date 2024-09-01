@@ -1,1 +1,20 @@
-    ∇ tab←GetNetUse;lines;head;len;start;rows;share;File;tie;drive;row;msk;spaces[1]   ⍝ MAINWIN.sf#2[2]   ⍝ Convert result of Net Use command to a table[3]   [4]   tab←MATRIX 'Drive' 'Share' ⋄ File←InputDir,'net__use.txt'[5]   [6]   3 ⎕cmd 'net use > "',File,'"'[7]   :if ':'∊,lines←⊃(⎕tcnl,⎕tclf) partition nfile_get_contents File[8]       head←WHERE ,1↑[1+⎕io]'Status'⍷lines[9]       rows←WHERE ∨/':'=lines[10]      drive←,↑start←∊WHERE¨'Local' 'Remote' 'Network'⍷¨⊂lines[head;][11]      share←0⍴⊂'' ⋄ len←DIFF 1↓start ⋄ start←¯1+↑1↓start[12]      :for row :in ⎕split lines[rows;],' '[13]          msk←len≤spaces←WHERE ' '=start↓row[14]          share←share,⊂DLTB row[start+⍳↑msk/spaces][15]      :endfor[16]      tab←tab OVER ⊃spin (⎕split UPPERCASE lines[rows;drive]) share[17]  :endif[18]  :if File NTIE tie←'Native' TieNumber File ⋄ File NERASE tie ⋄ :endif ⍝ Delete the file    ∇
+    ∇ tab←GetNetUse;lines;head;len;start;rows;share;File;tie;drive;row;msk;spaces
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝ Convert result of Net Use command to a table
+[3]   
+[4]   tab←MATRIX 'Drive' 'Share' ⋄ File←InputDir,'net__use.txt'
+[5]   
+[6]   3 ⎕cmd 'net use > "',File,'"'
+[7]   :if ':'∊,lines←⊃(⎕tcnl,⎕tclf) partition nfile_get_contents File
+[8]       head←WHERE ,1↑[1+⎕io]'Status'⍷lines
+[9]       rows←WHERE ∨/':'=lines
+[10]      drive←,↑start←∊WHERE¨'Local' 'Remote' 'Network'⍷¨⊂lines[head;]
+[11]      share←0⍴⊂'' ⋄ len←DIFF 1↓start ⋄ start←¯1+↑1↓start
+[12]      :for row :in ⎕split lines[rows;],' '
+[13]          msk←len≤spaces←WHERE ' '=start↓row
+[14]          share←share,⊂DLTB row[start+⍳↑msk/spaces]
+[15]      :endfor
+[16]      tab←tab OVER ⊃spin (⎕split UPPERCASE lines[rows;drive]) share
+[17]  :endif
+[18]  :if File NTIE tie←'Native' TieNumber File ⋄ File NERASE tie ⋄ :endif ⍝ Delete the file
+    ∇

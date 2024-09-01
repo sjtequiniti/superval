@@ -1,1 +1,71 @@
-    ∇ arg BEN∆CALCS runs;N;esc;COCR;CFTOT;INS;Z;X;TOTALS;PV;OldTOT[1]   ⍝ CONSWIN.sf#9[2]   ⍝ Read cash flow results from file[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   esc←1↑arg ⋄ OldTOT←N←0[8]   L1:→((⍴runs)<N←N+1)/END ⋄ 'CFTOT TOTALS' pdef ⎕FREAD tie,runs[N][9]   SIZE←SIZE⌈(⍴CFTOT)[2] ⋄ CFTOT←((0,SIZE,0)⌈⍴CFTOT)↑CFTOT[10]  OldTOT←OldTOT+TOTALS[6;6][11]  TOTALS[5;13 9]←CFTOT[2;1;2+abNO],¯1↑((contper+1)↑+/CFTOT[2;;1,2+abNO])×(contper+1)↑v[12]  ⍝ Update Accrued Benefits and Demographics[13]  ABTOT←CFTOT[2;;⍳2+7×PROPT]+(SIZE,2+7×PROPT)↑ABTOT[14]  FUNDTOT←CFTOT[3;;⍳16]+(SIZE,16)↑FUNDTOT ⋄ CFTOT←CFTOT[1;;][15]  PV←+⌿((contper,13)↑CFTOT[;((⍳13)~6 9),16 15])×(contper↑v),12/⍉MATRIX contper↑vMP[16]  TOTALS[6;⍳6]←(+/PV[⍳3]),(+/PV[3+⍳2]),(+/PV[5+⍳2]),(+/PV[7+⍳2]),PV[10],(+/PV[⍳10])[17]  TOTALS[5;5 7 8]←PV[11 12 13][18]  TOTALS[5;6]←PV[12]×COCR←((+/PV[⍳10],TOTALS[5;9])-+/PV[11],TOTALS[5;13])CDIV PV[12][19]  CFTOT[;14]←CFTOT[;14]+COCR×CFTOT[;16][20]  ⍝ Calculate the expenses cash flows[21]  X←(EXPMC×CFTOT[;13])+(EXPCC×CFTOT[;14])+(PMEXP×CFTOT[;15])+EXPSAL×CFTOT[;16][22]  EXP←,EXP,+/contper↑(INS←+/CFTOT[; 6 9])×SIZE↑vMP[23]  CFTOT[;14]←CFTOT[;14]+X+(Z←(CFTOT[;14]CDIV 1-SIZE↑TaxRates)-CFTOT[;14])CDIV 1-EXPCC[24]  TAX←,TAX,+/contper↑Z×SIZE↑vMP[25]  CFTOT←CFTOT,X+(Z CDIV 1-EXPCC)+insind×(INS CDIV 1-EXPCC)-INS ⍝ Extend for Exp/Tax[26]  ⍝ Calc Co Conts and Tax and Expenses on Insured Prems[27]  CFTOT[;14]←CFTOT[;14]+insind×INS CDIV 1-EXPCC[28]  PVTOT←PVTOT⍪TOTALS[29]  GTOTS←CFTOT+(SIZE,17)↑GTOTS ⍝ Update grand totals[30]  GMAT←(((⍴GMAT)⌈SIZE,0)↑GMAT),CFTOT[;,15] ⋄ →esc/L1[31]  PVCONTS1pc←(SIZE,2)↑PVCONTS1pc[32]  PVCONTS1pc[;2]←PVCONTS1pc[;2]+CFTOT[;16] ⋄ →L1[33]  END:TOTind← 1 0 ≡(+⌿PVTOT)[6;6]> 0.99 1.01 ×OldTOT[34]  [35]  →0[36]  [37]  arg BEN∆CALCS runs;N;esc;COCR;CFTOT;INS;Z;X;TOTALS;PV;OldTOT[38]  ⍝ Read cash flow results from file[39]  ⍝[40]  ⍝[41]  ⍝[42]  ⍝ V2.50u RE 1/11/93 Standardised[43]  esc←1↑arg ⋄ OldTOT←N←0[44]  L1:→((⍴runs)<N←N+1)/END ⋄ 'CFTOT TOTALS' pdef ⎕FREAD tie,runs[N][45]  SIZE←SIZE⌈(⍴CFTOT)[2] ⋄ CFTOT←((0,SIZE,0)⌈⍴CFTOT)↑CFTOT[46]  OldTOT←OldTOT+TOTALS[6;6][47]  TOTALS[5;13 9]←CFTOT[2;1;2+3×abNO],¯1↑((contper+1)↑+/CFTOT[2;;1,2+3×abNO])×(contper+1)↑v[48]  ⍝ Update Accrued Benefits and Demographics[49]  ABTOT←CFTOT[2;;⍳2+7×PROPT]+(SIZE,2+7×PROPT)↑ABTOT[50]  FUNDTOT←CFTOT[3;;⍳14]+(SIZE,14)↑FUNDTOT ⋄ CFTOT←CFTOT[1;;][51]  PV←+⌿((contper,13)↑CFTOT[;((⍳13)~6 9),16 15])×(contper↑v),12/⍉MATRIX contper↑vMP[52]  TOTALS[6;⍳6]←(+/PV[⍳3]),(+/PV[3+⍳2]),(+/PV[5+⍳2]),(+/PV[7+⍳2]),PV[10],(+/PV[⍳10])[53]  TOTALS[5;5 7 8]←PV[11 12 13][54]  TOTALS[5;6]←(0.0001⌈PV[12])×COCR←((+/PV[⍳10],TOTALS[5;9])-+/PV[11],TOTALS[5;13])CDIV 0.0001⌈PV[12][55]  CFTOT[;14]←CFTOT[;14]+COCR×CFTOT[;16][56]  ⍝ Calculate the expenses cash flows[57]  X←(EXPMC×CFTOT[;13])+(EXPCC×CFTOT[;14])+(EXPPM×CFTOT[;15])+EXPSAL×CFTOT[;16][58]  EXP←,EXP,+/contper↑(INS←+/CFTOT[; 6 9])×SIZE↑vMP[59]  CFTOT[;14]←CFTOT[;14]+X+Z←(CFTOT[;14]CDIV 1-SIZE↑COCTax)-CFTOT[;14][60]  TAX←,TAX,+/contper↑Z×SIZE↑vMP[61]  CFTOT←CFTOT,X+ Z+(insind^NotPUC)×(INS×1+EXPCC)-INS ⍝ Extend for Exp/Tax[62]  ⍝ Calc Co Conts and Tax and Expenses on Insured Prems[63]  CFTOT[;14]←CFTOT[;14]+(insind^NotPUC)×INS×1+EXPCC[64]  PVTOT←PVTOT⍪TOTALS[65]  GTOTS←CFTOT+(SIZE,17)↑GTOTS ⍝ Update grand totals[66]  GMAT←(((⍴GMAT)⌈SIZE,0)↑GMAT),CFTOT[;,15] ⋄ →esc/L1[67]  PVCONTS1pc←(SIZE,2)↑PVCONTS1pc[68]  PVCONTS1pc[;2]←PVCONTS1pc[;2]+CFTOT[;16] ⋄ →L1[69]  END:TOTind← 1 0 ≡(+⌿PVTOT)[6;6]> 0.99 1.01 ×OldTOT    ∇
+    ∇ arg BEN∆CALCS runs;N;esc;COCR;CFTOT;INS;Z;X;TOTALS;PV;OldTOT
+[1]   ⍝ CONSWIN.sf#9
+[2]   ⍝ Read cash flow results from file
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   esc←1↑arg ⋄ OldTOT←N←0
+[8]   L1:→((⍴runs)<N←N+1)/END ⋄ 'CFTOT TOTALS' pdef ⎕FREAD tie,runs[N]
+[9]   SIZE←SIZE⌈(⍴CFTOT)[2] ⋄ CFTOT←((0,SIZE,0)⌈⍴CFTOT)↑CFTOT
+[10]  OldTOT←OldTOT+TOTALS[6;6]
+[11]  TOTALS[5;13 9]←CFTOT[2;1;2+abNO],¯1↑((contper+1)↑+/CFTOT[2;;1,2+abNO])×(contper+1)↑v
+[12]  ⍝ Update Accrued Benefits and Demographics
+[13]  ABTOT←CFTOT[2;;⍳2+7×PROPT]+(SIZE,2+7×PROPT)↑ABTOT
+[14]  FUNDTOT←CFTOT[3;;⍳16]+(SIZE,16)↑FUNDTOT ⋄ CFTOT←CFTOT[1;;]
+[15]  PV←+⌿((contper,13)↑CFTOT[;((⍳13)~6 9),16 15])×(contper↑v),12/⍉MATRIX contper↑vMP
+[16]  TOTALS[6;⍳6]←(+/PV[⍳3]),(+/PV[3+⍳2]),(+/PV[5+⍳2]),(+/PV[7+⍳2]),PV[10],(+/PV[⍳10])
+[17]  TOTALS[5;5 7 8]←PV[11 12 13]
+[18]  TOTALS[5;6]←PV[12]×COCR←((+/PV[⍳10],TOTALS[5;9])-+/PV[11],TOTALS[5;13])CDIV PV[12]
+[19]  CFTOT[;14]←CFTOT[;14]+COCR×CFTOT[;16]
+[20]  ⍝ Calculate the expenses cash flows
+[21]  X←(EXPMC×CFTOT[;13])+(EXPCC×CFTOT[;14])+(PMEXP×CFTOT[;15])+EXPSAL×CFTOT[;16]
+[22]  EXP←,EXP,+/contper↑(INS←+/CFTOT[; 6 9])×SIZE↑vMP
+[23]  CFTOT[;14]←CFTOT[;14]+X+(Z←(CFTOT[;14]CDIV 1-SIZE↑TaxRates)-CFTOT[;14])CDIV 1-EXPCC
+[24]  TAX←,TAX,+/contper↑Z×SIZE↑vMP
+[25]  CFTOT←CFTOT,X+(Z CDIV 1-EXPCC)+insind×(INS CDIV 1-EXPCC)-INS ⍝ Extend for Exp/Tax
+[26]  ⍝ Calc Co Conts and Tax and Expenses on Insured Prems
+[27]  CFTOT[;14]←CFTOT[;14]+insind×INS CDIV 1-EXPCC
+[28]  PVTOT←PVTOT⍪TOTALS
+[29]  GTOTS←CFTOT+(SIZE,17)↑GTOTS ⍝ Update grand totals
+[30]  GMAT←(((⍴GMAT)⌈SIZE,0)↑GMAT),CFTOT[;,15] ⋄ →esc/L1
+[31]  PVCONTS1pc←(SIZE,2)↑PVCONTS1pc
+[32]  PVCONTS1pc[;2]←PVCONTS1pc[;2]+CFTOT[;16] ⋄ →L1
+[33]  END:TOTind← 1 0 ≡(+⌿PVTOT)[6;6]> 0.99 1.01 ×OldTOT
+[34]  
+[35]  →0
+[36]  
+[37]  arg BEN∆CALCS runs;N;esc;COCR;CFTOT;INS;Z;X;TOTALS;PV;OldTOT
+[38]  ⍝ Read cash flow results from file
+[39]  ⍝
+[40]  ⍝
+[41]  ⍝
+[42]  ⍝ V2.50u RE 1/11/93 Standardised
+[43]  esc←1↑arg ⋄ OldTOT←N←0
+[44]  L1:→((⍴runs)<N←N+1)/END ⋄ 'CFTOT TOTALS' pdef ⎕FREAD tie,runs[N]
+[45]  SIZE←SIZE⌈(⍴CFTOT)[2] ⋄ CFTOT←((0,SIZE,0)⌈⍴CFTOT)↑CFTOT
+[46]  OldTOT←OldTOT+TOTALS[6;6]
+[47]  TOTALS[5;13 9]←CFTOT[2;1;2+3×abNO],¯1↑((contper+1)↑+/CFTOT[2;;1,2+3×abNO])×(contper+1)↑v
+[48]  ⍝ Update Accrued Benefits and Demographics
+[49]  ABTOT←CFTOT[2;;⍳2+7×PROPT]+(SIZE,2+7×PROPT)↑ABTOT
+[50]  FUNDTOT←CFTOT[3;;⍳14]+(SIZE,14)↑FUNDTOT ⋄ CFTOT←CFTOT[1;;]
+[51]  PV←+⌿((contper,13)↑CFTOT[;((⍳13)~6 9),16 15])×(contper↑v),12/⍉MATRIX contper↑vMP
+[52]  TOTALS[6;⍳6]←(+/PV[⍳3]),(+/PV[3+⍳2]),(+/PV[5+⍳2]),(+/PV[7+⍳2]),PV[10],(+/PV[⍳10])
+[53]  TOTALS[5;5 7 8]←PV[11 12 13]
+[54]  TOTALS[5;6]←(0.0001⌈PV[12])×COCR←((+/PV[⍳10],TOTALS[5;9])-+/PV[11],TOTALS[5;13])CDIV 0.0001⌈PV[12]
+[55]  CFTOT[;14]←CFTOT[;14]+COCR×CFTOT[;16]
+[56]  ⍝ Calculate the expenses cash flows
+[57]  X←(EXPMC×CFTOT[;13])+(EXPCC×CFTOT[;14])+(EXPPM×CFTOT[;15])+EXPSAL×CFTOT[;16]
+[58]  EXP←,EXP,+/contper↑(INS←+/CFTOT[; 6 9])×SIZE↑vMP
+[59]  CFTOT[;14]←CFTOT[;14]+X+Z←(CFTOT[;14]CDIV 1-SIZE↑COCTax)-CFTOT[;14]
+[60]  TAX←,TAX,+/contper↑Z×SIZE↑vMP
+[61]  CFTOT←CFTOT,X+ Z+(insind^NotPUC)×(INS×1+EXPCC)-INS ⍝ Extend for Exp/Tax
+[62]  ⍝ Calc Co Conts and Tax and Expenses on Insured Prems
+[63]  CFTOT[;14]←CFTOT[;14]+(insind^NotPUC)×INS×1+EXPCC
+[64]  PVTOT←PVTOT⍪TOTALS
+[65]  GTOTS←CFTOT+(SIZE,17)↑GTOTS ⍝ Update grand totals
+[66]  GMAT←(((⍴GMAT)⌈SIZE,0)↑GMAT),CFTOT[;,15] ⋄ →esc/L1
+[67]  PVCONTS1pc←(SIZE,2)↑PVCONTS1pc
+[68]  PVCONTS1pc[;2]←PVCONTS1pc[;2]+CFTOT[;16] ⋄ →L1
+[69]  END:TOTind← 1 0 ≡(+⌿PVTOT)[6;6]> 0.99 1.01 ×OldTOT
+    ∇

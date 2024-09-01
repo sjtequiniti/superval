@@ -1,0 +1,98 @@
+    ∇ data←⍙DBXL_MemberWrite;flds;n;NoFields;z;fldnos;pos;tab;col;sql;NoMembers;keys;membercount;IDfld;IDs;MorScol;MorS
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Insert the member details into Excel, if required
+[3]   
+[4]   NoMembers←XL_Data 'NoMembers' ⋄ 'Members' XL_ProtectSheet 0
+[5]   :if sqlDatabase ⋄ IDs←    ,1 ⍙DBadoCONCommand "SELECT DISTINCT(MemberDataID) FROM  NumMemberData WHERE MemberDataID BETWEEN ",(⍕1+ClassBase)," AND ",(⍕9999+ClassBase)," AND DatabaseID=",DBID
+[6]                   ⋄ IDs←IDs,,1 ⍙DBadoCONCommand "SELECT DISTINCT(MemberDataID) FROM CharMemberData WHERE MemberDataID BETWEEN ",(⍕1+ClassBase)," AND ",(⍕9999+ClassBase)," AND DatabaseID=",DBID
+[7]                   ⋄ IDs←IDs[⍋IDs]
+[8]   :else           ⋄ IDs←,1 ⍙DBadoCONCommand "SELECT MemberDataID FROM MemberFields WHERE MemberDataID BETWEEN ",(⍕1+ClassBase)," AND ",(⍕9999+ClassBase)," ORDER BY MemberDataID"
+[9]   :endif
+[10]  
+[11]  n←↑⍴flds←1 ⍙DBadoCONCommand "SELECT MemberDataID, MemberDataName, MemberDataVar, MemberDataType FROM MemberFields WHERE MemberDataID IN (",(⍙DBNumList IDs),") ORDER BY MemberDataID"
+[12]  :if ~0∊⍴,z←(,'V'=⊃flds[;⎕io+3])/⍳n ⋄ flds←flds[(⍳2),(1↑z),(2↓⍳n)~1↑z;] ⋄ :endif ⍝ Put Frequency first
+[13]  :if ('XL' ⎕wi 'xActiveSheet') ⎕wi 'xAutoFilterMode' ⍝ Turn off AutoFilter, if on
+[14]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 13 6) ⋄ 0 0⍴'XL.Rng' ⎕wi 'XAutoFilter'
+[15]  :endif
+[16]  
+[17]  :if n>NoFields←XL_Data 'NoFields'
+[18]      n←↑⍴data←(⊂' ',⎕tclf) REPL ¨DLTB¨((NoFields 0)↓flds)[;,⎕io+1]
+[19]      0 0⍴(⍉data) XL_Data RCtoA1 13 (NoFields+11) 13 (NoFields+n+10)
+[20]      data←DLTB¨((NoFields 0)↓flds)[;,⎕io+2]
+[21]      0 0⍴(⍉data) XL_Data RCtoA1 12 (NoFields+11) 12 (NoFields+n+10)
+[22]      data←DLTB¨((NoFields 0)↓flds)[;,⎕io+3]
+[23]      0 0⍴(⍉data) XL_Data RCtoA1 11 (NoFields+11) 11 (NoFields+n+10)
+[24]      ( 5 12 10 12) XL_PasteAll      5 (NoFields+11) 10 (NoFields+n+10)
+[25]      (11 12 13 12) XL_PasteFormats 11 (NoFields+11) 13 (NoFields+n+10)
+[26]      :for col :in (10+NoFields)↓(~⎕io)+⍳(NoFields+n+10)
+[27]          :select ↑XL_Data RCtoA1 11 col ⍝ Reset Formats
+[28]          :case 'C' ⋄ (7 col) XL_HAlign '=xlHAlignLeft'
+[29]          :case 'D' ⋄ (7 col) XL_NumberFormat 'dd/mm/yyyy'
+[30]          :case 'V' ⋄ (7 col) XL_HAlign '=xlHAlignCenter'
+[31]          :endselect
+[32]      :endfor
+[33]      0 0⍴(NoFields←n+NoFields) XL_Data 'NoFields'
+[34]  :endif
+[35]  
+[36]  ⍝ Get the numeric fields first
+[37]  z←'N'=↑¨flds[;⎕io+3]
+[38]  fldnos←z/flds[;⎕io]
+[39]  
+[40]  membercount←↑1 ⍙DBadoCONCommand "SELECT COUNT(*) FROM NumMemberData WHERE ResultsCategoryID=",(DLTB CatID)," AND MemberValue=1"
+[41]  
+[42]  sql←⍙DBPivot "SUM" "MemberValue" "NumMemberData" ("ResultsCategoryID=",DLTB CatID) "MemberID" "MemberDataID" fldnos membercount
+[43]  
+[44]  :if ~0=↑⍴data←XL_Pivot sql " " ⍝ Skip if no members
+[45]      data←(1,0,z[⎕io],0,z[⎕io+1],0,2↓z)\data
+[46]      sql←"SELECT MemberID, MemberAge FROM NumMemberData WHERE (ResultsCategoryID=",CatID,") AND NOT (MemberID='           0') GROUP BY MemberID, MemberAge ORDER BY MemberID"
+[47]      data[;⎕io+3]←0 1↓data[;⎕io] XL_Pivot sql 0 ⍝ Insert Ages into data
+[48]  
+[49]      :if aosind
+[50]          sql←"SELECT MemberID, AOSContingencyID FROM AOSMember WHERE ResultsCategoryID=",CatID," GROUP BY MemberID, AOSContingencyID ORDER BY MemberID"
+[51]          data[;⎕io+5]←~×data[;⎕io+1]←0 1↓data[;⎕io] XL_Pivot sql 0 ⍝ Insert Exit Indicators into data (non-zero for Exit, 0 for Active)
+[52]          data[;⎕io+5]←data[;⎕io+4]×data[;⎕io+5] ⍝ Number of Actives
+[53]      :else
+[54]          data[;⎕io+1]←0 ⋄ data[;⎕io+5]←data[;⎕io+4]
+[55]      :endif
+[56]  
+[57]      MorScol←⍬
+[58]      :if summopt∨csvind∨aggopt[0]
+[59]          data[;⎕io+2]←data[;⎕io] ⍝ Use MemberID for Name
+[60]      :else
+[61]          fldnos←(~z)/flds[;⎕io]
+[62]          sql←⍙DBPivot "MAX" "MemberValue" "CharMemberData" ("ResultsCategoryID=",(DLTB CatID)," AND NOT MemberID='           0'") "MemberID" "MemberDataID" fldnos membercount
+[63]          tab←data[;⎕io] XL_Pivot sql " "
+[64]          pos←(~z)/4+⍳⍴z ⋄ pos[⎕io]←pos[⎕io]-2
+[65]          data[;pos]←0 1↓tab ⍝ Insert Chars and Dates into data
+[66]          :if ClassID=4 ⋄ :andif (⊂'Member or Spouse')∊DLTB¨flds[;⎕io+1]
+[67]              MorScol←4+(fldnos=flds[(DLTB¨flds[;⎕io+1])⍳⊂'Member or Spouse';⎕io])/pos
+[68]          :endif
+[69]      :endif
+[70]  
+[71]      z←,1 ⍙DBadoCONCommand "SELECT MemberDataID FROM MemberFields WHERE MemberDataVar=",1 ⍙DBString (1 3 4⍳ClassID)⊃'fsalfreq' 'fpupfreq' 'fpenfreq'
+[72]      data[;4+flds[;⎕io]⍳z]←DLTB¨,1 ⍙DBadoCONCommand "SELECT MemberValue FROM CharMemberData WHERE (ResultsCategoryID=",CatID,") AND (MemberDataID=",(⍕z),")"
+[73]  
+[74]      IDfld←basisIdentifier⊃("BasisCategory",(~useBasisCat)/"ID") "BasisDescription"
+[75]      keys←DLTB¨,1 ⍙DBadoCONCommand "SELECT Sex, ",IDfld,", DataCategory FROM ResultsCategory WHERE ResultsCategoryID=",CatID
+[76]      :if ~useBasisCat ⋄ :andif ~basisIdentifier
+[77]          keys[⎕io+1]←↑10000∣keys[⎕io+1]
+[78]      :endif
+[79]      data←(10000∣ResultsCategoryID),data[;⎕io+0 1],keys[⎕io],keys[⎕io+1],keys[⎕io+2],0 2↓data
+[80]      pos←(14+NoMembers) 0 (13+NoMembers+↑⍴data) 0
+[81]  
+[82]      0 0⍴data[;⍳3] XL_Data RCtoA1 pos+0 1 0 3
+[83]  
+[84]      ⍝ Copy formulae for these cells
+[85]      (3 4 3 5) XL_PasteFormulas pos+0 4 0 5
+[86]  
+[87]      0 0⍴(0 3↓data) XL_Data RCtoA1 pos+0 6 0,2+¯1↑⍴data
+[88]      (7 6 7 12) XL_PasteFormats 14 0 0 0⌈pos+¯1 6 0 12
+[89]  
+[90]      :if AgeInterp ⋄ (pos+0 10 0 10) XL_NumberFormat '#0.00' ⋄ :endif ⍝ Reset Age Formats to 2dp
+[91]  
+[92]      :if mt MorScol ⋄ MorS←(1 0×⍴data)⍴⊂'' ⋄ :else ⋄ MorS←DLTB¨data[;MorScol] ⋄ :endif ⍝ Member of Spouse for Pensioners
+[93]      data←data[;⍳10],MorS ⍝ Data for the Results Page(s)
+[94]      0 0⍴(NoMembers+↑⍴data) XL_Data 'NoMembers'
+[95]  
+[96]  :endif
+    ∇

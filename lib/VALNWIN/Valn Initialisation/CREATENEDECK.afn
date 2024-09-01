@@ -1,0 +1,124 @@
+    ∇ tieno←CREATENEDECK;File;REC;N;FLDS;var;A;DateDone;NumDone;SAL;SALMP;X;T;X0
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Filling new entrant records using column numbers in actives data format.
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ('Creating Members at Duration:' 'Creating Member at Age:') Win∆ProgressBar2 'SetLabels'
+[8]   'Creating New Entrant Data File' Win∆ProgressBar2 'Open'
+[9]   
+[10]  ⍝ Temporary New Entrant File, erase if necessary
+[11]  tieno←NCREATE File←OutputDir,'TEMP$$.NES' ⋄ T←SDurn-Dskip ⍝ Duration Factor
+[12]  
+[13]  :if ValMeth≡'NOT'
+[14]      ⍝ Durn from DJF to VDATE (if any)
+[15]      :if 0∊⍴,surcDurn←DataDateVars ExactTLU 'Date Joined ',surcind
+[16]          surcDurn←1↑DataDateVars ExactTLU (2 12⍴'Date Joined '),2 7⍴'ServiceFund   '
+[17]      :endif
+[18]      :if 0≠surcDurn
+[19]          :if ^/' '=DataDateAbs[surcDurn-~⎕io;]
+[20]              surcDurn←∣ZWB DataDateRel[surcDurn-~⎕io;]
+[21]          :else
+[22]              surcDurn←'DN' DURN ('DD/MM/YYYY' DATEEXP 10↑,DataDateAbs[surcDurn-~⎕io;]),VDATE
+[23]          :endif
+[24]      :endif
+[25]      ⍝ Check if Post Valuation Entrants
+[26]      :if 0>surcDurn ⋄ →ERR ⋄ :endif
+[27]  :endif
+[28]  
+[29]  REC←((RECL-3)⍴' '),'M',⎕TCNL,⎕TCLF
+[30]  REC[fSEX,fCAT]←((⍴fSEX)↑neSEX),(⍴fCAT)↑neCAT
+[31]  
+[32]  :for N :in ⍳1↑⍴DataCharVars ⍝ Variable Character Fields
+[33]      :if 0∊⍴,var←DLTMB DataCharVars[N;] ⋄ :continue ⋄ :endif
+[34]      :if 0=⎕nc FLDS←'f',var ⋄ :continue ⋄ :endif
+[35]      FLDS←⍎FLDS ⋄ ⍎var,"←'",(REC[FLDS]←(⍴FLDS)↑DataCharValue[N;]),"'"
+[36]  :endfor
+[37]  
+[38]  :if uk≠0 ⋄ DataDateAdj←((↑⍴DataDateAbs),2)⍴'No' ⋄ :endif ⍝⍝⍝ Compatability with Aust
+[39]  
+[40]  LOOP:→((LDurn+Dskip)≤T←T+Dskip)/ESC ⋄ T←LDurn⌊T ⋄ X0←Xe-skip
+[41]  ((T-SDurn-Dskip) (LDurn-SDurn-Dskip) (⍕T)) Win∆ProgressBar2 'FileUpdate'
+[42]  
+[43]  DJF←VDATE- 0 0,T
+[44]  DateDone←N←¯1+DataDateVars ExactTLU 'Date Joined ',(2 6⍴'Fund  Scheme')[×uk;]
+[45]  :if ~0∊⍴fDJF
+[46]      :if ^/' '=DataDateAbs[N;]
+[47]          DJF←((365.25×ZWB DataDateRel[N;]) DATEOFFSET VDATE)- 0 0,T×'Y'=↑DataDateAdj[N;]
+[48]      :else
+[49]          DJF←('DD/MM/YYYY' DATEEXP 10↑,DataDateAbs[N;])- 0 0,T×'Y'=↑DataDateAdj[N;]
+[50]      :endif
+[51]      REC[A↑fDJF]←(A←8⌊⍴fDJF)↑(2×2=⍴fDJF)↓,'ZI4,2ZI2' ⎕FMT MATRIX ⌽DJF
+[52]      dfDJF←A↑'YYYYMMDD'
+[53]      ⍝ Check if Post Valuation Entrants
+[54]      :if 0>DJF DAYS VDATE ⋄ →ERR ⋄ :endif
+[55]  :endif
+[56]  
+[57]  DJS←DJF
+[58]  DateDone←DateDone,N←¯1+DataDateVars ExactTLU 'Date Joined ',(2 7⍴'ServiceCompany')[×uk;]
+[59]  :if ~0∊⍴fDJS
+[60]      :if ^/' '=DataDateAbs[N;]
+[61]          DJS←((365.25×ZWB DataDateRel[N;]) DATEOFFSET VDATE)- 0 0,T×'Y'=↑DataDateAdj[N;]
+[62]      :else
+[63]          DJS←('DD/MM/YYYY' DATEEXP 10↑,DataDateAbs[N;])- 0 0,T×'Y'=↑DataDateAdj[N;]
+[64]      :endif
+[65]      REC[A↑fDJS]←(A←8⌊⍴fDJS)↑(2×2=⍴fDJS)↓,'ZI4,2ZI2' ⎕FMT MATRIX ⌽DJS
+[66]      dfDJS←A↑'YYYYMMDD'
+[67]      ⍝ Check if Post Valuation Entrants
+[68]      :if 0>DJS DAYS VDATE ⋄ →ERR ⋄ :endif
+[69]  :endif
+[70]  
+[71]  :for N :in (⍳1↑⍴DataDateVars)~DateDone ⍝ Variable Date Fields
+[72]      :if 0∊⍴,var←DLTMB DataDateVars[N;] ⋄ :continue ⋄ :endif
+[73]      :if 0=⎕nc FLDS←'f',var ⋄ :continue ⋄ :endif
+[74]      FLDS←(8⌊⍴FLDS)↑⍎FLDS
+[75]      :if ^/' '=DataDateAbs[N;]
+[76]          ⍎var,'←',⍕((365.25×ZWB DataDateRel[N;]) DATEOFFSET VDATE)- 0 0,T×'Y'=↑DataDateAdj[N;]
+[77]      :else
+[78]          ⍎var,'←',⍕('DD/MM/YYYY' DATEEXP 10↑,DataDateAbs[N;])- 0 0,T×'Y'=↑DataDateAdj[N;]
+[79]      :endif
+[80]      REC[FLDS]←(⍴FLDS)↑(2×2=⍴FLDS)↓,'ZI4,2ZI2' ⎕FMT MATRIX ⌽⍎var
+[81]      ⍎'df',var,'←(⍴FLDS)↑"YYYYMMDD"'
+[82]  :endfor
+[83]  
+[84]  ⍝ A record for each of the ages specified
+[85]  FILL:X0←Lage⌊X0+skip ⋄ →(neMinAge>X←X0-T)/END ⍝ Skip if <Min Age at Entry
+[86]  ((X0-(Xe-skip)⌈neMinAge+T) (Lage-(Xe-skip)⌈neMinAge+T) (⍕X0)) Win∆ProgressBar2 'MemberUpdate'
+[87]  →(~×NOM[X0])/END ⋄ REC[fNOM]←(-⍴fNOM)↑DLTMB 'I10' ⎕FMT NOM[X]
+[88]  
+[89]  :if ValMeth≡'NOT'
+[90]      REC[fNAME]←(⍴fNAME)↑,'<x=>,LI2,<,t=>,LI2' ⎕FMT MATRIX X0,T
+[91]  :else
+[92]      REC[fNAME]←(⍴fNAME)↑,'<AGE>,LI3' ⎕fmt X0
+[93]  :endif
+[94]  
+[95]  REC[A↑fDOB]←(A←8⌊⍴fDOB)↑(2×2=⍴fDOB)↓,'ZI4,2ZI2' ⎕FMT MATRIX ⌽VDATE-0,0,X0
+[96]  dfDOB←A↑'YYYYMMDD'
+[97]  
+[98]  ⍝ Assume Previous Salary same as Current Salary
+[99]  REC[fSAL]←(⍴fSAL)↑DLTMB 'I10' ⎕FMT SAL←SALMP←NESALS[X0]
+[100] REC[fPSAL]←(⍴fPSAL)↑DLTMB 'I10' ⎕FMT SAL
+[101] NumDone←CREATENE∆ver ⍝ Put in Fields specific to each System
+[102] 
+[103] :for N :in (⍳1↑⍴DataNumVars)~NumDone ⍝ Variable Numeric Fields
+[104]     :if 0∊⍴,var←DLTMB DataNumVars[N;] ⋄ :continue ⋄ :endif
+[105]     :if 0=⎕nc FLDS←'f',var ⋄ :continue ⋄ :endif
+[106]     FLDS←⍎FLDS
+[107]     :if 0∊⍴,DLTMB DataNumValue[N;] ⋄ :continue ⋄ :endif
+[108]     REC[FLDS]←((⍴FLDS),ZWB DataNumDecP[N;])⍕FormulaZWB DataNumValue[N;]
+[109] :endfor
+[110] 
+[111] REC ⎕NAPPEND tieno
+[112] END:→((Lage+skip)>X0+skip)/FILL ⋄ →LOOP
+[113] ESC:filesize←⎕nsize tieno ⋄ →end
+[114] 
+[115] ERR:(unattended/'Log') MDISPLAY 'LateJoinDate'
+[116] ⍝ Erase Input/Output Files (not required)
+[117] File NERASE tieno
+[118] NERASE tpr1 ⋄ :if PROPT ⋄ NERASE tpA ⋄ :endif
+[119] NERASE tpI ⋄ :if aosind ⋄ NERASE tpS ⋄ :endif
+[120] tieno←0
+[121] 
+[122] end:Win∆ProgressBar2 'Hide'
+    ∇

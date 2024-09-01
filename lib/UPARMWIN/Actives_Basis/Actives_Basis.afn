@@ -1,0 +1,207 @@
+    ∇ res←field Actives_Basis parm;SSName;parent;page;Error
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Function to allow user control on Actives Basis
+[3]   
+[4]   parent←'fmSV.sActives_Basis.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'TabOrder'
+[8]       :if basisTabOrder
+[9]           (parent,'pgAltSlices') ⎕wi 'order' (¯0.5+(parent,'pgLeaving') ⎕wi 'order')
+[10]          (parent,'pgSlices') ⎕wi 'order' (¯0.5+(parent,'pgLeaving') ⎕wi 'order')
+[11]      :endif
+[12]  
+[13]  :case 'Pre-Audit' ⍝ Adjustments to screen variables (particularly S21 Migration)
+[14]      S21Migration 'Actives'
+[15]      CashMigration 'Actives'
+[16]      FixRelFields 'Actives'
+[17]      :if ~mt Error←FixCOMPERFields
+[18]          MDISPLAY (2/⎕tcnl) join ,0 2↓Error
+[19]      :endif
+[20]      Act_DataDefaults 'Pre-Audit'
+[21]  
+[22]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[23]      changedParm←0
+[24]      0 0⍴Actives_Basis 'Lock' ⍝ Lock Spreadsheet Cells
+[25]      Act_Main 'Vars'
+[26]      Act_Financial 'Vars'
+[27]      Act_Legislation 'Vars'
+[28]      Act_PPF 'Vars'
+[29]      Act_Mortality 'Vars'
+[30]      Act_Demographic 'Vars'
+[31]      Act_Salaries 'Vars'
+[32]      Act_Slices 'Vars'
+[33]      Act_AltSlices 'Vars'
+[34]      Act_Membership 'Vars'
+[35]      Act_RetPension 'Vars'
+[36]      Act_RetCash 'Vars'
+[37]      Act_RetCOT 'Vars'
+[38]      Act_LateRet 'Vars'
+[39]      Act_DeathPen 'Vars'
+[40]      Act_DeathCash 'Vars'
+[41]      Act_IllHPension 'Vars'
+[42]      Act_IllHCash 'Vars'
+[43]      Act_IllHCOT 'Vars'
+[44]      Act_PHI 'Vars'
+[45]      Act_Leaving 'Vars'
+[46]      Act_IndSlices 'Vars'
+[47]      Act_Contributions 'Vars'
+[48]      Act_DataDefaults 'Vars'
+[49]  
+[50]      comment_var←'Comment_Actives_Basis'
+[51]  
+[52]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[53]      Display∆Access basAccess[1 2]
+[54]      Act_Main 'Init'
+[55]      Act_Financial 'Init'
+[56]      Act_Legislation 'Init'
+[57]      Act_PPF 'Init'
+[58]      Act_Mortality 'Init'
+[59]      Act_Demographic 'Init'
+[60]      Act_Salaries 'Init'
+[61]      Act_Slices 'Init'
+[62]      Act_AltSlices 'Init'
+[63]      Act_Membership 'Init'
+[64]      Act_RetPension 'Init'
+[65]      Act_RetCash 'Init'
+[66]      Act_RetCOT 'Init'
+[67]      Act_LateRet 'Init'
+[68]      Act_DeathPen 'Init'
+[69]      Act_DeathCash 'Init'
+[70]      Act_IllHPension 'Init'
+[71]      Act_IllHCash 'Init'
+[72]      Act_IllHCOT 'Init'
+[73]      Act_PHI 'Init'
+[74]      Act_Leaving 'Init'
+[75]      Act_IndSlices 'Init'
+[76]      Act_Contributions 'Init'
+[77]      Act_DataDefaults 'Init'
+[78]  
+[79]  :case 'Lock'
+[80]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[81]      :else             ⋄ SSName←(⊂parent),¨'pgSalaries.fSalaries.ssSalaries' 'pgSlices.fSlices.ssSlices' 'pgAltSlices.fAltSlices.ssAltSlices' 'pgIndSlices.fIndSlices.ssIndSlices' 'pgNEDataDefaults.fNumData.ssNumData' 'pgNEDataDefaults.fCharData.ssCharData' 'pgNEDataDefaults.fDateData.ssDateData'
+[82]      :endif
+[83]      :for SSName :in SSName
+[84]          :if ~mt SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1) ⋄ :endif
+[85]      :endfor
+[86]  
+[87]  :case 'Unlock'
+[88]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[89]      :else             ⋄ SSName←(⊂parent),¨'pgSalaries.fSalaries.ssSalaries' 'pgSlices.fSlices.ssSlices' 'pgAltSlices.fAltSlices.ssAltSlices' 'pgIndSlices.fIndSlices.ssIndSlices' 'pgNEDataDefaults.fNumData.ssNumData' 'pgNEDataDefaults.fCharData.ssCharData' 'pgNEDataDefaults.fDateData.ssDateData'
+[90]      :endif
+[91]      :for SSName :in SSName
+[92]          :if ~mt SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells 'Unlock' ⋄ :endif
+[93]      :endfor
+[94]  
+[95]  :case 'PostAssign'
+[96]      0 0⍴('ssSlices' 'ssAltSlices' 'ssIndSlices') Actives_Basis 'Change'
+[97]  
+[98]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[99]  
+[100]     :repeat
+[101]         :select ↑field
+[102]             :caselist 'edfILENAME' 'cbFormat' 'lsCatSels' 'cbAltSw' 'ckIndSlices'
+[103]                 (↑field) Act_Main 'Change'
+[104]             :case ' '
+[105]                 (↑field) Act_Financial 'Change'
+[106]             :case 'edSLICEUP'
+[107]                 (↑field) Act_Legislation 'Change'
+[108]             :caselist 'edm_PPFNRAtab4' 'edf_PPFNRAtab4'
+[109]                 (↑field) Act_PPF 'Change'
+[110]             :caselist 'cbm_miDPRE' 'cbm_miDILL' 'cbm_miDPOST' 'cbm_miSDPOST' 'cbf_miDPRE' 'cbf_miDILL' 'cbf_miDPOST' 'cbf_miSDPOST'
+[111]                 (↑field) Act_Mortality 'Change'
+[112]             :caselist 'cbm_DRateParm' 'cbf_DRateParm' 'cbSpouseParm'
+[113]                 (↑field) Act_Demographic 'Change'
+[114]             :case 'ssSalaries'
+[115]                 (↑field) Act_Salaries 'Change'
+[116]             :case 'ssSlices'
+[117]                 (↑field) Act_Slices 'Change'
+[118]             :case 'ssAltSlices'
+[119]                 (↑field) Act_AltSlices 'Change'
+[120]             :caselist 'edm_NRA' 'edf_NRA' 'cbm_RAParm' 'cbf_RAParm'
+[121]                 (↑field) Act_Membership 'Change'
+[122]             :caselist 'cbm_ERTABParm' 'cbf_ERTABParm'
+[123]                 (↑field) Act_RetPension 'Change'
+[124]             :caselist 'cbm_COMTABParm' 'cbf_COMTABParm' 'cbCashParm'
+[125]                 (↑field) Act_RetCash 'Change'
+[126]             :caselist 'cbm_ERTABParmC' 'cbf_ERTABParmC' 'cbCashParm2'
+[127]                 (↑field) Act_RetCOT 'Change'
+[128]             :caselist 'cbm_LRTABParm' 'cbf_LRTABParm' 'cbm_LRTABParmC' 'cbf_LRTABParmC'
+[129]                 (↑field) Act_LateRet 'Change'
+[130]             :caselist 'cbWOSTYPE' 'cbWOSDParm'
+[131]                 (↑field) Act_DeathPen 'Change'
+[132]             :case 'cbGLSDParm'
+[133]                 (↑field) Act_DeathCash 'Change'
+[134]             :caselist 'cbSTYPEIH' 'cbSDParmIH'
+[135]                 (↑field) Act_IllHPension 'Change'
+[136]             :caselist 'cbm_ILLCOMTABParm' 'cbf_ILLCOMTABParm' 'cbILLCashParm' 'cbSDParmIH'
+[137]                 (↑field) Act_IllHCash 'Change'
+[138]             :case 'cbILLCashParm2'
+[139]                 (↑field) Act_IllHCOT 'Change'
+[140]             :case ' '
+[141]                 (↑field) Act_PHI 'Change'
+[142]             :case ' '
+[143]                 (↑field) Act_Leaving 'Change'
+[144]             :case 'ssIndSlices'
+[145]                 (↑field) Act_IndSlices 'Change'
+[146]             :case ' '
+[147]                 (↑field) Act_Contributions 'Change'
+[148]             :case ''
+[149]                 (↑field) Act_DataDefaults 'Change'
+[150]         :endselect
+[151]         (↑field) Win∆FormValidation 'Change'
+[152]     :until mt field←1↓field
+[153] 
+[154] :case 'Valid' ⍝ Routine specific validation
+[155] 
+[156]     :repeat
+[157]         :select page←DLTMB ↑field
+[158]         :case 'All'
+[159]             PIsenabled←0
+[160]             :for page :in 'pgMain' 'pgFinancial' 'pgLegislation' 'pgPPF' 'pgMortality' 'pgDemographic' 'pgSalariesonSave' 'pgSlicesonSave' 'pgAltSlicesonSave' 'pgMembership' 'pgRetPension' 'pgRetCash' 'pgRetCOT' 'pgLateRetirement' 'pgDeathPen' 'pgDeathCash' 'pgIHPension' 'pgIHCash' 'pgIHCOT' 'pgPHI' 'pgLeaving' 'pgIndSlicesonSave' 'pgContributions' 'pgNEDataDefaultsonSave'
+[161]                 :if ~mt res←(⊂page) Actives_Basis 'Valid' ⋄ :leave ⋄ :endif
+[162]             :endfor
+[163]             PIsenabled←enablePIs
+[164]             :if mt res ⋄ :andif ~mt res←valsIn Error←'Actives' VALIDATE∆Basis 0 0 ⍝ Returns field names and messages
+[165]                 0 Win∆SetFocus ↑(FormFields for 'variable' (↑Error at 'variable')) at 'control'
+[166]                 res←⊃Error at 'message'
+[167]             :endif
+[168]         :caselist 'pgMain' 'pgFinancial' 'pgLegislation' 'pgPPF' 'pgMortality' 'pgDemographic' 'pgMembership' 'pgRetPension' 'pgRetCash' 'pgRetCOT' 'pgLateRetirement' 'pgDeathPen' 'pgDeathCash' 'pgIHPension' 'pgIHCash' 'pgIHCOT' 'pgPHI' 'pgLeaving' 'pgContributions'
+[169]             res←((FormFields for ↑¨(⊂parent,page)⍷¨FormFields at 'control') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[170]         :case 'pgSalariesonSave'
+[171]             res←((FormFields for 'shortname' 'ssSalaries') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[172]         :case 'pgSlicesonSave'
+[173]             res←((FormFields for 'shortname' 'ssSlices') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[174]         :case 'pgAltSlicesonSave'
+[175]             :if ~'Ignore'≡6↑(parent,'pgMain.fAltBens.cbAltSw') ⎕wi 'text'
+[176]                 res←((FormFields for 'shortname' 'ssAltSlices') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[177]             :endif
+[178]         :case 'pgIndSlicesonSave'
+[179]             :if zwb IndSlices
+[180]                 res←((FormFields for 'shortname' 'ssIndSlices') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[181]             :endif
+[182]         :case  'pgNEDataDefaultsonSave'
+[183]             res←((FormFields for ↑¨(⊂parent,'pgNEDataDefaults')⍷¨FormFields at 'control') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[184]         :case 'pgSalaries'           ⋄ ⍝⍝⍝ Act_Salaries 'Valid'
+[185]         :case 'pgSlices'             ⋄ ⍝⍝⍝ Act_Slices 'Valid'
+[186]         :case 'pgAltSlices'          ⋄ ⍝⍝⍝ Act_AltSlices 'Valid'
+[187]         :case 'pgIndSlices'          ⋄ ⍝⍝⍝ Act_IndSlices 'Valid'
+[188]         :case 'pgNEDataDefaults'     ⋄ ⍝⍝⍝ Act_DataDefaults 'Valid'
+[189]         :endselect
+[190]     :until mt field←1↓field
+[191] 
+[192] :case 'Run'
+[193] 
+[194]     res←'Quit'
+[195] 
+[196] :case 'Quit' ⍝ Deleting "other" variables
+[197] 
+[198]     :if 0≠⎕nc 'DateVars'
+[199]         0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars
+[200]         0 0⍴⎕ex 'd','f',DateVars
+[201]     :endif
+[202]     0 0⍴DeleteVars 'ActFormat'
+[203]     0 0⍴⎕ex 'FormatType Filesettings ValYear OffsetSlice FirstSlice AltFirstSlice IndFirstSlice BasisFile changedParm comment_var'
+[204] 
+[205] :endselect
+    ∇

@@ -1,1 +1,41 @@
-    ∇ res←field Comment_View parm;parent;SSName[1]   ⍝ PARMWIN.sf#45[2]   ⍝ Function to allow user control on Comment Viewing[3]   [4]   parent←'fmViewComment.' ⋄ res←0⍴'' ⍝ Default response[5]   SSName←parent,'fComments.ssComments'[6]   [7]   :select parm[8]   [9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[10]      (rOW dESC cOMM uSeR tS)←⊃¨⍕¨¨Parameters_Comment at 'row' 'desc' 'comment' 'user' 'timestamp'[11]  [12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[13]      SSName ⎕wi 'xShowRowHeading' 0[14]      SSName ⎕wi 'SetSelection' 1 3 (SSName ⎕wi 'xMaxRow') 3[15]      SSName ⎕wi 'xWordWrap' 1[16]      SSName ⎕wi 'xColWidth' 3 (20000⌊SSName ⎕wi 'xColWidth' 3)[17]      SSName ⎕wi 'XSetRowHeightAuto' 1 1 (SSName ⎕wi 'xMaxRow') (SSName ⎕wi 'xMaxCol') 1[18]      SSName ⎕wi 'SetSelection' ¯1 ¯1 ¯1 ¯1[19]      SSName ⎕wi 'XSetProtection' 1 0[20]      SSName ⎕wi 'XEnableProtection' 1[21]      SSName ⎕wi 'SetSelection' 1 1 1 1[22]  [23]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[24]  [25]      :repeat[26]          :select ↑field[27]          :case ' '[28]          :endselect[29]      :until mt field←1↓field[30]  [31]  :case 'Valid' ⍝ Routine specific validation[32]  [33]  :case 'Run'[34]      res←'Quit'[35]  [36]  :case 'Quit' ⍝ Deleting "other" variables[37]  [38]  [39]  :endselect    ∇
+    ∇ res←field Comment_View parm;parent;SSName
+[1]   ⍝ PARMWIN.sf#45
+[2]   ⍝ Function to allow user control on Comment Viewing
+[3]   
+[4]   parent←'fmViewComment.' ⋄ res←0⍴'' ⍝ Default response
+[5]   SSName←parent,'fComments.ssComments'
+[6]   
+[7]   :select parm
+[8]   
+[9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[10]      (rOW dESC cOMM uSeR tS)←⊃¨⍕¨¨Parameters_Comment at 'row' 'desc' 'comment' 'user' 'timestamp'
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]      SSName ⎕wi 'xShowRowHeading' 0
+[14]      SSName ⎕wi 'SetSelection' 1 3 (SSName ⎕wi 'xMaxRow') 3
+[15]      SSName ⎕wi 'xWordWrap' 1
+[16]      SSName ⎕wi 'xColWidth' 3 (20000⌊SSName ⎕wi 'xColWidth' 3)
+[17]      SSName ⎕wi 'XSetRowHeightAuto' 1 1 (SSName ⎕wi 'xMaxRow') (SSName ⎕wi 'xMaxCol') 1
+[18]      SSName ⎕wi 'SetSelection' ¯1 ¯1 ¯1 ¯1
+[19]      SSName ⎕wi 'XSetProtection' 1 0
+[20]      SSName ⎕wi 'XEnableProtection' 1
+[21]      SSName ⎕wi 'SetSelection' 1 1 1 1
+[22]  
+[23]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[24]  
+[25]      :repeat
+[26]          :select ↑field
+[27]          :case ' '
+[28]          :endselect
+[29]      :until mt field←1↓field
+[30]  
+[31]  :case 'Valid' ⍝ Routine specific validation
+[32]  
+[33]  :case 'Run'
+[34]      res←'Quit'
+[35]  
+[36]  :case 'Quit' ⍝ Deleting "other" variables
+[37]  
+[38]  
+[39]  :endselect
+    ∇

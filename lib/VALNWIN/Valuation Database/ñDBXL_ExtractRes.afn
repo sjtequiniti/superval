@@ -1,0 +1,14 @@
+    ∇ tab←where ⍙DBXL_ExtractRes pivot;sql;pivotfld;collist
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Run a SQL command to extract member valuation results
+[3]   ⍝ where: (str) WHERE expression for SQL query on MemberResults table, eg 'LiabilityTypeID = 7'
+[4]   ⍝ pivot: (str numvec) eg 'DataItemID' (4 19 18 20 21 17)
+[5]   ⍝ Reads: data
+[6]   ⍝ Revn: sjt26oct15 * SQL Server
+[7]   
+[8]   (pivotfld collist)←pivot
+[9]   sql←⍙DBPivot "SUM" "MemberValue" "MemberResults" ("ResultsCategoryID=",(DLTB CatID)," AND ",where) "MemberID" pivotfld collist membercount
+[10]  
+[11]  ⍝ Execute SQL and make sure there are results for all members
+[12]  tab←0 1↓data[;⎕io+1] XL_Pivot sql 0
+    ∇

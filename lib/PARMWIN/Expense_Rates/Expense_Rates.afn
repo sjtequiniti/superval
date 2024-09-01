@@ -1,1 +1,31 @@
-    ∇ res←field Expense_Rates parm;parent[1]   ⍝ PARMWIN.sf#3[2]   ⍝ Function to allow user control on Expense Rates[3]   [4]   parent←'fmExpRates.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[11]      Display∆Access basAccess[1 2][12]  [13]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[14]  [15]      :repeat[16]          (↑field) Win∆FormValidation 'Change'[17]      :until mt field←1↓field[18]  [19]  :case 'Valid' ⍝ Routine specific validation[20]  [21]      res←((Win∆GetControlList parent) at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form[22]  [23]  :case 'Run'[24]  [25]      res←'Quit'[26]  [27]  :case 'Quit' ⍝ Deleting "other" variables[28]  [29]  :endselect    ∇
+    ∇ res←field Expense_Rates parm;parent
+[1]   ⍝ PARMWIN.sf#3
+[2]   ⍝ Function to allow user control on Expense Rates
+[3]   
+[4]   parent←'fmExpRates.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]      Display∆Access basAccess[1 2]
+[12]  
+[13]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[14]  
+[15]      :repeat
+[16]          (↑field) Win∆FormValidation 'Change'
+[17]      :until mt field←1↓field
+[18]  
+[19]  :case 'Valid' ⍝ Routine specific validation
+[20]  
+[21]      res←((Win∆GetControlList parent) at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[22]  
+[23]  :case 'Run'
+[24]  
+[25]      res←'Quit'
+[26]  
+[27]  :case 'Quit' ⍝ Deleting "other" variables
+[28]  
+[29]  :endselect
+    ∇

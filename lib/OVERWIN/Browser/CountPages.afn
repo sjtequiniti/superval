@@ -1,1 +1,106 @@
-    ∇ tieno←ind CountPages fILENAME;size;recs;i;exist;Error;invalid;assoc;n[1]   ⍝ OVERWIN.sf#15[2]   ⍝ Determine the Page Breaks in a File[3]   [4]   No∆recs←⍳tieno←exist←size←invalid←0[5]   [6]   :if 0∊⍴,DLTMB fILENAME ⍝ No FileName[7]   :orif 0=exist←fILENAME NTIE tieno←'Native' TieNumber '' ⍝ Invalid FileName[8]   :orif 0=size←⎕nsize tieno ⍝ Empty File[9]      'fmBrowser.edText' ⎕wi 'text' ' ' ⍝ File Text[10]     'fmBrowser.edPageNo' ⎕wi 'text' (⍕MaxPage←1)[11]     :if 0≠tieno←exist×tieno ⍝ Max Pages caption[12]          'fmBrowser.lrPageNo' ⎕wi 'caption' 'of Empty File'[13]     :else[14]          'fmBrowser.lrPageNo' ⎕wi 'caption' ' '[15]          :if ~0∊⍴'fmBrowser.barBrowser' ⎕wi 'self'[16]              'fmBrowser.barBrowser' ⎕wi 'enabled' 0[17]          :endif[18]     :endif[19]  :else[20]      assoc←⎕wcall 'FindExecutable' fILENAME '' (1000⍴⎕tcnul)[21]      :if 32>1⊃assoc ⋄ assoc←0⍴''[22]      :elseif ~0∊⍴n←(0 30↓Associations) ExactTLU assoc←UPPERCASE '\' Win∆Child (2⊃assoc)~⎕tcnul[23]          assoc←DLTMB Associations[n;⍳30][24]      :endif[25]      :if invalid←⎕tcnul∊⎕nread tieno,82,(size⌊FileChunk),0[26]          ⎕nuntie tieno ⋄ size←tieno←0[27]          'fmBrowser.lrPageNo' ⎕wi 'caption' 'of Invalid File'[28]          'fmBrowser.edText' ⎕wi 'text' ' ' ⍝ File Text[29]          :if 0∊⍴assoc ⋄ MDISPLAY 'NotASCII' ⋄ :endif[30]      :else[31]          0 0 ⍴⎕NREAD tieno,82 0 0 ⍝ Get to Start of File[32]      :endif[33]      :if ind ⋄ :andif ~0∊⍴assoc[34]          :if invalid ⋄ :andif assocopen←'Y'='YN' ASK 'EditNonASCII' assoc fILENAME[35]              0 Win∆EditFile fILENAME[36]          :elseif ~invalid ⋄ :andif assocopen←'Y'='YN' ASK 'DispASCII' assoc fILENAME[37]              ⎕nuntie tieno ⋄ tieno←0[38]              0 Win∆EditFile fILENAME[39]              'fmBrowser.edfILENAME' ⎕wi 'text' (fILENAME←'')[40]          :endif[41]      :endif[42]  :endif[43]  [44]  ⍝ Enable/Disable Buttons[45]  ('fmBrowser.bnBrowserPrint' 'fmBrowser.bnBrowserFont') MultiWI 'enabled' (size≠0)[46]  'fmBrowser.edPageNo' ⎕wi 'enabled' ((size≠0)⌊'fmBrowser.edfILENAME' ⎕wi 'enabled')[47]  'fmBrowser.bnBrowserEdit' ⎕wi 'enabled' (invalid∨size≠0)[48]  :if ~0∊⍴'fmBrowser.barBrowser' ⎕wi 'self'[49]      'fmBrowser.barBrowser' ⎕wi 'enabled' (tieno≠0)[50]  :endif[51]  [52]  :if 0=size×tieno ⋄ :return ⋄ :endif ⍝ And return if nothing to display![53]  [54]  :if ~assocopen ⋄ 'Selected File' UpdateBrowserHistory fILENAME ⋄ :endif[55]  0 0⍴⎕ex 'FilesDesc FilesList'[56]  GetAbsFileList 'History'[57]  [58]  :while (⎕nread tieno,82,1,size-1)=⎕av[26+⎕io] ⍝ Remove Garbage on end![59]      :if 0=size←size-1[60]          'fmBrowser.edText' ⎕wi 'text' ' ' ⍝ File Text[61]          'fmBrowser.lrPageNo' ⎕wi 'caption' 'of Empty File'[62]          'fmBrowser.edPageNo' ⎕wi 'text' (⍕MaxPage←1)[63]          ('fmBrowser.bnBrowserPrint' 'fmBrowser.bnBrowserEdit' 'fmBrowser.bnBrowserFont' 'fmBrowser.edPageNo') MultiWI 'enabled' 0[64]          :if bbar_ok[65]              'fmBrowser.barBrowser' ⎕wi 'enabled' 0[66]          :endif[67]          :return[68]      :endif[69]  :endwhile[70]  [71]  recs←,((⌊size÷FileChunk)⍴FileChunk),FileChunk∣size ⍝ "chunks"[72]  [73]  0 0 ⍴⎕NREAD tieno,82 0 0 ⍝ Get to Start of File[74]  [75]  :for i :in ⍳⍴,recs[76]       No∆recs←No∆recs,(+/(i-⎕io)↑recs)+((⎕NREAD tieno,82,recs[i])⎕ss ⎕tcff)/⍳recs[i][77]  :endfor[78]  [79]  :if 0∊⍴,No∆recs ⍝ Probably Input File with no Page Breaks so Pagenate[80]       ⍝ Look for ⎕tclf and use "user-specifed" page length[81]      0 0 ⍴⎕NREAD tieno,82 0 0 ⍝ Get to Start of File[82]      :for i :in ⍳⍴,recs[83]           No∆recs←No∆recs,(+/(i-⎕io)↑recs)+((⎕NREAD tieno,82,recs[i])⎕ss ⎕tclf)/⍳recs[i][84]      :endfor[85]      :if 0∊⍴,No∆recs ⍝ Probably Input File with ⎕tcnl only[86]          0 0 ⍴⎕NREAD tieno,82 0 0 ⍝ Get to Start of File[87]          :for i :in ⍳⍴,recs[88]               No∆recs←No∆recs,(+/(i-⎕io)↑recs)+((⎕NREAD tieno,82,recs[i])⎕ss ⎕tcnl)/⍳recs[i][89]          :endfor[90]      :endif[91]      :if ~0∊⍴,No∆recs ⍝ Give Up if No∆recs still empty!![92]          No∆recs←(pAGE×i←⌈(⍴No∆recs)÷pAGE) OVERTAKE No∆recs[93]          No∆recs←No∆recs[pAGE×(~⎕io)+⍳i][94]      :endif[95]  :endif[96]  No∆recs←(DIFF 0,(No∆recs~1),size)~0 ⍝ Ignore ⎕tcff at start of file[97]  [98]  MaxPage←⍴,No∆recs ⍝ Maximum Pages[99]  [100] :if 0∊⍴,No∆recs ⍝ Assume it is invalid[101]     'fmBrowser.lrPageNo' ⎕wi 'caption' 'of Invalid File'[102] :else[103]     'fmBrowser.lrPageNo' ⎕wi 'caption' (DLTMB ('<of >,CI6,< page',((MaxPage≠1)/'s'),'>') ⎕fmt MaxPage)[104] :endif    ∇
+    ∇ tieno←ind CountPages fILENAME;size;recs;i;exist;Error;invalid;assoc;n
+[1]   ⍝ OVERWIN.sf#15
+[2]   ⍝ Determine the Page Breaks in a File
+[3]   
+[4]   No∆recs←⍳tieno←exist←size←invalid←0
+[5]   
+[6]   :if 0∊⍴,DLTMB fILENAME ⍝ No FileName
+[7]   :orif 0=exist←fILENAME NTIE tieno←'Native' TieNumber '' ⍝ Invalid FileName
+[8]   :orif 0=size←⎕nsize tieno ⍝ Empty File
+[9]      'fmBrowser.edText' ⎕wi 'text' ' ' ⍝ File Text
+[10]     'fmBrowser.edPageNo' ⎕wi 'text' (⍕MaxPage←1)
+[11]     :if 0≠tieno←exist×tieno ⍝ Max Pages caption
+[12]          'fmBrowser.lrPageNo' ⎕wi 'caption' 'of Empty File'
+[13]     :else
+[14]          'fmBrowser.lrPageNo' ⎕wi 'caption' ' '
+[15]          :if ~0∊⍴'fmBrowser.barBrowser' ⎕wi 'self'
+[16]              'fmBrowser.barBrowser' ⎕wi 'enabled' 0
+[17]          :endif
+[18]     :endif
+[19]  :else
+[20]      assoc←⎕wcall 'FindExecutable' fILENAME '' (1000⍴⎕tcnul)
+[21]      :if 32>1⊃assoc ⋄ assoc←0⍴''
+[22]      :elseif ~0∊⍴n←(0 30↓Associations) ExactTLU assoc←UPPERCASE '\' Win∆Child (2⊃assoc)~⎕tcnul
+[23]          assoc←DLTMB Associations[n;⍳30]
+[24]      :endif
+[25]      :if invalid←⎕tcnul∊⎕nread tieno,82,(size⌊FileChunk),0
+[26]          ⎕nuntie tieno ⋄ size←tieno←0
+[27]          'fmBrowser.lrPageNo' ⎕wi 'caption' 'of Invalid File'
+[28]          'fmBrowser.edText' ⎕wi 'text' ' ' ⍝ File Text
+[29]          :if 0∊⍴assoc ⋄ MDISPLAY 'NotASCII' ⋄ :endif
+[30]      :else
+[31]          0 0 ⍴⎕NREAD tieno,82 0 0 ⍝ Get to Start of File
+[32]      :endif
+[33]      :if ind ⋄ :andif ~0∊⍴assoc
+[34]          :if invalid ⋄ :andif assocopen←'Y'='YN' ASK 'EditNonASCII' assoc fILENAME
+[35]              0 Win∆EditFile fILENAME
+[36]          :elseif ~invalid ⋄ :andif assocopen←'Y'='YN' ASK 'DispASCII' assoc fILENAME
+[37]              ⎕nuntie tieno ⋄ tieno←0
+[38]              0 Win∆EditFile fILENAME
+[39]              'fmBrowser.edfILENAME' ⎕wi 'text' (fILENAME←'')
+[40]          :endif
+[41]      :endif
+[42]  :endif
+[43]  
+[44]  ⍝ Enable/Disable Buttons
+[45]  ('fmBrowser.bnBrowserPrint' 'fmBrowser.bnBrowserFont') MultiWI 'enabled' (size≠0)
+[46]  'fmBrowser.edPageNo' ⎕wi 'enabled' ((size≠0)⌊'fmBrowser.edfILENAME' ⎕wi 'enabled')
+[47]  'fmBrowser.bnBrowserEdit' ⎕wi 'enabled' (invalid∨size≠0)
+[48]  :if ~0∊⍴'fmBrowser.barBrowser' ⎕wi 'self'
+[49]      'fmBrowser.barBrowser' ⎕wi 'enabled' (tieno≠0)
+[50]  :endif
+[51]  
+[52]  :if 0=size×tieno ⋄ :return ⋄ :endif ⍝ And return if nothing to display!
+[53]  
+[54]  :if ~assocopen ⋄ 'Selected File' UpdateBrowserHistory fILENAME ⋄ :endif
+[55]  0 0⍴⎕ex 'FilesDesc FilesList'
+[56]  GetAbsFileList 'History'
+[57]  
+[58]  :while (⎕nread tieno,82,1,size-1)=⎕av[26+⎕io] ⍝ Remove Garbage on end!
+[59]      :if 0=size←size-1
+[60]          'fmBrowser.edText' ⎕wi 'text' ' ' ⍝ File Text
+[61]          'fmBrowser.lrPageNo' ⎕wi 'caption' 'of Empty File'
+[62]          'fmBrowser.edPageNo' ⎕wi 'text' (⍕MaxPage←1)
+[63]          ('fmBrowser.bnBrowserPrint' 'fmBrowser.bnBrowserEdit' 'fmBrowser.bnBrowserFont' 'fmBrowser.edPageNo') MultiWI 'enabled' 0
+[64]          :if bbar_ok
+[65]              'fmBrowser.barBrowser' ⎕wi 'enabled' 0
+[66]          :endif
+[67]          :return
+[68]      :endif
+[69]  :endwhile
+[70]  
+[71]  recs←,((⌊size÷FileChunk)⍴FileChunk),FileChunk∣size ⍝ "chunks"
+[72]  
+[73]  0 0 ⍴⎕NREAD tieno,82 0 0 ⍝ Get to Start of File
+[74]  
+[75]  :for i :in ⍳⍴,recs
+[76]       No∆recs←No∆recs,(+/(i-⎕io)↑recs)+((⎕NREAD tieno,82,recs[i])⎕ss ⎕tcff)/⍳recs[i]
+[77]  :endfor
+[78]  
+[79]  :if 0∊⍴,No∆recs ⍝ Probably Input File with no Page Breaks so Pagenate
+[80]       ⍝ Look for ⎕tclf and use "user-specifed" page length
+[81]      0 0 ⍴⎕NREAD tieno,82 0 0 ⍝ Get to Start of File
+[82]      :for i :in ⍳⍴,recs
+[83]           No∆recs←No∆recs,(+/(i-⎕io)↑recs)+((⎕NREAD tieno,82,recs[i])⎕ss ⎕tclf)/⍳recs[i]
+[84]      :endfor
+[85]      :if 0∊⍴,No∆recs ⍝ Probably Input File with ⎕tcnl only
+[86]          0 0 ⍴⎕NREAD tieno,82 0 0 ⍝ Get to Start of File
+[87]          :for i :in ⍳⍴,recs
+[88]               No∆recs←No∆recs,(+/(i-⎕io)↑recs)+((⎕NREAD tieno,82,recs[i])⎕ss ⎕tcnl)/⍳recs[i]
+[89]          :endfor
+[90]      :endif
+[91]      :if ~0∊⍴,No∆recs ⍝ Give Up if No∆recs still empty!!
+[92]          No∆recs←(pAGE×i←⌈(⍴No∆recs)÷pAGE) OVERTAKE No∆recs
+[93]          No∆recs←No∆recs[pAGE×(~⎕io)+⍳i]
+[94]      :endif
+[95]  :endif
+[96]  No∆recs←(DIFF 0,(No∆recs~1),size)~0 ⍝ Ignore ⎕tcff at start of file
+[97]  
+[98]  MaxPage←⍴,No∆recs ⍝ Maximum Pages
+[99]  
+[100] :if 0∊⍴,No∆recs ⍝ Assume it is invalid
+[101]     'fmBrowser.lrPageNo' ⎕wi 'caption' 'of Invalid File'
+[102] :else
+[103]     'fmBrowser.lrPageNo' ⎕wi 'caption' (DLTMB ('<of >,CI6,< page',((MaxPage≠1)/'s'),'>') ⎕fmt MaxPage)
+[104] :endif
+    ∇

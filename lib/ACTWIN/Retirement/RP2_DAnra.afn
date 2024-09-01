@@ -1,1 +1,50 @@
-    ∇ RP2∆DAnra;Dec∆pp;ExitProbs∆pp;Age∆pp;Start∆pp;End∆pp;GP∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;WARNRAD;FWARNRAD;RetAge∆pp;WARSPAD;FWARSPAD;GWARNRAD;GWARSPAD;FGWARNRAD;FGWARSPAD;WARPRESPAD;FWARPRESPAD;GWARPRESPAD;FGWARPRESPAD[1]   ⍝ ACTWIN.sf#5[2]   ⍝ CLAYBROOK VALUATION SYSTEM - Death after Retirement PENSION[3]   [4]   :if PreSPASplit[5]       (  WARSPAD   WARPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPENSPA                )[⎕io+1;;][6]       ( FWARSPAD  FWARPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;⎕io+2;;   ;;;])[⎕io+1;;][7]       ( GWARSPAD  GWARPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;     ;;⎕io;;;])[⎕io+1;;][8]       (FGWARSPAD FGWARPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPENSPA[;⎕io+2;;⎕io;;;])[⎕io+1;;][9]   [10]        WARPRESPAD←(0.5×(1↓[1]  WARPRESPAD)+¯1↓[1]  WARPRESPAD),0[11]       FWARPRESPAD←(0.5×(1↓[1] FWARPRESPAD)+¯1↓[1] FWARPRESPAD),0[12]       GWARPRESPAD←(0.5×(1↓[1] GWARPRESPAD)+¯1↓[1] GWARPRESPAD),0[13]      FGWARPRESPAD←(0.5×(1↓[1]FGWARPRESPAD)+¯1↓[1]FGWARPRESPAD),0[14]  :else[15]         WARNRAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPEN                   )[⎕io+1; ] ⍝ DIS Pension is before Commutation[16]        FWARNRAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPEN   [;⎕io+2;;   ;;;])[⎕io+1; ][17]        GWARNRAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPEN   [;     ;;⎕io;;;])[⎕io+1; ][18]       FGWARNRAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPEN   [;⎕io+2;;⎕io;;;])[⎕io+1; ][19]         WARSPAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPENSPA                )[⎕io+1; ][20]        FWARSPAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;⎕io+2;;   ;;;])[⎕io+1; ][21]        GWARSPAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;     ;;⎕io;;;])[⎕io+1; ][22]       FGWARSPAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPENSPA[;⎕io+2;;⎕io;;;])[⎕io+1; ][23]  :endif[24]  ⍝[25]  Dec∆pp←'DL' ⋄ ExitProbs∆pp←PROBS[;1]×(ENX_1,LNX+1)/0 1[26]  RetAge∆pp←Start∆pp←Age∆pp←,XMP ⋄ End∆pp←GP∆pp←Con∆pp←FCon∆pp←⍬[27]  [28]  Upin∆pp←0 ⍝ Not "underpinned"[29]  :if PreSPASplit ⋄ SL∆pp←                   WARPRESPAD-GWARPRESPAD ⋄ FSL∆pp←                   FWARPRESPAD-FGWARPRESPAD[30]  :else           ⋄ SL∆pp←,(SPA>Age∆pp)×(MID WARNRAD   -GWARNRAD),0 ⋄ FSL∆pp←,(SPA>Age∆pp)×(MID FWARNRAD-   FGWARNRAD),0[31]  :endif[32]  [33]  PP∆CreateInterface[34]  [35]  Upin∆pp←1 ⍝ "underpinned"[36]  :if PreSPASplit ⋄ SL∆pp←                              GWARPRESPAD ⋄ FSL∆pp←                               FGWARPRESPAD[37]  :else           ⋄ SL∆pp←,(SPA>Age∆pp)×(MID            GWARNRAD),0 ⋄ FSL∆pp←,(SPA>Age∆pp)×(MID             FGWARNRAD),0[38]  :endif[39]  [40]  PP∆CreateInterface[41]  [42]  Upin∆pp←0 ⍝ Not "underpinned"[43]  SL∆pp←,(SPA<Age∆pp)×(MID WARSPAD-GWARSPAD),0 ⋄ FSL∆pp←,(SPA<Age∆pp)×(MID FWARSPAD-FGWARSPAD),0[44]  PP∆CreateInterface[45]  [46]  Upin∆pp←1 ⍝ "underpinned"[47]  SL∆pp←,(SPA<Age∆pp)×(MID         GWARSPAD),0 ⋄ FSL∆pp←,(SPA<Age∆pp)×(MID          FGWARSPAD),0[48]  PP∆CreateInterface    ∇
+    ∇ RP2∆DAnra;Dec∆pp;ExitProbs∆pp;Age∆pp;Start∆pp;End∆pp;GP∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;WARNRAD;FWARNRAD;RetAge∆pp;WARSPAD;FWARSPAD;GWARNRAD;GWARSPAD;FGWARNRAD;FGWARSPAD;WARPRESPAD;FWARPRESPAD;GWARPRESPAD;FGWARPRESPAD
+[1]   ⍝ ACTWIN.sf#5
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - Death after Retirement PENSION
+[3]   
+[4]   :if PreSPASplit
+[5]       (  WARSPAD   WARPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPENSPA                )[⎕io+1;;]
+[6]       ( FWARSPAD  FWARPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;⎕io+2;;   ;;;])[⎕io+1;;]
+[7]       ( GWARSPAD  GWARPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;     ;;⎕io;;;])[⎕io+1;;]
+[8]       (FGWARSPAD FGWARPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPENSPA[;⎕io+2;;⎕io;;;])[⎕io+1;;]
+[9]   
+[10]        WARPRESPAD←(0.5×(1↓[1]  WARPRESPAD)+¯1↓[1]  WARPRESPAD),0
+[11]       FWARPRESPAD←(0.5×(1↓[1] FWARPRESPAD)+¯1↓[1] FWARPRESPAD),0
+[12]       GWARPRESPAD←(0.5×(1↓[1] GWARPRESPAD)+¯1↓[1] GWARPRESPAD),0
+[13]      FGWARPRESPAD←(0.5×(1↓[1]FGWARPRESPAD)+¯1↓[1]FGWARPRESPAD),0
+[14]  :else
+[15]         WARNRAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPEN                   )[⎕io+1; ] ⍝ DIS Pension is before Commutation
+[16]        FWARNRAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPEN   [;⎕io+2;;   ;;;])[⎕io+1; ]
+[17]        GWARNRAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPEN   [;     ;;⎕io;;;])[⎕io+1; ]
+[18]       FGWARNRAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPEN   [;⎕io+2;;⎕io;;;])[⎕io+1; ]
+[19]         WARSPAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPENSPA                )[⎕io+1; ]
+[20]        FWARSPAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;⎕io+2;;   ;;;])[⎕io+1; ]
+[21]        GWARSPAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;     ;;⎕io;;;])[⎕io+1; ]
+[22]       FGWARSPAD                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPENSPA[;⎕io+2;;⎕io;;;])[⎕io+1; ]
+[23]  :endif
+[24]  ⍝
+[25]  Dec∆pp←'DL' ⋄ ExitProbs∆pp←PROBS[;1]×(ENX_1,LNX+1)/0 1
+[26]  RetAge∆pp←Start∆pp←Age∆pp←,XMP ⋄ End∆pp←GP∆pp←Con∆pp←FCon∆pp←⍬
+[27]  
+[28]  Upin∆pp←0 ⍝ Not "underpinned"
+[29]  :if PreSPASplit ⋄ SL∆pp←                   WARPRESPAD-GWARPRESPAD ⋄ FSL∆pp←                   FWARPRESPAD-FGWARPRESPAD
+[30]  :else           ⋄ SL∆pp←,(SPA>Age∆pp)×(MID WARNRAD   -GWARNRAD),0 ⋄ FSL∆pp←,(SPA>Age∆pp)×(MID FWARNRAD-   FGWARNRAD),0
+[31]  :endif
+[32]  
+[33]  PP∆CreateInterface
+[34]  
+[35]  Upin∆pp←1 ⍝ "underpinned"
+[36]  :if PreSPASplit ⋄ SL∆pp←                              GWARPRESPAD ⋄ FSL∆pp←                               FGWARPRESPAD
+[37]  :else           ⋄ SL∆pp←,(SPA>Age∆pp)×(MID            GWARNRAD),0 ⋄ FSL∆pp←,(SPA>Age∆pp)×(MID             FGWARNRAD),0
+[38]  :endif
+[39]  
+[40]  PP∆CreateInterface
+[41]  
+[42]  Upin∆pp←0 ⍝ Not "underpinned"
+[43]  SL∆pp←,(SPA<Age∆pp)×(MID WARSPAD-GWARSPAD),0 ⋄ FSL∆pp←,(SPA<Age∆pp)×(MID FWARSPAD-FGWARSPAD),0
+[44]  PP∆CreateInterface
+[45]  
+[46]  Upin∆pp←1 ⍝ "underpinned"
+[47]  SL∆pp←,(SPA<Age∆pp)×(MID         GWARSPAD),0 ⋄ FSL∆pp←,(SPA<Age∆pp)×(MID          FGWARSPAD),0
+[48]  PP∆CreateInterface
+    ∇

@@ -1,1 +1,54 @@
-    ∇ res←larg GET∆RetCashGlobals varname;flds;success;MESS;desc;errflag;var;tab;old;new;vars;descs;∆;stem;cot;parms;idx;parmlist[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Extract the Retirement Cash Global parameters using the "description" pointer "varname"[3]   ⍝ varname has the form "stem Table variable name",'Parm' and '2' if COT cash[4]   ⍝ larg is the description of the Retirement Cash set and a valuation flag[5]   [6]   (desc errflag)←larg ⋄ var←DLTB ⍎varname[7]   [8]   :if ↑res←(success MESS)←2↑ClientFile ReadModule 'Retirement_Cash' var 'Retirement Cash' desc errflag varname[9]   [10]      cot←'2'=¯1↑DLTB varname ⋄ stem←(-8+cot)↓varname[11]  [12]      :if ~isActive ⋄ :andif (⊂grcCTYPE)∊'IR Maximum' 'Accrual x Salary for each year'[13]          MESS←MATRIX varname ⍬ ((errflag/'ERROR:  '),'Retirement Cash definition "',grcCTYPE,'" not available in Deferreds Module')[14]          ⍎varname,'←""'[15]          success←0 ⋄ →end[16]      :elseif cot ⋄ :andif grcCTYPE≡'% of A-Day Cash'[17]          MESS←MATRIX varname ⍬ ((errflag/'ERROR:  '),'Retirement Cash definition "',grcCTYPE,'" not available for Cash on Top')[18]          ⍎varname,'←""'[19]          success←0 ⋄ →end[20]      :endif[21]  [22]      tab←⍙RULESdict ReadDictFile 'Retirement_Cash'[23]      tab←tab for ⍎¨tab at 'Editable' ⍝ Exclude those not required[24]      flds←(tab at 'Field')~(zwb¨grcCOMMULTmt grcCOMPERmt)/'grcCOMMULT' 'grcCOMPER'   ⍝ Remove Mult and % if they are Blank[25]  [26]      vars←(⊂'/grc/',stem) TEXTREPL¨(flds~'grcCOMMULTmt' 'grcCOMPERmt'),¨⊂cot/'2' ⍝ Variable Names (remove mt's)[27]      old←DLTB¨⍎¨vars                                                     ⍝ Currently set Variables[28]  [29]      ⍎'(',⍕((⊂'/grc/',stem) TEXTREPL¨flds,¨⊂cot/'2'),')←',⍕flds[30]  [31]      ∆←~(⍎comment_var,' at "variable"')∊(⊂'/grc/',stem) TEXTREPL¨flds,¨⊂cot/'2'[32]      ⍎comment_var,'←',comment_var,' for ∆'[33]      :if ×rowsIn Comment_Retirement_Cash←Comment_Retirement_Cash for (⊂'variable'),flds ⍝ Add Retirement_Cash comments[34]          Comment_Retirement_Cash←Comment_Retirement_Cash amend 'variable' (((⊂'/grc/',stem) TEXTREPL¨Comment_Retirement_Cash at 'variable'),¨⊂cot/'2')[35]          ⍎comment_var,'←',comment_var,' append Comment_Retirement_Cash'[36]      :endif[37]      0 0⍴⎕ex ⍙VALUESdict ReadDictFile 'Retirement_Cash' '' 'NAMES'[38]  [39]      :if ∨/∆←~old≡¨new←DLTB¨⍎¨vars[40]          new←∆/new ⋄ vars←∆/vars[41]  [42]          parms←⊃spin (tab for (⊂'Field'),parmlist←∆/flds~'grcCOMMULTmt' 'grcCOMPERmt') at 'Field' 'Type' 'Desc'[43]          idx←parmlist⍳parms[;1][44]          parms[;1]←vars[idx] ⋄ parms[;2]←new[idx][45]  [46]          :for ∆ :in ⎕split parms ⋄ (vars new descs)←∆[47]              MESS←MESS OVER vars ⍬ ((errflag/'Warning:  '),'Value for "',descs,'" in ',desc,' has changed to "',new,'"')[48]          :endfor[49]      :endif[50]  [51]  end:res←success MESS[52]  :endif    ∇
+    ∇ res←larg GET∆RetCashGlobals varname;flds;success;MESS;desc;errflag;var;tab;old;new;vars;descs;∆;stem;cot;parms;idx;parmlist
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Extract the Retirement Cash Global parameters using the "description" pointer "varname"
+[3]   ⍝ varname has the form "stem Table variable name",'Parm' and '2' if COT cash
+[4]   ⍝ larg is the description of the Retirement Cash set and a valuation flag
+[5]   
+[6]   (desc errflag)←larg ⋄ var←DLTB ⍎varname
+[7]   
+[8]   :if ↑res←(success MESS)←2↑ClientFile ReadModule 'Retirement_Cash' var 'Retirement Cash' desc errflag varname
+[9]   
+[10]      cot←'2'=¯1↑DLTB varname ⋄ stem←(-8+cot)↓varname
+[11]  
+[12]      :if ~isActive ⋄ :andif (⊂grcCTYPE)∊'IR Maximum' 'Accrual x Salary for each year'
+[13]          MESS←MATRIX varname ⍬ ((errflag/'ERROR:  '),'Retirement Cash definition "',grcCTYPE,'" not available in Deferreds Module')
+[14]          ⍎varname,'←""'
+[15]          success←0 ⋄ →end
+[16]      :elseif cot ⋄ :andif grcCTYPE≡'% of A-Day Cash'
+[17]          MESS←MATRIX varname ⍬ ((errflag/'ERROR:  '),'Retirement Cash definition "',grcCTYPE,'" not available for Cash on Top')
+[18]          ⍎varname,'←""'
+[19]          success←0 ⋄ →end
+[20]      :endif
+[21]  
+[22]      tab←⍙RULESdict ReadDictFile 'Retirement_Cash'
+[23]      tab←tab for ⍎¨tab at 'Editable' ⍝ Exclude those not required
+[24]      flds←(tab at 'Field')~(zwb¨grcCOMMULTmt grcCOMPERmt)/'grcCOMMULT' 'grcCOMPER'   ⍝ Remove Mult and % if they are Blank
+[25]  
+[26]      vars←(⊂'/grc/',stem) TEXTREPL¨(flds~'grcCOMMULTmt' 'grcCOMPERmt'),¨⊂cot/'2' ⍝ Variable Names (remove mt's)
+[27]      old←DLTB¨⍎¨vars                                                     ⍝ Currently set Variables
+[28]  
+[29]      ⍎'(',⍕((⊂'/grc/',stem) TEXTREPL¨flds,¨⊂cot/'2'),')←',⍕flds
+[30]  
+[31]      ∆←~(⍎comment_var,' at "variable"')∊(⊂'/grc/',stem) TEXTREPL¨flds,¨⊂cot/'2'
+[32]      ⍎comment_var,'←',comment_var,' for ∆'
+[33]      :if ×rowsIn Comment_Retirement_Cash←Comment_Retirement_Cash for (⊂'variable'),flds ⍝ Add Retirement_Cash comments
+[34]          Comment_Retirement_Cash←Comment_Retirement_Cash amend 'variable' (((⊂'/grc/',stem) TEXTREPL¨Comment_Retirement_Cash at 'variable'),¨⊂cot/'2')
+[35]          ⍎comment_var,'←',comment_var,' append Comment_Retirement_Cash'
+[36]      :endif
+[37]      0 0⍴⎕ex ⍙VALUESdict ReadDictFile 'Retirement_Cash' '' 'NAMES'
+[38]  
+[39]      :if ∨/∆←~old≡¨new←DLTB¨⍎¨vars
+[40]          new←∆/new ⋄ vars←∆/vars
+[41]  
+[42]          parms←⊃spin (tab for (⊂'Field'),parmlist←∆/flds~'grcCOMMULTmt' 'grcCOMPERmt') at 'Field' 'Type' 'Desc'
+[43]          idx←parmlist⍳parms[;1]
+[44]          parms[;1]←vars[idx] ⋄ parms[;2]←new[idx]
+[45]  
+[46]          :for ∆ :in ⎕split parms ⋄ (vars new descs)←∆
+[47]              MESS←MESS OVER vars ⍬ ((errflag/'Warning:  '),'Value for "',descs,'" in ',desc,' has changed to "',new,'"')
+[48]          :endfor
+[49]      :endif
+[50]  
+[51]  end:res←success MESS
+[52]  :endif
+    ∇

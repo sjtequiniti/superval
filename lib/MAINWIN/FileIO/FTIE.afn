@@ -1,0 +1,29 @@
+    ∇ ERR←fILENAME FTIE arg;⎕ELX;flag;tieno
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Opens an existing component file called 'fILENAME'. If this file cannot
+[3]   ⍝ be found, return ERR 0, or Ties the file using 'tieno'.
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕ELX←'→ERR←0'
+[8]   
+[9]   (tieno flag)←2↑arg
+[10]  
+[11]  :if ~flag ⋄ :andif ~'.SF'≡¯3↑fILENAME←DLTB UPPERCASE fILENAME
+[12]      fILENAME←fILENAME,'.SF' ⍝ Add extension required for extended names
+[13]  :endif
+[14]  
+[15]  :select tieno
+[16]  :caselist ⎕fnums
+[17]      :if ERR←('.' Win∆Parent fILENAME)≡DLTB UPPERCASE (tieno=⎕fnums)⌿⎕fnames
+[18]          ⎕funtie tieno ⍝ Make it an extended file tie!!
+[19]      :else
+[20]          :return ⍝ Wrong File!!
+[21]      :endif
+[22]  :caselist ⎕xfnums ⍝ If already tied - NT doesn't like retying file!!
+[23]      ERR←fILENAME≡DLTB UPPERCASE (tieno=⎕xfnums)⌿⎕xfnames ⍝ Or Wrong File!!
+[24]      :return
+[25]  :endselect
+[26]  
+[27]  fILENAME ⎕xftie tieno ⋄ ERR←1
+    ∇

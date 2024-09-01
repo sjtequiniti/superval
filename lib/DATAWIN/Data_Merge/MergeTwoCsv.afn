@@ -1,1 +1,100 @@
-    ∇ msgs←MergeTwoCsv R;NUMERIC_FIELD;msk;PREVi;CURRk;PREVk;conn;sql;tno;RSLTn;RSLTf;line;ctr;LOOKFOR;REQUIRE;IGNORE;currn;prevn;ignr;curr;CURRf;CURRn;prev;PREVf;PREVn;NUMRECS[1]   ⍝ DATAWIN.sf#22[2]   [3]   ('Task:' 'Current Record Number:') Win∆ProgressBar 'SetLabels'[4]   'Running Data Merge' Win∆ProgressBar 'Open'[5]   [6]   (curr CURRf CURRn prev PREVf PREVn)←R[7]   [8]   NUMERIC_FIELD←,¨'Nn'[9]   (LOOKFOR REQUIRE IGNORE)←('')('CAT' 'DOB' 'MEMNO' 'NAME' 'SEX')('SAL' 'PSAL')[10]  :Select ↑datatype[11]  :Case 'A'[12]      REQUIRE←REQUIRE,'DJF' 'DJS' 'PSAL' 'SAL'[13]      IGNORE ←IGNORE, 'BOE' 'NOM'[14]  :Case 'D'[15]      REQUIRE←REQUIRE,'GMPE0' 'GMP0'[16]      IGNORE ←IGNORE, 'BOT' 'NOM'[17]      LOOKFOR←        'DOL' 'DOX'[18]  :Case 'P'[19]      REQUIRE←REQUIRE,'DPC' 'GMPE0' 'GMP0' 'MEMORSP'[20]      IGNORE ←IGNORE, 'BOT' 'TPP'[21]  :EndSelect[22]  [23]  :If ~×⍴msgs←errors_in CURRn CURRf PREVn PREVf LOOKFOR REQUIRE IGNORE[24]  ⍝ Join CSV tables ..............................................................[25]  [26]      (2 4 'Creating Merge File') Win∆ProgressBar 'FileUpdate'[27]  [28]      (currn prevn ignr)←caseDn¨¨CURRn PREVn IGNORE[29]  [30]     ⍝ Select columns for the join[31]      CURRk←(currn⍳⊂'memno')⊃CURRn[32]      PREVk←(prevn⍳⊂'memno')⊃PREVn[33]  [34]      msk ← prevn∊currn~ignr[35]      msk ← msk^PREVf∊NUMERIC_FIELD[36]      PREVi ← msk/PREVn                              ⍝ names of PREV cols to include[37]  [38]     ⍝ Create result file and write header rows to it[39]     ⍝ - make result headers, except for 'last' column[40]      RSLTn←(¯1↓CURRn),('#',¨PREVi) ,⊂''[41]      RSLTf←(¯1↓CURRf), (msk/PREVf) ,⊂''[42]     ⍝ - destructively create result file[43]      :if ~'.'∊mrgd ⋄ mrgd←mrgd,'.csv' ⋄ :endif ⍝ Add extension if required[44]      tno←NCREATE InputDir,mrgd[45]     ⍝ - write header rows[46]      ((⊃comma/RSLTn),WINNL) ⎕NAPPEND tno[47]      ((⊃comma/RSLTf),WINNL) ⎕NAPPEND tno[48]  [49]     ⍝ Open ADO connection to InputDir[50]      conn←'Provider=MSDASQL;'[51]      conn←conn,'Driver={Microsoft Text Driver (*.txt; *.csv)};'[52]      conn←conn,'DBQ=',InputDir,';'[53]  [54]      0 0⍴'ADO' ⎕WI 'Create' 'ADODB.Connection'[55]      'ADO' ⎕WI 'xConnectionTimeout' 0               ⍝ no time out[56]      'ADO' ⎕WI 'xCommandTimeout' 0                  ⍝ no time out[57]      'ADO' ⎕WI 'XOpen' conn[58]  [59]     ⍝ Specify and perform left join[60]  [61]     ⍝ To join CSV tables, ODBC Microsoft Text Driver requires aliases. See:[62]     ⍝ http://p2p.wrox.com/pro-visual-basic-2005/55982-ado-text-files-problem-doing-join.html[63]     ⍝ NB the join controls the order of fields in result, but no use is made of the field names[64]     ⍝ NB the join converts dates automatically to day nos, so cfield specifies original format[65]      sql←'SELECT '[66]      sql←sql tcnl ⊃,/¯1↓(CURRf cfield¨CURRn),¨⊂', '[67]      sql←sql tcnl ⊃,/   (      pfield¨PREVi),¨⊂', '[68]      sql←sql tcnl      'cu.NoName AS xNoName '      ⍝ driver names anonymous last col 'NoName'[69]      sql←sql tcnl 'FROM      ',curr,' cu '[70]      sql←sql tcnl 'LEFT JOIN ',prev,' pr '[71]      sql←sql tcnl 'ON        cu.',CURRk,' = ','pr.',PREVk[72]      sql←sql,';'[73]  [74]      (3 4 'Joining data tables') Win∆ProgressBar 'FileUpdate'[75]  [76]      'ADO' ⎕WI 'XExecute>RSLT' sql[77]  [78]     ⍝ Copy recordset rows to result file (80% of execution time here)[79]      'RSLT' ⎕WI 'MoveFirst'[80]      'RSLT' ⎕WI 'MoveNext'                          ⍝ ignore format row[81]  [82]      (4 4 'Writing merged file') Win∆ProgressBar 'FileUpdate'[83]      ctr←1 ⋄ NUMRECS←65500[84]     :Repeat[85]         (ctr NUMRECS) Win∆ProgressBar 'MemberUpdate'[86]         line←,⊃comma/⍕¨'RSLT' ⎕WI 'GetRows' 1       ⍝ RecordCount returns ¯1 (unavailable)[87]         (line,WINNL) ⎕NAPPEND tno                   ⍝ but could use blocks by trapping EOF error[88]         NUMRECS←NUMRECS⌈1+ctr←ctr+1[89]     :Until 'RSLT' ⎕WI 'EOF'[90]  [91]     ⍝ Clean up and announce a win[92]      0 0⍴'ADO' 'RSLT' ∘.⎕WI 'Close' 'Delete'[93]      ⎕NUNTIE tno[94]      MDISPLAY ⊃tcnl/('Previous file ',prev)('merged into current file ',curr)('to make ',mrgd)[95]  [96]  :EndIf[97]  [98]  Win∆ProgressBar 'Close'    ∇
+    ∇ msgs←MergeTwoCsv R;NUMERIC_FIELD;msk;PREVi;CURRk;PREVk;conn;sql;tno;RSLTn;RSLTf;line;ctr;LOOKFOR;REQUIRE;IGNORE;currn;prevn;ignr;curr;CURRf;CURRn;prev;PREVf;PREVn;NUMRECS
+[1]   ⍝ DATAWIN.sf#22
+[2]   
+[3]   ('Task:' 'Current Record Number:') Win∆ProgressBar 'SetLabels'
+[4]   'Running Data Merge' Win∆ProgressBar 'Open'
+[5]   
+[6]   (curr CURRf CURRn prev PREVf PREVn)←R
+[7]   
+[8]   NUMERIC_FIELD←,¨'Nn'
+[9]   (LOOKFOR REQUIRE IGNORE)←('')('CAT' 'DOB' 'MEMNO' 'NAME' 'SEX')('SAL' 'PSAL')
+[10]  :Select ↑datatype
+[11]  :Case 'A'
+[12]      REQUIRE←REQUIRE,'DJF' 'DJS' 'PSAL' 'SAL'
+[13]      IGNORE ←IGNORE, 'BOE' 'NOM'
+[14]  :Case 'D'
+[15]      REQUIRE←REQUIRE,'GMPE0' 'GMP0'
+[16]      IGNORE ←IGNORE, 'BOT' 'NOM'
+[17]      LOOKFOR←        'DOL' 'DOX'
+[18]  :Case 'P'
+[19]      REQUIRE←REQUIRE,'DPC' 'GMPE0' 'GMP0' 'MEMORSP'
+[20]      IGNORE ←IGNORE, 'BOT' 'TPP'
+[21]  :EndSelect
+[22]  
+[23]  :If ~×⍴msgs←errors_in CURRn CURRf PREVn PREVf LOOKFOR REQUIRE IGNORE
+[24]  ⍝ Join CSV tables ..............................................................
+[25]  
+[26]      (2 4 'Creating Merge File') Win∆ProgressBar 'FileUpdate'
+[27]  
+[28]      (currn prevn ignr)←caseDn¨¨CURRn PREVn IGNORE
+[29]  
+[30]     ⍝ Select columns for the join
+[31]      CURRk←(currn⍳⊂'memno')⊃CURRn
+[32]      PREVk←(prevn⍳⊂'memno')⊃PREVn
+[33]  
+[34]      msk ← prevn∊currn~ignr
+[35]      msk ← msk^PREVf∊NUMERIC_FIELD
+[36]      PREVi ← msk/PREVn                              ⍝ names of PREV cols to include
+[37]  
+[38]     ⍝ Create result file and write header rows to it
+[39]     ⍝ - make result headers, except for 'last' column
+[40]      RSLTn←(¯1↓CURRn),('#',¨PREVi) ,⊂''
+[41]      RSLTf←(¯1↓CURRf), (msk/PREVf) ,⊂''
+[42]     ⍝ - destructively create result file
+[43]      :if ~'.'∊mrgd ⋄ mrgd←mrgd,'.csv' ⋄ :endif ⍝ Add extension if required
+[44]      tno←NCREATE InputDir,mrgd
+[45]     ⍝ - write header rows
+[46]      ((⊃comma/RSLTn),WINNL) ⎕NAPPEND tno
+[47]      ((⊃comma/RSLTf),WINNL) ⎕NAPPEND tno
+[48]  
+[49]     ⍝ Open ADO connection to InputDir
+[50]      conn←'Provider=MSDASQL;'
+[51]      conn←conn,'Driver={Microsoft Text Driver (*.txt; *.csv)};'
+[52]      conn←conn,'DBQ=',InputDir,';'
+[53]  
+[54]      0 0⍴'ADO' ⎕WI 'Create' 'ADODB.Connection'
+[55]      'ADO' ⎕WI 'xConnectionTimeout' 0               ⍝ no time out
+[56]      'ADO' ⎕WI 'xCommandTimeout' 0                  ⍝ no time out
+[57]      'ADO' ⎕WI 'XOpen' conn
+[58]  
+[59]     ⍝ Specify and perform left join
+[60]  
+[61]     ⍝ To join CSV tables, ODBC Microsoft Text Driver requires aliases. See:
+[62]     ⍝ http://p2p.wrox.com/pro-visual-basic-2005/55982-ado-text-files-problem-doing-join.html
+[63]     ⍝ NB the join controls the order of fields in result, but no use is made of the field names
+[64]     ⍝ NB the join converts dates automatically to day nos, so cfield specifies original format
+[65]      sql←'SELECT '
+[66]      sql←sql tcnl ⊃,/¯1↓(CURRf cfield¨CURRn),¨⊂', '
+[67]      sql←sql tcnl ⊃,/   (      pfield¨PREVi),¨⊂', '
+[68]      sql←sql tcnl      'cu.NoName AS xNoName '      ⍝ driver names anonymous last col 'NoName'
+[69]      sql←sql tcnl 'FROM      ',curr,' cu '
+[70]      sql←sql tcnl 'LEFT JOIN ',prev,' pr '
+[71]      sql←sql tcnl 'ON        cu.',CURRk,' = ','pr.',PREVk
+[72]      sql←sql,';'
+[73]  
+[74]      (3 4 'Joining data tables') Win∆ProgressBar 'FileUpdate'
+[75]  
+[76]      'ADO' ⎕WI 'XExecute>RSLT' sql
+[77]  
+[78]     ⍝ Copy recordset rows to result file (80% of execution time here)
+[79]      'RSLT' ⎕WI 'MoveFirst'
+[80]      'RSLT' ⎕WI 'MoveNext'                          ⍝ ignore format row
+[81]  
+[82]      (4 4 'Writing merged file') Win∆ProgressBar 'FileUpdate'
+[83]      ctr←1 ⋄ NUMRECS←65500
+[84]     :Repeat
+[85]         (ctr NUMRECS) Win∆ProgressBar 'MemberUpdate'
+[86]         line←,⊃comma/⍕¨'RSLT' ⎕WI 'GetRows' 1       ⍝ RecordCount returns ¯1 (unavailable)
+[87]         (line,WINNL) ⎕NAPPEND tno                   ⍝ but could use blocks by trapping EOF error
+[88]         NUMRECS←NUMRECS⌈1+ctr←ctr+1
+[89]     :Until 'RSLT' ⎕WI 'EOF'
+[90]  
+[91]     ⍝ Clean up and announce a win
+[92]      0 0⍴'ADO' 'RSLT' ∘.⎕WI 'Close' 'Delete'
+[93]      ⎕NUNTIE tno
+[94]      MDISPLAY ⊃tcnl/('Previous file ',prev)('merged into current file ',curr)('to make ',mrgd)
+[95]  
+[96]  :EndIf
+[97]  
+[98]  Win∆ProgressBar 'Close'
+    ∇

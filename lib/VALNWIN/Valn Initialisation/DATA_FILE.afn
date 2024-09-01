@@ -1,0 +1,24 @@
+    ∇ page←type DATA∆FILE parms;SUMMREC;N;HEAD;rows;N0;REC;dataind;tieno;tpr1;NoPages;NoRecs;size;REC∆ASCII
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Output up to 2 pages of the Input Data File
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V Windows RSE Aug 98 "Windowised"
+[6]   (dataind tieno tpr1 page NoPages)←5↑parms,2 ⍝ Default 2 pages
+[7]   
+[8]   :if ~(↑dataind)∊'Nn' ⍝ Not Requested
+[9]       NoRecs←⌊(size←⎕nsize tieno)÷RECL
+[10]      :if (↑dataind)∊'Ll' ⋄ N←NoRecs⌊NoPages×pAGE-3
+[11]      :else               ⋄ N←NoRecs
+[12]      :endif
+[13]      HEAD←(0 WRITE∆HEAD type,' DATA FILE')⍪' '
+[14]      rows←1+↑wIDTH wIDTH⊤RECL-2
+[15]      N0←0 ⋄ SUMMREC←0 0⍴' '
+[16]      :while N>N0
+[17]          REC←¯2↓,'ASCII' Read∆DataFile tieno,size,RECL,1,N0 ⍝ Localise REC∆ASCII to avoid variable being around for valuation
+[18]          SUMMREC←SUMMREC OVER (rows,wIDTH)⍴(rows×wIDTH)↑REC
+[19]          N0←N0+1
+[20]      :endwhile
+[21]      page←↑HEAD OUTPUT tpr1,page,pAGE
+[22]  :endif
+    ∇

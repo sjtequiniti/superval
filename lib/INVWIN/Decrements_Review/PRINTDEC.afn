@@ -1,1 +1,47 @@
-    ∇ PRINTDEC;RUNDESC;TABXX;tpr1;AGES;BAGE;EAGE;NN;GROUP;PS;MAT;EX;TABLE;TTABLE;decrdesc;fDURN;SUMMREC;H1;TAB;DPAGE;eage;desc;RunTime;Desc;cols;size;NO;rows;sfac[1]   ⍝ INVWIN.sf#8[2]   ⍝ is called when a file of data points versus a Standard Table is required[3]   ⍝ Prints the results from the salary investigation using TOTS[4]   ⍝[5]   ⍝ V3 RE 1/11/93 Windowised[6]   :if ~0∊⍴,DecParameters ⋄ :return ⋄ :endif[7]   fDURN←fDURN-1 ⍝ Convert to ⎕io=0!!![8]   [9]   tpr1←OPEN∆TPR∆FILE 'DECINV' ⍝ Output File[10]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Decrements' ⍝ Insert info in header[11]  H1←((¯1↑⍴H1) WRITE∆HEAD 'DECREMENT INVESTIGATION') OVER H1[12]  H1[4;18+⍳114]←114↑RUNDESC[13]  H1[5;⍳103]←' ' ⋄ H1[5;(124+⍳2),130+⍳2]←,'ZI2' ⎕FMT PS[14]  H1[6;17+⍳115]←115↑Desc←DecrDescription TABXX[15]  [16]  eage←'fmDecrementsReview.fParms.edEAGE' ⎕wi 'text'[17]  SUMMREC←ClientFile DECREV_RunDesc ControlName ⎕wi '∆savecn'[18]  DPAGE←1↑(¯5 0↓H1) OUTPUT tpr1,0[19]  RunTime←DLTMB 1 DATESPELL ⎕ts[20]  [21]  SUMMREC←(TABXX Desc) DecrPrint DEC∆CHECK TABXX[22]  :if (¯5↑DLTMB TABXX[1;])[2]='WL'[1+uk=1][23]      H1[7;17+⍳115]←115↑DLTMB 'with Durational ',decrdesc,' Weights ',Desc←DecrDescription TXX[24]      SUMMREC←SUMMREC OVER ' ' OVER (TXX Desc) DecrPrint DEC∆CHECK TXX[25]  :endif[26]  DPAGE←1↑(¯5 0↓H1) OUTPUT tpr1,DPAGE[27]  [28]  SUMMREC←MAT DEC∆OUTPUT EX[29]  cols←8+¯1↓(^⌿SUMMREC[;8+⍳11]=' ')/⍳11[30]  cols←cols,28+¯1↓(^⌿SUMMREC[;28+⍳5]=' ')/⍳5[31]  cols←(⍳62)~cols,38+¯1↓(^⌿SUMMREC[;38+⍳5]=' ')/⍳5[32]  size←¯1↑⍴SUMMREC←SUMMREC[;cols][33]  TAB←((⍴cols)↑TAB[⎕IO;])⍪(1 0↓TAB)[;cols] ⋄ TAB[1;11+⍳8]←'All Data'[34]  [35]  ⍝⍝⍝ SUMMREC←(SUMMREC⍪' ') OVER '<   Exposure Weighting:  >,CLF20.2' ⎕FMT sfac CDIV SFAC[36]  NO←⌈(1↑⍴SUMMREC)÷rows←(GROUP+3)×1⌈⌊(pAGE-13)÷GROUP+3[37]  [38]  TAB←(5,NO×size)↑TAB,TAB,TAB,TAB,TAB,TAB,TAB,TAB[39]  SUMMREC←' '⍪(rows,NO×size)⍴ 2 1 3 ⍉(NO,rows,size)⍴((NO×rows),size)↑SUMMREC[40]  [41]  0 0⍴(H1 OVER TAB)OUTPUT tpr1,DPAGE[42]  [43]  (desc,' at ',RunTime) BROWSE tpr1[44]  [45]  0 0⍴(⊂'lvRUNDESC') Decrements_Review 'Change'    ∇
+    ∇ PRINTDEC;RUNDESC;TABXX;tpr1;AGES;BAGE;EAGE;NN;GROUP;PS;MAT;EX;TABLE;TTABLE;decrdesc;fDURN;SUMMREC;H1;TAB;DPAGE;eage;desc;RunTime;Desc;cols;size;NO;rows;sfac
+[1]   ⍝ INVWIN.sf#8
+[2]   ⍝ is called when a file of data points versus a Standard Table is required
+[3]   ⍝ Prints the results from the salary investigation using TOTS
+[4]   ⍝
+[5]   ⍝ V3 RE 1/11/93 Windowised
+[6]   :if ~0∊⍴,DecParameters ⋄ :return ⋄ :endif
+[7]   fDURN←fDURN-1 ⍝ Convert to ⎕io=0!!!
+[8]   
+[9]   tpr1←OPEN∆TPR∆FILE 'DECINV' ⍝ Output File
+[10]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Decrements' ⍝ Insert info in header
+[11]  H1←((¯1↑⍴H1) WRITE∆HEAD 'DECREMENT INVESTIGATION') OVER H1
+[12]  H1[4;18+⍳114]←114↑RUNDESC
+[13]  H1[5;⍳103]←' ' ⋄ H1[5;(124+⍳2),130+⍳2]←,'ZI2' ⎕FMT PS
+[14]  H1[6;17+⍳115]←115↑Desc←DecrDescription TABXX
+[15]  
+[16]  eage←'fmDecrementsReview.fParms.edEAGE' ⎕wi 'text'
+[17]  SUMMREC←ClientFile DECREV_RunDesc ControlName ⎕wi '∆savecn'
+[18]  DPAGE←1↑(¯5 0↓H1) OUTPUT tpr1,0
+[19]  RunTime←DLTMB 1 DATESPELL ⎕ts
+[20]  
+[21]  SUMMREC←(TABXX Desc) DecrPrint DEC∆CHECK TABXX
+[22]  :if (¯5↑DLTMB TABXX[1;])[2]='WL'[1+uk=1]
+[23]      H1[7;17+⍳115]←115↑DLTMB 'with Durational ',decrdesc,' Weights ',Desc←DecrDescription TXX
+[24]      SUMMREC←SUMMREC OVER ' ' OVER (TXX Desc) DecrPrint DEC∆CHECK TXX
+[25]  :endif
+[26]  DPAGE←1↑(¯5 0↓H1) OUTPUT tpr1,DPAGE
+[27]  
+[28]  SUMMREC←MAT DEC∆OUTPUT EX
+[29]  cols←8+¯1↓(^⌿SUMMREC[;8+⍳11]=' ')/⍳11
+[30]  cols←cols,28+¯1↓(^⌿SUMMREC[;28+⍳5]=' ')/⍳5
+[31]  cols←(⍳62)~cols,38+¯1↓(^⌿SUMMREC[;38+⍳5]=' ')/⍳5
+[32]  size←¯1↑⍴SUMMREC←SUMMREC[;cols]
+[33]  TAB←((⍴cols)↑TAB[⎕IO;])⍪(1 0↓TAB)[;cols] ⋄ TAB[1;11+⍳8]←'All Data'
+[34]  
+[35]  ⍝⍝⍝ SUMMREC←(SUMMREC⍪' ') OVER '<   Exposure Weighting:  >,CLF20.2' ⎕FMT sfac CDIV SFAC
+[36]  NO←⌈(1↑⍴SUMMREC)÷rows←(GROUP+3)×1⌈⌊(pAGE-13)÷GROUP+3
+[37]  
+[38]  TAB←(5,NO×size)↑TAB,TAB,TAB,TAB,TAB,TAB,TAB,TAB
+[39]  SUMMREC←' '⍪(rows,NO×size)⍴ 2 1 3 ⍉(NO,rows,size)⍴((NO×rows),size)↑SUMMREC
+[40]  
+[41]  0 0⍴(H1 OVER TAB)OUTPUT tpr1,DPAGE
+[42]  
+[43]  (desc,' at ',RunTime) BROWSE tpr1
+[44]  
+[45]  0 0⍴(⊂'lvRUNDESC') Decrements_Review 'Change'
+    ∇

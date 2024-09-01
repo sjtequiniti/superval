@@ -1,1 +1,22 @@
-    ∇ vDATE←tab Scenarios_Data action;∆;list;Actsfile;Defsfile;Pensfile;FormatA;FormatD;FormatP;tbl;vDATE;array[1]   ⍝ OVERWIN.sf#29[2]   [3]   AbsDict←AbsDict for ~(AbsDict at 'Module')∊⊂'Client'[4]   [5]   :if action≡'Update' ⍝ Update with Scenario Files, Formats and Valuation Date[6]       (Actsfile Defsfile Pensfile)←(∨/' '≠3↑[⎕io]DataValue) sel¨m2n 3↑[⎕io]DataScenFile[7]       (FormatA FormatD FormatP)←(∨/' '≠3↑[⎕io]DataValue) sel¨m2n 3↑[⎕io]DataScenFormat[8]       vDATE←DatavDATE[9]   [10]      ∆←  (⊂'Date'  ),⊃spin (,⊂'Current Valuation Date')                            list (      ⍎¨list←,⊂'vDATE'                         )[11]      ∆←∆⍪(⊂'File'  ),⊃spin (  'Actives' 'Deferreds' 'Pensioners',¨⊂' Data File')   list (DTDot¨⍎¨list←  'Actsfile' 'Defsfile' 'Pensfile')[12]      ∆←∆⍪(⊂'Format'),⊃spin (  'Actives' 'Deferreds' 'Pensioners',¨⊂' Data Format') list (      ⍎¨list←  'FormatA' 'FormatD' 'FormatP'   )[13]      tbl←(keysIn tab)⍪((⊂'Client'),∆,⊂''),∆[;⎕io+1][14]      tbl←tbl for ~mt¨DLTB¨tbl at 'Parameter'                       ⍝ Remove empty[15]      tab←tbl append tab for ~(tab at 'Variable')∊tbl at 'Variable' ⍝ Replace non-empty[16]  :endif[17]  [18]  AbsDict←AbsDict append tab[19]  [20]  vDATE←'DD/MM/YYYY' DATEEXP ↑(AbsDict for 'Variable' 'vDATE' ) at 'Parameter'    ∇
+    ∇ vDATE←tab Scenarios_Data action;∆;list;Actsfile;Defsfile;Pensfile;FormatA;FormatD;FormatP;tbl;vDATE;array
+[1]   ⍝ OVERWIN.sf#29
+[2]   
+[3]   AbsDict←AbsDict for ~(AbsDict at 'Module')∊⊂'Client'
+[4]   
+[5]   :if action≡'Update' ⍝ Update with Scenario Files, Formats and Valuation Date
+[6]       (Actsfile Defsfile Pensfile)←(∨/' '≠3↑[⎕io]DataValue) sel¨m2n 3↑[⎕io]DataScenFile
+[7]       (FormatA FormatD FormatP)←(∨/' '≠3↑[⎕io]DataValue) sel¨m2n 3↑[⎕io]DataScenFormat
+[8]       vDATE←DatavDATE
+[9]   
+[10]      ∆←  (⊂'Date'  ),⊃spin (,⊂'Current Valuation Date')                            list (      ⍎¨list←,⊂'vDATE'                         )
+[11]      ∆←∆⍪(⊂'File'  ),⊃spin (  'Actives' 'Deferreds' 'Pensioners',¨⊂' Data File')   list (DTDot¨⍎¨list←  'Actsfile' 'Defsfile' 'Pensfile')
+[12]      ∆←∆⍪(⊂'Format'),⊃spin (  'Actives' 'Deferreds' 'Pensioners',¨⊂' Data Format') list (      ⍎¨list←  'FormatA' 'FormatD' 'FormatP'   )
+[13]      tbl←(keysIn tab)⍪((⊂'Client'),∆,⊂''),∆[;⎕io+1]
+[14]      tbl←tbl for ~mt¨DLTB¨tbl at 'Parameter'                       ⍝ Remove empty
+[15]      tab←tbl append tab for ~(tab at 'Variable')∊tbl at 'Variable' ⍝ Replace non-empty
+[16]  :endif
+[17]  
+[18]  AbsDict←AbsDict append tab
+[19]  
+[20]  vDATE←'DD/MM/YYYY' DATEEXP ↑(AbsDict for 'Variable' 'vDATE' ) at 'Parameter'
+    ∇

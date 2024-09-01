@@ -1,1 +1,34 @@
-    ∇ SIZE Prepare_XLSheet col;z;color;size;row;light;dark;COL;flg[1]   ⍝ CONSWIN.sf#21[2]   ⍝ Prepare the XL Sheet for insering scenarios[3]   [4]   color←⊖((NoScen-1),2)⍴colors[5]   flg←¯1=×SIZE ⋄ SIZE←∣SIZE[6]   :for col :in col[7]       :if NoScen>2[8]           'R→' XL_RangeInsert ⍬ col ⍬ (col+NoScen-3)[9]           (1 (col+NoScen-2)    1 (col+NoScen-2)) XL_PasteAll 1 col    1 (col+NoScen-2)[10]          (8 (col+NoScen-2) SIZE (col+NoScen-2)) XL_PasteAll 8 col SIZE (col+NoScen-2)[11]      :endif[12]  [13]      :for z :in ⍳NoScen-1[14]          light←color[z;1] ⋄ COL←col+NoScen-z+1[15]          :if flg[16]              'XL' ⎕wi 'Range>.Rng' (RCtoA1 7 COL SIZE COL)[17]              ('XL.Rng' ⎕wi 'xInterior') ⎕wi 'xColor' light[18]          :else[19]              size←SIZE+10 ⋄ row←6 ⋄ dark←color[z;2][20]              :repeat[21]                  'XL' ⎕wi 'Range>.Rng' (RCtoA1 (row⌈7) COL (size⌊row+4) COL)[22]                  ('XL.Rng' ⎕wi 'xInterior') ⎕wi 'xColor' light[23]                  :if size<row←row+5 ⋄ :continue ⋄ :endif[24]                  'XL' ⎕wi 'Range>.Rng' (RCtoA1  row    COL (size⌊row+4) COL)[25]                  ('XL.Rng' ⎕wi 'xInterior') ⎕wi 'xColor' dark[26]              :until size≤row←row+5[27]          :endif[28]      :endfor[29]  :endfor[30]  [31]  0 0⍴((5+5×NoScen-2)⍴descs) XL_Data RCtoA1 7 5 7 (9+5×NoScen-2)[32]  :if VaryVDate ⋄ 0 0⍴((⊂↑VDates),(5+5×NoScen-2)⍴1↓VDates) XL_Data RCtoA1 5 4 5 (9+5×NoScen-2) ⋄ :endif    ∇
+    ∇ SIZE Prepare_XLSheet col;z;color;size;row;light;dark;COL;flg
+[1]   ⍝ CONSWIN.sf#21
+[2]   ⍝ Prepare the XL Sheet for insering scenarios
+[3]   
+[4]   color←⊖((NoScen-1),2)⍴colors
+[5]   flg←¯1=×SIZE ⋄ SIZE←∣SIZE
+[6]   :for col :in col
+[7]       :if NoScen>2
+[8]           'R→' XL_RangeInsert ⍬ col ⍬ (col+NoScen-3)
+[9]           (1 (col+NoScen-2)    1 (col+NoScen-2)) XL_PasteAll 1 col    1 (col+NoScen-2)
+[10]          (8 (col+NoScen-2) SIZE (col+NoScen-2)) XL_PasteAll 8 col SIZE (col+NoScen-2)
+[11]      :endif
+[12]  
+[13]      :for z :in ⍳NoScen-1
+[14]          light←color[z;1] ⋄ COL←col+NoScen-z+1
+[15]          :if flg
+[16]              'XL' ⎕wi 'Range>.Rng' (RCtoA1 7 COL SIZE COL)
+[17]              ('XL.Rng' ⎕wi 'xInterior') ⎕wi 'xColor' light
+[18]          :else
+[19]              size←SIZE+10 ⋄ row←6 ⋄ dark←color[z;2]
+[20]              :repeat
+[21]                  'XL' ⎕wi 'Range>.Rng' (RCtoA1 (row⌈7) COL (size⌊row+4) COL)
+[22]                  ('XL.Rng' ⎕wi 'xInterior') ⎕wi 'xColor' light
+[23]                  :if size<row←row+5 ⋄ :continue ⋄ :endif
+[24]                  'XL' ⎕wi 'Range>.Rng' (RCtoA1  row    COL (size⌊row+4) COL)
+[25]                  ('XL.Rng' ⎕wi 'xInterior') ⎕wi 'xColor' dark
+[26]              :until size≤row←row+5
+[27]          :endif
+[28]      :endfor
+[29]  :endfor
+[30]  
+[31]  0 0⍴((5+5×NoScen-2)⍴descs) XL_Data RCtoA1 7 5 7 (9+5×NoScen-2)
+[32]  :if VaryVDate ⋄ 0 0⍴((⊂↑VDates),(5+5×NoScen-2)⍴1↓VDates) XL_Data RCtoA1 5 4 5 (9+5×NoScen-2) ⋄ :endif
+    ∇

@@ -1,1 +1,41 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Convert_Database" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Convert_Database" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmDBConvert.lvSQLDBase" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SQLDBase) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX SQLDBase[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmDBConvert.lvSQLDBase" ⎕wi "value" value[25]  0 0⍴"fmDBConvert.lvSQLDBase" ⎕wi "EnsureVisible" ((1↑value),1)[26]  "fmDBConvert.ckUseSQLName" ⎕wi "value" (zwb UseSQLName)[27]  "fmDBConvert.eddbfile" ⎕wi "text" (DLTB dbfile)[28]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Convert_Database[29]      :for var :in spin Comment_Convert_Database at "variable" "row" ⋄ (var row)←var[30]          "Convert_Database" ParmColor ((FormFields for "variable" var) at "control"),var row 1[31]      :endfor[32]  :endif[33]  :if ~0∊⍴,warnings[34]      MDISPLAY DLTMB warnings,⎕tcnl[35]      Win∆AssignVars "fmDBConvert"[36]  :endif[37]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Convert_Database" "" "Names"[38]      "fmDBConvert" ⎕wi "modified" 0[39]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Convert_Database" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Convert_Database" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmDBConvert.lvSQLDBase" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SQLDBase) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX SQLDBase
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmDBConvert.lvSQLDBase" ⎕wi "value" value
+[25]  0 0⍴"fmDBConvert.lvSQLDBase" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  "fmDBConvert.ckUseSQLName" ⎕wi "value" (zwb UseSQLName)
+[27]  "fmDBConvert.eddbfile" ⎕wi "text" (DLTB dbfile)
+[28]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Convert_Database
+[29]      :for var :in spin Comment_Convert_Database at "variable" "row" ⋄ (var row)←var
+[30]          "Convert_Database" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[31]      :endfor
+[32]  :endif
+[33]  :if ~0∊⍴,warnings
+[34]      MDISPLAY DLTMB warnings,⎕tcnl
+[35]      Win∆AssignVars "fmDBConvert"
+[36]  :endif
+[37]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Convert_Database" "" "Names"
+[38]      "fmDBConvert" ⎕wi "modified" 0
+[39]  :endif
+    ∇

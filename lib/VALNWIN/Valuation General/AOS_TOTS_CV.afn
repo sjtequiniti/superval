@@ -1,0 +1,112 @@
+    ∇ Ind∆AOS←AOS∆TOTS∆CV Ind∆AOS;Reserve;X;LX;last;ID;I;conts;V1pc;contsSALMP;keys;values
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   LX←(MID tPx),0 ⋄ last←ResSize-1
+[7]   
+[8]   :if (⊂ValMeth)∊'AGG' 'EAN' ⍝ Prospective Reserve for AGG and EAN
+[9]       Reserve←+/VTB-vMP×Ind∆CFTOT[0;⍳NX;12]+Ind∆CFTOT[0;⍳NX;13]+CCONTS×LX
+[10]  :else ⍝ Reserve Equal to Accrued Benefit for DAB or PSL for AAN, PUC, UCM
+[11]      Reserve←Ind∆CFTOT[1;0;(1,4)[×abNO]]
+[12]  :endif
+[13]  
+[14]  :if ~IsDeferred ⍝ Actual Member and Company Contributions (End Point)
+[15]      ⍝ Determine an "approximate" Interest figure for actuals or approximate expecteds
+[16]      :if 0=I←1↑((+/0 ¯1↓Ind∆AOS[13+I;]) CDIV +/0 ¯1↓Ind∆AOS[I←7 8 6 9 10 3 4 5 2;])~0
+[17]          I←ResSize↑(PerToEnt/1),V CDIV 1↓V,0
+[18]          X←¯1↑(I*ResMult) ROLLUP 0,conts←(⌈ValPer)↑ResMult-ExitMult
+[19]          I←¯1+X ZDIV +/conts
+[20]      :endif
+[21]  
+[22]      :if 0≥Ind∆AOS[26;last]←ACWO0-Ind∆AOS[26;0] ⍝ Member Actual = Expected if not positive
+[23]          Ind∆AOS[26;last]←+/last↑Ind∆AOS[7;]
+[24]      :endif
+[25]  
+[26]      :if 0=Ind∆AOS[36;0] ⍝ If Rate of Member Contributions is zero
+[27]          :if ^/0=Ind∆AOS[7;] ⍝ Member Expected = Actual if zero
+[28]              Ind∆AOS[20;0]←I×Ind∆AOS[7;0]←Ind∆AOS[26;last]
+[29]          :endif
+[30]          ⍝ Keep trying to get a Member Contribution Rate
+[31]          :if 0=Ind∆AOS[36;0]←(+/last↑Ind∆CFTOT[0;⍳NX;12]CDIV LX) CDIV +/0.01×last↑(-SNX+1)↓SALMPvec[;contsSAL]
+[32]              ⍝ Use Future Member Cont Rate for those with No Salary
+[33]              :if ^/0=contsSALMP←×SALMPvec[;contsSAL] ⋄ contsSALMP←NX⍴1 ⋄ :endif
+[34]              Ind∆AOS[36;0]←100×1↑contsl MEMB∆CONT contsr
+[35]          :endif
+[36]      :endif
+[37]      V1pc←Ind∆AOS[26;last] CDIV Ind∆AOS[36;0] ⍝ 1% of "Actual" Salary based on Member Conts
+[38]  
+[39]      Ind∆AOS[27;last]←(0≠EACWO0)×EACWO0-Ind∆AOS[27;0]
+[40]      :if 0=EACWO0 ⍝ Guesstimate of Company Funded Contributions, if required
+[41]          :if 0=Ind∆AOS[36;1] ⍝ if Rate of Company Contributions is zero
+[42]          :andif 0=Ind∆AOS[36;1]←(+/last↑CCONTS) CDIV +/0.01×last↑(-SNX+1)↓SALMPvec[;V1pcSAL]
+[43]              ⍝ Use Future Company Cont Rate for those with No Salary
+[44]              :if ^/0=contsSALMP←×SALMPvec[;V1pcSAL] ⋄ contsSALMP←NX⍴1 ⋄ :endif
+[45]              Ind∆AOS[36;1]←100×1↑ccl COMP∆CONT ccr
+[46]          :endif
+[47]          Ind∆AOS[27;last]←V1pc×Ind∆AOS[36;1]
+[48]      :endif
+[49]  
+[50]      Ind∆AOS[28 29;last]←V1pc×COCRccd,COCRcci ⍝ Calculation of Actual Insured etc Conts
+[51]      :if ^/0=Ind∆AOS[9;] ⍝ Expected Death Insured = Actual if zero
+[52]          Ind∆AOS[22;0]←I×Ind∆AOS[9;0]←Ind∆AOS[28;last]
+[53]      :endif
+[54]      :if ^/0=Ind∆AOS[10;] ⍝ Expected Ill-Health Insured = Actual if zero
+[55]          Ind∆AOS[23;0]←I×Ind∆AOS[10;0]←Ind∆AOS[29;last]
+[56]      :endif
+[57]  
+[58]      Ind∆AOS[32+⍳4;last]←I×Ind∆AOS[26+⍳4;last] ⍝ Interest on Actual Contributions to VDate
+[59]  
+[60]      :if ^/0=Ind∆AOS[8;] ⍝ Company Expected = Actual if zero
+[61]          Ind∆AOS[8 21;0]←Ind∆AOS[27 33;last]
+[62]      :endif
+[63]      :if ^/0=Ind∆AOS[6;] ⍝ Company Required = Expected if zero
+[64]          Ind∆AOS[6 19;]←Ind∆AOS[8 21;]
+[65]      :endif
+[66]  
+[67]  :endif
+[68]  
+[69]  ⍝ Determine an "approximate" Interest after exit figure for actuals or approximate expecteds
+[70]  :if 0=I←(+/¯1↓Ind∆AOS[13;]) CDIV Ind∆AOS[0;last]
+[71]  :andif ∨/EXIT[3 4]
+[72]      I←ResSize↑(PerToEnt/1),V CDIV 1↓V,0
+[73]      X←¯1↑(I*ResMult) ROLLUP 0,conts←(⌈ValPer)↑ExitMult
+[74]      I←¯1+X ZDIV +/conts
+[75]  :endif
+[76]  
+[77]  :if ^/0=Ind∆AOS[0;] ⍝ Guesstimates of Expected (and Actual Reserves) as Required
+[78]      Ind∆AOS[13;0]←I×Ind∆AOS[0;last]←(+⌿Ind∆AOS[26 27 32 33;last]) CDIV (1+I)
+[79]  :endif
+[80]  
+[81]  Ind∆AOS[24;last]←Reserve+Ind∆AOS[0;last]×0=Reserve ⍝ Current Reserve = Expected if zero
+[82]  Ind∆AOS[25;last]←BOE×∨/EXIT[3 4]
+[83]  
+[84]  ⍝ Interest from Exit to VDate on Actual Reserve and Exit Benefit for Exits
+[85]  Ind∆AOS[30 31;last]←I×Ind∆AOS[24 25;last]
+[86]  
+[87]  ⍝ Inter-Valuation Totals
+[88]  Ind∆AOS[1+⍳23;last]←+/ 0 ¯1 ↓Ind∆AOS[1+⍳23;]
+[89]  
+[90]  ⍝ AOS Summary Listing
+[91]  LINE∆AOS
+[92]  
+[93]  ⍝ Create Records for Database/Excel AOS results
+[94]  :if ⍙dbopt
+[95]      (keys values)←ClassID XL_StoreAOSRes Ind∆AOS
+[96]      ID←recn XL_MemberID fMOE                                                               ⍝ MemberID
+[97]      ID←⊂ID,2 0⍕(4×ClassID=3)+EXIT⍳1                                                        ⍝ AOSClasID
+[98]      keys←ID,¨keys
+[99]      ID←,'BI2' ⎕FMT ↑(∨/EXIT[3 4])/(20 1,(3+3×ClassID=3),4 5)[(0,1+CODEcol)[↑CODE TLU MOT]] ⍝ AOSContingencyID
+[100]     ID←⊂ID,3 0⍕X0×~(aggopt[0]∨csvind∨summopt)^∨/EXIT[3 4]                                  ⍝ AOSAge
+[101]     keys←⊃keys,¨ID
+[102]     (xl_maostie 'xl_maos') ⍙DBInsertTempData keys values
+[103] :endif
+[104] 
+[105] →NoInd/0 ⍝ Individual Listing, if Required
+[106] :if ~IsDeferred
+[107]     Ind∆AOS←Ind∆AOS⍪(2,-ResSize)↑⍉SALvec[,0;contsSAL,V1pcSAL]
+[108] :endif
+[109] Ind∆AOS[38+⍳8;last]←0
+[110] IND∆AOS Ind∆AOS ⋄ Ind∆AOS←((¯9-4×~IsDeferred),0)↓Ind∆AOS
+    ∇

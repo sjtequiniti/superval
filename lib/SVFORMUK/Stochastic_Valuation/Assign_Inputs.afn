@@ -1,1 +1,67 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Stochastic_Valuation" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Stochastic_Valuation" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmStochVal.lvQSMParms" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX QSMParms) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX QSMParms[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmStochVal.lvQSMParms" ⎕wi "value" value[25]  0 0⍴"fmStochVal.lvQSMParms" ⎕wi "EnsureVisible" ((1↑value),1)[26]  "fmStochVal.edEffDate" ⎕wi "text" (DLTB EffDate)[27]  PickList←"fmStochVal.lsGroups" ⎕wi "list"[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT Groups[29]      "fmStochVal.lsGroups" ⎕wi "value" ((×1↑⍴PickList)⍴0)[30]      modified←⌈/modified,"fmStochVal.lsGroups" ⎕wi "value"[31]  :else[32]      "fmStochVal.lsGroups" ⎕wi "visible" ¯1[33]      "fmStochVal.lsGroups" ⎕wi "value" selection[34]      "fmStochVal.lsGroups" ⎕wi "visible" 1[35]  :endif[36]  PickList←"fmStochVal.cbxlFILE" ⎕wi "list"[37]  selection←PickList ExactTLU DLTB xlFILE[38]  :if mt selection[39]      :if ~mt DLTB xlFILE[40]          warnings←warnings OVER "Previous Selection for 'Stochastic Assumptions Source File' is no longer available"[41]      :endif[42]      modified←⌈/modified,1[43]  :endif[44]  "fmStochVal.cbxlFILE" ⎕wi "value" (¯1↑1,selection)[45]  PickList←"fmStochVal.cbxlDIR" ⎕wi "list"[46]  selection←PickList ExactTLU DLTB xlDIR[47]  :if mt selection[48]      :if ~mt DLTB xlDIR[49]          warnings←warnings OVER "Previous Selection for 'Stochastic Assumptions Source File Location' is no longer available"[50]      :endif[51]      modified←⌈/modified,1[52]  :endif[53]  "fmStochVal.cbxlDIR" ⎕wi "value" (¯1↑1,selection)[54]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Stochastic_Valuation[55]      :for var :in spin Comment_Stochastic_Valuation at "variable" "row" ⋄ (var row)←var[56]          "Stochastic_Valuation" ParmColor ((FormFields for "variable" var) at "control"),var row 1[57]      :endfor[58]  :endif[59]  :if ~0∊⍴,warnings[60]      MDISPLAY DLTMB warnings,⎕tcnl[61]      Win∆AssignVars "fmStochVal"[62]  :endif[63]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Stochastic_Valuation" "" "Names"[64]      "fmStochVal" ⎕wi "modified" 0[65]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Stochastic_Valuation" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Stochastic_Valuation" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmStochVal.lvQSMParms" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX QSMParms) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX QSMParms
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmStochVal.lvQSMParms" ⎕wi "value" value
+[25]  0 0⍴"fmStochVal.lvQSMParms" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  "fmStochVal.edEffDate" ⎕wi "text" (DLTB EffDate)
+[27]  PickList←"fmStochVal.lsGroups" ⎕wi "list"
+[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT Groups
+[29]      "fmStochVal.lsGroups" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[30]      modified←⌈/modified,"fmStochVal.lsGroups" ⎕wi "value"
+[31]  :else
+[32]      "fmStochVal.lsGroups" ⎕wi "visible" ¯1
+[33]      "fmStochVal.lsGroups" ⎕wi "value" selection
+[34]      "fmStochVal.lsGroups" ⎕wi "visible" 1
+[35]  :endif
+[36]  PickList←"fmStochVal.cbxlFILE" ⎕wi "list"
+[37]  selection←PickList ExactTLU DLTB xlFILE
+[38]  :if mt selection
+[39]      :if ~mt DLTB xlFILE
+[40]          warnings←warnings OVER "Previous Selection for 'Stochastic Assumptions Source File' is no longer available"
+[41]      :endif
+[42]      modified←⌈/modified,1
+[43]  :endif
+[44]  "fmStochVal.cbxlFILE" ⎕wi "value" (¯1↑1,selection)
+[45]  PickList←"fmStochVal.cbxlDIR" ⎕wi "list"
+[46]  selection←PickList ExactTLU DLTB xlDIR
+[47]  :if mt selection
+[48]      :if ~mt DLTB xlDIR
+[49]          warnings←warnings OVER "Previous Selection for 'Stochastic Assumptions Source File Location' is no longer available"
+[50]      :endif
+[51]      modified←⌈/modified,1
+[52]  :endif
+[53]  "fmStochVal.cbxlDIR" ⎕wi "value" (¯1↑1,selection)
+[54]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Stochastic_Valuation
+[55]      :for var :in spin Comment_Stochastic_Valuation at "variable" "row" ⋄ (var row)←var
+[56]          "Stochastic_Valuation" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[57]      :endfor
+[58]  :endif
+[59]  :if ~0∊⍴,warnings
+[60]      MDISPLAY DLTMB warnings,⎕tcnl
+[61]      Win∆AssignVars "fmStochVal"
+[62]  :endif
+[63]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Stochastic_Valuation" "" "Names"
+[64]      "fmStochVal" ⎕wi "modified" 0
+[65]  :endif
+    ∇

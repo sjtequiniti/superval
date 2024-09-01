@@ -1,1 +1,41 @@
-    ∇ var ARG18 parm;R;z[1]   ⍝ PARMWIN.sf#14[2]   ⍝ Fn to get Parameters required for BEN18 and write the code[3]   [4]   :select parm[5]   :case 'Vars'[6]       ⍝ Conversion of Parameters (if any)[7]       :if ~0∊⍴R←SStoMAT 1↓ALLparms SSINDEX BENno ⍝ Assign Parameters[8]           :if 12=1↑⍴R[9]               R←R[1;] OVER (ConvertDates R[2;]) OVER 2 0↓R[10]              :if ∨/' '≠R[3;][11]                  R←R[⍳2;] OVER (ConvertDates R[3;]) OVER 3 0↓R[12]              :else[13]                  R←R[⍳2;] OVER ('ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX MatrixZWB R[3+⍳3;]) OVER 3 0↓R[14]              :endif[15]              :if ∨/' '≠R[7;][16]                  R←R[⍳6;] OVER (ConvertDates R[7;]) OVER 7 0↓R[17]              :else[18]                  R←R[⍳6;] OVER ('ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX MatrixZWB R[7+⍳3;]) OVER 7 0↓R[19]              :endif[20]              R←1 1 1 0 0 0 1 0 0 0 1 1⌿R[21]          :endif[22]          R ASSIGN∆Dict SStoMAT '⍺BenRate⍺ServDate⍺STDate⍺FNDate⍺BenConst⍺BenConstf'[23]     :endif[24]  [25]  :case 'Write' ⍝ Write Code and comments[26]      R←BenRate OVER ServDate OVER STDate OVER FNDate OVER BenConst OVER BenConstf[27]      NEWparms←NEWparms,'ß',DLTMB '⍵',R[28]  [29]      :if ^/⎕vi R[5;] ⋄ R[5;]←'-¯' REPL R[5;] ⋄ :endif[30]      :if ^/⎕vi R[6;] ⋄ R[6;]←'-¯' REPL R[6;] ⋄ :endif[31]      R←StripText R[32]      z←'/ ' REPL R[1;] OVER ConvertDates 1 0↓R[33]  [34]      fncode←fncode OVER ' ' OVER DLTMB var,'←(',R[6;],') BEN18 ',¯1↓DLTMB ¯1 0↓z,','[35]      fncode←fncode OVER DLTMB '⍝ Benefit of ',R[1;],'% x Period after ',R[2;],' but between'[36]      fncode←fncode OVER DLTMB '⍝ ',R[3;],' and ',R[4;],' x Constant of ',R[5;][37]      fncode←fncode OVER '⍝ Inflating at Rates (%) ',DLTMB R[6;][38]  [39]  :endselect    ∇
+    ∇ var ARG18 parm;R;z
+[1]   ⍝ PARMWIN.sf#14
+[2]   ⍝ Fn to get Parameters required for BEN18 and write the code
+[3]   
+[4]   :select parm
+[5]   :case 'Vars'
+[6]       ⍝ Conversion of Parameters (if any)
+[7]       :if ~0∊⍴R←SStoMAT 1↓ALLparms SSINDEX BENno ⍝ Assign Parameters
+[8]           :if 12=1↑⍴R
+[9]               R←R[1;] OVER (ConvertDates R[2;]) OVER 2 0↓R
+[10]              :if ∨/' '≠R[3;]
+[11]                  R←R[⍳2;] OVER (ConvertDates R[3;]) OVER 3 0↓R
+[12]              :else
+[13]                  R←R[⍳2;] OVER ('ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX MatrixZWB R[3+⍳3;]) OVER 3 0↓R
+[14]              :endif
+[15]              :if ∨/' '≠R[7;]
+[16]                  R←R[⍳6;] OVER (ConvertDates R[7;]) OVER 7 0↓R
+[17]              :else
+[18]                  R←R[⍳6;] OVER ('ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX MatrixZWB R[7+⍳3;]) OVER 7 0↓R
+[19]              :endif
+[20]              R←1 1 1 0 0 0 1 0 0 0 1 1⌿R
+[21]          :endif
+[22]          R ASSIGN∆Dict SStoMAT '⍺BenRate⍺ServDate⍺STDate⍺FNDate⍺BenConst⍺BenConstf'
+[23]     :endif
+[24]  
+[25]  :case 'Write' ⍝ Write Code and comments
+[26]      R←BenRate OVER ServDate OVER STDate OVER FNDate OVER BenConst OVER BenConstf
+[27]      NEWparms←NEWparms,'ß',DLTMB '⍵',R
+[28]  
+[29]      :if ^/⎕vi R[5;] ⋄ R[5;]←'-¯' REPL R[5;] ⋄ :endif
+[30]      :if ^/⎕vi R[6;] ⋄ R[6;]←'-¯' REPL R[6;] ⋄ :endif
+[31]      R←StripText R
+[32]      z←'/ ' REPL R[1;] OVER ConvertDates 1 0↓R
+[33]  
+[34]      fncode←fncode OVER ' ' OVER DLTMB var,'←(',R[6;],') BEN18 ',¯1↓DLTMB ¯1 0↓z,','
+[35]      fncode←fncode OVER DLTMB '⍝ Benefit of ',R[1;],'% x Period after ',R[2;],' but between'
+[36]      fncode←fncode OVER DLTMB '⍝ ',R[3;],' and ',R[4;],' x Constant of ',R[5;]
+[37]      fncode←fncode OVER '⍝ Inflating at Rates (%) ',DLTMB R[6;]
+[38]  
+[39]  :endselect
+    ∇

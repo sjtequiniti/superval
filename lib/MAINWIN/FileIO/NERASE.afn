@@ -1,0 +1,35 @@
+    ∇ File NERASE arg;tieno;∆;tries;⍙;wait
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Erase a Native file tied to "tieno"
+[3]   
+[4]   (tieno wait)←2↑arg,0
+[5]   
+[6]   :if 0=⎕nc 'File' ⍝ Determine filename if not given
+[7]   :orif mt DLTB File
+[8]       File←DLTB (tieno=⎕nnums,⎕xnnums)⌿⎕nnames OVER ⎕xnnames
+[9]   :endif
+[10]  
+[11]  :if mt File ⋄ :return ⋄ :endif ⍝ Must be already gone!!
+[12]  
+[13]  :if tieno∊⎕nnums
+[14]      :repeat
+[15]          File ⎕nerase tieno
+[16]      :until ~FileExist File
+[17]  :elseif tieno∊⎕xnnums
+[18]      :repeat
+[19]          File ⎕xnerase tieno
+[20]      :until ~File NTIE tieno
+[21]  ⍝⍝⍝    :if ecflag
+[22]  ⍝⍝⍝        'Erased ',File
+[23]  ⍝⍝⍝        'File Available:  ',⍕FileAvailable File
+[24]  ⍝⍝⍝        tries←1
+[25]  ⍝⍝⍝        :repeat
+[26]  ⍝⍝⍝            'File Exists (',(⍕tries),'):  ',⍕⍙←FileExist File
+[27]  ⍝⍝⍝            'File Still in Directory (',(⍕tries),'):  ',⍕∆←(⊂UPPERCASE '\' Win∆Child File)∊m2n UPPERCASE ⎕xlib '\' Win∆Parent File
+[28]  ⍝⍝⍝            0 0⍴⎕dl (∆∨⍙)×0.1
+[29]  ⍝⍝⍝        :until 0=∆∨⍙ ⋄ :orif 600=tries←tries+1
+[30]  ⍝⍝⍝    :endif
+[31]      :while wait
+[32]      :until ~FileExist File
+[33]  :endif
+    ∇

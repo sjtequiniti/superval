@@ -1,1 +1,69 @@
-    ∇ CMDWSTIME o;⎕io;o1;o2;o3;o4;o5;o6;⎕wself;x;size;where[1]   ⍝ MONITOR.sf#2[2]   ⍝ Displays ⎕MF timings in a listview[3]   ⍝ Copyright 1999 APL2000 Inc.[4]   ⍝ 10/19/2018 -- Updated to support DPI-awareness on high resolution displays[5]   [6]   ⎕io←1[7]   'fmWSTIME' ⎕wi 'Delete'[8]    o2←⍙_⍙CUMSUM[9]    :if 0∊⍴o2[10]       0 0⍴⎕wi ':Close' ⋄ →0[11]   :endif[12]  [13]   ⎕wself←'fmWSTIME' ⎕wi 'New' 'Form' 'Close'[14]     ⎕wi 'caption' 'Function timings'[15]     ⎕wi "where" (Win∆CentrePos 1.2 0.7×768 1024×1⌈CharSize÷13 6)[16]     ⎕wi "limitwhere" (0.8×¯2↑⎕wi "where")[17]  ⍝⍝⍝   ⎕wi 'size' 20 72[18]  ⍝⍝⍝   ⎕wi 'limitwhere' 8 20[19]     ⎕wi 'onResize' '⍙_⍙WSMF_Hnd ⎕wevent'[20]   0 0⍴⎕wi ':mFile.New'         'Menu' ('caption' '&File')[21]   0 0⍴⎕wi ':mFile.Details.New' 'Menu' ('caption' '&Details...')  ('onClick' '⍙_⍙WSMF_Detail')[22]  ⍝ 0 0⍴⎕wi ':mFile.NoZero.New'  'Menu' ('caption' '&Hide Functions with no time') ('onClick' '⍙_⍙WSMF_Hnd ''NoZero''') ('style' 1)[23]   0 0⍴⎕wi ':mFile.Print.New'   'Menu' ('caption' '&Print...')    ('onClick' '⍙_⍙WSMF_Hnd ''Print''')[24]   0 0⍴⎕wi ':mFile.Sep1.New'    'Menu' ('separator' 1)[25]   0 0⍴⎕wi ':mFile.Exit.New'    'Menu' ('caption' 'E&xit')        ('onClick' '0 0⍴⎕wi '':Close ''')[26]  [27]   0 0⍴⎕wi ':mRes.New'       'Menu' ('caption' '&Resolution') ('suppress' 1)[28]   0 0⍴⎕wi ':mRes.Tick.New'  'Menu' ('caption' '&Ticks')              ('onClick' '⍙_⍙WSMF_Hnd "Res"')[29]   0 0⍴⎕wi ':mRes.Ttick.New' 'Menu' ('caption' 'Ticks (Thousands)')   ('onClick' '⍙_⍙WSMF_Hnd "Res"')[30]   0 0⍴⎕wi ':mRes.Mtick.New' 'Menu' ('caption' 'Ticks (Millions)')    ('onClick' '⍙_⍙WSMF_Hnd "Res"')[31]   0 0⍴⎕wi ':mRes.Tsec.New'  'Menu' ('caption' 'Seconds (Thousands)') ('onClick' '⍙_⍙WSMF_Hnd "Res"')[32]   0 0⍴⎕wi ':mRes.Sec.New'   'Menu' ('caption' '&Seconds')            ('onClick' '⍙_⍙WSMF_Hnd "Res"') ('value' 1)[33]   0 0⍴⎕wi ':mRes.Min.New'   'Menu' ('caption' '&Minutes')            ('onClick' '⍙_⍙WSMF_Hnd "Res"')[34]  [35]   0 0⍴⎕wi ':mFont.New'          'Menu' ('caption' 'Font') ('suppress' 1)[36]   0 0⍴⎕wi ':mFont.Largest.New'  'Menu' ('caption' 'Lar&gest')  ('onClick' '1.5  ⍙_⍙WSMF_Hnd ''Font''')[37]   0 0⍴⎕wi ':mFont.Larger.New'   'Menu' ('caption' '&Larger')   ('onClick' '1.25 ⍙_⍙WSMF_Hnd ''Font''')[38]   0 0⍴⎕wi ':mFont.Medium.New'   'Menu' ('caption' '&Medium')   ('onClick' '1    ⍙_⍙WSMF_Hnd ''Font''') ('value' 1)[39]   0 0⍴⎕wi ':mFont.Smaller.New'  'Menu' ('caption' '&Smaller')  ('onClick' '0.85 ⍙_⍙WSMF_Hnd ''Font''')[40]   0 0⍴⎕wi ':mFont.Smallest.New' 'Menu' ('caption' 'Sm&allest') ('onClick' '0.75 ⍙_⍙WSMF_Hnd ''Font''')[41]  [42]   o4←⎕wi '.lvFns.New' 'Listview' ('onOpen' '⍙_⍙WSMF_Hnd ''AutoFit''') ('onColClick' '⍙_⍙SortListview') ('style' 1 2 4)[43]   o4 ⎕wi 'columndisplay' (7 3⍴'Function' 20 'left' 'Seconds' 10 'right' 'Lines' 10 'right' 'Pct' 10 'right' 'Iter' 10 'right' 'Calls' 10 'right' 'Size' 10 'right')[44]   o4 ⎕wi "where" ((¯2↑'fmWSTIME' ⎕wi 'where') Win∆Resize (4 2⍴0 0 0 0 1 ¯45 1 0))[45]   o4 ⎕wi 'list' (0,1,o2)[46]   :if 17≤0.001×⎕sys[19] ⍝ dpi support in V17[47]       o6←(.01×2⊃'#' ⎕wi 'dpi')×(∣↑⎕fi '-13')÷↑'#' ⎕wi 'units'[48]   :else[49]       o6←(∣↑⎕fi ⎕wcall 'W_Ini' '[APLFONT]Height')÷↑'#' ⎕wi 'units'[50]   :endif[51]   o4 ⎕wi 'Set' ('∆fontsize' o6) ('font' 'APLHELP' o6)[52]   o4 ⎕wi 'onDblClick' '⍙_⍙WSMF_Detail'[53]  [54]  ⍝⍝⍝ o4←".bnWSTIMEReport" ⎕wi "New" "Button"[55]  ⍝⍝⍝ o4 ⎕wi "extent" (size←1×buttonsize×1⌈CharSize÷13 6)[56]  ⍝⍝⍝ x←0.5×⍴where←Win∆Calcwhere 1,(¯10-size[1]),1,-5+size[2][57]  ⍝⍝⍝ o4 ⎕wi "where" ((¯2↑"fmWSTIME" ⎕wi "where") Win∆Resize (x,2)⍴where)[58]  ⍝⍝⍝ o4 ⎕wi "tooltip" "Create Excel Timings Report"[59]  ⍝⍝⍝ o4 ⎕wi "onClick" 'Excel_Report'[60]  ⍝⍝⍝ o4 ⎕wi "caption" "Report"[61]  [62]   0 0⍴⎕wi ':Wait'[63]   :if 'Y'='YN' ASK 'Do you want to create an Excel Report on the Excel Timings?'[64]      ¯1 Win∆EditFile Excel_Report[65]   :endif[66]  [67]   'fmWSTIME' ⎕wi 'Delete'    ∇
+    ∇ CMDWSTIME o;⎕io;o1;o2;o3;o4;o5;o6;⎕wself;x;size;where
+[1]   ⍝ MONITOR.sf#2
+[2]   ⍝ Displays ⎕MF timings in a listview
+[3]   ⍝ Copyright 1999 APL2000 Inc.
+[4]   ⍝ 10/19/2018 -- Updated to support DPI-awareness on high resolution displays
+[5]   
+[6]   ⎕io←1
+[7]   'fmWSTIME' ⎕wi 'Delete'
+[8]    o2←⍙_⍙CUMSUM
+[9]    :if 0∊⍴o2
+[10]       0 0⍴⎕wi ':Close' ⋄ →0
+[11]   :endif
+[12]  
+[13]   ⎕wself←'fmWSTIME' ⎕wi 'New' 'Form' 'Close'
+[14]     ⎕wi 'caption' 'Function timings'
+[15]     ⎕wi "where" (Win∆CentrePos 1.2 0.7×768 1024×1⌈CharSize÷13 6)
+[16]     ⎕wi "limitwhere" (0.8×¯2↑⎕wi "where")
+[17]  ⍝⍝⍝   ⎕wi 'size' 20 72
+[18]  ⍝⍝⍝   ⎕wi 'limitwhere' 8 20
+[19]     ⎕wi 'onResize' '⍙_⍙WSMF_Hnd ⎕wevent'
+[20]   0 0⍴⎕wi ':mFile.New'         'Menu' ('caption' '&File')
+[21]   0 0⍴⎕wi ':mFile.Details.New' 'Menu' ('caption' '&Details...')  ('onClick' '⍙_⍙WSMF_Detail')
+[22]  ⍝ 0 0⍴⎕wi ':mFile.NoZero.New'  'Menu' ('caption' '&Hide Functions with no time') ('onClick' '⍙_⍙WSMF_Hnd ''NoZero''') ('style' 1)
+[23]   0 0⍴⎕wi ':mFile.Print.New'   'Menu' ('caption' '&Print...')    ('onClick' '⍙_⍙WSMF_Hnd ''Print''')
+[24]   0 0⍴⎕wi ':mFile.Sep1.New'    'Menu' ('separator' 1)
+[25]   0 0⍴⎕wi ':mFile.Exit.New'    'Menu' ('caption' 'E&xit')        ('onClick' '0 0⍴⎕wi '':Close ''')
+[26]  
+[27]   0 0⍴⎕wi ':mRes.New'       'Menu' ('caption' '&Resolution') ('suppress' 1)
+[28]   0 0⍴⎕wi ':mRes.Tick.New'  'Menu' ('caption' '&Ticks')              ('onClick' '⍙_⍙WSMF_Hnd "Res"')
+[29]   0 0⍴⎕wi ':mRes.Ttick.New' 'Menu' ('caption' 'Ticks (Thousands)')   ('onClick' '⍙_⍙WSMF_Hnd "Res"')
+[30]   0 0⍴⎕wi ':mRes.Mtick.New' 'Menu' ('caption' 'Ticks (Millions)')    ('onClick' '⍙_⍙WSMF_Hnd "Res"')
+[31]   0 0⍴⎕wi ':mRes.Tsec.New'  'Menu' ('caption' 'Seconds (Thousands)') ('onClick' '⍙_⍙WSMF_Hnd "Res"')
+[32]   0 0⍴⎕wi ':mRes.Sec.New'   'Menu' ('caption' '&Seconds')            ('onClick' '⍙_⍙WSMF_Hnd "Res"') ('value' 1)
+[33]   0 0⍴⎕wi ':mRes.Min.New'   'Menu' ('caption' '&Minutes')            ('onClick' '⍙_⍙WSMF_Hnd "Res"')
+[34]  
+[35]   0 0⍴⎕wi ':mFont.New'          'Menu' ('caption' 'Font') ('suppress' 1)
+[36]   0 0⍴⎕wi ':mFont.Largest.New'  'Menu' ('caption' 'Lar&gest')  ('onClick' '1.5  ⍙_⍙WSMF_Hnd ''Font''')
+[37]   0 0⍴⎕wi ':mFont.Larger.New'   'Menu' ('caption' '&Larger')   ('onClick' '1.25 ⍙_⍙WSMF_Hnd ''Font''')
+[38]   0 0⍴⎕wi ':mFont.Medium.New'   'Menu' ('caption' '&Medium')   ('onClick' '1    ⍙_⍙WSMF_Hnd ''Font''') ('value' 1)
+[39]   0 0⍴⎕wi ':mFont.Smaller.New'  'Menu' ('caption' '&Smaller')  ('onClick' '0.85 ⍙_⍙WSMF_Hnd ''Font''')
+[40]   0 0⍴⎕wi ':mFont.Smallest.New' 'Menu' ('caption' 'Sm&allest') ('onClick' '0.75 ⍙_⍙WSMF_Hnd ''Font''')
+[41]  
+[42]   o4←⎕wi '.lvFns.New' 'Listview' ('onOpen' '⍙_⍙WSMF_Hnd ''AutoFit''') ('onColClick' '⍙_⍙SortListview') ('style' 1 2 4)
+[43]   o4 ⎕wi 'columndisplay' (7 3⍴'Function' 20 'left' 'Seconds' 10 'right' 'Lines' 10 'right' 'Pct' 10 'right' 'Iter' 10 'right' 'Calls' 10 'right' 'Size' 10 'right')
+[44]   o4 ⎕wi "where" ((¯2↑'fmWSTIME' ⎕wi 'where') Win∆Resize (4 2⍴0 0 0 0 1 ¯45 1 0))
+[45]   o4 ⎕wi 'list' (0,1,o2)
+[46]   :if 17≤0.001×⎕sys[19] ⍝ dpi support in V17
+[47]       o6←(.01×2⊃'#' ⎕wi 'dpi')×(∣↑⎕fi '-13')÷↑'#' ⎕wi 'units'
+[48]   :else
+[49]       o6←(∣↑⎕fi ⎕wcall 'W_Ini' '[APLFONT]Height')÷↑'#' ⎕wi 'units'
+[50]   :endif
+[51]   o4 ⎕wi 'Set' ('∆fontsize' o6) ('font' 'APLHELP' o6)
+[52]   o4 ⎕wi 'onDblClick' '⍙_⍙WSMF_Detail'
+[53]  
+[54]  ⍝⍝⍝ o4←".bnWSTIMEReport" ⎕wi "New" "Button"
+[55]  ⍝⍝⍝ o4 ⎕wi "extent" (size←1×buttonsize×1⌈CharSize÷13 6)
+[56]  ⍝⍝⍝ x←0.5×⍴where←Win∆Calcwhere 1,(¯10-size[1]),1,-5+size[2]
+[57]  ⍝⍝⍝ o4 ⎕wi "where" ((¯2↑"fmWSTIME" ⎕wi "where") Win∆Resize (x,2)⍴where)
+[58]  ⍝⍝⍝ o4 ⎕wi "tooltip" "Create Excel Timings Report"
+[59]  ⍝⍝⍝ o4 ⎕wi "onClick" 'Excel_Report'
+[60]  ⍝⍝⍝ o4 ⎕wi "caption" "Report"
+[61]  
+[62]   0 0⍴⎕wi ':Wait'
+[63]   :if 'Y'='YN' ASK 'Do you want to create an Excel Report on the Excel Timings?'
+[64]      ¯1 Win∆EditFile Excel_Report
+[65]   :endif
+[66]  
+[67]   'fmWSTIME' ⎕wi 'Delete'
+    ∇

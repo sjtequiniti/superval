@@ -1,1 +1,125 @@
-    ∇ XV_CategoryAudit txt_tn;⎕IO;htm_nm;htm_tn;lines;rws;CR;NL;xxx;ptr;eof;new;client;read;MAX_DEPTH;STYLE_CAP;STYLE_TH;STYLE_THR;STYLE_THG;tof;rtag;nxt;pb;FF;isect;slines;ss;isects;nxt∆;ss∆;section;bfr;dir;file;toc;vdate;user;BR;runtm;msk;toc∆;tid;∆;toc2;secta;PG_HDR_DEPTH;vn;tmp_nm;tmp_tn[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Read TXT run-basis-details file tied to txt_tn,[3]   ⍝ write HTML version, open in Excel and save as XLS. 09mar10 SJT[4]   ⍝ Reads ext vars: XV_DOCTYPE XV_XHTML[5]   [6]   ⎕IO←1[7]   [8]   BR←'<br/>'[9]   FF←⎕AV[13]                                                                      ⍝ formfeed[10]  (NL CR)←⎕TC[2 3]                                                                ⍝ newline, carriage return[11]  MAX_DEPTH←50                                                                    ⍝ max table depth[12]  PG_HDR_DEPTH←3                                                                  ⍝ depth of page headers[13]  [14]  ⍝ Excel's default stylesheet overrides some of an HTML document's STYLE element[15]  ⍝  so some styles are set repetitively as style elements of table cells,[16]  ⍝  ovveriding Excel's default styles[17]  STYLE_CAP←' style="background: #353; color: #DFD; font-size: 1.2em;"'[18]  STYLE_TH← ' style="background: #DFD; color: #353;"'[19]  STYLE_THR←' style="background: #DFD; color: #353; text-align: right;"'[20]  STYLE_THG←' style="background: #ADA; border-right: 1px solid gray; color: #353; text-align: center;"'[21]  [22]  (dir file)←(1+~⌽∨\'\'=⌽∆)⊂∆←DLTB ⎕XNNAMES[⎕XNNUMS⍳txt_tn;][23]  (htm_nm tmp_nm)←(⊂dir,file~'.'),¨'.htm' '.tmp'                                  ⍝ HTM and XLS filenames[24]  [25]  tmp_tn←NCREATE tmp_nm[26]  [27]  ptr←0,⎕NSIZE txt_tn[28]  (bfr lines section tof)←'' '' '' 1[29]  (toc tid)←'' 0[30]  [31]  :Repeat[32]  [33]      rws←''[34]      ss←(⍴lines)↑1                                                           ⍝ mark section starts[35]  [36]     ⍝ read to end of file or section[37]      :Repeat[38]          nxt←bfr,⎕NREAD txt_tn 82 FileChunk,↑ptr[39]          eof←≥/ptr←ptr+FileChunk 0                                          ⍝ flag end of file[40]          nxt∆←1↓¨(+\∆=NL)⊂∆←NL,nxt~CR[41]          :If ~eof[42]              (nxt∆ bfr)←(¯1↓nxt∆)(↑⌽nxt∆)                                    ⍝ hold last line fragment for next pass[43]          :EndIf[44]  [45]          pb←((⍴nxt∆)↑tof)∨FF=↑¨nxt∆                                          ⍝ flag page starts (always at tof)[46]          ss∆←pb\1,1↓~≡⌿⊃0 ¯1⌽¨⊂2⊃¨XV_ParseHeader2¨nxt∆[1+pb/⍳⍴pb]            ⍝ flag section starts[47]          msk←~∨⌿⊃(∆⍴¨0),¨(-∆←¯1+⍳PG_HDR_DEPTH)↓¨⊂pb^~ss∆                     ⍝ mask: contn pg headers[48]  [49]          lines←lines,msk/nxt∆                                                ⍝ mask lines[50]          ss←ss,msk/ss∆                                                       ⍝ mask sectn start flags[51]      :Until eof ∨ ∨/1↓ss[52]  [53]      :If tof[54]          (user vdate client vn xxx runtm)←XV_ParseHeader 2↑lines[55]          tof←0[56]      :EndIf[57]  [58]     ⍝ process all complete sections[59]      isects←(+\ss)⊂⍳⍴ss                                                      ⍝ index lines in each section[60]      :For isect :In (eof-1)↓isects                                           ⍝ last sectn might be incomplete[61]  [62]          slines←lines[isect]                                                 ⍝ lines in this section[63]  [64]          section←2⊃XV_ParseHeader2 2⊃slines[65]  [66]          :If (⊂section)∊'INDIVIDUAL MEMBER LISTING' 'TOTAL INDIVIDUAL MEMBER LISTING'[67]  [68]              toc2←''[69]              slines←(PG_HDR_DEPTH-1)↓slines[70]              tid←tid+1[71]              rws←rws,⊂'h1' xtag ('a name="',(⍕tid),'"') xtag section[72]  [73]              :While ×⍴slines                                                 ⍝ no table crosses section end[74]                  (read new toc∆ tid)←section XV_NextSegment tid slines       ⍝ find & format next segment[75]                  toc2←toc2,toc∆                                              ⍝ ToC entry for this table[76]                  rws←rws,new[77]                  slines←read↓slines[78]              :EndWhile[79]  [80]             ⍝ ToC entry/entries for this section[81]              secta←('a href="#',(⍕tid),'"') xtag section[82]              :If ×⍴toc2[83]                  toc←toc,'li' xtag (⊂secta),'ul' xtag toc2[84]                  tid←tid+⍴toc2[85]              :Else[86]                  toc←toc,⊂'li' xtag secta[87]              :EndIf[88]  [89]          :EndIf[90]  [91]      :EndFor[92]  [93]      :If ×⍴rws[94]          (↑,/rws,¨NL) ⎕NAPPEND tmp_tn[95]      :EndIf[96]      lines←(~eof)/lines[↑⌽isects]                                            ⍝ first lines of next sectn[97]  [98]  :Until eof[99]  [100] :If ×⎕NSIZE tmp_tn ⍝ Write HTML file .......................................[101]     htm_tn←NCREATE htm_nm[102]     (XV_DOCTYPE,NL,XV_XHTML,NL) ⎕NAPPEND htm_tn[103]     ('cataudit' XV_XhtmlHead file user vn vdate client runtm) ⎕NAPPEND htm_tn[104]     ('<body class="cataudit">',NL) ⎕NAPPEND htm_tn[105]    ⍝ ToC controls[106]     ∆←  ⊂'button id="bn_show" type="button" onclick="hidetoc(this)"' xtag 'Hide ToC'[107]     ∆←∆,⊂'button id="bn_lock" type="button" onclick="locktoc(this)"' xtag 'Lock'[108]     ∆←'form id="toc-controls" action=""' xtag 'p' xtag ∆[109]     (↑,/∆,¨NL) ⎕NAPPEND htm_tn[110]    ⍝ Table of Contents[111]     ∆←'div id="toc"' xtag (⊂'p id="client"' xtag client),'ul' xtag toc[112]     (↑,/∆,¨NL) ⎕NAPPEND htm_tn[113]    ⍝ copy in TMP file contents[114]     ptr←0,⎕NSIZE tmp_tn[115]     :Repeat[116]         (⎕NREAD tmp_tn 82 FileChunk,↑ptr)⎕NAPPEND htm_tn[117]     :Until ≥/ptr←ptr+FileChunk 0[118]     ('</body>',NL,'</html>',NL) ⎕NAPPEND htm_tn[119] [120]     ⎕NUNTIE htm_tn[121] :EndIf ⍝ ...................................................................[122] [123] tmp_nm NERASE tmp_tn    ∇
+    ∇ XV_CategoryAudit txt_tn;⎕IO;htm_nm;htm_tn;lines;rws;CR;NL;xxx;ptr;eof;new;client;read;MAX_DEPTH;STYLE_CAP;STYLE_TH;STYLE_THR;STYLE_THG;tof;rtag;nxt;pb;FF;isect;slines;ss;isects;nxt∆;ss∆;section;bfr;dir;file;toc;vdate;user;BR;runtm;msk;toc∆;tid;∆;toc2;secta;PG_HDR_DEPTH;vn;tmp_nm;tmp_tn
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Read TXT run-basis-details file tied to txt_tn,
+[3]   ⍝ write HTML version, open in Excel and save as XLS. 09mar10 SJT
+[4]   ⍝ Reads ext vars: XV_DOCTYPE XV_XHTML
+[5]   
+[6]   ⎕IO←1
+[7]   
+[8]   BR←'<br/>'
+[9]   FF←⎕AV[13]                                                                      ⍝ formfeed
+[10]  (NL CR)←⎕TC[2 3]                                                                ⍝ newline, carriage return
+[11]  MAX_DEPTH←50                                                                    ⍝ max table depth
+[12]  PG_HDR_DEPTH←3                                                                  ⍝ depth of page headers
+[13]  
+[14]  ⍝ Excel's default stylesheet overrides some of an HTML document's STYLE element
+[15]  ⍝  so some styles are set repetitively as style elements of table cells,
+[16]  ⍝  ovveriding Excel's default styles
+[17]  STYLE_CAP←' style="background: #353; color: #DFD; font-size: 1.2em;"'
+[18]  STYLE_TH← ' style="background: #DFD; color: #353;"'
+[19]  STYLE_THR←' style="background: #DFD; color: #353; text-align: right;"'
+[20]  STYLE_THG←' style="background: #ADA; border-right: 1px solid gray; color: #353; text-align: center;"'
+[21]  
+[22]  (dir file)←(1+~⌽∨\'\'=⌽∆)⊂∆←DLTB ⎕XNNAMES[⎕XNNUMS⍳txt_tn;]
+[23]  (htm_nm tmp_nm)←(⊂dir,file~'.'),¨'.htm' '.tmp'                                  ⍝ HTM and XLS filenames
+[24]  
+[25]  tmp_tn←NCREATE tmp_nm
+[26]  
+[27]  ptr←0,⎕NSIZE txt_tn
+[28]  (bfr lines section tof)←'' '' '' 1
+[29]  (toc tid)←'' 0
+[30]  
+[31]  :Repeat
+[32]  
+[33]      rws←''
+[34]      ss←(⍴lines)↑1                                                           ⍝ mark section starts
+[35]  
+[36]     ⍝ read to end of file or section
+[37]      :Repeat
+[38]          nxt←bfr,⎕NREAD txt_tn 82 FileChunk,↑ptr
+[39]          eof←≥/ptr←ptr+FileChunk 0                                          ⍝ flag end of file
+[40]          nxt∆←1↓¨(+\∆=NL)⊂∆←NL,nxt~CR
+[41]          :If ~eof
+[42]              (nxt∆ bfr)←(¯1↓nxt∆)(↑⌽nxt∆)                                    ⍝ hold last line fragment for next pass
+[43]          :EndIf
+[44]  
+[45]          pb←((⍴nxt∆)↑tof)∨FF=↑¨nxt∆                                          ⍝ flag page starts (always at tof)
+[46]          ss∆←pb\1,1↓~≡⌿⊃0 ¯1⌽¨⊂2⊃¨XV_ParseHeader2¨nxt∆[1+pb/⍳⍴pb]            ⍝ flag section starts
+[47]          msk←~∨⌿⊃(∆⍴¨0),¨(-∆←¯1+⍳PG_HDR_DEPTH)↓¨⊂pb^~ss∆                     ⍝ mask: contn pg headers
+[48]  
+[49]          lines←lines,msk/nxt∆                                                ⍝ mask lines
+[50]          ss←ss,msk/ss∆                                                       ⍝ mask sectn start flags
+[51]      :Until eof ∨ ∨/1↓ss
+[52]  
+[53]      :If tof
+[54]          (user vdate client vn xxx runtm)←XV_ParseHeader 2↑lines
+[55]          tof←0
+[56]      :EndIf
+[57]  
+[58]     ⍝ process all complete sections
+[59]      isects←(+\ss)⊂⍳⍴ss                                                      ⍝ index lines in each section
+[60]      :For isect :In (eof-1)↓isects                                           ⍝ last sectn might be incomplete
+[61]  
+[62]          slines←lines[isect]                                                 ⍝ lines in this section
+[63]  
+[64]          section←2⊃XV_ParseHeader2 2⊃slines
+[65]  
+[66]          :If (⊂section)∊'INDIVIDUAL MEMBER LISTING' 'TOTAL INDIVIDUAL MEMBER LISTING'
+[67]  
+[68]              toc2←''
+[69]              slines←(PG_HDR_DEPTH-1)↓slines
+[70]              tid←tid+1
+[71]              rws←rws,⊂'h1' xtag ('a name="',(⍕tid),'"') xtag section
+[72]  
+[73]              :While ×⍴slines                                                 ⍝ no table crosses section end
+[74]                  (read new toc∆ tid)←section XV_NextSegment tid slines       ⍝ find & format next segment
+[75]                  toc2←toc2,toc∆                                              ⍝ ToC entry for this table
+[76]                  rws←rws,new
+[77]                  slines←read↓slines
+[78]              :EndWhile
+[79]  
+[80]             ⍝ ToC entry/entries for this section
+[81]              secta←('a href="#',(⍕tid),'"') xtag section
+[82]              :If ×⍴toc2
+[83]                  toc←toc,'li' xtag (⊂secta),'ul' xtag toc2
+[84]                  tid←tid+⍴toc2
+[85]              :Else
+[86]                  toc←toc,⊂'li' xtag secta
+[87]              :EndIf
+[88]  
+[89]          :EndIf
+[90]  
+[91]      :EndFor
+[92]  
+[93]      :If ×⍴rws
+[94]          (↑,/rws,¨NL) ⎕NAPPEND tmp_tn
+[95]      :EndIf
+[96]      lines←(~eof)/lines[↑⌽isects]                                            ⍝ first lines of next sectn
+[97]  
+[98]  :Until eof
+[99]  
+[100] :If ×⎕NSIZE tmp_tn ⍝ Write HTML file .......................................
+[101]     htm_tn←NCREATE htm_nm
+[102]     (XV_DOCTYPE,NL,XV_XHTML,NL) ⎕NAPPEND htm_tn
+[103]     ('cataudit' XV_XhtmlHead file user vn vdate client runtm) ⎕NAPPEND htm_tn
+[104]     ('<body class="cataudit">',NL) ⎕NAPPEND htm_tn
+[105]    ⍝ ToC controls
+[106]     ∆←  ⊂'button id="bn_show" type="button" onclick="hidetoc(this)"' xtag 'Hide ToC'
+[107]     ∆←∆,⊂'button id="bn_lock" type="button" onclick="locktoc(this)"' xtag 'Lock'
+[108]     ∆←'form id="toc-controls" action=""' xtag 'p' xtag ∆
+[109]     (↑,/∆,¨NL) ⎕NAPPEND htm_tn
+[110]    ⍝ Table of Contents
+[111]     ∆←'div id="toc"' xtag (⊂'p id="client"' xtag client),'ul' xtag toc
+[112]     (↑,/∆,¨NL) ⎕NAPPEND htm_tn
+[113]    ⍝ copy in TMP file contents
+[114]     ptr←0,⎕NSIZE tmp_tn
+[115]     :Repeat
+[116]         (⎕NREAD tmp_tn 82 FileChunk,↑ptr)⎕NAPPEND htm_tn
+[117]     :Until ≥/ptr←ptr+FileChunk 0
+[118]     ('</body>',NL,'</html>',NL) ⎕NAPPEND htm_tn
+[119] 
+[120]     ⎕NUNTIE htm_tn
+[121] :EndIf ⍝ ...................................................................
+[122] 
+[123] tmp_nm NERASE tmp_tn
+    ∇

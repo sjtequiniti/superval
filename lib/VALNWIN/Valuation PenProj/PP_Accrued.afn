@@ -1,0 +1,140 @@
+    ∇ PP∆Accrued Ind∆Output;pp∆accrued;pp∆exit;pp∆exitcol;pp∆row;pp∆lxexit;pp∆LXexit;pp∆ly;pp∆LY;n;pp∆ppfRatio;pp∆Underpinned;pp∆Accrued;UVAB1;UVAB2;UVAB3;UVAB4;UVAB5;UVAB6;UVAB7;BenefitTypeID;⍙dbCFres;⍙dbABres;⍙dbABmpu;⍙dbCFmpu;MPUexcess;CCONTS;mat;pp∆SpouseProbs;TargetAB;pp∆inctype;pp∆bentype;pp∆rows;pp∆abno;pp∆exitprobs;pp∆AltABno;pp∆AltAB;pp∆UFUND;pp⍙exitprobs;pp∆DD;⍙dbRESres;∆;VFtab;pp∆cash;spouseContID;memberContID;ContingencyID;isTOut
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝⍝⍝ ;pp∆Accrued;UVAB1;UVAB2;UVAB3;UVAB4;UVAB5;UVAB6;UVAB7;⍙dbABmpu;⍙dbCFmpu;MPUexcess;mat
+[3]   ⍝ Project a series of Accrued Pensions
+[4]   ⍝ The data on emerging pensions is in global Ind∆Output
+[5]   
+[6]   ⍝ write interface contents out as XHTML
+[7]   :if test ⋄ 'Accrued' DumpInterface Ind∆Output ⋄ :endif
+[8]   
+[9]   pp∆accrued←1 ⋄ isTOut←0
+[10]  
+[11]  0 PP∆Process∆Output Ind∆Output ⍝ Create the variables from the "file"
+[12]  
+[13]  pp∆RetAge←pp∆Age⌈pp∆RetAge+(0=pp∆RetAge)×pp∆Age ⋄ pp∆SpAge←↑pp∆SpAge
+[14]  
+[15]  :if test ⋄ PP∆IndVars ⋄ :endif
+[16]  
+[17]  PP∆MortSelect 'A' ⍝ Same Mortality for all accrueds
+[18]  pp∆exitcol←4 ⍝⍝⍝ ⋄ memberContID←2
+[19]  ⍙dbCFmpu←125 2⍴⍙dbABmpu←120 2⍴pp∆UFUND←pp∆Underpinned←(pp∆NX,2)⍴0 ⍝ Stores Total and Future Underpinned, Cashflows and Accrueds for Underpin
+[20]  VFtab←MATRIX 'X0' 'BenID' 'ContID' 'DataID' 'Age' 'Year' 'Ident' 'Indiv' 'LiabID' 'Value' 'ValueNoRev'
+[21]  
+[22]  VAB1←VAB2←VAB3←VAB4←VAB5←VAB6←VAB7←pp∆NX⍴0
+[23]  
+[24]  :for pp∆abno :in '1' '2' '3' '4' '5' '6' '7' ⍝ Accrued Benefits
+[25]      :if 0∊⍴,pp∆rows←¯1+(' ',pp∆ABno,' ') TLU ' ',pp∆abno ⋄ :andif ClassID≠3 ⋄ :continue ⋄ :endif
+[26]      :if ClassID=3 ⋄ :andif pp∆abno∊'14' ⋄ pp∆UFUND←pp∆Underpinned←(pp∆NX,2)⍴0 ⋄ :endif
+[27]      :for pp∆row :in pp∆rows
+[28]          ContingencyID←memberContID←↑(2,6)[(⊂pp∆exit←pp∆Dec[pp∆row;])∊'DD' 'N2']
+[29]          spouseContID←↑(memberContID=2 6)/12 6
+[30]          pp∆DD←(ClassID=3)^pp∆exit≡'DD' ⍝ Deferred Accrued DiD
+[31]  
+[32]          pp∆ppfRatio←140 OVERTAKE ((⌊pp∆Start[pp∆row;0]-pp∆X0)⍴1),pp∆PPFRatio[pp∆row;]
+[33]  
+[34]          pp∆bentype←2↑DLTMB pp∆BenType[pp∆row;] ⋄ pp∆inctype←2↑DLTMB pp∆IncType[pp∆row;]
+[35]          pp∆cash←(⊂pp∆bentype)∊'L ' 'LC' 'LT' 'UF'
+[36]  ⍝⍀⍝        (pp∆BenName pp∆BenPart)←DLTB¨2↑' ' partition pp∆Identifier[pp∆row;]
+[37]          BenefitTypeID←⍬⍴(pp∆abno='1234567')/(¯3↑12 13 34,pp∆cash/38 39 40),4/¯1 ⍝ PPF Settings (invalid if not A1 or A2 or A3 is Underpin for Non-PPF)
+[38]          :if (BenefitTypeID≠¯1)∨ClassID=3 ⋄ :andif ~ppf ⍝ Non-PPF Settings for valids
+[39]              BenefitTypeID←PP∆BenefitType pp∆inctype
+[40]          :endif
+[41]          ⍙dbCFres←125 2⍴⍙dbABres←120 2⍴⍙dbRESres←120⍴pp∆Accrued←pp∆NX⍴0 ⍝ Cashflows and Accrueds per benefit
+[42]  
+[43]          :select pp∆bentype
+[44]          :case 'P ' ⍝ "Pension" Benefits
+[45]              memberContID PP∆Pension pp∆row
+[46]          :caselist 'L ' 'LC' 'LM' 'LS' 'L3' 'L4' 'LT' 'Lm' 'Ls' 'Lt' 'Lf' 'UF' ⍝ Cash (split into Commutation and onTop) (and Underpin Fudge) Benefits
+[47]              memberContID PP∆Cash pp∆row
+[48]          :case 'U ' ⍝ Underpin Benefits
+[49]              memberContID PP∆Underpin pp∆row
+[50]          :case 'DD' ⍝ Death in Deferment Benefits
+[51]              memberContID PP∆DIDFudge pp∆row ⍝ Using the LS fudge for Actives
+[52]          :case 'F ' ⍝ Funeral Benefits
+[53]              memberContID PP∆PostRetLS pp∆row
+[54]          :else      ⍝ "Unknown" Benefit Type
+[55]              crash
+[56]          :endselect
+[57]  
+[58]          ⍎'VAB',pp∆abno,'←VAB',pp∆abno,'+pp∆Accrued' ⍝ Assign VABs
+[59]          :for pp∆AltAB :in pp∆AltABno[pp∆row;]~' '
+[60]              ⍎'VAB',pp∆AltAB,'←VAB',pp∆AltAB,'+pp∆Accrued' ⍝ Assign VABs
+[61]          :endfor
+[62]          :if ⍙dbresults ⋄ ⍙DBAddRecords ⋄ :endif
+[63]      :endfor
+[64]  
+[65]      :if ClassID=3 ⋄ :andif ~ppf ⋄ :andif pp∆abno∊'36'⍝ UK Deferreds underpin on VABs
+[66]          :if pp∆abno='3'
+[67]              VAB2←VAB2+MPUexcess←0⌈VAB3-pp∆Underpinned[;0]
+[68]              ⍙dbABres←⍙dbABmpu×[0]120↑MPUexcess←MPUexcess CDIV VAB3
+[69]              VAB3←VAB1+VAB2 ⋄ ContingencyID←memberContID←2 ⋄ spouseContID←12
+[70]          :elseif pp∆abno='6'
+[71]              VAB5←VAB5+MPUexcess←0⌈VAB6-pp∆Underpinned[;0]
+[72]              ⍙dbABres←⍙dbABmpu×[0]120↑MPUexcess←MPUexcess CDIV VAB6
+[73]              VAB1←VAB1+VAB4 ⋄ VAB2←VAB2+VAB5 ⋄ VAB3←VAB1+VAB2 ⋄ VAB6←0 ⋄ ContingencyID←memberContID←spouseContID←6
+[74]          :endif
+[75]          :if ⍙dbresults
+[76]              ⍙dbCFres←⍙dbCFmpu×1↑MPUexcess
+[77]              BenefitTypeID←8 ⋄ ⍙DBAddAccrued
+[78]              ⍙DBAddRecords
+[79]          :endif
+[80]      :endif
+[81]  :endfor
+[82]  
+[83]  PP∆StoreValnFactors VFtab
+[84]  
+[85]  :if ClassID=4 ⋄ :return ⋄ :endif
+[86]  
+[87]  :if uk=1
+[88]      :if ppf
+[89]          VAB4←VAB1+VAB2+VAB3
+[90]      :else
+[91]          :if ClassID∊1 2 ⍝ UK Actives underpin on VABs
+[92]              VAB2←VAB2+MPUexcess←0⌈VAB3-pp∆Underpinned[;0]
+[93]              :if ⍙dbresults
+[94]                  ⍙dbABres←⍙dbABmpu×[0]120↑MPUexcess←MPUexcess CDIV VAB3
+[95]                  ⍙dbCFres←⍙dbCFmpu×1↑MPUexcess
+[96]                  BenefitTypeID←8 ⋄ ContingencyID←memberContID←2 ⋄ spouseContID←12
+[97]                  ⍙DBAddAccrued
+[98]                  ⍙DBAddRecords
+[99]              :endif
+[100]             VAB3←VAB1+VAB2
+[101]         :endif
+[102]         :if test
+[103]             pp∆exitprobs←1
+[104]             :if ~0∊⍴pp∆ExitProbs
+[105]                 pp∆row←¯1
+[106]                 :repeat ⋄ pp∆row←pp∆row+1
+[107]                 :until ~'' PP∆ExtractBens 0
+[108]             :endif
+[109]             :if 2=⍴⍴pp∆exitprobs ⋄ pp∆exitprobs←pp∆exitprobs[0;] ⋄ :endif
+[110]             UFUNDW ←pp∆Underpinned[;0] CDIV pp∆exitprobs
+[111]             FUFUNDW←pp∆Underpinned[;1] CDIV pp∆exitprobs
+[112]             Output∆Varprint 1
+[113]         :endif
+[114]     :endif
+[115] :endif
+[116] 
+[117] :if dab ⋄ :andif ×abNO
+[118]     TargetAB←1↑(0⌈contper-term)↓(contper>term)×VAB3×pp∆v
+[119]     CCONTS←TargetAB-(term=0)×1↑VAB3
+[120]     :if ⍙dbresults
+[121]         ⍙dbbenres←⍙dbbenres⍪((0 0 9 13) (neIND⊃pp∆dbXe term) contper) ⍙DBValnRecords -TargetAB
+[122]         ⍙dbbenres←⍙dbbenres⍪((11 9 6 13) pp∆dbXe term) ⍙DBValnRecords CCONTS
+[123]         :if 0=⎕nc 'PVContsTot' ⋄ :orif PVContsTot=0
+[124]             ⍙dbbenproj←⍙dbbenproj⍪((11 9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords ∆←pp∆NX↑(¯1+pp∆NX-pp∆SNX)⍴CCONTS CDIV +/(¯1+pp∆NX-pp∆SNX)↑pp∆vMP
+[125]         :else
+[126]             ⍙dbbenproj←⍙dbbenproj⍪((11 9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords ∆←PVCONTS1pccf×CCONTS CDIV PVContsTot
+[127]         :endif
+[128]         :if bQSM ⍝ Total FS figures for QSM
+[129]             ⍙dbbenproj←⍙dbbenproj⍪((11 9 6 93) pp∆dbX0 term) ⍙DBValnRecords +/∆×pp∆vMP
+[130]         :endif
+[131]         ⍙DBAddRecords
+[132]     :endif
+[133]     :if ~suppressText ⋄ Ind∆Totals[4;5]←CCONTS ⋄ :endif
+[134] :endif
+[135] 
+[136] :if ~suppressText
+[137]     mat←mat,+/mat←MAT⍪+⌿MAT ⋄ PSL←(~×term)×mat[No∆Bens+2;5]
+[138] :endif
+    ∇

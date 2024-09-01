@@ -1,1 +1,26 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Replace" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Replace" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmReplace.edNum" ⎕wi "text" (DLTB Num)[10]  "fmReplace.edDate" ⎕wi "text" (DLTB Date)[11]  "fmReplace.edChar" ⎕wi "text" (DLTB Char)[12]  "fmReplace.edSearch" ⎕wi "text" (DLTB Search)[13]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Replace[14]      :for var :in spin Comment_Replace at "variable" "row" ⋄ (var row)←var[15]          "Replace" ParmColor ((FormFields for "variable" var) at "control"),var row 1[16]      :endfor[17]  :endif[18]  :if ~0∊⍴,warnings[19]      MDISPLAY DLTMB warnings,⎕tcnl[20]      Win∆AssignVars "fmReplace"[21]  :endif[22]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Replace" "" "Names"[23]      "fmReplace" ⎕wi "modified" 0[24]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Replace" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Replace" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmReplace.edNum" ⎕wi "text" (DLTB Num)
+[10]  "fmReplace.edDate" ⎕wi "text" (DLTB Date)
+[11]  "fmReplace.edChar" ⎕wi "text" (DLTB Char)
+[12]  "fmReplace.edSearch" ⎕wi "text" (DLTB Search)
+[13]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Replace
+[14]      :for var :in spin Comment_Replace at "variable" "row" ⋄ (var row)←var
+[15]          "Replace" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[16]      :endfor
+[17]  :endif
+[18]  :if ~0∊⍴,warnings
+[19]      MDISPLAY DLTMB warnings,⎕tcnl
+[20]      Win∆AssignVars "fmReplace"
+[21]  :endif
+[22]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Replace" "" "Names"
+[23]      "fmReplace" ⎕wi "modified" 0
+[24]  :endif
+    ∇

@@ -1,0 +1,37 @@
+    ∇ CREATE∆HEAD∆ver;Z
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Add necessary Valuation Parameters to Headers
+[3]   ⍝ also modify if Summarised Results selected
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   :select ValMeth
+[8]   :caselist 'PUC' 'SUR' 'NOT' ⍝ PUC Header Modifications
+[9]       H0[5;50+⍳2]←H0[5;98+⍳2]←H1[4;59+⍳2]←H2[3;53+⍳2]←H2[3;102+⍳2]←'I2' ⎕FMT contper
+[10]      H0[5;124+⍳8]←H1[4;118+⍳8]←H2[3;124+⍳8]←'PUC(PBO)'
+[11]      :if PROPT
+[12]          H3[3+⍳3;123+⍳9]←3 9⍴'PUC (PBO)  Accrued  Benefit'
+[13]      :endif
+[14]  :case 'UCM' ⍝ UCM Header Modifications
+[15]      H0[5;50+⍳2]←H0[5;98+⍳2]←H1[4;59+⍳2]←H2[3;53+⍳2]←H2[3;102+⍳2]←'I2' ⎕FMT contper
+[16]      H0[5;124+⍳8]←H1[4;118+⍳8]←H2[3;124+⍳8]←'UC (ABO)'
+[17]      :if PROPT
+[18]          H3[3+⍳3;117+⍳15]←(3 7⍴'UC(ABO)AccruedBenefit'),' ',3 7⍴'UC(VBO)AccruedBenefit'
+[19]      :endif
+[20]  :case 'DAB'⍝ DAB Header Modifications
+[21]      H2[5;118+⍳2]←H1[4;59+⍳2]←'I2' ⎕FMT contper
+[22]  :case 'ABC' ⍝ ABC Header Modification
+[23]      H3[3+⍳3;123+⍳9]←' ' ⋄ H5[4+⍳3;123+⍳9]←' '
+[24]  :endselect
+[25]  
+[26]  ⍝ Make Header changes for "summary" option
+[27]  :if summopt
+[28]      H2[3+⍳3;⍳11]←Z←3 11⍴'       No.        of  Age   Memb.'
+[29]  
+[30]      ⍝ Only Do the following if Accrued Bens asked for
+[31]      :if PROPT ⋄ H3[3+⍳3;⍳11]←Z ⋄ :endif
+[32]  
+[33]      ⍝ Do the following if Analysis of Surplus asked for
+[34]      :if aosind ⋄ H7[4+⍳3;⍳11]←Z ⋄ :endif
+[35]  :endif
+    ∇

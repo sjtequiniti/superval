@@ -1,1 +1,68 @@
-    ∇ res←NE∆INV;⎕IO;File;RECN;NUMRECS;REC;MAT;GMAT;tpr1;DPAGE;I;N;FDJF;DFDJF;DJF;DJS;AGES;NN;DOB;DFDOB;FDOB;FNOM;NOM;SUMMREC;X;NO;J;A;Z;Active;H1;TAB;TABLE;RunTime;desc;Error;valid;z;tieno;rUNDESC;RESsave;size[1]   ⍝ INVWIN.sf#5[2]   ⍝ Main function, calls the screen function, sets up required global[3]   ⍝ variables, creates output file and header, calls PRINTNE to print[4]   ⍝ the results.[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   res←'' ⋄ ⎕IO←0 ⋄ I←¯1 ⋄ PREPARE[8]   [9]   TIE:⎕NUNTIE tieno ⍝ Tieing file if available and looping through each deck[10]  →((1↑⍴FILES)=I←I+1)/FINISH ⋄ →(0=⍴File←DLTB FILES[I;])/⎕LC ⋄ →(~File NTIE tieno)/⎕LC[11]  [12]  ⍝ Screen Display[13]  ((I+1) (1↑⍴FILES) ('\' Win∆Child File)) Win∆ProgressBar 'FileUpdate'[14]  MAT←105 1 ⍴RECN←0 ⋄ TAB[0;11+⍳32]←32↑'\' Win∆Child File[15]  NO←⌊(size←⎕NSIZE tieno)÷RECL[16]  [17]  ⍝ Set up loop(s) to read member data from file, do calculations[18]  READ:NUMRECS←↑⍴REC←'ASCII' Read∆DataFile tieno size RECL (NO-RECN) RECN[19]  [20]  RECN←RECN+NUMRECS ⍝ Display record number being processed[21]  (RECN NO) Win∆ProgressBar 'MemberUpdate'[22]  [23]  DOB←MATRIX (DFDOB (vDATE- 0 0,120-20×Active)) DATEEXP REC[;FDOB][24]  [25]  ⍝ Validate Dates of Birth[26]  :if ∨/~DATECHECK DOB ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif[27]  [28]  DJF←MATRIX (DFDJF DOB) DATEEXP REC[;FDJF][29]  ⍝ Validate Dates Joined[30]  :if ∨/~DATECHECK DJF ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif[31]  →(~∨/A←,(DJS>BDATE)^(DJS←JUL DJF)≤EDATE)/L3[32]  [33]  z←(~^/' '=NOM)⌿NOM←REC[;,FNOM][34]  :if ∨/~valid←⎕VI ,z,' ' ⍝ Numbers must be valid[35]  :orif (⍴valid)≠1↑⍴z     ⍝ and scalar![36]      Error←'InvFileNum' ⋄ →ERR[37]  :endif[38]  [39]  Z←1↑⍴REC←A⌿REC ⋄ X←'YN' DURN (A⌿DOB),A⌿DJF ⋄ NOM←,1⌈MatrixZWB A⌿NOM[40]  J←0 ⍝ Insert into matrix according to age[41]  MAT[X[J];]←MAT[X[J];]+NOM[J] ⋄ →(Z>J←J+1)/⎕LC[42]  [43]  L3:→(RECN<NO)/READ[44]  [45]  ⍝ Work out the averages and print results[46]  GMAT←GMAT+MAT ⋄ N←(N←N+1)PRINTNE MAT ⋄ →((~RESsave)∨1=1↑⍴FILES)/TIE[47]  (desc,' (','\' Win∆Child File,')') NE∆SAVE MAT ⋄ →TIE[48]  [49]  FINISH:TAB[0;11+⍳32]←32↑'All Data' ⋄ 0 0⍴3 PRINTNE GMAT ⍝ grand totals[50]  [51]  desc NE∆SAVE GMAT[52]  (desc,' at ',RunTime) BROWSE tpr1[53]  [54]  FormName ⎕wi '∆invrun' 1 ⍝ indicates called Review from Run[55]  'INVWIN' CallModule 'NE_Age_Review'[56]  FormName ⎕wi 'Focus' ⋄ →OUT[57]  [58]  ERR: ⍝ on Error Process[59]  :if FileSelections[60]     MDISPLAY Error ('\' Win∆Child ,fILENAME) ⋄ res←parent,'fData.edfILENAME'[61]  :else[62]     MDISPLAY Error ('\' Win∆Child File) ⋄ res←parent,'fData.edFILES'[63]  :endif[64]  NERASE tpr1[65]  [66]  OUT:⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'    ∇
+    ∇ res←NE∆INV;⎕IO;File;RECN;NUMRECS;REC;MAT;GMAT;tpr1;DPAGE;I;N;FDJF;DFDJF;DJF;DJS;AGES;NN;DOB;DFDOB;FDOB;FNOM;NOM;SUMMREC;X;NO;J;A;Z;Active;H1;TAB;TABLE;RunTime;desc;Error;valid;z;tieno;rUNDESC;RESsave;size
+[1]   ⍝ INVWIN.sf#5
+[2]   ⍝ Main function, calls the screen function, sets up required global
+[3]   ⍝ variables, creates output file and header, calls PRINTNE to print
+[4]   ⍝ the results.
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   res←'' ⋄ ⎕IO←0 ⋄ I←¯1 ⋄ PREPARE
+[8]   
+[9]   TIE:⎕NUNTIE tieno ⍝ Tieing file if available and looping through each deck
+[10]  →((1↑⍴FILES)=I←I+1)/FINISH ⋄ →(0=⍴File←DLTB FILES[I;])/⎕LC ⋄ →(~File NTIE tieno)/⎕LC
+[11]  
+[12]  ⍝ Screen Display
+[13]  ((I+1) (1↑⍴FILES) ('\' Win∆Child File)) Win∆ProgressBar 'FileUpdate'
+[14]  MAT←105 1 ⍴RECN←0 ⋄ TAB[0;11+⍳32]←32↑'\' Win∆Child File
+[15]  NO←⌊(size←⎕NSIZE tieno)÷RECL
+[16]  
+[17]  ⍝ Set up loop(s) to read member data from file, do calculations
+[18]  READ:NUMRECS←↑⍴REC←'ASCII' Read∆DataFile tieno size RECL (NO-RECN) RECN
+[19]  
+[20]  RECN←RECN+NUMRECS ⍝ Display record number being processed
+[21]  (RECN NO) Win∆ProgressBar 'MemberUpdate'
+[22]  
+[23]  DOB←MATRIX (DFDOB (vDATE- 0 0,120-20×Active)) DATEEXP REC[;FDOB]
+[24]  
+[25]  ⍝ Validate Dates of Birth
+[26]  :if ∨/~DATECHECK DOB ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif
+[27]  
+[28]  DJF←MATRIX (DFDJF DOB) DATEEXP REC[;FDJF]
+[29]  ⍝ Validate Dates Joined
+[30]  :if ∨/~DATECHECK DJF ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif
+[31]  →(~∨/A←,(DJS>BDATE)^(DJS←JUL DJF)≤EDATE)/L3
+[32]  
+[33]  z←(~^/' '=NOM)⌿NOM←REC[;,FNOM]
+[34]  :if ∨/~valid←⎕VI ,z,' ' ⍝ Numbers must be valid
+[35]  :orif (⍴valid)≠1↑⍴z     ⍝ and scalar!
+[36]      Error←'InvFileNum' ⋄ →ERR
+[37]  :endif
+[38]  
+[39]  Z←1↑⍴REC←A⌿REC ⋄ X←'YN' DURN (A⌿DOB),A⌿DJF ⋄ NOM←,1⌈MatrixZWB A⌿NOM
+[40]  J←0 ⍝ Insert into matrix according to age
+[41]  MAT[X[J];]←MAT[X[J];]+NOM[J] ⋄ →(Z>J←J+1)/⎕LC
+[42]  
+[43]  L3:→(RECN<NO)/READ
+[44]  
+[45]  ⍝ Work out the averages and print results
+[46]  GMAT←GMAT+MAT ⋄ N←(N←N+1)PRINTNE MAT ⋄ →((~RESsave)∨1=1↑⍴FILES)/TIE
+[47]  (desc,' (','\' Win∆Child File,')') NE∆SAVE MAT ⋄ →TIE
+[48]  
+[49]  FINISH:TAB[0;11+⍳32]←32↑'All Data' ⋄ 0 0⍴3 PRINTNE GMAT ⍝ grand totals
+[50]  
+[51]  desc NE∆SAVE GMAT
+[52]  (desc,' at ',RunTime) BROWSE tpr1
+[53]  
+[54]  FormName ⎕wi '∆invrun' 1 ⍝ indicates called Review from Run
+[55]  'INVWIN' CallModule 'NE_Age_Review'
+[56]  FormName ⎕wi 'Focus' ⋄ →OUT
+[57]  
+[58]  ERR: ⍝ on Error Process
+[59]  :if FileSelections
+[60]     MDISPLAY Error ('\' Win∆Child ,fILENAME) ⋄ res←parent,'fData.edfILENAME'
+[61]  :else
+[62]     MDISPLAY Error ('\' Win∆Child File) ⋄ res←parent,'fData.edFILES'
+[63]  :endif
+[64]  NERASE tpr1
+[65]  
+[66]  OUT:⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'
+    ∇

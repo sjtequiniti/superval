@@ -1,0 +1,17 @@
+    ∇ R←A DATEOFFSET B;C;D;E;F;⎕IO;⎕CT;⎕ELX
+[1]   ⍝ MAINWIN.sf#7
+[2]   ⍝ Calculates New Date from Date(s) "B" using Offset(s) "A"
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕ELX←'→ERR' ⋄ ⎕CT←⎕IO←0 ⋄ B←⌽B ⍝ Convert to US Dates
+[8]   R←(3≠¯1↑⍴B)⍴'' ⋄ R← 1 0 0 /B ⋄ C← 0 0 1 /B ⋄ B← 715876 ¯59 ¯28 0 31 61 92 122 153 184 214 245 275 [0 1 0 /B] ⍝⍫u
+[9]   D←400∣R←R+1900×R<100 ⋄ C←(⌊A)+(¯1↓⍴B)⍴B+C-(((100⍴ 1 0 0 0),300⍴ 0 0 0 0 ,96⍴ 1 0 0 0)[D]^B<0)-((⌊R×146097)-D+(100×4∣R)-4×100∣R)÷400
+[10]  R←C-(C-B←146097∣C)÷146097 ⋄ B←(×B)-×D←36524∣R ⋄ R←R+(R-D)÷36524 ⋄ B←B+×D←1461∣R ⋄ R←365∣A←58+R-(R-D)÷1461 ⋄ ⎕ERASE 'C'
+[11]  D←365⍴0 ⋄ D[0 31 59 90 120 151 181 212 243 273 304 334]←1 ⋄ D←(+\D)[R]
+[12]  B←R- 0 ¯2 29 57 88 118 149 179 210 241 271 302 332 [D]+B
+[13]  B←D,[¯0.5+⍴⍴D]B ⋄ ⎕ERASE 'D'
+[14]  A←(A-R)÷365 ⋄ ⎕ERASE 'R' ⋄ R←⌽A,B ⋄ →0 ⍝ Convert US Dates
+[15]  ERR:⎕ERROR 'SYNTAX ERROR' ⋄ →0
+    ∇

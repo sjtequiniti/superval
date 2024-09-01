@@ -1,1 +1,33 @@
-    ∇ FinDefault←FinDefault UpdateFinancialsIndex arg;list;z;msk[1]   ⍝ PARMWIN.sf#29[2]   ⍝ Routine to update the Rate Tables Tree[3]   [4]   ⎕wself←'fmFin_Display.trFinancials'[5]   :if arg[6]       Win∆PopulateTree FinancialsIndex "Financial Assumptions"[7]   :endif[8]   [9]   list←(2=list[;2])⌿list←⎕wi 'list' ⋄ SetNodes←list[;1][10]  [11]  :for z :in 1,(~(DLTB¨'[' StripText¨list[;3])∊FinCollapse)/SetNodes[12]      0 0⍴⎕wi "Expand" "expand" z[13]  :endfor[14]  [15]  :if 1=↑⍴list[16]      ⍙FinAssdict←GetFinList FinDefault←DLTB '[' StripText ,⊃list[;3] ⋄ z←list[;1][17]  :elseif ∨/z←(DLTB¨'[' StripText ¨list[;3])∊⊂FinDefault[18]      z←z/list[;1][19]  :else[20]      FinDefault←'' ⋄ z←0[21]  :endif[22]  ⎕wi 'highlightbold' (↑z)[23]  [24]  msk←2=(⎕wi 'list')[;2][25]  [26]  ⎕wi '∆menu'      (msk sel¨⊂'fmFin_Display.mFinancials_DisplayFile.mModify')[27]  ⎕wi '∆auditmenu' (msk sel¨⊂'fmFin_Display.mFinancials_DisplayFile.mAudit')[28]  ⎕wi '∆file'      (msk sel¨⊂'ClientFile')[29]  ⎕wi '∆cn'        (msk\(Index for '∆_Name' 'Financials') at '∆_CompNo')[30]  [31]  ⎕wi "onClick" "Parameters∆Click 'fmFin_Display.trFinancials'"    ∇
+    ∇ FinDefault←FinDefault UpdateFinancialsIndex arg;list;z;msk
+[1]   ⍝ PARMWIN.sf#29
+[2]   ⍝ Routine to update the Rate Tables Tree
+[3]   
+[4]   ⎕wself←'fmFin_Display.trFinancials'
+[5]   :if arg
+[6]       Win∆PopulateTree FinancialsIndex "Financial Assumptions"
+[7]   :endif
+[8]   
+[9]   list←(2=list[;2])⌿list←⎕wi 'list' ⋄ SetNodes←list[;1]
+[10]  
+[11]  :for z :in 1,(~(DLTB¨'[' StripText¨list[;3])∊FinCollapse)/SetNodes
+[12]      0 0⍴⎕wi "Expand" "expand" z
+[13]  :endfor
+[14]  
+[15]  :if 1=↑⍴list
+[16]      ⍙FinAssdict←GetFinList FinDefault←DLTB '[' StripText ,⊃list[;3] ⋄ z←list[;1]
+[17]  :elseif ∨/z←(DLTB¨'[' StripText ¨list[;3])∊⊂FinDefault
+[18]      z←z/list[;1]
+[19]  :else
+[20]      FinDefault←'' ⋄ z←0
+[21]  :endif
+[22]  ⎕wi 'highlightbold' (↑z)
+[23]  
+[24]  msk←2=(⎕wi 'list')[;2]
+[25]  
+[26]  ⎕wi '∆menu'      (msk sel¨⊂'fmFin_Display.mFinancials_DisplayFile.mModify')
+[27]  ⎕wi '∆auditmenu' (msk sel¨⊂'fmFin_Display.mFinancials_DisplayFile.mAudit')
+[28]  ⎕wi '∆file'      (msk sel¨⊂'ClientFile')
+[29]  ⎕wi '∆cn'        (msk\(Index for '∆_Name' 'Financials') at '∆_CompNo')
+[30]  
+[31]  ⎕wi "onClick" "Parameters∆Click 'fmFin_Display.trFinancials'"
+    ∇

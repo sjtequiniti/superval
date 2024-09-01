@@ -1,1 +1,51 @@
-    ∇ errs←errors_in R;Reqr;Ignr;PrevF;PrevN;CurrF;CurrN;currn;reqr;msk;prevn;ignr;currf;prevf;mtch;Look;look;DATECHARS;CHRFMT;NUMFMT[1]   ⍝ DATAWIN.sf#22[2]   (CurrN CurrF PrevN PrevF Look Reqr Ignr) ← R                                            ⍝ indeterminate case[3]   (CurrN CurrF PrevN PrevF)←(-2/0=↑¨⍴¨↑¨⌽¨CurrF PrevN)↓¨CurrN CurrF PrevN PrevF           ⍝ ignore anonymous last columns[4]   (currn currf prevn prevf look reqr ignr)←caseDn¨¨CurrN CurrF PrevN PrevF Look Reqr Ignr  ⍝ lower case[5]   (CHRFMT NUMFMT)←,¨'cn'                                                                  ⍝ l-case column formats[6]   DATECHARS←'dmy/-'                                                                       ⍝ characters used in date formats[7]   [8]   (1 4 'Checking Compatibility of Files') Win∆ProgressBar 'FileUpdate'[9]   [10]  errs←''[11]  [12]  :If ∨/msk←~reqr∊currn[13]      errs←errs,⊂'Required Current column names missing:',⍕msk/Reqr[14]  :EndIf[15]  [16]  :If ∨/msk←0=↑¨⍴¨CurrF[17]      errs←errs,⊂'Missing format for Current column/s: ',⍕msk/CurrN[18]  :EndIf[19]  [20]  :If ∨/msk←0=↑¨⍴¨PrevF[21]      errs←errs,⊂'Missing format for Previous column/s: ',⍕msk/PrevN[22]  :EndIf[23]  [24]  :If ∨/msk←~(currf∊CHRFMT NUMFMT)∨^/¨currf∊¨⊂DATECHARS[25]      errs←errs,⊂'Unrecognised format for Current column/s: ',⍕msk/CurrN[26]  :EndIf[27]  [28]  :If ∨/msk←~(prevf∊CHRFMT NUMFMT)∨^/¨prevf∊¨⊂DATECHARS[29]      errs←errs,⊂'Unrecognised format for Previous column/s: ',⍕msk/PrevN[30]  :EndIf[31]  [32]  :If ∨/msk←(currn⍳currn)≠⍳⍴currn[33]      errs←errs,⊂'Repeated column names in Current source file:',⍕msk/CurrN[34]  :EndIf[35]  :If ∨/msk←(prevn⍳prevn)≠⍳⍴prevn[36]      errs←errs,⊂'Repeated column names in Previous source file:',⍕msk/PrevN[37]  :EndIf[38]  [39]  :If 0∊⍴mtch←((currf∊⊂NUMFMT)/currn)~ignr[40]      errs←errs,⊂'No usable numeric columns in Current source file'[41]  :ElseIf ∨/msk←~mtch∊prevn[42]      errs←errs,⊂'Numeric columns missing from Previous source file:',⍕msk/(currn∊mtch)/CurrN[43]  :EndIf[44]  [45]  :If ×⍴look[46]  :AndIf ^/msk←~look∊currn[47]      MDISPLAY ('Required columns',(⍕msk/Look),' not found,')('so must be identified in Basis.')[48]  :Endif[49]      ∇
+    ∇ errs←errors_in R;Reqr;Ignr;PrevF;PrevN;CurrF;CurrN;currn;reqr;msk;prevn;ignr;currf;prevf;mtch;Look;look;DATECHARS;CHRFMT;NUMFMT
+[1]   ⍝ DATAWIN.sf#22
+[2]   (CurrN CurrF PrevN PrevF Look Reqr Ignr) ← R                                            ⍝ indeterminate case
+[3]   (CurrN CurrF PrevN PrevF)←(-2/0=↑¨⍴¨↑¨⌽¨CurrF PrevN)↓¨CurrN CurrF PrevN PrevF           ⍝ ignore anonymous last columns
+[4]   (currn currf prevn prevf look reqr ignr)←caseDn¨¨CurrN CurrF PrevN PrevF Look Reqr Ignr  ⍝ lower case
+[5]   (CHRFMT NUMFMT)←,¨'cn'                                                                  ⍝ l-case column formats
+[6]   DATECHARS←'dmy/-'                                                                       ⍝ characters used in date formats
+[7]   
+[8]   (1 4 'Checking Compatibility of Files') Win∆ProgressBar 'FileUpdate'
+[9]   
+[10]  errs←''
+[11]  
+[12]  :If ∨/msk←~reqr∊currn
+[13]      errs←errs,⊂'Required Current column names missing:',⍕msk/Reqr
+[14]  :EndIf
+[15]  
+[16]  :If ∨/msk←0=↑¨⍴¨CurrF
+[17]      errs←errs,⊂'Missing format for Current column/s: ',⍕msk/CurrN
+[18]  :EndIf
+[19]  
+[20]  :If ∨/msk←0=↑¨⍴¨PrevF
+[21]      errs←errs,⊂'Missing format for Previous column/s: ',⍕msk/PrevN
+[22]  :EndIf
+[23]  
+[24]  :If ∨/msk←~(currf∊CHRFMT NUMFMT)∨^/¨currf∊¨⊂DATECHARS
+[25]      errs←errs,⊂'Unrecognised format for Current column/s: ',⍕msk/CurrN
+[26]  :EndIf
+[27]  
+[28]  :If ∨/msk←~(prevf∊CHRFMT NUMFMT)∨^/¨prevf∊¨⊂DATECHARS
+[29]      errs←errs,⊂'Unrecognised format for Previous column/s: ',⍕msk/PrevN
+[30]  :EndIf
+[31]  
+[32]  :If ∨/msk←(currn⍳currn)≠⍳⍴currn
+[33]      errs←errs,⊂'Repeated column names in Current source file:',⍕msk/CurrN
+[34]  :EndIf
+[35]  :If ∨/msk←(prevn⍳prevn)≠⍳⍴prevn
+[36]      errs←errs,⊂'Repeated column names in Previous source file:',⍕msk/PrevN
+[37]  :EndIf
+[38]  
+[39]  :If 0∊⍴mtch←((currf∊⊂NUMFMT)/currn)~ignr
+[40]      errs←errs,⊂'No usable numeric columns in Current source file'
+[41]  :ElseIf ∨/msk←~mtch∊prevn
+[42]      errs←errs,⊂'Numeric columns missing from Previous source file:',⍕msk/(currn∊mtch)/CurrN
+[43]  :EndIf
+[44]  
+[45]  :If ×⍴look
+[46]  :AndIf ^/msk←~look∊currn
+[47]      MDISPLAY ('Required columns',(⍕msk/Look),' not found,')('so must be identified in Basis.')
+[48]  :Endif
+[49]  
+    ∇

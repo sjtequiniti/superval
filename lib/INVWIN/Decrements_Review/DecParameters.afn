@@ -1,1 +1,41 @@
-    ∇ res←DecParameters;⎕io;cn;list;ps[1]   ⍝ INVWIN.sf#8[2]   ⍝ Create the variables from the screen parameters as well as[3]   ⍝  AGES (Ages covered by Groups)[4]   ⍝  NN - Number of Groups[5]   ⍝  TABLE - the values of Rate Table TABXX[6]   ⍝  TTABLE - the values of the Durational Weights[7]   ⍝  decrdesc - the Withdrawal/Leaving Service Decrement description[8]   ⍝  TOTS - the results matrix[9]   ⎕io←1[10]  [11]  :if 0=⎕nc 'ControlName' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif[12]  :if 0∊⍴cn←'fmDecrementsReview.lvRUNDESC' ⎕wi 'value' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif[13]  :if 0∊⍴,DLTMB 'fmDecrementsReview.fTable.edTXX' ⎕wi 'text' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif ⍝ Not ready yet[14]  :if ~0∊⍴,res←1 Win∆ValidForm ControlName ⋄ :return ⋄ :endif[15]  Win∆AssignVars ControlName[16]  :if ~0∊⍴,res←(⊂'All') Decrements_Review 'Valid' ⍝ Specific (Cross) Validation Module[17]      MDISPLAY res ⋄ :return[18]  :endif[19]  Convert_Vars[20]  [21]  list←'fmDecrementsReview.lvRUNDESC' ⎕wi 'list'[22]  RUNDESC←(DLTB ⊃list[(list[;1])⍳cn;3])~'#%'[23]  0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' (3 4⍴'MAT EX  SFAC')[24]  [25]  EAGE←BAGE+AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP[26]  TABLE←(EAGE+1)↑DEC∆CHECK TABXX[27]  ps←20⌊PS←MatrixZWB PS ⋄ fDURN←ps[1]+⍳1+ps[2]-ps[1][28]  :if PS[2]≥20 ⋄ PS[2]←99 ⋄ :endif ⍝ Correct Impression[29]  [30]  MAT←((⍴MAT)⌈(BAGE+AGES),0)↑MAT ⋄ EX←((⍴EX)⌈(BAGE+AGES),0)↑EX[31]  MAT←MAT[BAGE+⍳AGES;fDURN] ⋄ EX←EX[BAGE+⍳AGES;fDURN][32]  [33]  :if 'fmDecrementsReview.fTable.edTXX' ⎕wi 'enabled'[34]      TTABLE←50 OVERTAKE DEC∆CHECK TXX[35]      TTABLE←(20↑TTABLE),(+/(20↓TTABLE)×⌽¯1+⍳30) CDIV +/¯1+⍳30 ⍝ Weighted Average after 20!![36]      decrdesc←(3 15⍴'Withdrawal     Leaving Service')[1+uk;][37]  :else[38]      TTABLE←21/1[39]  :endif    ∇
+    ∇ res←DecParameters;⎕io;cn;list;ps
+[1]   ⍝ INVWIN.sf#8
+[2]   ⍝ Create the variables from the screen parameters as well as
+[3]   ⍝  AGES (Ages covered by Groups)
+[4]   ⍝  NN - Number of Groups
+[5]   ⍝  TABLE - the values of Rate Table TABXX
+[6]   ⍝  TTABLE - the values of the Durational Weights
+[7]   ⍝  decrdesc - the Withdrawal/Leaving Service Decrement description
+[8]   ⍝  TOTS - the results matrix
+[9]   ⎕io←1
+[10]  
+[11]  :if 0=⎕nc 'ControlName' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif
+[12]  :if 0∊⍴cn←'fmDecrementsReview.lvRUNDESC' ⎕wi 'value' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif
+[13]  :if 0∊⍴,DLTMB 'fmDecrementsReview.fTable.edTXX' ⎕wi 'text' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif ⍝ Not ready yet
+[14]  :if ~0∊⍴,res←1 Win∆ValidForm ControlName ⋄ :return ⋄ :endif
+[15]  Win∆AssignVars ControlName
+[16]  :if ~0∊⍴,res←(⊂'All') Decrements_Review 'Valid' ⍝ Specific (Cross) Validation Module
+[17]      MDISPLAY res ⋄ :return
+[18]  :endif
+[19]  Convert_Vars
+[20]  
+[21]  list←'fmDecrementsReview.lvRUNDESC' ⎕wi 'list'
+[22]  RUNDESC←(DLTB ⊃list[(list[;1])⍳cn;3])~'#%'
+[23]  0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' (3 4⍴'MAT EX  SFAC')
+[24]  
+[25]  EAGE←BAGE+AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP
+[26]  TABLE←(EAGE+1)↑DEC∆CHECK TABXX
+[27]  ps←20⌊PS←MatrixZWB PS ⋄ fDURN←ps[1]+⍳1+ps[2]-ps[1]
+[28]  :if PS[2]≥20 ⋄ PS[2]←99 ⋄ :endif ⍝ Correct Impression
+[29]  
+[30]  MAT←((⍴MAT)⌈(BAGE+AGES),0)↑MAT ⋄ EX←((⍴EX)⌈(BAGE+AGES),0)↑EX
+[31]  MAT←MAT[BAGE+⍳AGES;fDURN] ⋄ EX←EX[BAGE+⍳AGES;fDURN]
+[32]  
+[33]  :if 'fmDecrementsReview.fTable.edTXX' ⎕wi 'enabled'
+[34]      TTABLE←50 OVERTAKE DEC∆CHECK TXX
+[35]      TTABLE←(20↑TTABLE),(+/(20↓TTABLE)×⌽¯1+⍳30) CDIV +/¯1+⍳30 ⍝ Weighted Average after 20!!
+[36]      decrdesc←(3 15⍴'Withdrawal     Leaving Service')[1+uk;]
+[37]  :else
+[38]      TTABLE←21/1
+[39]  :endif
+    ∇

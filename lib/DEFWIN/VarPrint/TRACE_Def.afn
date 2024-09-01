@@ -1,1 +1,36 @@
-    ∇ L TRACE_Def R;⎕IO;∆∆val;bdy;hdr;msk;tcpn;thdr;tbdy;tabl;out;full;∆[1]   ⍝ DEFWIN.sf#9[2]   ⍝  Write to APL trace file. SJT aug2010[3]   ⍝⍝⍝ FIXME - generalise for all membership groups[4]   [5]   ⎕IO←1[6]   :If 0∊⍴R                              ⋄ :return                                 ⍝ do nothing[7]   :ElseIf 2=rank R ⋄ :andif ^/0=∊,1 1↓R ⋄ :return                                 ⍝ Ignore if all zeroes[8]   :ElseIf ×⎕NC 'L'[9]       :Select ↑⍴⍴R[10]      :CaseList 0 1[11]          out←'h3'xtag L[12]          out←out,⎕TCNL,'pre'xtag ⎕TCNL,('¯-' REPL ⍕R),⎕TCNL[13]      :Case 2[14]          :if 0∊1↓full←×↑¨⍴¨R[1;] ⍝ empty hdr cells after first col indicate column groups[15]              (hdr bdy)←(R[⍳2;])(2 0↓R)[16]              ∆←  ⊂(1,1↓full)/('th' 'th colspan="3"')[1+0,>⌿⊃1 ¯1↓¨⊂full] xtag¨hdr[1;][17]              ∆←∆,⊂(⊂'th')xtag¨,¨⍕¨hdr[2;][18]              thdr←'thead' xtag  (⊂'tr')xtag¨ ↑¨,/¨∆[19]          :else[20]              (hdr bdy)←(R[1;])(1 0↓R)[21]              thdr←'thead' xtag ⊂  'tr' xtag  ↑,/(⊂'th')xtag¨,¨⍕¨hdr[22]          :endif[23]          msk←∨\∨/0≠↑¨0 1↓bdy                                                     ⍝ drop leading all-zero rows[24]          msk←msk∨msk^.=0                                                         ⍝ nothing to show?[25]          tcpn←⊂'caption' xtag L[26]          tbdy← 'tbody'   xtag(⊂'tr')xtag¨,/(⊂'td')xtag¨,¨⍉⊃⊂[2]¨(⊂'¯-') REPL¨⍕¨,[1.5]¨⊂[1]bdy[27]          tabl← 'table'   xtag tcpn,thdr,tbdy[28]          out←↑,/tabl,¨⎕TCNL[29]      :EndSelect[30]  :Else                                                                           ⍝ R is HTML[31]      out←'¯-' REPL R[32]  :EndIf[33]  [34]   (out,⎕TCNL) ⎕NAPPEND vtpr1    ∇
+    ∇ L TRACE_Def R;⎕IO;∆∆val;bdy;hdr;msk;tcpn;thdr;tbdy;tabl;out;full;∆
+[1]   ⍝ DEFWIN.sf#9
+[2]   ⍝  Write to APL trace file. SJT aug2010
+[3]   ⍝⍝⍝ FIXME - generalise for all membership groups
+[4]   
+[5]   ⎕IO←1
+[6]   :If 0∊⍴R                              ⋄ :return                                 ⍝ do nothing
+[7]   :ElseIf 2=rank R ⋄ :andif ^/0=∊,1 1↓R ⋄ :return                                 ⍝ Ignore if all zeroes
+[8]   :ElseIf ×⎕NC 'L'
+[9]       :Select ↑⍴⍴R
+[10]      :CaseList 0 1
+[11]          out←'h3'xtag L
+[12]          out←out,⎕TCNL,'pre'xtag ⎕TCNL,('¯-' REPL ⍕R),⎕TCNL
+[13]      :Case 2
+[14]          :if 0∊1↓full←×↑¨⍴¨R[1;] ⍝ empty hdr cells after first col indicate column groups
+[15]              (hdr bdy)←(R[⍳2;])(2 0↓R)
+[16]              ∆←  ⊂(1,1↓full)/('th' 'th colspan="3"')[1+0,>⌿⊃1 ¯1↓¨⊂full] xtag¨hdr[1;]
+[17]              ∆←∆,⊂(⊂'th')xtag¨,¨⍕¨hdr[2;]
+[18]              thdr←'thead' xtag  (⊂'tr')xtag¨ ↑¨,/¨∆
+[19]          :else
+[20]              (hdr bdy)←(R[1;])(1 0↓R)
+[21]              thdr←'thead' xtag ⊂  'tr' xtag  ↑,/(⊂'th')xtag¨,¨⍕¨hdr
+[22]          :endif
+[23]          msk←∨\∨/0≠↑¨0 1↓bdy                                                     ⍝ drop leading all-zero rows
+[24]          msk←msk∨msk^.=0                                                         ⍝ nothing to show?
+[25]          tcpn←⊂'caption' xtag L
+[26]          tbdy← 'tbody'   xtag(⊂'tr')xtag¨,/(⊂'td')xtag¨,¨⍉⊃⊂[2]¨(⊂'¯-') REPL¨⍕¨,[1.5]¨⊂[1]bdy
+[27]          tabl← 'table'   xtag tcpn,thdr,tbdy
+[28]          out←↑,/tabl,¨⎕TCNL
+[29]      :EndSelect
+[30]  :Else                                                                           ⍝ R is HTML
+[31]      out←'¯-' REPL R
+[32]  :EndIf
+[33]  
+[34]   (out,⎕TCNL) ⎕NAPPEND vtpr1
+    ∇

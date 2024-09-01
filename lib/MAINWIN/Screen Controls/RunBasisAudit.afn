@@ -1,0 +1,20 @@
+    ∇ BasisType RunBasisAudit parm;ReportParmAudit;htmfile;to
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Run the Basis Audit Module
+[3]   
+[4]   :select parm
+[5]   :case 'Form'
+[6]       0 0⍴(SystemDir,'PARMWIN') ReadFile 'Basis_Audit' '' 'ReportParmAudit'
+[7]       htmfile←0 ReportParmAudit ,⊂ (⍎ControlName ⎕wi '∆inputstype')  (↑ControlName ⎕wi '∆savecn')
+[8]   :case 'Menu'
+[9]       'PARMWIN' CallModule 'Basis_Audit'
+[10]  :case 'PPF'
+[11]      'PPFWIN' CallModule 'PPF_Audit'
+[12]  :endselect
+[13]  
+[14]  :if ~mt htmfile
+[15]      to←timeout
+[16]      (timeout unattended)←2 1 ⋄ MDISPLAY 'Loading Report in your Browser' ⋄ (timeout unattended)←to 0
+[17]      0 Win∆EditFile htmfile
+[18]  :endif
+    ∇

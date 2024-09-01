@@ -1,1 +1,21 @@
-    ∇ response←larg BrokerRequest request;tries;maxtries;⍙⍙httplevel;resplimit[1]   ⍝ HPCWIN.sf#2[2]   ⍝ Send off a request to Broker[3]   ⍝  and process response - return a nest of rows returned[4]   ⍝ Reads Globals: ⍙⍙httpIPADDR ⍙⍙httpPORT ⍙⍙hpcLogTie ⍙⍙hpcLOGLEVEL[5]   [6]   :if 0=⎕nc 'larg' ⋄ larg←9 ⋄ :endif[7]   (⍙⍙httplevel maxtries resplimit)←larg,(⍴,larg)↓0,10,⍙⍙httpRESPLIMIT[8]   request←unspace request[9]   [10]  tries←0 ⍝ Up to 10 tries with delays (if no broker, "Nothing received" takes ⍙⍙httpRESPLIMIT to be returned)[11]  :repeat[12]      0 0⍴⎕dl 0.000001                                    ⍝ Fixes issue with Nothing Received when Broker alive???[13]      response←RBClient ⍙⍙httpIPADDR ⍙⍙httpPORT request resplimit[14]      response←⎕tcnl,(⊃,/response)~⎕TCLF[15]      response←1↓¨(response ⎕ss ⎕tcnl) ⎕penclose response[16]      :if ⍙⍙httplevel≤⍙⍙hpcLOGLEVEL ⋄ :andif ~∨/(⊂'Nothing to do')≡¨response[17]          ⍙⍙hpcLogTie HPC_Log ' ! ' join (lmt ('IP Address: ',⍙⍙httpIPADDR) ('Port: ',⍕⍙⍙httpPORT) request ((0≠tries)/'Try: ',⍕1+tries)),response[18]      :endif[19]  :until ~∨/(⊂'Nothing received')≡¨response ⋄ :orif maxtries=tries←tries+1    ∇
+    ∇ response←larg BrokerRequest request;tries;maxtries;⍙⍙httplevel;resplimit
+[1]   ⍝ HPCWIN.sf#2
+[2]   ⍝ Send off a request to Broker
+[3]   ⍝  and process response - return a nest of rows returned
+[4]   ⍝ Reads Globals: ⍙⍙httpIPADDR ⍙⍙httpPORT ⍙⍙hpcLogTie ⍙⍙hpcLOGLEVEL
+[5]   
+[6]   :if 0=⎕nc 'larg' ⋄ larg←9 ⋄ :endif
+[7]   (⍙⍙httplevel maxtries resplimit)←larg,(⍴,larg)↓0,10,⍙⍙httpRESPLIMIT
+[8]   request←unspace request
+[9]   
+[10]  tries←0 ⍝ Up to 10 tries with delays (if no broker, "Nothing received" takes ⍙⍙httpRESPLIMIT to be returned)
+[11]  :repeat
+[12]      0 0⍴⎕dl 0.000001                                    ⍝ Fixes issue with Nothing Received when Broker alive???
+[13]      response←RBClient ⍙⍙httpIPADDR ⍙⍙httpPORT request resplimit
+[14]      response←⎕tcnl,(⊃,/response)~⎕TCLF
+[15]      response←1↓¨(response ⎕ss ⎕tcnl) ⎕penclose response
+[16]      :if ⍙⍙httplevel≤⍙⍙hpcLOGLEVEL ⋄ :andif ~∨/(⊂'Nothing to do')≡¨response
+[17]          ⍙⍙hpcLogTie HPC_Log ' ! ' join (lmt ('IP Address: ',⍙⍙httpIPADDR) ('Port: ',⍕⍙⍙httpPORT) request ((0≠tries)/'Try: ',⍕1+tries)),response
+[18]      :endif
+[19]  :until ~∨/(⊂'Nothing received')≡¨response ⋄ :orif maxtries=tries←tries+1
+    ∇

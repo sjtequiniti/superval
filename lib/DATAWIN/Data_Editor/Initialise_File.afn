@@ -1,1 +1,49 @@
-    ∇ res←Initialise_File;file;File;size;Error;REC;recs;NN;KEY[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Set up a file ready for edit[3]   [4]   ⍝ Erase Temporary Edit File first, if necessary[5]   :if res←0=edttie←NCREATE File←InputDir,'TEMP$$.EDT' ⍝ Force a new file[6]       ⍝ File must exist and be in use by another program[7]       MDISPLAY 'Unable to create or access TEMP$$.EDT' ⋄ :return[8]   :endif[9]   [10]  :if FileExist file←InputDir,EditFile[11]      filetie←'Native' TieNumber file[12]      :if res←~file NTIE filetie,2[13]          Error←'Unable to open ',EditFile ⋄ →Err[14]      :endif[15]  [16]      size←⎕nsize filetie[17]      recs←,(((⌊size÷recs)⍴recs),(recs←RECL×⌊FileChunk÷RECL)∣size)~0[18]      NN←⌊recs÷RECL ⋄ KEY←0[19]      ('Reading File:' 'Current Record Number:') Win∆ProgressBar 'SetLabels'[20]      'Copying Records' Win∆ProgressBar 'Open'[21]      (1 1 file) Win∆ProgressBar 'FileUpdate'[22]      :for recs :in NN ⍝ Make a working copy of the file[23]          REC←⎕NREAD filetie,82,RECL×recs[24]          :if res←~^/⎕tclf=REC[RECL×⍳recs][25]              Error←'VaryLength' ⋄ →Err[26]          :else[27]              REC ⎕NAPPEND edttie[28]              ((KEY←KEY+recs) (+/NN)) Win∆ProgressBar 'MemberUpdate'[29]          :endif[30]      :endfor[31]      ⎕nuntie filetie ⍝ Close the real file & reset pointer[32]      size←⎕nsize edttie[33]      :if '→'=⎕NREAD edttie,82,1,size-1 ⋄ (size-1) ⎕NRESIZE edttie ⋄ :endif[34]  [35]  :else ⍝ If new filename specified create a new one only (no copy)[36]      ⍝ Simply append a blank record to the working copy of the file[37]      ⍝ with the appropriate character at the end of the file[38]      ((-RECL)↑lastchar,⎕tcnl,⎕tclf) ⎕nappend edttie[39]  :endif[40]  [41]  hSS ⎕wi 'xModified' 0[42]  block←Tagged←⍳FileChanged←0 ⍝ Nothing can be blocked/tagged yet[43]  MDEpage←editing←1 ⋄ Reset_File 0[44]  →end[45]  [46]  Err:MDISPLAY Error ⋄ File NERASE edttie[47]  end:Win∆ProgressBar 'Close'    ∇
+    ∇ res←Initialise_File;file;File;size;Error;REC;recs;NN;KEY
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Set up a file ready for edit
+[3]   
+[4]   ⍝ Erase Temporary Edit File first, if necessary
+[5]   :if res←0=edttie←NCREATE File←InputDir,'TEMP$$.EDT' ⍝ Force a new file
+[6]       ⍝ File must exist and be in use by another program
+[7]       MDISPLAY 'Unable to create or access TEMP$$.EDT' ⋄ :return
+[8]   :endif
+[9]   
+[10]  :if FileExist file←InputDir,EditFile
+[11]      filetie←'Native' TieNumber file
+[12]      :if res←~file NTIE filetie,2
+[13]          Error←'Unable to open ',EditFile ⋄ →Err
+[14]      :endif
+[15]  
+[16]      size←⎕nsize filetie
+[17]      recs←,(((⌊size÷recs)⍴recs),(recs←RECL×⌊FileChunk÷RECL)∣size)~0
+[18]      NN←⌊recs÷RECL ⋄ KEY←0
+[19]      ('Reading File:' 'Current Record Number:') Win∆ProgressBar 'SetLabels'
+[20]      'Copying Records' Win∆ProgressBar 'Open'
+[21]      (1 1 file) Win∆ProgressBar 'FileUpdate'
+[22]      :for recs :in NN ⍝ Make a working copy of the file
+[23]          REC←⎕NREAD filetie,82,RECL×recs
+[24]          :if res←~^/⎕tclf=REC[RECL×⍳recs]
+[25]              Error←'VaryLength' ⋄ →Err
+[26]          :else
+[27]              REC ⎕NAPPEND edttie
+[28]              ((KEY←KEY+recs) (+/NN)) Win∆ProgressBar 'MemberUpdate'
+[29]          :endif
+[30]      :endfor
+[31]      ⎕nuntie filetie ⍝ Close the real file & reset pointer
+[32]      size←⎕nsize edttie
+[33]      :if '→'=⎕NREAD edttie,82,1,size-1 ⋄ (size-1) ⎕NRESIZE edttie ⋄ :endif
+[34]  
+[35]  :else ⍝ If new filename specified create a new one only (no copy)
+[36]      ⍝ Simply append a blank record to the working copy of the file
+[37]      ⍝ with the appropriate character at the end of the file
+[38]      ((-RECL)↑lastchar,⎕tcnl,⎕tclf) ⎕nappend edttie
+[39]  :endif
+[40]  
+[41]  hSS ⎕wi 'xModified' 0
+[42]  block←Tagged←⍳FileChanged←0 ⍝ Nothing can be blocked/tagged yet
+[43]  MDEpage←editing←1 ⋄ Reset_File 0
+[44]  →end
+[45]  
+[46]  Err:MDISPLAY Error ⋄ File NERASE edttie
+[47]  end:Win∆ProgressBar 'Close'
+    ∇

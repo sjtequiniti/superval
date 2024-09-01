@@ -1,0 +1,46 @@
+    ∇ ClientFolder Folder;Error;CurrentFolder;ctie
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Select a Client Folder
+[3]   
+[4]   CurrentFolder←InputDir ClientFile ⍝ Save Curent Settings
+[5]   ParametersTreeHide
+[6]   
+[7]   :if ^/Folder∊'0123456789'
+[8]       :if ';'∊Folder←INIString uSER ('Open',Folder) '' PrefINI
+[9]           Error←'InvFolder' Folder ';' ⋄ →err
+[10]      :endif
+[11]  ⍝⍝⍝    elx←⎕elx ⋄ ⎕elx←"⎕elx←elx ⋄ Error←'NotFolder' Folder ⋄ →err"
+[12]  ⍝⍝⍝    0 0⍴⎕xlib Folder ⋄ ⎕elx←elx ⍝ Check if valid Folder ⍝⍝⍝ Could use FileExist?
+[13]      :if ~FolderExist Folder ⍝ Check if valid Folder
+[14]          Error←'NotFolder' Folder ⋄ →err
+[15]      :endif
+[16]  :else
+[17]      :if ''≡Folder←UPPERCASE 'Select Scheme Folder' GetDir95 Folder ⋄ →end ⋄ :endif
+[18]      :if ';'∊Folder ⋄ Error←'InvFolder' Folder ';'                  ⋄ →err ⋄ :endif
+[19]  :endif
+[20]  Folder←FullFolder Folder
+[21]  0 0⍴((1⊃CurrentFolder) uSER (ctie←TieNumber '')) FolderHeld 'Start' ⍝ Preserve Current Client
+[22]  
+[23]  →(~mt Error←uSER ClientSetup Folder)/err
+[24]  
+[25]  yieldDir←outputDir←consolidDir←'' ⋄  0 0⍴⎕ex 'newyieldDir newoutputDir newconsolidDir'
+[26]  
+[27]  →(ClientCheck 'OpenScheme')/end
+[28]  
+[29]  0 0⍴((1⊃CurrentFolder) ctie) FolderHeld 'End' ⍝ Release Previous Client
+[30]  TrackUser 'Logged Off from ',1⊃CurrentFolder
+[31]  TrackUser 'Logged On to ',InputDir
+[32]  :return
+[33]  
+[34]  err:    MDISPLAY Error
+[35]  end:    (InputDir ClientFile)←CurrentFolder ⍝ Revert to previous setting
+[36]  0 0⍴(InputDir uSER) FolderHeld 'Start'
+[37]  
+[38]  0 0⍴(SystemDir,'OVERWIN') ReadFile 'Client'
+[39]  ListviewDict←MATRIX 'Module' 'Control' 'Parameters' 'Sort'
+[40]  'CreateVars' RunModule 'Client'                ⍝ Create Client Vars
+[41]  0 0⍴(SystemDir,'OVERWIN') DeleteModule 'Client'
+[42]  
+[43]  :if ecflag ⋄ LocalLicence ⋄ :endif ⍝ Get "local" Licence
+[44]  'Client' UpdateParametersIndex 1
+    ∇

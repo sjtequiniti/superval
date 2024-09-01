@@ -1,1 +1,22 @@
-    ∇ Z←TotMaxSRV SRATAB_Calc MaxSRV;termfrac;preterm;servstart;servend;ACC;upLift;servtot[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Calculate the Service Related Accrual[3]   ⍝  Reads: startterm, endterm, SERVNOMAX, SRATAB∆L, AccMethod, slice, ACCRATE[4]   ⍝ Returns Global UPSERV (fro VarPrint)[5]   [6]   termfrac←preterm-⌊preterm←startterm⌊MaxSRV+SERVNOMAX                  ⍝ Service at the Start of Slice[7]   servstart←(SRATAB∆L[⌊preterm]×1-termfrac)+termfrac×SRATAB∆L[⌈preterm] ⍝ Accrual at start of Slice[8]   [9]   termfrac←preterm-⌊preterm←  endterm⌊MaxSRV+SERVNOMAX                  ⍝ Service at the End of Slice[10]  servend  ←(SRATAB∆L[⌊preterm]×1-termfrac)+termfrac×SRATAB∆L[⌈preterm] ⍝ Accrual at end of Slice[11]  [12]  ACC←ACCRATE×0⌈UPSERV←servend-servstart                                ⍝ Difference is accrual during Slice[13]  [14]  :if upLift←0 ⋄ :andif upLift←AccMethod ⋄ :andif upLift←slice≠0[15]      termfrac←preterm-⌊preterm←totterm⌊TotMaxSRV+SERVNOMAX               ⍝ Service at the Exit[16]      servtot←(SRATAB∆L[⌊preterm]×1-termfrac)+termfrac×SRATAB∆L[⌈preterm] ⍝ Accrual at Exit[17]      upLift←¯0.99999⌈(servtot CDIV preterm)-1[18]  :endif[19]  [20]  Z←ACC upLift    ∇
+    ∇ Z←TotMaxSRV SRATAB_Calc MaxSRV;termfrac;preterm;servstart;servend;ACC;upLift;servtot
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Calculate the Service Related Accrual
+[3]   ⍝  Reads: startterm, endterm, SERVNOMAX, SRATAB∆L, AccMethod, slice, ACCRATE
+[4]   ⍝ Returns Global UPSERV (fro VarPrint)
+[5]   
+[6]   termfrac←preterm-⌊preterm←startterm⌊MaxSRV+SERVNOMAX                  ⍝ Service at the Start of Slice
+[7]   servstart←(SRATAB∆L[⌊preterm]×1-termfrac)+termfrac×SRATAB∆L[⌈preterm] ⍝ Accrual at start of Slice
+[8]   
+[9]   termfrac←preterm-⌊preterm←  endterm⌊MaxSRV+SERVNOMAX                  ⍝ Service at the End of Slice
+[10]  servend  ←(SRATAB∆L[⌊preterm]×1-termfrac)+termfrac×SRATAB∆L[⌈preterm] ⍝ Accrual at end of Slice
+[11]  
+[12]  ACC←ACCRATE×0⌈UPSERV←servend-servstart                                ⍝ Difference is accrual during Slice
+[13]  
+[14]  :if upLift←0 ⋄ :andif upLift←AccMethod ⋄ :andif upLift←slice≠0
+[15]      termfrac←preterm-⌊preterm←totterm⌊TotMaxSRV+SERVNOMAX               ⍝ Service at the Exit
+[16]      servtot←(SRATAB∆L[⌊preterm]×1-termfrac)+termfrac×SRATAB∆L[⌈preterm] ⍝ Accrual at Exit
+[17]      upLift←¯0.99999⌈(servtot CDIV preterm)-1
+[18]  :endif
+[19]  
+[20]  Z←ACC upLift
+    ∇

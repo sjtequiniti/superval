@@ -1,0 +1,32 @@
+    ∇ ⍙DBInitialise arg;data;table
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Insert all Fixed Data into the Database
+[3]   
+[4]   :if ⍙dbopen ⍝ Put data in Fixed and some Variable Data Tables and queries
+[5]       :for table :in 'BenefitType' 'Contingency' 'LiabilityType' 'DataItem' 'BasisType',AOSCtl/'AOSClass' 'AOSItem'
+[6]           ⍙DBInsertFixedData table
+[7]       :endfor
+[8]       :if arg=1 ⋄ ⍙DBStoredProc ⋄ :endif
+[9]   :endif
+[10]  
+[11]  data←(Win∆Parent version) (Win∆Child version),(uk=1)/⊂⍕ClntCode×1+bGAD
+[12]  'ADOrst' ⎕wi 'XOpen' 'Version' ('ADOcon' ⎕wi 'obj') cursor lock
+[13]  ⍙DBInsertData data
+[14]  0 0⍴'ADOrst' ⎕wi 'XClose'
+[15]  
+[16]  data←(~sqlDatabase)↓10 100 0 10000 20000 0 0 0 10000 20000
+[17]  'ADOrst' ⎕wi 'XOpen' 'AllocatedIDs' ('ADOcon' ⎕wi 'obj') cursor lock
+[18]  ⍙DBInsertData data
+[19]  
+[20]  :if ~sqlDatabase
+[21]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[22]  
+[23]      data←(100↑cLIENT) ((⎕io+arg)⊃'Temporary' 'Client' 'Consolidation' 'Scenario')
+[24]      :if     arg=1 ⋄ data←data,'Valuation Runs' (⍙DBTimeStamp ⎕ts) 10 10 10 uSER
+[25]      :elseif arg=2 ⋄ data←data, ConsDBName      (⍙DBTimeStamp ⎕ts)  0  0  0 uSER ParmDesc ParmTS
+[26]      :elseif arg=3 ⋄ data←data, ScenDBName      (⍙DBTimeStamp ⎕ts)  0  0  0 uSER ParmDesc ParmTS
+[27]      :endif
+[28]      'ADOrst' ⎕wi 'XOpen' 'Identification' ('ADOcon' ⎕wi 'obj') cursor lock
+[29]      ⍙DBInsertData data
+[30]  :endif
+    ∇

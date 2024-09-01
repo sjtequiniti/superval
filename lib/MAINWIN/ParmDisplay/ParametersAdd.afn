@@ -1,0 +1,66 @@
+    ∇ nested←pfx ParametersAdd Index;Module;row;cn;desc;highlight;cns;descs;tab;FinCollapse;menu;auditmenu;ModuleType;FileType;table;enabled;disabled
+[1]   ⍝ MAINWIN.sf#15
+[2]   ⍝ Create Tree Nodes of Parameters
+[3]   
+[4]   nested←0 6⍴0 '' '' '' '' 0
+[5]   
+[6]   :if ~mt Index
+[7]       :if 'LibraryFile'≡FileType←↑Index at '∆_Name' ⋄ FileType←ClientFile ⋄ :endif
+[8]   
+[9]       :for ModuleType :in nub (table←ParametersTable for 'ModuleFile' FileType) at 'ModuleType'
+[10]          nested←nested⍪3 ModuleType ''  '' '' 0
+[11]  
+[12]          :for Module :in (table for 'ModuleType' ModuleType) at 'Module'
+[13]              tab←ParametersTable for 'Module' Module
+[14]              (desc enabled menu auditmenu)←(pfx '' '' ''),¨↑¨tab at 'ModuleDesc' 'ModuleEnabled' 'ModuleMenu' 'AuditMenu'
+[15]              highlight←(disabled←~ZWB enabled)/'highlightcut'
+[16]              nested←nested⍪4 ((disabled/'{Not Available} '),desc) highlight menu auditmenu 0
+[17]  
+[18]              cns←(Index for '∆_Name' Module) at '∆_CompNo'
+[19]  
+[20]              :if Module≡'Financials' ⍝ Get Currently Selected Financials
+[21]              :andif mt ClientFile ReadFile 'Financials_Display' ⍝ Read Financials default
+[22]                  FinDefault←''
+[23]              :elseif (⊂Module)∊'Actives' 'Deferreds' 'Pensioners',¨⊂'_Basis'
+[24]              :andif useBasisCat
+[25]                  descs←↑¨(⊂Index at '∆_CompNo' '∆_Description') map¨cns
+[26]                  descs←(' '=2⊃¨2↑¨descs)/descs
+[27]                  descs←((~unique ↑¨descs)∨(⌽~unique ⌽↑¨descs))/descs
+[28]              :endif
+[29]  
+[30]              :select ParmsSort
+[31]              :case 'Alpha'
+[32]                  cns←cns[⎕av⍋⊃(Index for '∆_Name' Module) at '∆_Description']
+[33]              :case 'Modified'
+[34]                  cns←cns[⍋⊃(Index for '∆_Name' Module) at '∆_TimeModified']
+[35]              :case 'Created' ⍝ Should already be in this order
+[36]              :endselect
+[37]  
+[38]              :if 'Single'≡↑tab at 'ModuleSets' ⋄ :andif 1=⍴,cns
+[39]                  row←↑⍴nested
+[40]                  nested[row;2]←nested[row;2],¨⊂(' [Last Saved by ',,⊃(Index at '∆_CompNo' '∆_UserModified') map cns),' on ',DLTB (⊃(Index at '∆_CompNo' '∆_TSModified') map cns),']'
+[41]                  nested[row;6]←⊂cns
+[42]              :else
+[43]                  :for cn :in cns
+[44]                      desc←pfx,⊃(Index at '∆_CompNo' '∆_Description') map cn
+[45]                      highlight←''
+[46]                      :select Module
+[47]                      :case 'Financials'
+[48]                          :if desc≡FinDefault ⋄ highlight←'highlightbold' ⋄ :endif
+[49]                      :caselist 'Actives' 'Deferreds' 'Pensioners',¨⊂'_Basis'
+[50]                          :if useBasisCat
+[51]                              :if ' '≠2⊃2↑desc ⋄ :orif (⊂desc)∊descs
+[52]                                  highlight←'highlightselect'
+[53]                              :endif
+[54]                          :endif
+[55]                      :endselect
+[56]                      desc←desc,' [Last Saved by ',,⊃(Index at '∆_CompNo' '∆_UserModified') map cn
+[57]                      desc←desc,' on ',DLTB (⊃(Index at '∆_CompNo' '∆_TSModified') map cn),']'
+[58]                      nested←nested⍪5 desc highlight menu auditmenu cn
+[59]                  :endfor
+[60]              :endif
+[61]          :endfor
+[62]      :endfor
+[63]  :endif
+[64]  0 0⍴DeleteVars 'Financials_Display'
+    ∇

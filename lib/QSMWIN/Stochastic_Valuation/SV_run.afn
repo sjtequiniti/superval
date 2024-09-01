@@ -1,0 +1,59 @@
+    ∇ res←SV_run;group10;cashflows;liabilities;group;scen;rate∆;LiabView;CFView;xxx;finMethod
+[1]   ⍝ QSMWIN.sf#7
+[2]   ⍝ Run the Stochastic Valuation
+[3]   
+[4]   ('Task:' 'Progress:') Win∆ProgressBar 'SetLabels'
+[5]   'Running Stochastic Valuations' Win∆ProgressBar 'Open'
+[6]   
+[7]   (1 3 'Importing Quick Scenario Programs') Win∆ProgressBar 'FileUpdate'
+[8]   
+[9]   0 0⍴(SystemDir,'QSMWIN') ReadFile 'Quick_Scenario'
+[10]  0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation PenProj' '' (⊃'PP∆FreqGeoAdjust' 'PP∆FreqAdjust')
+[11]  
+[12]  0 0⍴⍙VALUESdict ReadDictFile 'Configure_RF'
+[13]  0 0⍴ClientFile ReadFile 'Configure_RF'
+[14]  0 0⍴(SystemDir,'QSMWIN') ReadFile 'Configure_RF'
+[15]  'CreateVars' RunModule 'Configure_RF'
+[16]  0 0⍴(SystemDir,'QSMWIN') DeleteModule 'Configure_RF'
+[17]  
+[18]  0 0⍴qsmfile ReadFile 'Quick_Scenario' parms
+[19]  group10←9.27>saveVersion
+[20]  
+[21]  restab←1 QS_Compatibility restab
+[22]  (maxyr maxpay xxx premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk)←⍙WebVariables 0 0
+[23]  finMethod←zwb ¨finRelative finAbsolute finPCChange finPerCent
+[24]  
+[25]  cashflows←0 0⍴liabilities←0⍴'' ⍝ Calculate liabilities
+[26]  
+[27]  (2 3 'Running Scenarios') Win∆ProgressBar 'FileUpdate'
+[28]  :for scen :in ⍳scenarios ⍝ Calculate a Cashflow/Liability figures using QSM
+[29]      (scen scenarios ('Scenario ',⍕scen)) Win∆ProgressBar 'MemberUpdate'
+[30]      :for group :in lmt groupings
+[31]          0 XL_ActivateWorksheet group
+[32]          rate∆←maxyr OVERTAKE 0.01×lmt ,XL_Data RCtoA1 scen ⍬ scen ⍬
+[33]          restab←(⊂group rate∆) ⍙WebFinancials restab 0
+[34]      :endfor
+[35]      liabilities←liabilities,↑↑+/restab at 'NewLiabilityValue'
+[36]      cashflows←cashflows OVER ↑+/+⌿¨restab at 'RFCashFlow'
+[37]  :endfor
+[38]  XL_Quit
+[39]  
+[40]  (3 3 'Deleting Quick Scenario Programs') Win∆ProgressBar 'FileUpdate'
+[41]  0 0⍴DeleteVars¨'Quick_Scenario' 'Configure_RF'
+[42]  
+[43]  Win∆ProgressBar 'Close'
+[44]  
+[45]  ⍝ Generate new Graph
+[46]  LiabView←SVLiab_Graph liabilities
+[47]  0 0⍴⎕dl 10
+[48]  (parent,'picLiabGraph') ⎕wi 'visible' 0
+[49]  
+[50]  CFView←SVCF_Graph cashflows
+[51]  0 0⍴⎕dl 10
+[52]  (parent,'picCFGraph') ⎕wi 'visible' 0
+[53]  
+[54]  0 0⍴Quick_Scenario 'Quit'
+[55]  0 0⍴(SystemDir,'QSMWIN') DeleteModule 'Quick_Scenario'
+[56]  
+[57]  res←cashflows liabilities
+    ∇

@@ -1,1 +1,74 @@
-    ∇ Z←ctx wGMP_EVAL R;nTy;xyn;orig;back;fwdn;fwdr;fI;fR;fRX;fTD;fTEXDF;fEU;factors;raw;fP;fL;lmt;bgn;end;revr;revn;fl;startdate;lastyr;moo;warf;wof;coo;wof∆;dbr;MAXREV;REVNRA;P;REV;rates;fGTD;fgd;freval;ert[1]   ⍝ DEFWIN.sf#4[2]   ⍝ [EnhDef] v8.50 adapted from wPUP_LOOP3 DT/RJW/SJT 2010[3]   ⍝ Analyses, calculates and projects benefits on the axes of PRE defined in calling fn wPUP_LOOP2.[4]   ⍝ Constructs a corresponding array of factors by which to multiply the PUP amount.[5]   ⍝ Some project (eg on age axis), some apportion (eg on Barber axis), and some assign (eg fInc).[6]   ⍝ The construction of the factors reflects their interdependencies.[7]   ⍝  ctx  : context - ['pre'∣'post'][8]   ⍝ Axis abbreviations in comments:[9]   ⍝  [D] Decrement: ret/DBR/DAR; [E] ERF1/ERF2; [F] with/without ER Factors;[10]  ⍝  [R] real/notional; [T] type: pension/consider-for-cash; [U] aUND; [X] exit age; ⍬ - scalar[11]  ⍝ R is a 'keyed array' read through the zip function:[12]  ⍝  amt  : amount of benefit to be evaluated[13]  ⍝  barb : Barber - ERF1, ERF2 or split service period[14]  ⍝  bgn  : beginning of service period[15]  ⍝  coo  : flag to preclude consideration for cash benefits[16]  ⍝  end  : end of service period[17]  ⍝  ign  : ignore entirely[18]  ⍝  incr : pension-increase rate or yield curve[19]  ⍝  moo  : flag to exclude benefits from DBR decrement: Y, N. L='Legislation'[20]  ⍝  orig : flag - GMPs as at VDATE? Else LEAVING[21]  ⍝  revn : notional revaluation rate (or yield curve) to NRA[22]  ⍝  revr : real revaluation rate (or yield curve) to SPA[23]  ⍝  revy : flag to include 1/2-year effect in revaluation[24]  ⍝  revx : rounding method to use in exit year of revaluation[25]  ⍝  und  : underpin - exclude, include or split service period[26]  ⍝  ttl  : title for trace file[27]  ⍝  wof  : spouse fraction for DBR decrement[28]  ⍝  warf : spouse fraction for DAR decrement[29]  [30]  ⍝ ⎕IO=0[31]  ⍝ Read ext vars, constant for member: barbdates, ertabs[TEX], SEX, udate, X, WARERFind[32]  [33]  :If 'ign' zip R[34]      Z←lI lU lT lD lX lF lR lG⍴0                                                 ⍝ [IUTDXRF] SV5000329[35]  :Else ⍝ construct factors ______________________________________________________[36]  [37]      fI←'SM34'='incr' zip R                                                      ⍝ Pension-increase: one of 4 rates [I][38]  [39]     ⍝ ER factors apply to entitlements according to decrement:[40]     ⍝ Ret yes, DBR no, DAR maybe;[41]     ⍝ and (at 2nd place on F axis) not at all[42]      ert←(ertabs[;;X] ∘.* 1 0), ertabs[;;NX⍴NRA]                                 ⍝ [TEXF] ER factors on, off, @NRA SV5000329[43]      fTEXDF←0 1 2 4 3⍉ ert ∘.* 1 0,WARERFind                                     ⍝ [TEXDF] preserve axes now, refactor later SV5000329[44]  [45]     ⍝ DBR and DAR pension is reduced (wof warf)[46]     ⍝ DBR pension and cash may be reduced to 0 or .5 (moo)[47]     ⍝ RET and DBR cash may be suppressed (coo); DAR always is[48]     ⍝ NB Type axis: pension, cash, cash[49]     ⍝ legacy version:[50]     ⍝ moo may be Y (suppress) N (allow) or L (Legislation)[51]     ⍝ in last case DBR pension (not cash) benefits are restricted to:[52]     ⍝ pre-88: 50% (M) 0% (F); post-88: 50%[53]     ⍝ and the remainder transferred to PRE[54]      (coo moo wof warf)←'coo' 'moo' 'wof' 'warf' zip R[55]      dbr←moo≠'Y'                                                                 ⍝ moo=Y: ignore for DBR[56]      wof∆←wof∆,wof-wof∆←↑(moo='L')⌽(wof)(↑.5×Male∨ctx≡'post')                    ⍝ moo=L: restrict and transfer wof@DBR[57]      fgd←⍉⊃(1 0)(wof∆)(warf 0)                                                   ⍝ distbn of WOF between GMP and excess[58]      fGTD←2 0 1⍉⊃(1 dbr 1) ×⊂[0 1] fgd,[1] (coo^2 3⍴1 1 0),[-.5] 0[59]  [60]      fEU←barbdates udate wBARBER 'barb' 'bgn' 'end' 'und' zip R                  ⍝ [EU][61]  [62]      ⍝ ITDGXFUR <= ITDGEXFUR <= TDGEXFUR <= TDGEXFU <= TDGEXF[63]      ⍝ Use unanalysed revaluation factors from wGMP[64]      freval←GMPfR8X[;'pre' 'post'⍳⊂ctx;]                                         ⍝ Watch Out: might contain ER factors...[65]      factors←+/[4] fI∘.× ⊃(⊂[0] freval       ) ×[4] ⊃(⊂[1]fEU) ×[3] ⊃(⊂[0]fGTD)∘.×¨⊂[1 2 4]fTEXDF[66]  [67]      Z←('amt' zip R) × aINC aTYP aDEC aGMX aAGE aFAC aUND aREA ⍉ factors         ⍝ [IUTDXRFG][68]  [69]  ⍝⍝⍝    :if test ⋄ wGMP_EVAL_TRACE R ⋄ :endif[70]  ⍝⌿⍝    wGMP_EVAL_TRACE R[71]  [72]  :EndIf    ∇
+    ∇ Z←ctx wGMP_EVAL R;nTy;xyn;orig;back;fwdn;fwdr;fI;fR;fRX;fTD;fTEXDF;fEU;factors;raw;fP;fL;lmt;bgn;end;revr;revn;fl;startdate;lastyr;moo;warf;wof;coo;wof∆;dbr;MAXREV;REVNRA;P;REV;rates;fGTD;fgd;freval;ert
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ [EnhDef] v8.50 adapted from wPUP_LOOP3 DT/RJW/SJT 2010
+[3]   ⍝ Analyses, calculates and projects benefits on the axes of PRE defined in calling fn wPUP_LOOP2.
+[4]   ⍝ Constructs a corresponding array of factors by which to multiply the PUP amount.
+[5]   ⍝ Some project (eg on age axis), some apportion (eg on Barber axis), and some assign (eg fInc).
+[6]   ⍝ The construction of the factors reflects their interdependencies.
+[7]   ⍝  ctx  : context - ['pre'∣'post']
+[8]   ⍝ Axis abbreviations in comments:
+[9]   ⍝  [D] Decrement: ret/DBR/DAR; [E] ERF1/ERF2; [F] with/without ER Factors;
+[10]  ⍝  [R] real/notional; [T] type: pension/consider-for-cash; [U] aUND; [X] exit age; ⍬ - scalar
+[11]  ⍝ R is a 'keyed array' read through the zip function:
+[12]  ⍝  amt  : amount of benefit to be evaluated
+[13]  ⍝  barb : Barber - ERF1, ERF2 or split service period
+[14]  ⍝  bgn  : beginning of service period
+[15]  ⍝  coo  : flag to preclude consideration for cash benefits
+[16]  ⍝  end  : end of service period
+[17]  ⍝  ign  : ignore entirely
+[18]  ⍝  incr : pension-increase rate or yield curve
+[19]  ⍝  moo  : flag to exclude benefits from DBR decrement: Y, N. L='Legislation'
+[20]  ⍝  orig : flag - GMPs as at VDATE? Else LEAVING
+[21]  ⍝  revn : notional revaluation rate (or yield curve) to NRA
+[22]  ⍝  revr : real revaluation rate (or yield curve) to SPA
+[23]  ⍝  revy : flag to include 1/2-year effect in revaluation
+[24]  ⍝  revx : rounding method to use in exit year of revaluation
+[25]  ⍝  und  : underpin - exclude, include or split service period
+[26]  ⍝  ttl  : title for trace file
+[27]  ⍝  wof  : spouse fraction for DBR decrement
+[28]  ⍝  warf : spouse fraction for DAR decrement
+[29]  
+[30]  ⍝ ⎕IO=0
+[31]  ⍝ Read ext vars, constant for member: barbdates, ertabs[TEX], SEX, udate, X, WARERFind
+[32]  
+[33]  :If 'ign' zip R
+[34]      Z←lI lU lT lD lX lF lR lG⍴0                                                 ⍝ [IUTDXRF] SV5000329
+[35]  :Else ⍝ construct factors ______________________________________________________
+[36]  
+[37]      fI←'SM34'='incr' zip R                                                      ⍝ Pension-increase: one of 4 rates [I]
+[38]  
+[39]     ⍝ ER factors apply to entitlements according to decrement:
+[40]     ⍝ Ret yes, DBR no, DAR maybe;
+[41]     ⍝ and (at 2nd place on F axis) not at all
+[42]      ert←(ertabs[;;X] ∘.* 1 0), ertabs[;;NX⍴NRA]                                 ⍝ [TEXF] ER factors on, off, @NRA SV5000329
+[43]      fTEXDF←0 1 2 4 3⍉ ert ∘.* 1 0,WARERFind                                     ⍝ [TEXDF] preserve axes now, refactor later SV5000329
+[44]  
+[45]     ⍝ DBR and DAR pension is reduced (wof warf)
+[46]     ⍝ DBR pension and cash may be reduced to 0 or .5 (moo)
+[47]     ⍝ RET and DBR cash may be suppressed (coo); DAR always is
+[48]     ⍝ NB Type axis: pension, cash, cash
+[49]     ⍝ legacy version:
+[50]     ⍝ moo may be Y (suppress) N (allow) or L (Legislation)
+[51]     ⍝ in last case DBR pension (not cash) benefits are restricted to:
+[52]     ⍝ pre-88: 50% (M) 0% (F); post-88: 50%
+[53]     ⍝ and the remainder transferred to PRE
+[54]      (coo moo wof warf)←'coo' 'moo' 'wof' 'warf' zip R
+[55]      dbr←moo≠'Y'                                                                 ⍝ moo=Y: ignore for DBR
+[56]      wof∆←wof∆,wof-wof∆←↑(moo='L')⌽(wof)(↑.5×Male∨ctx≡'post')                    ⍝ moo=L: restrict and transfer wof@DBR
+[57]      fgd←⍉⊃(1 0)(wof∆)(warf 0)                                                   ⍝ distbn of WOF between GMP and excess
+[58]      fGTD←2 0 1⍉⊃(1 dbr 1) ×⊂[0 1] fgd,[1] (coo^2 3⍴1 1 0),[-.5] 0
+[59]  
+[60]      fEU←barbdates udate wBARBER 'barb' 'bgn' 'end' 'und' zip R                  ⍝ [EU]
+[61]  
+[62]      ⍝ ITDGXFUR <= ITDGEXFUR <= TDGEXFUR <= TDGEXFU <= TDGEXF
+[63]      ⍝ Use unanalysed revaluation factors from wGMP
+[64]      freval←GMPfR8X[;'pre' 'post'⍳⊂ctx;]                                         ⍝ Watch Out: might contain ER factors...
+[65]      factors←+/[4] fI∘.× ⊃(⊂[0] freval       ) ×[4] ⊃(⊂[1]fEU) ×[3] ⊃(⊂[0]fGTD)∘.×¨⊂[1 2 4]fTEXDF
+[66]  
+[67]      Z←('amt' zip R) × aINC aTYP aDEC aGMX aAGE aFAC aUND aREA ⍉ factors         ⍝ [IUTDXRFG]
+[68]  
+[69]  ⍝⍝⍝    :if test ⋄ wGMP_EVAL_TRACE R ⋄ :endif
+[70]  ⍝⌿⍝    wGMP_EVAL_TRACE R
+[71]  
+[72]  :EndIf
+    ∇

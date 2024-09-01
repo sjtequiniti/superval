@@ -1,1 +1,28 @@
-    ∇ FactOvl parm;Error[1]   ⍝ DECRWIN.sf#10[2]   ⍝ Routine to call other Factor Routines which are "protected" (one user at a time)[3]   [4]   :if ~0∊⍴,Error←FactorFile DecrTied 'Capture'[5]       MDISPLAY Error ⋄ :return[6]   :endif[7]   [8]   'fmFactors.lsTABLE' ⎕wi 'value' ((~parm≡'Add')/'fmFactors.lsTABLE' ⎕wi 'value')[9]   code←TableNo ⋄ OldDesc←TableDesc ⋄ OldDates←Dates ⋄ OldRates←RATES[10]  [11]  :select ChangeType←parm[12]  :case 'Add'[13]     StartEdit 'Add'[14]  [15]  :case 'Delete'[16]     Fact∆DEL 1↓TABLE ⍝ Delete Current Table[17]     0 Win∆SetFocus 'fmFactors.lsTABLE' ⍝ Give focus back to List[18]  [19]  :case 'Edit'[20]     StartEdit 'Edit'[21]  [22]  :case 'Print' ⍝ Printout of All or "Group" of Rate Tables[23]     'FactPRINT' Win∆ProgressBar 'Start'[24]     0 Win∆SetFocus 'fmFactors.lsTABLE' ⍝ Give focus back to List[25]  [26]  :endselect    ∇
+    ∇ FactOvl parm;Error
+[1]   ⍝ DECRWIN.sf#10
+[2]   ⍝ Routine to call other Factor Routines which are "protected" (one user at a time)
+[3]   
+[4]   :if ~0∊⍴,Error←FactorFile DecrTied 'Capture'
+[5]       MDISPLAY Error ⋄ :return
+[6]   :endif
+[7]   
+[8]   'fmFactors.lsTABLE' ⎕wi 'value' ((~parm≡'Add')/'fmFactors.lsTABLE' ⎕wi 'value')
+[9]   code←TableNo ⋄ OldDesc←TableDesc ⋄ OldDates←Dates ⋄ OldRates←RATES
+[10]  
+[11]  :select ChangeType←parm
+[12]  :case 'Add'
+[13]     StartEdit 'Add'
+[14]  
+[15]  :case 'Delete'
+[16]     Fact∆DEL 1↓TABLE ⍝ Delete Current Table
+[17]     0 Win∆SetFocus 'fmFactors.lsTABLE' ⍝ Give focus back to List
+[18]  
+[19]  :case 'Edit'
+[20]     StartEdit 'Edit'
+[21]  
+[22]  :case 'Print' ⍝ Printout of All or "Group" of Rate Tables
+[23]     'FactPRINT' Win∆ProgressBar 'Start'
+[24]     0 Win∆SetFocus 'fmFactors.lsTABLE' ⍝ Give focus back to List
+[25]  
+[26]  :endselect
+    ∇

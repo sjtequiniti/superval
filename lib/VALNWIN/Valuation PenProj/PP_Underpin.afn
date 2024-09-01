@@ -1,0 +1,42 @@
+    ∇ ContingencyID PP∆Underpin pp∆row;pp∆upin;z;pp∆TotBens;pp∆FutBens;pp∆midexit;pp∆midret;pp∆midstart;pp∆Xexit;pp∆xexit;pp∆Xret;pp∆xret;pp∆Xstart;pp∆xstart;pp∆exitdisc;pp∆defdisc;pp∆Texit;pp∆Tret;pp∆Tstart;pp∆def;pp∆startpad;pp∆defInc;pp∆FutCF;pp∆PastCF;pp∆TotCF;pp∆FutPV;pp∆PastPV;pp∆TotPV;pp∆top;pp∆defLX;pp∆VF;pp∆exitprobs;pp∆xprestart;pp∆Xprestart;pp∆midprestart;pp∆Tprestart;pp∆year;pp∆2Dbens;pp∆benyear;pp∆RGP
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Projection of Underpin Benefit Cash Flows
+[3]   ⍝ For Underpin Benefits, there is no Contingent Benefit so ignore pp∆Con and pp∆FCon
+[4]   ⍝⍝⍝ Underpin does not work with Aggregated Benefits
+[5]   
+[6]   pp∆2Dbens←'Benefits' PP∆ExtractBens 0 ⍝ Underpin must have vector benefits
+[7]   ⍝ Exit if no Underpin payable
+[8]   :if ^/0=pp∆TotBens←0⌈pp∆TotBens-pp∆Underpinned[;0]××pp∆exitprobs ⋄ :return ⋄ :endif
+[9]   
+[10]  ⍝ Assumed to be less than pp∆TotBens (and zero when pp∆TotBens is zero)
+[11]  pp∆FutBens←pp∆TotBens⌊0⌈pp∆FutBens-pp∆Underpinned[;1]××pp∆exitprobs
+[12]  pp∆RGP←pp∆upin←0
+[13]  
+[14]  :for pp∆year :in (×∣pp∆TotBens)/⍳pp∆NX ⍝ Process non-zero benefits
+[15]      pp∆benyear←pp∆year
+[16]      PP∆Terms 'M' ⋄ pp∆def←pp∆def×0
+[17]      PP∆Deferral ~isTOut
+[18]  
+[19]      pp∆TotCF←(pp∆TotPV←pp∆TotBens[pp∆benyear]×pp∆VF←pp∆ppfRatio[pp∆Tstart-term]×pp∆exitdisc) CDIV pp∆defdisc
+[20]      :if ~pp∆accrued
+[21]          :if neIND ⋄ pp∆FutPV←pp∆TotPV ⋄ pp∆FutCF←pp∆TotCF
+[22]          :else     ⋄ pp∆FutCF←(pp∆FutPV←pp∆FutBens[pp∆benyear]×pp∆VF) CDIV pp∆defdisc
+[23]          :endif
+[24]          pp∆PastCF←pp∆TotCF-pp∆FutCF ⋄ pp∆PastPV←pp∆TotPV-pp∆FutPV
+[25]      :endif
+[26]  
+[27]      0 PP∆StoreRes 2
+[28]  :endfor
+[29]  
+[30]  :if ⍙dbresults
+[31]      0 0⍴'Amounts' PP∆ExtractBens 0
+[32]      :if pp∆accrued ⍝ not used - Accrued Underpin goes thru cash
+[33]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 3 11) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆TotBens
+[34]          ⍙DBAddAccrued
+[35]      :else
+[36]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 1 11) pp∆dbX0 term) ⍙DBValnRecords (↑,pp∆FutBens)-↑,pp∆TotBens
+[37]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 2 11) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆FutBens
+[38]          ⍙DBAddResults
+[39]      :endif
+[40]  :endif
+    ∇

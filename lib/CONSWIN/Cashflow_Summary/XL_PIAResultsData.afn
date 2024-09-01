@@ -1,1 +1,30 @@
-    ∇ tottab←ID XL_PIAResultsData tottab;runs;sql;tab[1]   ⍝ CONSWIN.sf#13[2]   ⍝ Populate the cash flow summary using the ResultsData Table[3]   [4]   sql←"SELECT BenefitTypeID, SVYear, SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID IN (%1) AND LiabilityTypeID=8",(sqlDatabase/" AND DatabaseID=",⍕DBID)," GROUP BY BenefitTypeID, SVYear"[5]   [6]   ⍝ Actives[7]   runs←(1+DBID),,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ClassID = 1",sqlDatabase/" AND DatabaseID=",⍕DBID[8]   :if ~mt tab←1 1 0 1\1 ⍙DBadoCONCommand ('/%1/',0 ⍙DBNumList runs) TEXTREPL sql[9]       tab[;3]←⊂"Active" ⋄ tab[;1]←ID[(∊ID[;1])⍳tab[;1];2] ⋄ tottab←tottab⍪tab[10]  :endif[11]  [12]  ⍝ New Entrants[13]  runs←(2+DBID),,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ClassID = 2",sqlDatabase/" AND DatabaseID=",⍕DBID[14]  :if ~mt tab←1 1 0 1\1 ⍙DBadoCONCommand ('/%1/',0 ⍙DBNumList runs) TEXTREPL sql[15]      tab[;3]←⊂"Active New Entrant" ⋄ tab[;1]←ID[(∊ID[;1])⍳tab[;1];2] ⋄ tottab←tottab⍪tab[16]  :endif[17]  [18]  ⍝ Deferreds[19]  runs←(3+DBID),,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ClassID = 3",sqlDatabase/" AND DatabaseID=",⍕DBID[20]  :if ~mt tab←1 1 0 1\1 ⍙DBadoCONCommand ('/%1/',0 ⍙DBNumList runs) TEXTREPL sql[21]      tab[;3]←⊂"Deferred" ⋄ tab[;1]←ID[(∊ID[;1])⍳tab[;1];2] ⋄ tottab←tottab⍪tab[22]  :endif[23]  [24]  ⍝ Pensioners[25]  runs←(4+DBID),,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ClassID = 4",sqlDatabase/" AND DatabaseID=",⍕DBID[26]  :if ~mt tab←1 1 0 1\1 ⍙DBadoCONCommand ('/%1/',0 ⍙DBNumList runs) TEXTREPL sql[27]      tab[;3]←⊂"Pensioner" ⋄ tab[;1]←ID[(∊ID[;1])⍳tab[;1];2] ⋄ tottab←tottab⍪tab[28]  :endif    ∇
+    ∇ tottab←ID XL_PIAResultsData tottab;runs;sql;tab
+[1]   ⍝ CONSWIN.sf#13
+[2]   ⍝ Populate the cash flow summary using the ResultsData Table
+[3]   
+[4]   sql←"SELECT BenefitTypeID, SVYear, SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID IN (%1) AND LiabilityTypeID=8",(sqlDatabase/" AND DatabaseID=",⍕DBID)," GROUP BY BenefitTypeID, SVYear"
+[5]   
+[6]   ⍝ Actives
+[7]   runs←(1+DBID),,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ClassID = 1",sqlDatabase/" AND DatabaseID=",⍕DBID
+[8]   :if ~mt tab←1 1 0 1\1 ⍙DBadoCONCommand ('/%1/',0 ⍙DBNumList runs) TEXTREPL sql
+[9]       tab[;3]←⊂"Active" ⋄ tab[;1]←ID[(∊ID[;1])⍳tab[;1];2] ⋄ tottab←tottab⍪tab
+[10]  :endif
+[11]  
+[12]  ⍝ New Entrants
+[13]  runs←(2+DBID),,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ClassID = 2",sqlDatabase/" AND DatabaseID=",⍕DBID
+[14]  :if ~mt tab←1 1 0 1\1 ⍙DBadoCONCommand ('/%1/',0 ⍙DBNumList runs) TEXTREPL sql
+[15]      tab[;3]←⊂"Active New Entrant" ⋄ tab[;1]←ID[(∊ID[;1])⍳tab[;1];2] ⋄ tottab←tottab⍪tab
+[16]  :endif
+[17]  
+[18]  ⍝ Deferreds
+[19]  runs←(3+DBID),,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ClassID = 3",sqlDatabase/" AND DatabaseID=",⍕DBID
+[20]  :if ~mt tab←1 1 0 1\1 ⍙DBadoCONCommand ('/%1/',0 ⍙DBNumList runs) TEXTREPL sql
+[21]      tab[;3]←⊂"Deferred" ⋄ tab[;1]←ID[(∊ID[;1])⍳tab[;1];2] ⋄ tottab←tottab⍪tab
+[22]  :endif
+[23]  
+[24]  ⍝ Pensioners
+[25]  runs←(4+DBID),,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ClassID = 4",sqlDatabase/" AND DatabaseID=",⍕DBID
+[26]  :if ~mt tab←1 1 0 1\1 ⍙DBadoCONCommand ('/%1/',0 ⍙DBNumList runs) TEXTREPL sql
+[27]      tab[;3]←⊂"Pensioner" ⋄ tab[;1]←ID[(∊ID[;1])⍳tab[;1];2] ⋄ tottab←tottab⍪tab
+[28]  :endif
+    ∇

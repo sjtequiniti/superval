@@ -1,1 +1,340 @@
-    ∇ wPUP_LOOP2;trc_on;∆;dint;dlump;dconts;cap;com_mult;com_perp;limit;comtab;commuted;decs;fcom;sex;IHEAD;PP;RETCASH;BHEAD;com_method;caperf;caprev;cot_mult;fCot;COMCASH;COTCASH;pre;post;com;revn;inc;revr;fUpost;fUpre;greatr;prms;GMPraw;capped;cot_base;cot_revn;cot_erf;bfr;aft;fromCOT;fromPUP;CAPincPre∆l;caps;TOC_SOURCE;ctc;cot_fac;cot_method;cot_prop;PHEAD;IndCOTCASH;cotcash;mcot;qsmcom[1]   ⍝ DEFWIN.sf#4[2]   ⍝ v8.50 [EnhDef] DT/RJW/SJT 2010[3]   ⍝ Analyses benefits from PUPs into external vars:[4]   ⍝ - STDPUP  Pensions derived from Standard PUPs[5]   ⍝ - GMP     Guaranteed minimum pension rights[6]   ⍝ - PRE     Pre-commutation pensions from STDPUP, after franking in deferment[7]   ⍝ - CASH    Retirement cash from commutation and cash-on-top[8]   ⍝ - GCASH   Underpinned retirement cash[9]   ⍝ - POST    Post-commutation pensions[10]  ⍝ - DBRPEN  Death-before-retirement benefits from Non-standard PUPs[11]  ⍝ - DARPEN  Death-after-retirement benefits from Non-standard PUPs[12]  ⍝ - BEN     Pension benefits after anti-franking[13]  ⍝ See comments for axes of these accumulators and see axis settings for interpretation.[14]  ⍝ Optionally writes NDFPRINT as HTML document.[15]  ⍝ See initialisation in PREPARE∆ndf[16]  ⍝  NB: aTYP index iCon in PRE means 'consider for cash'. (In POST it should index only 0s.)[17]  ⍝ ⎕IO=0[18]  [19]  ⍝ START TRACE_Def  /////////////////////////////////////////////////////////////////[20]  ⍝⍝⍝ :If test[21]  ⍝⌿⍝    ⍎(2=⎕NC 'vtpr1')/'⎕NUNTIE vtpr1~0'[22]  ⍝⌿⍝    vtpr1←OPEN∆HTM∆FILE OutputDir,↑IsAccrued⌽'NDFPRINT' 'NDFACC'[23]  ⍝⌿⍝    TRACE_HTML_HDR ⎕NAPPEND vtpr1                                               ⍝ start XHTML document, close in Output∆Varprint[24]  ⍝⌿⍝    TRACE∆V←zip ''                                                              ⍝ cache for trace values[25]  ⍝⌿⍝    sex←(↑('MF'=↑SEX)/'M' 'Fem'),'ale'[26]  ⍝⌿⍝    BHEAD←'Age' 'Before' 'During' 'After'                                       ⍝ Barber header[27]  ⍝⌿⍝    IHEAD←'Age' 'Special' 'Main' 'Peninc3' 'Peninc4'                            ⍝ Increase-rate header[28]  ⍝⌿⍝    PHEAD←'Age' 'Pre 1997' '1997 to 2009' 'Post 2009'                           ⍝ PPF Period header[29]  ⍝⌿⍝    PP←.0001                                                                    ⍝ print precision[30]  ⍝⌿⍝    TOC_SOURCE←''                                                               ⍝ source for table of contents[31]  ⍝⌿⍝[32]  ⍝⌿⍝    wPUP_LOOP2_TRACE1[33]  ⍝⍝⍝ :EndIf[34]  [35]  ⍝ STANDARD PUPs ////////////////////////////////////////////////////////////////[36]  :If ∨/0≠pups[37]  ⍝⌿⍝    TRACE_BOOKMARK 'Standard PUPs'[38]      STDPUP←↑+/(⊂'PUP')wPUP_EVAL¨wDEFINE_PUP¨⍳⍴pups                              ⍝ [IUTDXFP][39]  :Else[40]      STDPUP←(lI,lU,lT,lD,NX,lF,lP)⍴0[41]  :EndIf[42]  [43]  ⍝ INDEPENDENT PUPs /////////////////////////////////////////////////////////////[44]  ⍝ cannot be summed, so kept as list of rank-7 arrays[45]  IndCOTCASH←(lU,NX,lI,lP)⍴0                                                      ⍝ [UXIP][46]  :If ∨/0≠Indpups[47]  ⍝⌿⍝    TRACE_BOOKMARK 'Independent PUPs'[48]      prms←wDEFINE_IndPUP¨⍳⍴Indpups[49]      prms IndPUP∆OUTPUT¨(⊂'IND')wPUP_EVAL¨prms[50]  :EndIf[51]  [52]  ⍝ GMPs /////////////////////////////////////////////////////////////////////////[53]  ⍝⍝⍝ :if test[54]  ⍝⌿⍝    TRACE_BOOKMARK 'GMPs'[55]  ⍝⌿⍝    :if GMPORIGIN ⋄ :andif (~bencap)∨~FID ⋄ TRACE_RevalueGMPs GMPrevalue ⋄ :endif[56]  ⍝⍝⍝ :endif[57]  [58]  :if isNPCR ⋄ :orif ^/0=GMP0,GMPE0                                                   ⍝ SV5000329[59]      PreGMP←PreGMPR←PostGMP←PostGMPR←PreGMPSPA←PostGMPSPA←GNPre←GNPost←NX⍴0[60]      GMPraw←lI lU lT lD lX lF lR lG l8⍴0[61]      GMP   ←lI lU lT lD lX lF lR      ⍴0[62]  :else[63]      wGMP[64]      ⍝ Revaluation rates to NRA and SPA[65]      ⍝⍝⍝⍝ FIXME - most of this should be a pre process[66]      :If GMPREV2       ⋄ revr←FixedRate ⋄ :Else ⋄ revr←GMPREV1 ⋄ :EndIf[67]      :if ~0∊⍴PRESPAREV ⋄ revn←PRESPAREV ⋄ :else ⋄ revn←revr    ⋄ :endif[68]  [69]       com←    ('revn' (↑revn))    ('revr' (↑revr))                                   ⍝ common GMP parameters[70]       com←com,('revy' GMPREVYRS)  ('revx' GMPNRARND)                                 ⍝ common GMP parameters[71]       com←com,('orig' GMPORIGIN)  ('wof'  WOFRAC)     ('warf' WARFRAC∆l)[72]  [73]       pre←      ('amt'  GMP0      ) ('ttl' 'GMP Pre 1988' ) ('ign' IGNOREPre )       ⍝ GMP params for pre[74]       post←     ('amt'  GMPE0     ) ('ttl' 'GMP Post 1988') ('ign' IGNOREPost)       ⍝ GMP params for post[75]       pre← pre, ('bgn' PreStart   ) ('end' PreFinish      )                          ⍝ SV5000303[76]       post←post,('bgn' PostStart  ) ('end' PostFinish     )                          ⍝ SV5000303[77]       pre← pre, ('coo' (↑~COOPre) ) ('moo' MOOPre         )[78]       post←post,('coo' (↑~COOPost)) ('moo' MOOPost        )[79]       pre← pre, ('barb' bpreIND   ) ('incr' mpreIND       ) ('und' upreIND   ) ('pips' B88GMPINC)[80]       post←post,('barb' bpostIND  ) ('incr' mpostIND      ) ('und' upostIND  ) ('pips' A88GMPINC)[81]  [82]       ∆←'pre' 'post' wGMP_EVAL¨zip¨pre post,¨⊂com[83]       GMPraw←aG88 aINC aUND aTYP aDEC aAGE aFAC aREA aGMX⍉⊃∆                         ⍝ [IUTDXFRG8][84]       GMP←+/GMPraw[;;;;;;;↑iGmp;]                                                    ⍝ exclude 'extra' and sum pre/post[85]  :endif[86]  [87]  ⍝ FRANKING IN DEFERMENT ////////////////////////////////////////////////////////[88]   PRE←STDPUP                                                                     ⍝ pre-commutation pension rights[89]   :if ~isNPCR[90]       :If FID[91]          greatr←,↑</+/[aINC]¨(STDPUP[;iWho;iPen;iRet;;iWto;iPre])(GMP[;iWho;iPen;iRet;;iWto;iNot]) ⍝ [X][92]          ∆←⊃ (STDPUP[;;iPen,iCot;iRet,iDar;;;iPre]) (GMP[;;iPen,iCot;iRet,iDar;;;iNot])  ⍝ select greater for iRet, iDar[93]          PRE[;;iPen,iCot;iRet,iDar;;;iPre]←(aAGE,aALL~aAGE)⍉⊃↑⊂[1]greatr⊖⊂[1+aALL~aAGE]∆[94]      :Else[95]          PRE[;;;    ;;;iPre]←PRE[;;;    ;;;iPre] + +/GMPraw[;;;    ;;;iNot;↑iXtr;]     ⍝ [IUTDXFP][96]          PRE[;;iPen,iCot;iRet,iDar;;;iPre]←PRE[;;iPen,iCot;iRet,iDar;;;iPre] + GMP[;;iPen,iCot;iRet,iDar;;;iNot] ⍝ PENNRA[97]      :EndIf[98]   :endif[99]  [100] ⍝ ..........................................................................[101] ⍝ Richard's approximation for Underpin SV5000310: FIXME remove eventually[102] ⍝ Vars read in Output∆Varprint[103] bfr←CDIV⌿⊖aUND aDEC aAGE aINC SUMSOF STDPUP[;;iPen;iRet,iDar;;iWto;]             ⍝ [DAI][104] aft←CDIV⌿⊖aUND aDEC aAGE aINC SUMSOF    PRE[;;iPen;iRet,iDar;;iWto;]             ⍝ [DAI][105] (GFRAC4  GFRAC3  GFRAC5  GFRAC6    SGFRAC4  SGFRAC3  SGFRAC5  SGFRAC6 )←,⊂[1] bfr[106] (GFRAC4A GFRAC3A GFRAC5A GFRAC6A   SGFRAC4A SGFRAC3A SGFRAC5A SGFRAC6A)←,⊂[1] aft[107] :if ClntCode≠3[108]     (SGFRAC4  SGFRAC3  SGFRAC5  SGFRAC6 )←(GFRAC4  GFRAC3  GFRAC5  GFRAC6 )[109]     (SGFRAC4A SGFRAC3A SGFRAC5A SGFRAC6A)←(GFRAC4A GFRAC3A GFRAC5A GFRAC6A)[110] :endif[111] ⍝ ..........................................................................[112] [113] ⍝ CONSIDER FOR CASH ////////////////////////////////////////////////////////////[114] [115] ⍝ LUMP SUM ON DEATH BEFORE RETIREMENT //////////////////////////////////////[116] ⍝ a lump sum is calculated from the member's DBR convertible pension,[117] ⍝ which escaped the ER factors applied to the RET pension: see wPUP_EVAL[118]  dlump←GLBENMULT × aAGE SUMSOF PRE[;iWho;iPen;iRet;;iWto;]                  ⍝ [X][119] ⍝ and added to or compared with any of 2 other lump sums[120] :If ∨/0≠DConts1,DConts2                                                     ⍝ other lump sums to include[121]     dint←(iDCONTS1 iDCONTS2)wDEF_INC¨⊂0 'YN'                                ⍝ effects of interest rates[122]     dconts←⊃dint × ¨DConts1 DConts2                                         ⍝ contributions [1:2 X][123] :Else[124]     dconts←2 lX⍴0[125] :EndIf[126] DBRCASH←⍎'dlump',((' AC'=GLPUP)/'++⌈'),'+⌿dconts'                           ⍝ add or compare [X][127] [128] ⍝⍝⍝ :If (CTYPE∊0 1)^(ClntCode≠3)∨(CTYPE2∊0 1)^(0=COTData)[129]  :If (CTYPE∊0 1)^(CTYPE2∊0 1)^(0=COTData)[130]  :orif 0=+/,PRE[;;iCom,iCot;iRet,iDbr;;iWth;]                               ⍝ benefits to be considered for cash[131]     comCASH←cotCASH←RETCASH←lU lX⍴COTCASH←COMCASH←0                         ⍝ [UX][132]     splitcomCASH←splitcomGCASH←lX lI⍴0                                      ⍝ [XI][133]  :Else[134]     ⍝ NB no cash benefit for DAR[135] [136]     ⍝ LIMITS TO CASH ///////////////////////////////////////////////////////////[137]     ⍝ There may be a cap, a currency amount, set for each member,[138]     ⍝ which caps either the cash commuted from pension, or the cash-on-top.[139]     ⍝ If so, it is revalued and subject to ER factors[140]     :If 0=⍴,DATACASHCAP ⋄ cap←⌊/⍬                                               ⍝ no cap set [⍬][141]     :Else[142]     ⍝ REVCASHCAP has been set from REVCASHCAP and REVCASHCAPT by ProcTBL@mainwin.7[143]         caprev←REVCASHCAP wDEF_INC PreNRAEXITCASHCAP NRAEXITCASHCAP       ⍝ revaluation factors [X][144]         :Select ERFCASHCAP[145]         :Case     '0'  ⋄ caperf←1                                               ⍝ no ERF [⍬][146]         :CaseList '12' ⋄ caperf←ertabs[↑iPen;'12'⍳↑ERFCASHCAP;X]                ⍝ [X][147]         :EndSelect[148]         cap←caperf × caprev × DATACASHCAP × PERCENTCASHCAP × CASHCAPADJ         ⍝ [X][149]     :EndIf[150] [151]     ⍝ Cash at retirement (with and without underpin) ///////////////////////////[152]     :if COMValBas                                                               ⍝ Calculate Valuation Basis Commutation Factors[153]         :if ppf∨~IsAccrued[154]             comtabs←⍉⊃COMValpc CommTabCalc SelSex 'CR' COMValmsk[155]         :endif[156]         comtab←comtabs[157]     :elseif COMAdjbyEx                                                          ⍝ Adjust Commutation Factors for Ex improvement[158]         :if ppf∨~IsAccrued[159]             comtabs←⍉⊃(NX↑¨X0↓¨COMTAB1 COMTAB2 COMTAB3 COMTAB4) CommTabMIAdj 'R' QXret∆l PMORTIMPR PostImpM[160]         :endif[161]         comtab←comtabs[162]     :else[163] ⍝⍝⍝    comtab←(⍉⊃(1+⌈/X)↑¨,comtabs)[X;]                                            ⍝ commutation table for this gender [XI][164]         comtab←⍉⊃NX↑¨X0↓¨comtabs                                                ⍝ commutation table for this gender [XI][165]     :endif[166] [167]     :If 0≠COTData                                                               ⍝ COT specified in member data[168]         cot_revn←REVN wDEF_INC REVYRS NRARND[169]         cot_erf←ertabs[↑iCot;0;X]                                               ⍝ ER factors for cash on top, table 1 SV5000241[170]         cot_base←COTData × cot_erf × cot_revn[171]         capped←cap⌊cot_base[172]         :if ppf ⋄ :orif isNPCR[173]                 cot_prop←∆÷[0]+/∆←+⌿STDPUP[;↑iWho;↑iPen;↑iRet;;↑iWth;]          ⍝ [XP] Cot Pension proportions by PPF Period[174]         :else ⋄ cot_prop←1                                                      ⍝[175]         :endif[176]         COTCASH←1 0∘.× capped ×[0] cot_prop                                     ⍝ [UX] or [UXP] (if ppf) nothing underpinned[177]         (cot_fac cot_method)←1 'specified amount'[178] ⍝⍝⍝        :if test ⋄ TRACEVALS 'cot_revn' 'cot_erf' 'cot_base' 'cot_fac' 'cot_method' ⋄ :endif       ⍝ SV5000236[179] ⍝⌿⍝        TRACEVALS 'cot_revn' 'cot_erf' 'cot_base' 'cot_fac' 'cot_method'        ⍝ SV5000236[180] [181]     :ElseIf (bBuck ∨ ClntCode=3)                 ^ (~isNPCR) ∨ 0≠MultPENCASH2   ⍝ for NPCR only if method is multiple[182]         COTCASH←'COT' wCALC_CASH CTYPE2 MultPENCASH2 PerPENCASH2 0 1 0          ⍝ [UXIP][183] [184]     :ElseIf (        ClntCode=0) ^ (CASHIND='O') ^ (~isNPCR) ∨ 0≠MultPENCASH    ⍝ for NPCR only if method is multiple[185]         COTCASH←'COT' wCALC_CASH CTYPE  MultPENCASH  PerPENCASH  0 1 0          ⍝ [UXIP][186] [187]     :Else[188]         COTCASH←(lU,NX,lI,lP)⍴0                                                 ⍝ [UXIP][189]     :EndIf[190] [191]     :if CTYPE=9[192]         :If 0≠COTData                                                           ⍝ COT specified in member data[193]             :if 3=⍴⍴COTCASH ⋄ cotcash←(⎕io+1 2 0 3)⍉4 rnk COTCASH               ⍝ [UXP] => [UXIP][194]             :else           ⋄ cotcash←(⎕io+2 3 0 1)⍉4 rnk COTCASH ⋄ :endif      ⍝ [UX]  => [UXIP][195]         :else[196]             cotcash←COTCASH[197]         :endif[198]         cotcash←((lU,NX,lI,lP)↑cotcash)+COMADayInd×IndCOTCASH                   ⍝ [UXIP][199]     :else[200]         cotcash←0[201]     :endif[202] [203]     :If bBuck ∨ ClntCode=3                                                      ⍝ Cash Commutation[204]     :andif ~isNPCR[205]         COMCASH←'COM' wCALC_CASH CTYPE MultPENCASH PerPENCASH COMADaySep COMADayPER cotcash ⍝ [UXI][206]     :ElseIf (ClntCode=0) ^ ~bBuck[207]     :AndIf CASHIND='C'[208]     :andif ~isNPCR[209]         COMCASH←'COM' wCALC_CASH CTYPE MultPENCASH PerPENCASH COMADaySep COMADayPER cotcash ⍝ [UXI][210]     :Else[211]         :if ppf ⋄ :orif isNPCR ⋄ COMCASH←(lU,NX,lP)⍴0[212]         :else                  ⋄ COMCASH←(lU,NX,lI)⍴0 ⋄ :endif[213]     :EndIf[214]     comCASH←+/COMCASH ⋄ splitcomCASH←COMCASH[0;;] ⋄ splitcomGCASH←COMCASH[1;;][215] [216]     :If 0≠COTData                                                               ⍝ COT specified in member data[217]         :if 3=⍴⍴COTCASH ⋄ RETCASH←(cotCASH←+/                COTCASH)+comCASH   ⍝ [UX] REFACTOR!! :-<[218]         :else           ⋄ RETCASH←(cotCASH←                  COTCASH)+comCASH   ⍝ [UX][219]         :endif[220]     :ElseIf (bBuck ∨ ClntCode=3)                 ^ (~isNPCR) ∨ 0≠MultPENCASH2   ⍝ for NPCR only if method is multiple[221]     :OrIf   (        ClntCode=0) ^ (CASHIND='O') ^ (~isNPCR) ∨ 0≠MultPENCASH    ⍝ for NPCR only if method is multiple[222]         :if 3=⍴⍴COTCASH ⋄ RETCASH←(cotCASH←+/                COTCASH)+comCASH   ⍝ [UX] REFACTOR!! :-<[223]         :else           ⋄ RETCASH←(cotCASH←+/+/[3-ppf∨isNPCR]COTCASH)+comCASH   ⍝ [UX] for NPCR[224]         :endif[225]     :Else[226]         RETCASH←comCASH ⋄ cotCASH←(lU,NX)⍴0                                     ⍝ [UX][227]     :EndIf[228]     :if bQSM ⋄ :andif ~IsAccrued ⋄ :andif ~ppf∨isNPCR ⋄ :andif 1∊×cotCASH       ⍝ COT as a multiple of Pension for QSM[229]         :if CTYPE2∊2 8[230]             ⍙dbbenres←⍙dbbenres⍪((36 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords PerPENCASH2 ⍝ Past ER[231]             ⍙dbbenres←⍙dbbenres⍪((36 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords PerPENCASH2 ⍝ Past NR[232]         :else[233]             mcot←(+⌿cotCASH) CDIV aAGE SUMSOF PRE[;;iPen;iRet;;iWth;]           ⍝ COT as a multiple of RET pension [X][234]             ∆←+⌿mcot×∆ CDIV +/∆←(¯1↓PROBS[;0]),0[235]             ⍙dbbenres←⍙dbbenres⍪((36 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords ∆       ⍝ Past ER[236]             ∆←¯1↑mcot×PROBS[;0][237]             ⍙dbbenres←⍙dbbenres⍪((36 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords ∆       ⍝ Past NR[238]         :endif[239]     :endif[240] :EndIf[241] [242] ⍝ Reduce post-commutation pension by any pension commuted //////////////////////[243]  POSTP←PRE[;;;;;↑iWth;]                                                         ⍝ [IUTDXP][244] :If 1∊×COMCASH[245]     commuted←1 2 0⍉⊃(⊂[0]COMCASH) CDIV comtab                                   ⍝ RET pension commuted to cash [UXI][246]     fcom←commuted CDIV (aUND aAGE aINC)SUMSOF PRE[;;iPen;iRet;;iWth;]           ⍝ fraction of RET pension commuted [UXI][247]     decs←iRet,(~WARCOMind)/iDar                                                 ⍝ reduce RET, maybe DAR pension, ie base on post-commutation pension?[248]     ∆←(⊂[aDEC aTYP aFAC aPPF]PRE[;;iPen;decs;;iWth;]) × 1 2 0⍉ 1-fcom           ⍝ [IUX][249]     POSTP[;;iPen;decs;;]←+/[aFAC](aINC aUND aAGE aDEC aTYP aFAC aPPF)⍉ ⊃∆[250]     :if bQSM ⋄ :andif ~IsAccrued ⋄ :andif ~ppf∨isNPCR ⍝ Cash as a proportion of Pension for QSM[251]         qsmcom←commuted[↑iWho;;] CDIV ((aAGE aINC)SUMSOF PRE[;;iPen;iRet;;iWth;])-⍉GMP[;↑iWho;↑iPen;↑iRet;;↑iWth;↑iRea][252]         ∆←+⌿qsmcom×[0]∆ CDIV +/∆←(¯1↓PROBS[;0]),0[253]         ⍙dbbenres←⍙dbbenres⍪((5 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (0⊃∆) ⍝ Past ER[254]         ⍙dbbenres←⍙dbbenres⍪((4 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (1⊃∆)[255]         ⍙dbbenres←⍙dbbenres⍪((6 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (2⊃∆)[256]         ⍙dbbenres←⍙dbbenres⍪((7 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (3⊃∆)[257]         ∆←qsmcom[↑NX_1;][258]         ⍙dbbenres←⍙dbbenres⍪((5 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (0⊃∆) ⍝ Past NR[259]         ⍙dbbenres←⍙dbbenres⍪((4 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (1⊃∆)[260]         ⍙dbbenres←⍙dbbenres⍪((6 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (2⊃∆)[261]         ⍙dbbenres←⍙dbbenres⍪((7 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (3⊃∆)[262]     :endif[263] :Else[264]     fcom←commuted←lU lX lI⍴0[265] :EndIf[266]  POSTP[;;iCom,iCot;;;]←0                                                        ⍝ nothing now remains to consider for cash[267] [268] (CASH GCASH)←⊂[1]RETCASH                                                        ⍝ cash: whole/underpinned ¨[X][269] :if sepComCot[270]     (comCASH comGCASH)←⊂[1]comCASH[271]     (cotCASH cotGCASH)←⊂[1]cotCASH[272] :endif[273] [274] :if isNPCR ⍝ adapted from CAP∆ENHDEF SV5000329[275] :andif ~capratio←X0≥NRA[276]     fromPUP←aAGE SUMSOF STDPUP[;iWho;iPen;iRet;;iNra;]                          ⍝ SV5000329[277]     :if 0=⍴⍴COTCASH ⍝ REFACTOR: COTCASH to constant rank: M9181[278]         fromCOT←NX/0                                                                ⍝ [X][279]     :else[280]         :select ↑⍴⍴COTCASH[281]         :case 3 ⋄ ctc←     COTCASH[↑iWho;;]                                         ⍝ [XP] ← [UXP][282]         :case 4 ⋄ ctc←+/[1]COTCASH[↑iWho;;;]                                        ⍝ [XP] ← [UXIP][283]         :else   ⋄ ?[284]         :endselect[285]         fromCOT←+/(×∆)×[1] ctc ÷[1] ∆←(NRA+⎕IO)⊃¨PPFCASHFAC2 PPFCASHFAC PPFCASHFAC ⍝ [X][286]     :endif[287]     CAPincPre∆l←d_CAPincPre wDEF_INC REVYRS NRARND[288]     caps←CAPincPre∆l × (↑PPFCAP) × PPFCAPADJ[NRA+⎕io] × CAPinc[2×0⌈NRA-X][289]     capratio←0⌈1⌊ caps CDIV fromCOT+fromPUP[290]     capflag←(0<∆)^1>∆←↑capratio                                                 ⍝ read by Excel output[291] :endif[292] [293] ⍝⍝⍝ :if test ⋄ wPUP_LOOP2_TRACE2 ⋄ :endif[294] ⍝⌿⍝ wPUP_LOOP2_TRACE2[295] [296] ⍝ DBR pensions from NS PUPs ////////////////////////////////////////////////////[297] :if ^/0=DATADBR1 DATADBR2[298]     DBRPEN←⊃(lX lI⍴0) (lX lI⍴0)[299] :else[300] ⍝⌿⍝    TRACE_BOOKMARK 'NS PUPs: DBR'[301]     ∆←  ⊂DataDBR1 DATADBR1 REVFAC REVDBR1 PreNRAEXITDBR1             PERCENTDBR1         DYNDBR1 DBR1ADJ 'DBR pension 1'[302]     ∆←∆,⊂DataDBR2 DATADBR2 REVFAC REVDBR2 PreNRAEXITDBR2             PERCENTDBR2         DYNDBR2 DBR2ADJ 'DBR pension 2'[303]     DBRPEN←⊃wDBR_EVAL¨∆                                                         ⍝ [1:2 X I][304] :endif[305] [306] ⍝ DAR pensions from NS PUPs ////////////////////////////////////////////////////[307] :if ^/0=DATADAR1 DATADAR2[308]     DARPEN←⊃(lX lI⍴0) (lX lI⍴0)[309] :else[310] ⍝⌿⍝    TRACE_BOOKMARK 'NS PUPs: DAR'[311]     ∆←  ⊂DataDAR1 DATADAR1 REVFAC REVDAR1 PreNRAEXITDAR1 NRAEXITDAR1 PERCENTDAR1 ERFDAR1 DYNDAR1 DAR1ADJ 'DAR pension 1'[312]     ∆←∆,⊂DataDAR2 DATADAR2 REVFAC REVDAR2 PreNRAEXITDAR2 NRAEXITDAR2 PERCENTDAR2 ERFDAR2 DYNDAR2 DAR2ADJ 'DAR pension 2'[313]     DARPEN←⊃(⊂ertabs[↑iPen;;X])wDAR_EVAL¨∆                                          ⍝ [1:2 X I][314] :endif[315] [316] ⍝ Anti-franking ////////////////////////////////////////////////////////////////[317] :if test ⋄ :orif ~isNPCR[318]     fUpre ←wUndSvcFrac PreStart  PreFinish  upreIND                                 ⍝ underpinned fraction (pre)[319]     fUpost←wUndSvcFrac PostStart PostFinish upostIND                                ⍝ underpinned fraction (post)[320] [321]     BEN←POSTP PUP_Franking ⊃DYNRAT2 DYNRAT1 DYNRAT3 DYNRAT4[322] [323]     :if transfers[324]         TransBEN←PRE[;;;;;↑iWth;] PUP_Franking ⊃TVDYNRAT2 TVDYNRAT1 TVDYNRAT3 TVDYNRAT4[325]     :endif[326] :endif[327] [328] POST←+/POSTP                                                                    ⍝ [IUTDX][329] :if ~isNPCR[330]     NRAPUP←↑¯1↑aAGE SUMSOF  PRE[;iWho;iPen;iRet;;iWto;]                         ⍝ SV5000277[331] :endif[332] [333] ⍝⍝⍝ :if test[334] ⍝⌿⍝    wPUP_LOOP2_TRACE3[335] ⍝⌿⍝    ⍎'VPFile',(⍕IsAccrued),'←"',('/"/""' TEXTREPL ,(vtpr1=⎕nnums,⎕xnnums)⌿⎕nnames OVER ⎕xnnames),'"'[336] ⍝⌿⍝    ⍎'TOC_SOURCE',(⍕IsAccrued),'←TOC_SOURCE' ⍝⍝⍝ Ugly but necessary!![337] ⍝⌿⍝    ⎕nuntie vtpr1[338] ⍝⍝⍝ :endif    ∇
+    ∇ wPUP_LOOP2;trc_on;∆;dint;dlump;dconts;cap;com_mult;com_perp;limit;comtab;commuted;decs;fcom;sex;IHEAD;PP;RETCASH;BHEAD;com_method;caperf;caprev;cot_mult;fCot;COMCASH;COTCASH;pre;post;com;revn;inc;revr;fUpost;fUpre;greatr;prms;GMPraw;capped;cot_base;cot_revn;cot_erf;bfr;aft;fromCOT;fromPUP;CAPincPre∆l;caps;TOC_SOURCE;ctc;cot_fac;cot_method;cot_prop;PHEAD;IndCOTCASH;cotcash;mcot;qsmcom
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ v8.50 [EnhDef] DT/RJW/SJT 2010
+[3]   ⍝ Analyses benefits from PUPs into external vars:
+[4]   ⍝ - STDPUP  Pensions derived from Standard PUPs
+[5]   ⍝ - GMP     Guaranteed minimum pension rights
+[6]   ⍝ - PRE     Pre-commutation pensions from STDPUP, after franking in deferment
+[7]   ⍝ - CASH    Retirement cash from commutation and cash-on-top
+[8]   ⍝ - GCASH   Underpinned retirement cash
+[9]   ⍝ - POST    Post-commutation pensions
+[10]  ⍝ - DBRPEN  Death-before-retirement benefits from Non-standard PUPs
+[11]  ⍝ - DARPEN  Death-after-retirement benefits from Non-standard PUPs
+[12]  ⍝ - BEN     Pension benefits after anti-franking
+[13]  ⍝ See comments for axes of these accumulators and see axis settings for interpretation.
+[14]  ⍝ Optionally writes NDFPRINT as HTML document.
+[15]  ⍝ See initialisation in PREPARE∆ndf
+[16]  ⍝  NB: aTYP index iCon in PRE means 'consider for cash'. (In POST it should index only 0s.)
+[17]  ⍝ ⎕IO=0
+[18]  
+[19]  ⍝ START TRACE_Def  /////////////////////////////////////////////////////////////////
+[20]  ⍝⍝⍝ :If test
+[21]  ⍝⌿⍝    ⍎(2=⎕NC 'vtpr1')/'⎕NUNTIE vtpr1~0'
+[22]  ⍝⌿⍝    vtpr1←OPEN∆HTM∆FILE OutputDir,↑IsAccrued⌽'NDFPRINT' 'NDFACC'
+[23]  ⍝⌿⍝    TRACE_HTML_HDR ⎕NAPPEND vtpr1                                               ⍝ start XHTML document, close in Output∆Varprint
+[24]  ⍝⌿⍝    TRACE∆V←zip ''                                                              ⍝ cache for trace values
+[25]  ⍝⌿⍝    sex←(↑('MF'=↑SEX)/'M' 'Fem'),'ale'
+[26]  ⍝⌿⍝    BHEAD←'Age' 'Before' 'During' 'After'                                       ⍝ Barber header
+[27]  ⍝⌿⍝    IHEAD←'Age' 'Special' 'Main' 'Peninc3' 'Peninc4'                            ⍝ Increase-rate header
+[28]  ⍝⌿⍝    PHEAD←'Age' 'Pre 1997' '1997 to 2009' 'Post 2009'                           ⍝ PPF Period header
+[29]  ⍝⌿⍝    PP←.0001                                                                    ⍝ print precision
+[30]  ⍝⌿⍝    TOC_SOURCE←''                                                               ⍝ source for table of contents
+[31]  ⍝⌿⍝
+[32]  ⍝⌿⍝    wPUP_LOOP2_TRACE1
+[33]  ⍝⍝⍝ :EndIf
+[34]  
+[35]  ⍝ STANDARD PUPs ////////////////////////////////////////////////////////////////
+[36]  :If ∨/0≠pups
+[37]  ⍝⌿⍝    TRACE_BOOKMARK 'Standard PUPs'
+[38]      STDPUP←↑+/(⊂'PUP')wPUP_EVAL¨wDEFINE_PUP¨⍳⍴pups                              ⍝ [IUTDXFP]
+[39]  :Else
+[40]      STDPUP←(lI,lU,lT,lD,NX,lF,lP)⍴0
+[41]  :EndIf
+[42]  
+[43]  ⍝ INDEPENDENT PUPs /////////////////////////////////////////////////////////////
+[44]  ⍝ cannot be summed, so kept as list of rank-7 arrays
+[45]  IndCOTCASH←(lU,NX,lI,lP)⍴0                                                      ⍝ [UXIP]
+[46]  :If ∨/0≠Indpups
+[47]  ⍝⌿⍝    TRACE_BOOKMARK 'Independent PUPs'
+[48]      prms←wDEFINE_IndPUP¨⍳⍴Indpups
+[49]      prms IndPUP∆OUTPUT¨(⊂'IND')wPUP_EVAL¨prms
+[50]  :EndIf
+[51]  
+[52]  ⍝ GMPs /////////////////////////////////////////////////////////////////////////
+[53]  ⍝⍝⍝ :if test
+[54]  ⍝⌿⍝    TRACE_BOOKMARK 'GMPs'
+[55]  ⍝⌿⍝    :if GMPORIGIN ⋄ :andif (~bencap)∨~FID ⋄ TRACE_RevalueGMPs GMPrevalue ⋄ :endif
+[56]  ⍝⍝⍝ :endif
+[57]  
+[58]  :if isNPCR ⋄ :orif ^/0=GMP0,GMPE0                                                   ⍝ SV5000329
+[59]      PreGMP←PreGMPR←PostGMP←PostGMPR←PreGMPSPA←PostGMPSPA←GNPre←GNPost←NX⍴0
+[60]      GMPraw←lI lU lT lD lX lF lR lG l8⍴0
+[61]      GMP   ←lI lU lT lD lX lF lR      ⍴0
+[62]  :else
+[63]      wGMP
+[64]      ⍝ Revaluation rates to NRA and SPA
+[65]      ⍝⍝⍝⍝ FIXME - most of this should be a pre process
+[66]      :If GMPREV2       ⋄ revr←FixedRate ⋄ :Else ⋄ revr←GMPREV1 ⋄ :EndIf
+[67]      :if ~0∊⍴PRESPAREV ⋄ revn←PRESPAREV ⋄ :else ⋄ revn←revr    ⋄ :endif
+[68]  
+[69]       com←    ('revn' (↑revn))    ('revr' (↑revr))                                   ⍝ common GMP parameters
+[70]       com←com,('revy' GMPREVYRS)  ('revx' GMPNRARND)                                 ⍝ common GMP parameters
+[71]       com←com,('orig' GMPORIGIN)  ('wof'  WOFRAC)     ('warf' WARFRAC∆l)
+[72]  
+[73]       pre←      ('amt'  GMP0      ) ('ttl' 'GMP Pre 1988' ) ('ign' IGNOREPre )       ⍝ GMP params for pre
+[74]       post←     ('amt'  GMPE0     ) ('ttl' 'GMP Post 1988') ('ign' IGNOREPost)       ⍝ GMP params for post
+[75]       pre← pre, ('bgn' PreStart   ) ('end' PreFinish      )                          ⍝ SV5000303
+[76]       post←post,('bgn' PostStart  ) ('end' PostFinish     )                          ⍝ SV5000303
+[77]       pre← pre, ('coo' (↑~COOPre) ) ('moo' MOOPre         )
+[78]       post←post,('coo' (↑~COOPost)) ('moo' MOOPost        )
+[79]       pre← pre, ('barb' bpreIND   ) ('incr' mpreIND       ) ('und' upreIND   ) ('pips' B88GMPINC)
+[80]       post←post,('barb' bpostIND  ) ('incr' mpostIND      ) ('und' upostIND  ) ('pips' A88GMPINC)
+[81]  
+[82]       ∆←'pre' 'post' wGMP_EVAL¨zip¨pre post,¨⊂com
+[83]       GMPraw←aG88 aINC aUND aTYP aDEC aAGE aFAC aREA aGMX⍉⊃∆                         ⍝ [IUTDXFRG8]
+[84]       GMP←+/GMPraw[;;;;;;;↑iGmp;]                                                    ⍝ exclude 'extra' and sum pre/post
+[85]  :endif
+[86]  
+[87]  ⍝ FRANKING IN DEFERMENT ////////////////////////////////////////////////////////
+[88]   PRE←STDPUP                                                                     ⍝ pre-commutation pension rights
+[89]   :if ~isNPCR
+[90]       :If FID
+[91]          greatr←,↑</+/[aINC]¨(STDPUP[;iWho;iPen;iRet;;iWto;iPre])(GMP[;iWho;iPen;iRet;;iWto;iNot]) ⍝ [X]
+[92]          ∆←⊃ (STDPUP[;;iPen,iCot;iRet,iDar;;;iPre]) (GMP[;;iPen,iCot;iRet,iDar;;;iNot])  ⍝ select greater for iRet, iDar
+[93]          PRE[;;iPen,iCot;iRet,iDar;;;iPre]←(aAGE,aALL~aAGE)⍉⊃↑⊂[1]greatr⊖⊂[1+aALL~aAGE]∆
+[94]      :Else
+[95]          PRE[;;;    ;;;iPre]←PRE[;;;    ;;;iPre] + +/GMPraw[;;;    ;;;iNot;↑iXtr;]     ⍝ [IUTDXFP]
+[96]          PRE[;;iPen,iCot;iRet,iDar;;;iPre]←PRE[;;iPen,iCot;iRet,iDar;;;iPre] + GMP[;;iPen,iCot;iRet,iDar;;;iNot] ⍝ PENNRA
+[97]      :EndIf
+[98]   :endif
+[99]  
+[100] ⍝ ..........................................................................
+[101] ⍝ Richard's approximation for Underpin SV5000310: FIXME remove eventually
+[102] ⍝ Vars read in Output∆Varprint
+[103] bfr←CDIV⌿⊖aUND aDEC aAGE aINC SUMSOF STDPUP[;;iPen;iRet,iDar;;iWto;]             ⍝ [DAI]
+[104] aft←CDIV⌿⊖aUND aDEC aAGE aINC SUMSOF    PRE[;;iPen;iRet,iDar;;iWto;]             ⍝ [DAI]
+[105] (GFRAC4  GFRAC3  GFRAC5  GFRAC6    SGFRAC4  SGFRAC3  SGFRAC5  SGFRAC6 )←,⊂[1] bfr
+[106] (GFRAC4A GFRAC3A GFRAC5A GFRAC6A   SGFRAC4A SGFRAC3A SGFRAC5A SGFRAC6A)←,⊂[1] aft
+[107] :if ClntCode≠3
+[108]     (SGFRAC4  SGFRAC3  SGFRAC5  SGFRAC6 )←(GFRAC4  GFRAC3  GFRAC5  GFRAC6 )
+[109]     (SGFRAC4A SGFRAC3A SGFRAC5A SGFRAC6A)←(GFRAC4A GFRAC3A GFRAC5A GFRAC6A)
+[110] :endif
+[111] ⍝ ..........................................................................
+[112] 
+[113] ⍝ CONSIDER FOR CASH ////////////////////////////////////////////////////////////
+[114] 
+[115] ⍝ LUMP SUM ON DEATH BEFORE RETIREMENT //////////////////////////////////////
+[116] ⍝ a lump sum is calculated from the member's DBR convertible pension,
+[117] ⍝ which escaped the ER factors applied to the RET pension: see wPUP_EVAL
+[118]  dlump←GLBENMULT × aAGE SUMSOF PRE[;iWho;iPen;iRet;;iWto;]                  ⍝ [X]
+[119] ⍝ and added to or compared with any of 2 other lump sums
+[120] :If ∨/0≠DConts1,DConts2                                                     ⍝ other lump sums to include
+[121]     dint←(iDCONTS1 iDCONTS2)wDEF_INC¨⊂0 'YN'                                ⍝ effects of interest rates
+[122]     dconts←⊃dint × ¨DConts1 DConts2                                         ⍝ contributions [1:2 X]
+[123] :Else
+[124]     dconts←2 lX⍴0
+[125] :EndIf
+[126] DBRCASH←⍎'dlump',((' AC'=GLPUP)/'++⌈'),'+⌿dconts'                           ⍝ add or compare [X]
+[127] 
+[128] ⍝⍝⍝ :If (CTYPE∊0 1)^(ClntCode≠3)∨(CTYPE2∊0 1)^(0=COTData)
+[129]  :If (CTYPE∊0 1)^(CTYPE2∊0 1)^(0=COTData)
+[130]  :orif 0=+/,PRE[;;iCom,iCot;iRet,iDbr;;iWth;]                               ⍝ benefits to be considered for cash
+[131]     comCASH←cotCASH←RETCASH←lU lX⍴COTCASH←COMCASH←0                         ⍝ [UX]
+[132]     splitcomCASH←splitcomGCASH←lX lI⍴0                                      ⍝ [XI]
+[133]  :Else
+[134]     ⍝ NB no cash benefit for DAR
+[135] 
+[136]     ⍝ LIMITS TO CASH ///////////////////////////////////////////////////////////
+[137]     ⍝ There may be a cap, a currency amount, set for each member,
+[138]     ⍝ which caps either the cash commuted from pension, or the cash-on-top.
+[139]     ⍝ If so, it is revalued and subject to ER factors
+[140]     :If 0=⍴,DATACASHCAP ⋄ cap←⌊/⍬                                               ⍝ no cap set [⍬]
+[141]     :Else
+[142]     ⍝ REVCASHCAP has been set from REVCASHCAP and REVCASHCAPT by ProcTBL@mainwin.7
+[143]         caprev←REVCASHCAP wDEF_INC PreNRAEXITCASHCAP NRAEXITCASHCAP       ⍝ revaluation factors [X]
+[144]         :Select ERFCASHCAP
+[145]         :Case     '0'  ⋄ caperf←1                                               ⍝ no ERF [⍬]
+[146]         :CaseList '12' ⋄ caperf←ertabs[↑iPen;'12'⍳↑ERFCASHCAP;X]                ⍝ [X]
+[147]         :EndSelect
+[148]         cap←caperf × caprev × DATACASHCAP × PERCENTCASHCAP × CASHCAPADJ         ⍝ [X]
+[149]     :EndIf
+[150] 
+[151]     ⍝ Cash at retirement (with and without underpin) ///////////////////////////
+[152]     :if COMValBas                                                               ⍝ Calculate Valuation Basis Commutation Factors
+[153]         :if ppf∨~IsAccrued
+[154]             comtabs←⍉⊃COMValpc CommTabCalc SelSex 'CR' COMValmsk
+[155]         :endif
+[156]         comtab←comtabs
+[157]     :elseif COMAdjbyEx                                                          ⍝ Adjust Commutation Factors for Ex improvement
+[158]         :if ppf∨~IsAccrued
+[159]             comtabs←⍉⊃(NX↑¨X0↓¨COMTAB1 COMTAB2 COMTAB3 COMTAB4) CommTabMIAdj 'R' QXret∆l PMORTIMPR PostImpM
+[160]         :endif
+[161]         comtab←comtabs
+[162]     :else
+[163] ⍝⍝⍝    comtab←(⍉⊃(1+⌈/X)↑¨,comtabs)[X;]                                            ⍝ commutation table for this gender [XI]
+[164]         comtab←⍉⊃NX↑¨X0↓¨comtabs                                                ⍝ commutation table for this gender [XI]
+[165]     :endif
+[166] 
+[167]     :If 0≠COTData                                                               ⍝ COT specified in member data
+[168]         cot_revn←REVN wDEF_INC REVYRS NRARND
+[169]         cot_erf←ertabs[↑iCot;0;X]                                               ⍝ ER factors for cash on top, table 1 SV5000241
+[170]         cot_base←COTData × cot_erf × cot_revn
+[171]         capped←cap⌊cot_base
+[172]         :if ppf ⋄ :orif isNPCR
+[173]                 cot_prop←∆÷[0]+/∆←+⌿STDPUP[;↑iWho;↑iPen;↑iRet;;↑iWth;]          ⍝ [XP] Cot Pension proportions by PPF Period
+[174]         :else ⋄ cot_prop←1                                                      ⍝
+[175]         :endif
+[176]         COTCASH←1 0∘.× capped ×[0] cot_prop                                     ⍝ [UX] or [UXP] (if ppf) nothing underpinned
+[177]         (cot_fac cot_method)←1 'specified amount'
+[178] ⍝⍝⍝        :if test ⋄ TRACEVALS 'cot_revn' 'cot_erf' 'cot_base' 'cot_fac' 'cot_method' ⋄ :endif       ⍝ SV5000236
+[179] ⍝⌿⍝        TRACEVALS 'cot_revn' 'cot_erf' 'cot_base' 'cot_fac' 'cot_method'        ⍝ SV5000236
+[180] 
+[181]     :ElseIf (bBuck ∨ ClntCode=3)                 ^ (~isNPCR) ∨ 0≠MultPENCASH2   ⍝ for NPCR only if method is multiple
+[182]         COTCASH←'COT' wCALC_CASH CTYPE2 MultPENCASH2 PerPENCASH2 0 1 0          ⍝ [UXIP]
+[183] 
+[184]     :ElseIf (        ClntCode=0) ^ (CASHIND='O') ^ (~isNPCR) ∨ 0≠MultPENCASH    ⍝ for NPCR only if method is multiple
+[185]         COTCASH←'COT' wCALC_CASH CTYPE  MultPENCASH  PerPENCASH  0 1 0          ⍝ [UXIP]
+[186] 
+[187]     :Else
+[188]         COTCASH←(lU,NX,lI,lP)⍴0                                                 ⍝ [UXIP]
+[189]     :EndIf
+[190] 
+[191]     :if CTYPE=9
+[192]         :If 0≠COTData                                                           ⍝ COT specified in member data
+[193]             :if 3=⍴⍴COTCASH ⋄ cotcash←(⎕io+1 2 0 3)⍉4 rnk COTCASH               ⍝ [UXP] => [UXIP]
+[194]             :else           ⋄ cotcash←(⎕io+2 3 0 1)⍉4 rnk COTCASH ⋄ :endif      ⍝ [UX]  => [UXIP]
+[195]         :else
+[196]             cotcash←COTCASH
+[197]         :endif
+[198]         cotcash←((lU,NX,lI,lP)↑cotcash)+COMADayInd×IndCOTCASH                   ⍝ [UXIP]
+[199]     :else
+[200]         cotcash←0
+[201]     :endif
+[202] 
+[203]     :If bBuck ∨ ClntCode=3                                                      ⍝ Cash Commutation
+[204]     :andif ~isNPCR
+[205]         COMCASH←'COM' wCALC_CASH CTYPE MultPENCASH PerPENCASH COMADaySep COMADayPER cotcash ⍝ [UXI]
+[206]     :ElseIf (ClntCode=0) ^ ~bBuck
+[207]     :AndIf CASHIND='C'
+[208]     :andif ~isNPCR
+[209]         COMCASH←'COM' wCALC_CASH CTYPE MultPENCASH PerPENCASH COMADaySep COMADayPER cotcash ⍝ [UXI]
+[210]     :Else
+[211]         :if ppf ⋄ :orif isNPCR ⋄ COMCASH←(lU,NX,lP)⍴0
+[212]         :else                  ⋄ COMCASH←(lU,NX,lI)⍴0 ⋄ :endif
+[213]     :EndIf
+[214]     comCASH←+/COMCASH ⋄ splitcomCASH←COMCASH[0;;] ⋄ splitcomGCASH←COMCASH[1;;]
+[215] 
+[216]     :If 0≠COTData                                                               ⍝ COT specified in member data
+[217]         :if 3=⍴⍴COTCASH ⋄ RETCASH←(cotCASH←+/                COTCASH)+comCASH   ⍝ [UX] REFACTOR!! :-<
+[218]         :else           ⋄ RETCASH←(cotCASH←                  COTCASH)+comCASH   ⍝ [UX]
+[219]         :endif
+[220]     :ElseIf (bBuck ∨ ClntCode=3)                 ^ (~isNPCR) ∨ 0≠MultPENCASH2   ⍝ for NPCR only if method is multiple
+[221]     :OrIf   (        ClntCode=0) ^ (CASHIND='O') ^ (~isNPCR) ∨ 0≠MultPENCASH    ⍝ for NPCR only if method is multiple
+[222]         :if 3=⍴⍴COTCASH ⋄ RETCASH←(cotCASH←+/                COTCASH)+comCASH   ⍝ [UX] REFACTOR!! :-<
+[223]         :else           ⋄ RETCASH←(cotCASH←+/+/[3-ppf∨isNPCR]COTCASH)+comCASH   ⍝ [UX] for NPCR
+[224]         :endif
+[225]     :Else
+[226]         RETCASH←comCASH ⋄ cotCASH←(lU,NX)⍴0                                     ⍝ [UX]
+[227]     :EndIf
+[228]     :if bQSM ⋄ :andif ~IsAccrued ⋄ :andif ~ppf∨isNPCR ⋄ :andif 1∊×cotCASH       ⍝ COT as a multiple of Pension for QSM
+[229]         :if CTYPE2∊2 8
+[230]             ⍙dbbenres←⍙dbbenres⍪((36 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords PerPENCASH2 ⍝ Past ER
+[231]             ⍙dbbenres←⍙dbbenres⍪((36 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords PerPENCASH2 ⍝ Past NR
+[232]         :else
+[233]             mcot←(+⌿cotCASH) CDIV aAGE SUMSOF PRE[;;iPen;iRet;;iWth;]           ⍝ COT as a multiple of RET pension [X]
+[234]             ∆←+⌿mcot×∆ CDIV +/∆←(¯1↓PROBS[;0]),0
+[235]             ⍙dbbenres←⍙dbbenres⍪((36 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords ∆       ⍝ Past ER
+[236]             ∆←¯1↑mcot×PROBS[;0]
+[237]             ⍙dbbenres←⍙dbbenres⍪((36 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords ∆       ⍝ Past NR
+[238]         :endif
+[239]     :endif
+[240] :EndIf
+[241] 
+[242] ⍝ Reduce post-commutation pension by any pension commuted //////////////////////
+[243]  POSTP←PRE[;;;;;↑iWth;]                                                         ⍝ [IUTDXP]
+[244] :If 1∊×COMCASH
+[245]     commuted←1 2 0⍉⊃(⊂[0]COMCASH) CDIV comtab                                   ⍝ RET pension commuted to cash [UXI]
+[246]     fcom←commuted CDIV (aUND aAGE aINC)SUMSOF PRE[;;iPen;iRet;;iWth;]           ⍝ fraction of RET pension commuted [UXI]
+[247]     decs←iRet,(~WARCOMind)/iDar                                                 ⍝ reduce RET, maybe DAR pension, ie base on post-commutation pension?
+[248]     ∆←(⊂[aDEC aTYP aFAC aPPF]PRE[;;iPen;decs;;iWth;]) × 1 2 0⍉ 1-fcom           ⍝ [IUX]
+[249]     POSTP[;;iPen;decs;;]←+/[aFAC](aINC aUND aAGE aDEC aTYP aFAC aPPF)⍉ ⊃∆
+[250]     :if bQSM ⋄ :andif ~IsAccrued ⋄ :andif ~ppf∨isNPCR ⍝ Cash as a proportion of Pension for QSM
+[251]         qsmcom←commuted[↑iWho;;] CDIV ((aAGE aINC)SUMSOF PRE[;;iPen;iRet;;iWth;])-⍉GMP[;↑iWho;↑iPen;↑iRet;;↑iWth;↑iRea]
+[252]         ∆←+⌿qsmcom×[0]∆ CDIV +/∆←(¯1↓PROBS[;0]),0
+[253]         ⍙dbbenres←⍙dbbenres⍪((5 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (0⊃∆) ⍝ Past ER
+[254]         ⍙dbbenres←⍙dbbenres⍪((4 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (1⊃∆)
+[255]         ⍙dbbenres←⍙dbbenres⍪((6 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (2⊃∆)
+[256]         ⍙dbbenres←⍙dbbenres⍪((7 1 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (3⊃∆)
+[257]         ∆←qsmcom[↑NX_1;]
+[258]         ⍙dbbenres←⍙dbbenres⍪((5 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (0⊃∆) ⍝ Past NR
+[259]         ⍙dbbenres←⍙dbbenres⍪((4 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (1⊃∆)
+[260]         ⍙dbbenres←⍙dbbenres⍪((6 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (2⊃∆)
+[261]         ⍙dbbenres←⍙dbbenres⍪((7 2 1 32) (⍬⍴dbXe) 0) ⍙DBValnRecords (3⊃∆)
+[262]     :endif
+[263] :Else
+[264]     fcom←commuted←lU lX lI⍴0
+[265] :EndIf
+[266]  POSTP[;;iCom,iCot;;;]←0                                                        ⍝ nothing now remains to consider for cash
+[267] 
+[268] (CASH GCASH)←⊂[1]RETCASH                                                        ⍝ cash: whole/underpinned ¨[X]
+[269] :if sepComCot
+[270]     (comCASH comGCASH)←⊂[1]comCASH
+[271]     (cotCASH cotGCASH)←⊂[1]cotCASH
+[272] :endif
+[273] 
+[274] :if isNPCR ⍝ adapted from CAP∆ENHDEF SV5000329
+[275] :andif ~capratio←X0≥NRA
+[276]     fromPUP←aAGE SUMSOF STDPUP[;iWho;iPen;iRet;;iNra;]                          ⍝ SV5000329
+[277]     :if 0=⍴⍴COTCASH ⍝ REFACTOR: COTCASH to constant rank: M9181
+[278]         fromCOT←NX/0                                                                ⍝ [X]
+[279]     :else
+[280]         :select ↑⍴⍴COTCASH
+[281]         :case 3 ⋄ ctc←     COTCASH[↑iWho;;]                                         ⍝ [XP] ← [UXP]
+[282]         :case 4 ⋄ ctc←+/[1]COTCASH[↑iWho;;;]                                        ⍝ [XP] ← [UXIP]
+[283]         :else   ⋄ ?
+[284]         :endselect
+[285]         fromCOT←+/(×∆)×[1] ctc ÷[1] ∆←(NRA+⎕IO)⊃¨PPFCASHFAC2 PPFCASHFAC PPFCASHFAC ⍝ [X]
+[286]     :endif
+[287]     CAPincPre∆l←d_CAPincPre wDEF_INC REVYRS NRARND
+[288]     caps←CAPincPre∆l × (↑PPFCAP) × PPFCAPADJ[NRA+⎕io] × CAPinc[2×0⌈NRA-X]
+[289]     capratio←0⌈1⌊ caps CDIV fromCOT+fromPUP
+[290]     capflag←(0<∆)^1>∆←↑capratio                                                 ⍝ read by Excel output
+[291] :endif
+[292] 
+[293] ⍝⍝⍝ :if test ⋄ wPUP_LOOP2_TRACE2 ⋄ :endif
+[294] ⍝⌿⍝ wPUP_LOOP2_TRACE2
+[295] 
+[296] ⍝ DBR pensions from NS PUPs ////////////////////////////////////////////////////
+[297] :if ^/0=DATADBR1 DATADBR2
+[298]     DBRPEN←⊃(lX lI⍴0) (lX lI⍴0)
+[299] :else
+[300] ⍝⌿⍝    TRACE_BOOKMARK 'NS PUPs: DBR'
+[301]     ∆←  ⊂DataDBR1 DATADBR1 REVFAC REVDBR1 PreNRAEXITDBR1             PERCENTDBR1         DYNDBR1 DBR1ADJ 'DBR pension 1'
+[302]     ∆←∆,⊂DataDBR2 DATADBR2 REVFAC REVDBR2 PreNRAEXITDBR2             PERCENTDBR2         DYNDBR2 DBR2ADJ 'DBR pension 2'
+[303]     DBRPEN←⊃wDBR_EVAL¨∆                                                         ⍝ [1:2 X I]
+[304] :endif
+[305] 
+[306] ⍝ DAR pensions from NS PUPs ////////////////////////////////////////////////////
+[307] :if ^/0=DATADAR1 DATADAR2
+[308]     DARPEN←⊃(lX lI⍴0) (lX lI⍴0)
+[309] :else
+[310] ⍝⌿⍝    TRACE_BOOKMARK 'NS PUPs: DAR'
+[311]     ∆←  ⊂DataDAR1 DATADAR1 REVFAC REVDAR1 PreNRAEXITDAR1 NRAEXITDAR1 PERCENTDAR1 ERFDAR1 DYNDAR1 DAR1ADJ 'DAR pension 1'
+[312]     ∆←∆,⊂DataDAR2 DATADAR2 REVFAC REVDAR2 PreNRAEXITDAR2 NRAEXITDAR2 PERCENTDAR2 ERFDAR2 DYNDAR2 DAR2ADJ 'DAR pension 2'
+[313]     DARPEN←⊃(⊂ertabs[↑iPen;;X])wDAR_EVAL¨∆                                          ⍝ [1:2 X I]
+[314] :endif
+[315] 
+[316] ⍝ Anti-franking ////////////////////////////////////////////////////////////////
+[317] :if test ⋄ :orif ~isNPCR
+[318]     fUpre ←wUndSvcFrac PreStart  PreFinish  upreIND                                 ⍝ underpinned fraction (pre)
+[319]     fUpost←wUndSvcFrac PostStart PostFinish upostIND                                ⍝ underpinned fraction (post)
+[320] 
+[321]     BEN←POSTP PUP_Franking ⊃DYNRAT2 DYNRAT1 DYNRAT3 DYNRAT4
+[322] 
+[323]     :if transfers
+[324]         TransBEN←PRE[;;;;;↑iWth;] PUP_Franking ⊃TVDYNRAT2 TVDYNRAT1 TVDYNRAT3 TVDYNRAT4
+[325]     :endif
+[326] :endif
+[327] 
+[328] POST←+/POSTP                                                                    ⍝ [IUTDX]
+[329] :if ~isNPCR
+[330]     NRAPUP←↑¯1↑aAGE SUMSOF  PRE[;iWho;iPen;iRet;;iWto;]                         ⍝ SV5000277
+[331] :endif
+[332] 
+[333] ⍝⍝⍝ :if test
+[334] ⍝⌿⍝    wPUP_LOOP2_TRACE3
+[335] ⍝⌿⍝    ⍎'VPFile',(⍕IsAccrued),'←"',('/"/""' TEXTREPL ,(vtpr1=⎕nnums,⎕xnnums)⌿⎕nnames OVER ⎕xnnames),'"'
+[336] ⍝⌿⍝    ⍎'TOC_SOURCE',(⍕IsAccrued),'←TOC_SOURCE' ⍝⍝⍝ Ugly but necessary!!
+[337] ⍝⌿⍝    ⎕nuntie vtpr1
+[338] ⍝⍝⍝ :endif
+    ∇

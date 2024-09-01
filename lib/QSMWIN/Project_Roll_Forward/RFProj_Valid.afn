@@ -1,0 +1,31 @@
+    ∇ MESS←RFProj_Valid;∆;parms;file;Parms;ValDATE;dates;terms
+[1]   ⍝ QSMWIN.sf#6
+[2]   ⍝ Process the Validation before Page Change from Parameters to Results
+[3]   
+[4]   :if ~mt MESS←1 Win∆ValidF1SSAll SSName1 ⍝ Validate SSName1
+[5]       :return
+[6]   :endif
+[7]   
+[8]   :if ∨/∆←~unique m2n rfDate
+[9]       MESS←'The following Roll-Forward Dates are not unique:',(2/⎕tcnl),,∆⌿rfDate,⎕tcnl
+[10]      :return
+[11]  :endif
+[12]  
+[13]  :for parms :in Parms←nub m2n QSMParms
+[14]      dates←((⊂parms)≡¨m2n QSMParms)⌿rfDate
+[15]      file←ConsolidDir,1↓'}' StripText parms
+[16]      parms←DLTB '[' StripText '}' DropText parms
+[17]      :if mt file ReadFile 'Quick_Scenario' parms 'ValDATE'
+[18]          MESS←'Quick Scenario Parameters not found'
+[19]          :return
+[20]      :endif
+[21]  
+[22]      :if ∨/∆←0>terms←ValDATE YDAYS 'DD/MM/YYYY' DATEEXP dates
+[23]          MESS←'The following Roll-Forward Dates precede the Quick Scenario Valuation Date:',(2/⎕tcnl),,∆⌿dates,⎕tcnl
+[24]          :return
+[25]      :elseif ∨/∆←5<terms
+[26]          MESS←'The following Roll-Forward Dates are more than 5 years after the Quick Scenario Valuation Date:',(2/⎕tcnl),,∆⌿dates,⎕tcnl
+[27]          :return
+[28]      :endif
+[29]  :endfor
+    ∇

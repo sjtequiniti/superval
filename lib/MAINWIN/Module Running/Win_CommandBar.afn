@@ -1,1 +1,60 @@
-    ∇ bar_open←parent Win∆CommandBar parm;⎕elx;elx;fm[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Create a Command Bar (Tool Bar)[3]   ⍝  parent is the stem of the Menu objects (Form is the parent of this)[4]   ⍝  parm contains Button Types (eg RunHelp or SaveHelp)[5]   [6]   fm←parent[7]   :repeat ⋄ fm←Win∆Parent fm[8]   :until (,'#')≡Win∆Parent fm[9]   [10]  elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ →bar_open←0' ⍝ Trap if unable to have CommandBar[11]  ⎕wself←fm←(fm,'.barTools') ⎕wi 'New' 'CommandBar'[12]  ⎕elx←elx[13]      ⎕wi 'scale' 5[14]      ⎕wi 'imagelist' 'fmSV.iStandard'[15]      ⎕wi 'showtext' 0[16]      ⎕wi 'style' 8[17]      ⎕wi 'dockable' 0[18]      ⎕wi 'dock' 1[19]      ⎕wi 'floatlayout' 1[20]  [21]  ⎕wself←(fm,'.bNew') ⎕wi 'New' 'CommandButton'[22]      ⎕wi 'tooltip' 'New Parameter Set using "Defaults"'[23]      ⎕wi 'style' 0[24]      ⎕wi 'image' 7[25]      ⎕wi 'caption' 'New'[26]      ⎕wi 'onClick' ('"',parent,'New" ⎕wi "Click"')[27]  [28]  ⎕wself←(fm,'.bOpen') ⎕wi 'New' 'CommandButton'[29]      ⎕wi 'tooltip' 'Open Parameter Set'[30]      ⎕wi 'style' 0[31]      ⎕wi 'image' 8[32]      ⎕wi 'caption' 'Open'[33]      ⎕wi 'onClick' ('"',parent,'Open" ⎕wi "Click"')[34]  [35]  ⎕wself←(fm,'.bSave') ⎕wi 'New' 'CommandButton'[36]      ⎕wi 'tooltip' 'Save Parameter Set'[37]      ⎕wi 'style' 0[38]      ⎕wi 'image' 9[39]      ⎕wi 'caption' 'Save'[40]      ⎕wi 'onClick' ('"',parent,'Save" ⎕wi "Click"')[41]  [42]  :if 'Run'≡3↑parm[43]      ⎕wself←(fm,'.bRun') ⎕wi 'New' 'CommandButton'[44]          ⎕wi 'tooltip' 'Run Parameter Set'[45]          ⎕wi 'style' 0[46]          ⎕wi 'image' 33[47]          ⎕wi 'caption' 'Run'[48]          ⎕wi 'onClick' ('"',parent,'Run" ⎕wi "Click"')[49]  :endif[50]  [51]  ⎕wself←(fm,'.bHelp') ⎕wi 'New' 'CommandButton'[52]      ⎕wi 'tooltip' 'Help on Field'[53]      ⎕wi 'style' 0[54]      ⎕wi 'image' 12[55]      ⎕wi 'caption' 'Help'[56]      ⎕wi 'onClick' ('"',(¯6↓parent),'Help.mContext" ⎕wi "Click"')[57]  [58]  bar_open←1    ∇
+    ∇ bar_open←parent Win∆CommandBar parm;⎕elx;elx;fm
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Create a Command Bar (Tool Bar)
+[3]   ⍝  parent is the stem of the Menu objects (Form is the parent of this)
+[4]   ⍝  parm contains Button Types (eg RunHelp or SaveHelp)
+[5]   
+[6]   fm←parent
+[7]   :repeat ⋄ fm←Win∆Parent fm
+[8]   :until (,'#')≡Win∆Parent fm
+[9]   
+[10]  elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ →bar_open←0' ⍝ Trap if unable to have CommandBar
+[11]  ⎕wself←fm←(fm,'.barTools') ⎕wi 'New' 'CommandBar'
+[12]  ⎕elx←elx
+[13]      ⎕wi 'scale' 5
+[14]      ⎕wi 'imagelist' 'fmSV.iStandard'
+[15]      ⎕wi 'showtext' 0
+[16]      ⎕wi 'style' 8
+[17]      ⎕wi 'dockable' 0
+[18]      ⎕wi 'dock' 1
+[19]      ⎕wi 'floatlayout' 1
+[20]  
+[21]  ⎕wself←(fm,'.bNew') ⎕wi 'New' 'CommandButton'
+[22]      ⎕wi 'tooltip' 'New Parameter Set using "Defaults"'
+[23]      ⎕wi 'style' 0
+[24]      ⎕wi 'image' 7
+[25]      ⎕wi 'caption' 'New'
+[26]      ⎕wi 'onClick' ('"',parent,'New" ⎕wi "Click"')
+[27]  
+[28]  ⎕wself←(fm,'.bOpen') ⎕wi 'New' 'CommandButton'
+[29]      ⎕wi 'tooltip' 'Open Parameter Set'
+[30]      ⎕wi 'style' 0
+[31]      ⎕wi 'image' 8
+[32]      ⎕wi 'caption' 'Open'
+[33]      ⎕wi 'onClick' ('"',parent,'Open" ⎕wi "Click"')
+[34]  
+[35]  ⎕wself←(fm,'.bSave') ⎕wi 'New' 'CommandButton'
+[36]      ⎕wi 'tooltip' 'Save Parameter Set'
+[37]      ⎕wi 'style' 0
+[38]      ⎕wi 'image' 9
+[39]      ⎕wi 'caption' 'Save'
+[40]      ⎕wi 'onClick' ('"',parent,'Save" ⎕wi "Click"')
+[41]  
+[42]  :if 'Run'≡3↑parm
+[43]      ⎕wself←(fm,'.bRun') ⎕wi 'New' 'CommandButton'
+[44]          ⎕wi 'tooltip' 'Run Parameter Set'
+[45]          ⎕wi 'style' 0
+[46]          ⎕wi 'image' 33
+[47]          ⎕wi 'caption' 'Run'
+[48]          ⎕wi 'onClick' ('"',parent,'Run" ⎕wi "Click"')
+[49]  :endif
+[50]  
+[51]  ⎕wself←(fm,'.bHelp') ⎕wi 'New' 'CommandButton'
+[52]      ⎕wi 'tooltip' 'Help on Field'
+[53]      ⎕wi 'style' 0
+[54]      ⎕wi 'image' 12
+[55]      ⎕wi 'caption' 'Help'
+[56]      ⎕wi 'onClick' ('"',(¯6↓parent),'Help.mContext" ⎕wi "Click"')
+[57]  
+[58]  bar_open←1
+    ∇

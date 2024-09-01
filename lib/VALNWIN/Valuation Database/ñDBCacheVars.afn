@@ -1,0 +1,18 @@
+    ∇ type ⍙DBCacheVars kw;float0;CACHE_LIMIT;EXTEND;SUMKEYS_NAME;SUMVALS_NAME;CACHEDKEYS_NAME;CACHEDVALS_NAME;CACHESIZE_NAME
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Create Cache vars for storing records
+[3]   
+[4]   float0←0.1-0.1
+[5]   CACHE_LIMIT←4E6                                                             ⍝ max # records in cache
+[6]   EXTEND←1E5                                                                  ⍝ # by which to extend sums vector
+[7]   (SUMKEYS_NAME SUMVALS_NAME CACHEDKEYS_NAME CACHEDVALS_NAME CACHESIZE_NAME)←(⊂type),¨'SumKeys' 'SumVals' 'CachedKeys' 'CachedVals' 'CacheSize'
+[8]   
+[9]   ⍝ initialise sums cache
+[10]  ⍎SUMKEYS_NAME,"←''"                                                         ⍝ cached sum keys: vector
+[11]  ⍎SUMVALS_NAME,"←EXTEND/float0"                                              ⍝ cached vals: vector of floats
+[12]  
+[13]  ⍝ initialise data cache
+[14]  ⍎CACHEDKEYS_NAME,"←CACHE_LIMIT kw⍴' '"                                      ⍝ defer ⎕SPLIT to ⍙DBSummariseMem: economy of scale
+[15]  ⍎CACHEDVALS_NAME,"←CACHE_LIMIT⍴float0"                                      ⍝ cache new vals
+[16]  ⍎CACHESIZE_NAME,"←0"
+    ∇

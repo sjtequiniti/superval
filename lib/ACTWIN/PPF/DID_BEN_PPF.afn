@@ -1,1 +1,140 @@
-    ∇ DID∆BEN∆PPF;A;GMPREV∆DDTAB;NX88;NX93;NX97;NX02;∆A;∆B;∆BP;∆C;∆CP;∆CT;∆D;∆E;∆F;∆G;∆H;DIDPEN;GDIDMAIN;GDIDSPECIAL;GDIDLIMITED;GDID4;FGDIDMAIN;FGDIDSPECIAL;FGDIDLIMITED;FGDID4;i0;i2;i3;DATE1;DATE2;DATE3;DATE4;DIDCALC;FDIDCALC;MDIDCALC;g1;g2;g3;DIDDATE;MDIDSPECIAL;MDIDMAIN;MDIDLIMITED;MDID4;DIDLS;DID∆GLS;DIDPre∆LS;DIDPost∆LS;fixed∆l;DID∆PRE;DID∆POST97;DID∆PRECOST;DID∆POST97COST;TEMP;DIDLS∆PRE;DIDLS∆POST97;DIDLS∆PRECOST;DIDLS∆POST97COST;captot;capratio;Xlast;Befr;Spec;Xval;Uinc;Minc;Erf1;aREV;aUND;aMAX;aERF;aSLI;Aftr;Pst9;∆1;∆2;shp;DID∆POST09;DID∆POST09COST;aDYN;aNRA;xxxx;temp;temp2;BenType∆pp;IncType∆pp;ABno∆pp;SL∆pp;Dec∆pp;VFYear∆pp[1]   ⍝ ACTWIN.sf#11[2]   ⍝ Used by INIT∆PPF[3]   ⍝[4]   ⍝ BEWARE - The first plane is redefined according to PPFNRA[5]   ⍝[6]   ⍝ Indices for ERPEN are:[7]   ⍝   0 - 0 Special[8]   ⍝       1 Main[9]   ⍝       2 Limited[10]  ⍝       3 PenInc4[11]  ⍝   1 - 0 Before split[12]  ⍝       1 After split[13]  ⍝       2 Future[14]  ⍝   2 - 0 Subject to Revaluation[15]  ⍝       1 Auxrev[16]  ⍝       2 Revrat3[17]  ⍝   3 - 0 Include in Underpin[18]  ⍝       1 Exclude from Underpin[19]  ⍝   4 - 0 Include in IRMax[20]  ⍝       1 Exclude from IRMax[21]  ⍝   5 - 0 ER Factor 1[22]  ⍝       1 ER Factor 2[23]  ⍝   6 - Vector of term to NRA[24]  (aDYN aSLI aREV aUND aMAX aERF aNRA)←⍳⍴⍴TPEN   ⍝ axis labels[25]  (Spec xxxx xxxx xxxx)←⍳4                        ⍝ enumerate 1st axis: dynamism[26]  (Befr Aftr xxxx Pst9)←⍳4                        ⍝ enumerate 2nd axis: slicing[27]  (xxxx Xval xxxx)←⍳3                             ⍝ enumerate 3rd axis: revaluation[28]  (Uinc xxxx)←⍳2                                  ⍝ enumerate 4th axis: Underpin[29]  (Minc xxxx)←⍳2                                  ⍝ enumerate 5th axis: IR Max[30]  (Erf1 xxxx)←⍳2                                  ⍝ enumerate 6th axis: ER Factor[31]  [32]  [33]  LTC←LFC←0   ⍝ Initialise Death Benefits[34]  DID←DIDMAIN←DIDSPECIAL←DIDLIMITED←DID4←DIDPreGMP←DIDPostGMP←DIDPre←DIDPost←0[35]  FDID←FDIDMAIN←FDIDSPECIAL←FDIDLIMITED←FDID4←FDIDPostGMP←0[36]  GDIDMAIN←GDIDSPECIAL←GDIDLIMITED←GDID4←FGDIDMAIN←FGDIDSPECIAL←FGDIDLIMITED←FGDID4←0[37]  DIDPEN←0×PPF∆DIDTPEN  ⍝ Initialise as zero[38]  ⍝ DID Pension[39]  :if ~(0=DDINDS)∨⍬⍴(DDINDS=5)^WDIDFRAC=0[40]      DIDPEN←0.5×PPF∆DIDTPEN[41]  :endif[42]  PDIDCALC←+⌿+⌿+⌿+⌿+⌿DIDPEN[;Befr;;;;;][43]  [44]  ⍝ Make first tranch at least WGMP, putting the extra in PPFNRA1[45]  DIDPEN[Spec;Befr;Xval;Uinc;Minc;Erf1;]←DIDPEN[Spec;Befr;Xval;Uinc;Minc;Erf1;]+0⌈WGMP-PDIDCALC[46]  ⍝[47]  captot←NX⍴0[48]  ⍝[49]  [50]  :if ~DIDPEN≡0×PPF∆DIDTPEN[51]      ⍝ Cost using Valuation Basis[52]      ⍝ Do partial sums[53]      DIDPEN←    +/[aREV]+/[aUND]+/[aMAX]+/[aERF] DIDPEN  ⍝ [aDYN;aSLI;aNRA][54]      DID∆PRE←   DIDPEN[;Befr;]                           ⍝ [aDYN;aNRA][55]      DID∆POST97←  DIDPEN[;Aftr;]                           ⍝ [aDYN;aNRA][56]      DID∆POST09←DIDPEN[;Pst9;]                           ⍝ [aDYN;aNRA][57]      ⍝ NB the cap is based on the level of the member's pension[58]      PRE97∆DID←  ⍉(NX,4)⍴⍉(4 1)↑PRE97∆DID    ⍝ Fill with first year values[59]      POST97∆DID← ⍉(NX,4)⍴⍉(4 1)↑POST97∆DID[60]      POST09∆DID← ⍉(NX,4)⍴⍉(4 1)↑POST09∆DID[61]      LTONTOP∆DID←⍉(NX,4)⍴⍉(4 1)↑LTONTOP∆DID[62]      :for NRA∆L :in LIST[63]          idx←(NRA∆L=PPFNRAALL)/⍳4[64]          ⍝ ⎕io is 0 here[65]          :if (~^/0=,PRE97∆DID[idx;0]+POST97∆DID[idx;0]+POST09∆DID[idx;0]+LTONTOP∆DID[idx;0])^NRA∆L≥X0+PPF∆ageadj  ⍝ ⎕io is 0 here The ∆DID figues are before capping and are calculated in INIT∆PPF[66]              :if s143 ⍝ Allows for cap at age of death[67]                  ∆1←X[68]                  ∆2←PPFCAPADJ[X]×s143capinc*0⌈X-X0[69]              :else[70]                  Xlast←X0⌊⌊⍬⍴16⌈100∣DOB YDAYS ValDATE[71]                  ∆1←X0[72]                  ∆2←PPFCAPADJ[Xlast][73]              :endif[74]              shp←⍴idx[75]              captot←captot+(+⌿PRE97∆DID[idx;]+POST97∆DID[idx;]+POST09∆DID[idx;]+((LTONTOPPOST97∆DID[idx;]+LTONTOPPOST09∆DID[idx;]) CDIV (shp,NX)⍴PPFCASHFAC[∆1])+LTONTOPPRE∆DID[idx;] CDIV (shp,NX)⍴PPFCASHFAC2[∆1]) CDIV PPFCAP×∆2[76]              ⍝ Lines below allowed for cap at age of death[77]              ⍝:if s143[78]              ⍝    captot←captot+(+⌿PRE97∆DID[idx;]+POST97∆DID[idx;]+(LTONTOPPOST∆DID[idx;] CDIV ((⍴idx),⍴X)⍴PPFCASHFAC[X])+LTONTOPPRE∆DID[idx;] CDIV ((⍴idx),⍴X)⍴PPFCASHFAC2[X]) CDIV PPFCAP×PPFCAPADJ[X]×(1+0.01×s143capinc)*0⌈X-X0[79]              ⍝:else[80]              ⍝    captot←captot+(+⌿PRE97∆DID[idx;]+POST97∆DID[idx;]+(LTONTOPPOST∆DID[idx;] CDIV ((⍴idx),⍴X)⍴PPFCASHFAC[X])+LTONTOPPRE∆DID[idx;] CDIV ((⍴idx),⍴X)⍴PPFCASHFAC2[X]) CDIV PPFCAP×PPFCAPADJ[X][81]              ⍝:endif[82]          :endif[83]      :endfor[84]  :else[85]      DID∆PRE←DID∆POST97←DID∆POST09←0[86]  :endif[87]  [88]  ⍝ DID Lump Sum[89]  ⍝[90]  CASH∆D←0[91]  FCASH∆D←0[92]  capratio←0⌈1⌊1 CDIV captot[93]  capflag←capflag∨∨/captot>1[94]  capratio←0.9×capratio  ⍝ Assumes that 0.9 is applied even if formula is not capped[95]  ⍝Output[96]  [97]  ⍝ Pension Projection Variables[98]  Dec∆pp←'DD' ⋄ BenType∆pp←IncType∆pp←'DD' ⋄ VFYear∆pp←¯1[99]  ⍝ DID Pension[100] :if 0≠+/+/0≠DID∆PRE ⍝ Check for any non-zero elements[101]     DID∆PRECOST←NX↑0 DID∆COST DID∆PRE[102] [103]     SL∆pp←,DID∆PRECOST ⋄ ABno∆pp←'1'[104] [105]     PP∆CreateInterface[106] [107]     ABno∆pp←'5'[108] [109]     PP∆CreateInterface[110] :endif[111] :if 0≠+/+/0≠DID∆POST97 ⍝ Check for any non-zero elements[112]     DID∆POST97COST←NX↑1 DID∆COST DID∆POST97[113] [114]     SL∆pp←,DID∆POST97COST ⋄ ABno∆pp←'2'[115] [116]     PP∆CreateInterface[117] [118]     ABno∆pp←'6'[119] [120]     PP∆CreateInterface[121] :endif[122] :if 0≠+/+/0≠DID∆POST09 ⍝ Check for any non-zero elements[123]     temp←v    ⍝ Need different values in DDTAB∆PPF[124]     temp2←vMP[125]     v←v09[126]     vMP←v09MP[127]     DID∆POST09COST←NX↑1 DID∆COST DID∆POST09[128] [129]     SL∆pp←,DID∆POST09COST ⋄ ABno∆pp←'3'[130] [131]     PP∆CreateInterface[132] [133]     ABno∆pp←'7'[134] [135]     PP∆CreateInterface[136]     v←temp[137]     vMP←temp2[138] :endif    ∇
+    ∇ DID∆BEN∆PPF;A;GMPREV∆DDTAB;NX88;NX93;NX97;NX02;∆A;∆B;∆BP;∆C;∆CP;∆CT;∆D;∆E;∆F;∆G;∆H;DIDPEN;GDIDMAIN;GDIDSPECIAL;GDIDLIMITED;GDID4;FGDIDMAIN;FGDIDSPECIAL;FGDIDLIMITED;FGDID4;i0;i2;i3;DATE1;DATE2;DATE3;DATE4;DIDCALC;FDIDCALC;MDIDCALC;g1;g2;g3;DIDDATE;MDIDSPECIAL;MDIDMAIN;MDIDLIMITED;MDID4;DIDLS;DID∆GLS;DIDPre∆LS;DIDPost∆LS;fixed∆l;DID∆PRE;DID∆POST97;DID∆PRECOST;DID∆POST97COST;TEMP;DIDLS∆PRE;DIDLS∆POST97;DIDLS∆PRECOST;DIDLS∆POST97COST;captot;capratio;Xlast;Befr;Spec;Xval;Uinc;Minc;Erf1;aREV;aUND;aMAX;aERF;aSLI;Aftr;Pst9;∆1;∆2;shp;DID∆POST09;DID∆POST09COST;aDYN;aNRA;xxxx;temp;temp2;BenType∆pp;IncType∆pp;ABno∆pp;SL∆pp;Dec∆pp;VFYear∆pp
+[1]   ⍝ ACTWIN.sf#11
+[2]   ⍝ Used by INIT∆PPF
+[3]   ⍝
+[4]   ⍝ BEWARE - The first plane is redefined according to PPFNRA
+[5]   ⍝
+[6]   ⍝ Indices for ERPEN are:
+[7]   ⍝   0 - 0 Special
+[8]   ⍝       1 Main
+[9]   ⍝       2 Limited
+[10]  ⍝       3 PenInc4
+[11]  ⍝   1 - 0 Before split
+[12]  ⍝       1 After split
+[13]  ⍝       2 Future
+[14]  ⍝   2 - 0 Subject to Revaluation
+[15]  ⍝       1 Auxrev
+[16]  ⍝       2 Revrat3
+[17]  ⍝   3 - 0 Include in Underpin
+[18]  ⍝       1 Exclude from Underpin
+[19]  ⍝   4 - 0 Include in IRMax
+[20]  ⍝       1 Exclude from IRMax
+[21]  ⍝   5 - 0 ER Factor 1
+[22]  ⍝       1 ER Factor 2
+[23]  ⍝   6 - Vector of term to NRA
+[24]  (aDYN aSLI aREV aUND aMAX aERF aNRA)←⍳⍴⍴TPEN   ⍝ axis labels
+[25]  (Spec xxxx xxxx xxxx)←⍳4                        ⍝ enumerate 1st axis: dynamism
+[26]  (Befr Aftr xxxx Pst9)←⍳4                        ⍝ enumerate 2nd axis: slicing
+[27]  (xxxx Xval xxxx)←⍳3                             ⍝ enumerate 3rd axis: revaluation
+[28]  (Uinc xxxx)←⍳2                                  ⍝ enumerate 4th axis: Underpin
+[29]  (Minc xxxx)←⍳2                                  ⍝ enumerate 5th axis: IR Max
+[30]  (Erf1 xxxx)←⍳2                                  ⍝ enumerate 6th axis: ER Factor
+[31]  
+[32]  
+[33]  LTC←LFC←0   ⍝ Initialise Death Benefits
+[34]  DID←DIDMAIN←DIDSPECIAL←DIDLIMITED←DID4←DIDPreGMP←DIDPostGMP←DIDPre←DIDPost←0
+[35]  FDID←FDIDMAIN←FDIDSPECIAL←FDIDLIMITED←FDID4←FDIDPostGMP←0
+[36]  GDIDMAIN←GDIDSPECIAL←GDIDLIMITED←GDID4←FGDIDMAIN←FGDIDSPECIAL←FGDIDLIMITED←FGDID4←0
+[37]  DIDPEN←0×PPF∆DIDTPEN  ⍝ Initialise as zero
+[38]  ⍝ DID Pension
+[39]  :if ~(0=DDINDS)∨⍬⍴(DDINDS=5)^WDIDFRAC=0
+[40]      DIDPEN←0.5×PPF∆DIDTPEN
+[41]  :endif
+[42]  PDIDCALC←+⌿+⌿+⌿+⌿+⌿DIDPEN[;Befr;;;;;]
+[43]  
+[44]  ⍝ Make first tranch at least WGMP, putting the extra in PPFNRA1
+[45]  DIDPEN[Spec;Befr;Xval;Uinc;Minc;Erf1;]←DIDPEN[Spec;Befr;Xval;Uinc;Minc;Erf1;]+0⌈WGMP-PDIDCALC
+[46]  ⍝
+[47]  captot←NX⍴0
+[48]  ⍝
+[49]  
+[50]  :if ~DIDPEN≡0×PPF∆DIDTPEN
+[51]      ⍝ Cost using Valuation Basis
+[52]      ⍝ Do partial sums
+[53]      DIDPEN←    +/[aREV]+/[aUND]+/[aMAX]+/[aERF] DIDPEN  ⍝ [aDYN;aSLI;aNRA]
+[54]      DID∆PRE←   DIDPEN[;Befr;]                           ⍝ [aDYN;aNRA]
+[55]      DID∆POST97←  DIDPEN[;Aftr;]                           ⍝ [aDYN;aNRA]
+[56]      DID∆POST09←DIDPEN[;Pst9;]                           ⍝ [aDYN;aNRA]
+[57]      ⍝ NB the cap is based on the level of the member's pension
+[58]      PRE97∆DID←  ⍉(NX,4)⍴⍉(4 1)↑PRE97∆DID    ⍝ Fill with first year values
+[59]      POST97∆DID← ⍉(NX,4)⍴⍉(4 1)↑POST97∆DID
+[60]      POST09∆DID← ⍉(NX,4)⍴⍉(4 1)↑POST09∆DID
+[61]      LTONTOP∆DID←⍉(NX,4)⍴⍉(4 1)↑LTONTOP∆DID
+[62]      :for NRA∆L :in LIST
+[63]          idx←(NRA∆L=PPFNRAALL)/⍳4
+[64]          ⍝ ⎕io is 0 here
+[65]          :if (~^/0=,PRE97∆DID[idx;0]+POST97∆DID[idx;0]+POST09∆DID[idx;0]+LTONTOP∆DID[idx;0])^NRA∆L≥X0+PPF∆ageadj  ⍝ ⎕io is 0 here The ∆DID figues are before capping and are calculated in INIT∆PPF
+[66]              :if s143 ⍝ Allows for cap at age of death
+[67]                  ∆1←X
+[68]                  ∆2←PPFCAPADJ[X]×s143capinc*0⌈X-X0
+[69]              :else
+[70]                  Xlast←X0⌊⌊⍬⍴16⌈100∣DOB YDAYS ValDATE
+[71]                  ∆1←X0
+[72]                  ∆2←PPFCAPADJ[Xlast]
+[73]              :endif
+[74]              shp←⍴idx
+[75]              captot←captot+(+⌿PRE97∆DID[idx;]+POST97∆DID[idx;]+POST09∆DID[idx;]+((LTONTOPPOST97∆DID[idx;]+LTONTOPPOST09∆DID[idx;]) CDIV (shp,NX)⍴PPFCASHFAC[∆1])+LTONTOPPRE∆DID[idx;] CDIV (shp,NX)⍴PPFCASHFAC2[∆1]) CDIV PPFCAP×∆2
+[76]              ⍝ Lines below allowed for cap at age of death
+[77]              ⍝:if s143
+[78]              ⍝    captot←captot+(+⌿PRE97∆DID[idx;]+POST97∆DID[idx;]+(LTONTOPPOST∆DID[idx;] CDIV ((⍴idx),⍴X)⍴PPFCASHFAC[X])+LTONTOPPRE∆DID[idx;] CDIV ((⍴idx),⍴X)⍴PPFCASHFAC2[X]) CDIV PPFCAP×PPFCAPADJ[X]×(1+0.01×s143capinc)*0⌈X-X0
+[79]              ⍝:else
+[80]              ⍝    captot←captot+(+⌿PRE97∆DID[idx;]+POST97∆DID[idx;]+(LTONTOPPOST∆DID[idx;] CDIV ((⍴idx),⍴X)⍴PPFCASHFAC[X])+LTONTOPPRE∆DID[idx;] CDIV ((⍴idx),⍴X)⍴PPFCASHFAC2[X]) CDIV PPFCAP×PPFCAPADJ[X]
+[81]              ⍝:endif
+[82]          :endif
+[83]      :endfor
+[84]  :else
+[85]      DID∆PRE←DID∆POST97←DID∆POST09←0
+[86]  :endif
+[87]  
+[88]  ⍝ DID Lump Sum
+[89]  ⍝
+[90]  CASH∆D←0
+[91]  FCASH∆D←0
+[92]  capratio←0⌈1⌊1 CDIV captot
+[93]  capflag←capflag∨∨/captot>1
+[94]  capratio←0.9×capratio  ⍝ Assumes that 0.9 is applied even if formula is not capped
+[95]  ⍝Output
+[96]  
+[97]  ⍝ Pension Projection Variables
+[98]  Dec∆pp←'DD' ⋄ BenType∆pp←IncType∆pp←'DD' ⋄ VFYear∆pp←¯1
+[99]  ⍝ DID Pension
+[100] :if 0≠+/+/0≠DID∆PRE ⍝ Check for any non-zero elements
+[101]     DID∆PRECOST←NX↑0 DID∆COST DID∆PRE
+[102] 
+[103]     SL∆pp←,DID∆PRECOST ⋄ ABno∆pp←'1'
+[104] 
+[105]     PP∆CreateInterface
+[106] 
+[107]     ABno∆pp←'5'
+[108] 
+[109]     PP∆CreateInterface
+[110] :endif
+[111] :if 0≠+/+/0≠DID∆POST97 ⍝ Check for any non-zero elements
+[112]     DID∆POST97COST←NX↑1 DID∆COST DID∆POST97
+[113] 
+[114]     SL∆pp←,DID∆POST97COST ⋄ ABno∆pp←'2'
+[115] 
+[116]     PP∆CreateInterface
+[117] 
+[118]     ABno∆pp←'6'
+[119] 
+[120]     PP∆CreateInterface
+[121] :endif
+[122] :if 0≠+/+/0≠DID∆POST09 ⍝ Check for any non-zero elements
+[123]     temp←v    ⍝ Need different values in DDTAB∆PPF
+[124]     temp2←vMP
+[125]     v←v09
+[126]     vMP←v09MP
+[127]     DID∆POST09COST←NX↑1 DID∆COST DID∆POST09
+[128] 
+[129]     SL∆pp←,DID∆POST09COST ⋄ ABno∆pp←'3'
+[130] 
+[131]     PP∆CreateInterface
+[132] 
+[133]     ABno∆pp←'7'
+[134] 
+[135]     PP∆CreateInterface
+[136]     v←temp
+[137]     vMP←temp2
+[138] :endif
+    ∇

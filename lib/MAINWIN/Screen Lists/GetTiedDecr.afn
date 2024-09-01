@@ -1,0 +1,16 @@
+    ∇ res←GetTiedDecr;Index;indexrow;PickList;NameList;sortorder
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get the Parameters Descriptions
+[3]   
+[4]   sortorder←'⍺Alpha⍺Alpha' ⋄ PickList←0 4⍴'' ⋄ indexrow←⍳0
+[5]   
+[6]   →(mt Index←(LibraryDir,'SVTIEDDECR') ReadFile 'Index')/end
+[7]   →(mt indexrow←2↓¯1+(∨/' '≠⊃Index[;Index[1;]⍳⊂'∆_Description'])/⍳↑⍴Index)/end
+[8]   
+[9]   PickList←((⊃Index at '∆_CompNo'),(⊂1 0 ¯2),⊃spin Index at '∆_Name' '∆_Description')[indexrow;]
+[10]  
+[11]  end:NameList←     MATRIX 'Rate Table File' (¯1↑Win∆TextSize ⊃PickList[;3]) 'left' 1 1 0 1
+[12]  NameList←NameList⍪MATRIX 'In Use By'       (¯1↑Win∆TextSize ⊃PickList[;4]) 'left' 2 2 0 1
+[13]  
+[14]  res←PickList NameList sortorder indexrow
+    ∇

@@ -1,1 +1,24 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "FileIO" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "FileIO" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmFileIO.edtestDir" ⎕wi "text" (DLTB testDir)[10]  "fmFileIO.edNumTests" ⎕wi "text" (DLTB NumTests)[11]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_FileIO[12]      :for var :in spin Comment_FileIO at "variable" "row" ⋄ (var row)←var[13]          "FileIO" ParmColor ((FormFields for "variable" var) at "control"),var row 1[14]      :endfor[15]  :endif[16]  :if ~0∊⍴,warnings[17]      MDISPLAY DLTMB warnings,⎕tcnl[18]      Win∆AssignVars "fmFileIO"[19]  :endif[20]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "FileIO" "" "Names"[21]      "fmFileIO" ⎕wi "modified" 0[22]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "FileIO" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "FileIO" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmFileIO.edtestDir" ⎕wi "text" (DLTB testDir)
+[10]  "fmFileIO.edNumTests" ⎕wi "text" (DLTB NumTests)
+[11]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_FileIO
+[12]      :for var :in spin Comment_FileIO at "variable" "row" ⋄ (var row)←var
+[13]          "FileIO" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[14]      :endfor
+[15]  :endif
+[16]  :if ~0∊⍴,warnings
+[17]      MDISPLAY DLTMB warnings,⎕tcnl
+[18]      Win∆AssignVars "fmFileIO"
+[19]  :endif
+[20]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "FileIO" "" "Names"
+[21]      "fmFileIO" ⎕wi "modified" 0
+[22]  :endif
+    ∇

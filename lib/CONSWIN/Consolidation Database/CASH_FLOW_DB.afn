@@ -1,1 +1,52 @@
-    ∇ CASH∆FLOW∆DB;exp;no;tax;VMP;∆[1]   ⍝ CONSWIN.sf#11[2]   ⍝[3]   ⍝[4]   ⍝[5]   ⍝ Scheme Expenses Cash Flows[6]   no←1⌈⍴DTZ ×+/ExpSFMAT[7]   exp←no↑EXPSF[8]   ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 15  8 12) 0 (⍳no)) ⍙DBValnRecords -exp ⍝ Scheme Fee Cash Flow[9]   ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 15 12 13) 0 0) ⍙DBValnRecords -∆←+/(no↑vMP)×exp ⍝ PV Scheme Fee[10]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 15  8 12) 0 (⍳no)) ⍙DBValnRecords (~(⊂ValMeth)∊'AGG' 'EAN')×exp ⍝ Co Conts to cover Scheme Fee[11]  ExpSFMAT←+⌿((no⌊contper)↑exp×no↑vMP)×[1]ExpSFMAT÷[1]+/ExpSFMAT←(no⌊contper)↑[1]ExpSFMAT[12]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 15 6 13) 0 0) ⍙DBValnRecords (~(⊂ValMeth)∊'AGG' 'EAN')×+/ExpSFMAT ⍝ Co Conts to cover expenses[13]  :if bQSM[14]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 15 12 93) 0 0) ⍙DBValnRecords -∆ ⍝ PV Scheme Fee[15]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 15  6 93) 0 0) ⍙DBValnRecords ∆ ⍝ PV of Total Scheme Fee[16]  :endif[17]  [18]  ⍝⍝⍝    :if uk=0 ⋄ :andif (⊂ValMeth)∊'AGG' 'EAN' ⍝ AGG or EAN Aust Tax[19]  ⍝⍝⍝         tax←(1-EXPCC)×(0⌈values-exp)×no↑TaxRates[20]  ⍝⍝⍝    :else ⍝ AAN PUC or DAB[21]  ⍝⍝⍝         tax←((0⌈values) CDIV 1-no↑TaxRates)-0⌈values[22]  ⍝⍝⍝    :endif[23]  [24]  :if ValMeth≡'AGG' ⍝ AGG Additional Conts - For salary related Agg Addit, see BEN∆CALCS∆DB[25]      ⍝⍝⍝ Aust tax ??[26]      VMP←((⍴VMP)⍴0 1)/VMP←(2×TERMDA)↑×\1,(÷2/SIZE OVERTAKE amorti)*0.5[27]      AdditConts[⎕io]←AdditConts[⎕io]++/VMP×∆←TERMDA OVERTAKE DA[28]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 10  8 12) 0 (⍳TERMDA)) ⍙DBValnRecords ∆ ⍝ Additional Specified Conts[29]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 10  8 12) 0 (⍳TERMDA)) ⍙DBValnRecords -EXPCC×∆[30]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 10  6 13) 0 0) ⍙DBValnRecords ∆←+/VMP×∆ ⍝ Additional Specified Conts[31]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 10 12 13) 0 0) ⍙DBValnRecords -EXPCC×∆[32]      :if bQSM[33]          ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 10  6 93) 0 0) ⍙DBValnRecords ∆ ⍝ Additional Specified Conts[34]          ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 10 12 93) 0 0) ⍙DBValnRecords -EXPCC×∆[35]      :endif[36]  :endif[37]  [38]  ⍝ Additional Liabilities[39]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  8 12) 0 1) ⍙DBValnRecords -LTOT ⍝ Full Cashflow[40]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  4 12) 0 1) ⍙DBValnRecords -LTOT ⍝ Past Cashflow[41]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  1 13) 0 0) ⍙DBValnRecords -LTOT ⍝ Past Liability[42]  ⍝⍝⍝ ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17 9 14) 0 1) ⍙DBValnRecords -LTOT ⍝ Accrued Benefit[43]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  3 14) 0 0) ⍙DBValnRecords -LTOT ⍝ Discontinuance Benefit[44]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  5 12) 0 1) ⍙DBValnRecords -LTOT ⍝ Discontinuance Cashflow[45]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17 11 14) 0 1) ⍙DBValnRecords -LTOT ⍝ Actuarial Emerging Accrued Benefit[46]  :if bQSM[47]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  1 93) 0 0) ⍙DBValnRecords -LTOT ⍝ Past Liability[48]  :endif[49]  [50]  ⍝⍝⍝ GLPrem←+/EXP ⍝⍝⍝ ????    ∇
+    ∇ CASH∆FLOW∆DB;exp;no;tax;VMP;∆
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ Scheme Expenses Cash Flows
+[6]   no←1⌈⍴DTZ ×+/ExpSFMAT
+[7]   exp←no↑EXPSF
+[8]   ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 15  8 12) 0 (⍳no)) ⍙DBValnRecords -exp ⍝ Scheme Fee Cash Flow
+[9]   ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 15 12 13) 0 0) ⍙DBValnRecords -∆←+/(no↑vMP)×exp ⍝ PV Scheme Fee
+[10]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 15  8 12) 0 (⍳no)) ⍙DBValnRecords (~(⊂ValMeth)∊'AGG' 'EAN')×exp ⍝ Co Conts to cover Scheme Fee
+[11]  ExpSFMAT←+⌿((no⌊contper)↑exp×no↑vMP)×[1]ExpSFMAT÷[1]+/ExpSFMAT←(no⌊contper)↑[1]ExpSFMAT
+[12]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 15 6 13) 0 0) ⍙DBValnRecords (~(⊂ValMeth)∊'AGG' 'EAN')×+/ExpSFMAT ⍝ Co Conts to cover expenses
+[13]  :if bQSM
+[14]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 15 12 93) 0 0) ⍙DBValnRecords -∆ ⍝ PV Scheme Fee
+[15]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 15  6 93) 0 0) ⍙DBValnRecords ∆ ⍝ PV of Total Scheme Fee
+[16]  :endif
+[17]  
+[18]  ⍝⍝⍝    :if uk=0 ⋄ :andif (⊂ValMeth)∊'AGG' 'EAN' ⍝ AGG or EAN Aust Tax
+[19]  ⍝⍝⍝         tax←(1-EXPCC)×(0⌈values-exp)×no↑TaxRates
+[20]  ⍝⍝⍝    :else ⍝ AAN PUC or DAB
+[21]  ⍝⍝⍝         tax←((0⌈values) CDIV 1-no↑TaxRates)-0⌈values
+[22]  ⍝⍝⍝    :endif
+[23]  
+[24]  :if ValMeth≡'AGG' ⍝ AGG Additional Conts - For salary related Agg Addit, see BEN∆CALCS∆DB
+[25]      ⍝⍝⍝ Aust tax ??
+[26]      VMP←((⍴VMP)⍴0 1)/VMP←(2×TERMDA)↑×\1,(÷2/SIZE OVERTAKE amorti)*0.5
+[27]      AdditConts[⎕io]←AdditConts[⎕io]++/VMP×∆←TERMDA OVERTAKE DA
+[28]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 10  8 12) 0 (⍳TERMDA)) ⍙DBValnRecords ∆ ⍝ Additional Specified Conts
+[29]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 10  8 12) 0 (⍳TERMDA)) ⍙DBValnRecords -EXPCC×∆
+[30]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 10  6 13) 0 0) ⍙DBValnRecords ∆←+/VMP×∆ ⍝ Additional Specified Conts
+[31]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 10 12 13) 0 0) ⍙DBValnRecords -EXPCC×∆
+[32]      :if bQSM
+[33]          ⍙dbfundres←⍙dbfundres⍪DatabaseID,((11 10  6 93) 0 0) ⍙DBValnRecords ∆ ⍝ Additional Specified Conts
+[34]          ⍙dbfundres←⍙dbfundres⍪DatabaseID,((32 10 12 93) 0 0) ⍙DBValnRecords -EXPCC×∆
+[35]      :endif
+[36]  :endif
+[37]  
+[38]  ⍝ Additional Liabilities
+[39]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  8 12) 0 1) ⍙DBValnRecords -LTOT ⍝ Full Cashflow
+[40]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  4 12) 0 1) ⍙DBValnRecords -LTOT ⍝ Past Cashflow
+[41]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  1 13) 0 0) ⍙DBValnRecords -LTOT ⍝ Past Liability
+[42]  ⍝⍝⍝ ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17 9 14) 0 1) ⍙DBValnRecords -LTOT ⍝ Accrued Benefit
+[43]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  3 14) 0 0) ⍙DBValnRecords -LTOT ⍝ Discontinuance Benefit
+[44]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  5 12) 0 1) ⍙DBValnRecords -LTOT ⍝ Discontinuance Cashflow
+[45]  ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17 11 14) 0 1) ⍙DBValnRecords -LTOT ⍝ Actuarial Emerging Accrued Benefit
+[46]  :if bQSM
+[47]      ⍙dbfundres←⍙dbfundres⍪DatabaseID,((33 17  1 93) 0 0) ⍙DBValnRecords -LTOT ⍝ Past Liability
+[48]  :endif
+[49]  
+[50]  ⍝⍝⍝ GLPrem←+/EXP ⍝⍝⍝ ????
+    ∇

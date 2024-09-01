@@ -1,0 +1,32 @@
+    ∇ progid←⍙DBAccessProvider arg;MESS
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Determine the Provider string according to Access version installed
+[3]   
+[4]   :select accessProvider ⍝ User selected Provider
+[5]   :case 'Jet 4.0'
+[6]       :if mt ProcRegRead 'HKey_Classes_Root\',progid←'Microsoft.Jet.OLEDB.4.0' ⋄ →fail ⋄ :endif ⍝ Access 2003
+[7]   :case 'ACE 12.0'
+[8]       :if mt ProcRegRead 'HKey_Classes_Root\',progid←'Microsoft.ACE.OLEDB.12.0' ⋄ →fail ⋄ :endif ⍝ Access 2007
+[9]   :case 'ACE 16.0'
+[10]      :if mt ProcRegRead 'HKey_Classes_Root\',progid←'Microsoft.ACE.OLEDB.16.0' ⋄ →fail ⋄ :endif
+[11]  :else ⍝ else old precedence order
+[12]      :for progid :in (bGAD⌽'Microsoft.ACE.OLEDB.12.0' 'Microsoft.Jet.OLEDB.4.0'),⊂'Microsoft.ACE.OLEDB.16.0' ⍝ GAD prefer Jet!
+[13]          :if mt ProcRegRead 'HKey_Classes_Root\',progid ⋄ :continue ⍝ Try next until success
+[14]          :else                                          ⋄ :return   ⍝ Success
+[15]          :endif
+[16]      :endfor ⍝ All Failed
+[17]      MESS←'No Microsoft Access engines installed on this machine'
+[18]      →error
+[19]  :endselect
+[20]  
+[21]  :return ⍝ Successfully got preferred Provider
+[22]  
+[23]  fail:
+[24]      MESS←'Preferred Microsoft Access Provider "Microsoft.',('/ /.OLEDB.' TEXTREPL accessProvider),'" not installed on this machine'
+[25]  error:
+[26]      progid←''
+[27]      :if arg ⋄ MESS VALN∆LOG 'Error'
+[28]          AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Unable to Load Access Database'
+[29]      :else   ⋄ MDISPLAY MESS
+[30]      :endif
+    ∇

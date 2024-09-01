@@ -1,0 +1,66 @@
+    ∇ res←Modules GetParmDesc InputsType;Index;cn;PickList;NameList;sortorder;tieno;indexrow;Files;File;list;RowID;ts;exclude;singleton;Module;folder
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get the Parameters Descriptions
+[3]   
+[4]   :if ~singleton←0=⎕nc 'Modules' ⋄ singleton←1=≡Modules ⋄ Modules←eis Modules ⋄ :endif
+[5]   (InputsType folder)←2↑eis InputsType
+[6]   
+[7]   sortorder←((~singleton)/'⍺Alpha'),'⍺RowID⍺Alpha⍺Alpha⍺SortList'
+[8]   PickList←(0,7-singleton)⍴'' ⋄ list←MATRIX (11⍴⊂' '),'Order' 'File'
+[9]   →(0∊⍴,DLTB InputsType)/end
+[10]  
+[11]  :if 0=⎕nc 'Modules'
+[12]      :if 0≠⎕nc 'OpenedModule' ⋄ Modules←⊂OpenedModule ⋄ :else ⋄ →end ⋄ :endif
+[13]  :endif
+[14]  
+[15]  :select InputsType
+[16]  :case 'ConfigFile'  ⋄ Files←(⊂ConfigFile)
+[17]  :case 'ClientFile'  ⋄ Files←(⊂ClientFile)
+[18]  :case 'LibraryFile' ⋄ Files←(⊂ClientFile) ⍝⍝⍝ ,(accesslevel=9)/⊂GlobalsFile
+[19]  :case 'BasisFile'   ⋄ Files←(⊂InputDir),¨m2n 1 0↓InputsType GetParmFiles 1
+[20]  :case 'QSMFile'     ⋄ Files←(⊂ConsolidDir),¨m2n 1 0↓InputsType GetParmFiles 1
+[21]  :case 'AllBases'    ⋄ Files←(⊂ClientFile),(⊂InputDir),¨m2n 1 0↓'BasisFile' GetParmFiles 1
+[22]  :case 'SVPPFFile'   ⋄ Files←(⊂LibraryDir),¨m2n 1 0↓InputsType GetParmFiles 1
+[23]  :case 'OtherBases'  ⋄ Files←(⊂folder),¨m2n 1 0↓(InputsType folder) GetParmFiles 1
+[24]  :endselect
+[25]  
+[26]  RowID←0
+[27]  :for File :in Files
+[28]      Index←File ReadFile 'Index'
+[29]  
+[30]      ⍝ Exclude the Current Basis being edited when exporting (Modules always scalar)
+[31]      :if exclude←0≠⎕nc 'Exp_CurrBasis' ⋄ :andif (DLTB Exp_CurrBasis)≡DLTB File
+[32]          exclude←↑((⎕split Index[;Index[1;]⍳'∆_Name' '∆_Description'])∊⊂Modules,⊂Exp_BasisDesc)/⍳↑⍴Index
+[33]      :endif
+[34]  
+[35]      indexrow←⍳0
+[36]      :for Module :in Modules
+[37]          ⍝ ClntCode dependent bases in the UK (for ExactVal and CC0 only)
+[38]          :if uk=1 ⋄ :andif (⊂Module)∊'Actives_Basis' 'Deferreds_Basis' 'Pensioners_Basis' ⋄ :andif bExactVal∨(ClntCode≠3)∨(×exclude)
+[39]              indexrow←indexrow,((⎕split Index[;Index[1;]⍳ '∆_Name' '∆_Code'])∊⊂Module (,ClntCode))/⍳↑⍴Index
+[40]          :else
+[41]              indexrow←indexrow,((       Index[;Index[1;]⍳⊂'∆_Name'         ])∊⊂Module            )/⍳↑⍴Index
+[42]          :endif
+[43]      :endfor
+[44]      cn←Index[indexrow←indexrow~exclude;Index[1;]⍳⊂'∆_CompNo']
+[45]  
+[46]      :if 0=RowID ⋄ list←Index[1;],'Order' 'File' ⋄ :endif ⍝ Get Header row
+[47]      list←list OVER (Index[indexrow;],RowID+cn),(('\' Win∆Child File) '{Library}')[⎕io+File≡GlobalsFile]
+[48]  
+[49]      RowID←RowID+1000000
+[50]  :endfor
+[51]  
+[52]  :if 0≠rowsIn list
+[53]      PickList←((list at'Order'),(⊂1 0 ¯2),⊃spin list at ((~singleton)/⊂'∆_Name'),'File' '∆_Description' '∆_UserModified' '∆_TSModified')[⍒list at '∆_TimeModified';]
+[54]  :endif
+[55]  :if ~singleton ⋄ PickList[;3]←'_' StripText¨PickList[;3] ⋄ :endif
+[56]  
+[57]  end:
+[58]  NameList←(~singleton)⌿MATRIX 'Basis Type'             (¯1↑Win∆TextSize ⊃PickList[;3])           'left'   1             1            0 1
+[59]  NameList←NameList    ⍪MATRIX 'Parameter File'         (¯1↑Win∆TextSize ⊃PickList[;4-singleton]) 'left'  (2-singleton) (2-singleton) 0 1
+[60]  NameList←NameList    ⍪MATRIX 'Parameters Description' (¯1↑Win∆TextSize ⊃PickList[;5-singleton]) 'left'  (3-singleton) (3-singleton) 0 1
+[61]  NameList←NameList    ⍪MATRIX 'User Name'              (¯1↑Win∆TextSize ⊃PickList[;6-singleton]) 'left'  (4-singleton) (4-singleton) 0 1
+[62]  NameList←NameList    ⍪MATRIX 'Date/Time Saved'        (¯1↑Win∆TextSize ⊃PickList[;7-singleton]) 'right' (5-singleton) (5-singleton) 0 1
+[63]  
+[64]  res←PickList NameList sortorder (PickList[;1])
+    ∇

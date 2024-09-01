@@ -1,0 +1,58 @@
+    ∇ Error←FormValid Win∆ValidF1SS parm;row;col;major;mandatory;type;valid;limit;range;numfmt;combo;code
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Check the validity of the contents of a F1SS Cell
+[3]   ⍝  "row" is the row and "col" is the col
+[4]   Error←0⍴'' ⋄ (row col)←parm
+[5]   :if 0∊⍴type←SStoMAT ⎕wi '∆type' ⋄ :return ⋄ :endif
+[6]   
+[7]   :select ⎕wi '∆roworcol'
+[8]   :case 'Row' ⋄ major←row
+[9]   :case 'Col' ⋄ major←col
+[10]  :endselect
+[11]  
+[12]  mandatory←,⎕wi '∆mandatory' ⋄ valid←SStoMAT ⎕wi '∆valid'
+[13]  limit←⎕wi '∆limit' ⋄ range←SStoMAT ⎕wi '∆range' ⋄ numfmt←⎕wi '∆numfmt'
+[14]  
+[15]  :if 0∊⍴,DLTMB text
+[16]      :if 0≠mandatory[major] ⋄ :andif FormValid≥mandatory[major]
+[17]          Error←'Mandatory' ⋄ :return
+[18]      :endif
+[19]      →end
+[20]  :else
+[21]      :select DLTMB type[major;]
+[22]      :case 'NumCSV'
+[23]          :if ~'.CSV'≡UPPERCASE ¯4↑text
+[24]              combo←0 ⍝ Not picked from a combo list
+[25]              :if ~0∊⍴,Error←(⍎valid[major;]) NUM∆CHECK ((limit[major]) (range[major;])) ⋄ :return ⋄ :endif
+[26]              :if ~0≡numfmt ⋄ text←numfmt ⎕fmt zwb text ⋄ :endif
+[27]          :endif
+[28]      :caselist 'Num' 'CharNum' 'NumChar' ⍝ Check Numeric Fields
+[29]          combo←0 ⍝ Not picked from a combo list
+[30]          :if ~0∊⍴,Error←(⍎valid[major;]) NUM∆CHECK ((limit[major]) (range[major;])) ⋄ :return ⋄ :endif
+[31]          :if ~0≡numfmt ⋄ text←numfmt ⎕fmt zwb text ⋄ :endif
+[32]      :case 'Date' ⍝ Date Checks
+[33]          :if ~0∊⍴,Error←(⍎valid[major;]) DATE∆CHECK (range[major;]) ⋄ :return ⋄ :endif
+[34]      :case 'Decr' ⍝ Decrement Checks
+[35]          valid←DLTB ⍎valid[major;]
+[36]          :if uk=1 ⋄ :andif ~0∊⍴rtCODE TLU code←2↑¯5↑DLTB text ⍝ Allow migrated invalid table types
+[37]              valid←valid,⊂code
+[38]          :endif
+[39]          :if valid CODE∆CHK text ⋄ Error←'InvRate' ⋄ :return ⋄ :endif ⍝ Invalid Table Code
+[40]          :if ¯1=1 DEC∆CHECK text ⋄ Error←'NoRateFound' text ⋄ :return ⋄ :endif ⍝ Invalid Table Number
+[41]      :caselist 'Char' 'Upper' ⍝ Character Checks
+[42]          :if ~0∊⍴,Error←CHAR∆CHECK (⍎valid[major;]) ⋄ :return ⋄ :endif
+[43]      :case 'Formula' ⍝ APL Formula Checks
+[44]          :if ~0∊⍴,Error←Formula∆CHECK ⋄ :return ⋄ :endif
+[45]  
+[46]      :endselect
+[47]      :if limit[major]≠0
+[48]      :andif limit[major]<⍴text←DLTB text
+[49]          text←limit[major]↑DLTB text ⋄ Error←'TruncData' (⍕limit[major])
+[50]      :endif
+[51]      :if ⎕wi '∆apl' ⋄ text←AV2ANSI text
+[52]      :else          ⋄ text←⎕av[209 151] REPL text
+[53]      :endif
+[54]  :endif
+[55]  
+[56]  end:⎕wi 'TextRC' row col text
+    ∇

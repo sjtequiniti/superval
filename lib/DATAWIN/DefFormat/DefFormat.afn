@@ -1,1 +1,91 @@
-    ∇ res←field DefFormat parm;parent[1]   ⍝ DATAWIN.sf#4[2]   ⍝ Function to allow user control on Deferreds Format[3]   [4]   parent←'fmSV.sDefFormat.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Prepare'  ⍝ Preparatory Routines[9]       prevind←uk≠bar_ok←0 ⍝ Only Aus does not have Previous Data Format Tab[10]  [11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[12]      0 0⍴⍙VALUESdict ReadDictFile 'DefFormat' '' (SStoMAT '⍺CharStandNames⍺CharStandVars⍺DateStandNames⍺DateStandVars⍺FixNumStandNames⍺FixNumStandVars⍺VarNumStandNames⍺VarNumStandVars')[13]  [14]      :if ~mt AvNumVars ⍝ Remove Average Non-Standard Variables (introduced in error)[15]          TotNumVars ←TotNumVars  OVER AvNumVars[16]          TotNumFrom ←TotNumFrom  OVER AvNumFrom[17]          TotNumTo   ←TotNumTo    OVER AvNumTo[18]          pTotNumFrom←pTotNumFrom OVER pAvNumFrom[19]          pTotNumTo  ←pTotNumTo   OVER pAvNumTo[20]          TotNumDesc ←TotNumDesc  OVER AvNumDesc[21]          AvNumVars←AvNumFrom←AvNumTo←pAvNumFrom←pAvNumTo←AvNumDesc←1 0⍴''[22]      :endif[23]  [24]      FixNumFields←'DefFormat' MakeFieldList FixNumStandVars[25]      VarNumFields←'DefFormat' MakeFieldList VarNumStandVars[26]      CharFields←'DefFormat' MakeFieldList CharStandVars[27]      DateFields←'DefFormat' MakeFieldList DateStandVars[28]      FormatFields←'DefFormat' MakeFieldList 'd',⊃DateFields[1][29]      0 0⍴DefFormat 'Lock' ⍝ Lock Spreadsheet Cells[30]  [31]  :case 'PostAssign'[32]      (⊂((2+7 0 19)[1+uk]) (parent,'pgValidation.ssValidation')) Format∆ValidParms¨'SetUp' 'Write'[33]  [34]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[35]  [36]      Def_Init[37]  [38]  :case 'Lock'[39]      :if prevind[40]      :andif ~aosenabled[41]      :andif ~0∊⍴(parent,'pgNon_Standard') ⎕wi 'self'[42]          (parent,'pgNon_Standard.ssTotNumNonS') Win∆F1SSProtectCells (⊂¯1 4 ¯1 5)[43]  ⍝⍝⍝        (parent,'pgNon_Standard.ssAvNumNonS') Win∆F1SSProtectCells (⊂¯1 4 ¯1 5)[44]      :endif[45]      :if ~0∊⍴(parent,'pgValidation') ⎕wi 'self'[46]          (parent,'pgValidation.ssValidation') Win∆F1SSProtectCells (⊂1 1 1 1)[47]      :endif[48]  [49]  :case 'Unlock'[50]      :if ~0∊⍴(parent,'pgNon_Standard') ⎕wi 'self'[51]          (parent,'pgNon_Standard.ssTotNumNonS') Win∆F1SSProtectCells 'Unlock'[52]  ⍝⍝⍝        (parent,'pgNon_Standard.ssAvNumNonS') Win∆F1SSProtectCells 'Unlock'[53]      :endif[54]      :if ~0∊⍴(parent,'pgValidation') ⎕wi 'self'[55]          (parent,'pgValidation.ssValidation') Win∆F1SSProtectCells 'Unlock'[56]      :endif[57]  [58]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[59]  [60]      :repeat[61]          Def_Change DLTMB ↑field[62]      :until mt field←1↓field[63]  [64]  :case 'PageChange'[65]  [66]      :repeat[67]          Def_PageChange DLTMB ↑field[68]      :until mt field←1↓field[69]  [70]  :case 'Valid' ⍝ Routine specific validation[71]  [72]      :repeat[73]          :if 0≠⍴,res←Def_Valid DLTMB ↑field ⋄ :return ⋄ :endif[74]      :until mt field←1↓field[75]  [76]  :case 'Run'[77]  [78]      res←'Quit'[79]  [80]  :case 'Quit' ⍝ Deleting "other" variables[81]  [82]      :if bar_ok[83]          (2↑'fmSV.barMemberDisplay' ⎕wi 'floatwhere') INIString uSER 'Disp_floatwhere' PrefINI[84]          0 0⍴'fmSV.barMemberDisplay' ⎕wi 'Delete'[85]      :endif[86]      0 0⍴⎕ex 'recl prevind bar_ok'[87]      0 0⍴⎕ex 'FixNumFields VarNumFields CharFields DateFields FormatFields'[88]  [89]  :endselect    ∇
+    ∇ res←field DefFormat parm;parent
+[1]   ⍝ DATAWIN.sf#4
+[2]   ⍝ Function to allow user control on Deferreds Format
+[3]   
+[4]   parent←'fmSV.sDefFormat.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Prepare'  ⍝ Preparatory Routines
+[9]       prevind←uk≠bar_ok←0 ⍝ Only Aus does not have Previous Data Format Tab
+[10]  
+[11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[12]      0 0⍴⍙VALUESdict ReadDictFile 'DefFormat' '' (SStoMAT '⍺CharStandNames⍺CharStandVars⍺DateStandNames⍺DateStandVars⍺FixNumStandNames⍺FixNumStandVars⍺VarNumStandNames⍺VarNumStandVars')
+[13]  
+[14]      :if ~mt AvNumVars ⍝ Remove Average Non-Standard Variables (introduced in error)
+[15]          TotNumVars ←TotNumVars  OVER AvNumVars
+[16]          TotNumFrom ←TotNumFrom  OVER AvNumFrom
+[17]          TotNumTo   ←TotNumTo    OVER AvNumTo
+[18]          pTotNumFrom←pTotNumFrom OVER pAvNumFrom
+[19]          pTotNumTo  ←pTotNumTo   OVER pAvNumTo
+[20]          TotNumDesc ←TotNumDesc  OVER AvNumDesc
+[21]          AvNumVars←AvNumFrom←AvNumTo←pAvNumFrom←pAvNumTo←AvNumDesc←1 0⍴''
+[22]      :endif
+[23]  
+[24]      FixNumFields←'DefFormat' MakeFieldList FixNumStandVars
+[25]      VarNumFields←'DefFormat' MakeFieldList VarNumStandVars
+[26]      CharFields←'DefFormat' MakeFieldList CharStandVars
+[27]      DateFields←'DefFormat' MakeFieldList DateStandVars
+[28]      FormatFields←'DefFormat' MakeFieldList 'd',⊃DateFields[1]
+[29]      0 0⍴DefFormat 'Lock' ⍝ Lock Spreadsheet Cells
+[30]  
+[31]  :case 'PostAssign'
+[32]      (⊂((2+7 0 19)[1+uk]) (parent,'pgValidation.ssValidation')) Format∆ValidParms¨'SetUp' 'Write'
+[33]  
+[34]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[35]  
+[36]      Def_Init
+[37]  
+[38]  :case 'Lock'
+[39]      :if prevind
+[40]      :andif ~aosenabled
+[41]      :andif ~0∊⍴(parent,'pgNon_Standard') ⎕wi 'self'
+[42]          (parent,'pgNon_Standard.ssTotNumNonS') Win∆F1SSProtectCells (⊂¯1 4 ¯1 5)
+[43]  ⍝⍝⍝        (parent,'pgNon_Standard.ssAvNumNonS') Win∆F1SSProtectCells (⊂¯1 4 ¯1 5)
+[44]      :endif
+[45]      :if ~0∊⍴(parent,'pgValidation') ⎕wi 'self'
+[46]          (parent,'pgValidation.ssValidation') Win∆F1SSProtectCells (⊂1 1 1 1)
+[47]      :endif
+[48]  
+[49]  :case 'Unlock'
+[50]      :if ~0∊⍴(parent,'pgNon_Standard') ⎕wi 'self'
+[51]          (parent,'pgNon_Standard.ssTotNumNonS') Win∆F1SSProtectCells 'Unlock'
+[52]  ⍝⍝⍝        (parent,'pgNon_Standard.ssAvNumNonS') Win∆F1SSProtectCells 'Unlock'
+[53]      :endif
+[54]      :if ~0∊⍴(parent,'pgValidation') ⎕wi 'self'
+[55]          (parent,'pgValidation.ssValidation') Win∆F1SSProtectCells 'Unlock'
+[56]      :endif
+[57]  
+[58]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[59]  
+[60]      :repeat
+[61]          Def_Change DLTMB ↑field
+[62]      :until mt field←1↓field
+[63]  
+[64]  :case 'PageChange'
+[65]  
+[66]      :repeat
+[67]          Def_PageChange DLTMB ↑field
+[68]      :until mt field←1↓field
+[69]  
+[70]  :case 'Valid' ⍝ Routine specific validation
+[71]  
+[72]      :repeat
+[73]          :if 0≠⍴,res←Def_Valid DLTMB ↑field ⋄ :return ⋄ :endif
+[74]      :until mt field←1↓field
+[75]  
+[76]  :case 'Run'
+[77]  
+[78]      res←'Quit'
+[79]  
+[80]  :case 'Quit' ⍝ Deleting "other" variables
+[81]  
+[82]      :if bar_ok
+[83]          (2↑'fmSV.barMemberDisplay' ⎕wi 'floatwhere') INIString uSER 'Disp_floatwhere' PrefINI
+[84]          0 0⍴'fmSV.barMemberDisplay' ⎕wi 'Delete'
+[85]      :endif
+[86]      0 0⍴⎕ex 'recl prevind bar_ok'
+[87]      0 0⍴⎕ex 'FixNumFields VarNumFields CharFields DateFields FormatFields'
+[88]  
+[89]  :endselect
+    ∇

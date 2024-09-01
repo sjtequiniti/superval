@@ -1,0 +1,45 @@
+    ∇ res←isValn XL_Init arg;template;XLfile;Z;exist;tie;UpdLinks;ReadOnly
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Copy Template and open up Excel Workbook
+[3]   ⍝ Initialize APL to Excel COM support
+[4]   ⍝ Creates object: "XL".  Much is courtesy of APL2000 (2004)
+[5]   
+[6]   (template XLfile UpdLinks ReadOnly)←4↑arg,0 0 ⋄ res←''
+[7]   
+[8]   Open:
+[9]   :if ~exist←FileExist XLfile
+[10]      :if ~1 CopyFile template XLfile
+[11]          res←'Unable to copy Template Spreadsheet File, please report to Claybrook to resolve the problem.'
+[12]          :if isValn
+[13]              res VALN∆LOG 'Error'
+[14]              AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Failed to copy Excel Template'
+[15]          :endif
+[16]          :return
+[17]      :endif
+[18]  :else ⍝ Check whether EXCEL workbook is open.
+[19]      :if 0<Z←⎕wcall '_lopen' XLfile 16
+[20]          0 0⍴⎕wcall '_lclose' Z
+[21]          :if ~isValn
+[22]              :if XLfile NTIE tie←'Native' TieNumber XLfile ⋄ XLfile NERASE tie ⋄ :endif ⍝ Delete the existing file
+[23]              →Open
+[24]          :endif
+[25]      :else
+[26]          :if unattended ⍝ Only Valuation can be unattended
+[27]              (res←'Workbook [',XLfile,'] is in use by another process.') VALN∆LOG 'Error'
+[28]              AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Unable to load Excel Output File'
+[29]              :return
+[30]          :else
+[31]              MDISPLAY 'Workbook [',XLfile,'] is in use.',⎕tcnl,⎕tcnl,'Please close workbook before clicking OK...'
+[32]              →Open
+[33]          :endif
+[34]      :endif
+[35]  :endif
+[36]  
+[37]  :if ~mt res←ExcelRunButton XL_Open XLfile UpdLinks ReadOnly
+[38]      :if isValn
+[39]          res VALN∆LOG 'Error'
+[40]          AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Unable to load Excel Output File'
+[41]      :endif
+[42]      :return
+[43]  :endif
+    ∇

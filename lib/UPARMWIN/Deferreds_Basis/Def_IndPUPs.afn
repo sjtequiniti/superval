@@ -1,0 +1,154 @@
+    ∇ field Def_IndPUPs parm;page;no;SSName;PUPget;PUPput;headings;desc;list;parent;z;∆
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Independent PUPs
+[3]   
+[4]   parent←'fmSV.sDefBasis.' ⋄ page←'pgIndPUPs.' ⋄ SSName←parent,page,'fIndPUPs.ssIndPUPs'
+[5]   headings←⊃(⊂'Independent PUP '),¨⍕¨⍳no←↑⍴IndPUPDesc
+[6]   
+[7]   :select parm
+[8]   :case 'Vars'
+[9]       lrIndPUPADJ  ←((⍴lrIndPUPADJ)  ⌈1 0×no)↑lrIndPUPADJ  ←MATRIX lrIndPUPADJ
+[10]      lrIndINDREV  ←((⍴lrIndINDREV)  ⌈1 0×no)↑lrIndINDREV  ←MATRIX lrIndINDREV
+[11]  ⍝⍝⍝    lrIndTVINDREV←((⍴lrIndTVINDREV)⌈1 0×no)↑lrIndTVINDREV←MATRIX lrIndTVINDREV
+[12]      PUPs_Vars 'IndPUPs'
+[13]      :if no≠0
+[14]          IndPUPADJ   ←IndPUPADJ    UpdateGridField lrIndPUPADJ
+[15]          IndINDSTART ←IndINDSTART  UpdateGridField lrIndINDSTART
+[16]          IndINDFINISH←IndINDFINISH UpdateGridField lrIndINDFINISH
+[17]          IndINDREV   ←IndINDREV    UpdateGridField lrIndINDREV
+[18]  ⍝⍝⍝        IndTVINDREV ←IndTVINDREV  UpdateGridField lrIndTVINDREV
+[19]      :endif
+[20]  
+[21]      z←(parent,'pgMain.fAddBens.ckIndPUPs') ⎕wi 'value'
+[22]      :for no :in ⍳no
+[23]          SSName ⎕wi 'xColHidden' no (~z)
+[24]      :endfor
+[25]      :if 0=no ⋄ SSName ⎕wi 'xColHidden' 1 (~z) ⋄ :endif
+[26]      (parent,page,'fButtons.bnDeferreds_BasisDelete') ⎕wi 'enabled' (z^( 1<no)^(ClntCode=3)^basAccess[2]≤accesslevel)
+[27]      (parent,page,'fButtons.bnDeferreds_BasisEdit'  ) ⎕wi 'enabled' (z^        (ClntCode=3)^basAccess[2]≤accesslevel)
+[28]      (parent,page,'fButtons.bnDeferreds_BasisInsert') ⎕wi 'enabled' (z^(20>no)^(ClntCode=3)^basAccess[2]≤accesslevel)
+[29]      (parent,page,'fButtons.bnDeferreds_BasisAdd'   ) ⎕wi 'enabled' (z^(20>no)^(ClntCode=3)^basAccess[2]≤accesslevel)
+[30]  
+[31]  :case 'Init'
+[32]      SSName ⎕wi '∆VarsInWS' 1
+[33]      Def_IndPUPs 'Vars'
+[34]      0 0⍴(⊂'ssIndPUPs') Deferreds_Basis 'Change'
+[35]  
+[36]  :case 'Change'
+[37]      :select field
+[38]      :case 'ssIndPUPs'
+[39]          :for no :in ⍳no
+[40]              SSName ⎕wi 'ColText' no (IndPUPDesc[no;])
+[41]              SSName Win∆F1SSSetSelection 1 no 3 no
+[42]              z←∨/' '≠IndPUPDesc[no;]
+[43]              :if (¯1↑SSName ⎕wi 'GetPattern')≠∆←1+z×¯1+SSName ⎕wi 'xBackColor'
+[44]                  SSName ⎕wi 'SetPattern' 1 (1+z×¯1+SSName ⎕wi 'xExtraColor') ∆
+[45]              :endif
+[46]          :endfor
+[47]          SSName Win∆F1SSSetSelection 1 1 1 1
+[48]          ⍙CACHE←UpdateCache
+[49]          0 0⍴(lmt qtrim¨m2n SSName ⎕wi '∆name') Deferreds_Basis 'Change'
+[50]      :endselect
+[51]  
+[52]  :case 'Valid'
+[53]  
+[54]  :caselist 'Add' 'Edit' 'Insert' ⍝ Add/Edit/Insert a PUP Definition
+[55]  
+[56]      :if 1=SSName ⎕wi 'SelectionCount'
+[57]      :andif =/(∆←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[58]      :andif ~∆≡1 1 1 1
+[59]          PUPget←∆[2]
+[60]      :else
+[61]          PUPget←0
+[62]      :endif
+[63]  
+[64]      :if parm≡'Insert'
+[65]          :if PUPget=0
+[66]              :if 1=↑⍴desc←IndPUPDesc  ⋄ PUPput←0.5
+[67]              :else
+[68]                  list←⊃(⊂'Insert PUP before '),¨m2n headings
+[69]                  :if mt PUPput←Win∆SelectionBox desc list ⋄ :return ⋄ :endif
+[70]                  PUPput←¯0.5+↑list ExactTLU ,PUPput
+[71]              :endif
+[72]          :else
+[73]              PUPput←PUPget-0.5
+[74]          :endif
+[75]          PUPget←0
+[76]      :endif
+[77]  
+[78]      :if PUPget=0
+[79]          desc←IndPUPDesc ⋄ list←headings
+[80]          :if   parm≡'Edit'                                   ⋄ list←⊃(⊂'Edit '),¨m2n list
+[81]          :else             ⋄ desc←desc OVER 'Default Values' ⋄ list←⊃(⊂'Use '),¨(m2n list OVER 'Default'),¨⊂' Values'
+[82]          :endif
+[83]          :if 1=↑⍴desc ⋄ PUPget←list
+[84]          :elseif mt PUPget←Win∆SelectionBox desc list ⋄ :return
+[85]          :endif
+[86]          PUPget←↑((-~parm≡'Edit')↓[⎕io]list) ExactTLU ,PUPget
+[87]      :endif
+[88]      :if ~parm≡'Insert' ⋄ PUPput←PUPget×parm≡'Edit' ⋄ :endif
+[89]  
+[90]      Win∆AssignVars ControlName ⍝ Trap current field entries
+[91]      Format←HyphenSwap Format
+[92]  
+[93]      UKPUPRun 'Ind'
+[94]  
+[95]      :if parm≡'Insert'
+[96]          'Deferreds_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Insert' PUPput
+[97]      :endif
+[98]      Def_IndPUPs 'Vars'
+[99]      openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[100]     0 0⍴(⊂'ssIndPUPs') Deferreds_Basis 'Change'
+[101] 
+[102] :case 'Delete' ⍝ Delete a PUP Definition
+[103] 
+[104]     :if 1=SSName ⎕wi 'SelectionCount'
+[105]     :andif =/(PUPget←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[106]     :andif ~PUPget≡1 1 1 1
+[107]         PUPget←PUPget[2]
+[108]     :else
+[109]         :if mt PUPget←Win∆SelectionBox IndPUPDesc (list←⊃(⊂'Delete '),¨m2n headings) ⋄ :return ⋄ :endif
+[110]         PUPget←list ExactTLU ,PUPget
+[111]     :endif
+[112] 
+[113]     :if 'Y'='YN' ASK 'Delete' (headings[PUPget;] ConcatLabel IndPUPDesc[PUPget;])
+[114]         Win∆AssignVars ControlName ⍝ Trap current field entries
+[115]         PUPput←(⍳no)~PUPget
+[116]         IndPUPDesc    ←IndPUPDesc[PUPput;]
+[117]         IndPUP        ←IndPUP[PUPput;]
+[118]         IndINDREV     ←IndINDREV[PUPput;]
+[119]         lrIndINDREV   ←lrIndINDREV[PUPput;]
+[120] ⍝⍝⍝        IndTVINDREV   ←IndTVINDREV[PUPput;]
+[121] ⍝⍝⍝        lrIndTVINDREV ←lrIndTVINDREV[PUPput;]
+[122]         IndINDWARFRAC ←IndINDWARFRAC[PUPput;]
+[123]         IndINDREVYRS  ←IndINDREVYRS[PUPput;]
+[124]         IndINDNRARND  ←IndINDNRARND[PUPput;]
+[125]         IndINDSTART   ←IndINDSTART[PUPput;]
+[126]         lrIndINDSTART ←lrIndINDSTART[PUPput;]
+[127]         IndINDFINISH  ←IndINDFINISH[PUPput;]
+[128]         lrIndINDFINISH←lrIndINDFINISH[PUPput;]
+[129]         m_IndPayStart ←m_IndPayStart[PUPput;]
+[130]         f_IndPayStart ←f_IndPayStart[PUPput;]
+[131]         m_IndPayEnd   ←m_IndPayEnd[PUPput;]
+[132]         f_IndPayEnd   ←f_IndPayEnd[PUPput;]
+[133]         IndPUPADJ     ←IndPUPADJ[PUPput;]
+[134]         lrIndPUPADJ   ←lrIndPUPADJ[PUPput;]
+[135]         IndBARBIND    ←IndBARBIND[PUPput;]
+[136]         IndDYNIND     ←IndDYNIND[PUPput;]
+[137]         IndDYNIND2    ←IndDYNIND2[PUPput;]
+[138]         IndUNDIND     ←IndUNDIND[PUPput;]
+[139]         m_IndPPFNRA   ←m_IndPPFNRA[PUPput;]
+[140]         f_IndPPFNRA   ←f_IndPPFNRA[PUPput;]
+[141]         IndPPFPAYINC  ←IndPPFPAYINC[PUPput;]
+[142] 
+[143]         SSName ⎕wi 'MaxCol' (¯1+SSName ⎕wi 'MaxCol')
+[144]         SSName ⎕wi 'xSetSelection' 1 1 1 1
+[145] 
+[146]         'Deferreds_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Delete' PUPget
+[147]         Def_IndPUPs 'Vars'
+[148]         openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[149]         0 0⍴(⊂'ssIndPUPs') Deferreds_Basis 'Change'
+[150]     :endif
+[151] 
+[152] :endselect
+    ∇

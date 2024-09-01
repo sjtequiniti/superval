@@ -1,0 +1,12 @@
+    ∇ Z←ProcessNumerics R
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Process Numeric fields that can be Member Data Field, Scheme/Financial Constant or
+[3]   ⍝  Numeric value (the latter two with a possible (numeric) Scenario Adjustment)
+[4]   
+[5]   :if mt Z←lmt R ⋄ Z←'1' ⋄ :return ⋄ :endif ⍝ Lose any blank elements (and default to 1)
+[6]   Z←,¨(⊂'Act') DescToVariableUK¨Z     ⍝ Convert Standard Field Descriptions to Variable names
+[7]   
+[8]   :if ^/∊⎕vi¨Z~¨'+' ⋄ Z←⍕+/ZWB¨Z      ⍝ Sum the numeric values
+[9]   :else             ⋄ Z←↑Z            ⍝ Non-numeric should be a (single) Member Data Field
+[10]  :endif
+    ∇

@@ -1,0 +1,18 @@
+    ∇ Ind∆Totals←FINAL∆CALCS;type;VAB1;VAB2;VAB3;VAB4;VAB5;VAB6;VAB7;PSL
+[1]   ⍝ VALNWIN.sf#10
+[2]   ⍝ FINAL∆CALCS for an Accrued Benefits Calculations
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   DEFAULT∆VARS ⍝ Default some Benefit Variables
+[8]   PROCESS∆BENS 'Accrued' ⋄ Ind∆Totals←((8+No∆Bens),18)⍴PSL←⎕IO←0
+[9]   ⍝ Group grand totals and Membership Statistics
+[10]  Ind∆Totals[0;]←(SAL0××/term OVERTAKE f),(10↑SALvec[0;]),data
+[11]  Ind∆Totals[1+⍳3;⍳10]←(NOM,SALvec[0;contsSAL,V1pcSAL])∘.×1,(+/(PMMP-1↑PM)×-DIFF tPx,0),X0,(1↑PS),(1↑PM),TS,TM,(1↑FM),nra-TS,TM
+[12]  →(~summopt)/END ⋄ 1 SUMMARY,Ind∆Totals
+[13]  ⍝ Accrued Benefits listing
+[14]  END:ACCRES MATRIX(1↑VAB1),(1↑VAB2),(1↑VAB3),(1↑VAB4),(1↑VAB5),(1↑VAB6),1↑VAB7
+[15]  VALN∆EXPORT ⍝ Valuation Extract File
+[16]  →NoInd/0 ⋄ IND∆ACC 0,(NX↑VAB1),(NX↑VAB2),(NX↑VAB3),(NX↑VAB4),(NX↑VAB5),(NX↑VAB6),[0.5]NX↑VAB7
+    ∇

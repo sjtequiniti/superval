@@ -1,0 +1,95 @@
+    ∇ AuditLog←packold Win∆AuditLogold packnew;∆;kold;knew;del;ins;dold;dnew;common;changes;IT;key;f;d;transpose;vals;ts;difs;row;z;seln;msk;vars
+[1]   ⍝ UTILSWIN.sf#4
+[2]   ⍝ Audit Log from old and new Parameters sets
+[3]   ⍝ Revn: sjt05feb15
+[4]   
+[5]   ⍝ define Implicit Tables
+[6]   :select SavedModule
+[7]   :caselist 'Financials' 'Financials_Export'
+[8]       ∆←(1 0∘.sel 'inc' 'inf' 'int' 'rev')∘.,'Name' 'Value' 'ConsDyn'  'Desc'
+[9]       ∆←(⊂'Field' 'Desc')⍪¨⊃¨⎕SPLIT pr⌿∆
+[10]      IT←('Increase' 'Inflation' 'Interest' 'Revaluation',¨⊂' Rate Assumptions') push ∆
+[11]      transpose←1
+[12]  :caselist 'Actives' 'Deferreds' 'Pensioners',¨⊂'_Basis'
+[13]      ∆←relRules for ^/~mt¨valsIn relRules select 'Page' 'Alternative'
+[14]  ⍝   ∆←∆ for (∆ at 'Relevant')≠¯1                                                ⍝ ignore hidden fields
+[15]      ∆←∆ groupby 'Page' ('Field' 'Desc' 'Row')                                   ⍝ d: Page=>table
+[16]      IT←(keysIn ∆) push (valsIn ∆) sortedBy¨⊂'Row'                               ⍝ d: Page=>defn table for implicit tables
+[17]      transpose←0                                                                 ⍝ FIXME: Implicit assumption that all Tables are the same alignment is wrong for Actives
+[18]  :else                                                                           ⍝ FIXME
+[19]      IT←'' push ''
+[20]      transpose←0
+[21]  :endselect
+[22]  
+[23]  ∆←p2d¨packold packnew                                                           ⍝ packages => dictionaries
+[24]  ∆←∆ SavedModule excludeHidden ∆                                                 ⍝ exclude hidden fields
+[25]  ∆←∆ select¨(82=⎕DR¨¨valsIn¨∆)sel¨keysIn¨∆                                       ⍝ exclude numeric vars
+[26]  ∆←(keysIn¨∆) push¨1 HyphenSwap ¨¨valsIn¨∆                                       ⍝ replace dodgy hyphens
+[27]  (kold knew)←keysIn¨(dold dnew)←∆                                                ⍝ dictionaries: parm=>value; their keys
+[28]  
+[29]  AuditLog←,[.5] 'Parameter' 'Old Value' 'New Value'
+[30]  
+[31]  ⍝ Report deleted and inserted parms
+[32]  (del ins)←kold knew~¨⊂common←(kold∊knew)/kold                                   ⍝ parms common, deleted or inserted in New
+[33]  AuditLog←AuditLog⍪ del,(dold at del)       ,[1.5] ⊂'Deleted Parameter'  ⍝ Old keys deleted in New
+[34]  
+[35]  ins←ins~m2n RENAMED_VARS                            ⍝ Renamed Variables (not new)
+[36]  ins←ins~m2n HIDDEN_VARS                             ⍝ Hidden Variables
+[37]  :if ~mt ins
+[38]      msk←(⊂'lr')≡¨2↑¨ins                             ⍝ Identify Label Variables
+[39]      msk←msk^~ins∊(⊂'lr'),¨((~msk)/ins)~¨⊂'[;]'      ⍝ Exclude those linked to a new variable
+[40]      msk←msk^mt¨DLTB¨⍎¨ins                           ⍝ Exclude those empty
+[41]      msk←msk∨(⊂'sCEN_')≡¨5↑¨ins                      ⍝ Exclude new scenario variables
+[42]      :if ~mt ins←(~msk)/ins                          ⍝ the reduced list
+[43]          AuditLog←AuditLog⍪ ins,(⊂'Added Parameter'),[1.5] dnew at ins           ⍝ Added to New
+[44]      :endif
+[45]  :endif
+[46]  
+[47]  ⍝ Report changed parms
+[48]  :if ×↑⍴keysIn IT
+[49]      changes←~ common∊ ((⊂'lr'),¨∆),∆←↑,/(valsIn IT) at¨⊂'Field'                 ⍝ exclude implicit tables
+[50]  :else
+[51]      changes←1
+[52]  :endif
+[53]  changes←changes ^ ~ ↑≡¨/ trimm¨¨dnew dold at¨ ⊂common                           ⍝ flag parms with changed values
+[54]  changes←changes ^ ~common∊(9.02>saveVersion)/⊂'GMPORIGIN'                       ⍝ The (hidden) conversion of GMPORIGIN
+[55]  
+[56]  msk←(⊂'lr')≡¨2↑¨vars←changes/common                                             ⍝ Changed Vars and labels
+[57]  vars←vars,(∆∊common)/∆←((2↓¨msk/vars),((⊂'lr'),¨(~msk)/vars)~¨⊂'[;]')~vars      ⍝ Keep companion Varianble or Label if not already
+[58]  
+[59]  AuditLog←AuditLog⍪ vars, ⍉⎕MIX dold dnew at¨⊂vars
+[60]  
+[61]  ⍝ Report implicit tables
+[62]  :for key :in keysIn IT
+[63]      (f d)←(IT at key) at 'Field' 'Desc'
+[64]      (f d)←(⊂f∊common)sel¨f d
+[65]      :if ∨/difs←~↑≡¨/vals←trimm¨¨dold dnew at¨⊂f                                 ⍝ flag differences in values
+[66]      :andif ~^/^/¨mt¨¨vals
+[67]          :if transpose ⋄ :orif 'NE '≡3↑key                                       ⍝ fields correspond to table columns (fudge for NE Data Defaults)
+[68]  ⍝⍝          ts←⍕¨⍉¨⊃¨m2n¨¨vals
+[69]  ⍝⍝          row←(key) push ⍕¨ts selectedBy 1 changesIn ts
+[70]  
+[71]              ⍝ Fudge to fix variables that have had "additional" rows added by Import
+[72]              ∆← ⌈/¨↑¨¨⍴¨¨vals                                                    ⍝ Maximum rows of variables
+[73]              vals←∆↑[⎕io]¨¨vals                                                  ⍝ Make all the same size
+[74]  
+[75]              z←key push (changesIn MATRIX¨⍉¨⊃¨m2n¨¨vals) stretch¨⍕¨vals
+[76]          :else                                                                   ⍝ fields correspond to table rows
+[77]  ⍝⍝⍝            ts←trimm¨¨dold dnew at¨⊂↑(f d)←(⊂1,1↓difs) sel¨ f d                 ⍝ select changed fields but always first (col heads)
+[78]              ts←trimm¨¨dold dnew at¨⊂↑f d                                        ⍝ select changed fields but always first (col heads)
+[79]  
+[80]              ⍝ Fudge to fix variables that have had "additional" rows added by Import
+[81]              ∆← ⌈/¨↑¨¨⍴¨¨ts                                                      ⍝ Maximum rows of variables
+[82]              ts←∆↑[⎕io]¨¨ts                                                      ⍝ Make all the same size
+[83]  
+[84]  ⍝⍝⍝            seln←∨⌿×2⊃¨⍴¨⊃ts                                                    ⍝ flag tables with width >0
+[85]              z←(1,1↓difs)⌿d,((⍴∆)⍴changesIn ⍉¨⊃¨m2n¨¨ts) stretch¨∆←⍉⊃ts
+[86]  ⍝⍝          row←(⊃d) push ⍕¨⍉¨(⍉¨⊃¨m2n¨¨ts) selectedBy changesIn ⍕¨ts
+[87]          :endif
+[88]  ⍝⍝      :if ∨/z←↑∨/∨/¨' '≠¨1↓row,¨' '
+[89]  ⍝⍝          AuditLog←AuditLog OVER ⍉↑OVER/⎕split¨z⌿¨row
+[90]  ⍝⍝      :endif
+[91]          AuditLog←AuditLog⍪z
+[92]      :endif
+[93]  :endfor
+    ∇

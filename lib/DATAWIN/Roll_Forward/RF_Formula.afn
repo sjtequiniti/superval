@@ -1,1 +1,27 @@
-    ∇ RF_Formula;SSName;selection;row;iNCtYPE;rf_Formula;page;PageNO[1]   ⍝ DATAWIN.sf#23[2]   ⍝ Create a Formula for Adjustment[3]   [4]   SSName←(page←Win∆Parent Win∆Parent '#' ⎕wi 'focus'),'.fOther.ssAdjust'[5]   PageNO←¯1↑page[6]   [7]   :if 1=SSName ⎕wi 'SelectionCount'                               ⍝ Single Selection[8]   :andif =/(selection←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[1 3]   ⍝ Singl Row[9]       row←selection[1]                                            ⍝ Row of Grid[10]      :if mt iNCtYPE←DLTB ⍎'IncType_',PageNO,'[row;]'             ⍝ Types of Escalations[11]          MDISPLAY 'Specify Type of Increase first' ⋄ :return[12]      :elseif ~(⊂iNCtYPE)∊'Interest' 'Inflation' 'Revaluation' 'Increases'[13]          MDISPLAY 'Not available with this Type of Increase' ⋄ :return[14]      :endif[15]  [16]      rf_Formula←,⊃,SSName Win∆F1SSGetTextArray row 11 1 1[17]  [18]      'DATAWIN' CallModule 'RF_EditFormula'[19]  [20]      SSName ⎕wi 'TextRC[]' (row 11) (⊂rf_Formula)[21]      SSName ⎕wi "SetColWidthAuto" ¯1 11 (SSName ⎕wi 'MaxRow') 11 0[22]  [23]  :else[24]      MDISPLAY 'Select a single cell to be edited'[25]  :endif    ∇
+    ∇ RF_Formula;SSName;selection;row;iNCtYPE;rf_Formula;page;PageNO
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ Create a Formula for Adjustment
+[3]   
+[4]   SSName←(page←Win∆Parent Win∆Parent '#' ⎕wi 'focus'),'.fOther.ssAdjust'
+[5]   PageNO←¯1↑page
+[6]   
+[7]   :if 1=SSName ⎕wi 'SelectionCount'                               ⍝ Single Selection
+[8]   :andif =/(selection←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[1 3]   ⍝ Singl Row
+[9]       row←selection[1]                                            ⍝ Row of Grid
+[10]      :if mt iNCtYPE←DLTB ⍎'IncType_',PageNO,'[row;]'             ⍝ Types of Escalations
+[11]          MDISPLAY 'Specify Type of Increase first' ⋄ :return
+[12]      :elseif ~(⊂iNCtYPE)∊'Interest' 'Inflation' 'Revaluation' 'Increases'
+[13]          MDISPLAY 'Not available with this Type of Increase' ⋄ :return
+[14]      :endif
+[15]  
+[16]      rf_Formula←,⊃,SSName Win∆F1SSGetTextArray row 11 1 1
+[17]  
+[18]      'DATAWIN' CallModule 'RF_EditFormula'
+[19]  
+[20]      SSName ⎕wi 'TextRC[]' (row 11) (⊂rf_Formula)
+[21]      SSName ⎕wi "SetColWidthAuto" ¯1 11 (SSName ⎕wi 'MaxRow') 11 0
+[22]  
+[23]  :else
+[24]      MDISPLAY 'Select a single cell to be edited'
+[25]  :endif
+    ∇

@@ -1,0 +1,37 @@
+    ∇ field Def_Spouse parm;page;MESS
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Spouse
+[3]   
+[4]   page←'pgSpouse.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]       (parent,page,'fSpouse.edm_AGEDIF' ) ⎕wi 'onChange' ((parent,page,'fSpouse.edm_AGEDIF' ) ⎕wi 'onExit')
+[9]       (parent,page,'fSpouse.edf_AGEDIF' ) ⎕wi 'onChange' ((parent,page,'fSpouse.edf_AGEDIF' ) ⎕wi 'onExit')
+[10]  
+[11]  :case 'Init'
+[12]      (parent,page,'fButtons.bnDeferreds_BasisEditSP') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[13]  
+[14]  :case 'PageChange'
+[15]      'Deferreds' TVBasisUpdate ⊂'TVSpouseSame'
+[16]  
+[17]  :case 'Change'
+[18]      :select field
+[19]      :case 'cbSpouseParm'
+[20]          :if ~mt SpouseParm←DLTB (parent,page,'fSpouse.cbSpouseParm') ⎕wi 'text'
+[21]              MESS←2⊃('Spouse Parameters Set' 0) GET∆SpouseGlobals 2↓field
+[22]              :if ~openParameters∨changedParm
+[23]                  changedParm←1
+[24]                  (parent,page,'fSpouse.cbSpouseParm') ⎕wi 'suppress' 1
+[25]                  Assign_Inputs 1
+[26]                  (parent,page,'fSpouse.cbSpouseParm') ⎕wi 'suppress' 0
+[27]                  changedParm←0
+[28]              :endif
+[29]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[30]          :endif
+[31]      :endselect
+[32]  
+[33]  :case 'Valid'
+[34]  
+[35]  :endselect
+    ∇

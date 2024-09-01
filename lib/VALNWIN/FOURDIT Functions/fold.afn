@@ -1,0 +1,27 @@
+    ∇ Z←folds fold Z;r;c;H
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Z folded
+[3]   ⍝ Z: [vec∣mat]
+[4]   ⍝ folds: (+int) # copies to fold into
+[5]   ⍝ ←: (vec) folds copies of Z
+[6]   ⍝    (mat) Z wrapped vertically across folds copies
+[7]   ⍝ Tests:
+[8]   ⍝?⍝ ∆ ≡ 5 fold ∆←0/'abc' 'def'
+[9]   ⍝?⍝ ∆ ≡ 5 fold ∆←0/2 2 ⍴'abc' 'def' 'ghi' 'jkl'
+[10]  ⍝?⍝ 'abc' 'def' ≡ 0 fold 'abc' 'def'
+[11]  ⍝?⍝ 'abc' 'def' ≡ 1 fold 'abc' 'def'
+[12]  ⍝?⍝ 'abc' 'def' 'abc' 'def' ≡ 2 fold 'abc' 'def'
+[13]  ⍝?⍝ (↑rr⊂[1 2] 3 4 2⍴12 2↑∆) ≡ 3 fold ∆←10 2⍴'the' 'quick' 'brown' 'fox' 'jumps' 'over' 'the' 'lazy' 'dog'
+[14]  ⍝ Vern: sjt10sep15
+[15]  :if folds>1
+[16]  :andif ~mt Z
+[17]      :select rank Z
+[18]      :caselist 0 1
+[19]          Z←(folds×⍴Z)⍴Z
+[20]      :case 2⍝ fill down then across
+[21]          (r c)←⍴Z
+[22]          H←⌈r÷folds ⍝ final height
+[23]          Z←↑rr ⊂[1 2+⎕IO] (folds H c)⍴ (folds×H)↑[⎕IO] Z
+[24]      :endselect
+[25]  :endif
+    ∇

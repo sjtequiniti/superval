@@ -1,0 +1,30 @@
+    ∇ fields ⍙DBInsertData data;⎕elx;elx;i;z;n
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Put data into an ADO Record Set
+[3]   ⍝  data is a n column (nested) array of data to be inserted in the table
+[4]   ⍝ if data has one row, then ⎕tcnul indicate that field is not updated
+[5]   ⍝ fields can be column names, column numbers or not specified (first "n")
+[6]   
+[7]   :if ×↑⍴data←MATRIX data
+[8]       :if 0=⎕nc 'fields' ⍝ Assume the first "n" fields
+[9]           fields←(⍳¯1↑⍴data)-⎕io
+[10]          :if 1=↑⍴data ⍝ But exclude "nulls" from data
+[11]              z←~^/¨⎕tcnul=,data ⋄ fields←z/fields ⋄ data←z/data
+[12]          :endif
+[13]      :elseif ~(⎕dr fields)∊11 323 ⍝ Non-numeric Header names
+[14]           fields←fields ⍙DBadoRstFields 'ADOrst'
+[15]      :endif
+[16]      fields←'#' ⎕wi 'VT' fields 8204
+[17]      i←⍳↑⍴data
+[18]  
+[19]      n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"⍙DBInsertData ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry'
+[20]      retry:
+[21]      :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[22]  
+[23]      :repeat
+[24]          'ADOrst' ⎕wi 'XAddNew' fields ('#' ⎕wi 'VT' (data[↑i;]) 8204)
+[25]      :until mt i←1↓i
+[26]      'ADOrst' ⎕wi 'XUpdateBatch'
+[27]      ⎕elx←elx
+[28]  :endif
+    ∇

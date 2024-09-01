@@ -1,0 +1,37 @@
+    ∇ Error←FormValid Win∆ValidF1SSAll SSName;rows;cols;n;i;text;ind;I;N
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Check the validity of all contents of a F1SS
+[3]   ⍝  "major" is the rows/columns on the major "axis" (depending on how data is orientated ie in Cols or in Rows)
+[4]   ⍝   (all data in the "major" row/column is assumed to be of the same type)
+[5]   ⍝  "minor" is the columns/rows (opposite to "major")
+[6]   
+[7]   Error←0⍴'' ⋄ ⎕wself←SSName
+[8]   rows←⍳I←⎕wi 'MaxRow' ⋄ cols←⍳N←⎕wi 'MaxCol'
+[9]   
+[10]  :if ind←10000<N×I ⍝ For more than 10000 cells (2D Rate Tables), set up Progress Bar
+[11]      ('Validating Data - Row:' 'Column:') Win∆ProgressBar 'SetLabels'
+[12]      :if Module≡'Assumptions_Review'
+[13]          'Validating Financial Assumptions Data' Win∆ProgressBar 'Open'
+[14]      :else
+[15]          'Validating Rate Table Data' Win∆ProgressBar 'Open'
+[16]      :endif
+[17]  :endif
+[18]  
+[19]  :for i :in rows
+[20]      :if ind ⋄ :andif 1=10∣i ⋄ (i I (⍕i)) Win∆ProgressBar 'FileUpdate' ⋄ :endif
+[21]      :for n :in cols
+[22]          :if ind ⋄ :andif 1=10∣n ⋄ (n N (⍕n)) Win∆ProgressBar 'MemberUpdate' ⋄ :endif
+[23]          ⎕wi 'xSetActiveCell' i n
+[24]          :if ~1↑⎕wi 'XGetProtection' ⍬ ⍬
+[25]          :orif 0=⎕wi 'xEnableProtection'
+[26]              text←,⊃,Win∆F1SSGetTextArray i n 1 1
+[27]              :if ~0∊⍴,Error←FormValid Win∆ValidF1SS i,n
+[28]                  :if ind ⋄ Win∆ProgressBar 'Close' ⋄ :endif
+[29]                  ⎕wi 'XStartEdit' 0 1 1
+[30]                  :return
+[31]              :endif
+[32]          :endif
+[33]      :endfor
+[34]  :endfor
+[35]  :if ind ⋄ Win∆ProgressBar 'Close' ⋄ :endif
+    ∇

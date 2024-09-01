@@ -1,1 +1,53 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Decrements_Review" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Decrements_Review" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmDecrementsReview.lvRUNDESC" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX RUNDESC) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX RUNDESC[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmDecrementsReview.lvRUNDESC" ⎕wi "value" value[25]  0 0⍴"fmDecrementsReview.lvRUNDESC" ⎕wi "EnsureVisible" ((1↑value),1)[26]  "fmDecrementsReview.ckRetrieve" ⎕wi "value" (zwb Retrieve)[27]  "fmDecrementsReview.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)[28]  "fmDecrementsReview.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)[29]  "fmDecrementsReview.fParms.edGROUP" ⎕wi "text" (DLTB GROUP)[30]  "fmDecrementsReview.fParms.edPS1" ⎕wi "text" (DLTB PS[1;])[31]  "fmDecrementsReview.fParms.edPS2" ⎕wi "text" (DLTB PS[2;])[32]  0 0⍴GetDecrList "List"[33]  warnings←warnings OVER "Expected Table" Win∆CheckDecr (TABXX[1;]) (lrTABXX1)[34]  "fmDecrementsReview.fTable.edTABXX1" ⎕wi "text" (DLTB TABXX[1;])[35]  "fmDecrementsReview.fTable.edTABXX2" ⎕wi "text" (DLTB TABXX[2;])[36]  "fmDecrementsReview.fTable.edTABXX3" ⎕wi "text" (DLTB TABXX[3;])[37]  0 0⍴GetDecrList "List"[38]  warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX) (lrTXX)[39]  "fmDecrementsReview.fTable.edTXX" ⎕wi "text" (DLTB TXX)[40]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Decrements_Review[41]      :for var :in spin Comment_Decrements_Review at "variable" "row" ⋄ (var row)←var[42]          "Decrements_Review" ParmColor ((FormFields for "variable" var) at "control"),var row 1[43]      :endfor[44]  :endif[45]  :if ~0∊⍴,warnings[46]      MDISPLAY DLTMB warnings,⎕tcnl[47]      Win∆AssignVars "fmDecrementsReview"[48]  :endif[49]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Decrements_Review" "" "Names"[50]      "fmDecrementsReview" ⎕wi "modified" 0[51]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Decrements_Review" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Decrements_Review" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmDecrementsReview.lvRUNDESC" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX RUNDESC) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX RUNDESC
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmDecrementsReview.lvRUNDESC" ⎕wi "value" value
+[25]  0 0⍴"fmDecrementsReview.lvRUNDESC" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  "fmDecrementsReview.ckRetrieve" ⎕wi "value" (zwb Retrieve)
+[27]  "fmDecrementsReview.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)
+[28]  "fmDecrementsReview.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)
+[29]  "fmDecrementsReview.fParms.edGROUP" ⎕wi "text" (DLTB GROUP)
+[30]  "fmDecrementsReview.fParms.edPS1" ⎕wi "text" (DLTB PS[1;])
+[31]  "fmDecrementsReview.fParms.edPS2" ⎕wi "text" (DLTB PS[2;])
+[32]  0 0⍴GetDecrList "List"
+[33]  warnings←warnings OVER "Expected Table" Win∆CheckDecr (TABXX[1;]) (lrTABXX1)
+[34]  "fmDecrementsReview.fTable.edTABXX1" ⎕wi "text" (DLTB TABXX[1;])
+[35]  "fmDecrementsReview.fTable.edTABXX2" ⎕wi "text" (DLTB TABXX[2;])
+[36]  "fmDecrementsReview.fTable.edTABXX3" ⎕wi "text" (DLTB TABXX[3;])
+[37]  0 0⍴GetDecrList "List"
+[38]  warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX) (lrTXX)
+[39]  "fmDecrementsReview.fTable.edTXX" ⎕wi "text" (DLTB TXX)
+[40]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Decrements_Review
+[41]      :for var :in spin Comment_Decrements_Review at "variable" "row" ⋄ (var row)←var
+[42]          "Decrements_Review" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[43]      :endfor
+[44]  :endif
+[45]  :if ~0∊⍴,warnings
+[46]      MDISPLAY DLTMB warnings,⎕tcnl
+[47]      Win∆AssignVars "fmDecrementsReview"
+[48]  :endif
+[49]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Decrements_Review" "" "Names"
+[50]      "fmDecrementsReview" ⎕wi "modified" 0
+[51]  :endif
+    ∇

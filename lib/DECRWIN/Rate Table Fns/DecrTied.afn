@@ -1,1 +1,42 @@
-    ∇ res←File DecrTied parm;fILENAME;i;tieno;index;row;∆_TimeStamp;∆_TimeNum[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Capture (if available) or Release the "Decr" File for[3]   ⍝ exclusive use while Editing, Adding or Deleting Rate Tables[4]   [5]   res←0⍴''[6]   :if ~FileExist fILENAME←LibraryDir,'SVTiedDecr.sf'[7]       0 0⍴CreateFile fILENAME 'Tied Rate Tables Control File'[8]   :endif[9]   [10]  tieno←TieNumber fILENAME[11]  :for i :in ⍳100[12]      :if fILENAME FTIE tieno[13]          :leave[14]      :else[15]          :if i=100 ⋄ res←'Unable to ',parm,' the File ',File ⋄ :return ⋄ :endif[16]      :endif[17]      0 0⍴⎕dl 0.01[18]  :endfor[19]  [20]  index←⎕fread tieno,1[21]  :if (↑⍴index)<row←(index[;index[1;]⍳⊂'∆_Name'])⍳⊂'\' Win∆Child File[22]      0 0⍴fILENAME AddToFile ('\' Win∆Child File) ''[23]      row←↑⍴index←⎕fread tieno,1 ⋄ index[row;index[1;]⍳⊂'∆_Description']←⊂''[24]  :endif[25]  [26]  ∆_TimeStamp←,1 DATESPELL ⎕ts ⋄ ∆_TimeNum←TIMEBASE ⎕ts[27]  :select parm[28]  :case 'Capture'[29]      :if mt ⊃index[row;index[1;]⍳⊂'∆_Description'][30]          index←index UpdateIndex 'Update' row[31]          index[row;index[1;]⍳⊂'∆_Description']←⊂uSER[32]      :else[33]          res←(,⊃index[row;index[1;]⍳⊂'∆_Description']),' is currently modifying ',File ⋄ →end[34]      :endif[35]  :case 'Release'[36]      index←index UpdateIndex 'Update' row[37]      index[row;index[1;]⍳⊂'∆_Description']←⊂''[38]  :endselect[39]  index ⎕freplace tieno,1[40]  end:⎕funtie tieno    ∇
+    ∇ res←File DecrTied parm;fILENAME;i;tieno;index;row;∆_TimeStamp;∆_TimeNum
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Capture (if available) or Release the "Decr" File for
+[3]   ⍝ exclusive use while Editing, Adding or Deleting Rate Tables
+[4]   
+[5]   res←0⍴''
+[6]   :if ~FileExist fILENAME←LibraryDir,'SVTiedDecr.sf'
+[7]       0 0⍴CreateFile fILENAME 'Tied Rate Tables Control File'
+[8]   :endif
+[9]   
+[10]  tieno←TieNumber fILENAME
+[11]  :for i :in ⍳100
+[12]      :if fILENAME FTIE tieno
+[13]          :leave
+[14]      :else
+[15]          :if i=100 ⋄ res←'Unable to ',parm,' the File ',File ⋄ :return ⋄ :endif
+[16]      :endif
+[17]      0 0⍴⎕dl 0.01
+[18]  :endfor
+[19]  
+[20]  index←⎕fread tieno,1
+[21]  :if (↑⍴index)<row←(index[;index[1;]⍳⊂'∆_Name'])⍳⊂'\' Win∆Child File
+[22]      0 0⍴fILENAME AddToFile ('\' Win∆Child File) ''
+[23]      row←↑⍴index←⎕fread tieno,1 ⋄ index[row;index[1;]⍳⊂'∆_Description']←⊂''
+[24]  :endif
+[25]  
+[26]  ∆_TimeStamp←,1 DATESPELL ⎕ts ⋄ ∆_TimeNum←TIMEBASE ⎕ts
+[27]  :select parm
+[28]  :case 'Capture'
+[29]      :if mt ⊃index[row;index[1;]⍳⊂'∆_Description']
+[30]          index←index UpdateIndex 'Update' row
+[31]          index[row;index[1;]⍳⊂'∆_Description']←⊂uSER
+[32]      :else
+[33]          res←(,⊃index[row;index[1;]⍳⊂'∆_Description']),' is currently modifying ',File ⋄ →end
+[34]      :endif
+[35]  :case 'Release'
+[36]      index←index UpdateIndex 'Update' row
+[37]      index[row;index[1;]⍳⊂'∆_Description']←⊂''
+[38]  :endselect
+[39]  index ⎕freplace tieno,1
+[40]  end:⎕funtie tieno
+    ∇

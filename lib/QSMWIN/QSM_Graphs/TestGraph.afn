@@ -1,0 +1,33 @@
+    ∇ GraphView←showzeroes TestGraph type;old;new;bb;ppt
+[1]   ⍝ QSMWIN.sf#5
+[2]   ⍝ Display an Example Graph
+[3]   
+[4]   :if mt GraphView←(parent,'picGraph') ⎕wi 'self'
+[5]       :return ⍝ Graph Control doesn't exist yet!!
+[6]   :endif
+[7]   psWipe parent,'picGraph'
+[8]   
+[9]   old←MatrixZWB oldvalues ⋄ new←MatrixZWB newvalues
+[10]  
+[11]  chSet 'HMargin' 60 36
+[12]  chSet 'Heading' 'Example Graph'
+[13]  chSet 'HFont' 'tii,12,blue'
+[14]  chSet 'XCaption' 'Year'
+[15]  chSet 'XLab' (⍕¨⍳10)
+[16]  chSet 'YRange' (⌊/0,old,new),(⌈/0,old,new)
+[17]  chSet 'colour' (',' join (type≡'Multi-Line')↓(⊂'WH'),((type≡'Changes')⌽'GR' 'BL'),⊂'RE')
+[18]  chSet 'pattern' 15
+[19]  chSet 'Style' 'lines,nomarkers'
+[20]  chSet 'Key' (',' join (type≡'Multi-Line')↓(⊂''),((type≡'Changes')⌽'Reduced' 'Original'),⊂'Increased')
+[21]  chSet 'KFont' 'he,8'
+[22]  :if type≡'Multi-Line' ⋄ chSet 'Gap' ¯0.5
+[23]  :else                 ⋄ chSet 'Style' 'stacked,Relative'
+[24]  :endif
+[25]  chBar (type showzeroes) StackedValues old new
+[26]  
+[27]  :if ~mt GraphView←chClose
+[28]      bb←psReadHeader GraphView '%%BoundingBox:' ⍝ Bounding Box
+[29]      ppt←.5+.×(((parent,'picGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+[30]      ps_exec GraphView (parent,'picGraph') ppt ps∆cmap 1
+[31]  :endif
+    ∇

@@ -1,1 +1,31 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Select_Rates" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Select_Rates" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmSelectRates.lsRatesFile" ⎕wi "list"[10]  :if 0∊⍴selection←PickList ExactTLU SStoMAT RatesFile[11]      "fmSelectRates.lsRatesFile" ⎕wi "value" ((×1↑⍴PickList)⍴1)[12]      modified←⌈/modified,"fmSelectRates.lsRatesFile" ⎕wi "value"[13]  :else[14]      "fmSelectRates.lsRatesFile" ⎕wi "visible" ¯1[15]      "fmSelectRates.lsRatesFile" ⎕wi "value" selection[16]      "fmSelectRates.lsRatesFile" ⎕wi "visible" 1[17]  :endif[18]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Select_Rates[19]      :for var :in spin Comment_Select_Rates at "variable" "row" ⋄ (var row)←var[20]          "Select_Rates" ParmColor ((FormFields for "variable" var) at "control"),var row 1[21]      :endfor[22]  :endif[23]  :if ~0∊⍴,warnings[24]      MDISPLAY DLTMB warnings,⎕tcnl[25]      Win∆AssignVars "fmSelectRates"[26]  :endif[27]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Select_Rates" "" "Names"[28]      "fmSelectRates" ⎕wi "modified" 0[29]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Select_Rates" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Select_Rates" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmSelectRates.lsRatesFile" ⎕wi "list"
+[10]  :if 0∊⍴selection←PickList ExactTLU SStoMAT RatesFile
+[11]      "fmSelectRates.lsRatesFile" ⎕wi "value" ((×1↑⍴PickList)⍴1)
+[12]      modified←⌈/modified,"fmSelectRates.lsRatesFile" ⎕wi "value"
+[13]  :else
+[14]      "fmSelectRates.lsRatesFile" ⎕wi "visible" ¯1
+[15]      "fmSelectRates.lsRatesFile" ⎕wi "value" selection
+[16]      "fmSelectRates.lsRatesFile" ⎕wi "visible" 1
+[17]  :endif
+[18]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Select_Rates
+[19]      :for var :in spin Comment_Select_Rates at "variable" "row" ⋄ (var row)←var
+[20]          "Select_Rates" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[21]      :endfor
+[22]  :endif
+[23]  :if ~0∊⍴,warnings
+[24]      MDISPLAY DLTMB warnings,⎕tcnl
+[25]      Win∆AssignVars "fmSelectRates"
+[26]  :endif
+[27]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Select_Rates" "" "Names"
+[28]      "fmSelectRates" ⎕wi "modified" 0
+[29]  :endif
+    ∇

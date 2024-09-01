@@ -1,0 +1,35 @@
+    ∇ res←RFProj_CallQSM arg;date;parms;file;group;rate∆;∆;rfperiod;finMethod;saveVersion
+[1]   ⍝ QSMWIN.sf#6
+[2]   ⍝ Calculate a Liability figure using QSM
+[3]   
+[4]   (date parms)←arg
+[5]   
+[6]   0 0⍴⍙VALUESdict ReadDictFile 'Configure_RF'
+[7]   0 0⍴ClientFile ReadFile 'Configure_RF'
+[8]   0 0⍴(SystemDir,'QSMWIN') ReadFile 'Configure_RF'
+[9]   'CreateVars' RunModule 'Configure_RF'
+[10]  0 0⍴(SystemDir,'QSMWIN') DeleteModule 'Configure_RF'
+[11]  
+[12]  file←ConsolidDir,1↓'}' StripText parms
+[13]  saveVersion←+/(10*-0 2 4)×MatrixZWB SStoMAT '.','-' Win∆Child parms
+[14]  parms←DLTB '[' StripText '}' DropText parms
+[15]  0 0⍴file ReadFile 'Quick_Scenario' parms
+[16]  group10←9.27>saveVersion
+[17]  
+[18]  restab←1 QS_Compatibility restab
+[19]  
+[20]  (maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk)←⍙WebVariables 0 0
+[21]  
+[22]  rfperiod←'DN' DURN ValDATE,'DD/MM/YYYY' DATEEXP date
+[23]  restab←(⊂'' 0) ⍙WebFinancials restab 0
+[24]  :for ∆ :in spin groupings (rate01 rate02 rate03 rate04 rate05 rate06 rate07 rate08 rate09 rate10 rate11 rate12 rate13 rate14 rate15)
+[25]      :if ~mt ↑(group rate∆)←∆
+[26]          rate∆←maxyr OVERTAKE 0.01×EXECUTE (^/⎕vi rate∆)/rate∆←(READTBL rate∆)~'+'
+[27]          restab←(⊂group rate∆) ⍙WebFinancials restab 0
+[28]      :endif
+[29]  :endfor
+[30]  
+[31]  res←↑↑+/restab at 'NewLiabilityValue'
+[32]  
+[33]  0 0⍴DeleteVars¨'Quick_Scenario' 'Configure_RF'
+    ∇

@@ -1,1 +1,101 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Snapshot_Salary" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Snapshot_Salary" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "FileSelections" Win∆Inherits "fILESelections"[10]  "fmSV.fSnapshot_Salary.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)[11]  "FILES" Win∆Inherits "Actsfile"[12]  "fmSV.fSnapshot_Salary.fData.edFILES" ⎕wi "text" (DLTB FILES)[13]  "fILENAME" Win∆Inherits "Actsfile"[14]  GetAbsFileList "Fund"[15]  warnings←warnings OVER "Investigation Data File" Win∆FileRelative "fILENAME" "lrfILENAME"[16]  "fmSV.fSnapshot_Salary.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)[17]  "Format" Win∆Inherits "FormatA"[18]  PickList←"fmSV.fSnapshot_Salary.fData.cbFormat" ⎕wi "list"[19]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"[20]  selection←(StripText PickList) ExactTLU DLTB StripText Format[21]  :if mt selection[22]      modified←⌈/modified,1[23]  :endif[24]  "fmSV.fSnapshot_Salary.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)[25]  "fmSV.fSnapshot_Salary.fData.ckUseSex" ⎕wi "value" (zwb UseSex)[26]  "fmSV.fSnapshot_Salary.fData.ckUseCat" ⎕wi "value" (zwb UseCat)[27]  PickList←"fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "list"[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels[29]      "fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)[30]      modified←⌈/modified,"fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "value"[31]  :else[32]      "fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "visible" ¯1[33]      "fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "value" selection[34]      "fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "visible" 1[35]  :endif[36]  "fmSV.fSnapshot_Salary.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)[37]  "fmSV.fSnapshot_Salary.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)[38]  PickList←"fmSV.fSnapshot_Salary.fParms.cbCalcDATE" ⎕wi "list"[39]  warnings←warnings OVER "Calculation Date" Win∆DateRelative "CalcDATE" "lrCalcDATE"[40]  selection←(StripText PickList) ExactTLU DLTB StripText CalcDATE[41]  :if mt selection[42]          "fmSV.fSnapshot_Salary.fParms.cbCalcDATE" ⎕wi "text" (DLTB CalcDATE)[43]  :else[44]      "fmSV.fSnapshot_Salary.fParms.cbCalcDATE" ⎕wi "value" selection[45]  :endif[46]  "fmSV.fSnapshot_Salary.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)[47]  "fmSV.fSnapshot_Salary.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)[48]  "fmSV.fSnapshot_Salary.fParms.edGROUP" ⎕wi "text" (DLTB GROUP)[49]  PickList←"fmSV.fSnapshot_Salary.fParms.cbsalind" ⎕wi "list"[50]  selection←PickList ExactTLU DLTB salind[51]  :if mt selection[52]      :if ~mt DLTB salind[53]          warnings←warnings OVER "Previous Selection for 'Salary Definition' is no longer available"[54]      :endif[55]      modified←⌈/modified,1[56]  :endif[57]  "fmSV.fSnapshot_Salary.fParms.cbsalind" ⎕wi "value" (¯1↑1,selection)[58]  PickList←"fmSV.fSnapshot_Salary.fParms.cbBDATE" ⎕wi "list"[59]  warnings←warnings OVER "Investigate Only Entrants between" Win∆DateRelative "BDATE" "lrBDATE"[60]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE[61]  :if mt selection[62]          "fmSV.fSnapshot_Salary.fParms.cbBDATE" ⎕wi "text" (DLTB BDATE)[63]  :else[64]      "fmSV.fSnapshot_Salary.fParms.cbBDATE" ⎕wi "value" selection[65]  :endif[66]  PickList←"fmSV.fSnapshot_Salary.fParms.cbEDATE" ⎕wi "list"[67]  warnings←warnings OVER "and" Win∆DateRelative "EDATE" "lrEDATE"[68]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE[69]  :if mt selection[70]          "fmSV.fSnapshot_Salary.fParms.cbEDATE" ⎕wi "text" (DLTB EDATE)[71]  :else[72]      "fmSV.fSnapshot_Salary.fParms.cbEDATE" ⎕wi "value" selection[73]  :endif[74]  no←1↑⍴PickList←SStoMAT ("fmSV.fSnapshot_Salary.fParms.fservind.opservind_1" ⎕wi "∆lastoption") ⎕wi "∆options"[75]  value←¯1↑1,selection←PickList ExactTLU servind[76]  :if 0∊⍴selection[77]      modified←⌈/modified,×value[78]  :endif[79]  :for nn :in ⍳no[80]      ("fmSV.fSnapshot_Salary.fParms.fservind.opservind_",⍕nn) ⎕wi "value" (value=nn)[81]  :endfor[82]  "fmSV.fSnapshot_Salary.fParms.cksave" ⎕wi "value" (zwb save)[83]  0 0⍴GetDecrList "List"[84]  warnings←warnings OVER "Expected Table" Win∆CheckDecr (TABXX[1;]) (lrTABXX1)[85]  "fmSV.fSnapshot_Salary.fTable.edTABXX1" ⎕wi "text" (DLTB TABXX[1;])[86]  "fmSV.fSnapshot_Salary.fTable.edTABXX2" ⎕wi "text" (DLTB TABXX[2;])[87]  "fmSV.fSnapshot_Salary.fTable.edTABXX3" ⎕wi "text" (DLTB TABXX[3;])[88]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Snapshot_Salary[89]      :for var :in spin Comment_Snapshot_Salary at "variable" "row" ⋄ (var row)←var[90]          "Snapshot_Salary" ParmColor ((FormFields for "variable" var) at "control"),var row 1[91]      :endfor[92]  :endif[93]  :if ~0∊⍴,warnings[94]      MDISPLAY DLTMB warnings,⎕tcnl[95]      Win∆AssignVars "fmSV.fSnapshot_Salary"[96]  :endif[97]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Snapshot_Salary" "" "Names"[98]      "fmSV.fSnapshot_Salary" ⎕wi "modified" 0[99]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Snapshot_Salary" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Snapshot_Salary" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "FileSelections" Win∆Inherits "fILESelections"
+[10]  "fmSV.fSnapshot_Salary.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)
+[11]  "FILES" Win∆Inherits "Actsfile"
+[12]  "fmSV.fSnapshot_Salary.fData.edFILES" ⎕wi "text" (DLTB FILES)
+[13]  "fILENAME" Win∆Inherits "Actsfile"
+[14]  GetAbsFileList "Fund"
+[15]  warnings←warnings OVER "Investigation Data File" Win∆FileRelative "fILENAME" "lrfILENAME"
+[16]  "fmSV.fSnapshot_Salary.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[17]  "Format" Win∆Inherits "FormatA"
+[18]  PickList←"fmSV.fSnapshot_Salary.fData.cbFormat" ⎕wi "list"
+[19]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"
+[20]  selection←(StripText PickList) ExactTLU DLTB StripText Format
+[21]  :if mt selection
+[22]      modified←⌈/modified,1
+[23]  :endif
+[24]  "fmSV.fSnapshot_Salary.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)
+[25]  "fmSV.fSnapshot_Salary.fData.ckUseSex" ⎕wi "value" (zwb UseSex)
+[26]  "fmSV.fSnapshot_Salary.fData.ckUseCat" ⎕wi "value" (zwb UseCat)
+[27]  PickList←"fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "list"
+[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels
+[29]      "fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)
+[30]      modified←⌈/modified,"fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "value"
+[31]  :else
+[32]      "fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "visible" ¯1
+[33]      "fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "value" selection
+[34]      "fmSV.fSnapshot_Salary.fData.lsCatSels" ⎕wi "visible" 1
+[35]  :endif
+[36]  "fmSV.fSnapshot_Salary.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)
+[37]  "fmSV.fSnapshot_Salary.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)
+[38]  PickList←"fmSV.fSnapshot_Salary.fParms.cbCalcDATE" ⎕wi "list"
+[39]  warnings←warnings OVER "Calculation Date" Win∆DateRelative "CalcDATE" "lrCalcDATE"
+[40]  selection←(StripText PickList) ExactTLU DLTB StripText CalcDATE
+[41]  :if mt selection
+[42]          "fmSV.fSnapshot_Salary.fParms.cbCalcDATE" ⎕wi "text" (DLTB CalcDATE)
+[43]  :else
+[44]      "fmSV.fSnapshot_Salary.fParms.cbCalcDATE" ⎕wi "value" selection
+[45]  :endif
+[46]  "fmSV.fSnapshot_Salary.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)
+[47]  "fmSV.fSnapshot_Salary.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)
+[48]  "fmSV.fSnapshot_Salary.fParms.edGROUP" ⎕wi "text" (DLTB GROUP)
+[49]  PickList←"fmSV.fSnapshot_Salary.fParms.cbsalind" ⎕wi "list"
+[50]  selection←PickList ExactTLU DLTB salind
+[51]  :if mt selection
+[52]      :if ~mt DLTB salind
+[53]          warnings←warnings OVER "Previous Selection for 'Salary Definition' is no longer available"
+[54]      :endif
+[55]      modified←⌈/modified,1
+[56]  :endif
+[57]  "fmSV.fSnapshot_Salary.fParms.cbsalind" ⎕wi "value" (¯1↑1,selection)
+[58]  PickList←"fmSV.fSnapshot_Salary.fParms.cbBDATE" ⎕wi "list"
+[59]  warnings←warnings OVER "Investigate Only Entrants between" Win∆DateRelative "BDATE" "lrBDATE"
+[60]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE
+[61]  :if mt selection
+[62]          "fmSV.fSnapshot_Salary.fParms.cbBDATE" ⎕wi "text" (DLTB BDATE)
+[63]  :else
+[64]      "fmSV.fSnapshot_Salary.fParms.cbBDATE" ⎕wi "value" selection
+[65]  :endif
+[66]  PickList←"fmSV.fSnapshot_Salary.fParms.cbEDATE" ⎕wi "list"
+[67]  warnings←warnings OVER "and" Win∆DateRelative "EDATE" "lrEDATE"
+[68]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE
+[69]  :if mt selection
+[70]          "fmSV.fSnapshot_Salary.fParms.cbEDATE" ⎕wi "text" (DLTB EDATE)
+[71]  :else
+[72]      "fmSV.fSnapshot_Salary.fParms.cbEDATE" ⎕wi "value" selection
+[73]  :endif
+[74]  no←1↑⍴PickList←SStoMAT ("fmSV.fSnapshot_Salary.fParms.fservind.opservind_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[75]  value←¯1↑1,selection←PickList ExactTLU servind
+[76]  :if 0∊⍴selection
+[77]      modified←⌈/modified,×value
+[78]  :endif
+[79]  :for nn :in ⍳no
+[80]      ("fmSV.fSnapshot_Salary.fParms.fservind.opservind_",⍕nn) ⎕wi "value" (value=nn)
+[81]  :endfor
+[82]  "fmSV.fSnapshot_Salary.fParms.cksave" ⎕wi "value" (zwb save)
+[83]  0 0⍴GetDecrList "List"
+[84]  warnings←warnings OVER "Expected Table" Win∆CheckDecr (TABXX[1;]) (lrTABXX1)
+[85]  "fmSV.fSnapshot_Salary.fTable.edTABXX1" ⎕wi "text" (DLTB TABXX[1;])
+[86]  "fmSV.fSnapshot_Salary.fTable.edTABXX2" ⎕wi "text" (DLTB TABXX[2;])
+[87]  "fmSV.fSnapshot_Salary.fTable.edTABXX3" ⎕wi "text" (DLTB TABXX[3;])
+[88]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Snapshot_Salary
+[89]      :for var :in spin Comment_Snapshot_Salary at "variable" "row" ⋄ (var row)←var
+[90]          "Snapshot_Salary" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[91]      :endfor
+[92]  :endif
+[93]  :if ~0∊⍴,warnings
+[94]      MDISPLAY DLTMB warnings,⎕tcnl
+[95]      Win∆AssignVars "fmSV.fSnapshot_Salary"
+[96]  :endif
+[97]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Snapshot_Salary" "" "Names"
+[98]      "fmSV.fSnapshot_Salary" ⎕wi "modified" 0
+[99]  :endif
+    ∇

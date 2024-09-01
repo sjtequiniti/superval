@@ -1,0 +1,13 @@
+    ∇ Index←Index UpdateIndex R;⎕io;type;rows;n;∆_TimeStamp;∆_TimeNum
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Update the Timestamp and User Information in the specified rows of the Index (with either Delete or Update)
+[3]   ⍝ Note: it is rows not components!
+[4]   
+[5]   ⎕io←1 ⋄ (type rows)←R
+[6]   type←type≡'Delete' ⋄ ∆_TimeStamp←,1 DATESPELL ⎕ts ⋄ ∆_TimeNum←TIMEBASE ⎕ts
+[7]   
+[8]   :for n :in rows
+[9]       Index[n;Index[1;]⍳'∆_UserModified' '∆_TSModified' '∆_TimeModified' '∆_VersModified',type/⊂'∆_Deleted']←uSER ∆_TimeStamp ∆_TimeNum version,type/⊂'Y'
+[10]  :endfor
+[11]      Index[2;Index[1;]⍳'∆_UserModified' '∆_TSModified' '∆_TimeModified' '∆_VersModified'                  ]←uSER ∆_TimeStamp ∆_TimeNum version
+    ∇

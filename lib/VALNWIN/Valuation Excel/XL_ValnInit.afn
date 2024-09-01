@@ -1,0 +1,48 @@
+    ∇ res←XL_ValnInit flag;Z;exist;template;elx;⎕elx;MESS;ValMethdesc
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Initialize APL to Excel COM support
+[3]   ⍝ Creates object: "XL".  Much is courtesy of APL2000 (2004)
+[4]   
+[5]   res←0 ⋄ elx←⎕elx ⋄ (3 7 'Preparing Excel Output') Win∆ProgressBar2 'FileUpdate'
+[6]   
+[7]   :if 0=ExcelVersion
+[8]       (1 9 'Determining Excel Version') Win∆ProgressBar2 'MemberUpdate'
+[9]       :if res←~mt MESS←XL_Create ExcelRunButton ⋄ MESS VALN∆LOG 'Error'
+[10]          AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Unable to load Excel Output File'
+[11]          :return
+[12]      :endif
+[13]      XL_Quit
+[14]  :endif
+[15]  (1 9 'Loading Excel Application') Win∆ProgressBar2 'MemberUpdate'
+[16]  
+[17]  :select ClassID
+[18]  :case 1 ⋄ template←'Actives'
+[19]  :case 3 ⋄ template←'Deferreds'
+[20]  :case 4 ⋄ template←'Pensioners'
+[21]  :endselect
+[22]  template←TemplatesDir,template,' Excel Template (V',(DLTB Win∆Parent version),').xls',(12≤ExcelVersion)/XLtype
+[23]  
+[24]  :if exist←FileExist XLfile←XL_filename ⋄ :orif ~excelDelay
+[25]      :if res←~mt 1 XL_Init template XLfile 0 0
+[26]          :return
+[27]      :endif
+[28]  
+[29]      :if res←∨/Z←4↑XL_filecheck ⍝ Check Correct Version/Client
+[30]          :if   ↑Z ⋄ ('Incorrect Spreadsheet Version.  Please try clearing your Output and Consolidation folders (or designate new ones) and try again.') VALN∆LOG 'Error' ⋄ :endif
+[31]          :if ↑1↓Z ⋄ ('Incorrect Spreadsheet Client Code.  Please report to Claybrook to resolve the problem.') VALN∆LOG 'Error' ⋄ :endif
+[32]          :if ↑2↓Z ⋄ ('Incorrect Spreadsheet Scheme ID.  Please try clearing your Output and Consolidation folders (or designate new ones) and try again.') VALN∆LOG 'Error' ⋄ :endif
+[33]          :if  3↓Z ⋄ ('Incorrect Spreadsheet Cash Split flag.  Change "Separate Cash Commutation and Cash on Top" flag in Scheme Details or clear your Output folder (or designate new one) and try again.') VALN∆LOG 'Error' ⋄ :endif
+[34]          AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Invalid Excel Output File'
+[35]          XL_Quit ⋄ :return
+[36]      :endif
+[37]  
+[38]      :if ~exist ⍝ Set file up if didn't previously exist
+[39]          XL_filesetup
+[40]          :if flag ⋄ 0 0⍴XL_Save XLfile ⋄ :endif
+[41]      :elseif res←0=⍴,XL_Data 'VDate' ⍝ Not properly set up when first opened
+[42]          ('Invalid Excel Output File [',XLfile,'].',⎕tcnl,'File will need to be deleted or removed.') VALN∆LOG 'Error'
+[43]          AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Invalid Excel Output File'
+[44]          XL_Quit ⋄ :return
+[45]      :endif
+[46]  :endif
+    ∇

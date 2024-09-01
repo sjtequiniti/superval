@@ -1,0 +1,55 @@
+    ∇ res←res adoCONCommand arg;con;sql;⎕elx;n;elx
+[1]   ⍝ UTILSWIN.sf#8
+[2]   ⍝ Executing an SQL command on the specified Connection
+[3]   ⍝ res is 0 if no records expected to be returned
+[4]   ⍝        1 if RecordSet records expected to be returned
+[5]   ⍝        2 if CSV records expected to be returned
+[6]   ⍝ Modified version of ⍙DBadoCONCommand to allow the connection to be specified
+[7]   
+[8]   (sql con)←arg
+[9]   
+[10]  :if uSERisRSE ⋄ :andif '"'∊sql
+[11]      (⎕si[1+⎕io;]) sql
+[12]  :endif
+[13]  :if ~';'∊¯5↑DLTB sql ⋄ sql←sql,';' ⋄ :endif
+[14]  ⍝⍝⍝    :if sqlDatabase
+[15]  ⍝⍝⍝        sql←'BEGIN TRANSACTION;',⎕tcnl,sql,⎕tcnl,'COMMIT;'
+[16]  ⍝⍝⍝    :endif
+[17]  
+[18]  0 0⍴'ADOcmd' ⎕wi 'Create' 'ADODB.Command'
+[19]  n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"⍙DBadoCONCommand(1) ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry1'
+[20]  retry1:
+[21]  :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[22]  'ADOcmd' ⎕wi 'xActiveConnection' (con ⎕wi 'obj')
+[23]  ⎕elx←elx
+[24]  'ADOcmd' ⎕wi 'xCommandText' sql
+[25]  'ADOcmd' ⎕wi 'xCommandType' ('ADOcmd' ⎕wi 'adCmdText')
+[26]  'ADOcmd' ⎕wi 'xCommandTimeout' sqlTimeout
+[27]  
+[28]  :if ×res ⍝ If results expected, put them in RecordSet and retrieve
+[29]      n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"⍙DBadoCONCommand(2) ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry2'
+[30]  retry2:
+[31]      :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[32]      :if ~mt 'rst' ⎕wi 'self' ⍝ Delete the RecordSet in the case of a retry
+[33]          0 0⍴'rst' ⎕wi 'XClose' ⋄ 0 0⍴'rst' ⎕wi 'Delete'
+[34]      :endif
+[35]      0 0⍴'ADOcmd' ⎕wi 'XExecute > rst'
+[36]      :if 0='rst' ⎕wi 'xBOF' ⋄ :orif 0='rst' ⎕wi 'xEOF'
+[37]          :select res
+[38]          :case 1 ⋄ res←'rst' ⎕wi 'XGetRows'
+[39]          :case 2 ⋄ res←'rst' ⎕wi 'XGetString' ('rst' ⎕wi 'adClipString') ¯1 ',' (⎕tcnl,⎕tclf)
+[40]          :endselect
+[41]      :else ⍝ No Records retrieved - XGetRows fails
+[42]          res←(0,('rst' ⎕wi 'xFields') ⎕wi 'xCount')⍴''
+[43]      :endif
+[44]      0 0⍴'rst' ⎕wi 'XClose'
+[45]      0 0⍴'rst' ⎕wi 'Delete'
+[46]  :else
+[47]      n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"⍙DBadoCONCommand(3) ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry3'
+[48]  retry3:
+[49]      :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[50]      0 0⍴'ADOcmd' ⎕wi 'XExecute'
+[51]  :endif
+[52]  0 0⍴'ADOcmd' ⎕wi 'Delete'
+[53]  ⎕elx←elx
+    ∇

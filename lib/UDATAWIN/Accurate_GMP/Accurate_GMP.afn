@@ -1,1 +1,75 @@
-    ∇ res←field Accurate_GMP parm;parent;bDATE;z[1]   ⍝ UDATAWIN.sf#3[2]   ⍝ Function to allow user control on Accurate GMP Calculator[3]   [4]   parent←'fmAccurate_GMP.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       TotNumVars←CharVars←DateVars←0 0⍴''[10]      Format←HyphenSwap Format[11]      (CalcDATE lrCalcDATE)←'Date' SwapRelFields CalcDATE lrCalcDATE[12]  [13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[14]  [15]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[16]  [17]      :repeat[18]          :select ↑field[19]          :case 'cbFormat'[20]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format[21]          :endselect[22]      :until mt field←1↓field[23]  [24]  :case 'Valid' ⍝ Routine specific validation[25]  [26]      ⍝ Check Calculation Date is after 5 4 1978[27]      bDATE←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrCalcDATE CalcDATE[28]      :if 0>COD1 DAYS bDATE[29]          res←'EarlyDate' (,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX COD1)[30]          Win∆SetFocus parent,'cbCalcDATE' ⋄ :return[31]      :endif[32]  [33]      fqNIC78←fqNIC79←fqNIC80←fqNIC81←fqNIC82←fqNIC83←fqNIC84←fqNIC85←fqNIC86←⍳0[34]      fqUBE87←fqUBE88←fqUBE89←fqUBE90←fqUBE91←fqUBE92←fqUBE93←fqUBE94←fqUBE95←fqUBE96←⍳0[35]  [36]      CREATEDATADESC Format ⍝ Create data format[37]      :if 0∊⍴,fGMP0 ⍝ Check GMP fields are specified[38]      :orif 0∊⍴,fGMPE0[39]          Win∆SetFocus parent,'cbFormat'[40]          res←'NoGMPs' ⋄ :return[41]      :endif[42]  [43]     ⍝ Check NIC and UBE fields are specified[44]      :if 0∊⍴,fqNIC78,fqNIC79,fqNIC80,fqNIC81,fqNIC82,fqNIC83,fqNIC84,fqNIC85,fqNIC86,fqUBE87,fqUBE88,fqUBE89,fqUBE90,fqUBE91,fqUBE92,fqUBE93,fqUBE94,fqUBE95,fqUBE96[45]          Win∆SetFocus parent,'cbFormat'[46]          res←'NoNICorUBE' ⋄ :return[47]      :endif[48]  [49]      fact←'S21' FACTOR 'All' ⍝ Get S21 Factors[50]      z←COD1 TAXYEARS bDATE ⍝ Number of Factors required[51]      :if ~^/(1978+⍳z)∊⌊(1⊃fact)÷10000[52]          Win∆SetFocus parent,'cbCalcDATE'[53]          res←'NoS21' ⋄ :return[54]      :endif[55]      fact←z↑2⊃fact[56]  [57]  :case 'Run'[58]  [59]      'res←GMP∆CALC' Win∆ProgressBar 'Start'[60]      :if ''≡res ⍝ If Successful Run[61]          res←'Quit'[62]      :else[63]          Win∆SetFocus res ⋄ res←''[64]      :endif[65]  [66]  :case 'Quit' ⍝ Deleting "other" variables[67]  [68]      0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars[69]      0 0⍴⎕ex 'd','f',DateVars[70]      0 0⍴DeleteVars 'ActFormat'[71]      0 0⍴⎕ex 'FormatType fact'[72]  [73]  :endselect    ∇
+    ∇ res←field Accurate_GMP parm;parent;bDATE;z
+[1]   ⍝ UDATAWIN.sf#3
+[2]   ⍝ Function to allow user control on Accurate GMP Calculator
+[3]   
+[4]   parent←'fmAccurate_GMP.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       TotNumVars←CharVars←DateVars←0 0⍴''
+[10]      Format←HyphenSwap Format
+[11]      (CalcDATE lrCalcDATE)←'Date' SwapRelFields CalcDATE lrCalcDATE
+[12]  
+[13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[14]  
+[15]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[16]  
+[17]      :repeat
+[18]          :select ↑field
+[19]          :case 'cbFormat'
+[20]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[21]          :endselect
+[22]      :until mt field←1↓field
+[23]  
+[24]  :case 'Valid' ⍝ Routine specific validation
+[25]  
+[26]      ⍝ Check Calculation Date is after 5 4 1978
+[27]      bDATE←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrCalcDATE CalcDATE
+[28]      :if 0>COD1 DAYS bDATE
+[29]          res←'EarlyDate' (,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX COD1)
+[30]          Win∆SetFocus parent,'cbCalcDATE' ⋄ :return
+[31]      :endif
+[32]  
+[33]      fqNIC78←fqNIC79←fqNIC80←fqNIC81←fqNIC82←fqNIC83←fqNIC84←fqNIC85←fqNIC86←⍳0
+[34]      fqUBE87←fqUBE88←fqUBE89←fqUBE90←fqUBE91←fqUBE92←fqUBE93←fqUBE94←fqUBE95←fqUBE96←⍳0
+[35]  
+[36]      CREATEDATADESC Format ⍝ Create data format
+[37]      :if 0∊⍴,fGMP0 ⍝ Check GMP fields are specified
+[38]      :orif 0∊⍴,fGMPE0
+[39]          Win∆SetFocus parent,'cbFormat'
+[40]          res←'NoGMPs' ⋄ :return
+[41]      :endif
+[42]  
+[43]     ⍝ Check NIC and UBE fields are specified
+[44]      :if 0∊⍴,fqNIC78,fqNIC79,fqNIC80,fqNIC81,fqNIC82,fqNIC83,fqNIC84,fqNIC85,fqNIC86,fqUBE87,fqUBE88,fqUBE89,fqUBE90,fqUBE91,fqUBE92,fqUBE93,fqUBE94,fqUBE95,fqUBE96
+[45]          Win∆SetFocus parent,'cbFormat'
+[46]          res←'NoNICorUBE' ⋄ :return
+[47]      :endif
+[48]  
+[49]      fact←'S21' FACTOR 'All' ⍝ Get S21 Factors
+[50]      z←COD1 TAXYEARS bDATE ⍝ Number of Factors required
+[51]      :if ~^/(1978+⍳z)∊⌊(1⊃fact)÷10000
+[52]          Win∆SetFocus parent,'cbCalcDATE'
+[53]          res←'NoS21' ⋄ :return
+[54]      :endif
+[55]      fact←z↑2⊃fact
+[56]  
+[57]  :case 'Run'
+[58]  
+[59]      'res←GMP∆CALC' Win∆ProgressBar 'Start'
+[60]      :if ''≡res ⍝ If Successful Run
+[61]          res←'Quit'
+[62]      :else
+[63]          Win∆SetFocus res ⋄ res←''
+[64]      :endif
+[65]  
+[66]  :case 'Quit' ⍝ Deleting "other" variables
+[67]  
+[68]      0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars
+[69]      0 0⍴⎕ex 'd','f',DateVars
+[70]      0 0⍴DeleteVars 'ActFormat'
+[71]      0 0⍴⎕ex 'FormatType fact'
+[72]  
+[73]  :endselect
+    ∇

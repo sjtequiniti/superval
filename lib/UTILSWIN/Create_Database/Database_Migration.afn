@@ -1,0 +1,115 @@
+    ∇ MESS←sqlDatabase Database_Migration ⍙dbname;tables;tempDB;DBversion;versions;labels;xxx;cursor;lock
+[1]   ⍝ UTILSWIN.sf#11
+[2]   ⍝ Conversion Routine for moving Databases from one version to the next
+[3]   
+[4]   MESS←'' ⋄ tables←⍙DBTableNames 'ADOcon' ⋄ tempDB←0
+[5]   
+[6]   :if ~(⊂'Version')∊tables
+[7]   :orif 9.2>DBversion←+/1 .0001×zwb¨,1 ⍙DBadoCONCommand 'SELECT SVVersion, SVBuild FROM Version' ⍝ Database version
+[8]       MESS←'Migration of Databases unavailable for databases created prior to version 9.20'
+[9]       :return
+[10]  :endif
+[11]  
+[12]  xxx←'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'
+[13]  cursor←'ADOrst' ⎕wi 'adOpenStatic' ⋄ lock←'ADOrst' ⎕wi 'adLockOptimistic'
+[14]  
+[15]  versions←9.2500 9.2700 9.2800 9.2900 9.3000 999+.009×ecflag   ⍝ Change versions (only post 9.20)
+[16]  labels←  L92500 L92700 L92800 L92900 L93000 end               ⍝ Change code labels
+[17]  
+[18]  →↑(DBversion<versions)/labels
+[19]  
+[20]  L92500:
+[21]  ('') ('') Update_Table 'BenefitType' sqlDatabase ⍝ Increase width of BenefitTypeName field
+[22]  ' WHERE BenefitTypeID<100' Update_Data 'BenefitType' ⋄ MESS←MESS,⎕tcnl,'Updated Data in BenefitType table'
+[23]  '' Update_Data 'Contingency' ⋄ MESS←MESS,⎕tcnl,'Updated Data in Contingency table'
+[24]  
+[25]  ('FinancialsCollar' 'FinancialsCap',(bASM/⊂'FinancialsScenValue'),bQSM/⊂'FinancialsGroup') ((2+bASM+bQSM)/⊂"''") Update_Table 'FinancialsValues' sqlDatabase
+[26]  MESS←MESS,⎕tcnl,'Added new Fields to FinancialsValues table'
+[27]  
+[28]  ('SeparateComCot' 'IndivCashFlow' 'AltScenSpouseCF' 'ValuationFactors',bAON/⊂'FinAssSummarised') ('0' '0' '0' '0',bAON/⊂'0') Update_Table 'ResultsCategory' sqlDatabase
+[29]  MESS←MESS,⎕tcnl,'Added new Fields to ResultsCategory table'
+[30]  
+[31]  UpdateBasisIDs
+[32]  MESS←MESS,⎕tcnl,'Changed BasisItemIDs to static values'
+[33]  
+[34]  :if (⊂'AssumptionSummary')∊tables ⍝ Get rid of "development" table in 9.20
+[35]      xxx←0 ⍙DBadoCONCommand "DROP TABLE AssumptionSummary"
+[36]  :endif
+[37]  
+[38]  :if ecflag ⋄ :andif (⊂'CategoryAssumptions')∊tables
+[39]      xxx←0 ⍙DBadoCONCommand "DROP TABLE CategoryAssumptions"
+[40]      xxx←0 ⍙DBadoCONCommand "DROP TABLE BenefitAssumptions"
+[41]      :if sqlDatabase
+[42]          sqlDatabase Create_Table¨spin (2/1) ("CategoryAssumptions" "BenefitAssumptions")
+[43]      :endif
+[44]  :endif
+[45]  
+[46]  xxx←0 ⍙DBadoCONCommand "UPDATE Version SET SVVersion=' 9.25'"
+[47]  xxx←0 ⍙DBadoCONCommand "UPDATE Version SET SVBuild='00'"
+[48]  
+[49]  L92700:
+[50]  ('') ('') Update_Table 'DataItem' sqlDatabase ⍝ Make description field longer for new data
+[51]  '' Update_Data 'Contingency' ⋄ MESS←MESS,⎕tcnl,'Updated Data in Contingency table'
+[52]  '' Update_Data 'DataItem' ⋄ MESS←MESS,⎕tcnl,'Updated Data in DataItem table'
+[53]  (⊂'ValuationFactors') (⊂'0') Update_Table 'ResultsCategory' sqlDatabase
+[54]  MESS←MESS,⎕tcnl,'Added new Field to ResultsCategory table'
+[55]  ('') ('') Update_Table 'TableValues' sqlDatabase ⍝ Make Age field decimal
+[56]  MESS←MESS,⎕tcnl,'Updated structure of TableValues table'
+[57]  
+[58]  xxx←0 ⍙DBadoCONCommand "UPDATE Version SET SVVersion=' 9.27'"
+[59]  xxx←0 ⍙DBadoCONCommand "UPDATE Version SET SVBuild='00'"
+[60]  
+[61]  L92800:
+[62]  ('') ('') Update_Table 'BenefitType' sqlDatabase ⍝ Increase width of BenefitTypeName field
+[63]  ' WHERE BenefitTypeID<100' Update_Data 'BenefitType' ⋄ MESS←MESS,⎕tcnl,'Updated Data in BenefitType table'
+[64]  '' Update_Data 'DataItem' ⋄ MESS←MESS,⎕tcnl,'Updated Data in DataItem table'
+[65]  ('') ('') Update_Table 'BasisItem' sqlDatabase ⍝ Make name field longer for new data
+[66]  0 0⍴0 ⍙DBadoCONCommand "UPDATE BasisData SET BasisItemID=BasisItemID+900000 WHERE (BasisItemID BETWEEN 100000 AND 200000)" ⍝ Update Comments IDs
+[67]  
+[68]  L92900:
+[69]  ('') ('') Update_Table 'Contingency' sqlDatabase ⍝ Make name field longer for new data
+[70]  '' Update_Data 'Contingency' ⋄ MESS←MESS,⎕tcnl,'Updated Data in Contingency table'
+[71]  ⍝⍝⍝ :if (⊂'CategoryAssumptions')∊tables
+[72]  ⍝⍝⍝    (⊂'ExactAge') (,'0') Update_Table 'CategoryAssumptions' sqlDatabase
+[73]  ⍝⍝⍝    MESS←MESS,⎕tcnl,'Added new Field to Quick Scenario Modelling CategoryAssumptions Table'
+[74]  ⍝⍝⍝    (⊂'CashRate') (,'') Update_Table 'BenefitAssumptions' sqlDatabase
+[75]  ⍝⍝⍝    MESS←MESS,⎕tcnl,'Added new Field to Quick Scenario Modelling BenefitAssumptions Table'
+[76]  ⍝⍝⍝ :endif
+[77]  
+[78]  L93000:
+[79]  (⊂'SplitCombyPI') (⊂'0') Update_Table 'ResultsCategory' sqlDatabase
+[80]  MESS←MESS,⎕tcnl,'Added new Fields to ResultsCategory table'
+[81]  
+[82]  xxx←0 ⍙DBadoCONCommand "UPDATE Version SET SVVersion='",(5↑version),"'"
+[83]  xxx←0 ⍙DBadoCONCommand "UPDATE Version SET SVBuild='",(6↓version),"'"
+[84]  
+[85]  end:
+[86]  :if bASM ⍝ Upgrade to ASM
+[87]      ('ScenarioSavedDesc' 'ScenarioTimeStamp') ("''" ⍬) Update_Table 'FinancialsGroups' sqlDatabase
+[88]      (⊂'FinancialsScenValue') (⊂"''") Update_Table 'FinancialsValues' sqlDatabase
+[89]      MESS←MESS,⎕tcnl,'Upgraded Database for Accurate Scenario Modelling Module'
+[90]  :endif
+[91]  :if bQSM ⍝ Upgrade to QSM
+[92]      ' WHERE BenefitTypeID<100' Update_Data 'BenefitType'
+[93]      (⊂'') Update_Data¨'Contingency' 'DataItem'
+[94]      (⊂'FinancialsGroup') (⊂"''") Update_Table 'FinancialsValues' sqlDatabase
+[95]      :if sqlDatabase ⋄ :andif ~(⊂'CategoryAssumptions')∊tables
+[96]          sqlDatabase Create_Table¨spin (2/1) ("CategoryAssumptions" "BenefitAssumptions")
+[97]      :endif
+[98]      (⊂'LiabilityValue') (,'0') Update_Table 'BenefitAssumptions' sqlDatabase ⍝ Add Liability Field for AON
+[99]      MESS←MESS,⎕tcnl,'Upgraded Database for Quick Scenario Modelling Module'
+[100] :endif
+[101] ⍝ Add AOS Tables when they take Module
+[102] :if AOSCtl ⋄ :andif ~(⊂'AOS')∊3↑¨tables
+[103]     sqlDatabase Create_Table¨spin (5/1) ('AOSClass' 'AOSItem' 'AOSMember' 'AOSType' 'AOSResults')
+[104]     sqlDatabase Create_Table 0 'AOSResults' 'AOSResults_NoIndex'
+[105]     MESS←MESS,⎕tcnl,'Upgraded Database for Analysis of Surplus Module'
+[106] :endif
+[107] xxx←(⊂'ADOrst') ⎕wi¨'Close' 'Delete'
+[108] 
+[109] :if mt MESS
+[110]     MESS←'No changes required to the Database'
+[111] :else
+[112]     MESS←1↓MESS,⎕tcnl,'Successfully updated the ',⍙dbname,' database.'
+[113] :endif
+    ∇

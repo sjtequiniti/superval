@@ -1,0 +1,18 @@
+    ∇ R←Max CONCISE X;z
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝∇charvec←CONCISE numvec -- Describe a num vec
+[3]   ⍝  by specifying consecutive sequences as 2 col Matrix of Start No and Subsequent No
+[4]   ⍝  subject to a maximum number in the sequence
+[5]   R←0 2⍴0 ⋄ →(⍴X←,X)↓0
+[6]   R←(((¯1⌽X)≠X-1)/X),[⎕io+0.5]((1⌽X)≠X+1)/X ⍝ Starts,Ends
+[7]   
+[8]   :if 0≠⎕nc 'Max' ⋄ :andif ∨/1<z←⌈(1+,DIFF R)÷Max
+[9]       R←z⌿R
+[10]      :for z :in ⍳¯1+⌈/z
+[11]          R[;⎕io]←R[;⎕io]+Max×R[;⎕io]=¯1↓0,R[;⎕io]
+[12]      :endfor
+[13]      R[;⎕io+1]←R[;⎕io+1]⌊¯1+1↓R[;⎕io],1E20
+[14]  :endif
+[15]  
+[16]  R[;⎕io+1]←R[;⎕io+1]-(R[;⎕io]-1) ⍝ Difference to get number of consecutive
+    ∇

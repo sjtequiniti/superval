@@ -1,1 +1,42 @@
-    ∇ res←CreateFinancials;xxx;MESS;vars;package;SavedModule;SaveCN;AuditLog;AuditCN;cn[1]   ⍝ PARMWIN.sf#39[2]   ⍝ Create the Financials Dictionary and, if required, a new set of Financials[3]   [4]   res←0[5]   xxx←ClientFile ReadFile 'Financials_Display' ⋄ finDefault←FinDefault[6]   [7]   :if (∨/zwb¨ScenRel ScenAbs)∨(zwb TermAdjFin)^0<vDATE YDAYS 'DD/MM/YYYY' DATEEXP DatavDATE[8]       (1 3 'Creating Financial Set') Win∆ProgressBar 'FileUpdate'[9]       :if ↑(xxx MESS vars)←FinancialsUpdate 1[10]          package←pack vars ⋄ SavedModule←'Financials'[11]          :if zwb CreateFin[12]              SaveCN←ClientFile AddToFile SavedModule FinNewDesc[13]              0 0⍴ClientFile SaveToFile SaveCN FinNewDesc package 0[14]  [15]              AuditLog←(⍙VALUESdict at SavedModule) Win∆AuditLog package[16]              AuditCN←ClientFile AddToFile ('⊂',(⍕SaveCN),'⊃') FinNewDesc[17]              0 0⍴ClientFile SaveToFile AuditCN FinNewDesc (pack 'AuditLog') 0[18]              FinDefault←FinNewDesc[19]          :elseif ~mt SavedParms[20]              cn←((CIndex for '∆_Name' 'Financials') for '∆_Description' FinSavedDesc) at '∆_CompNo'[21]              :if ~package≡↑cn file_get_cns ClientFile,'.sf' ⍝ Financials Set not identical to created set[22]                  MDISPLAY 'Current Financials Set "',FinSavedDesc,'" does not have the same Financial Values as the Scenario settings'[23]                  res←1 ⋄ :return[24]              :endif[25]              FinDefault←FinSavedDesc[26]          :else[27]              FinDefault←finDefault[28]          :endif[29]      :else[30]          MDISPLAY MESS ⋄ res←1 ⋄ :return ⍝ Financials Set not found[31]      :endif[32]  :elseif ~mt FinParms[33]      FinDefault←FinParms[34]  :endif[35]  [36]  :if ~finDefault≡FinDefault[37]      ⍙FinAssdict←GetFinList FinDefault[38]      xxx←ClientFile SaveToFile 'Financials_Display' '' (pack 'FinDefault') 0[39]  :endif[40]  0 0⍴DeleteVars 'Financials_Display'    ∇
+    ∇ res←CreateFinancials;xxx;MESS;vars;package;SavedModule;SaveCN;AuditLog;AuditCN;cn
+[1]   ⍝ PARMWIN.sf#39
+[2]   ⍝ Create the Financials Dictionary and, if required, a new set of Financials
+[3]   
+[4]   res←0
+[5]   xxx←ClientFile ReadFile 'Financials_Display' ⋄ finDefault←FinDefault
+[6]   
+[7]   :if (∨/zwb¨ScenRel ScenAbs)∨(zwb TermAdjFin)^0<vDATE YDAYS 'DD/MM/YYYY' DATEEXP DatavDATE
+[8]       (1 3 'Creating Financial Set') Win∆ProgressBar 'FileUpdate'
+[9]       :if ↑(xxx MESS vars)←FinancialsUpdate 1
+[10]          package←pack vars ⋄ SavedModule←'Financials'
+[11]          :if zwb CreateFin
+[12]              SaveCN←ClientFile AddToFile SavedModule FinNewDesc
+[13]              0 0⍴ClientFile SaveToFile SaveCN FinNewDesc package 0
+[14]  
+[15]              AuditLog←(⍙VALUESdict at SavedModule) Win∆AuditLog package
+[16]              AuditCN←ClientFile AddToFile ('⊂',(⍕SaveCN),'⊃') FinNewDesc
+[17]              0 0⍴ClientFile SaveToFile AuditCN FinNewDesc (pack 'AuditLog') 0
+[18]              FinDefault←FinNewDesc
+[19]          :elseif ~mt SavedParms
+[20]              cn←((CIndex for '∆_Name' 'Financials') for '∆_Description' FinSavedDesc) at '∆_CompNo'
+[21]              :if ~package≡↑cn file_get_cns ClientFile,'.sf' ⍝ Financials Set not identical to created set
+[22]                  MDISPLAY 'Current Financials Set "',FinSavedDesc,'" does not have the same Financial Values as the Scenario settings'
+[23]                  res←1 ⋄ :return
+[24]              :endif
+[25]              FinDefault←FinSavedDesc
+[26]          :else
+[27]              FinDefault←finDefault
+[28]          :endif
+[29]      :else
+[30]          MDISPLAY MESS ⋄ res←1 ⋄ :return ⍝ Financials Set not found
+[31]      :endif
+[32]  :elseif ~mt FinParms
+[33]      FinDefault←FinParms
+[34]  :endif
+[35]  
+[36]  :if ~finDefault≡FinDefault
+[37]      ⍙FinAssdict←GetFinList FinDefault
+[38]      xxx←ClientFile SaveToFile 'Financials_Display' '' (pack 'FinDefault') 0
+[39]  :endif
+[40]  0 0⍴DeleteVars 'Financials_Display'
+    ∇

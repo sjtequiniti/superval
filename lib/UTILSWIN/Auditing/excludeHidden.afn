@@ -1,0 +1,11 @@
+    ∇ dics←module excludeHidden dics;d;f
+[1]   ⍝ UTILSWIN.sf#4
+[2]   ⍝ Dictionaries dics with hidden fields excluded
+[3]   ⍝ Revn: sjt05feb15
+[4]   :select module
+[5]   :caselist 'Actives' 'Deferreds' 'Pensioners',¨⊂'_Basis'
+[6]       ⍝ relRules defined only for these modules
+[7]       (f d)←relRules at 'Field' 'Desc'
+[8]       dics←dics select¨(keysIn¨dics)~¨⊂(∨/'Hidden'⍷⊃d)/f
+[9]   :endselect
+    ∇

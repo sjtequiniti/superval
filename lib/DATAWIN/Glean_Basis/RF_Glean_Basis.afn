@@ -1,1 +1,94 @@
-    ∇ BasisType RF_Glean_Basis parmsets;var;flg;varbits;v;is2d;∆;rn;tab;esctype;escalation;table;RFT;conflicts;conflag;report;grid;newTable;screenVars;hdrs;varnames;newscreenVars;order;pointers;notInUse;parmset;File;Desc;dic;cn;cns;Files;Descs;dics;∆objects;basisVals;flgs;dynamism;⍙stop[1]   ⍝ DATAWIN.sf#24[2]   ⍝ Extract information from the Basis and insert into Roll_Forward form variables[3]   ⍝ BasisType is Actives, Deferreds of Pensioners[4]   ⍝ dic is a dictionary representation of Basis Details[5]   table←MATRIX 'File' 'Desc' ,((keysIn RFTable)~'Module' 'Desc' 'row' 'Comments'), 'Numfield' 'rn'         ⍝ Blank table with the row headers[6]   RFT←RFTable for 'Module' BasisType                                                      ⍝ Roll Foward table with irrelevant rows eliminated[7]   [8]   ⍝∆objects                ←  RFT at 'Object'                                              ⍝ list of objects - basis variables which can hold numeric fields[9]   ⍝(Files Descs cns dics)  ←  parmsets at 'File' 'BasisDesc' 'Comp' 'dic'[10]  ⍝basisVals               ←  dics at¨ ⊂∆objects                                           ⍝ extract the basis values corresponding to objects[11]  ⍝is2d                    ←  2=rank¨¨basisVals[12]  ⍝flgs                    ←  (m2n¨¨ basisVals) ∊¨¨⊂⊂m2n numfields[13]  ⍝varbits                 ←  flgs sel¨¨ (m2n¨¨ basisVals)[14]  [15]  [16]  [17]  ⍝ find data fields in basis[18]  ⍙stop←1[19]  :for var :in RFT at 'Object'                                               ⍝ List objects[20]      :for parmset :in  split valsIn parmsets  ⋄ (File Desc cn dic)←parmset  ⍝ List parmsets[21]          is2d←2=rank dic at var                                             ⍝ Flag 2Ds[22]          varbits←m2n dic at var[23]          flg←varbits∊m2n numfields[24]          :if ∨/flg[25]              varbits←flg/varbits[26]              flg← WHERE flg[27]              :for ∆ :in spin varbits flg ⋄ (v rn)←∆  ⋄ rn← ↑(~is2d)⌽rn '~'  ⍝ for loop working on each component of the multi var[28]                  tab←RFT for 'Object' var[29]                  esctype←↑tab at 'Escalation Type'[30]  [31]                  :if 'Pensioners' ≡ BasisType                               ⍝ dnp 11jul17 - fix for ASP[32]                  :andif 'PENDATA'≡var[33]                  :andif 'Yes' ≡↑(m2n dic at 'GMPADJ')[rn][34]                      esctype←'Excess over GMP'[35]                  :endif[36]  [37]                  :if esctype  ≡ 'If CARE'[38]                      esctype ← ↑('CARE'≡ DLTB (dic at 'ACCBASIS')[rn;])⌽'None' 'Revaluation'[39]                  :endif[40]  [41]                  :if esctype≡'Excess over GMP' ⋄ :andif 'Actives' ≡ BasisType[42]                      dynamism ← (⊂DLTB(dic at 'DYNIND')[rn;])∊ dic at 'mpreIND' 'mpostIND'[43]                      esctype  ← ↑ dynamism ⌽'Age Dependent' esctype[44]                  :endif[45]  [46]                  :if esctype≡'None'[47]                      table← table OVER File Desc ,(11↑ var esctype), v rn[48]  [49]                  :else[50]                      pointers← RF_PickPointer¨ 'SSMale' 'SSFemale' 'Timing' 'RevDate' 'AgeMale' 'AgeFemale' 'Revaluation' 'Increase' 'Escalation'[51]                      table←table OVER  File Desc, var esctype, pointers, v rn[52]                  :endif[53]              :endfor[54]          :endif[55]      :endfor[56]  :endfor[57]  [58]  notInUse←(~(m2n numfields)∊(table at 'Numfield'))/m2n numfields[59]  [60]  conflicts←table for  unique ⎕split valsIn table select  ((keysIn table)~ 'Object' 'Numfield' 'rn')[61]  :if ^/~conflag← ~unique conflicts at 'Numfield'[62]      report←'No Conflicts To Report'[63]  :else[64]      ⍝ report←⊃,/'The following items have conflicts: ' ,⎕TCNL, (conflag/conflicts at 'Numfield'),¨⎕tcnl[65]      report←spin (conflicts for (~sOcc conflicts at 'Numfield')) at 'File' 'Desc' 'Numfield'[66]      report←⊃,/'The following items have conflicts: ' , ⎕TCNL,(⊃,/¨' ',¨¨report),¨⎕tcnl[67]  :endif[68]  [69]  MDISPLAY report[70]  :if ~mt notInUse[71]      MDISPLAY  ⊃,/'The following fields are not in use in the basis: ', ⎕TCNL, notInUse,¨⎕TCNL[72]  :endif[73]  [74]  newTable←(table for unique table at 'Numfield')[75]  newTable← newTable select hdrs←'Numfield'    'Escalation Type' 'SSMale' 'SSFemale' 'Timing'  'RevDate' 'AgeMale' 'AgeFemale'       'Revaluation' 'Increase'        'Escalation'[76]  ∆←'DataField' 'IncType' 'M_SXX' 'F_SXX' 'IncFreq' 'IncRevDate' 'M_IncAge' 'F_IncAge' 'IncRevaln' 'IncIncreases' 'IncFormula'[77]  varnames←∆,¨⊂'_',PageNO[78]  screenVars←⍉⊃m2n¨⍎¨ varnames[79]  screenVars←((keysIn newTable) OVER screenVars)[80]  [81]  newscreenVars←newTable OVER valsIn screenVars[82]  order←1+((newscreenVars at 'Numfield') ⍳(screenVars at 'Numfield'))[83]  newscreenVars← (newscreenVars[1,order;])[84]  [85]  order←keysIn newscreenVars[86]  msk←mt ¨∆←newscreenVars at 'Escalation Type'[87]  (msk/∆)←⊂'None'[88]  newscreenVars←(newscreenVars amend 'Escalation Type' ∆) select order[89]  [90]  ⍎ ⊃,/'(', (varnames,¨' ') ,⊂ ')←⊃¨newscreenVars at hdrs' ⍝ yuk![91]  [92]  RF_GMPFields BasisType    ∇
+    ∇ BasisType RF_Glean_Basis parmsets;var;flg;varbits;v;is2d;∆;rn;tab;esctype;escalation;table;RFT;conflicts;conflag;report;grid;newTable;screenVars;hdrs;varnames;newscreenVars;order;pointers;notInUse;parmset;File;Desc;dic;cn;cns;Files;Descs;dics;∆objects;basisVals;flgs;dynamism;⍙stop
+[1]   ⍝ DATAWIN.sf#24
+[2]   ⍝ Extract information from the Basis and insert into Roll_Forward form variables
+[3]   ⍝ BasisType is Actives, Deferreds of Pensioners
+[4]   ⍝ dic is a dictionary representation of Basis Details
+[5]   table←MATRIX 'File' 'Desc' ,((keysIn RFTable)~'Module' 'Desc' 'row' 'Comments'), 'Numfield' 'rn'         ⍝ Blank table with the row headers
+[6]   RFT←RFTable for 'Module' BasisType                                                      ⍝ Roll Foward table with irrelevant rows eliminated
+[7]   
+[8]   ⍝∆objects                ←  RFT at 'Object'                                              ⍝ list of objects - basis variables which can hold numeric fields
+[9]   ⍝(Files Descs cns dics)  ←  parmsets at 'File' 'BasisDesc' 'Comp' 'dic'
+[10]  ⍝basisVals               ←  dics at¨ ⊂∆objects                                           ⍝ extract the basis values corresponding to objects
+[11]  ⍝is2d                    ←  2=rank¨¨basisVals
+[12]  ⍝flgs                    ←  (m2n¨¨ basisVals) ∊¨¨⊂⊂m2n numfields
+[13]  ⍝varbits                 ←  flgs sel¨¨ (m2n¨¨ basisVals)
+[14]  
+[15]  
+[16]  
+[17]  ⍝ find data fields in basis
+[18]  ⍙stop←1
+[19]  :for var :in RFT at 'Object'                                               ⍝ List objects
+[20]      :for parmset :in  split valsIn parmsets  ⋄ (File Desc cn dic)←parmset  ⍝ List parmsets
+[21]          is2d←2=rank dic at var                                             ⍝ Flag 2Ds
+[22]          varbits←m2n dic at var
+[23]          flg←varbits∊m2n numfields
+[24]          :if ∨/flg
+[25]              varbits←flg/varbits
+[26]              flg← WHERE flg
+[27]              :for ∆ :in spin varbits flg ⋄ (v rn)←∆  ⋄ rn← ↑(~is2d)⌽rn '~'  ⍝ for loop working on each component of the multi var
+[28]                  tab←RFT for 'Object' var
+[29]                  esctype←↑tab at 'Escalation Type'
+[30]  
+[31]                  :if 'Pensioners' ≡ BasisType                               ⍝ dnp 11jul17 - fix for ASP
+[32]                  :andif 'PENDATA'≡var
+[33]                  :andif 'Yes' ≡↑(m2n dic at 'GMPADJ')[rn]
+[34]                      esctype←'Excess over GMP'
+[35]                  :endif
+[36]  
+[37]                  :if esctype  ≡ 'If CARE'
+[38]                      esctype ← ↑('CARE'≡ DLTB (dic at 'ACCBASIS')[rn;])⌽'None' 'Revaluation'
+[39]                  :endif
+[40]  
+[41]                  :if esctype≡'Excess over GMP' ⋄ :andif 'Actives' ≡ BasisType
+[42]                      dynamism ← (⊂DLTB(dic at 'DYNIND')[rn;])∊ dic at 'mpreIND' 'mpostIND'
+[43]                      esctype  ← ↑ dynamism ⌽'Age Dependent' esctype
+[44]                  :endif
+[45]  
+[46]                  :if esctype≡'None'
+[47]                      table← table OVER File Desc ,(11↑ var esctype), v rn
+[48]  
+[49]                  :else
+[50]                      pointers← RF_PickPointer¨ 'SSMale' 'SSFemale' 'Timing' 'RevDate' 'AgeMale' 'AgeFemale' 'Revaluation' 'Increase' 'Escalation'
+[51]                      table←table OVER  File Desc, var esctype, pointers, v rn
+[52]                  :endif
+[53]              :endfor
+[54]          :endif
+[55]      :endfor
+[56]  :endfor
+[57]  
+[58]  notInUse←(~(m2n numfields)∊(table at 'Numfield'))/m2n numfields
+[59]  
+[60]  conflicts←table for  unique ⎕split valsIn table select  ((keysIn table)~ 'Object' 'Numfield' 'rn')
+[61]  :if ^/~conflag← ~unique conflicts at 'Numfield'
+[62]      report←'No Conflicts To Report'
+[63]  :else
+[64]      ⍝ report←⊃,/'The following items have conflicts: ' ,⎕TCNL, (conflag/conflicts at 'Numfield'),¨⎕tcnl
+[65]      report←spin (conflicts for (~sOcc conflicts at 'Numfield')) at 'File' 'Desc' 'Numfield'
+[66]      report←⊃,/'The following items have conflicts: ' , ⎕TCNL,(⊃,/¨' ',¨¨report),¨⎕tcnl
+[67]  :endif
+[68]  
+[69]  MDISPLAY report
+[70]  :if ~mt notInUse
+[71]      MDISPLAY  ⊃,/'The following fields are not in use in the basis: ', ⎕TCNL, notInUse,¨⎕TCNL
+[72]  :endif
+[73]  
+[74]  newTable←(table for unique table at 'Numfield')
+[75]  newTable← newTable select hdrs←'Numfield'    'Escalation Type' 'SSMale' 'SSFemale' 'Timing'  'RevDate' 'AgeMale' 'AgeFemale'       'Revaluation' 'Increase'        'Escalation'
+[76]  ∆←'DataField' 'IncType' 'M_SXX' 'F_SXX' 'IncFreq' 'IncRevDate' 'M_IncAge' 'F_IncAge' 'IncRevaln' 'IncIncreases' 'IncFormula'
+[77]  varnames←∆,¨⊂'_',PageNO
+[78]  screenVars←⍉⊃m2n¨⍎¨ varnames
+[79]  screenVars←((keysIn newTable) OVER screenVars)
+[80]  
+[81]  newscreenVars←newTable OVER valsIn screenVars
+[82]  order←1+((newscreenVars at 'Numfield') ⍳(screenVars at 'Numfield'))
+[83]  newscreenVars← (newscreenVars[1,order;])
+[84]  
+[85]  order←keysIn newscreenVars
+[86]  msk←mt ¨∆←newscreenVars at 'Escalation Type'
+[87]  (msk/∆)←⊂'None'
+[88]  newscreenVars←(newscreenVars amend 'Escalation Type' ∆) select order
+[89]  
+[90]  ⍎ ⊃,/'(', (varnames,¨' ') ,⊂ ')←⊃¨newscreenVars at hdrs' ⍝ yuk!
+[91]  
+[92]  RF_GMPFields BasisType
+    ∇

@@ -1,0 +1,44 @@
+    ∇ FOURDITopen type;⎕elx;afile;tno;elx;tries;ext;fn
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Audit files initialised
+[3]   ⍝ type is either 'Basis', 'Member' or 'Benefits'
+[4]   ⍝ Sets: AuditBFile AuditBTie or AuditMFile AuditMTie or AuditFile AuditTie
+[5]   ⍝ Vern: sjt21sep15
+[6]   ⍝ Vern: dnp02oct15 - Increased time resolution
+[7]   
+[8]   ext←'.SFA' ⍝ SFA extension used lest SuperVal launch stumble after a crash trying to retie an SF with no index
+[9]   
+[10]  :select type
+[11]  :case 'Basis'
+[12]      (⍙⍙prevtitle ⍙⍙prevsubtitle)←'' ''
+[13]      FIXED_ALIASES←VARIABLE_ALIASES←push ⊂¨'' ''
+[14]  
+[15]      ⍝ Try to erase any Audit (intermediate) files in InputDir
+[16]      tno←'APL' TieNumber ''
+[17]      elx←⎕ELX ⋄ ⎕ELX←"→(1>tries←tries-1+0×⎕DL 0.5)↓next,⎕LC"
+[18]      :for afile :in (⊂InputDir),¨m2n ⎕XLIB InputDir,'AUDIT*',ext
+[19]          tries←3
+[20]          afile ⎕XFTIE tno
+[21]          afile ⎕XFERASE tno
+[22]          next:
+[23]      :endfor
+[24]      ⎕ELX←elx
+[25]  
+[26]      AuditBFile←InputDir,'AuditB',((-1 2 3 4 5 6 7) tsIM ⎕TS),ext ⍝ dnp02oct15
+[27]      AuditBFile ⎕XFCREATE AuditBTie←'APL' TieNumber AuditBFile
+[28]      AuditCTie←AuditBTie ⍝⍝⍝ ⋄ AuditMFile←AuditFile←''
+[29]  
+[30]      FOURDITdecomment '⍝⍀⍝' ⍝ Remove commenting of Audit Lines
+[31]  
+[32]  :case 'Member'
+[33]      AuditMFile←InputDir,'AuditM',((-1 2 3 4 5 6 7) tsIM ⎕TS),ext
+[34]      AuditMFile ⎕XFCREATE AuditMTie←'APL' TieNumber AuditMFile
+[35]      AuditCTie←AuditMTie
+[36]  
+[37]  :case 'Benefits'
+[38]      AuditFile←InputDir,'Audit',((-1 2 3 4 5 6 7) tsIM ⎕TS),ext
+[39]      AuditFile ⎕XFCREATE AuditTie←'APL' TieNumber AuditFile
+[40]      AuditCTie←AuditTie
+[41]  
+[42]  :endselect
+    ∇

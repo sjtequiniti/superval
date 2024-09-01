@@ -1,1 +1,47 @@
-    ∇ INIT∆CONTS;OLDAGES;sal;res;∆A;N;∆C;Conts∆Amt[1]   ⍝ ACTWIN.sf#3[2]   [3]   :if ~mpuflag ⍝ Underpin Contributions only if Start Date defined[4]       FUFUND←UFUND←FUFUNDMP←UFUNDMP←NX⍴mpuCONTS←0[5]   :else[6]       :if 0=⍴res←UDATA ⋄ res←'ACCMP' ⋄ :endif ⍝⍝⍝ Error ACCMP does not exist - should be scalar - AC0 or ACW??[7]       :if 0=⎕NC res ⋄ res←0[8]       :else         ⋄ res←ZWB res[9]       :endif[10]      UFUNDMP←(MID UFUND),¯1↑UFUND←(Jmpu-1) ROLLUP res,¯1↓PCONTS[11]      FUFUNDMP←(MID FUFUND),¯1↑FUFUND←(Jmpu-1) ROLLUP 0,¯1↓PCONTS[12]      mpuCONTS←PCONTS×MidtPx[13]  :endif[14]  :if ClntCode=4 ⋄ j∆GEC←Jmpu-1 ⋄ :endif[15]  [16]  ⍝ Member Contributions[17]  Conts∆Output←PP∆InterfaceHeader 'Conts'[18]  Conts∆Amt←(ExactConts×0.01×SALMPvec[;V1pcSAL]) (ExactConts×0.01×0.5×SALMPvec[;V1pcSAL]+SALvec[;V1pcSAL]) CONTS[19]  Conts∆Output←Conts∆Output⍪Conts∆Amt,(Conts∆Amt×(1↓((NX-SNX)↑tPx),(-SNX+1)↑tPx) DifftPx MidtPx),EXPPM (PHICONTS×PHIMidtPx) PHIContsDed[20]  :if aggopt[0][21]      Conts∆All[X0;]←Conts∆All[X0;]+MATRIX 1 0↓Conts∆Output ⍝ ⎕io is 0 here[22]  :endif[23]  ACMP←(MID AC),¯1↑AC←(J-1) ROLLUP AC0,¯1↓CONTS[24]  ACPMMP←(MID ACPM),¯1↑ACPM←AC0×1,×\NX_1 OVERTAKE J[25]  ⍝⍝⍝ :if test ⍝⍝⍝ ⋄ :andif TEST∊1 2[26]  ⍝⌿⍝    OLDAGES←AGES[27]  ⍝⌿⍝    AGES←(1↑AGES),((1↑AGES)+1↓⍳--/2⍴AGES),1↓AGES[28]  ⍝⌿⍝    :for N :in ⍳⍴SALdata[29]  ⍝⌿⍝        SAL←SALvec[;N] ⋄ SALMP←SALMPvec[;N][30]  ⍝⌿⍝        FAS←FASvec[;N] ⋄ FASMP←FASMPvec[;N][31]  ⍝⌿⍝        ∆A←⍕1+N[32]  ⍝⌿⍝        AUDIT '  2⍺'[33]  ⍝⌿⍝    :endfor[34]  ⍝⌿⍝    ∆C←'Contribution Formula: ',contsDEF,'  Sal No: ',(⍕contsSAL+1)[35]  ⍝⌿⍝    AUDIT '  40'[36]  ⍝⌿⍝    :if mpuflag[37]  ⍝⌿⍝        ∆C←'Underpin Formula: ',mpuDEF,'  Sal No: ',(⍕mpuSAL+1),'  Start Date: ',SDATE mpuDATE[38]  ⍝⌿⍝        AUDIT '  60'[39]  ⍝⌿⍝    :endif[40]  ⍝⌿⍝    AGES←OLDAGES[41]  ⍝⍝⍝ :endif[42]  ⍝ Contributions Salary[43]  sal←¯1+1⌈contsSAL[44]  SAL←SALvec[;sal] ⋄ SALMP←SALMPvec[;sal] ⍝ These are the Global Salary figures (for Text Outputs)[45]  FAS←FASvec[;sal] ⋄ FASMP←FASMPvec[;sal]    ∇
+    ∇ INIT∆CONTS;OLDAGES;sal;res;∆A;N;∆C;Conts∆Amt
+[1]   ⍝ ACTWIN.sf#3
+[2]   
+[3]   :if ~mpuflag ⍝ Underpin Contributions only if Start Date defined
+[4]       FUFUND←UFUND←FUFUNDMP←UFUNDMP←NX⍴mpuCONTS←0
+[5]   :else
+[6]       :if 0=⍴res←UDATA ⋄ res←'ACCMP' ⋄ :endif ⍝⍝⍝ Error ACCMP does not exist - should be scalar - AC0 or ACW??
+[7]       :if 0=⎕NC res ⋄ res←0
+[8]       :else         ⋄ res←ZWB res
+[9]       :endif
+[10]      UFUNDMP←(MID UFUND),¯1↑UFUND←(Jmpu-1) ROLLUP res,¯1↓PCONTS
+[11]      FUFUNDMP←(MID FUFUND),¯1↑FUFUND←(Jmpu-1) ROLLUP 0,¯1↓PCONTS
+[12]      mpuCONTS←PCONTS×MidtPx
+[13]  :endif
+[14]  :if ClntCode=4 ⋄ j∆GEC←Jmpu-1 ⋄ :endif
+[15]  
+[16]  ⍝ Member Contributions
+[17]  Conts∆Output←PP∆InterfaceHeader 'Conts'
+[18]  Conts∆Amt←(ExactConts×0.01×SALMPvec[;V1pcSAL]) (ExactConts×0.01×0.5×SALMPvec[;V1pcSAL]+SALvec[;V1pcSAL]) CONTS
+[19]  Conts∆Output←Conts∆Output⍪Conts∆Amt,(Conts∆Amt×(1↓((NX-SNX)↑tPx),(-SNX+1)↑tPx) DifftPx MidtPx),EXPPM (PHICONTS×PHIMidtPx) PHIContsDed
+[20]  :if aggopt[0]
+[21]      Conts∆All[X0;]←Conts∆All[X0;]+MATRIX 1 0↓Conts∆Output ⍝ ⎕io is 0 here
+[22]  :endif
+[23]  ACMP←(MID AC),¯1↑AC←(J-1) ROLLUP AC0,¯1↓CONTS
+[24]  ACPMMP←(MID ACPM),¯1↑ACPM←AC0×1,×\NX_1 OVERTAKE J
+[25]  ⍝⍝⍝ :if test ⍝⍝⍝ ⋄ :andif TEST∊1 2
+[26]  ⍝⌿⍝    OLDAGES←AGES
+[27]  ⍝⌿⍝    AGES←(1↑AGES),((1↑AGES)+1↓⍳--/2⍴AGES),1↓AGES
+[28]  ⍝⌿⍝    :for N :in ⍳⍴SALdata
+[29]  ⍝⌿⍝        SAL←SALvec[;N] ⋄ SALMP←SALMPvec[;N]
+[30]  ⍝⌿⍝        FAS←FASvec[;N] ⋄ FASMP←FASMPvec[;N]
+[31]  ⍝⌿⍝        ∆A←⍕1+N
+[32]  ⍝⌿⍝        AUDIT '  2⍺'
+[33]  ⍝⌿⍝    :endfor
+[34]  ⍝⌿⍝    ∆C←'Contribution Formula: ',contsDEF,'  Sal No: ',(⍕contsSAL+1)
+[35]  ⍝⌿⍝    AUDIT '  40'
+[36]  ⍝⌿⍝    :if mpuflag
+[37]  ⍝⌿⍝        ∆C←'Underpin Formula: ',mpuDEF,'  Sal No: ',(⍕mpuSAL+1),'  Start Date: ',SDATE mpuDATE
+[38]  ⍝⌿⍝        AUDIT '  60'
+[39]  ⍝⌿⍝    :endif
+[40]  ⍝⌿⍝    AGES←OLDAGES
+[41]  ⍝⍝⍝ :endif
+[42]  ⍝ Contributions Salary
+[43]  sal←¯1+1⌈contsSAL
+[44]  SAL←SALvec[;sal] ⋄ SALMP←SALMPvec[;sal] ⍝ These are the Global Salary figures (for Text Outputs)
+[45]  FAS←FASvec[;sal] ⋄ FASMP←FASMPvec[;sal]
+    ∇

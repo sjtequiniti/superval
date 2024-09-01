@@ -1,0 +1,59 @@
+    ∇ File FDUP parm;⎕elx;elx;tieno;size;forceind;flag
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ FDUP an APL component File
+[3]   ⍝ parm can be either a tie number (with optional filename as left arg)
+[4]   ⍝      or a filename
+[5]   
+[6]   (parm flag)←2↑parm 0 ⋄ elx←⎕elx ⋄ forceind←0
+[7]   
+[8]   :if 82=⎕dr parm
+[9]       tieno←TieNumber File←parm
+[10]  :else
+[11]      tieno←parm
+[12]      :if 0=⎕nc 'File'⍝ Get the filename if not given
+[13]          :if 0∊⍴File←(tieno=⎕fnums,⎕xfnums)⌿⎕fnames OVER ⎕xfnames
+[14]              :return ⍝ Nothing tied to "tieno"
+[15]          :endif
+[16]      :else
+[17]          forceind←1 ⍝ Force Compression if both filename and tieno given
+[18]      :endif
+[19]  :endif
+[20]  
+[21]  :if ~flag ⋄ :andif ~'.SF'≡¯3↑File←DLTB UPPERCASE File
+[22]      File←File,'.SF' ⍝ Add extension required for extended names
+[23]  :endif
+[24]  
+[25]  :if tieno∊⎕fnums,⎕xfnums
+[26]      size←(⎕fsize tieno)[4 2+⎕io]
+[27]      :if (DUPlimit×~forceind)≥÷/size ⍝ Only DUP if necessary
+[28]          →end
+[29]      :endif
+[30]  :endif
+[31]  
+[32]  :select tieno
+[33]  :caselist ⎕fnums
+[34]      :if ('.' Win∆Parent File)≡DLTB UPPERCASE (tieno=⎕fnums)⌿⎕fnames
+[35]          ⎕funtie tieno ⍝ Make it a full extended file tie!!
+[36]      :else
+[37]          →end ⍝ Wrong File!!
+[38]      :endif
+[39]  :caselist ⎕xfnums
+[40]      :if File≡DLTB UPPERCASE (tieno=⎕xfnums)⌿⎕xfnames
+[41]          ⎕funtie tieno ⍝ Make it a full extended file tie!!
+[42]      :else
+[43]          →end ⍝ Wrong File!!
+[44]      :endif
+[45]  :endselect
+[46]  
+[47]  ⍝ Make it a full tie
+[48]  :if 0=File FTIE tieno
+[49]      :return ⍝ Can't exclusively tie the File!
+[50]  :endif
+[51]  
+[52]  ⎕elx←'→ERR' ⍝ Skip the DUPping if an error
+[53]  File ⎕xfdup tieno ⍝ Do the DUPping
+[54]  ERR:⎕elx←elx
+[55]  
+[56]  ⍝ Up to Calling Function if the tie is to be maintained
+[57]  end:⎕funtie tieno ⍝ Untie the file
+    ∇

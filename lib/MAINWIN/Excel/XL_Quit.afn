@@ -1,0 +1,19 @@
+    ∇ XL_Quit;⎕elx
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Quit Excel and Delete "XL" object
+[3]   ⍝ Copyright APL2000 Inc. 2003
+[4]   ⍝ Check if Excel is still around
+[5]   ⎕elx←'→⎕lc+1' ⍝ Overcomes problems where Excel object has been deleted by user but APL "XL" object still exits
+[6]   ⍝⍝⍝ XL_Clipboard "Close"
+[7]   →(0=⍴'XL' ⎕wi'self')/0     ⍝ Exit if XL no longer exists
+[8]   →(0='XL' ⎕wi 'interface')/0  ⍝ or if no longer connected
+[9]   ⍝⍝⍝ :if 0≠⍴'XL.rng' ⎕wi'self' ⋄ 'XL.rng' ⎕wi 'interface' ('#' ⎕wi 'null') ⋄ :endif
+[10]  :if 0≠⍴'XL.Rng' ⎕wi'self' ⋄ 'XL.Rng' ⎕wi 'interface' ('#' ⎕wi 'null') ⋄ :endif
+[11]  'XL.Rng' ⎕wi 'Delete'
+[12]  0 0⍴'XL.wb' ⎕wi 'Close' ⍝ Closes workbook
+[13]  0 0⍴('XL' ⎕wi 'Workbooks') ⎕wi 'Close'
+[14]  'XL' ⎕wi 'XQuit'
+[15]  'XL.wb' ⎕wi 'interface' ('#' ⎕wi 'null')
+[16]  'XL' ⎕wi 'interface' ('#' ⎕wi 'null')
+[17]  'XL' ⎕wi 'Delete'          ⍝ Delete the APL Object
+    ∇

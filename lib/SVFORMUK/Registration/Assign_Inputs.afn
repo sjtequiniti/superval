@@ -1,1 +1,33 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Registration" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Registration" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmRegister.ssRegTable" ⎕wi "XClearRange" 1 1 ("fmRegister.ssRegTable" ⎕wi "MaxRow") ("fmRegister.ssRegTable" ⎕wi "MaxCol") 3[10]  MaxRow←MaxCol←1[11]  "fmRegister.ssRegTable" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[12]  (MaxRow MaxCol)←"fmRegister.ssRegTable" ⎕wi "xGetActiveCell" 0 0[13]  "fmRegister.ssRegTable" ⎕wi "xSetActiveCell" (MaxRow⌊"fmRegister.ssRegTable" ⎕wi "xMaxRow") (MaxCol⌊"fmRegister.ssRegTable" ⎕wi "xMaxCol")[14]  "fmRegister.ssRegTable" ⎕wi "xmodified" 0[15]  "fmRegister.ssRegTable" ⎕wi "onXModified" "('fmRegister.' (Win∆Parent 'fmRegister.')) MultiWI 'modified' ('fmRegister.ssRegTable' ⎕wi 'xmodified')"[16]  "fmRegister.ckdEVELOPMENT" ⎕wi "value" (zwb dEVELOPMENT)[17]  "fmRegister.ckblanking" ⎕wi "value" (zwb blanking)[18]  "fmRegister.edLicenceKey" ⎕wi "text" (DLTB LicenceKey)[19]  "fmRegister.edexpiryDate" ⎕wi "text" (DLTB expiryDate)[20]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Registration[21]      :for var :in spin Comment_Registration at "variable" "row" ⋄ (var row)←var[22]          "Registration" ParmColor ((FormFields for "variable" var) at "control"),var row 1[23]      :endfor[24]  :endif[25]  :if ~0∊⍴,warnings[26]      MDISPLAY DLTMB warnings,⎕tcnl[27]      Win∆AssignVars "fmRegister"[28]  :endif[29]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Registration" "" "Names"[30]      "fmRegister" ⎕wi "modified" 0[31]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Registration" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Registration" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmRegister.ssRegTable" ⎕wi "XClearRange" 1 1 ("fmRegister.ssRegTable" ⎕wi "MaxRow") ("fmRegister.ssRegTable" ⎕wi "MaxCol") 3
+[10]  MaxRow←MaxCol←1
+[11]  "fmRegister.ssRegTable" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[12]  (MaxRow MaxCol)←"fmRegister.ssRegTable" ⎕wi "xGetActiveCell" 0 0
+[13]  "fmRegister.ssRegTable" ⎕wi "xSetActiveCell" (MaxRow⌊"fmRegister.ssRegTable" ⎕wi "xMaxRow") (MaxCol⌊"fmRegister.ssRegTable" ⎕wi "xMaxCol")
+[14]  "fmRegister.ssRegTable" ⎕wi "xmodified" 0
+[15]  "fmRegister.ssRegTable" ⎕wi "onXModified" "('fmRegister.' (Win∆Parent 'fmRegister.')) MultiWI 'modified' ('fmRegister.ssRegTable' ⎕wi 'xmodified')"
+[16]  "fmRegister.ckdEVELOPMENT" ⎕wi "value" (zwb dEVELOPMENT)
+[17]  "fmRegister.ckblanking" ⎕wi "value" (zwb blanking)
+[18]  "fmRegister.edLicenceKey" ⎕wi "text" (DLTB LicenceKey)
+[19]  "fmRegister.edexpiryDate" ⎕wi "text" (DLTB expiryDate)
+[20]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Registration
+[21]      :for var :in spin Comment_Registration at "variable" "row" ⋄ (var row)←var
+[22]          "Registration" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[23]      :endfor
+[24]  :endif
+[25]  :if ~0∊⍴,warnings
+[26]      MDISPLAY DLTMB warnings,⎕tcnl
+[27]      Win∆AssignVars "fmRegister"
+[28]  :endif
+[29]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Registration" "" "Names"
+[30]      "fmRegister" ⎕wi "modified" 0
+[31]  :endif
+    ∇

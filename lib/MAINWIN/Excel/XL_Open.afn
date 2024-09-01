@@ -1,0 +1,26 @@
+    ∇ res←ExcelRunButton XL_Open arg;⎕elx;UpdLinks;ReadOnly
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Create an Excel session (if one does not already exist) and
+[3]   ⍝   either Open an existing file - "arg" is filename (with optional args [UpdateLinks 0/1] [ReadOnly 0/1]) - default 0 0
+[4]   ⍝   or Add a new Workbook - "arg" is number of sheets
+[5]   
+[6]   :if mt 'XL' ⎕wi 'self' ⍝ Connect to Excel Application if doesn't already exist
+[7]       :if ~mt res←XL_Create ExcelRunButton ⋄ :return ⋄ :endif
+[8]   :else
+[9]       'XL' ⎕wi 'xEnableEvents' 0          ⍝ Disable Macros
+[10]      0 0⍴'XL' ⎕wi 'DisplayAlerts' 0      ⍝ Turn off Excel Alerts
+[11]  :endif
+[12]  
+[13]  ⍝⍝⍝ 'XL' ⎕wi 'visible' 1 ⍝⍝⍝ For Testing only
+[14]  
+[15]  :if 82=⎕dr ↑arg ⍝ Character argument (filename)
+[16]      :if 1=≡arg ⋄ arg←(⊂arg),0 0 ⋄ :endif
+[17]      (arg UpdLinks ReadOnly)←arg
+[18]      res←UpdLinks ReadOnly XL_FileLoad arg
+[19]  :else
+[20]      ⎕elx←'XL_Quit ⋄ →0'
+[21]      res←"Unable to create new Excel workbook"
+[22]      XL_AddWorkbook arg ⍝ Add a new Workbook with "arg" sheets
+[23]      res←''
+[24]  :endif
+    ∇

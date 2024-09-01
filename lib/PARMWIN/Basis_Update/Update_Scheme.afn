@@ -1,1 +1,20 @@
-    ∇ Update_Scheme;list;∆;vDATE;Actsfile;FormatA;FormatD;Defsfile;Pensfile;FormatP;vars[1]   ⍝ PARMWIN.sf#39[2]   ⍝ Update the Scheme Details with Parameters from the Basis Update[3]   [4]   list←0 0⍴' '[5]   [6]   :if ~mt DatavDATE ⋄ vDATE←DatavDATE ⋄ list←list OVER 'vDATE' ⋄ :endif[7]   [8]   :if ∨/∆←~mt¨m2n DataScenFile[9]       list←list OVER vars←∆⌿⊃'Actsfile' 'Defsfile' 'Pensfile'[10]      (∆/m2n DataScenFile) ASSIGN∆Dict¨m2n vars[11]  :endif[12]  [13]  :if ∨/∆←~mt¨m2n DataScenFormat[14]      list←list OVER vars←∆⌿⊃'FormatA' 'FormatD' 'FormatP'[15]      (∆/m2n DataScenFormat) ASSIGN∆Dict¨m2n vars[16]  :endif[17]  [18]  0 0⍴ClientFile SaveToFile 'Client' '' (pack list) 1    ∇
+    ∇ Update_Scheme;list;∆;vDATE;Actsfile;FormatA;FormatD;Defsfile;Pensfile;FormatP;vars
+[1]   ⍝ PARMWIN.sf#39
+[2]   ⍝ Update the Scheme Details with Parameters from the Basis Update
+[3]   
+[4]   list←0 0⍴' '
+[5]   
+[6]   :if ~mt DatavDATE ⋄ vDATE←DatavDATE ⋄ list←list OVER 'vDATE' ⋄ :endif
+[7]   
+[8]   :if ∨/∆←~mt¨m2n DataScenFile
+[9]       list←list OVER vars←∆⌿⊃'Actsfile' 'Defsfile' 'Pensfile'
+[10]      (∆/m2n DataScenFile) ASSIGN∆Dict¨m2n vars
+[11]  :endif
+[12]  
+[13]  :if ∨/∆←~mt¨m2n DataScenFormat
+[14]      list←list OVER vars←∆⌿⊃'FormatA' 'FormatD' 'FormatP'
+[15]      (∆/m2n DataScenFormat) ASSIGN∆Dict¨m2n vars
+[16]  :endif
+[17]  
+[18]  0 0⍴ClientFile SaveToFile 'Client' '' (pack list) 1
+    ∇

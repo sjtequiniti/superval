@@ -1,0 +1,13 @@
+    ∇ NO Win∆F1SSAddRow SSName;MaxRow;rows
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Add a Row to the Spreadsheet
+[3]   
+[4]   SSName ⎕wi 'MaxRow' (MaxRow←NO+SSName ⎕wi 'MaxRow')
+[5]   SSName ⎕wi 'xSetActiveCell' MaxRow 1
+[6]   
+[7]   ⍝ Determine visible rows
+[8]   rows←⌊((1↑SSName ⎕wi 'size')-SSName ⎕wi 'HdrHeight') CDIV SSName ⎕wi 'xRowHeight' 1
+[9]   SSName ⎕wi 'xTopRow' ((SSName ⎕wi 'xTopRow')⌈1+MaxRow-rows)
+[10]  SSName ⎕wi 'xLeftCol' 1
+[11]  SSName ⎕wi 'modified' 1
+    ∇

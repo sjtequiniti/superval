@@ -1,0 +1,14 @@
+    ∇ DATE←fmt DATE∆FMT arg;⎕IO;cols;A
+[1]   ⍝ MAINWIN.sf#7
+[2]   ⍝ Takes a numeric 'arg' and turns it into a chracter date using 'fmt'
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   fmt←DLTMB fmt ⍝ Delete extraneous blanks now stored on Date Formats
+[8]   cols←(2↑(fmt='D')/cols),(2↑(fmt='M')/cols),4↑2⌽(fmt='Y')/cols←⍳⍴fmt
+[9]   DATE←('2ZI2,ZI4' ⎕FMT arg←MATRIX arg)[; 1 2 3 4 7 8 5 6]
+[10]  A←((1↑⍴arg),+/×cols)↑(×cols)/DATE
+[11]  DATE←(1↑⍴arg)⌿MATRIX fmt ⋄ DATE[;cols~0]←A
+[12]  →(1≠1↑⍴DATE)/0 ⋄ DATE←,DATE
+    ∇

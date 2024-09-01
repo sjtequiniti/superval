@@ -1,1 +1,39 @@
-    ∇ res←larg GET∆SpouseGlobals varname;list;success;MESS;desc;errflag;new;old;tab;descs;∆;vars;flds;labs;var;parms;idx;parmlist[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Extract the Spouse Global parameters using the "description" pointer "var"[3]   ⍝ larg is the description of the Spouse Parameters set and a valuation flag[4]   [5]   (desc errflag)←larg ⋄ var←DLTB ⍎varname[6]   [7]   :if ↑res←(success MESS)←2↑ClientFile ReadModule 'Spouse_Parameters' var 'Spouse' desc errflag varname[8]       tab←⍙RULESdict ReadDictFile 'Spouse_Parameters'[9]       flds←tab at 'Field'[10]  [11]      old←DLTB¨⍎¨vars←3↓¨flds ⍝ Currently set Variables[12]  [13]      ∆←~(⍎comment_var,' at "variable"')∊(⊂'/gsp/') TEXTREPL¨flds[14]      ⍎comment_var,'←',comment_var,' for ∆'[15]      :if ×rowsIn Comment_Spouse_Parameters ⍝ Add Spouse_Parameters comments[16]          Comment_Spouse_Parameters←Comment_Spouse_Parameters amend 'variable' ((⊂'/gsp/') TEXTREPL¨Comment_Spouse_Parameters at 'variable')[17]          ⍎comment_var,'←',comment_var,' append Comment_Spouse_Parameters'[18]      :endif[19]  [20]      list←m2n ⍙VALUESdict ReadDictFile 'Spouse_Parameters' '' 'NAMES'[21]      flds←0 Uniquelist ⊃(qtrim¨flds),(labs∊list)/labs←(⊂'lr'),¨flds~¨⊂'[;]'[22]      flds RenameVars 'gsp' '' ⋄ flds RenameVars 'lrgsp' 'lr'[23]      0 0⍴⎕ex ⊃list[24]      :if ∨/∆←~old≡¨new←DLTB¨⍎¨vars[25]          new←∆/new ⋄ vars←∆/vars[26]  [27]          parms←⊃spin (tab for (⊂'Field'),parmlist←(⊂'gsp'),¨vars) at 'Field' 'Type' 'Desc'[28]          idx←parmlist⍳parms[;1][29]          parms[;1]←vars[idx] ⋄ parms[;2]←new[idx][30]  [31]          :for ∆ :in ⎕split parms ⋄ (vars new descs)←∆[32]              MESS←MESS OVER vars ⍬ ((errflag/'Warning:  '),'Value for "',descs,'" in ',desc,' has changed to "',new,'"')[33]          :endfor[34]      :endif[35]  [36]      res←success MESS[37]  :endif    ∇
+    ∇ res←larg GET∆SpouseGlobals varname;list;success;MESS;desc;errflag;new;old;tab;descs;∆;vars;flds;labs;var;parms;idx;parmlist
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Extract the Spouse Global parameters using the "description" pointer "var"
+[3]   ⍝ larg is the description of the Spouse Parameters set and a valuation flag
+[4]   
+[5]   (desc errflag)←larg ⋄ var←DLTB ⍎varname
+[6]   
+[7]   :if ↑res←(success MESS)←2↑ClientFile ReadModule 'Spouse_Parameters' var 'Spouse' desc errflag varname
+[8]       tab←⍙RULESdict ReadDictFile 'Spouse_Parameters'
+[9]       flds←tab at 'Field'
+[10]  
+[11]      old←DLTB¨⍎¨vars←3↓¨flds ⍝ Currently set Variables
+[12]  
+[13]      ∆←~(⍎comment_var,' at "variable"')∊(⊂'/gsp/') TEXTREPL¨flds
+[14]      ⍎comment_var,'←',comment_var,' for ∆'
+[15]      :if ×rowsIn Comment_Spouse_Parameters ⍝ Add Spouse_Parameters comments
+[16]          Comment_Spouse_Parameters←Comment_Spouse_Parameters amend 'variable' ((⊂'/gsp/') TEXTREPL¨Comment_Spouse_Parameters at 'variable')
+[17]          ⍎comment_var,'←',comment_var,' append Comment_Spouse_Parameters'
+[18]      :endif
+[19]  
+[20]      list←m2n ⍙VALUESdict ReadDictFile 'Spouse_Parameters' '' 'NAMES'
+[21]      flds←0 Uniquelist ⊃(qtrim¨flds),(labs∊list)/labs←(⊂'lr'),¨flds~¨⊂'[;]'
+[22]      flds RenameVars 'gsp' '' ⋄ flds RenameVars 'lrgsp' 'lr'
+[23]      0 0⍴⎕ex ⊃list
+[24]      :if ∨/∆←~old≡¨new←DLTB¨⍎¨vars
+[25]          new←∆/new ⋄ vars←∆/vars
+[26]  
+[27]          parms←⊃spin (tab for (⊂'Field'),parmlist←(⊂'gsp'),¨vars) at 'Field' 'Type' 'Desc'
+[28]          idx←parmlist⍳parms[;1]
+[29]          parms[;1]←vars[idx] ⋄ parms[;2]←new[idx]
+[30]  
+[31]          :for ∆ :in ⎕split parms ⋄ (vars new descs)←∆
+[32]              MESS←MESS OVER vars ⍬ ((errflag/'Warning:  '),'Value for "',descs,'" in ',desc,' has changed to "',new,'"')
+[33]          :endfor
+[34]      :endif
+[35]  
+[36]      res←success MESS
+[37]  :endif
+    ∇

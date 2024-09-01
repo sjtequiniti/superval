@@ -1,0 +1,39 @@
+    ∇ Z←test_Validate;clients;QTS;vERSIONnO;∆;test;result;errs;cases
+[1]   ⍝ REGISTER.sf#2
+[2]   ⍝ local test environment
+[3]   QTS←2011 1 1 0 0 0 0 ⍝ system clock
+[4]   vERSIONnO←' 9.00'
+[5]   
+[6]   clients←⊃'Julian' 'George' 'Dick' 'Anne' 'Timmy'
+[7]   
+[8]   ⍝ define test cases
+[9]   ∆←,[.5] 'answer' 'left' 'right'
+[10]  ∆←∆⍪(1 '')                        (clients) ('  4' '0000' '10   ' '110228')
+[11]  ∆←∆⍪(1 '')                        (clients) ('4  ' '0000' '10.0 ' '120131')
+[12]  ∆←∆⍪(1 '')                        (clients) ('04 ' 'ffff' '10.00' '120229')
+[13]  ∆←∆⍪(1 '')                        (' 4')    ('04 ' 'ffff' '10.00' '120229')
+[14]  ∆←∆⍪(0 'Invalid client')          (clients) ('4.0' '0000' '10   ' '120101')
+[15]  ∆←∆⍪(0 'Invalid client')          (clients) ('040' '0000' '10   ' '120101')
+[16]  ∆←∆⍪(0 'Invalid flags')           (clients) ('  4' 'nuts' '10   ' '120101')
+[17]  ∆←∆⍪(0 'Invalid version on key')  (clients) ('  4' '0000' 'nuts ' '120101')
+[18]  ∆←∆⍪(0 'Invalid version on key')  (clients) ('  4' '0000' '9.2.5' '120101')
+[19]  ∆←∆⍪(0 'Invalid version on key')  (clients) ('  4' '0000' '¯10  ' '120101')
+[20]  ∆←∆⍪(0 'Invalid version on key')  (clients) ('  4' '0000' '-10.3' '120101')
+[21]  ∆←∆⍪(0 'Invalid key expiry date') (clients) ('  4' '0000' '10   ' '000101') ⍝ see test_ValidDate for all date tests
+[22]  cases←∆
+[23]  
+[24]  ⍝ evaluate results
+[25]  errs←,[.5] 'left' 'right' 'answer' 'result'
+[26]  :for test :in ∆[1] push¨ 1↓∆←⎕SPLIT cases
+[27]      :try
+[28]          ⎕ELX←cutbackHere ⋄ result←(test at 'left') Validate test at 'right'
+[29]      :catch
+[30]          result←'broke'
+[31]      :end
+[32]      ⎕ELX←"⎕DM"
+[33]      :if ~result ≡ test at 'answer'
+[34]          errs←errs⍪ (test at 'left' 'right' 'answer'), ⊂result
+[35]      :endif
+[36]  :endfor
+[37]  Z←(0=rowsIn errs) (errs)
+    ∇

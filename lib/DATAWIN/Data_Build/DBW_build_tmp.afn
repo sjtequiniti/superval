@@ -1,1 +1,80 @@
-    ∇ res←DBW_build_tmp;csv_tn;fileptr;buffer;csv_sz;lines;eof;tbl;tk1;tk2;blk;tof;SGL;tmp_tn;∆;ftmp;nrecs;sums;idx;key;nums;File;fmtstring;UPPER;LastCol;lCol;NOM;bynom[1]   ⍝ DATAWIN.sf#21[2]   ⍝ Create: (# of recs read)(categories found)(checksums)[3]   ⍝ reads external vars: CHUNK_SZ DLMT IGNORENUMERICS InputDir INTERCOLSPACE SGLCHARFLDS[4]   [5]   res←''[6]   nums←('N'=↑¨fmts)/⍳⍴fmts[7]   bynom←('N'=↑¨fmts)/byNOM[8]   SGL←  NAMS⍳(SGLCHARFLDS∊NAMS)/SGLCHARFLDS[9]   UPPER←NAMS⍳(UPPER      ∊NAMS)/UPPER←'SEX' 'MEMORSP' 'MS'                ⍝ upper-case fields[10]  lCol ←NAMS⍳⊂LASTCOLPN[11]  LastCol←('ADP'⍳↑membtype)⊃'MDP'[12]  [13]  :if csv_tn←CSVimp[14]      :if 0=File NTIE csv_tn←'Native' TieNumber File←InputDir,FILE[15]          res←'Unable to tie ',(DLTB FILE),'.  It may be in use by another program.' ⋄ :return[16]      :endif[17]      csv_sz←⎕NSIZE csv_tn[18]      ftmp←(Win∆Parent File),'.tmp'[19]  :else[20]      ftmp←InputDir,((Win∆Parent xlFILE),' ','{}'embrace xlSHEET),'.tmp'[21]  :endif[22]  [23]  :if 0=tmp_tn←NCREATE ftmp[24]      ⎕nuntie csv_tn[25]      res←'Unable to create ',('\' Win∆Child ftmp),'.' ⋄ :return[26]  :endif[27]  [28]  tk1←wids×1-2×'C'≠↑¨fmts                                                 ⍝ right-align dates & numerics[29]  tk2←(∣tk1)+(((⍴wids)-1),1)/INTERCOLSPACE 0                              ⍝ pad all but last column[30]  [31]  (buffer fileptr nrecs)←'' 0 0[32]  idx←(,(⎕split cats)∘.,'/M' '/F')                                        ⍝ index to check sums[33]  sums←(1 0+↑¨⍴¨nums idx)⍴0[34]  :repeat[35]      :if CSVimp ⋄ lines←(⎕tcnl,⎕tclf) part buffer,⎕NREAD csv_tn 82 CHUNK_SZ fileptr[36]      :else      ⋄ lines←(⊂',') join¨⎕split ↑fmts DBW_excel_data (1+fileptr) 1 (XLrows⌊fileptr+⌊CHUNK_SZ÷100×XLcols) XLcols[37]      :endif[38]      tof←fileptr=0                                                       ⍝ top of file[39]      lines←(tof×2-nofmtrow)↓(×∊⍴¨lines~¨⊂DLMT)/lines                     ⍝ toss header and empty lines[40]  [41]      :if CSVimp[42]          :if ~eof←csv_sz≤fileptr←fileptr+CHUNK_SZ                        ⍝ end of file?[43]              (lines buffer)←(¯1↓lines)(↑⌽lines)                          ⍝ buffer incomplete line[44]          :endif[45]      :else[46]          eof←XLrows≤fileptr←fileptr+(tof×2-nofmtrow)+⍴lines              ⍝ end of file?[47]      :endif[48]  [49]      tbl←included/⊃(↑⍴included)↑¨DLMT partq¨lines[50]      tbl[;nums]←DLTB¨tbl[;nums]~¨⊂IGNORENUMERICS                         ⍝ ignore commas &c in numerics[51]      :if ∨/bynom[52]          NOM←1⌈zwb¨tbl[;nams⍳⊂'NOM'][53]          tbl[;bynom/nums]←⍕¨NOM×[⎕io]zwb¨tbl[;,bynom/nums][54]      :endif[55]      tbl[;SGL]←1↑¨tbl[;SGL]                                              ⍝ truncate single-char fields[56]      tbl[;UPPER]←DLTB¨UPPERCASE¨tbl[;UPPER][57]      tbl[;lCol]←1↑¨(tbl[;lCol]~¨' '),¨LastCol[58]      blk←⊃,/⊃¨⊂[1]((⍴tbl)⍴tk2)↑¨((⍴tbl)⍴tk1)↑¨tbl[59]      blk APPEND tmp_tn[60]      nrecs←nrecs+⍴lines[61]  [62]      key←'/' join¨⎕split ((wids[NAMS⍳⊂'CAT'])↑¨tbl[;NAMS⍳⊂'CAT']),tbl[;,NAMS⍳⊂'SEX'][63]      sums←sums+(1⍪⍉↑¨⎕FI¨tbl[;nums])+.×key∘.≡idx[64]  [65]      ∆←(+/^\∆=' ')↓∆←,'CI12' ⎕FMT nrecs[66]  [67]  :until eof[68]  [69]  ⎕NUNTIE tmp_tn,CSVimp/csv_tn[70]  [71]  ⍝⍝⍝ fmtstring←⎕split '<CF30.>,I1' ⎕fmt (5 2 0)[1+⌈/+⌿(1 100∘.×sums)=⌊1 100∘.×sums] ⍝⍝⍝ FIXME use this to format??[72]  ⍝⍝⍝ fmtstring ⎕FMT¨⎕SPLIT[1](⍉sums)⍪+/sums ⍝⍝⍝ format columns[73]  ⍝⍝⍝ DLTB¨((⍴∆)⍴fmtstring)⎕FMT¨∆←(⍉sums)⍪+/sums ⍝⍝⍝ format cells[74]  chksums←('Category' 'Records',NAMS[nums])⍪(idx,⊂'Total'),DLTB¨(⊂'CF30.2')⎕FMT¨(⍉sums)⍪+/sums[75]  [76]  ((parent,'fCheckSum.lvSums') 'Data_Build') Win∆UpdateListview GetCheckSums chksums[77]  [78]  (parent,'fCheckSum.lSummary') ⎕wi 'caption' (DLTB (,'CI12' ⎕FMT nrecs),' ',membtype,' members in ',(⍕↑⍴cats),' categories')    ∇
+    ∇ res←DBW_build_tmp;csv_tn;fileptr;buffer;csv_sz;lines;eof;tbl;tk1;tk2;blk;tof;SGL;tmp_tn;∆;ftmp;nrecs;sums;idx;key;nums;File;fmtstring;UPPER;LastCol;lCol;NOM;bynom
+[1]   ⍝ DATAWIN.sf#21
+[2]   ⍝ Create: (# of recs read)(categories found)(checksums)
+[3]   ⍝ reads external vars: CHUNK_SZ DLMT IGNORENUMERICS InputDir INTERCOLSPACE SGLCHARFLDS
+[4]   
+[5]   res←''
+[6]   nums←('N'=↑¨fmts)/⍳⍴fmts
+[7]   bynom←('N'=↑¨fmts)/byNOM
+[8]   SGL←  NAMS⍳(SGLCHARFLDS∊NAMS)/SGLCHARFLDS
+[9]   UPPER←NAMS⍳(UPPER      ∊NAMS)/UPPER←'SEX' 'MEMORSP' 'MS'                ⍝ upper-case fields
+[10]  lCol ←NAMS⍳⊂LASTCOLPN
+[11]  LastCol←('ADP'⍳↑membtype)⊃'MDP'
+[12]  
+[13]  :if csv_tn←CSVimp
+[14]      :if 0=File NTIE csv_tn←'Native' TieNumber File←InputDir,FILE
+[15]          res←'Unable to tie ',(DLTB FILE),'.  It may be in use by another program.' ⋄ :return
+[16]      :endif
+[17]      csv_sz←⎕NSIZE csv_tn
+[18]      ftmp←(Win∆Parent File),'.tmp'
+[19]  :else
+[20]      ftmp←InputDir,((Win∆Parent xlFILE),' ','{}'embrace xlSHEET),'.tmp'
+[21]  :endif
+[22]  
+[23]  :if 0=tmp_tn←NCREATE ftmp
+[24]      ⎕nuntie csv_tn
+[25]      res←'Unable to create ',('\' Win∆Child ftmp),'.' ⋄ :return
+[26]  :endif
+[27]  
+[28]  tk1←wids×1-2×'C'≠↑¨fmts                                                 ⍝ right-align dates & numerics
+[29]  tk2←(∣tk1)+(((⍴wids)-1),1)/INTERCOLSPACE 0                              ⍝ pad all but last column
+[30]  
+[31]  (buffer fileptr nrecs)←'' 0 0
+[32]  idx←(,(⎕split cats)∘.,'/M' '/F')                                        ⍝ index to check sums
+[33]  sums←(1 0+↑¨⍴¨nums idx)⍴0
+[34]  :repeat
+[35]      :if CSVimp ⋄ lines←(⎕tcnl,⎕tclf) part buffer,⎕NREAD csv_tn 82 CHUNK_SZ fileptr
+[36]      :else      ⋄ lines←(⊂',') join¨⎕split ↑fmts DBW_excel_data (1+fileptr) 1 (XLrows⌊fileptr+⌊CHUNK_SZ÷100×XLcols) XLcols
+[37]      :endif
+[38]      tof←fileptr=0                                                       ⍝ top of file
+[39]      lines←(tof×2-nofmtrow)↓(×∊⍴¨lines~¨⊂DLMT)/lines                     ⍝ toss header and empty lines
+[40]  
+[41]      :if CSVimp
+[42]          :if ~eof←csv_sz≤fileptr←fileptr+CHUNK_SZ                        ⍝ end of file?
+[43]              (lines buffer)←(¯1↓lines)(↑⌽lines)                          ⍝ buffer incomplete line
+[44]          :endif
+[45]      :else
+[46]          eof←XLrows≤fileptr←fileptr+(tof×2-nofmtrow)+⍴lines              ⍝ end of file?
+[47]      :endif
+[48]  
+[49]      tbl←included/⊃(↑⍴included)↑¨DLMT partq¨lines
+[50]      tbl[;nums]←DLTB¨tbl[;nums]~¨⊂IGNORENUMERICS                         ⍝ ignore commas &c in numerics
+[51]      :if ∨/bynom
+[52]          NOM←1⌈zwb¨tbl[;nams⍳⊂'NOM']
+[53]          tbl[;bynom/nums]←⍕¨NOM×[⎕io]zwb¨tbl[;,bynom/nums]
+[54]      :endif
+[55]      tbl[;SGL]←1↑¨tbl[;SGL]                                              ⍝ truncate single-char fields
+[56]      tbl[;UPPER]←DLTB¨UPPERCASE¨tbl[;UPPER]
+[57]      tbl[;lCol]←1↑¨(tbl[;lCol]~¨' '),¨LastCol
+[58]      blk←⊃,/⊃¨⊂[1]((⍴tbl)⍴tk2)↑¨((⍴tbl)⍴tk1)↑¨tbl
+[59]      blk APPEND tmp_tn
+[60]      nrecs←nrecs+⍴lines
+[61]  
+[62]      key←'/' join¨⎕split ((wids[NAMS⍳⊂'CAT'])↑¨tbl[;NAMS⍳⊂'CAT']),tbl[;,NAMS⍳⊂'SEX']
+[63]      sums←sums+(1⍪⍉↑¨⎕FI¨tbl[;nums])+.×key∘.≡idx
+[64]  
+[65]      ∆←(+/^\∆=' ')↓∆←,'CI12' ⎕FMT nrecs
+[66]  
+[67]  :until eof
+[68]  
+[69]  ⎕NUNTIE tmp_tn,CSVimp/csv_tn
+[70]  
+[71]  ⍝⍝⍝ fmtstring←⎕split '<CF30.>,I1' ⎕fmt (5 2 0)[1+⌈/+⌿(1 100∘.×sums)=⌊1 100∘.×sums] ⍝⍝⍝ FIXME use this to format??
+[72]  ⍝⍝⍝ fmtstring ⎕FMT¨⎕SPLIT[1](⍉sums)⍪+/sums ⍝⍝⍝ format columns
+[73]  ⍝⍝⍝ DLTB¨((⍴∆)⍴fmtstring)⎕FMT¨∆←(⍉sums)⍪+/sums ⍝⍝⍝ format cells
+[74]  chksums←('Category' 'Records',NAMS[nums])⍪(idx,⊂'Total'),DLTB¨(⊂'CF30.2')⎕FMT¨(⍉sums)⍪+/sums
+[75]  
+[76]  ((parent,'fCheckSum.lvSums') 'Data_Build') Win∆UpdateListview GetCheckSums chksums
+[77]  
+[78]  (parent,'fCheckSum.lSummary') ⎕wi 'caption' (DLTB (,'CI12' ⎕FMT nrecs),' ',membtype,' members in ',(⍕↑⍴cats),' categories')
+    ∇

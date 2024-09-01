@@ -1,1 +1,48 @@
-    ∇ RP1∆PubSect;idx;Age∆pp;ExitProbs∆pp;Inc∆pp;GP∆pp;RetAge∆pp;BenType∆pp;Start∆pp;IncType∆pp;Upin∆pp;SL∆pp;Con∆pp;ABno∆pp;Dec∆pp;AltABno∆pp[1]   ⍝ DEFWIN.sf#5[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT PENSION 1[3]   ⍝ Handle the "special case" of the Public Sector GMPs which are payable in service[4]   [5]   :if IsAccrued[6]       idx←SPA≥X[7]       RetAge∆pp←NX⍴,X0⌈NRA⌊SPA ⋄ Age∆pp←,X0⌈XMP ⋄ ABno∆pp←'1' ⋄ AltABno∆pp←''[8]   :else[9]       :if X0>SPA ⋄ idx←NX↑1 0 ⍝ Point payment commences[10]      :else      ⋄ idx←SPA=X[11]      :endif[12]      RetAge∆pp←Age∆pp←,NX⍴X0⌈SPA⌈X ⍝ Changed on-going "benefit" level defaults locally[13]  :endif[14]  [15]  Dec∆pp←IsAccrued↓'GR' ⋄ ExitProbs∆pp←tPx ⍝ Changed on-going "benefit" level default locally[16]  [17]  ⍝ Pension Projector Variables[18]  BenType∆pp←'P' ⋄ Start∆pp←,X0⌈SPA⌈X ⋄ GP∆pp←NX⍴,0⌈GPeriod-0⌈(X0⌈SPA)-NRA⌈X0[19]  [20]  [21]  ⍝ Pre 1988 GMP[22]  IncType∆pp←'G1' ⋄ Inc∆pp←B88GMPINC[23]  [24]  Upin∆pp←0 ⍝ Not "underpinned"[25]  Con∆pp←,(SL∆pp←,idx×(1-GFRAC1)×PreGMPSPA)×0.5×Male[26]  [27]  PP∆CreateInterface[28]  [29]  Upin∆pp←1 ⍝ "Underpinned"[30]  Con∆pp←,(SL∆pp←,idx×   GFRAC1 ×PreGMPSPA)×0.5×Male[31]  [32]  PP∆CreateInterface[33]  [34]  [35]  ⍝ Post 1988 GMP[36]  IncType∆pp←'G2' ⋄ Inc∆pp←A88GMPINC[37]  [38]  Upin∆pp←0 ⍝ Not "underpinned"[39]  Con∆pp←,(SL∆pp←,idx×(1-GFRAC2)×PostGMPSPA)×0.5[40]  [41]  PP∆CreateInterface[42]  [43]  Upin∆pp←1 ⍝ "Underpinned"[44]  Con∆pp←,(SL∆pp←,idx×   GFRAC2 ×PostGMPSPA)×0.5[45]  [46]  PP∆CreateInterface    ∇
+    ∇ RP1∆PubSect;idx;Age∆pp;ExitProbs∆pp;Inc∆pp;GP∆pp;RetAge∆pp;BenType∆pp;Start∆pp;IncType∆pp;Upin∆pp;SL∆pp;Con∆pp;ABno∆pp;Dec∆pp;AltABno∆pp
+[1]   ⍝ DEFWIN.sf#5
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT PENSION 1
+[3]   ⍝ Handle the "special case" of the Public Sector GMPs which are payable in service
+[4]   
+[5]   :if IsAccrued
+[6]       idx←SPA≥X
+[7]       RetAge∆pp←NX⍴,X0⌈NRA⌊SPA ⋄ Age∆pp←,X0⌈XMP ⋄ ABno∆pp←'1' ⋄ AltABno∆pp←''
+[8]   :else
+[9]       :if X0>SPA ⋄ idx←NX↑1 0 ⍝ Point payment commences
+[10]      :else      ⋄ idx←SPA=X
+[11]      :endif
+[12]      RetAge∆pp←Age∆pp←,NX⍴X0⌈SPA⌈X ⍝ Changed on-going "benefit" level defaults locally
+[13]  :endif
+[14]  
+[15]  Dec∆pp←IsAccrued↓'GR' ⋄ ExitProbs∆pp←tPx ⍝ Changed on-going "benefit" level default locally
+[16]  
+[17]  ⍝ Pension Projector Variables
+[18]  BenType∆pp←'P' ⋄ Start∆pp←,X0⌈SPA⌈X ⋄ GP∆pp←NX⍴,0⌈GPeriod-0⌈(X0⌈SPA)-NRA⌈X0
+[19]  
+[20]  
+[21]  ⍝ Pre 1988 GMP
+[22]  IncType∆pp←'G1' ⋄ Inc∆pp←B88GMPINC
+[23]  
+[24]  Upin∆pp←0 ⍝ Not "underpinned"
+[25]  Con∆pp←,(SL∆pp←,idx×(1-GFRAC1)×PreGMPSPA)×0.5×Male
+[26]  
+[27]  PP∆CreateInterface
+[28]  
+[29]  Upin∆pp←1 ⍝ "Underpinned"
+[30]  Con∆pp←,(SL∆pp←,idx×   GFRAC1 ×PreGMPSPA)×0.5×Male
+[31]  
+[32]  PP∆CreateInterface
+[33]  
+[34]  
+[35]  ⍝ Post 1988 GMP
+[36]  IncType∆pp←'G2' ⋄ Inc∆pp←A88GMPINC
+[37]  
+[38]  Upin∆pp←0 ⍝ Not "underpinned"
+[39]  Con∆pp←,(SL∆pp←,idx×(1-GFRAC2)×PostGMPSPA)×0.5
+[40]  
+[41]  PP∆CreateInterface
+[42]  
+[43]  Upin∆pp←1 ⍝ "Underpinned"
+[44]  Con∆pp←,(SL∆pp←,idx×   GFRAC2 ×PostGMPSPA)×0.5
+[45]  
+[46]  PP∆CreateInterface
+    ∇

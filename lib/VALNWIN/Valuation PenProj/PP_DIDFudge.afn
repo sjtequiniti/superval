@@ -1,0 +1,42 @@
+    ∇ ContingencyID PP∆DIDFudge pp∆row;pp∆upin;pp∆TotBens;pp∆FutBens;pp∆midexit;pp∆midret;pp∆midstart;pp∆Xexit;pp∆xexit;pp∆Xret;pp∆xret;pp∆Xstart;pp∆xstart;pp∆exitdisc;pp∆defdisc;pp∆Texit;pp∆Tret;pp∆Tstart;pp∆def;pp∆startpad;pp∆defInc;pp∆FutCF;pp∆PastCF;pp∆TotCF;pp∆FutPV;pp∆PastPV;pp∆TotPV;pp∆top;DataItemID;pp∆defLX;pp∆VF;pp∆exitprobs;pp∆xprestart;pp∆Xprestart;pp∆midprestart;pp∆Tprestart;pp∆year;pp∆2Dbens;pp∆benyear;pp∆RGP;memberContID
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Projection of Death in Deferment Benefit ("Lump Sum") Cash Flows
+[3]   ⍝ For Death in Deferment Benefits, there is no Contingent Benefit so ignore pp∆Con and pp∆FCon
+[4]   memberContID←ContingencyID←6 ⍝⍝⍝
+[5]   
+[6]   pp∆2Dbens←'Benefits' PP∆ExtractBens 0 ⍝ Fudge must have vector benefits
+[7]   pp∆upin←pp∆Upin[pp∆row;0] ⍝ Benefit is Underpinned - doesn't work with Aggregated Benefits
+[8]   pp∆RGP←0
+[9]   
+[10]  :for pp∆year :in (×∣pp∆TotBens)/⍳pp∆NX ⍝ Process non-zero benefits
+[11]      pp∆benyear←pp∆year
+[12]      PP∆Terms 'M' ⋄ pp∆def←pp∆def×0
+[13]      PP∆Deferral 1
+[14]  
+[15]      pp∆TotCF←(pp∆TotPV←pp∆TotBens[pp∆benyear]×pp∆VF←pp∆exitdisc×pp∆ppfRatio[pp∆Tstart-term]) CDIV pp∆defdisc
+[16]      :if neIND ⋄ pp∆FutPV←pp∆TotPV ⋄ pp∆FutCF←pp∆TotCF
+[17]      :else     ⋄ pp∆FutCF←(pp∆FutPV←pp∆FutBens[pp∆benyear]×pp∆VF) CDIV pp∆defdisc
+[18]      :endif
+[19]      pp∆PastCF←pp∆TotCF-pp∆FutCF ⋄ pp∆PastPV←pp∆TotPV-pp∆FutPV
+[20]  
+[21]      1 PP∆StoreRes 1
+[22]  :endfor
+[23]  
+[24]  :if ⍙dbresults
+[25]      DataItemID←11+4××pp∆End[pp∆row;0] ⍝ For Life or Temporary
+[26]      0 0⍴'Amounts' PP∆ExtractBens 0
+[27]      :if pp∆accrued
+[28]          :if BenefitTypeID≠¯1 ⋄ :andif ~ppf ⍝ Non-PPF Settings for valids
+[29]              :if pp∆abno≡'1' ⋄ BenefitTypeID←99 ⍝ GMP/non-GMP split
+[30]              :else           ⋄ BenefitTypeID←98
+[31]              :endif
+[32]          :endif
+[33]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 3 DataItemID) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆TotBens
+[34]          ⍙DBAddAccrued
+[35]      :else
+[36]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 1 DataItemID) pp∆dbX0 term) ⍙DBValnRecords (↑,pp∆FutBens)-↑,pp∆TotBens
+[37]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 2 DataItemID) pp∆dbX0 term) ⍙DBValnRecords -↑,pp∆FutBens
+[38]          ⍙DBAddResults
+[39]      :endif
+[40]  :endif
+    ∇

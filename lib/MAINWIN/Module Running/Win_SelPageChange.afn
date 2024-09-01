@@ -1,1 +1,30 @@
-    ∇ parent Win∆SelPageChange parm;PageNo[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Create the "hidden" menu required for the Selector Page Changing[3]   ⍝  with PageUp and PageDown keys[4]   ⍝  and Processes for those keys[5]   [6]   :select parm[7]   :case 'PageUp'[8]       :if 1≠PageNo←parent ⎕wi 'value'[9]           parent ⎕wi 'value' (PageNo-1)[10]      :endif[11]  :case 'PageDn'[12]      :if (⍴parent ⎕wi 'pages')≠PageNo←parent ⎕wi 'value'[13]          parent ⎕wi 'value' (PageNo+1)[14]      :endif[15]  [16]  :else ⍝ Must be the "build"[17]  [18]  ⎕wself←(parent,'.mPgUp') ⎕wi 'New' 'Menu'[19]     ⎕wi 'visible' 0[20]     ⎕wi 'shortcut' 33 2 ⍝ Ctrl PgUp[21]     ⎕wi 'onClick' ('"',parent,'" Win∆SelPageChange "PageUp"')[22]  [23]  ⎕wself←(parent,'.mPgDn') ⎕wi 'New' 'Menu'[24]     ⎕wi 'visible' 0[25]     ⎕wi 'shortcut' 34 2 ⍝ Ctrl PgUp[26]     ⎕wi 'onClick' ('"',parent,'" Win∆SelPageChange "PageDn"')[27]  [28]  :endselect    ∇
+    ∇ parent Win∆SelPageChange parm;PageNo
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Create the "hidden" menu required for the Selector Page Changing
+[3]   ⍝  with PageUp and PageDown keys
+[4]   ⍝  and Processes for those keys
+[5]   
+[6]   :select parm
+[7]   :case 'PageUp'
+[8]       :if 1≠PageNo←parent ⎕wi 'value'
+[9]           parent ⎕wi 'value' (PageNo-1)
+[10]      :endif
+[11]  :case 'PageDn'
+[12]      :if (⍴parent ⎕wi 'pages')≠PageNo←parent ⎕wi 'value'
+[13]          parent ⎕wi 'value' (PageNo+1)
+[14]      :endif
+[15]  
+[16]  :else ⍝ Must be the "build"
+[17]  
+[18]  ⎕wself←(parent,'.mPgUp') ⎕wi 'New' 'Menu'
+[19]     ⎕wi 'visible' 0
+[20]     ⎕wi 'shortcut' 33 2 ⍝ Ctrl PgUp
+[21]     ⎕wi 'onClick' ('"',parent,'" Win∆SelPageChange "PageUp"')
+[22]  
+[23]  ⎕wself←(parent,'.mPgDn') ⎕wi 'New' 'Menu'
+[24]     ⎕wi 'visible' 0
+[25]     ⎕wi 'shortcut' 34 2 ⍝ Ctrl PgUp
+[26]     ⎕wi 'onClick' ('"',parent,'" Win∆SelPageChange "PageDn"')
+[27]  
+[28]  :endselect
+    ∇

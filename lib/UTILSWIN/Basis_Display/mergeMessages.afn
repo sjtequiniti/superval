@@ -1,0 +1,31 @@
+    ∇ Z←v_r mergeMessages tbl;⎕IO;∆;m;msg;etyp;colhds
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ v_r: (vec) 2 ≡ tally v_r ⍝ variable & row
+[3]   ⍝ tbl: (tbl) `message`etyp
+[4]   ⍝  `message: (str)
+[5]   ⍝  `etyp: (str) 'error' ∣ 'warning' ∣ 'note' ∣ ''
+[6]   ⍝ Z: (tbl) `variable`row`message`etyp (1 row)
+[7]   ⍝  `message: (str) join of tbl@`message
+[8]   ⍝  `etyp: (str) worst of tbl@`etyp
+[9]   ⍝ Vern: sjt12feb16
+[10]  ⍝ Tests:
+[11]  ⍝?⍝ (2 rnk 'variable' 'row' 'message' 'etyp') ≡ 'var' 3 mergeMessages 0 2⍴'message' 'etyp'
+[12]  ⍝?⍝ (2 rnk 'variable' 'row' 'message' 'etyp') ≡ 'var' 3 mergeMessages 1 2⍴'message' 'etyp'
+[13]  ⍝?⍝ (⊃('variable' 'row' 'message' 'etyp')('var' 3 'Error: foo' 'error')) ≡ 'var' 3 mergeMessages 2 2⍴'message' 'etyp' 'Error:  foo' 'error'
+[14]  ⍝?⍝ (⊃('variable' 'row' 'message' 'etyp')('var' 3 'Error: foo; Warning: bar' 'error')) ≡ 'var' 3 mergeMessages 3 2⍴'message' 'etyp' 'Error: foo' 'error' 'Warning: bar' 'warning'
+[15]  ⍝?⍝ (⊃('variable' 'row' 'message' 'etyp')('var' 3 'Error: foo; bar' 'error')) ≡ 'var' 3 mergeMessages 3 2⍴'message' 'etyp' 'Error:  foo' 'error' 'Error: bar' 'error'
+[16]  ⎕IO←1
+[17]  colhds←'variable' 'row' 'message' 'etyp'
+[18]  :select rowsIn tbl
+[19]  :caselist ¯1 0
+[20]      Z←2 rnk colhds
+[21]  :case 1
+[22]      Z←⊃(colhds) (v_r, DLTMB¨↑¨tbl at 'message' 'etyp')
+[23]  :else
+[24]      etyp←worstStatus tbl at 'etyp'
+[25]      m←DLTMB¨tbl at 'message'
+[26]      ∆←+/^⌿^\∆[1;]=[2] ∆←⊃m                                  ⍝ length of common prefix
+[27]      msg←'; ' join (0,1↓(⍴m)/∆)↓¨ m                          ⍝ join messages
+[28]      Z←⊃ (colhds) (v_r , msg etyp)
+[29]  :endselect
+    ∇

@@ -1,1 +1,193 @@
-    ∇ Z←folder ⍙WebInitialise ⍙dbname;∆;maxyr;maxpay;restab;groupings;premsk;penfymsk;incmsk;diff;z;MESS;mess;mortadj;v1pctab;x;agediff;meth;amorttab;amortmaxterm;amortmsk;decadj;cattab;field;vals;dbid;fundtab;conttab;BenTable;anddbid;cfs;disc;d[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Initialising Fn for Web Application[3]   ⍝ Connect to Database and Read Relevant Data into the Workspace[4]   [5]   Z←⊂'' ⋄ ⍙WebHideControls[6]   [7]   ('Task:' 'Progress:') Win∆ProgressBar 'SetLabels'[8]   (1 9 'Checking Database') Win∆ProgressBar 'FileUpdate'[9]   anddbid←sqlDatabase/" AND DatabaseID=",⍕DBID ⋄ dbid←sqlDatabase/" WHERE DatabaseID=",⍕DBID[10]  →(folder CheckDatabase ⍙dbname)/end[11]  [12]  ⍝⍝⍝ 0 0⍴⍙VALUESdict ReadDictFile 'Quick_Scenario'[13]  ⍝⍝⍝ 0 0⍴Quick_Scenario 'Vars'[14]  ⍝⍝⍝ initial_load←0[15]  [16]  ⍝ Create Headers for Results Table[17]  cattab←MATRIX (~sqlDatabase)↓'DatabaseID' 'ResultsCategoryID' 'BasisCategoryID' 'Sex' 'SepSpouseCF' 'PropMarrTable' 'PropMarrTableID' 'SpouseDefinition' 'PensionFrequency' 'PaymentMode' 'FirstYearIncrease' 'PenReviewDate' 'ExactAge' 'TVPropMarrTable' 'TVPropMarrTableID' 'TVSpouseDefinition'[18]  [19]  restab←(~sqlDatabase)↓'DatabaseID' 'ResultsCategoryID' 'ClassName' 'ContingencyID' 'StartYear' 'PastService' 'BenefitTypeID' 'BenefitBasis' 'CashRate'[20]  restab←restab,'InterestSwitch' 'PreInterestName' 'PreInterestGroup' 'PreInterestValue' 'PreInterestCap' 'PreInterestCollar' 'PreInterestTableID'[21]  restab←restab,'PostInterestName' 'PostInterestGroup' 'PostInterestValue' 'PostInterestCap' 'PostInterestCollar' 'PostInterestTableID'[22]  restab←restab,'ReviewDate' 'FASPeriod' 'InflationName' 'InflationGroup' 'InflationValue' 'InflationCap' 'InflationCollar' 'InflationTableID'[23]  restab←restab,'RevaluationName' 'RevaluationGroup' 'RevaluationValue' 'RevaluationCap' 'RevaluationCollar' 'RevaluationTableID'[24]  restab←MATRIX restab,'IncreaseName' 'IncreaseGroup' 'IncreaseValue' 'IncreaseCap' 'IncreaseCollar' 'IncreaseTableID' 'IncreaseConsDesc' 'ExcessPre88GMP' 'ExcessPost88GMP' 'LiabilityValue'[25]  [26]  ⍝ Get Assumptions Summary from Database[27]  (2 9 'Extracting Assumptions Summary from Database') Win∆ProgressBar 'FileUpdate'[28]  cattab←DLTB¨cattab OVER 1 ⍙DBadoCONCommand "SELECT * FROM CategoryAssumptions",dbid[29]  restab←DLTB¨restab OVER 1 ⍙DBadoCONCommand "SELECT * FROM BenefitAssumptions",dbid[30]  [31]  :for field :in (keysIn cattab)~'ResultsCategoryID' 'TVPropMarrTable' 'TVPropMarrTableID' 'TVSpouseDefinition'[32]       vals←↑¨((⊂cattab) for¨(⊂⊂'ResultsCategoryID'),¨⊂¨restab at 'ResultsCategoryID') at¨⊂field[33]       :if ∨/∆←(∊restab at 'ContingencyID')∊31 32 33 34 35 36 37 38 39 40 41 42 ⍝ Transfers Out[34]       :andif (⊂field)∊'PropMarrTable' 'PropMarrTableID' 'SpouseDefinition'[35]              (∆/vals)←∆/↑¨((⊂cattab) for¨(⊂⊂'ResultsCategoryID'),¨⊂¨restab at 'ResultsCategoryID') at¨⊂'TV',field[36]       :endif[37]       restab←restab amend field vals[38]  :endfor[39]  :if ∨/∆←(vals←restab at 'ClassName')∊⊂'Premiums'[40]      (∆/vals)←⊂'Contributions'[41]      restab←restab amend 'ClassName' vals[42]  :endif[43]  [44]  ⍙WebExtract[45]  (maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk)←⍙WebVariables maxyr maxpay[46]  [47]  :if ^/mt¨groupings[48]      MDISPLAY 'Run "Summarise Assumptions and Tranche Benefits" to add some Financial Groupings before running Quick Scenario Modeller'[49]      0 0⍴'ADOconcmd' ⎕wi 'Delete'[50]      'ADOcon' ⎕wi 'XClose' ⋄ 'ADOcon' ⎕wi 'Delete'   ⍝ Delete the Database connection[51]      (((⊂'Button')≡¨list ⎕wi¨⊂'class')/list←'fmQuickSM' ⎕wi 'children') MultiWI 'visible' 1[52]      →end[53]  :endif[54]  [55]  ⍝ 2 levels of amortisation[56]  ameth1 ←GetConsBasis 'ameth1'  ⋄ ameth2 ←GetConsBasis 'ameth2'[57]  TERMAM1←GetConsBasis 'TERMAM1' ⋄ TERMAM2←GetConsBasis 'TERMAM2'[58]  amortamount1←⌊0.5+-↑↑+/((restab for (⊂'BenefitTypeID'),,¨11) for (⊂'ContingencyID'),,¨10) at 'LiabilityValue'[59]  amortamount2←⌊0.5+-↑↑+/((restab for (⊂'BenefitTypeID'),,¨11) for (⊂'ContingencyID'),,¨28) at 'LiabilityValue'[60]  amortamount1←'¯-' REPL ⍕amortamount1+0.01×amortamount1=0 ⋄ amortamount2←'¯-' REPL ⍕amortamount2+0.01×amortamount2=0[61]  [62]  ⍙WebAmortisation 'Create' ⍝ Create "extra" Amortisation records[63]  [64]  ⍝ Groupings used in each row and overall[65]  ∆←restab at 'PreInterestGroup' 'PostInterestGroup' 'InflationGroup' 'RevaluationGroup' 'IncreaseGroup'[66]  restab←restab amend 'Groupings' ((lmt¨nub¨spin ∆)~¨⊂'GMP None' 'GMP Fixed' 'GMP Limited 5%' '⍙Not Used')[67]  [68]  ⍝⍝⍝ ⍝ Turn InterestSwitch into Boolean (Pre-Ret is 1, Post-Ret is 0)[69]  ⍝⍝⍝ restab←restab amend 'InterestSwitch' (∨/¨(⊂'Pre')⍷¨restab at 'InterestSwitch')[70]  restab←restab amend 'MidYear' (~restab at 'StartYear')  ⍝ Better flag!![71]  restab←restab amend 'PensionFrequency' (((⊂' ASQMLFWC')=¨↑¨restab at 'PensionFrequency')sel¨⊂0 1 2 4 12 13 26.09 52.18 10000000)[72]  restab←restab amend 'PaymentMode' (~(⊂'In Arrear')≡¨9↑¨restab at 'PaymentMode')[73]  restab←restab amend 'FreqAdj' ((∆+¯1+2×restab at 'PaymentMode')÷2×∆←restab at 'PensionFrequency')[74]  [75]  (3 9 'Changing Tables to Values') Win∆ProgressBar 'FileUpdate'[76]  ⍙WebProcessFinancials[77]  [78]  (4 9 ('Calculating Discounters and Inflators')) Win∆ProgressBar 'FileUpdate'[79]  :if 0∊∊restab at 'ContingencyID'[80]      BenTable←ContingencyTable for 'Contingency' 'All Benefits'[81]  :else[82]      BenTable←ContingencyTable for 'Contingency' 'Retirement' 'Death' 'Ill Health' 'PHI' 'Leaving Service' 'Retirement Transfer' 'Transfer Out'[83]  :endif[84]  ⍙WebGetCashFlows[85]  [86]  (5 9 'Deriving In-Service Decrements') Win∆ProgressBar 'FileUpdate'[87]  ⍙WebTransfers[88]  [89]  (6 9 ('Calculating Mortality')) Win∆ProgressBar 'FileUpdate'[90]  ⍙WebGetMortality[91]  [92]  ⍝⍝⍝(6 9 'Deriving In-Service Decrements') Win∆ProgressBar 'FileUpdate'[93]  ⍝⍝⍝⍙WebDecrements[94]  [95]  (7 9 'Closing Database') Win∆ProgressBar 'FileUpdate'[96]  0 0⍴'ADOconcmd' ⎕wi 'Delete'[97]  'ADOcon' ⎕wi 'XClose' ⋄ 'ADOcon' ⎕wi 'Delete'   ⍝ Delete the Database connection[98]  [99]  (8 9 'Initialising Cash Benefits') Win∆ProgressBar 'FileUpdate'[100] ∆←1-2×∨/¨(⊂'Pro Rata')⍷¨restab at 'BenefitBasis'                        ⍝ ¯1 if ProRata[101] restab←restab amend 'Commutation'         (∆×restab ⍙WebCashType 35)[102] restab←restab amend 'CashOnTop'           (  restab ⍙WebCashType 36)[103] restab←restab amend 'RollForwardAdjust'   ((rowsIn restab)⍴⊂1)[104] restab←restab amend 'CashRate'            (zwb¨restab at 'CashRate')[105] restab←restab amend 'AccrualAdjust'       ((rowsIn restab)⍴⊂1)[106] restab←restab amend 'CashAmtAdjust'       ((rowsIn restab)⍴⊂1)[107] restab←restab amend 'CashFactAdjust'      ((rowsIn restab)⍴⊂1)[108] restab←restab amend 'TVAmtAdjust'         ((rowsIn restab)⍴⊂1)[109] restab←restab amend 'TVPropAdjust'        ((rowsIn restab)⍴⊂1)[110] restab←restab amend 'VBFactAdjust'        ((rowsIn restab)⍴⊂1)[111] restab←restab amend 'VBFactAdjType'       ((rowsIn restab)⍴⊂0)[112] restab←restab amend 'CashFactor'          ((rowsIn restab)⍴⊂0)[113] restab←restab amend 'ADay%'               ((rowsIn restab)⍴⊂0)[114] restab←restab amend 'MemberOnly'          (∨/¨(⊂'Member Only')⍷¨restab at 'BenefitBasis')[115] restab←restab amend 'OriginalBenTypeID'   (restab at 'BenefitTypeID')[116] restab←⍙WebInitialiseCash restab[117] [118] restab←restab amend 'RawMemberCF' ((restab at 'MemberCashFlow') CDIV ↑×/restab at 'Inflator' 'MemberMortAdjust')[119] restab←restab amend 'RawSpouseCF' ((restab at 'SpouseCashFlow') CDIV ↑×/restab at 'Inflator' 'SpouseMortAdjust')[120] [121] cfs←↑+/restab at 'MemberCashFlow' 'SpouseCashFlow'[122] :if ∨/∆←¯1=restab at 'CashBenefit' ⍝ Cash Benefit related to Valuation Basis or Future CARE[123]     disc←∆/restab at 'Discount'[124]     d←maxpay↑¨,¨(0,(+/∆)⍴¨0 0 0) ⍙WebDeflator restab for ∆                    ⍝ Discounter at Point of Exit[125]     (∆/cfs)←(∆/cfs)×(restab for ∆) at 'VBFactAdjust'[126]     (∆/cfs)←(⊂penfymsk)×[1]¨(+/¨disc×∆/cfs)÷[1]¨d[127] :endif[128] restab←restab amend 'CashFlow' cfs[129] [130] restab←restab amend 'NewCashFlow'          (restab at 'CashFlow')[131] restab←restab amend 'RFCashFlow'           (restab at 'NewCashFlow')[132] restab←restab amend 'NewInflator'          (restab at 'Inflator')[133] restab←restab amend 'NewDiscount'          (restab at 'Discount')[134] restab←restab amend 'RFDiscount'           (restab at 'Discount')[135] restab←restab amend 'NewMemberMortality'   (restab at 'MemberMortality')[136] restab←restab amend 'NewMemberMortAdjust'  (restab at 'MemberMortAdjust')[137] restab←restab amend 'NewSpouseMortality'   (restab at 'SpouseMortality')[138] restab←restab amend 'NewSpouseMortAdjust'  (restab at 'SpouseMortAdjust')[139] [140] cfs←(↑+/restab at 'MemberCashFlow' 'SpouseCashFlow')×restab at 'VBFactAdjust'[141] restab←restab amend 'NewLiabilityValue' (+/¨,¨cfs×(~restab at 'CashZeroPension')×↑×/restab at 'Discount' 'AccrualLimit') ⍝⍝⍝ 'AccrualAdjust' 'CashAmtAdjust' 'CashFactAdjust') 'TVAmtAdjust' 'TVPropAdjust'[142] ∆←restab at 'LiabilityValue' 'NewLiabilityValue'[143] restab←restab amend 'LiabilityAdjust' (↑ZDIV/∆)[144] :if ecflag[145]     x←5<∣∊agediff[146]     :if   ∨/z←x∨(∊0.01<∣restab at 'LiabilityValue')^1<∣diff←∊100×(restab at 'LiabilityAdjust')-1[147]     :orif uSERisRSE[148]         MESS←''[149]         :for ∆ :in z/(spin restab at 'ClassName' 'ResultsCategoryID' 'PastService' 'ContingencyID' 'BenefitTypeID' 'StartYear' 'LiabilityValue'),¨diff,¨agediff[150]             mess←(↑∆),': '[151]             mess←mess,'ResID ',(⍕↑1↓∆),': '[152]             mess←mess,(1+↑2↓∆)⊃'Future Service: ' 'Past Service: '[153]             mess←mess,'ContID ',(⍕↑3↓∆),': '[154]             mess←mess,'BenID ',(⍕↑4↓∆),': '[155]             mess←mess,(1+↑5↓∆)⊃'Mid Year: ' 'Start Year: '[156]             mess←mess,⎕tcht,,'M<->CI20' ⎕fmt ↑6↓∆[157]             mess←mess,⎕tcht,,'M<->F10.1,<%>' ⎕fmt ↑7↓∆[158]             mess←mess,⎕tcht,,'M<->I3,< years>' ⎕fmt ↑8↓∆[159]             MESS←MESS,mess,⎕tcnl[160]         :endfor[161]         MESS←'Maximum Age Difference between Married and Single Members is ',(0⍕⌈/∣agediff),' years',⎕tcnl,¯1↓MESS[162]         MDISPLAY 'Maximum Difference between Liability Value and Discounted Cash Flow is ',(0⍕⌈/∣diff),'%',⎕tcnl,¯1↓MESS[163]     :endif[164] :endif[165] [166] ⍝⍝⍝ ⍴restab groupby aaa ((keysIn restab)~aaa←'ClassName' 'PastService' 'StartYear' 'InterestSwitch' 'PreInterestGroup' 'PreInterestValue' 'PostInterestGroup' 'PostInterestValue' 'InflationGroup' 'InflationValue' 'RevaluationGroup' 'RevaluationValue' 'IncreaseGroup' 'IncreaseValue' 'ExcessPre88GMP' 'ExcessPost88GMP')[167] [168] ⍙WebEmployerConts[169] [170] (9 9 'Initialising Amortisation Data') Win∆ProgressBar 'FileUpdate'[171] amorttab←restab for (⊂'ContingencyID'),,¨10 28[172] restab←restab for ~(∊restab at 'ContingencyID')∊10 28[173] amorttab←amorttab amend 'BenefitTypeID' (,¨(999 11) REPL ∊amorttab at 'BenefitTypeID')[174] amorttab←1 ⍙WebRecalculate amorttab[175] amorttab←amorttab amend 'CashFlow' (amorttab at 'NewCashFlow')[176] [177] restab←⍙WebAdditLiabs restab[178] [179] :if uSERisRSE[180]     restab←⍙WebMonthlyCashFlows restab[181] :endif[182] [183] ⍝⍝⍝ :if ~(⊂'Additional Liability')∊restab at 'ClassName'[184] ⍝⍝⍝    restab←restab append AdditLiabrec[185] ⍝⍝⍝ :else[186] ⍝⍝⍝    RFLTOT←⍕(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue'[187] ⍝⍝⍝ :endif[188] [189] Z←restab conttab fundtab amorttab v1pctab maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk[190] [191] end:Win∆ProgressBar 'Close'    ∇
+    ∇ Z←folder ⍙WebInitialise ⍙dbname;∆;maxyr;maxpay;restab;groupings;premsk;penfymsk;incmsk;diff;z;MESS;mess;mortadj;v1pctab;x;agediff;meth;amorttab;amortmaxterm;amortmsk;decadj;cattab;field;vals;dbid;fundtab;conttab;BenTable;anddbid;cfs;disc;d
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Initialising Fn for Web Application
+[3]   ⍝ Connect to Database and Read Relevant Data into the Workspace
+[4]   
+[5]   Z←⊂'' ⋄ ⍙WebHideControls
+[6]   
+[7]   ('Task:' 'Progress:') Win∆ProgressBar 'SetLabels'
+[8]   (1 9 'Checking Database') Win∆ProgressBar 'FileUpdate'
+[9]   anddbid←sqlDatabase/" AND DatabaseID=",⍕DBID ⋄ dbid←sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[10]  →(folder CheckDatabase ⍙dbname)/end
+[11]  
+[12]  ⍝⍝⍝ 0 0⍴⍙VALUESdict ReadDictFile 'Quick_Scenario'
+[13]  ⍝⍝⍝ 0 0⍴Quick_Scenario 'Vars'
+[14]  ⍝⍝⍝ initial_load←0
+[15]  
+[16]  ⍝ Create Headers for Results Table
+[17]  cattab←MATRIX (~sqlDatabase)↓'DatabaseID' 'ResultsCategoryID' 'BasisCategoryID' 'Sex' 'SepSpouseCF' 'PropMarrTable' 'PropMarrTableID' 'SpouseDefinition' 'PensionFrequency' 'PaymentMode' 'FirstYearIncrease' 'PenReviewDate' 'ExactAge' 'TVPropMarrTable' 'TVPropMarrTableID' 'TVSpouseDefinition'
+[18]  
+[19]  restab←(~sqlDatabase)↓'DatabaseID' 'ResultsCategoryID' 'ClassName' 'ContingencyID' 'StartYear' 'PastService' 'BenefitTypeID' 'BenefitBasis' 'CashRate'
+[20]  restab←restab,'InterestSwitch' 'PreInterestName' 'PreInterestGroup' 'PreInterestValue' 'PreInterestCap' 'PreInterestCollar' 'PreInterestTableID'
+[21]  restab←restab,'PostInterestName' 'PostInterestGroup' 'PostInterestValue' 'PostInterestCap' 'PostInterestCollar' 'PostInterestTableID'
+[22]  restab←restab,'ReviewDate' 'FASPeriod' 'InflationName' 'InflationGroup' 'InflationValue' 'InflationCap' 'InflationCollar' 'InflationTableID'
+[23]  restab←restab,'RevaluationName' 'RevaluationGroup' 'RevaluationValue' 'RevaluationCap' 'RevaluationCollar' 'RevaluationTableID'
+[24]  restab←MATRIX restab,'IncreaseName' 'IncreaseGroup' 'IncreaseValue' 'IncreaseCap' 'IncreaseCollar' 'IncreaseTableID' 'IncreaseConsDesc' 'ExcessPre88GMP' 'ExcessPost88GMP' 'LiabilityValue'
+[25]  
+[26]  ⍝ Get Assumptions Summary from Database
+[27]  (2 9 'Extracting Assumptions Summary from Database') Win∆ProgressBar 'FileUpdate'
+[28]  cattab←DLTB¨cattab OVER 1 ⍙DBadoCONCommand "SELECT * FROM CategoryAssumptions",dbid
+[29]  restab←DLTB¨restab OVER 1 ⍙DBadoCONCommand "SELECT * FROM BenefitAssumptions",dbid
+[30]  
+[31]  :for field :in (keysIn cattab)~'ResultsCategoryID' 'TVPropMarrTable' 'TVPropMarrTableID' 'TVSpouseDefinition'
+[32]       vals←↑¨((⊂cattab) for¨(⊂⊂'ResultsCategoryID'),¨⊂¨restab at 'ResultsCategoryID') at¨⊂field
+[33]       :if ∨/∆←(∊restab at 'ContingencyID')∊31 32 33 34 35 36 37 38 39 40 41 42 ⍝ Transfers Out
+[34]       :andif (⊂field)∊'PropMarrTable' 'PropMarrTableID' 'SpouseDefinition'
+[35]              (∆/vals)←∆/↑¨((⊂cattab) for¨(⊂⊂'ResultsCategoryID'),¨⊂¨restab at 'ResultsCategoryID') at¨⊂'TV',field
+[36]       :endif
+[37]       restab←restab amend field vals
+[38]  :endfor
+[39]  :if ∨/∆←(vals←restab at 'ClassName')∊⊂'Premiums'
+[40]      (∆/vals)←⊂'Contributions'
+[41]      restab←restab amend 'ClassName' vals
+[42]  :endif
+[43]  
+[44]  ⍙WebExtract
+[45]  (maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk)←⍙WebVariables maxyr maxpay
+[46]  
+[47]  :if ^/mt¨groupings
+[48]      MDISPLAY 'Run "Summarise Assumptions and Tranche Benefits" to add some Financial Groupings before running Quick Scenario Modeller'
+[49]      0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[50]      'ADOcon' ⎕wi 'XClose' ⋄ 'ADOcon' ⎕wi 'Delete'   ⍝ Delete the Database connection
+[51]      (((⊂'Button')≡¨list ⎕wi¨⊂'class')/list←'fmQuickSM' ⎕wi 'children') MultiWI 'visible' 1
+[52]      →end
+[53]  :endif
+[54]  
+[55]  ⍝ 2 levels of amortisation
+[56]  ameth1 ←GetConsBasis 'ameth1'  ⋄ ameth2 ←GetConsBasis 'ameth2'
+[57]  TERMAM1←GetConsBasis 'TERMAM1' ⋄ TERMAM2←GetConsBasis 'TERMAM2'
+[58]  amortamount1←⌊0.5+-↑↑+/((restab for (⊂'BenefitTypeID'),,¨11) for (⊂'ContingencyID'),,¨10) at 'LiabilityValue'
+[59]  amortamount2←⌊0.5+-↑↑+/((restab for (⊂'BenefitTypeID'),,¨11) for (⊂'ContingencyID'),,¨28) at 'LiabilityValue'
+[60]  amortamount1←'¯-' REPL ⍕amortamount1+0.01×amortamount1=0 ⋄ amortamount2←'¯-' REPL ⍕amortamount2+0.01×amortamount2=0
+[61]  
+[62]  ⍙WebAmortisation 'Create' ⍝ Create "extra" Amortisation records
+[63]  
+[64]  ⍝ Groupings used in each row and overall
+[65]  ∆←restab at 'PreInterestGroup' 'PostInterestGroup' 'InflationGroup' 'RevaluationGroup' 'IncreaseGroup'
+[66]  restab←restab amend 'Groupings' ((lmt¨nub¨spin ∆)~¨⊂'GMP None' 'GMP Fixed' 'GMP Limited 5%' '⍙Not Used')
+[67]  
+[68]  ⍝⍝⍝ ⍝ Turn InterestSwitch into Boolean (Pre-Ret is 1, Post-Ret is 0)
+[69]  ⍝⍝⍝ restab←restab amend 'InterestSwitch' (∨/¨(⊂'Pre')⍷¨restab at 'InterestSwitch')
+[70]  restab←restab amend 'MidYear' (~restab at 'StartYear')  ⍝ Better flag!!
+[71]  restab←restab amend 'PensionFrequency' (((⊂' ASQMLFWC')=¨↑¨restab at 'PensionFrequency')sel¨⊂0 1 2 4 12 13 26.09 52.18 10000000)
+[72]  restab←restab amend 'PaymentMode' (~(⊂'In Arrear')≡¨9↑¨restab at 'PaymentMode')
+[73]  restab←restab amend 'FreqAdj' ((∆+¯1+2×restab at 'PaymentMode')÷2×∆←restab at 'PensionFrequency')
+[74]  
+[75]  (3 9 'Changing Tables to Values') Win∆ProgressBar 'FileUpdate'
+[76]  ⍙WebProcessFinancials
+[77]  
+[78]  (4 9 ('Calculating Discounters and Inflators')) Win∆ProgressBar 'FileUpdate'
+[79]  :if 0∊∊restab at 'ContingencyID'
+[80]      BenTable←ContingencyTable for 'Contingency' 'All Benefits'
+[81]  :else
+[82]      BenTable←ContingencyTable for 'Contingency' 'Retirement' 'Death' 'Ill Health' 'PHI' 'Leaving Service' 'Retirement Transfer' 'Transfer Out'
+[83]  :endif
+[84]  ⍙WebGetCashFlows
+[85]  
+[86]  (5 9 'Deriving In-Service Decrements') Win∆ProgressBar 'FileUpdate'
+[87]  ⍙WebTransfers
+[88]  
+[89]  (6 9 ('Calculating Mortality')) Win∆ProgressBar 'FileUpdate'
+[90]  ⍙WebGetMortality
+[91]  
+[92]  ⍝⍝⍝(6 9 'Deriving In-Service Decrements') Win∆ProgressBar 'FileUpdate'
+[93]  ⍝⍝⍝⍙WebDecrements
+[94]  
+[95]  (7 9 'Closing Database') Win∆ProgressBar 'FileUpdate'
+[96]  0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[97]  'ADOcon' ⎕wi 'XClose' ⋄ 'ADOcon' ⎕wi 'Delete'   ⍝ Delete the Database connection
+[98]  
+[99]  (8 9 'Initialising Cash Benefits') Win∆ProgressBar 'FileUpdate'
+[100] ∆←1-2×∨/¨(⊂'Pro Rata')⍷¨restab at 'BenefitBasis'                        ⍝ ¯1 if ProRata
+[101] restab←restab amend 'Commutation'         (∆×restab ⍙WebCashType 35)
+[102] restab←restab amend 'CashOnTop'           (  restab ⍙WebCashType 36)
+[103] restab←restab amend 'RollForwardAdjust'   ((rowsIn restab)⍴⊂1)
+[104] restab←restab amend 'CashRate'            (zwb¨restab at 'CashRate')
+[105] restab←restab amend 'AccrualAdjust'       ((rowsIn restab)⍴⊂1)
+[106] restab←restab amend 'CashAmtAdjust'       ((rowsIn restab)⍴⊂1)
+[107] restab←restab amend 'CashFactAdjust'      ((rowsIn restab)⍴⊂1)
+[108] restab←restab amend 'TVAmtAdjust'         ((rowsIn restab)⍴⊂1)
+[109] restab←restab amend 'TVPropAdjust'        ((rowsIn restab)⍴⊂1)
+[110] restab←restab amend 'VBFactAdjust'        ((rowsIn restab)⍴⊂1)
+[111] restab←restab amend 'VBFactAdjType'       ((rowsIn restab)⍴⊂0)
+[112] restab←restab amend 'CashFactor'          ((rowsIn restab)⍴⊂0)
+[113] restab←restab amend 'ADay%'               ((rowsIn restab)⍴⊂0)
+[114] restab←restab amend 'MemberOnly'          (∨/¨(⊂'Member Only')⍷¨restab at 'BenefitBasis')
+[115] restab←restab amend 'OriginalBenTypeID'   (restab at 'BenefitTypeID')
+[116] restab←⍙WebInitialiseCash restab
+[117] 
+[118] restab←restab amend 'RawMemberCF' ((restab at 'MemberCashFlow') CDIV ↑×/restab at 'Inflator' 'MemberMortAdjust')
+[119] restab←restab amend 'RawSpouseCF' ((restab at 'SpouseCashFlow') CDIV ↑×/restab at 'Inflator' 'SpouseMortAdjust')
+[120] 
+[121] cfs←↑+/restab at 'MemberCashFlow' 'SpouseCashFlow'
+[122] :if ∨/∆←¯1=restab at 'CashBenefit' ⍝ Cash Benefit related to Valuation Basis or Future CARE
+[123]     disc←∆/restab at 'Discount'
+[124]     d←maxpay↑¨,¨(0,(+/∆)⍴¨0 0 0) ⍙WebDeflator restab for ∆                    ⍝ Discounter at Point of Exit
+[125]     (∆/cfs)←(∆/cfs)×(restab for ∆) at 'VBFactAdjust'
+[126]     (∆/cfs)←(⊂penfymsk)×[1]¨(+/¨disc×∆/cfs)÷[1]¨d
+[127] :endif
+[128] restab←restab amend 'CashFlow' cfs
+[129] 
+[130] restab←restab amend 'NewCashFlow'          (restab at 'CashFlow')
+[131] restab←restab amend 'RFCashFlow'           (restab at 'NewCashFlow')
+[132] restab←restab amend 'NewInflator'          (restab at 'Inflator')
+[133] restab←restab amend 'NewDiscount'          (restab at 'Discount')
+[134] restab←restab amend 'RFDiscount'           (restab at 'Discount')
+[135] restab←restab amend 'NewMemberMortality'   (restab at 'MemberMortality')
+[136] restab←restab amend 'NewMemberMortAdjust'  (restab at 'MemberMortAdjust')
+[137] restab←restab amend 'NewSpouseMortality'   (restab at 'SpouseMortality')
+[138] restab←restab amend 'NewSpouseMortAdjust'  (restab at 'SpouseMortAdjust')
+[139] 
+[140] cfs←(↑+/restab at 'MemberCashFlow' 'SpouseCashFlow')×restab at 'VBFactAdjust'
+[141] restab←restab amend 'NewLiabilityValue' (+/¨,¨cfs×(~restab at 'CashZeroPension')×↑×/restab at 'Discount' 'AccrualLimit') ⍝⍝⍝ 'AccrualAdjust' 'CashAmtAdjust' 'CashFactAdjust') 'TVAmtAdjust' 'TVPropAdjust'
+[142] ∆←restab at 'LiabilityValue' 'NewLiabilityValue'
+[143] restab←restab amend 'LiabilityAdjust' (↑ZDIV/∆)
+[144] :if ecflag
+[145]     x←5<∣∊agediff
+[146]     :if   ∨/z←x∨(∊0.01<∣restab at 'LiabilityValue')^1<∣diff←∊100×(restab at 'LiabilityAdjust')-1
+[147]     :orif uSERisRSE
+[148]         MESS←''
+[149]         :for ∆ :in z/(spin restab at 'ClassName' 'ResultsCategoryID' 'PastService' 'ContingencyID' 'BenefitTypeID' 'StartYear' 'LiabilityValue'),¨diff,¨agediff
+[150]             mess←(↑∆),': '
+[151]             mess←mess,'ResID ',(⍕↑1↓∆),': '
+[152]             mess←mess,(1+↑2↓∆)⊃'Future Service: ' 'Past Service: '
+[153]             mess←mess,'ContID ',(⍕↑3↓∆),': '
+[154]             mess←mess,'BenID ',(⍕↑4↓∆),': '
+[155]             mess←mess,(1+↑5↓∆)⊃'Mid Year: ' 'Start Year: '
+[156]             mess←mess,⎕tcht,,'M<->CI20' ⎕fmt ↑6↓∆
+[157]             mess←mess,⎕tcht,,'M<->F10.1,<%>' ⎕fmt ↑7↓∆
+[158]             mess←mess,⎕tcht,,'M<->I3,< years>' ⎕fmt ↑8↓∆
+[159]             MESS←MESS,mess,⎕tcnl
+[160]         :endfor
+[161]         MESS←'Maximum Age Difference between Married and Single Members is ',(0⍕⌈/∣agediff),' years',⎕tcnl,¯1↓MESS
+[162]         MDISPLAY 'Maximum Difference between Liability Value and Discounted Cash Flow is ',(0⍕⌈/∣diff),'%',⎕tcnl,¯1↓MESS
+[163]     :endif
+[164] :endif
+[165] 
+[166] ⍝⍝⍝ ⍴restab groupby aaa ((keysIn restab)~aaa←'ClassName' 'PastService' 'StartYear' 'InterestSwitch' 'PreInterestGroup' 'PreInterestValue' 'PostInterestGroup' 'PostInterestValue' 'InflationGroup' 'InflationValue' 'RevaluationGroup' 'RevaluationValue' 'IncreaseGroup' 'IncreaseValue' 'ExcessPre88GMP' 'ExcessPost88GMP')
+[167] 
+[168] ⍙WebEmployerConts
+[169] 
+[170] (9 9 'Initialising Amortisation Data') Win∆ProgressBar 'FileUpdate'
+[171] amorttab←restab for (⊂'ContingencyID'),,¨10 28
+[172] restab←restab for ~(∊restab at 'ContingencyID')∊10 28
+[173] amorttab←amorttab amend 'BenefitTypeID' (,¨(999 11) REPL ∊amorttab at 'BenefitTypeID')
+[174] amorttab←1 ⍙WebRecalculate amorttab
+[175] amorttab←amorttab amend 'CashFlow' (amorttab at 'NewCashFlow')
+[176] 
+[177] restab←⍙WebAdditLiabs restab
+[178] 
+[179] :if uSERisRSE
+[180]     restab←⍙WebMonthlyCashFlows restab
+[181] :endif
+[182] 
+[183] ⍝⍝⍝ :if ~(⊂'Additional Liability')∊restab at 'ClassName'
+[184] ⍝⍝⍝    restab←restab append AdditLiabrec
+[185] ⍝⍝⍝ :else
+[186] ⍝⍝⍝    RFLTOT←⍕(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue'
+[187] ⍝⍝⍝ :endif
+[188] 
+[189] Z←restab conttab fundtab amorttab v1pctab maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk
+[190] 
+[191] end:Win∆ProgressBar 'Close'
+    ∇

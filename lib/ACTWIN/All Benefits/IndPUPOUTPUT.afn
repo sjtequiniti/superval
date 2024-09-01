@@ -1,1 +1,31 @@
-    ∇ IndPUPOUTPUT;RetAge∆pp;Start∆pp;BenType∆pp;IncType∆pp;End∆pp;Inc∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;Dec∆pp;ABno∆pp;Upin∆pp;ExitProbs∆pp;post09adj;VFYear∆pp[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Output the Interface Records for the Independent Slices Cash[3]   [4]   Dec∆pp←'W' ⋄ ABno∆pp←'2' ⋄ Start∆pp←,X0⌈PUPStart ⋄ End∆pp←,PUPEnd ⋄ IncType∆pp←((DYNIND∆L∊'34')/'P'),DYNIND∆L[5]   :if ppf ⋄ Dec∆pp←'R'[6]       :if '0'=ABno∆pp←'1203'[sliceup] ⋄ :return ⋄ :endif ⍝ Future Service Slice not required[7]       RetAge∆pp←X0⌈PPFNRAALL[dynind] ⋄ Start∆pp←Age∆pp⌈RetAge∆pp⌈↑IndPayStart ⋄ End∆pp←,RetEnd[8]       IncType∆pp←↑(ABno∆pp='1')↓'MS'[9]       ExitProbs∆pp←NX↑ENX↑tPx ⋄ VFYear∆pp←¯1[10]  :else[11]      RetAge∆pp←Age∆pp⌈NRA∆G[12]      :if IsAccrued ⋄ ExitProbs∆pp←NX↑ENX↑tPx ⋄ VFYear∆pp←((AgeMult≠1)^AgeInterp^lowerAge)⊃(X⍳X0⌈NRA∆G) ¯1[13]      :else         ⋄ ExitProbs∆pp←PROBS[;3]  ⋄ VFYear∆pp←PROBS[;3] PP∆AverageTerm XMP-X0 ⍝ Probability of Leaving/Withdrawal[14]      :endif[15]  :endif[16]  [17]  Upin∆pp←(~ppf)^~upinslind ⍝ May or may not be "underpinned"[18]  [19]  :if ~post09adj←(~ppf)∨sliceup≠3 ⋄ post09adj←(ppfI CDIV ppfI20)*0⌈RetAge∆pp-Age∆pp ⋄ :endif[20]  [21]  BenType∆pp←'P' ⋄ Inc∆pp←DYNINC∆L[22]  SL∆pp←,post09adj×IndPUPStart ⋄ FSL∆pp←,post09adj×IndFPUPStart ⋄ Con∆pp←,post09adj×IndPUWStart ⋄ FCon∆pp←,post09adj×IndFPUWStart[23]  [24]  PP∆CreateInterface[25]  [26]  BenType∆pp←IncType∆pp←'L',sepComCot/'T' ⋄ End∆pp←Inc∆pp←⍬[27]  SL∆pp←,post09adj×IndPUCASH ⋄ FSL∆pp←,post09adj×IndFPUCASH ⋄ Con∆pp←FCon∆pp←⍬[28]  [29]  PP∆CreateInterface    ∇
+    ∇ IndPUPOUTPUT;RetAge∆pp;Start∆pp;BenType∆pp;IncType∆pp;End∆pp;Inc∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;Dec∆pp;ABno∆pp;Upin∆pp;ExitProbs∆pp;post09adj;VFYear∆pp
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Output the Interface Records for the Independent Slices Cash
+[3]   
+[4]   Dec∆pp←'W' ⋄ ABno∆pp←'2' ⋄ Start∆pp←,X0⌈PUPStart ⋄ End∆pp←,PUPEnd ⋄ IncType∆pp←((DYNIND∆L∊'34')/'P'),DYNIND∆L
+[5]   :if ppf ⋄ Dec∆pp←'R'
+[6]       :if '0'=ABno∆pp←'1203'[sliceup] ⋄ :return ⋄ :endif ⍝ Future Service Slice not required
+[7]       RetAge∆pp←X0⌈PPFNRAALL[dynind] ⋄ Start∆pp←Age∆pp⌈RetAge∆pp⌈↑IndPayStart ⋄ End∆pp←,RetEnd
+[8]       IncType∆pp←↑(ABno∆pp='1')↓'MS'
+[9]       ExitProbs∆pp←NX↑ENX↑tPx ⋄ VFYear∆pp←¯1
+[10]  :else
+[11]      RetAge∆pp←Age∆pp⌈NRA∆G
+[12]      :if IsAccrued ⋄ ExitProbs∆pp←NX↑ENX↑tPx ⋄ VFYear∆pp←((AgeMult≠1)^AgeInterp^lowerAge)⊃(X⍳X0⌈NRA∆G) ¯1
+[13]      :else         ⋄ ExitProbs∆pp←PROBS[;3]  ⋄ VFYear∆pp←PROBS[;3] PP∆AverageTerm XMP-X0 ⍝ Probability of Leaving/Withdrawal
+[14]      :endif
+[15]  :endif
+[16]  
+[17]  Upin∆pp←(~ppf)^~upinslind ⍝ May or may not be "underpinned"
+[18]  
+[19]  :if ~post09adj←(~ppf)∨sliceup≠3 ⋄ post09adj←(ppfI CDIV ppfI20)*0⌈RetAge∆pp-Age∆pp ⋄ :endif
+[20]  
+[21]  BenType∆pp←'P' ⋄ Inc∆pp←DYNINC∆L
+[22]  SL∆pp←,post09adj×IndPUPStart ⋄ FSL∆pp←,post09adj×IndFPUPStart ⋄ Con∆pp←,post09adj×IndPUWStart ⋄ FCon∆pp←,post09adj×IndFPUWStart
+[23]  
+[24]  PP∆CreateInterface
+[25]  
+[26]  BenType∆pp←IncType∆pp←'L',sepComCot/'T' ⋄ End∆pp←Inc∆pp←⍬
+[27]  SL∆pp←,post09adj×IndPUCASH ⋄ FSL∆pp←,post09adj×IndFPUCASH ⋄ Con∆pp←FCon∆pp←⍬
+[28]  
+[29]  PP∆CreateInterface
+    ∇

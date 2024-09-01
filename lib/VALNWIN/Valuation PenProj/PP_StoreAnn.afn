@@ -1,0 +1,154 @@
+    ∇ pp∆Ben PP∆StoreAnn pp∆spouse;pp∆var;pp∆no;pp∆temp;pp∆PVtot;pp∆PVfut;exitprobs
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Store the effective Annuity Factor
+[3]   
+[4]   :if 'I'≠↑pp∆no←pp∆Identifier[pp∆row;]
+[5]       :select pp∆inctype
+[6]       :case 'G1' ⋄ pp∆no←'3'
+[7]       :case 'G2' ⋄ pp∆no←'4'
+[8]       :case 'M ' ⋄ pp∆no←'2'
+[9]       :case 'S ' ⋄ pp∆no←'1'
+[10]      :case 'P3' ⋄ pp∆no←'6'
+[11]      :case 'P4' ⋄ pp∆no←'7'
+[12]      :case 'P5' ⋄ pp∆no←'5'
+[13]      :endselect
+[14]  :endif
+[15]  
+[16]  :if     2=⍴⍴pp∆exitprobs     ⋄ exitprobs←pp∆exitprobs[pp∆benyear;pp∆year]
+[17]  :else                        ⋄ exitprobs←pp∆exitprobs[pp∆benyear]
+[18]  :endif
+[19]  
+[20]  pp∆temp←0≠pp∆End[pp∆row;pp∆year] ⍝ Temporary
+[21]  pp∆PVtot←pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[22]  pp∆PVfut←pp∆FutPV CDIV pp∆exitdisc×exitprobs
+[23]  
+[24]  ⍝ Accumulate Benefit Values
+[25]  :if pp∆accrued
+[26]      ⍎(∊(2/⊂'WV','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[27]      ⍎(∊(2/⊂'WF','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[28]  :else
+[29]      :select pp∆exit
+[30]      :caselist 'LR' 'NR' 'ER' 'L2' 'N2' 'E2'
+[31]          ⍎(∊(2/⊂'RV','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[32]          ⍎(∊(2/⊂'RF','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[33]      :caselist 'I ' 'I2'
+[34]          ⍎(∊(2/⊂'IV','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[35]          ⍎(∊(2/⊂'IF','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[36]      :caselist 'W ' 'W2'
+[37]          ⍎(∊(2/⊂'WV','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[38]          ⍎(∊(2/⊂'WF','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[39]      :caselist 'D ' 'DL'
+[40]          ⍎(∊(2/⊂'DVT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[41]          ⍎(∊(2/⊂'DFT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[42]      :case 'P '
+[43]          ⍎(∊(2/⊂'PVT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[44]          ⍎(∊(2/⊂'PFT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[45]      :caselist 'PR' 'P2'
+[46]          ⍎(∊(2/⊂'PRV','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[47]          ⍎(∊(2/⊂'PRF','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[48]      :case 'PD'
+[49]          ⍎(∊(2/⊂'PDVT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[50]          ⍎(∊(2/⊂'PDFT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[51]      :case 'DD'
+[52]      :caselist 'LT' 'NT' 'ET'
+[53]          ⍎(∊(2/⊂'TRV','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[54]          ⍎(∊(2/⊂'TRF','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[55]      :case 'DT'
+[56]          ⍎(∊(2/⊂'TRDVT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[57]          ⍎(∊(2/⊂'TRDFT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[58]      :caselist 'LO' 'NO' 'EO'
+[59]          ⍎(∊(2/⊂'TVRV','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[60]          ⍎(∊(2/⊂'TVRF','DT'[pp∆temp],pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[61]      :case 'DO'
+[62]          ⍎(∊(2/⊂'TVDVT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVtot'
+[63]          ⍎(∊(2/⊂'TVDFT',pp∆no,'[',(⍕pp∆year),']'),¨'←' ''),'+pp∆PVfut'
+[64]      :endselect
+[65]  :endif
+[66]  
+[67]  :if pp∆accrued
+[68]          :if pp∆temp ⋄ pp∆var←¯3↑'RWT',pp∆spouse/'LWT'
+[69]          :else       ⋄ pp∆var←¯3↑'RWA',pp∆spouse/'LWA'
+[70]          :endif
+[71]          :if pp∆spouse ⋄ :andif 'I'≠↑pp∆Identifier[pp∆row;]
+[72]              :if     pp∆inctype≡'P3' ⋄ pp∆no←'10'
+[73]              :elseif pp∆inctype≡'P4' ⋄ pp∆no←'12'
+[74]              :endif
+[75]          :endif
+[76]  :else
+[77]      :select pp∆exit
+[78]      :caselist 'LR' 'NR' 'ER' 'L2' 'N2' 'E2'
+[79]          :if pp∆temp ⋄ pp∆var←¯3↑'RAT',pp∆spouse/'LAT'
+[80]          :else       ⋄ pp∆var←¯3↑'RAA',pp∆spouse/'LAA'
+[81]          :endif
+[82]          :if pp∆spouse ⋄ :andif 'I'≠↑pp∆Identifier[pp∆row;]
+[83]              :if     pp∆inctype≡'P3' ⋄ pp∆no←'10'
+[84]              :elseif pp∆inctype≡'P4' ⋄ pp∆no←'12'
+[85]              :endif
+[86]          :endif
+[87]      :caselist 'D ' 'DL' ⋄ pp∆var←'DAA'
+[88]      :caselist 'I ' 'I2'
+[89]          :if 'I'=↑pp∆Identifier[pp∆row;]
+[90]              :if pp∆temp ⋄ pp∆var←¯3↑'IAT',pp∆spouse/'IST' ⍝ Temporary
+[91]              :else       ⋄ pp∆var←¯3↑'IAA',pp∆spouse/'ISA' ⍝ Immediate
+[92]              :endif
+[93]          :else
+[94]              :if pp∆temp ⋄ pp∆var←¯3↑'IAT',pp∆spouse/'LAT' ⍝ Temporary
+[95]              :else       ⋄ pp∆var←¯3↑'IAA',pp∆spouse/'LAA' ⍝ Immediate
+[96]              :endif
+[97]              :if pp∆spouse
+[98]                  :if     pp∆inctype≡'G1' ⋄ pp∆no←'8'
+[99]                  :elseif pp∆inctype≡'G2' ⋄ pp∆no←'9'
+[100]                 :elseif pp∆inctype≡'M ' ⋄ pp∆no←'7'
+[101]                 :elseif pp∆inctype≡'S ' ⋄ pp∆no←'6'
+[102]                 :elseif pp∆inctype≡'P3' ⋄ pp∆no←'11'
+[103]                 :elseif pp∆inctype≡'P4' ⋄ pp∆no←'13'
+[104]                 :endif
+[105]             :endif
+[106]         :endif
+[107]     :caselist  'W ' 'W2'
+[108]         :if pp∆temp ⋄ pp∆var←¯3↑'RWT',pp∆spouse/'LWT'
+[109]         :else       ⋄ pp∆var←¯3↑'RWA',pp∆spouse/'LWA'
+[110]         :endif
+[111]         :if pp∆spouse ⋄ :andif 'I'≠↑pp∆Identifier[pp∆row;]
+[112]             :if     pp∆inctype≡'P3' ⋄ pp∆no←'10'
+[113]             :elseif pp∆inctype≡'P4' ⋄ pp∆no←'12'
+[114]             :endif
+[115]         :endif
+[116]     :case 'P ' ⋄ pp∆var←'PAT'
+[117]     :case 'PR'
+[118]         :if pp∆temp ⋄ pp∆var←¯4↑'PRAT',pp∆spouse/'PRST'
+[119]         :else       ⋄ pp∆var←¯4↑'PRAA',pp∆spouse/'PRSA'
+[120]         :endif
+[121]     :case 'P2'
+[122]         :if pp∆temp ⋄ pp∆var←'PRST'
+[123]         :else       ⋄ pp∆var←'PRSA'
+[124]         :endif
+[125]     :case 'PD' ⋄ pp∆var←'PDSA'
+[126]     :case 'DD'
+[127]     :caselist 'LT' 'NT' 'ET'
+[128]         :if pp∆temp ⋄ pp∆var←¯4↑'TRAT',pp∆spouse/'TLAT'
+[129]         :else       ⋄ pp∆var←¯4↑'TRAA',pp∆spouse/'TLAA'
+[130]         :endif
+[131]         :if pp∆spouse ⋄ :andif 'I'≠↑pp∆Identifier[pp∆row;]
+[132]             :if     pp∆inctype≡'P3' ⋄ pp∆no←'10'
+[133]             :elseif pp∆inctype≡'P4' ⋄ pp∆no←'12'
+[134]             :endif
+[135]         :endif
+[136]     :case 'DT' ⋄ pp∆var←'TRDAA'
+[137]     :caselist 'LO' 'NO' 'EO'
+[138]         :if pp∆temp ⋄ pp∆var←¯5↑'TVRAT',pp∆spouse/'TVLAT'
+[139]         :else       ⋄ pp∆var←¯5↑'TVRAA',pp∆spouse/'TVLAA'
+[140]         :endif
+[141]         :if pp∆spouse ⋄ :andif 'I'≠↑pp∆Identifier[pp∆row;]
+[142]             :if     pp∆inctype≡'P3' ⋄ pp∆no←'10'
+[143]             :elseif pp∆inctype≡'P4' ⋄ pp∆no←'12'
+[144]             :endif
+[145]         :endif
+[146]     :case 'DO' ⋄ pp∆var←'TVDAA'
+[147]     :endselect
+[148] :endif
+[149] 
+[150] :if 0=⍎pp∆var,pp∆no,'[pp∆year]'
+[151]     ⍎pp∆var,pp∆no,'[pp∆year]←(pp∆defdisc÷pp∆exitdisc)×(+/pp∆PVstart+pp∆FVstart) CDIV pp∆Ben'
+[152] :endif
+    ∇

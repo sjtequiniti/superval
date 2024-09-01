@@ -1,0 +1,39 @@
+    ∇ retries←test_cfiles folder;⎕ELX;xxx;tried;L;tno;fp1;NCOM;ARRAY;fp2;tno2;fp3;grandeur
+[1]   ⍝ UTILSWIN.sf#7
+[2]   ⍝ Exercise component file system
+[3]   ⍝ Vern: dnp11jan16
+[4]   ⍝ Revn: sjt14jan16
+[5]   (fp1 fp2 fp3)←(⊂folder,'component_test'),¨ '1' '2' '3',¨ ⊂'.sf'
+[6]   ARRAY←(?80 ⍴ 100)
+[7]   NCOM←10 ⍝ # of components
+[8]   retries←erase⍴0
+[9]   (tno tno2)←1 2+⌈/0,⎕XFNUMS
+[10]  
+[11]  ⎕ELX←"⎕WGIVE 0×L←↑⎕LC,⎕DL .5 ⋄ retries[L]←∆+go←10>∆←retries[L] ⋄ →go↑L ⋄ ⎕ERROR,⎕DM"
+[12]  
+[13]  random:     random_error 5
+[14]  
+[15]  create:     fp1 ⎕xfcreate tno
+[16]  untie:      ⎕funtie tno
+[17]  stie:       fp1 ⎕xfstie tno
+[18]              ⎕funtie tno
+[19]  tie:        fp1 ⎕xftie tno
+[20]  
+[21]  :for i :in ⍳NCOM
+[22]      append: xxx←ARRAY ⎕fappend tno
+[23]  :endfor
+[24]  replace:    ARRAY ⎕freplace tno (⌊NCOM÷2)
+[25]  size:       grandeur←3⊃⎕fsize tno
+[26]  drop:       ⎕fdrop tno (⌊NCOM÷2)
+[27]  
+[28]  compress:   fp1 ⎕xfdup tno
+[29]  duplicate:  fp2 ⎕xfdup tno
+[30]              fp2 ⎕xftie tno2
+[31]  rename:     fp3 ⎕xfrename tno2
+[32]  
+[33]  fnames:     xxx←⎕xfnames
+[34]  fnums:      xxx←⎕xfnums
+[35]  resize:     grandeur ⎕fresize tno
+[36]              fp1 ⎕xferase tno
+[37]  erase:      fp3 ⎕XFERASE tno2
+    ∇

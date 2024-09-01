@@ -1,1 +1,49 @@
-    ∇ PREPARE;I;F;Desc[1]   ⍝ INVWIN.sf#4[2]   ⍝ Creates output file and Headers[3]   ⍝ Sets up required global variables[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   ('Current File:' 'Current Member Number:') Win∆ProgressBar 'SetLabels'[8]   'Running Cohort Salary Investigation' Win∆ProgressBar 'Open'[9]   [10]  tpr1←OPEN∆TPR∆FILE 'CHSINV' ⍝ Open the print file[11]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Cohort_Salary' ⍝ Insert info in header[12]  H1←((¯1↑⍴H1) WRITE∆HEAD 'COHORT SALARY INVESTIGATION') OVER H1[13]  tieno←'Native' TieNumber ''[14]  [15]  RunTime←DLTMB 1 DATESPELL ⎕ts[16]  Format←1 HyphenSwap Format[17]  SUMMREC←3 0↓rUNDESC←ClientFile CHSINV_RunDesc SaveCN[18]  SPAGE←1↑(¯5 0↓H1) OUTPUT tpr1,0[19]  [20]  Convert_Vars ⍝ Windows Data Conversion[21]  :if 0.01>∣TERM-⌊0.5+TERM←(BDATE DAYS EDATE)÷365.25[22]     TERM←⌊0.5+TERM[23]  :endif[24]  :if ∨/' '≠lrf ⋄ (f lrf)←2↑FinConvert f lrf  ⋄ :endif[25]  f←ExecuteRates f ''[26]  f←(⌈TERM)OVERTAKE 1+0.01×F←f ⋄ f←×/((⌊TERM)↑f),(¯1↑f)*TERM-⌊TERM[27]  [28]  H1[3;⍳132]←132↑desc ⋄ H1[4;125+⍳7]←7↑servind[29]  H1[4;(41+⍳17),86+⍳17]←(17↑2 DATESPELL⌽BDATE),17↑2 DATESPELL⌽EDATE[30]  H1[5;(31+⍳18),101+⍳30]←(18↑⍕F),30↑DLTMB 'I2,< years >,I3,< days is >,F8.2,<%>' ⎕FMT MATRIX(⌊TERM),(365×1∣TERM),100×f-1[31]  H1[6;22+⍳110]←110↑Desc←DecrDescription TABXX[32]  [33]  SUMMREC←(TABXX Desc) DecrPrint TABLE←DEC∆CHECK TABXX[34]  SPAGE←1↑(¯5 0↓H1) OUTPUT tpr1,SPAGE[35]  [36]  ⍝ Non-Standard Data Conversion[37]  RESsave←zwb save ⋄ newent←zwb newent ⋄ EXIT←zwb EXIT[38]  TABLE←1+100↑TABLE ⋄ servind←'FS'[×uk]=1↑servind[39]  AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP[40]  TABLE←((-1+⌈TERM),0)↓⍉((⌈TERM),1+⍴TABLE)⍴TABLE←(AGES+⌈TERM)↑(BAGE-⌈TERM)↓TABLE[41]  TABLE[;0]←TABLE[;0]*(0=I)+I←TERM-⌊TERM ⋄ TABLE←×/TABLE[42]  desc←desc,DLTMB ': Salary Increase between ',(SDATE BDATE),' and ',SDATE EDATE[43]  BDATE←JUL BDATE ⋄ EDATE←JUL VDATE←EDATE[44]  [45]  →(0≠⍴fDJF,fDJS)/L0 ⋄ DJS←DJF←0 ⋄ H1[4;104+⍳28]←' '[46]  L0:salmult←(salfreq='ASQMLFW')/ 1 2 4 12 13 26.09 52.18[47]  GTOTS← 100 3 ⍴N←0 ⋄ SUMMREC←' '    ∇
+    ∇ PREPARE;I;F;Desc
+[1]   ⍝ INVWIN.sf#4
+[2]   ⍝ Creates output file and Headers
+[3]   ⍝ Sets up required global variables
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ('Current File:' 'Current Member Number:') Win∆ProgressBar 'SetLabels'
+[8]   'Running Cohort Salary Investigation' Win∆ProgressBar 'Open'
+[9]   
+[10]  tpr1←OPEN∆TPR∆FILE 'CHSINV' ⍝ Open the print file
+[11]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Cohort_Salary' ⍝ Insert info in header
+[12]  H1←((¯1↑⍴H1) WRITE∆HEAD 'COHORT SALARY INVESTIGATION') OVER H1
+[13]  tieno←'Native' TieNumber ''
+[14]  
+[15]  RunTime←DLTMB 1 DATESPELL ⎕ts
+[16]  Format←1 HyphenSwap Format
+[17]  SUMMREC←3 0↓rUNDESC←ClientFile CHSINV_RunDesc SaveCN
+[18]  SPAGE←1↑(¯5 0↓H1) OUTPUT tpr1,0
+[19]  
+[20]  Convert_Vars ⍝ Windows Data Conversion
+[21]  :if 0.01>∣TERM-⌊0.5+TERM←(BDATE DAYS EDATE)÷365.25
+[22]     TERM←⌊0.5+TERM
+[23]  :endif
+[24]  :if ∨/' '≠lrf ⋄ (f lrf)←2↑FinConvert f lrf  ⋄ :endif
+[25]  f←ExecuteRates f ''
+[26]  f←(⌈TERM)OVERTAKE 1+0.01×F←f ⋄ f←×/((⌊TERM)↑f),(¯1↑f)*TERM-⌊TERM
+[27]  
+[28]  H1[3;⍳132]←132↑desc ⋄ H1[4;125+⍳7]←7↑servind
+[29]  H1[4;(41+⍳17),86+⍳17]←(17↑2 DATESPELL⌽BDATE),17↑2 DATESPELL⌽EDATE
+[30]  H1[5;(31+⍳18),101+⍳30]←(18↑⍕F),30↑DLTMB 'I2,< years >,I3,< days is >,F8.2,<%>' ⎕FMT MATRIX(⌊TERM),(365×1∣TERM),100×f-1
+[31]  H1[6;22+⍳110]←110↑Desc←DecrDescription TABXX
+[32]  
+[33]  SUMMREC←(TABXX Desc) DecrPrint TABLE←DEC∆CHECK TABXX
+[34]  SPAGE←1↑(¯5 0↓H1) OUTPUT tpr1,SPAGE
+[35]  
+[36]  ⍝ Non-Standard Data Conversion
+[37]  RESsave←zwb save ⋄ newent←zwb newent ⋄ EXIT←zwb EXIT
+[38]  TABLE←1+100↑TABLE ⋄ servind←'FS'[×uk]=1↑servind
+[39]  AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP
+[40]  TABLE←((-1+⌈TERM),0)↓⍉((⌈TERM),1+⍴TABLE)⍴TABLE←(AGES+⌈TERM)↑(BAGE-⌈TERM)↓TABLE
+[41]  TABLE[;0]←TABLE[;0]*(0=I)+I←TERM-⌊TERM ⋄ TABLE←×/TABLE
+[42]  desc←desc,DLTMB ': Salary Increase between ',(SDATE BDATE),' and ',SDATE EDATE
+[43]  BDATE←JUL BDATE ⋄ EDATE←JUL VDATE←EDATE
+[44]  
+[45]  →(0≠⍴fDJF,fDJS)/L0 ⋄ DJS←DJF←0 ⋄ H1[4;104+⍳28]←' '
+[46]  L0:salmult←(salfreq='ASQMLFW')/ 1 2 4 12 13 26.09 52.18
+[47]  GTOTS← 100 3 ⍴N←0 ⋄ SUMMREC←' '
+    ∇

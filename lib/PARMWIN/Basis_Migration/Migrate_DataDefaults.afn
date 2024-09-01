@@ -1,1 +1,63 @@
-    ∇ Migrate_DataDefaults;data;Format;size;CN;NO[1]   ⍝ PARMWIN.sf#2[2]   ⍝ Migrate DOS New Entrant Data Defaults[3]   [4]   data←CN CONV∆BASIS SStoMAT ⎕fread tieno,CN←(12 0 11)[1+uk][5]   Format←⊃FormatNo⊃ActFormats[6]   [7]   neSEX←DLTMB data[1;] ⋄ neCAT←DLTMB data[2;][8]   ⍝ Date Data Defaults[9]   DataDateVars←(2 12⍴'Date Joined '),(2 7⍴'ServiceCompany')[1+×uk;] OVER (2 6⍴'Fund  Scheme')[1+×uk;][10]  :if ^/' '=data[3;] ⋄ DataDateRel←'+0' ⋄ DataDateAbs←' '[11]  :else              ⋄ DataDateRel←'  ' ⋄ DataDateAbs←'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP 8↑data[3;][12]  :endif[13]  :if ^/' '=data[4;] ⋄ DataDateRel←DataDateRel OVER '+0' ⋄ DataDateAbs←DataDateAbs OVER ' '[14]  :else              ⋄ DataDateRel←DataDateRel OVER '  ' ⋄ DataDateAbs←DataDateAbs OVER 'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP 8↑data[4;][15]  :endif[16]  DataDateAdj←2 3⍴'Yes'[17]  [18]  ⍝ Numeric Data Defaults[19]  :if uk=0 ⍝ Australian only fields[20]      DataNumVars←'Accum Conts with Int' OVER 'Accum Conts w/o Int' OVER 'Accum Preserved Conts' OVER 'Deemed Cont Rate' OVER 'Preserved Cont Rate' OVER 'Benefit Multiple'[21]      DataNumValue←SStoMAT DLTMB '⍺',data[35 33 39 7 9 11;][22]      DataNumDecP←data[36 34 40 8 10 12;,1][23]      DataNumType←(3 5⍴'Total') OVER 3 7⍴'Average'[24]  [25]      :if ∨/' '≠,Format[30+⍳2;][26]          DataNumVars←DataNumVars OVER 'AC083'[27]          DataNumValue←DataNumValue OVER DLTMB data[37;][28]          DataNumDecP←DataNumDecP OVER data[38;1][29]          DataNumType←DataNumType OVER 'Total'[30]      :endif[31]      :if ∨/' '≠,Format[32+⍳2;][32]          DataNumVars←DataNumVars OVER 'CR'[33]          DataNumValue←DataNumValue OVER DLTMB data[5;][34]          DataNumDecP←DataNumDecP OVER data[6;1][35]          DataNumType←DataNumType OVER 'Average'[36]      :endif[37]  :endif[38]  [39]  ⍝ Non-Standards - trim Format to determine no of Non-Standards[40]  NO←0.2×size←1↑⍴Format←((43 0 41)[1+uk],0)↓Format[41]  data←((⍴data)⌈(2×NO),8)↑data ⍝ Expand if necessary[42]  :if ∨/index←('N'=(size⍴1 0 0 0 0)⌿Format[;1])^∨/' '≠(size⍴0 1 0 0 0)⌿Format[43]      DataNumVars←DataNumVars OVER index⌿(size⍴0 1 0 0 0)⌿Format[44]      DataNumValue←DataNumValue OVER SStoMAT DLTMB '⍺',index⌿((2×NO)⍴1 0)⌿data[12+⍳2×NO;][45]      DataNumDecP←DataNumDecP OVER index⌿((2×NO)⍴0 1)⌿data[12+⍳2×NO;,1][46]      DataNumType←DataNumType OVER index⌿(NO,7)⍴'Total'[47]  :endif[48]  [49]  ⍝ Character Non-Standards[50]  :if ∨/index←('C'=(size⍴1 0 0 0 0)⌿Format[;1])^∨/' '≠(size⍴0 1 0 0 0)⌿Format[51]      DataCharVars←index⌿(size⍴0 1 0 0 0)⌿Format[52]      DataCharValue←SStoMAT DLTMB '⍺',index⌿((2×NO)⍴1 0)⌿data[12+⍳2×NO;][53]  :endif[54]  [55]  ⍝ Date Non-Standards[56]  :if ∨/index←('D'=(size⍴1 0 0 0 0)⌿Format[;1])^∨/' '≠(size⍴0 1 0 0 0)⌿Format[57]      DataDateVars←DataDateVars OVER index⌿(size⍴0 1 0 0 0)⌿Format[58]      DataDateAbs←DataDateAbs OVER 'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP index⌿((2×NO)⍴1 0)⌿data[12+⍳2×NO;⍳8][59]      DataDateAdj←DataDateAdj OVER SStoMAT index⌿((2×NO)⍴0 1)⌿data[12+⍳2×NO;1][60]      DataDateRel←((⍴DataDateRel)⌈⍴DataDateAbs)↑DataDateRel[61]  :endif    ∇
+    ∇ Migrate_DataDefaults;data;Format;size;CN;NO
+[1]   ⍝ PARMWIN.sf#2
+[2]   ⍝ Migrate DOS New Entrant Data Defaults
+[3]   
+[4]   data←CN CONV∆BASIS SStoMAT ⎕fread tieno,CN←(12 0 11)[1+uk]
+[5]   Format←⊃FormatNo⊃ActFormats
+[6]   
+[7]   neSEX←DLTMB data[1;] ⋄ neCAT←DLTMB data[2;]
+[8]   ⍝ Date Data Defaults
+[9]   DataDateVars←(2 12⍴'Date Joined '),(2 7⍴'ServiceCompany')[1+×uk;] OVER (2 6⍴'Fund  Scheme')[1+×uk;]
+[10]  :if ^/' '=data[3;] ⋄ DataDateRel←'+0' ⋄ DataDateAbs←' '
+[11]  :else              ⋄ DataDateRel←'  ' ⋄ DataDateAbs←'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP 8↑data[3;]
+[12]  :endif
+[13]  :if ^/' '=data[4;] ⋄ DataDateRel←DataDateRel OVER '+0' ⋄ DataDateAbs←DataDateAbs OVER ' '
+[14]  :else              ⋄ DataDateRel←DataDateRel OVER '  ' ⋄ DataDateAbs←DataDateAbs OVER 'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP 8↑data[4;]
+[15]  :endif
+[16]  DataDateAdj←2 3⍴'Yes'
+[17]  
+[18]  ⍝ Numeric Data Defaults
+[19]  :if uk=0 ⍝ Australian only fields
+[20]      DataNumVars←'Accum Conts with Int' OVER 'Accum Conts w/o Int' OVER 'Accum Preserved Conts' OVER 'Deemed Cont Rate' OVER 'Preserved Cont Rate' OVER 'Benefit Multiple'
+[21]      DataNumValue←SStoMAT DLTMB '⍺',data[35 33 39 7 9 11;]
+[22]      DataNumDecP←data[36 34 40 8 10 12;,1]
+[23]      DataNumType←(3 5⍴'Total') OVER 3 7⍴'Average'
+[24]  
+[25]      :if ∨/' '≠,Format[30+⍳2;]
+[26]          DataNumVars←DataNumVars OVER 'AC083'
+[27]          DataNumValue←DataNumValue OVER DLTMB data[37;]
+[28]          DataNumDecP←DataNumDecP OVER data[38;1]
+[29]          DataNumType←DataNumType OVER 'Total'
+[30]      :endif
+[31]      :if ∨/' '≠,Format[32+⍳2;]
+[32]          DataNumVars←DataNumVars OVER 'CR'
+[33]          DataNumValue←DataNumValue OVER DLTMB data[5;]
+[34]          DataNumDecP←DataNumDecP OVER data[6;1]
+[35]          DataNumType←DataNumType OVER 'Average'
+[36]      :endif
+[37]  :endif
+[38]  
+[39]  ⍝ Non-Standards - trim Format to determine no of Non-Standards
+[40]  NO←0.2×size←1↑⍴Format←((43 0 41)[1+uk],0)↓Format
+[41]  data←((⍴data)⌈(2×NO),8)↑data ⍝ Expand if necessary
+[42]  :if ∨/index←('N'=(size⍴1 0 0 0 0)⌿Format[;1])^∨/' '≠(size⍴0 1 0 0 0)⌿Format
+[43]      DataNumVars←DataNumVars OVER index⌿(size⍴0 1 0 0 0)⌿Format
+[44]      DataNumValue←DataNumValue OVER SStoMAT DLTMB '⍺',index⌿((2×NO)⍴1 0)⌿data[12+⍳2×NO;]
+[45]      DataNumDecP←DataNumDecP OVER index⌿((2×NO)⍴0 1)⌿data[12+⍳2×NO;,1]
+[46]      DataNumType←DataNumType OVER index⌿(NO,7)⍴'Total'
+[47]  :endif
+[48]  
+[49]  ⍝ Character Non-Standards
+[50]  :if ∨/index←('C'=(size⍴1 0 0 0 0)⌿Format[;1])^∨/' '≠(size⍴0 1 0 0 0)⌿Format
+[51]      DataCharVars←index⌿(size⍴0 1 0 0 0)⌿Format
+[52]      DataCharValue←SStoMAT DLTMB '⍺',index⌿((2×NO)⍴1 0)⌿data[12+⍳2×NO;]
+[53]  :endif
+[54]  
+[55]  ⍝ Date Non-Standards
+[56]  :if ∨/index←('D'=(size⍴1 0 0 0 0)⌿Format[;1])^∨/' '≠(size⍴0 1 0 0 0)⌿Format
+[57]      DataDateVars←DataDateVars OVER index⌿(size⍴0 1 0 0 0)⌿Format
+[58]      DataDateAbs←DataDateAbs OVER 'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP index⌿((2×NO)⍴1 0)⌿data[12+⍳2×NO;⍳8]
+[59]      DataDateAdj←DataDateAdj OVER SStoMAT index⌿((2×NO)⍴0 1)⌿data[12+⍳2×NO;1]
+[60]      DataDateRel←((⍴DataDateRel)⌈⍴DataDateAbs)↑DataDateRel
+[61]  :endif
+    ∇

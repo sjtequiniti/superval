@@ -1,0 +1,68 @@
+    ∇ edit Win∆F1SSRowMenu parms;Module;SSName;row;col;rc;z;MaxRow;fixed;restrict;add
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Popup Menu on Spreadsheets for Add/Insert/Delete Rows
+[3]   
+[4]   (Module SSName)←parms
+[5]   :if 82∊⎕dr¨(row col)←⎕warg ⍝ Where the (right) click occurred
+[6]       (row col)←SSName ⎕wi 'GetActiveCell' 0 0
+[7]   :endif
+[8]   
+[9]   :if SSName ⎕wi 'xEnableProtection'
+[10]  :andif ∨/SSName ⎕wi 'XGetProtection' ⍬ ⍬ ⍝ Return if both current and last cell are protected
+[11]      SSName ⎕wi 'xSetActiveCell' (SSName ⎕wi 'xMaxRow') (SSName ⎕wi 'xMaxCol')
+[12]      rc←∨/SSName ⎕wi 'XGetProtection' ⍬ ⍬
+[13]      SSName ⎕wi 'xSetActiveCell' (1⌈row) (1⌈col)
+[14]      :if rc ⋄ :return ⋄ :endif
+[15]  :endif
+[16]  
+[17]  (restrict add)←2 2⊤edit
+[18]  
+[19]  :if col=0 ⋄ :andif row=0 ⍝ Click on TLC
+[20]      Win∆F1SSTLCMenu SSName
+[21]  
+[22]  :elseif restrict ⋄ :andif col≠0 ⍝ Allowed and Click not on Col Header
+[23]      0 0⍴⍎'("',SSName,'" ',(⍕row col),') ',Module,' "SSClick"'
+[24]  
+[25]  :elseif add ⋄ :andif col=0 ⍝ Create a Menu if on Col Header
+[26]      fixed←SSName ⎕wi '∆fixed' ⍝ Fixed rows
+[27]  
+[28]      rc←'mSSRow' ⎕wi 'Delete'
+[29]      rc←'mSSRow' ⎕wi 'New' 'Menu'
+[30]  
+[31]      :if 0=MaxRow←SSName ⎕wi '∆max' ⋄ MaxRow←9
+[32]      :else                          ⋄ MaxRow←9⌊0⌈MaxRow-SSName ⎕wi 'MaxRow'
+[33]      :endif
+[34]      :if 0≠MaxRow
+[35]          ⎕wself←'mSSRow.mAdd' ⎕wi 'New' 'Menu'
+[36]          ⎕wi 'caption' 'Add New Row(s)'
+[37]  
+[38]          :for z :in MaxRow↑'123456789'
+[39]              ⎕wself←('mSSRow.mAdd.m',z) ⎕wi 'New' 'Menu'
+[40]              ⎕wi 'caption' ('Add ',z,' Row',(z≠'1')/'s')
+[41]              ⎕wi 'onClick' (z,' Win∆F1SSAddRow "',SSName,'"')
+[42]          :endfor
+[43]  
+[44]          ⎕wself←'mSSRow.mInsert' ⎕wi 'New' 'Menu'
+[45]          ⎕wi 'caption' 'Insert Row'
+[46]          ⎕wi 'onClick' ('"',Module,'" Win∆F1SSInsertRow ("',SSName,'" ',(⍕row),')')
+[47]          ⎕wi 'enabled' (~row∊1,fixed)
+[48]  
+[49]          ⎕wself←'mSSRow.mS1' ⎕wi 'New' 'Menu'
+[50]          ⎕wi 'separator' 1
+[51]      :endif
+[52]  
+[53]      :if rc←row∊fixed
+[54]      :elseif rc←row=1
+[55]          SSName ⎕wi 'xSetActiveCell' 1 1
+[56]          rc←∨/SSName ⎕wi 'XGetProtection' ⍬ ⍬
+[57]      :endif
+[58]  
+[59]      ⎕wself←'mSSRow.mDelete' ⎕wi 'New' 'Menu'
+[60]      ⎕wi 'caption' 'Delete Current Row'
+[61]      ⎕wi 'onClick' ('"',Module,'" Win∆F1SSDeleteRow ("',SSName,'" ',(⍕row),')')
+[62]      ⎕wi 'enabled' ((~rc)^1<SSName ⎕wi 'MaxRow')
+[63]  
+[64]      FormName ⎕wi 'Popup' 'mSSRow' 0
+[65]  
+[66]  :endif
+    ∇

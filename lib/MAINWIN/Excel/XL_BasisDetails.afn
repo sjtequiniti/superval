@@ -1,0 +1,40 @@
+    ∇ res←output XL_BasisDetails type;⍙dbXLbasis;codes;ppfcodes;∆
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Read the (Excel) Basis Details for "type" (Actives, Deferreds, Pensioners or Consolidation)
+[3]   ⍝ Select the relevant according to the Valuation Options, Client Code etc
+[4]   ⍝ Return, according to "output" (database, basis or rows) either:
+[5]   ⍝  database - the Basis Details to be stored in the Database
+[6]   ⍝  basis    - the relevant rows of the Basis for this run
+[7]   ⍝  excel    - the relevant rows for the Excel Basis display
+[8]   ⍝  rows     - the boolean of the relevant rows
+[9]   
+[10]  type←(1 3 4 5) ('Actives' 'Deferreds' 'Pensioners' 'Consolidation') mapp type ⍝ Argument passed as ClassID
+[11]  
+[12]  :if mt (TemplatesDir,'SVBASES',Win∆CountryCode) ReadFile type
+[13]      res←'Unable to read Basis Details file' ⋄ :return
+[14]  :endif
+[15]  
+[16]  codes←' ',(⍕ClntCode),('~6'[⎕io+bGAD]),((⎕io+(ClntCode=3)∨bBuck)⊃'AB'),((ClntCode=3)^~bGAD)/'2'
+[17]  
+[18]  res←(↑¨⍙dbXLbasis at 'ClientCode')∊codes            ⍝ Client Code only first to get list for Database storage
+[19]  
+[20]  :if output≡'database'                               ⍝ Retain PPF rows and AOS rows according to Licence rather than "scheme"
+[21]      res←res^(↑¨⍙dbXLbasis at 'AOS')∊' ',⍕AOSCtl     ⍝ Now the AOS rows are adjusted
+[22]      res←res^res\unique res/⍙dbXLbasis at 'Excel'    ⍝ Remove Duplicates (from relevants)
+[23]  :else
+[24]      ppfcodes←' ',(⍕ppf),(s143,bencap∨ppf,0)/'234'
+[25]      res←res^(↑¨⍙dbXLbasis at 'PPF')∊ppfcodes        ⍝ Now the PPF rows are adjusted
+[26]      res←res^(↑¨⍙dbXLbasis at 'AOS')∊' ',⍕aosind     ⍝ Now the AOS rows are adjusted
+[27]  :endif
+[28]  
+[29]  :if ~output≡'rows'
+[30]      res←⍙dbXLbasis for res
+[31]      :if ~output≡'excel'
+[32]          ∆←~mt¨DLTB¨res at 'APL'                     ⍝ Remove Blank (spacer) rows
+[33]          res←res for ∆
+[34]      :endif
+[35]      :if output≡'basis'
+[36]          res←res sortedBy 'ItemID' ⍝ Reorder the rows
+[37]      :endif
+[38]  :endif
+    ∇

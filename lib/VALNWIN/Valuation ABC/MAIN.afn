@@ -1,0 +1,29 @@
+    ∇ MAIN;ValDATE
+[1]   ⍝ VALNWIN.sf#10
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   NUMRECS←⌊(⎕NSIZE tieno)÷RECL
+[8]   PREP∆STAND ⍝ Do all the preparatory work
+[9]   ValDATE←¯3↑EDATE,prevind/BDATE
+[10]  ARECN←pAGE ⋄ APAGE←SPAGE
+[11]  (OutputDir,'TEMP$$.ACC') NERASE tpA ⋄  tpA←tpr1
+[12]  ⍝ Set up loop(s) to read member data from file, do calculations
+[13]  READ:→(NUMRECS<recn←recn+1)/FINISH
+[14]  (recn NUMRECS) Win∆ProgressBar 'MemberUpdate'
+[15]  REC←,'ASCII' Read∆DataFile tieno,filesize,RECL,1,recn-1
+[16]  NoInd←'*'≠REC[RECL-3] ⋄ →(~test)/L2
+[17]  →(recn>1000)/FINISH ⋄ →NoInd/READ
+[18]  ⍝ Set up vectors of serv/memb, salaries, AC's after check they are active
+[19]  L2:→(PRELIM ∨/ACTIVE[0 3 4 5])/L1
+[20]  TOTALS←TOTALS+FINAL∆CALCS ⋄ →READ ⍝ Main calculation program
+[21]  L1:→(summopt∨hpcenabled)/READ
+[22]  SUMMREC←(6↑NAME),(¯2↑SEX),(,'I3' ⎕FMT X0),'   Not Active'
+[23]  (APAGE ARECN)←H3 OUTPUT tpr1,APAGE,ARECN ⋄ →READ
+[24]  ⍝ Write totals out to files
+[25]  FINISH:0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Finish'
+[26]  
+[27]  PRINT∆TOTALS
+    ∇

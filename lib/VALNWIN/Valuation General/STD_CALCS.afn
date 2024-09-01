@@ -1,0 +1,101 @@
+    ∇ CFTOT←STD∆CALCS;PVC;PVCONTS1pc;cocr;VRB;VMB;VDB;VWB;VC;TVPC;TVRB;TVMB;TVDB;TVWB;TVC;TOTSPLIT;MAT;Z;PSL;INS;VAB;TOTS;TOTVAB;LXpost;LYpost;lxpost;lypost;LXpre;lxpre;LYpre;lypre;LXill;lxill;LXexit;lxexit;LY;ly;LYdis;lydis;ID;Age;data;pp∆vMP;pp∆v
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Standard Calcs for all Valuations
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   DEFAULT∆VARS ⍝ Default some Benefit Variables
+[7]   
+[8]   ⍝ Esc if No Benefits Defined when doing AOS
+[9]   →((prevind^∨/'Yy'∊⍎NoPData)∨^/(~prevind),(∨/'Yy'∊⍎NoCData),∨/EXIT[3 4])/0
+[10]  
+[11]  :if ~IsDeferred ⋄ :andif aosind
+[12]      ldate←ValDATE+ 0 6 0 ⋄ ldate←ldate+ 0 ¯12 1×ldate[1]>12
+[13]      ⍎(~DATECHECK ldate)/'ldate[0]←ldate[0]-1 ⋄ →⎕lc'
+[14]      ldate←MATRIX ldate
+[15]  :endif
+[16]  
+[17]  :if ~aggopt[1]
+[18]      :if ⍙dbresults ⋄ :andif ~neIND ⋄ :andif lowerAge
+[19]          XL_StoreMember
+[20]      :endif
+[21]  
+[22]      :if ~ppf
+[23]          :if uk=1 ⋄ :andif IsDeferred ⋄ :andif bencap
+[24]              pdef notNPCRpack
+[25]              (GMP0 GMPE0)←OrigGMPs×~IGNOREPre,IGNOREPost
+[26]              pups←pupmult×,ZWB PUP
+[27]                 WARFRAC∆l ←,0.01×ZWB WARFRAC
+[28]                 INDWARFrac←,0.01×ZWB INDWARFRAC
+[29]              IndINDWARFrac←,0.01×ZWB IndINDWARFRAC
+[30]                 INDDBRFrac←,0.01×ZWB INDDBRFRAC
+[31]              :if ~mt INDSTART
+[32]                  INDStart ←,⍎¨INDSTART
+[33]                  INDFinish←,⍎¨INDFINISH
+[34]              :endif
+[35]          :endif
+[36]          PROCESS∆BENS 'Exit' ⍝ Process Benefits
+[37]          Ind∆Ongoing←Ind∆Output ⍝ Store for later use
+[38]          :if ~suppressText ⋄ Ind∆Totals[4;16]←TOTPEN0 ⋄ :endif
+[39]          DEMOGRAPH ⍝ Figures for Fund Demographics
+[40]          :if ~IsDeferred
+[41]              :if ⍙dbresults ⋄ :andif ~neIND ⋄ :andif ∨/EXIT[1 2] ⍝ In-Service
+[42]                  ⍙dbbenres←⍙dbbenres⍪0,0,7,22,(⍬⍴dbXe),0,TOTPEN0
+[43]                  ⍙DBAddRecords
+[44]              :endif
+[45]          :endif
+[46]      :endif
+[47]  
+[48]      :if IsDeferred ⋄ :andif bencap
+[49]          pdef isNPCRpack
+[50]          (GMP0 GMPE0)←OrigGMPs
+[51]          pups←pupmult×,ZWB PUP
+[52]             WARFRAC∆l ←,0.01×ZWB WARFRAC
+[53]             INDWARFrac←,0.01×ZWB INDWARFRAC
+[54]          IndINDWARFrac←,0.01×ZWB IndINDWARFRAC
+[55]             INDDBRFrac←,0.01×ZWB INDDBRFRAC
+[56]          INDStart ←,⍎¨INDSTART
+[57]          INDFinish←,⍎¨INDFINISH
+[58]      :endif
+[59]      PROCESS∆BENS 'Accrued'
+[60]      Ind∆Accrued←Ind∆Output
+[61]      :if ~suppressText ⋄ Ind∆Totals[4;17]←ACCPEN0 ⋄ :endif
+[62]      :if ⍙dbresults ⋄ :andif ~neIND ⋄ :andif ~IsDeferred ⋄ :andif ∨/EXIT[1 2] ⍝ Not Enhanced Deferreds
+[63]          ⍙dbbenres←⍙dbbenres⍪0,0,7,23,(⍬⍴dbXe),0,ACCPEN0
+[64]          ⍙DBAddRecords
+[65]      :endif
+[66]  
+[67]      :if aggopt≡1 0
+[68]          Ind∆Ongoing AddKey 'E'
+[69]          Ind∆Accrued AddKey 'A'
+[70]          ⍙DBWriteTempDB 0
+[71]          :return
+[72]      :endif
+[73]  
+[74]  :endif
+[75]  
+[76]  PP∆Projector 0
+[77]  
+[78]  :if ~suppressText
+[79]      TOTSPLIT[;0]←TOTSPLIT[;0]++/¯3↑[1]TOTSPLIT ⋄ TOTSPLIT←TOTSPLIT,+/TOTSPLIT←TOTSPLIT⍪+⌿TOTSPLIT←0 ¯3↓TOTSPLIT
+[80]      MAT[;0]←MAT[;0]++/¯3↑[1]MAT ⋄ MAT←MAT,+/MAT←MAT⍪+⌿MAT←0 ¯3↓MAT
+[81]      Ind∆Totals[5+⍳No∆Bens+3;]←¯1⊖TOTSPLIT,(NotPUC×TOTSPLIT-MAT),MAT
+[82]      PSL←(~×term)×MAT[No∆Bens+2;5]
+[83]  
+[84]      :if PROPT ⋄ ACC∆CALCS ⋄ :endif ⍝ Accrued Benefit listing if required
+[85]  
+[86]      :if ~∨/prevind,EXIT[3 4]
+[87]          LINE∆MEMB ⍝ Summary Line for Member - don't always need
+[88]      :endif
+[89]  
+[90]      :if ~NoInd ⋄ TOT∆MEMB ⋄ :endif ⍝ Don't always need full individual p/out
+[91]  :endif
+[92]  
+[93]  :if prevind ⋄ Ind∆AOS←AOS∆TOTS∆PV ⋄ :endif ⍝ Previous Valn AOS Numbers in Matrix
+[94]  
+[95]  ⍝ store Database records
+[96]  :if uk=1 ⋄ :andif ⍙dbopt ⋄ :andif ~neIND ⋄ :andif ~prevind
+[97]      XL_StoreData
+[98]      ⍙DBWriteTempDB 0
+[99]  :endif
+    ∇

@@ -1,0 +1,50 @@
+    ∇ DropSQLDatabase ID;tables;NN;table;sql;IDs;id
+[1]   ⍝ UTILSWIN.sf#10
+[2]   ⍝ Delete Scheme Database from SQL Database
+[3]   
+[4]   ('Task:' 'Table:') Win∆ProgressBar 'SetLabels'
+[5]   (1 2 'Connecting to SQL Server Database') Win∆ProgressBar 'FileUpdate'
+[6]   
+[7]   :if ~2↓ValnResultsDB ⍙DBOpen ¯1
+[8]       MDISPLAY 'Unable to Open ',ValnResultsDB,' SQL Server Database.' ⋄ →end
+[9]   :endif
+[10]  
+[11]  (2 2 'Deleting Scheme Database') Win∆ProgressBar 'FileUpdate'
+[12]  tables←       ,'Identification' 'ResultsCategory' 'ResultsData' 'OutputFile' 'AltScenData',AOSCtl/'AOSMember' 'AOSResults'
+[13]  tables←tables ,'BasisData' 'CharMemberData' 'NumMemberData' 'MemberResults'
+[14]  tables←tables ,'FinancialsGroups' 'TableNames' 'CategoryAssumptions' 'BenefitAssumptions'
+[15]  tables←(tables∊⍙DBTableNames 'ADOcon')/tables
+[16]  NN←1+⍴tables
+[17]  
+[18]  sql←'DELETE FROM TaBlE WHERE DatabaseID=',ID
+[19]  :for table :in tables
+[20]      :select table ⍝ Grab ID before deleting
+[21]      :case 'FinancialsGroups'
+[22]          IDs←nub ,1 ⍙DBadoCONCommand 'SELECT FinancialsID FROM FinancialsGroups WHERE DatabaseID=',ID
+[23]      :case 'TableNames'
+[24]          IDs←nub ,1 ⍙DBadoCONCommand 'SELECT TableID FROM TableNames WHERE DatabaseID=',ID
+[25]      :endselect
+[26]  
+[27]      ((tables⍳⊂table) NN table) Win∆ProgressBar 'MemberUpdate'
+[28]      0 0⍴0 ⍙DBadoCONCommand ('/TaBlE/',table) TEXTREPL sql
+[29]  
+[30]      :select table
+[31]      :case 'FinancialsGroups'
+[32]          :for id :in IDs
+[33]              :if mt 1 ⍙DBadoCONCommand 'SELECT * FROM FinancialsGroups WHERE FinancialsID=',⍕id
+[34]                  0 0⍴0 ⍙DBadoCONCommand 'DELETE FROM FinancialsValues WHERE FinancialsID=',⍕id
+[35]              :endif
+[36]          :endfor
+[37]      :case 'TableNames'
+[38]          :for id :in IDs
+[39]              :if mt 1 ⍙DBadoCONCommand 'SELECT * FROM TableNames WHERE TableID=',⍕id
+[40]                  0 0⍴0 ⍙DBadoCONCommand 'DELETE FROM TableValues WHERE TableID=',⍕id
+[41]              :endif
+[42]          :endfor
+[43]      :endselect
+[44]  :endfor
+[45]  
+[46]  end:0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[47]      0 0⍴(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete'
+[48]  Win∆ProgressBar 'Close'
+    ∇

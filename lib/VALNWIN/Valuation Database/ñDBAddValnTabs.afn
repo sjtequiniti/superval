@@ -1,0 +1,91 @@
+    ∇ ⍙DBAddValnTabs;∆;var;desc;values;x;inc;durn;TableID;namrecs;valrecs;sex;ContIDs;ContDescs;ID;dectab;incs;inctab;type;typetab;RATES;ts;rates
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Add Valuation Basis Commutation Tables, Valuation Factor tables and rebased Mortality Imptovement tables to database
+[3]   
+[4]   incs←'Special Increase' 'Main Increase' 'Pension Increase 3' 'Pension Increase 4'
+[5]   sex←↑('MF'=SelSex)/'Male ' 'Female '
+[6]   namrecs←0 4⍴0 0 '' '' ⋄ valrecs←0 4⍴0
+[7]   
+[8]   :if basischanged∨CFmissing
+[9]   :andif ∨/∆←0≠⎕nc 'RETcomfacs ILLcomfacs'
+[10]      :for var :in ∆/'RETcomfacs' 'ILLcomfacs'
+[11]          :select var
+[12]          :case 'RETcomfacs' ⋄ var←RETcomfacs ⋄ desc←'Retirement ' ⋄ type←↑   COMValBas    COMAdjbyEx/' Valuation Basis' ' Life Expectancy Adjusted'
+[13]          :case 'ILLcomfacs' ⋄ var←ILLcomfacs ⋄ desc←'Ill-Health ' ⋄ type←↑ILLCOMValBas ILLCOMAdjbyEx/' Valuation Basis' ' Life Expectancy Adjusted'
+[14]          :endselect
+[15]          durn←⍳¯1↑⍴var
+[16]          :for ∆ :in spin (⊂[0 2]var) incs
+[17]              :if ∨/0≠,↑(var inc)←∆
+[18]                  var←(-durn)⊖var⍪0
+[19]                  TableID←1 ⍙DBNextID 'TableID'
+[20]                  values←0 3⍴0
+[21]                  :for x :in ⍳↑⍴var
+[22]                      values←values⍪(x+0.5×x<NRA),durn,[0.5]var[x;]
+[23]                  :endfor
+[24]                  values←(0≠values[;2])⌿values
+[25]                  valrecs←valrecs⍪TableID,values
+[26]                  namrecs←namrecs⍪BasisCategoryID TableID (sex,desc,inc,type,' Commutation Factors') RunTime
+[27]              :endif
+[28]          :endfor
+[29]      :endfor
+[30]  :endif
+[31]  0 0⍴⎕ex 'RETcomfacs ILLcomfacs'
+[32]  
+[33]  :if VFtables
+[34]      ContIDs←(1 2 21 26) (7 12 22 27) (3 23 25) (6) (4) (13) (5) (14) (31 32 33 37 38 39) (34 35 36 40 41 42)
+[35]      ContDescs←'Member Retirement ' 'Spouse Retirement ' 'Death in Service ' 'Death in Deferment ' 'Member Ill Health ' 'Spouse Ill Health ' 'Member Leaving Service ' 'Spouse Leaving Service ' 'Member Transfer Out ' 'Spouse Transfer Out '
+[36]      :for type :in nub VFDBtab at 'Ident'
+[37]          typetab←VFDBtab for 'Ident' type
+[38]          :if     'I'=↑type ⋄ type←'Independent ',(1↓type),' '
+[39]          :elseif 'D'=↑type ⋄ type←(DLTB type),' '
+[40]          :else             ⋄ type←DLTB type
+[41]          :endif
+[42]          :for ∆ :in spin ContIDs ContDescs ⋄ (ID desc)←∆
+[43]              :if ×rowsIn dectab←typetab for (⊂'ContID'),ID
+[44]                  :for ∆ :in spin (2 3 5 4 6 7 31) ('Pre 88 GMP' 'Post88 GMP',incs,⊂'Non-Standard PUP') ⋄ (ID inc)←∆
+[45]                      :if ×rowsIn inctab←dectab for (⊂'BenID'),ID
+[46]                          TableID←1 ⍙DBNextID 'TableID'
+[47]                          namrecs←namrecs⍪BasisCategoryID TableID (sex,type,desc,inc,' Valuation Factors') RunTime
+[48]                          inctab←inctab groupby ('Age' 'Year') ('DataID' 'ValueNoRev')
+[49]                          valrecs←valrecs⍪⊃TableID,¨(↑inctab),¨+/¨(1↓inctab) at¨⊂'ValueNoRev'
+[50]                      :endif
+[51]                  :endfor
+[52]              :endif
+[53]          :endfor
+[54]      :endfor
+[55]  :endif
+[56]  
+[57]  :if MItables ⋄ :andif ×rowsIn ReBasedIMPtab
+[58]      ReBasedIMPtab←ReBasedIMPtab for unique spin ReBasedIMPtab at 'desc' 'ts' ⍝ Get unique rows
+[59]      :for ∆ :in ⎕split valsIn ReBasedIMPtab  ⋄ (desc ts RATES)←∆
+[60]          :if sqlDatabase ⋄ :andif '/'∊ts ⍝ Convert Dates to acceptable format
+[61]              ts←,1 DATESPELL (⌽'YYYY/MM/DD' DATEEXP ts),MatrixZWB SStoMAT ':',' ' Win∆Child ts
+[62]          :endif
+[63]          :if ∨/'[#@ts@#]'⍷desc ⋄ desc←('\#@ts@#\',DLTMB ts) TEXTREPL desc ⋄ :endif
+[64]          desc←255↑⎕av[156 163] REPL desc
+[65]          :if     mt DLTB TableID←↑1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE (TableName = ",(1 ⍙DBString desc),") AND (TableTimeStamp = ",(sqlDatabase ⍙DBString ts),") AND (BasisCategoryID = ",(⍕∣DatabaseID+BasisCategoryID),")"
+[66]              :if mt DLTB TableID←↑1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE (TableName = ",(1 ⍙DBString desc),") AND (TableTimeStamp = ",(sqlDatabase ⍙DBString ts),")"
+[67]                  TableID←1 ⍙DBNextID 'TableID'
+[68]                  values←0 3⍴0
+[69]                  :for x :in ⍳↑⍴RATES
+[70]                      values←values⍪x,(⍳↑⍴rates),[0.5]rates←RATES[x;]
+[71]                  :endfor
+[72]                  values←(0≠values[;2])⌿values
+[73]                  valrecs←valrecs⍪TableID,values
+[74]              :endif
+[75]              namrecs←namrecs⍪(DatabaseID+BasisCategoryID) TableID desc ts
+[76]          :endif
+[77]      :endfor
+[78]  :endif
+[79]  
+[80]  :if ~mt namrecs
+[81]      'ADOrst' ⎕wi 'XOpen' 'TableNames' ('ADOcon' ⎕wi 'obj') cursor lock
+[82]      ⍙DBInsertData (~sqlDatabase)↓[⎕io+1]DatabaseID,namrecs
+[83]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[84]  :endif
+[85]  :if ~mt valrecs
+[86]      'ADOrst' ⎕wi 'XOpen' 'TableValues' ('ADOcon' ⎕wi 'obj') cursor lock
+[87]      0 1 2 4 ⍙DBInsertData valrecs
+[88]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[89]  :endif
+    ∇

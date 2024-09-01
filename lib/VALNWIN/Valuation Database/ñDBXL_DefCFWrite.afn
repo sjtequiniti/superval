@@ -1,0 +1,41 @@
+    ∇ ⍙DBXL_DefCFWrite;z;tab;capind;sql;sql1;NoCashflows;size
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Write the Cash Flows for the Deferreds
+[3]   
+[4]   1 XL_ActivateWorksheet 'CFbyCat'
+[5]   NoCashflows←XL_Data 'NoCashflows'
+[6]   z←neIND+(2×SelSex='F')+4×BasisCategoryID
+[7]   size←1+120 ⍝??⍝ Determine size (MAX SVYear for run in Database)
+[8]   0 0⍴z XL_Data RCtoA1 (131+NoCashflows) 1 (130+NoCashflows+size) 1
+[9]   0 0⍴(⍉MATRIX ⍳size) XL_Data RCtoA1 (131+NoCashflows) 2 (130+NoCashflows+size) 2
+[10]  
+[11]  capind←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE (BasisItemName=",(1 ⍙DBString 20↑"capind"),") AND (BasisItemID BETWEEN 10000 AND 10999)"
+[12]  capind←⍬⍴"C"=1↑,⊃,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") AND (BasisItemID=",(⍕capind),")"
+[13]  
+[14]  sql ←"SELECT SVYear,SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID=%1 AND ContingencyID IN (%2) AND LiabilityTypeID=%3 GROUP BY SVYear"
+[15]  sql1←"SELECT SVYear,SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID=%1 AND BenefitTypeID IN (%2) AND ContingencyID=%3 AND LiabilityTypeID=%4 GROUP BY SVYear"
+[16]  
+[17]  tab←121 3⍴0 ⍝ Retirement Cash Flows - All in Column
+[18]  tab[;⎕io+2-1×capind]←-121↑(ResultsCategoryID,1,8) ⍙DBSQLRead sql
+[19]  tab[;⎕io+2-2×capind]←tab[;⎕io+2-2×capind]-121↑(ResultsCategoryID,2,8) ⍙DBSQLRead sql
+[20]  :if ~capind ⍝ Move Cash Benefits to their column
+[21]      tab[;⎕io  ]←-121↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) 2 8) ⍙DBSQLRead sql1
+[22]      tab[;⎕io+1]←-121↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) 1 8) ⍙DBSQLRead sql1
+[23]      tab[;⎕io+2]←tab[;⎕io+2]-+/tab[;⎕io+0 1]
+[24]  :endif
+[25]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 3 (130+NoCashflows+size) 5
+[26]  
+[27]  tab←121 2⍴0 ⍝ Death (in Deferment) Cash Flows
+[28]  tab[;⎕io+1-capind]←-121↑(ResultsCategoryID,6,8) ⍙DBSQLRead sql
+[29]  :if ~capind
+[30]      tab[;⎕io+1]←tab[;⎕io+1]-tab[;⎕io]←-121↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) 6 8) ⍙DBSQLRead sql1
+[31]  :endif
+[32]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 6 (130+NoCashflows+size) 7
+[33]  
+[34]  ⍝ Transfer Out Cash Flows
+[35]  tab←⍉MATRIX -121↑(ResultsCategoryID (31 32 34 35 37 38 40 41) 8) ⍙DBSQLRead sql
+[36]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 15 (130+NoCashflows+size) 15
+[37]  
+[38]  0 0⍴(NoCashflows←NoCashflows+size) XL_Data 'NoCashflows'
+[39]  'CFbyCat' XL_ProtectSheet ¯1
+    ∇

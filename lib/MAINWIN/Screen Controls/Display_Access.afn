@@ -1,0 +1,19 @@
+    ∇ Display∆Access access;text;caption
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Indicate Access for Editing/Adding Parameters Sets
+[3]   
+[4]   :select accesslevel≥access
+[5]   :case 1 1 ⋄ :return ⍝ Both
+[6]   :case 1 0 ⋄ text←' [Edit Only]'
+[7]   :case 0 1 ⋄ text←' [Add Only]'
+[8]   :case 0 0 ⋄ text←' [View Only]' ⋄ ControlName ⎕wi '∆modified' 1 ⍝ No "Ignore Changes"
+[9]   :endselect
+[10]  
+[11]  caption←FormName ⎕wi '∆caption'
+[12]  FormName ⎕wi '∆caption' (caption←(¯1↓caption),⊂(,⊃¯1↑caption),text)
+[13]  FormName ⎕wi 'caption' (,⊃¯1↑caption)
+[14]  
+[15]  :if ~'fmSV'≡Win∆Parent ControlName
+[16]      (Win∆Parent ControlName) ⎕wi 'caption' (,⊃¯1↑caption)
+[17]  :endif
+    ∇

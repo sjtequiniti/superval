@@ -1,1 +1,59 @@
-    ∇ RP1∆BENEFIT;BenType∆pp;Start∆pp;GP∆pp;IncType∆pp;Inc∆pp;Upin∆pp;SL∆pp;Con∆pp;ABno∆pp;AltABno∆pp[1]   ⍝ DEFWIN.sf#5[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT PENSION 1[3]   ⍝ v8.50 [EnhDef] DT/SJT summer 2010[4]   ⍝ REFINE: retrieve results from GMP array instead[5]   [6]   wDEFINE_GMP[7]   GFRAC1←(upreIND ='01234')/0 0 1 0,1-0⌈1⌊('DN' DURN (PreStart  DATEMAX COD1) TO mpuDATE DATEMIN PreFinish DATEMIN COD2) CDIV 'DN' DURN (PreStart  DATEMAX COD1) TO PreFinish DATEMIN COD2[8]   GFRAC2←(upostIND='01234')/0 0 1 0,1-0⌈1⌊('DN' DURN (PostStart DATEMAX COD2) TO mpuDATE DATEMIN PostFinish)             CDIV 'DN' DURN (PostStart DATEMAX COD2) TO PostFinish[9]   [10]  :If ~IsAccrued[11]      PUP∆PROCESSING ⍝ UK Benefit Processing Function[12]  :EndIf[13]  [14]  :if PubSect ⋄ :andif NRA>SPA[15]      RP1∆PubSect[16]  [17]  :else[18]      ⍝ FIXME:[19]      ⍝ This section approximates underpinned values using GFRAC1 and GFRAC2[20]      ⍝ Replace with calculated underpinned values from POST (or BEN?)[21]      ⍝ Note BEN has a calculated 'slice' on underpin axis (dif←whole-underpinned)[22]      ⍝ and POST does not - but could be given one in wPUP_LOOP2[23]  [24]      ⍝ Pension Projector Variables[25]      BenType∆pp←'P' ⋄ Start∆pp←,SPA⌈RetAge∆pp ⋄ GP∆pp←,0⌈GPeriod-0⌈(SPA⌈Age∆pp)-RetAge∆pp[26]      :if IsAccrued ⋄ GP∆pp←NX⍴,¯1↑GP∆pp ⋄ ABno∆pp←'1' ⋄ AltABno∆pp←'' ⋄ :endif[27]  [28]      ⍝ Pre 1988 GMP[29]      IncType∆pp←'G1' ⋄ Inc∆pp←B88GMPINC[30]  [31]      Upin∆pp←0 ⍝ Not "underpinned"[32]      Con∆pp←,(SL∆pp←,(1-GFRAC1)×PreGMPR)×0.5×Male[33]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[34]  [35]      PP∆CreateInterface[36]  [37]      Upin∆pp←1 ⍝ "Underpinned"[38]      Con∆pp←,(SL∆pp←,   GFRAC1 ×PreGMPR)×0.5×Male[39]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[40]  [41]      PP∆CreateInterface[42]  [43]      ⍝ Post 1988 GMP[44]      IncType∆pp←'G2' ⋄ Inc∆pp←A88GMPINC[45]  [46]      Upin∆pp←0 ⍝ Not "underpinned"[47]      Con∆pp←,(SL∆pp←,(1-GFRAC2)×PostGMPR)×0.5[48]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[49]  [50]      PP∆CreateInterface[51]  [52]      Upin∆pp←1 ⍝ "Underpinned"[53]      Con∆pp←,(SL∆pp←,   GFRAC2 ×PostGMPR)×0.5[54]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[55]  [56]      PP∆CreateInterface[57]  :endif    ∇
+    ∇ RP1∆BENEFIT;BenType∆pp;Start∆pp;GP∆pp;IncType∆pp;Inc∆pp;Upin∆pp;SL∆pp;Con∆pp;ABno∆pp;AltABno∆pp
+[1]   ⍝ DEFWIN.sf#5
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT PENSION 1
+[3]   ⍝ v8.50 [EnhDef] DT/SJT summer 2010
+[4]   ⍝ REFINE: retrieve results from GMP array instead
+[5]   
+[6]   wDEFINE_GMP
+[7]   GFRAC1←(upreIND ='01234')/0 0 1 0,1-0⌈1⌊('DN' DURN (PreStart  DATEMAX COD1) TO mpuDATE DATEMIN PreFinish DATEMIN COD2) CDIV 'DN' DURN (PreStart  DATEMAX COD1) TO PreFinish DATEMIN COD2
+[8]   GFRAC2←(upostIND='01234')/0 0 1 0,1-0⌈1⌊('DN' DURN (PostStart DATEMAX COD2) TO mpuDATE DATEMIN PostFinish)             CDIV 'DN' DURN (PostStart DATEMAX COD2) TO PostFinish
+[9]   
+[10]  :If ~IsAccrued
+[11]      PUP∆PROCESSING ⍝ UK Benefit Processing Function
+[12]  :EndIf
+[13]  
+[14]  :if PubSect ⋄ :andif NRA>SPA
+[15]      RP1∆PubSect
+[16]  
+[17]  :else
+[18]      ⍝ FIXME:
+[19]      ⍝ This section approximates underpinned values using GFRAC1 and GFRAC2
+[20]      ⍝ Replace with calculated underpinned values from POST (or BEN?)
+[21]      ⍝ Note BEN has a calculated 'slice' on underpin axis (dif←whole-underpinned)
+[22]      ⍝ and POST does not - but could be given one in wPUP_LOOP2
+[23]  
+[24]      ⍝ Pension Projector Variables
+[25]      BenType∆pp←'P' ⋄ Start∆pp←,SPA⌈RetAge∆pp ⋄ GP∆pp←,0⌈GPeriod-0⌈(SPA⌈Age∆pp)-RetAge∆pp
+[26]      :if IsAccrued ⋄ GP∆pp←NX⍴,¯1↑GP∆pp ⋄ ABno∆pp←'1' ⋄ AltABno∆pp←'' ⋄ :endif
+[27]  
+[28]      ⍝ Pre 1988 GMP
+[29]      IncType∆pp←'G1' ⋄ Inc∆pp←B88GMPINC
+[30]  
+[31]      Upin∆pp←0 ⍝ Not "underpinned"
+[32]      Con∆pp←,(SL∆pp←,(1-GFRAC1)×PreGMPR)×0.5×Male
+[33]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[34]  
+[35]      PP∆CreateInterface
+[36]  
+[37]      Upin∆pp←1 ⍝ "Underpinned"
+[38]      Con∆pp←,(SL∆pp←,   GFRAC1 ×PreGMPR)×0.5×Male
+[39]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[40]  
+[41]      PP∆CreateInterface
+[42]  
+[43]      ⍝ Post 1988 GMP
+[44]      IncType∆pp←'G2' ⋄ Inc∆pp←A88GMPINC
+[45]  
+[46]      Upin∆pp←0 ⍝ Not "underpinned"
+[47]      Con∆pp←,(SL∆pp←,(1-GFRAC2)×PostGMPR)×0.5
+[48]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[49]  
+[50]      PP∆CreateInterface
+[51]  
+[52]      Upin∆pp←1 ⍝ "Underpinned"
+[53]      Con∆pp←,(SL∆pp←,   GFRAC2 ×PostGMPR)×0.5
+[54]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[55]  
+[56]      PP∆CreateInterface
+[57]  :endif
+    ∇

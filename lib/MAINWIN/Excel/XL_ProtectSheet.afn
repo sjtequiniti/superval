@@ -1,0 +1,32 @@
+    ∇ wksht XL_ProtectSheet arg;⎕elx;t;elx
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Turn on/off (arg is 1 or ¯1 (also Hiddden) for on or 0 for off) Protection on Worksheet "wksht"
+[3]   
+[4]   elx←⎕elx
+[5]   :if ∣arg
+[6]       :if ¯1=arg
+[7]           (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' wksht) ⎕wi 'xVisible' 2 ⋄ :return ⍝ VeryHidden
+[8]       :else      ⋄ XL_CursorHome ⍝ Reposition Cursor
+[9]           :if 12≤ExcelVersion ⋄ :andif (⊂wksht)∊'AllBases' 'ActBases' 'DefBases' 'PenBases' 'Members' 'IndivRes'
+[10]              (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' wksht) ⎕wi 'xEnableFormatConditionsCalculation' 1
+[11]          :endif
+[12]          ⎕elx←'0 0⍴⎕dl 0.05 ⋄ →Prot' ⋄ t←⎕ai[⎕io+1] ⍝ There must be a delay befor some sheets can be protected
+[13]  Prot:
+[14]          :if 10<⎕ai[⎕io+1]-t ⋄ ⎕elx←elx ⋄ :endif ⍝ Keep trying for 10 seconds
+[15]          (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' wksht) ⎕wi 'XProtect' ((XL_Password) 0 1 1 0,(9<ExcelVersion)/1 1 1 0 0 0 0 0 0 1 1) ⍝ Extra ater Excel 2000
+[16]      :endif
+[17]  :else
+[18]      :if (⊂wksht)∊'Header' 'StatCalc' 'CFbyCat' 'RateTables' 'AltScenData'
+[19]          (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' wksht) ⎕wi 'xVisible' 1 ⋄ :return
+[20]      :else
+[21]          t←0
+[22]          :repeat
+[23]              :if 100=t←t+1 ⋄ crash ⋄ :endif ⍝ 100 tries
+[24]              (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' wksht) ⎕wi 'XUnprotect' XL_Password
+[25]          :until ~(('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' wksht) ⎕wi 'xProtectContents'
+[26]          :if 12≤ExcelVersion ⋄ :andif (⊂wksht)∊'AllBases' 'ActBases' 'DefBases' 'PenBases' 'Members' 'IndivRes'
+[27]              (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' wksht) ⎕wi 'xEnableFormatConditionsCalculation' 0
+[28]          :endif
+[29]      :endif
+[30]  :endif
+    ∇

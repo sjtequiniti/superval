@@ -1,1 +1,99 @@
-    ∇ res←EDIT∆CALC;lRECL;tieno;FV1;FV2;FV3;FV4;FV5;FV6;size;NUMRECS;REC;NN;MESS;fmt;ind;cols;A;tpr1;RunTime;valid;NO;Error;RECL;values[1]   ⍝ DATAWIN.sf#9[2]   ⍝ Main function which displays a screen to show the progress of the[3]   ⍝ job, and calls BROWSE to let the user look at his creation.[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   res←''[8]   ('Reading Input File:' 'Writing Output File:') Win∆ProgressBar 'SetLabels'[9]   'Running Input File Editor/Calculator' Win∆ProgressBar 'Open'[10]  [11]  :if FileExist InputDir,FILE[12]  :orif 0=tieno←NCREATE InputDir,FILE[13]      MDISPLAY 'InvFileName' FILE ⋄ res←parent,'fFiles.edFILE' ⋄ →END[14]  :endif[15]  [16]  ⍝ Tie file and Calculate number of records[17]  :if 0=(InputDir,fILENAME) NTIE tpr1←'Native' TieNumber ''[18]      Error←'FileNotFound' ⋄ →ERR[19]  :endif[20]  [21]  fV1←1+COLS fV1 ⋄ fV2←1+COLS fV2 ⋄ fV3←1+COLS fV3 ⋄ fV4←1+COLS fV4[22]  fV5←1+COLS fV5 ⋄ dfV5←DLTMB dfV5 ⋄ fV6←1+COLS fV6 ⋄ dfV6←DLTMB dfV6[23]  RECL←recl+2 ⋄ lRECL←(¯3+RECL)⌈1+⌈/FV←1+COLS FV[24]  [25]  :if ind←0∊⍴fmt←DLTMB dFV[26]      fmt←'M<->',('IF'[1+×fmt]),(⍕⍴FV),(×fmt)/'.',⍕fmt←zwb DecP[27]  :else[28]      cols←(2↑(fmt='D')/cols),(2↑(fmt='M')/cols),4↑2⌽(fmt='Y')/cols←⍳⍴fmt[29]  :endif[30]  [31]  NN←⌊(size←⎕NSIZE tpr1)÷RECL ⋄ NO←0[32]  RunTime←DLTMB 1 DATESPELL ⎕ts[33]  [34]  READ:NUMRECS←↑⍴REC←0 ¯2↓'ASCII' Read∆DataFile tpr1 size RECL (NN-NO) NO[35]  [36]  ((NO←NO+NUMRECS) NN fILENAME) Win∆ProgressBar 'FileUpdate'[37]  REC←((NUMRECS,lRECL)↑ 0 ¯1 ↓REC),(NUMRECS,¯1)↑REC[38]  [39]  :if ∨/~valid←⎕VI ,(FV1←REC[;fV1]),' ' ⍝ Numbers must be valid[40]  :orif (⍴valid)≠1↑⍴(∨/' '≠FV1)⌿FV1     ⍝ and scalar![41]      Error←'InvFileNum' ⋄ →ERR[42]  :endif[43]  :if ∨/~valid←⎕VI ,(FV2←REC[;fV2]),' ' ⍝ Numbers must be valid[44]  :orif (⍴valid)≠1↑⍴(∨/' '≠FV2)⌿FV2     ⍝ and scalar![45]      Error←'InvFileNum' ⋄ →ERR[46]  :endif[47]  :if ∨/~valid←⎕VI ,(FV3←REC[;fV3]),' ' ⍝ Numbers must be valid[48]  :orif (⍴valid)≠1↑⍴(∨/' '≠FV3)⌿FV3     ⍝ and scalar![49]      Error←'InvFileNum' ⋄ →ERR[50]  :endif[51]  :if 0≠⍴fV5 ⍝ Dates must be valid if specified[52]      :if ∨/~DATECHECK FV5←MATRIX dfV5 DATEEXP REC[;fV5][53]          Error←'InvFileDate' ⋄ →ERR[54]      :endif[55]  :endif[56]  :if 0≠⍴fV6 ⍝ Dates must be valid if specified[57]      :if ∨/~DATECHECK FV6←MATRIX dfV6 DATEEXP REC[;fV6][58]          Error←'InvFileDate' ⋄ →ERR[59]      :endif[60]  :endif[61]  [62]  FV1←MatrixZWB FV1 ⋄ FV2←MatrixZWB FV2 ⋄ FV3←MatrixZWB FV3 ⋄ FV4←,REC[;fV4][63]  values←⍎Formula[64]  [65]  :if ind[66]      :if 1=⍴,values ⋄ values←NUMRECS/values ⋄ :endif ⍝ Expand if Constant Specified[67]      :if (NUMRECS,3)≡⍴values ⍝ Error if Date Calculated[68]      :orif NUMRECS≠⍴,values ⍝ Error - wrong no. of results[69]      :orif ∨/'*'=,values←fmt ⎕FMT values ⍝ Error if doesn't fit in field[70]          Error←'InvEntry' 'Invalid numeric result calculated'[71]          res←parent,'fOutput.edFormula' ⋄ →ERR1[72]      :endif[73]  :else[74]      :if 3≠¯1↑⍴values←MATRIX values[75]          res←parent,'fOutput.edFormula'[76]          Error←'InvEntry' 'Invalid Dates calculated' ⋄ →ERR1[77]      :endif[78]      values[;3]←values[;3]+1900×values[;3]<1000[79]      :if 1=1↑⍴values ⋄ values←NUMRECS⌿values ⋄ :endif ⍝ Expand if Constant specified[80]      A←DATECHECK values ⋄ values←A⍀A⌿('2ZI2,I4' ⎕FMT values)[; 1 2 3 4 7 8 5 6][81]      A←(NUMRECS,+/×cols)↑(×cols)/values[82]      values←NUMRECS⌿MATRIX fmt ⋄ values[;cols~0]←A[83]  :endif[84]  [85]  REC[;FV]←values ⋄ REC APPEND tieno[86]  (NO NN FILE) Win∆ProgressBar 'MemberUpdate'[87]  :if NO<NN ⋄ →READ ⋄ :endif[88]  FormName ⎕wi 'Focus'[89]  ('Input File Calculation at ',RunTime) BROWSE tieno ⋄ →END[90]  [91]  ERR: ⍝ on Error processing[92]       res←parent,'fFiles.edfILENAME' ⋄ Error←Error fILENAME[93]  ERR1:MDISPLAY Error ⋄ (InputDir,FILE) NERASE tieno[94]  [95]  END:0 0⍴⎕ex 'fV1 fV2 fV3 fV4 fV5 fV6 FV'[96]  Win∆AssignVars ControlName ⍝ Reset to screen values if an error[97]  ⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'    ∇
+    ∇ res←EDIT∆CALC;lRECL;tieno;FV1;FV2;FV3;FV4;FV5;FV6;size;NUMRECS;REC;NN;MESS;fmt;ind;cols;A;tpr1;RunTime;valid;NO;Error;RECL;values
+[1]   ⍝ DATAWIN.sf#9
+[2]   ⍝ Main function which displays a screen to show the progress of the
+[3]   ⍝ job, and calls BROWSE to let the user look at his creation.
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   res←''
+[8]   ('Reading Input File:' 'Writing Output File:') Win∆ProgressBar 'SetLabels'
+[9]   'Running Input File Editor/Calculator' Win∆ProgressBar 'Open'
+[10]  
+[11]  :if FileExist InputDir,FILE
+[12]  :orif 0=tieno←NCREATE InputDir,FILE
+[13]      MDISPLAY 'InvFileName' FILE ⋄ res←parent,'fFiles.edFILE' ⋄ →END
+[14]  :endif
+[15]  
+[16]  ⍝ Tie file and Calculate number of records
+[17]  :if 0=(InputDir,fILENAME) NTIE tpr1←'Native' TieNumber ''
+[18]      Error←'FileNotFound' ⋄ →ERR
+[19]  :endif
+[20]  
+[21]  fV1←1+COLS fV1 ⋄ fV2←1+COLS fV2 ⋄ fV3←1+COLS fV3 ⋄ fV4←1+COLS fV4
+[22]  fV5←1+COLS fV5 ⋄ dfV5←DLTMB dfV5 ⋄ fV6←1+COLS fV6 ⋄ dfV6←DLTMB dfV6
+[23]  RECL←recl+2 ⋄ lRECL←(¯3+RECL)⌈1+⌈/FV←1+COLS FV
+[24]  
+[25]  :if ind←0∊⍴fmt←DLTMB dFV
+[26]      fmt←'M<->',('IF'[1+×fmt]),(⍕⍴FV),(×fmt)/'.',⍕fmt←zwb DecP
+[27]  :else
+[28]      cols←(2↑(fmt='D')/cols),(2↑(fmt='M')/cols),4↑2⌽(fmt='Y')/cols←⍳⍴fmt
+[29]  :endif
+[30]  
+[31]  NN←⌊(size←⎕NSIZE tpr1)÷RECL ⋄ NO←0
+[32]  RunTime←DLTMB 1 DATESPELL ⎕ts
+[33]  
+[34]  READ:NUMRECS←↑⍴REC←0 ¯2↓'ASCII' Read∆DataFile tpr1 size RECL (NN-NO) NO
+[35]  
+[36]  ((NO←NO+NUMRECS) NN fILENAME) Win∆ProgressBar 'FileUpdate'
+[37]  REC←((NUMRECS,lRECL)↑ 0 ¯1 ↓REC),(NUMRECS,¯1)↑REC
+[38]  
+[39]  :if ∨/~valid←⎕VI ,(FV1←REC[;fV1]),' ' ⍝ Numbers must be valid
+[40]  :orif (⍴valid)≠1↑⍴(∨/' '≠FV1)⌿FV1     ⍝ and scalar!
+[41]      Error←'InvFileNum' ⋄ →ERR
+[42]  :endif
+[43]  :if ∨/~valid←⎕VI ,(FV2←REC[;fV2]),' ' ⍝ Numbers must be valid
+[44]  :orif (⍴valid)≠1↑⍴(∨/' '≠FV2)⌿FV2     ⍝ and scalar!
+[45]      Error←'InvFileNum' ⋄ →ERR
+[46]  :endif
+[47]  :if ∨/~valid←⎕VI ,(FV3←REC[;fV3]),' ' ⍝ Numbers must be valid
+[48]  :orif (⍴valid)≠1↑⍴(∨/' '≠FV3)⌿FV3     ⍝ and scalar!
+[49]      Error←'InvFileNum' ⋄ →ERR
+[50]  :endif
+[51]  :if 0≠⍴fV5 ⍝ Dates must be valid if specified
+[52]      :if ∨/~DATECHECK FV5←MATRIX dfV5 DATEEXP REC[;fV5]
+[53]          Error←'InvFileDate' ⋄ →ERR
+[54]      :endif
+[55]  :endif
+[56]  :if 0≠⍴fV6 ⍝ Dates must be valid if specified
+[57]      :if ∨/~DATECHECK FV6←MATRIX dfV6 DATEEXP REC[;fV6]
+[58]          Error←'InvFileDate' ⋄ →ERR
+[59]      :endif
+[60]  :endif
+[61]  
+[62]  FV1←MatrixZWB FV1 ⋄ FV2←MatrixZWB FV2 ⋄ FV3←MatrixZWB FV3 ⋄ FV4←,REC[;fV4]
+[63]  values←⍎Formula
+[64]  
+[65]  :if ind
+[66]      :if 1=⍴,values ⋄ values←NUMRECS/values ⋄ :endif ⍝ Expand if Constant Specified
+[67]      :if (NUMRECS,3)≡⍴values ⍝ Error if Date Calculated
+[68]      :orif NUMRECS≠⍴,values ⍝ Error - wrong no. of results
+[69]      :orif ∨/'*'=,values←fmt ⎕FMT values ⍝ Error if doesn't fit in field
+[70]          Error←'InvEntry' 'Invalid numeric result calculated'
+[71]          res←parent,'fOutput.edFormula' ⋄ →ERR1
+[72]      :endif
+[73]  :else
+[74]      :if 3≠¯1↑⍴values←MATRIX values
+[75]          res←parent,'fOutput.edFormula'
+[76]          Error←'InvEntry' 'Invalid Dates calculated' ⋄ →ERR1
+[77]      :endif
+[78]      values[;3]←values[;3]+1900×values[;3]<1000
+[79]      :if 1=1↑⍴values ⋄ values←NUMRECS⌿values ⋄ :endif ⍝ Expand if Constant specified
+[80]      A←DATECHECK values ⋄ values←A⍀A⌿('2ZI2,I4' ⎕FMT values)[; 1 2 3 4 7 8 5 6]
+[81]      A←(NUMRECS,+/×cols)↑(×cols)/values
+[82]      values←NUMRECS⌿MATRIX fmt ⋄ values[;cols~0]←A
+[83]  :endif
+[84]  
+[85]  REC[;FV]←values ⋄ REC APPEND tieno
+[86]  (NO NN FILE) Win∆ProgressBar 'MemberUpdate'
+[87]  :if NO<NN ⋄ →READ ⋄ :endif
+[88]  FormName ⎕wi 'Focus'
+[89]  ('Input File Calculation at ',RunTime) BROWSE tieno ⋄ →END
+[90]  
+[91]  ERR: ⍝ on Error processing
+[92]       res←parent,'fFiles.edfILENAME' ⋄ Error←Error fILENAME
+[93]  ERR1:MDISPLAY Error ⋄ (InputDir,FILE) NERASE tieno
+[94]  
+[95]  END:0 0⍴⎕ex 'fV1 fV2 fV3 fV4 fV5 fV6 FV'
+[96]  Win∆AssignVars ControlName ⍝ Reset to screen values if an error
+[97]  ⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'
+    ∇

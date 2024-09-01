@@ -1,0 +1,34 @@
+    ∇ res←field QSM_Solve parm;parent;∆
+[1]   ⍝ QSMWIN.sf#3
+[2]   ⍝ Function to allow user control on QSM Solver
+[3]   
+[4]   parent←'fmQSMSolve.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]   
+[9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[10]      amortmethod←(1+'R'=↑amortconstant)⊃'Rate' 'Term'
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]  
+[14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[15]  
+[16]      :repeat
+[17]          :select ↑field
+[18]          :caselist 'cbamortselect' 'cbamortshare' 'cbamortmethod'
+[19]              ((parent,↑field) ⎕wi 'text') ASSIGN∆Dict 2↓↑field
+[20]              (parent 'cbamortshare') Win∆SetRelated 'visible' ('B'=↑amortselect)
+[21]          :endselect
+[22]      :until mt field←1↓field
+[23]  
+[24]  :case 'Valid' ⍝ Routine specific validation
+[25]  
+[26]  :case 'Run'
+[27]      QS_AmortChange 'Solve'
+[28]      res←'Quit'
+[29]  
+[30]  :case 'Quit' ⍝ Deleting "other" variables
+[31]  
+[32]  :endselect
+    ∇

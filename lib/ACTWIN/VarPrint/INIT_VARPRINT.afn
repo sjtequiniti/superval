@@ -1,1 +1,27 @@
-    ∇ VARDESC INIT∆VARPRINT data;I;Z[1]   ⍝ ACTWIN.sf#12[2]   ⍝ Initialise the varprint file[3]   ⍝[4]   Z←↑⍴data[5]   ⍝[6]   ⍝ Create output file[7]   vtpr1←OPEN∆TPR∆FILE ((1⌽0,IsAccrued)↓SStoMAT '/VARPRINT/ACCPRINT')[⎕IO;][8]   vtpr1 SEND AUDIT 4 ⋄ ⍝ Append header to output[9]   ⍝[10]  ⍝ Format standard data items[11]  I←1[12]  VARDESC[I;17+⍳13]←13↑⍕⍎VARDESC[I;7+⍳24] ⋄ →(12>I←I+1)/⎕LC[13]  ⍝ Format non-standard data items[14]  →(0=Z)/L1 ⋄ I←0[15]  VARDESC←VARDESC⍪80↑(¯4↑⍕2+⌊I÷6),' ',(2↑'ABCDEF'[6∣I]),(10↑data[I;]),(37↑13↑⍕⍎data[I;]),'F20.2 1' ⋄ →(Z>I←I+1)/⎕LC[16]  ⍝[17]  L1: ⍝ Output data items[18]  varline←6 ⋄ AGES←0⍴0 ⋄ I←0 ⋄ data←'I4' ⎕FMT⍳Z←2+⌈Z÷6[19]  ⍝⍝⍝ OLDTEST←TEST ⋄ TEST←2[20]  AUDIT data[I;] ⋄ →(Z>I←I+1)/⎕LC[21]  ⍝⍝⍝ TEST←OLDTEST[22]  ⍝ Create vector of ages to output[23]  :if testall ⋄ AGES←X[24]  :else       ⋄ AGES←X~X0,LRA ⋄ AGES←X0,(X0<LRA)/((0=5∣AGES)/AGES),LRA[25]  :endif    ∇
+    ∇ VARDESC INIT∆VARPRINT data;I;Z
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ Initialise the varprint file
+[3]   ⍝
+[4]   Z←↑⍴data
+[5]   ⍝
+[6]   ⍝ Create output file
+[7]   vtpr1←OPEN∆TPR∆FILE ((1⌽0,IsAccrued)↓SStoMAT '/VARPRINT/ACCPRINT')[⎕IO;]
+[8]   vtpr1 SEND AUDIT 4 ⋄ ⍝ Append header to output
+[9]   ⍝
+[10]  ⍝ Format standard data items
+[11]  I←1
+[12]  VARDESC[I;17+⍳13]←13↑⍕⍎VARDESC[I;7+⍳24] ⋄ →(12>I←I+1)/⎕LC
+[13]  ⍝ Format non-standard data items
+[14]  →(0=Z)/L1 ⋄ I←0
+[15]  VARDESC←VARDESC⍪80↑(¯4↑⍕2+⌊I÷6),' ',(2↑'ABCDEF'[6∣I]),(10↑data[I;]),(37↑13↑⍕⍎data[I;]),'F20.2 1' ⋄ →(Z>I←I+1)/⎕LC
+[16]  ⍝
+[17]  L1: ⍝ Output data items
+[18]  varline←6 ⋄ AGES←0⍴0 ⋄ I←0 ⋄ data←'I4' ⎕FMT⍳Z←2+⌈Z÷6
+[19]  ⍝⍝⍝ OLDTEST←TEST ⋄ TEST←2
+[20]  AUDIT data[I;] ⋄ →(Z>I←I+1)/⎕LC
+[21]  ⍝⍝⍝ TEST←OLDTEST
+[22]  ⍝ Create vector of ages to output
+[23]  :if testall ⋄ AGES←X
+[24]  :else       ⋄ AGES←X~X0,LRA ⋄ AGES←X0,(X0<LRA)/((0=5∣AGES)/AGES),LRA
+[25]  :endif
+    ∇

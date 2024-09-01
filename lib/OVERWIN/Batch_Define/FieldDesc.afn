@@ -1,1 +1,19 @@
-    ∇ res←FieldDesc field[1]   ⍝ OVERWIN.sf#20[2]   ⍝ Return a description of the field's contents[3]   [4]   :if ~field≡field ⎕wi 'self'[5]   :orif 1≠field ⎕wi 'visible'[6]   :orif 0=field ⎕wi 'enabled'[7]       res←''[8]   :else[9]       :select field ⎕wi 'class'[10]      :caselist  'Combo' 'Edit'[11]           res←DLTB field ⎕wi 'text'[12]      :case 'Check'[13]           res←CheckTranslate ⍕field ⎕wi 'value'[14]      :case 'List'[15]           res←(field ⎕wi 'list')[field ⎕wi 'value';][16]      :endselect[17]  :endif    ∇
+    ∇ res←FieldDesc field
+[1]   ⍝ OVERWIN.sf#20
+[2]   ⍝ Return a description of the field's contents
+[3]   
+[4]   :if ~field≡field ⎕wi 'self'
+[5]   :orif 1≠field ⎕wi 'visible'
+[6]   :orif 0=field ⎕wi 'enabled'
+[7]       res←''
+[8]   :else
+[9]       :select field ⎕wi 'class'
+[10]      :caselist  'Combo' 'Edit'
+[11]           res←DLTB field ⎕wi 'text'
+[12]      :case 'Check'
+[13]           res←CheckTranslate ⍕field ⎕wi 'value'
+[14]      :case 'List'
+[15]           res←(field ⎕wi 'list')[field ⎕wi 'value';]
+[16]      :endselect
+[17]  :endif
+    ∇

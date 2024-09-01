@@ -1,0 +1,53 @@
+    ∇ ⍙DBXL_DefAOSWrite data;NoMembers;pos;sql;tab;expected;release;col;exitprof;exitbens;ClassID;tabi;exitbeni
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Write the Deferreds AOS Results to Excel
+[3]   
+[4]   →(0∊⍴data)/0 ⍝ Skip if no members
+[5]   
+[6]   NoMembers←XL_Data 'NoMembers'
+[7]   pos←(14+NoMembers-↑⍴data) 0 (13+NoMembers) 0
+[8]   
+[9]   1 XL_ActivateWorksheet 'IndivAOS'
+[10]  (13 28 13 41) XL_PasteAll pos+0 28 0 41
+[11]  0 0⍴data[;⍳3] XL_Data RCtoA1 pos+0 1 0 3 ⋄ 0 0⍴(0 3↓data) XL_Data RCtoA1 pos+0 28 0 34
+[12]  
+[13]  ⍝ Copy formulae for these cells
+[14]  (3 4 3 5) XL_PasteFormulas pos+0 4 0 5
+[15]  (3 27) XL_PasteFormulas pos+4⍴0 27
+[16]  
+[17]  sql←"SELECT MemberID, AOSClassID FROM AOSMember WHERE ResultsCategoryID=",CatID," GROUP BY MemberID, AOSClassID ORDER BY MemberID"
+[18]  0 0⍴(ClassID←0 1↓data[;⎕io+1] XL_Pivot sql 0) XL_Data RCtoA1 pos+4⍴0 6 ⍝ Insert ClassID's into data (5 for Starter/Ender, 6 for NE/Ender, etc)
+[19]  
+[20]  ⍝ Standard Pivot Raed SQL code - Execute SQL and make sure there are results for all members
+[21]  sql←⍙DBPivot "SUM" "AOSValue" "AOSMember" ("ResultsCategoryID=",DLTB CatID) "MemberID" "AOSItemID" (2 3 4 8 7 32 33) membercount
+[22]  tab ←0 1↓data[;⎕io+1] XL_Pivot sql 0
+[23]  sql←⍙DBPivot "SUM" "AOSValue" "AOSMember" ("ResultsCategoryID=",DLTB CatID) "MemberID" "AOSItemID" (18 19 20 24 23 39 40) membercount
+[24]  tabi←0 1↓data[;⎕io+1] XL_Pivot sql 0
+[25]  tab[;⎕io+2]←+/tab[;⎕io+1 2] ⋄ tab←tab[;⎕io,2+⍳5] ⍝ Combine Retirement Releases
+[26]  tabi[;⎕io+2]←+/tabi[;⎕io+1 2] ⋄ tabi←tabi[;⎕io,2+⍳5] ⍝ Combine Retirement Releases Interests
+[27]  
+[28]  0 0⍴(0 ¯1↓tab) XL_Data RCtoA1 pos+0 8 0 12 ⋄ 0 0⍴(0 ¯1↓tabi) XL_Data RCtoA1 pos+0 18 0 22
+[29]  0 0⍴(tab[;,⎕io]+tabi[;,⎕io]-tab[;,⎕io+4]+tabi[;,⎕io+4]) XL_Data RCtoA1 pos+4⍴0 39
+[30]  
+[31]  expected←(+/tab[;1+⍳3],tabi[;1+⍳3])-tab[;⎕io]+tabi[;⎕io]
+[32]  release←-(tab[;1+⍳3]+tabi[;1+⍳3]),0 ⍝ Includes withdrawal but not yet implemented
+[33]  exitprof←tab[;⎕io+4]+tabi[;⎕io+4]-tab[;⎕io+5]+tabi[;⎕io+5] ⋄ exitbens←exitbeni←(1 0×⍴tab)⍴0
+[34]  
+[35]  :for col :in ⍳4
+[36]      release[;col]←release[;col]+exitprof×data[;⎕io+2]=(1 6 5 20)[col]
+[37]      exitbens←exitbens,tab[;⎕io+5]×data[;⎕io+2]=(1 6 5 20)[col]
+[38]      exitbeni←exitbeni,tabi[;⎕io+5]×data[;⎕io+2]=(1 6 5 20)[col]
+[39]  :endfor
+[40]  
+[41]  0 0⍴exitbens XL_Data RCtoA1 pos+0 13 0 16 ⋄ 0 0⍴exitbeni XL_Data RCtoA1 pos+0 23 0 26
+[42]  0 0⍴(release[;0 1 3]) XL_Data RCtoA1 pos+0 36 0 38 ⍝ Exclude withdrawal for now!!
+[43]  
+[44]  sql←⍙DBPivot "SUM" "AOSValue" "AOSMember" ("ResultsCategoryID=",DLTB CatID) "MemberID" "AOSItemID" (1 17) membercount
+[45]  tab←0 1↓data[;⎕io+1] XL_Pivot sql 0
+[46]  
+[47]  0 0⍴tab[;,⎕io] XL_Data RCtoA1 pos+4⍴0 7 ⋄ 0 0⍴tab[;,⎕io+1] XL_Data RCtoA1 pos+4⍴0 17
+[48]  0 0⍴((ClassID∊6 8)×-tab[;,⎕io]+tab[;,⎕io+1]) XL_Data RCtoA1 pos+4⍴0 35
+[49]  0 0⍴(⍉MATRIX expected++/tab) XL_Data RCtoA1 pos+4⍴0 40
+[50]  
+[51]  (8 41) XL_PasteFormulas pos+4⍴0 41
+    ∇

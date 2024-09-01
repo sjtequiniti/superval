@@ -1,1 +1,68 @@
-    ∇ Z←ctx wPUP_EVAL R ;⎕IO;service;bdays;fbar;uservice;udays;fun;fTD;fEU;fI;ferf;revn;revy;revx;∆;fTEADs;nTy;fwdn;back;xyn;fP;orig;factors;fn;fs;fx;fy;revr;fwdr;fX;fTEXDF;ert[1]   ⍝ DEFWIN.sf#4[2]   ⍝ [EnhDef] v8.50 adapted from wPUP_LOOP3 DT/RJW/SJT summer 2010[3]   ⍝ Analyses, calculates and projects benefits on the axes of PRE defined in calling fn wPUP_LOOP2.[4]   ⍝ Constructs a corresponding array of factors by which to multiply the PUP amount.[5]   ⍝ Some project (eg on age axis), some apportion (eg on Barber axis), and some assign (eg fInc).[6]   ⍝ The construction of the factors reflects their interdependencies.[7]   ⍝ Works with slight variations for both standard PUPs and IndPUPs according to ctx[8]   ⍝ Axis abbreviations in comments: A - aAGE; D - aDEC; E - ERF1/ERF2; T - aTYP; U - aUND; ⍬ - scalar[9]   ⍝ R is a 'keyed array' read through the zip function:[10]  ⍝  amt  : amount of benefit to be evaluated[11]  ⍝  barb : Barber - ERF1, ERF2 or split service period[12]  ⍝  bgn  : beginning of service period[13]  ⍝  coo  : flag to preclude consideration for cash benefits[14]  ⍝  end  : end of service period[15]  ⍝  incr : pension-increase rate or yield curve[16]  ⍝  moo  : flag to exclude benefits from DBR decrement[17]  ⍝  ppf  : PPF service: pre-97, 97-09, post-09[18]  ⍝  revn : revaluation rate (or yield curve) to NRA[19]  ⍝  revy : flag to include 1/2-year effect in revaluation[20]  ⍝  revx : rounding method to use in exit year of revaluation[21]  ⍝  und  : underpin - exclude, include or split service period[22]  ⍝  ttl  : title for trace file[23]  ⍝  wof  : spouse fraction for DBR decrement[24]  ⍝  warf : spouse fraction for DAR decrement[25]  [26]  ⎕IO←0[27]  :if ~0=Z←'amt' zip R[28]      ⍝ Read ext vars, constant for member: barbdates, ertabs[TEA], SEX, udate, X, Xs, WARERFind[29]      (revn revy revx)←'revn' 'revy' 'revx' zip R[30]      fX←revn wDEF_INC revy revx                                                      ⍝ revaluation [X] VDATE to NRA[31]  [32]      fI←'SM34'='incr' zip R                                                          ⍝ Pension-increase: one of 4 rates [I][33]  [34]      ⍝ ER factors apply to entitlements according to decrement:[35]      ⍝ Ret yes, DBR no, DAR maybe[36]       ert←(ertabs[;;X] ∘.* 1 0), ertabs[;;NX⍴NRA]                                    ⍝ [TEXF] ER factors on, off, @NRA SV5000329[37]       fTEXDF←0 1 2 4 3⍉ ert ∘.* 1 0,WARERFind                                   ⍝ [TEXDF] preserve axes now, refactor later SV5000329[38]  [39]      ⍝ DBR and DAR pension is reduced (see WOFRAC WARFRAC)[40]      ⍝ DBR pension and cash may be suppressed (see MOO)[41]      ⍝ RET and DBR cash may be suppressed (see COO); DAR always is[42]       fTD←(1 0 1∨0='moo' zip R) ×[1] 1 2⌿⊃(1,'wof' 'warf' zip R)(1 1 0^'coo' zip R)  ⍝ [TD][43]  [44]      fEU←barbdates udate wBARBER 'barb' 'bgn' 'end' 'und' zip R                      ⍝ [EU][45]  [46]      ⍝ apply factors and sum across ERFs ____________________________________________[47]      fn← +/[3] fI∘.× fX×[3] ⊃(⊂[1]fEU)×[2] ⊃fTD×⊂[1 2 4]fTEXDF                       ⍝ [ITDXFU←ITDEXFU←TDEXFU←TDEXF←TEXDF][48]      fn←aINC aTYP aDEC aAGE aFAC aUND ⍉ fn                                           ⍝ [IUTDXF][49]  [50]      ⍝ add PPF axis, now for all contexts. 13jun11[51]       fP←'123'=  'ppf' zip R                                                         ⍝ M8336: handled in wDEFINE_PUP[52]      factors←fn ∘.× fP                                                               ⍝ [IUTDXFP][53]  [54]      :Select ctx[55]      :Case 'PPF'                                                                     ⍝ add trailing axis for IndPPFNRA[56]          factors←factors ∘.× (⍳5)=PPFNRAALL⍳'nra' zip R[57]          Z←factors × Z × 0.9*X0<'nra' zip R[58]      :Else[59]          Z←factors × Z[60]      :EndSelect[61]  [62]  ⍝⍝⍝    :if test ⋄ wPUP_EVAL_TRACE ctx ⋄ :endif[63]  ⍝⌿⍝    wPUP_EVAL_TRACE ctx[64]  :else[65]      Z←(lI,lU,lT,lD,NX,lF,lP)⍴0[66]  :endif    ∇
+    ∇ Z←ctx wPUP_EVAL R ;⎕IO;service;bdays;fbar;uservice;udays;fun;fTD;fEU;fI;ferf;revn;revy;revx;∆;fTEADs;nTy;fwdn;back;xyn;fP;orig;factors;fn;fs;fx;fy;revr;fwdr;fX;fTEXDF;ert
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ [EnhDef] v8.50 adapted from wPUP_LOOP3 DT/RJW/SJT summer 2010
+[3]   ⍝ Analyses, calculates and projects benefits on the axes of PRE defined in calling fn wPUP_LOOP2.
+[4]   ⍝ Constructs a corresponding array of factors by which to multiply the PUP amount.
+[5]   ⍝ Some project (eg on age axis), some apportion (eg on Barber axis), and some assign (eg fInc).
+[6]   ⍝ The construction of the factors reflects their interdependencies.
+[7]   ⍝ Works with slight variations for both standard PUPs and IndPUPs according to ctx
+[8]   ⍝ Axis abbreviations in comments: A - aAGE; D - aDEC; E - ERF1/ERF2; T - aTYP; U - aUND; ⍬ - scalar
+[9]   ⍝ R is a 'keyed array' read through the zip function:
+[10]  ⍝  amt  : amount of benefit to be evaluated
+[11]  ⍝  barb : Barber - ERF1, ERF2 or split service period
+[12]  ⍝  bgn  : beginning of service period
+[13]  ⍝  coo  : flag to preclude consideration for cash benefits
+[14]  ⍝  end  : end of service period
+[15]  ⍝  incr : pension-increase rate or yield curve
+[16]  ⍝  moo  : flag to exclude benefits from DBR decrement
+[17]  ⍝  ppf  : PPF service: pre-97, 97-09, post-09
+[18]  ⍝  revn : revaluation rate (or yield curve) to NRA
+[19]  ⍝  revy : flag to include 1/2-year effect in revaluation
+[20]  ⍝  revx : rounding method to use in exit year of revaluation
+[21]  ⍝  und  : underpin - exclude, include or split service period
+[22]  ⍝  ttl  : title for trace file
+[23]  ⍝  wof  : spouse fraction for DBR decrement
+[24]  ⍝  warf : spouse fraction for DAR decrement
+[25]  
+[26]  ⎕IO←0
+[27]  :if ~0=Z←'amt' zip R
+[28]      ⍝ Read ext vars, constant for member: barbdates, ertabs[TEA], SEX, udate, X, Xs, WARERFind
+[29]      (revn revy revx)←'revn' 'revy' 'revx' zip R
+[30]      fX←revn wDEF_INC revy revx                                                      ⍝ revaluation [X] VDATE to NRA
+[31]  
+[32]      fI←'SM34'='incr' zip R                                                          ⍝ Pension-increase: one of 4 rates [I]
+[33]  
+[34]      ⍝ ER factors apply to entitlements according to decrement:
+[35]      ⍝ Ret yes, DBR no, DAR maybe
+[36]       ert←(ertabs[;;X] ∘.* 1 0), ertabs[;;NX⍴NRA]                                    ⍝ [TEXF] ER factors on, off, @NRA SV5000329
+[37]       fTEXDF←0 1 2 4 3⍉ ert ∘.* 1 0,WARERFind                                   ⍝ [TEXDF] preserve axes now, refactor later SV5000329
+[38]  
+[39]      ⍝ DBR and DAR pension is reduced (see WOFRAC WARFRAC)
+[40]      ⍝ DBR pension and cash may be suppressed (see MOO)
+[41]      ⍝ RET and DBR cash may be suppressed (see COO); DAR always is
+[42]       fTD←(1 0 1∨0='moo' zip R) ×[1] 1 2⌿⊃(1,'wof' 'warf' zip R)(1 1 0^'coo' zip R)  ⍝ [TD]
+[43]  
+[44]      fEU←barbdates udate wBARBER 'barb' 'bgn' 'end' 'und' zip R                      ⍝ [EU]
+[45]  
+[46]      ⍝ apply factors and sum across ERFs ____________________________________________
+[47]      fn← +/[3] fI∘.× fX×[3] ⊃(⊂[1]fEU)×[2] ⊃fTD×⊂[1 2 4]fTEXDF                       ⍝ [ITDXFU←ITDEXFU←TDEXFU←TDEXF←TEXDF]
+[48]      fn←aINC aTYP aDEC aAGE aFAC aUND ⍉ fn                                           ⍝ [IUTDXF]
+[49]  
+[50]      ⍝ add PPF axis, now for all contexts. 13jun11
+[51]       fP←'123'=  'ppf' zip R                                                         ⍝ M8336: handled in wDEFINE_PUP
+[52]      factors←fn ∘.× fP                                                               ⍝ [IUTDXFP]
+[53]  
+[54]      :Select ctx
+[55]      :Case 'PPF'                                                                     ⍝ add trailing axis for IndPPFNRA
+[56]          factors←factors ∘.× (⍳5)=PPFNRAALL⍳'nra' zip R
+[57]          Z←factors × Z × 0.9*X0<'nra' zip R
+[58]      :Else
+[59]          Z←factors × Z
+[60]      :EndSelect
+[61]  
+[62]  ⍝⍝⍝    :if test ⋄ wPUP_EVAL_TRACE ctx ⋄ :endif
+[63]  ⍝⌿⍝    wPUP_EVAL_TRACE ctx
+[64]  :else
+[65]      Z←(lI,lU,lT,lD,NX,lF,lP)⍴0
+[66]  :endif
+    ∇

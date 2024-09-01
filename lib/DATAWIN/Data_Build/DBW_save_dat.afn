@@ -1,1 +1,44 @@
-    ∇ res←DBW_save_dat;fdat;tmp_tn;ftmp;desc;∆;no;cat;recs[1]   ⍝ DATAWIN.sf#21[2]   ⍝ reads ext vars: InputDir datatype[3]   [4]   ⍝ Rename Data File[5]   :if CSVimp ⋄ ftmp←(Win∆Parent InputDir,FILE),'.tmp'[6]   :else      ⋄ ftmp←InputDir,((Win∆Parent xlFILE),' ','{}'embrace xlSHEET),'.tmp'[7]   :endif[8]   [9]   fdat←(Win∆Parent ftmp),'.dat'[10]  :if fdat NTIE tmp_tn←'Native' TieNumber fdat ⍝ Check before destroying any prior DAT file[11]      :if 'Y'='YN' ASK ('\' Win∆Child fdat),' already exists.  Do you want to erase this file?'[12]          fdat NERASE tmp_tn[13]      :else[14]          ⎕nuntie tmp_tn ⋄ res←⊂'Move or Rename ',fdat,' and try again.' ⋄ :return[15]      :endif[16]  :endif[17]  [18]  :if 0=ftmp NTIE tmp_tn←'Native' TieNumber ftmp[19]      res←⊂'Unable to tie ',ftmp,'.  It may be in use by another program.' ⋄ :return[20]  :else[21]      fdat ⎕xnrename tmp_tn ⋄ ⎕nuntie tmp_tn[22]  :endif[23]  [24]  :for ∆ :in spin ¯1↓¨chksums at 'Category' 'Records' ⋄ (cat recs)←∆[25]      recs←⍕zwb recs[26]      cat←CreateCat ¯1↓¯1⌽cat[27]      recs INIString 'Members' (cat,UPPERCASE '\' Win∆Child fdat) (InputDir,'svscheme.ini')[28]  :endfor[29]  [30]  ⍝ Create a parameter description (and check it does not already exist)[31]  :if CSVimp ⋄ ∆←'Data Build of ',FILE[32]  :else      ⋄ ∆←'Data Build of ',xlFILE,' ','{}' embrace xlSHEET[33]  :endif[34]  no←¯1[35]  :repeat[36]      no←no+1[37]  :until mt ClientFile ReadFile (datatype,'Format') (desc←∆,(×no)/' [',(⍕no),']') 'NAMES'[38]  :orif 'Y'='YN' ASK 'Data Format "',desc,'" already exists.  Do you want to overwrite this Format?'[39]  [40]  0 0⍴ClientFile SaveToFile (datatype,'Format') desc (DBW_adapt_legend ∆ desc)[41]  [42]  res←'' fdat desc    ∇
+    ∇ res←DBW_save_dat;fdat;tmp_tn;ftmp;desc;∆;no;cat;recs
+[1]   ⍝ DATAWIN.sf#21
+[2]   ⍝ reads ext vars: InputDir datatype
+[3]   
+[4]   ⍝ Rename Data File
+[5]   :if CSVimp ⋄ ftmp←(Win∆Parent InputDir,FILE),'.tmp'
+[6]   :else      ⋄ ftmp←InputDir,((Win∆Parent xlFILE),' ','{}'embrace xlSHEET),'.tmp'
+[7]   :endif
+[8]   
+[9]   fdat←(Win∆Parent ftmp),'.dat'
+[10]  :if fdat NTIE tmp_tn←'Native' TieNumber fdat ⍝ Check before destroying any prior DAT file
+[11]      :if 'Y'='YN' ASK ('\' Win∆Child fdat),' already exists.  Do you want to erase this file?'
+[12]          fdat NERASE tmp_tn
+[13]      :else
+[14]          ⎕nuntie tmp_tn ⋄ res←⊂'Move or Rename ',fdat,' and try again.' ⋄ :return
+[15]      :endif
+[16]  :endif
+[17]  
+[18]  :if 0=ftmp NTIE tmp_tn←'Native' TieNumber ftmp
+[19]      res←⊂'Unable to tie ',ftmp,'.  It may be in use by another program.' ⋄ :return
+[20]  :else
+[21]      fdat ⎕xnrename tmp_tn ⋄ ⎕nuntie tmp_tn
+[22]  :endif
+[23]  
+[24]  :for ∆ :in spin ¯1↓¨chksums at 'Category' 'Records' ⋄ (cat recs)←∆
+[25]      recs←⍕zwb recs
+[26]      cat←CreateCat ¯1↓¯1⌽cat
+[27]      recs INIString 'Members' (cat,UPPERCASE '\' Win∆Child fdat) (InputDir,'svscheme.ini')
+[28]  :endfor
+[29]  
+[30]  ⍝ Create a parameter description (and check it does not already exist)
+[31]  :if CSVimp ⋄ ∆←'Data Build of ',FILE
+[32]  :else      ⋄ ∆←'Data Build of ',xlFILE,' ','{}' embrace xlSHEET
+[33]  :endif
+[34]  no←¯1
+[35]  :repeat
+[36]      no←no+1
+[37]  :until mt ClientFile ReadFile (datatype,'Format') (desc←∆,(×no)/' [',(⍕no),']') 'NAMES'
+[38]  :orif 'Y'='YN' ASK 'Data Format "',desc,'" already exists.  Do you want to overwrite this Format?'
+[39]  
+[40]  0 0⍴ClientFile SaveToFile (datatype,'Format') desc (DBW_adapt_legend ∆ desc)
+[41]  
+[42]  res←'' fdat desc
+    ∇

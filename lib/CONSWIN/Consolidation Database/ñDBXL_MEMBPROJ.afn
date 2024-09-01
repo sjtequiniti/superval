@@ -1,1 +1,41 @@
-    ∇ ⍙DBXL_MEMBPROJ;sql;SIZE;tab;NOM;runslist[1]   ⍝ CONSWIN.sf#11[2]   ⍝ Membership Projection[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   1 XL_ActivateWorksheet 'ActMembProj'[8]   [9]   (1 2 'Number of Members') Win∆ProgressBar 'MemberUpdate'[10]  [11]  runslist←0 ⍙DBNumList runsA[12]  sql←⍙DBPivot "SUM" "SVValue" "ResultsData_NoIndex" ("LiabilityTypeID=13 AND DataItemID=1 AND ResultsCategoryID IN (",runslist,")",sqlDatabase/" AND DatabaseID=",DBID) "SVYear" "ContingencyID" (18 21 2 1 3 23 4 5)[13]  [14]  SIZE←⌈/1,(XL_Pivot sql 0)[;1][15]  tab←0 1↓(⍳SIZE) XL_Pivot sql 0[16]  0 0⍴(tab[;,⎕io]) XL_Data RCtoA1 11 4 (10+SIZE) 4[17]  tab←tab[;1+⍳3],(+/tab[;4+⍳2]),tab[;6+⍳2][18]  0 0⍴tab XL_Data RCtoA1 11 6 (10+SIZE) 11[19]  [20]  (2 2 'Salaries of Members') Win∆ProgressBar 'MemberUpdate'[21]  [22]  sql←⍙DBPivot "SUM" "SVValue" "ResultsData_NoIndex" ("LiabilityTypeID=13 AND DataItemID=7 AND ResultsCategoryID IN (",runslist,")",sqlDatabase/" AND DatabaseID=",DBID) "SVYear" "ContingencyID" (18 19 21 2 1 3 23 4 5)[23]  [24]  tab←0 1↓(⍳SIZE) XL_Pivot sql 0[25]  tab←tab[;⍳5],(+/tab[;5+⍳2]),tab[;7+⍳2][26]  0 0⍴tab XL_Data RCtoA1 11 12 (10+SIZE) 19[27]  [28]  NOM←,1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ResultsData_NoIndex WHERE LiabilityTypeID=7 AND DataItemID=1 AND SVYear=0 AND ResultsCategoryID IN (",runslist,")",sqlDatabase/" AND DatabaseID=",DBID[29]  0 0⍴NOM XL_Data 'E11'[30]  [31]  (12 2 12 3) XL_PasteFormulas 12 2 (11+SIZE) 3[32]  (12 5) XL_PasteFormulas 12 5 (11+SIZE) 5[33]  [34]  (10 ⍬) XL_PasteFormats 10 ⍬ (11+SIZE) ⍬[35]  [36]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on[37]  XL_AutoFit 3 4 (11+SIZE) 19[38]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off[39]  'ActMembProj' XL_ProtectSheet 1    ∇
+    ∇ ⍙DBXL_MEMBPROJ;sql;SIZE;tab;NOM;runslist
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ Membership Projection
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   1 XL_ActivateWorksheet 'ActMembProj'
+[8]   
+[9]   (1 2 'Number of Members') Win∆ProgressBar 'MemberUpdate'
+[10]  
+[11]  runslist←0 ⍙DBNumList runsA
+[12]  sql←⍙DBPivot "SUM" "SVValue" "ResultsData_NoIndex" ("LiabilityTypeID=13 AND DataItemID=1 AND ResultsCategoryID IN (",runslist,")",sqlDatabase/" AND DatabaseID=",DBID) "SVYear" "ContingencyID" (18 21 2 1 3 23 4 5)
+[13]  
+[14]  SIZE←⌈/1,(XL_Pivot sql 0)[;1]
+[15]  tab←0 1↓(⍳SIZE) XL_Pivot sql 0
+[16]  0 0⍴(tab[;,⎕io]) XL_Data RCtoA1 11 4 (10+SIZE) 4
+[17]  tab←tab[;1+⍳3],(+/tab[;4+⍳2]),tab[;6+⍳2]
+[18]  0 0⍴tab XL_Data RCtoA1 11 6 (10+SIZE) 11
+[19]  
+[20]  (2 2 'Salaries of Members') Win∆ProgressBar 'MemberUpdate'
+[21]  
+[22]  sql←⍙DBPivot "SUM" "SVValue" "ResultsData_NoIndex" ("LiabilityTypeID=13 AND DataItemID=7 AND ResultsCategoryID IN (",runslist,")",sqlDatabase/" AND DatabaseID=",DBID) "SVYear" "ContingencyID" (18 19 21 2 1 3 23 4 5)
+[23]  
+[24]  tab←0 1↓(⍳SIZE) XL_Pivot sql 0
+[25]  tab←tab[;⍳5],(+/tab[;5+⍳2]),tab[;7+⍳2]
+[26]  0 0⍴tab XL_Data RCtoA1 11 12 (10+SIZE) 19
+[27]  
+[28]  NOM←,1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ResultsData_NoIndex WHERE LiabilityTypeID=7 AND DataItemID=1 AND SVYear=0 AND ResultsCategoryID IN (",runslist,")",sqlDatabase/" AND DatabaseID=",DBID
+[29]  0 0⍴NOM XL_Data 'E11'
+[30]  
+[31]  (12 2 12 3) XL_PasteFormulas 12 2 (11+SIZE) 3
+[32]  (12 5) XL_PasteFormulas 12 5 (11+SIZE) 5
+[33]  
+[34]  (10 ⍬) XL_PasteFormats 10 ⍬ (11+SIZE) ⍬
+[35]  
+[36]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+[37]  XL_AutoFit 3 4 (11+SIZE) 19
+[38]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[39]  'ActMembProj' XL_ProtectSheet 1
+    ∇

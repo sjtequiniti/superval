@@ -1,0 +1,123 @@
+    ∇ Slices_Vars arg;i;n;size;warnings;∆decrdesc;∆decrlist
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Do Initialisation of Slices - arg is 'Slices', 'AltSlices' or 'IndSlices'
+[3]   
+[4]   0 0⍴GetDecrList 'List'
+[5]   ∆decrdesc←FormName ⎕wi '∆decrdesc' ⋄ ∆decrlist←FormName ⎕wi '∆decrlist'
+[6]   
+[7]   warnings←0 0⍴''
+[8]   :select arg
+[9]   :case 'Slices'
+[10]      size←↑⍴MATRIX SliceDesc
+[11]      warnings←warnings OVER ("<Slice >,I2,< Tier 1 Accrual Rate Table>"            ⎕fmt ⍳size) Win∆DecrCheck (StripText  ARTAB1) (DropText  ARTAB1)
+[12]      warnings←warnings OVER ("<Slice >,I2,< Tier 1 Accelerated Service Table>"     ⎕fmt ⍳size) Win∆DecrCheck (StripText  ASTAB1) (DropText  ASTAB1)
+[13]      warnings←warnings OVER ("<Slice >,I2,< Tier 1 Service Related Accrual Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText SRATAB1) (DropText SRATAB1)
+[14]      warnings←warnings OVER ("<Slice >,I2,< Tier 2 Accrual Rate Table>"            ⎕fmt ⍳size) Win∆DecrCheck (StripText  ARTAB2) (DropText  ARTAB2)
+[15]      warnings←warnings OVER ("<Slice >,I2,< Tier 2 Accelerated Service Table>"     ⎕fmt ⍳size) Win∆DecrCheck (StripText  ASTAB2) (DropText  ASTAB2)
+[16]      warnings←warnings OVER ("<Slice >,I2,< Tier 2 Service Related Accrual Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText SRATAB2) (DropText SRATAB2)
+[17]      warnings←warnings OVER ("<Slice >,I2,< Tier 3 Accrual Rate Table>"            ⎕fmt ⍳size) Win∆DecrCheck (StripText  ARTAB3) (DropText  ARTAB3)
+[18]      warnings←warnings OVER ("<Slice >,I2,< Tier 3 Accelerated Service Table>"     ⎕fmt ⍳size) Win∆DecrCheck (StripText  ASTAB3) (DropText  ASTAB3)
+[19]      warnings←warnings OVER ("<Slice >,I2,< Tier 3 Service Related Accrual Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText SRATAB3) (DropText SRATAB3)
+[20]  
+[21]      :if ~mt warnings ⋄ :andif 0≠↑⍴ARTAB1
+[22]           ARTAB1←UpdateRTDesc  ARTAB1
+[23]           ASTAB1←UpdateRTDesc  ASTAB1
+[24]          SRATAB1←UpdateRTDesc SRATAB1
+[25]           ARTAB2←UpdateRTDesc  ARTAB2
+[26]           ASTAB2←UpdateRTDesc  ASTAB2
+[27]          SRATAB2←UpdateRTDesc SRATAB2
+[28]           ARTAB3←UpdateRTDesc  ARTAB3
+[29]           ASTAB3←UpdateRTDesc  ASTAB3
+[30]          SRATAB3←UpdateRTDesc SRATAB3
+[31]      :endif
+[32]  
+[33]      :for i :in ⍳size
+[34]          warnings←warnings OVER ("Slice ",(⍕i)," Start Date")  Win∆DateRelative "STDATE[i;]" "lrSTDATE[i;]"
+[35]          warnings←warnings OVER ("Slice ",(⍕i)," Finish Date") Win∆DateRelative "FNDATE[i;]" "lrFNDATE[i;]"
+[36]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 1 Adjustment Factor") Win∆NumRelative "PENADJ1[i;]" "lrPENADJ1[i;]" "Scalar"
+[37]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 2 Adjustment Factor") Win∆NumRelative "PENADJ2[i;]" "lrPENADJ2[i;]" "Scalar"
+[38]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 3 Adjustment Factor") Win∆NumRelative "PENADJ3[i;]" "lrPENADJ3[i;]" "Scalar"
+[39]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 1 Male PPF Adjustment Factor") Win∆NumRelative "m_PPFADJ1[i;]" "lrm_PPFADJ1[i;]" "Scalar"
+[40]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 2 Male PPF Adjustment Factor") Win∆NumRelative "m_PPFADJ2[i;]" "lrm_PPFADJ2[i;]" "Scalar"
+[41]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 3 Male PPF Adjustment Factor") Win∆NumRelative "m_PPFADJ3[i;]" "lrm_PPFADJ3[i;]" "Scalar"
+[42]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 1 Female PPF Adjustment Factor") Win∆NumRelative "f_PPFADJ1[i;]" "lrf_PPFADJ1[i;]" "Scalar"
+[43]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 2 Female PPF Adjustment Factor") Win∆NumRelative "f_PPFADJ2[i;]" "lrf_PPFADJ2[i;]" "Scalar"
+[44]          warnings←warnings OVER ("Slice ",(⍕i)," Tier 3 Female PPF Adjustment Factor") Win∆NumRelative "f_PPFADJ3[i;]" "lrf_PPFADJ3[i;]" "Scalar"
+[45]      :endfor
+[46]  
+[47]  :case 'AltSlices'
+[48]      size←↑⍴MATRIX AltSliceDesc
+[49]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 1 Accrual Rate Table>"            ⎕fmt ⍳size) Win∆DecrCheck (StripText  AltARTAB1) (DropText  AltARTAB1)
+[50]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 1 Accelerated Service Table>"     ⎕fmt ⍳size) Win∆DecrCheck (StripText  AltASTAB1) (DropText  AltASTAB1)
+[51]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 1 Service Related Accrual Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText AltSRATAB1) (DropText AltSRATAB1)
+[52]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 2 Accrual Rate Table>"            ⎕fmt ⍳size) Win∆DecrCheck (StripText  AltARTAB2) (DropText  AltARTAB2)
+[53]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 2 Accelerated Service Table>"     ⎕fmt ⍳size) Win∆DecrCheck (StripText  AltASTAB2) (DropText  AltASTAB2)
+[54]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 2 Service Related Accrual Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText AltSRATAB2) (DropText AltSRATAB2)
+[55]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 3 Accrual Rate Table>"            ⎕fmt ⍳size) Win∆DecrCheck (StripText  AltARTAB3) (DropText  AltARTAB3)
+[56]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 3 Accelerated Service Table>"     ⎕fmt ⍳size) Win∆DecrCheck (StripText  AltASTAB3) (DropText  AltASTAB3)
+[57]      warnings←warnings OVER ("<Alternate Slice >,I2,< Tier 3 Service Related Accrual Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText AltSRATAB3) (DropText AltSRATAB3)
+[58]  
+[59]      :if ~mt warnings ⋄ :andif 0≠↑⍴AltARTAB1
+[60]           AltARTAB1←UpdateRTDesc  AltARTAB1
+[61]           AltASTAB1←UpdateRTDesc  AltASTAB1
+[62]          AltSRATAB1←UpdateRTDesc AltSRATAB1
+[63]           AltARTAB2←UpdateRTDesc  AltARTAB2
+[64]           AltASTAB2←UpdateRTDesc  AltASTAB2
+[65]          AltSRATAB2←UpdateRTDesc AltSRATAB2
+[66]           AltARTAB3←UpdateRTDesc  AltARTAB3
+[67]           AltASTAB3←UpdateRTDesc  AltASTAB3
+[68]          AltSRATAB3←UpdateRTDesc AltSRATAB3
+[69]      :endif
+[70]  
+[71]      :for i :in ⍳size
+[72]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Start Date")  Win∆DateRelative "AltSTDATE[i;]" "lrAltSTDATE[i;]"
+[73]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Finish Date") Win∆DateRelative "AltFNDATE[i;]" "lrAltFNDATE[i;]"
+[74]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 1 Adjustment Factor") Win∆NumRelative "AltPENADJ1[i;]" "lrAltPENADJ1[i;]" "Scalar"
+[75]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 2 Adjustment Factor") Win∆NumRelative "AltPENADJ2[i;]" "lrAltPENADJ2[i;]" "Scalar"
+[76]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 3 Adjustment Factor") Win∆NumRelative "AltPENADJ3[i;]" "lrAltPENADJ3[i;]" "Scalar"
+[77]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 1 Male PPF Adjustment Factor") Win∆NumRelative "m_AltPPFADJ1[i;]" "lrm_AltPPFADJ1[i;]" "Scalar"
+[78]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 2 Male PPF Adjustment Factor") Win∆NumRelative "m_AltPPFADJ2[i;]" "lrm_AltPPFADJ2[i;]" "Scalar"
+[79]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 3 Male PPF Adjustment Factor") Win∆NumRelative "m_AltPPFADJ3[i;]" "lrm_AltPPFADJ3[i;]" "Scalar"
+[80]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 1 Female PPF Adjustment Factor") Win∆NumRelative "f_AltPPFADJ1[i;]" "lrf_AltPPFADJ1[i;]" "Scalar"
+[81]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 2 Female PPF Adjustment Factor") Win∆NumRelative "f_AltPPFADJ2[i;]" "lrf_AltPPFADJ2[i;]" "Scalar"
+[82]          warnings←warnings OVER ("Alternate Slice ",(⍕i)," Tier 3 Female PPF Adjustment Factor") Win∆NumRelative "f_AltPPFADJ3[i;]" "lrf_AltPPFADJ3[i;]" "Scalar"
+[83]      :endfor
+[84]  
+[85]  :case 'IndSlices'
+[86]      size←↑⍴MATRIX IndSliceDesc
+[87]      warnings←warnings OVER ("<Independent Slice >,I2,< Tier 1 Accrual Rate Table>"        ⎕fmt ⍳size) Win∆DecrCheck (StripText  IndARTAB1) (DropText  IndARTAB1)
+[88]      warnings←warnings OVER ("<Independent Slice >,I2,< Tier 1 Accelerated Service Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText  IndASTAB1) (DropText  IndASTAB1)
+[89]      warnings←warnings OVER ("<Independent Slice >,I2,< Tier 2 Accrual Rate Table>"        ⎕fmt ⍳size) Win∆DecrCheck (StripText  IndARTAB2) (DropText  IndARTAB2)
+[90]      warnings←warnings OVER ("<Independent Slice >,I2,< Tier 2 Accelerated Service Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText  IndASTAB2) (DropText  IndASTAB2)
+[91]      warnings←warnings OVER ("<Independent Slice >,I2,< Tier 3 Accrual Rate Table>"        ⎕fmt ⍳size) Win∆DecrCheck (StripText  IndARTAB3) (DropText  IndARTAB3)
+[92]      warnings←warnings OVER ("<Independent Slice >,I2,< Tier 3 Accelerated Service Table>" ⎕fmt ⍳size) Win∆DecrCheck (StripText  IndASTAB3) (DropText  IndASTAB3)
+[93]  
+[94]      :if ~mt warnings ⋄ :andif 0≠↑⍴IndARTAB1
+[95]          IndARTAB1←UpdateRTDesc IndARTAB1
+[96]          IndASTAB1←UpdateRTDesc IndASTAB1
+[97]          IndARTAB2←UpdateRTDesc IndARTAB2
+[98]          IndASTAB2←UpdateRTDesc IndASTAB2
+[99]          IndARTAB3←UpdateRTDesc IndARTAB3
+[100]         IndASTAB3←UpdateRTDesc IndASTAB3
+[101]     :endif
+[102] 
+[103]     :for i :in ⍳size
+[104]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Start Date")  Win∆DateRelative "IndSTDATE[i;]" "lrIndSTDATE[i;]"
+[105]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Finish Date") Win∆DateRelative "IndFNDATE[i;]" "lrIndFNDATE[i;]"
+[106]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 1 Adjustment Factor") Win∆NumRelative "IndPENADJ1[i;]" "lrIndPENADJ1[i;]" "Scalar"
+[107]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 2 Adjustment Factor") Win∆NumRelative "IndPENADJ2[i;]" "lrIndPENADJ2[i;]" "Scalar"
+[108]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 3 Adjustment Factor") Win∆NumRelative "IndPENADJ3[i;]" "lrIndPENADJ3[i;]" "Scalar"
+[109]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 1 Male PPF Adjustment Factor") Win∆NumRelative "m_IndPPFADJ1[i;]" "lrm_IndPPFADJ1[i;]" "Scalar"
+[110]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 2 Male PPF Adjustment Factor") Win∆NumRelative "m_IndPPFADJ2[i;]" "lrm_IndPPFADJ2[i;]" "Scalar"
+[111]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 3 Male PPF Adjustment Factor") Win∆NumRelative "m_IndPPFADJ3[i;]" "lrm_IndPPFADJ3[i;]" "Scalar"
+[112]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 1 Female PPF Adjustment Factor") Win∆NumRelative "f_IndPPFADJ1[i;]" "lrf_IndPPFADJ1[i;]" "Scalar"
+[113]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 2 Female PPF Adjustment Factor") Win∆NumRelative "f_IndPPFADJ2[i;]" "lrf_IndPPFADJ2[i;]" "Scalar"
+[114]         warnings←warnings OVER ("Independent Slice ",(⍕i)," Tier 3 Female PPF Adjustment Factor") Win∆NumRelative "f_IndPPFADJ3[i;]" "lrf_IndPPFADJ3[i;]" "Scalar"
+[115]     :endfor
+[116] 
+[117] :endselect
+[118] 
+[119] :if ~0∊⍴,warnings
+[120]     MDISPLAY DLTMB warnings,⎕tcnl
+[121] :endif
+    ∇

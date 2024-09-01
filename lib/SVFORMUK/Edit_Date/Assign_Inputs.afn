@@ -1,1 +1,24 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Edit_Date" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Edit_Date" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmEditDate.edDateAbs" ⎕wi "text" (DLTB DateAbs)[10]  "fmEditDate.edDateRel" ⎕wi "text" (DLTB DateRel)[11]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Edit_Date[12]      :for var :in spin Comment_Edit_Date at "variable" "row" ⋄ (var row)←var[13]          "Edit_Date" ParmColor ((FormFields for "variable" var) at "control"),var row 1[14]      :endfor[15]  :endif[16]  :if ~0∊⍴,warnings[17]      MDISPLAY DLTMB warnings,⎕tcnl[18]      Win∆AssignVars "fmEditDate"[19]  :endif[20]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Edit_Date" "" "Names"[21]      "fmEditDate" ⎕wi "modified" 0[22]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Edit_Date" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Edit_Date" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmEditDate.edDateAbs" ⎕wi "text" (DLTB DateAbs)
+[10]  "fmEditDate.edDateRel" ⎕wi "text" (DLTB DateRel)
+[11]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Edit_Date
+[12]      :for var :in spin Comment_Edit_Date at "variable" "row" ⋄ (var row)←var
+[13]          "Edit_Date" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[14]      :endfor
+[15]  :endif
+[16]  :if ~0∊⍴,warnings
+[17]      MDISPLAY DLTMB warnings,⎕tcnl
+[18]      Win∆AssignVars "fmEditDate"
+[19]  :endif
+[20]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Edit_Date" "" "Names"
+[21]      "fmEditDate" ⎕wi "modified" 0
+[22]  :endif
+    ∇

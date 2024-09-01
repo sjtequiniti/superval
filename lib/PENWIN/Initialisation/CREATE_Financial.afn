@@ -1,1 +1,50 @@
-    ∇ CREATE∆Financial;I;z;ALLPVMdef;ALLPVM[1]   ⍝ PENWIN.sf#2[2]   ⍝ Create the Financial variables[3]   [4]   ⍝⍀⍝ '' 'Discount' FOURDIT 'sCEN_pi pi'[5]   FinAdjTable←FinAdjTable OVER 'pi' 'pi' (i←pi←termAdjFin BlendRates pi sCEN_pi)[6]   ⍝⍀⍝ '' '' FOURDIT 'pi←'[7]   SWindic←'Use Pre-Ret Int for Accrued/Wdls'[8]   [9]   GP←zwb GPeriod ⋄ GPOverlap←zwb GPOverlap ⋄ DISC←~GPOverlap[10]  FREQ←('ASQMLFWC'=↑FREQ)/1 2 4 12 13 26.09 52.18 10000000[11]  MODE←~'In Arrear'≡9↑MODE[12]  capind←'Spread' ⋄ IncTiming←'Default'[13]  [14]  ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'B88GMPINC sCEN_B88GMPINC A88GMPINC sCEN_A88GMPINC'[15]  ⍝ Assumes GMP pension increases occur at the same time as other pension increases[16]  FinAdjTable←FinAdjTable OVER 'B88GMPINC' 'B88GMPINC' (B88GMPINC←termAdjFin BlendRates B88GMPINC sCEN_B88GMPINC)[17]  FinAdjTable←FinAdjTable OVER 'A88GMPINC' 'A88GMPINC' (A88GMPINC←termAdjFin BlendRates A88GMPINC sCEN_A88GMPINC)[18]  ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'B88GMPINC← A88GMPINC←'[19]  [20]  ALLPVM←ALLPVMdef←((z←⌈/SPA,MatrixZWB bage),No∆Pens)⍴PIR←RID←No∆Pens⍴,1[21]  ⍝ OVERTAKE to allow for sliding-scale vectors[22]  :for I :in ⍳No∆Pens[23]      FinAdjTable←FinAdjTable OVER ('RID[',(⍕I),']') ('DEFINC[',(⍕I),']') (⊃RID[I]←⊂termAdjFin BlendRates (DEFINC[I;]) (sCEN_DEFINC[I;]))[24]      FinAdjTable←FinAdjTable OVER ('PIR[',(⍕I),']') ('PAYINC[',(⍕I),']') (⊃PIR[I]←⊂termAdjFin BlendRates (PAYINC[I;]) (sCEN_PAYINC[I;]))[25]      ALLPVMdef[;I]←z OVERTAKE ⊃RID[I][26]      ALLPVM   [;I]←z OVERTAKE ⊃PIR[I][27]  :endfor[28]  [29]  :if 'R'=↑INCIND ⋄ incT←(incT≤0)+incT←VDATE YDAYS (INCDAT←2↑'DD/MM' DATEEXP INCDAT),VDATE[2][30]  :else           ⋄ incT←0.5[31]  :endif[32]  [33]  ⍝ All the PIR's at t=0.5, 1.5,.. (according to Review Date)[34]  allpvmSY←×⍀ 1⍪¯1 0↓ALLPVM                     ⋄ allpvmdefSY←×⍀ 1⍪¯1 0↓ALLPVMdef[35]  allpvm  ←×⍀(1⍪¯1 0↓ALLPVM*incT)×ALLPVM*1-incT ⋄ allpvmdef  ←×⍀(1⍪¯1 0↓ALLPVMdef*incT)×ALLPVMdef*1-incT[36]  ⍝⍀⍝ Year←⍳SPA[37]  ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'INCIND INCDAT incT←'[38]  ⍝⍀⍝ :for I :in 1+⍳No∆Pens ⍝⍝⍝ FOURDIT is ⎕io 1[39]  ⍝⍀⍝     idx←⍕I-1 ⋄ I←⍕I[40]  ⍝⍀⍝     ⍎'DEFINC',I,'←DEFINC[',idx,';] ⋄ sCEN_DEFINC',I,'←sCEN_DEFINC[',idx,';] ⋄ ALLPVMdef',I,'←ALLPVMdef[;',idx,'] ⋄ PAYINC',I,'←PAYINC[',idx,';] ⋄ sCEN_PAYINC',I,'←sCEN_PAYINC[',idx,';] ⋄ ALLPVM',I,'←ALLPVM[;',idx,'] ⋄ allpvmdefSY',I,'←allpvmdefSY[;',idx,'] ⋄ allpvmdef',I,'←allpvmdef[;',idx,'] ⋄ allpvmSY',I,'←allpvmSY[;',idx,'] ⋄ allpvm',I,'←allpvm[;',idx,']'[41]  ⍝⍀⍝     '' ('Pension Increases ',I) FOURDIT 'Year DEFINC',I,' sCEN_DEFINC',I,' ALLPVMdef',I,'← PAYINC',I,' sCEN_PAYINC',I,' ALLPVM',I,'← allpvmdefSY',I,'← allpvmdef',I,'← allpvmSY',I,'← allpvm',I,'←'[42]  ⍝⍀⍝     0 0⍴⎕ex 'DEFINC',I,' sCEN_DEFINC',I,' ALLPVMdef',I,' PAYINC',I,' sCEN_PAYINC',I,' ALLPVM',I,' allpvmdefSY',I,' allpvmdef',I,' allpvmSY',I,' allpvm',I[43]  ⍝⍀⍝ :endfor[44]  [45]  ⍝ ⍝⍀⍝ Year←⍳SPA[46]  ⍝ ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'Year DEFINC sCEN_DEFINC ALLPVMdef← PAYINC sCEN_PAYINC ALLPVM←'[47]  ⍝ ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'INCIND INCDAT incT←'[48]  ⍝ ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'Year allpvmdefSY← allpvmdef← allpvmSY← allpvm←'    ∇
+    ∇ CREATE∆Financial;I;z;ALLPVMdef;ALLPVM
+[1]   ⍝ PENWIN.sf#2
+[2]   ⍝ Create the Financial variables
+[3]   
+[4]   ⍝⍀⍝ '' 'Discount' FOURDIT 'sCEN_pi pi'
+[5]   FinAdjTable←FinAdjTable OVER 'pi' 'pi' (i←pi←termAdjFin BlendRates pi sCEN_pi)
+[6]   ⍝⍀⍝ '' '' FOURDIT 'pi←'
+[7]   SWindic←'Use Pre-Ret Int for Accrued/Wdls'
+[8]   
+[9]   GP←zwb GPeriod ⋄ GPOverlap←zwb GPOverlap ⋄ DISC←~GPOverlap
+[10]  FREQ←('ASQMLFWC'=↑FREQ)/1 2 4 12 13 26.09 52.18 10000000
+[11]  MODE←~'In Arrear'≡9↑MODE
+[12]  capind←'Spread' ⋄ IncTiming←'Default'
+[13]  
+[14]  ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'B88GMPINC sCEN_B88GMPINC A88GMPINC sCEN_A88GMPINC'
+[15]  ⍝ Assumes GMP pension increases occur at the same time as other pension increases
+[16]  FinAdjTable←FinAdjTable OVER 'B88GMPINC' 'B88GMPINC' (B88GMPINC←termAdjFin BlendRates B88GMPINC sCEN_B88GMPINC)
+[17]  FinAdjTable←FinAdjTable OVER 'A88GMPINC' 'A88GMPINC' (A88GMPINC←termAdjFin BlendRates A88GMPINC sCEN_A88GMPINC)
+[18]  ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'B88GMPINC← A88GMPINC←'
+[19]  
+[20]  ALLPVM←ALLPVMdef←((z←⌈/SPA,MatrixZWB bage),No∆Pens)⍴PIR←RID←No∆Pens⍴,1
+[21]  ⍝ OVERTAKE to allow for sliding-scale vectors
+[22]  :for I :in ⍳No∆Pens
+[23]      FinAdjTable←FinAdjTable OVER ('RID[',(⍕I),']') ('DEFINC[',(⍕I),']') (⊃RID[I]←⊂termAdjFin BlendRates (DEFINC[I;]) (sCEN_DEFINC[I;]))
+[24]      FinAdjTable←FinAdjTable OVER ('PIR[',(⍕I),']') ('PAYINC[',(⍕I),']') (⊃PIR[I]←⊂termAdjFin BlendRates (PAYINC[I;]) (sCEN_PAYINC[I;]))
+[25]      ALLPVMdef[;I]←z OVERTAKE ⊃RID[I]
+[26]      ALLPVM   [;I]←z OVERTAKE ⊃PIR[I]
+[27]  :endfor
+[28]  
+[29]  :if 'R'=↑INCIND ⋄ incT←(incT≤0)+incT←VDATE YDAYS (INCDAT←2↑'DD/MM' DATEEXP INCDAT),VDATE[2]
+[30]  :else           ⋄ incT←0.5
+[31]  :endif
+[32]  
+[33]  ⍝ All the PIR's at t=0.5, 1.5,.. (according to Review Date)
+[34]  allpvmSY←×⍀ 1⍪¯1 0↓ALLPVM                     ⋄ allpvmdefSY←×⍀ 1⍪¯1 0↓ALLPVMdef
+[35]  allpvm  ←×⍀(1⍪¯1 0↓ALLPVM*incT)×ALLPVM*1-incT ⋄ allpvmdef  ←×⍀(1⍪¯1 0↓ALLPVMdef*incT)×ALLPVMdef*1-incT
+[36]  ⍝⍀⍝ Year←⍳SPA
+[37]  ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'INCIND INCDAT incT←'
+[38]  ⍝⍀⍝ :for I :in 1+⍳No∆Pens ⍝⍝⍝ FOURDIT is ⎕io 1
+[39]  ⍝⍀⍝     idx←⍕I-1 ⋄ I←⍕I
+[40]  ⍝⍀⍝     ⍎'DEFINC',I,'←DEFINC[',idx,';] ⋄ sCEN_DEFINC',I,'←sCEN_DEFINC[',idx,';] ⋄ ALLPVMdef',I,'←ALLPVMdef[;',idx,'] ⋄ PAYINC',I,'←PAYINC[',idx,';] ⋄ sCEN_PAYINC',I,'←sCEN_PAYINC[',idx,';] ⋄ ALLPVM',I,'←ALLPVM[;',idx,'] ⋄ allpvmdefSY',I,'←allpvmdefSY[;',idx,'] ⋄ allpvmdef',I,'←allpvmdef[;',idx,'] ⋄ allpvmSY',I,'←allpvmSY[;',idx,'] ⋄ allpvm',I,'←allpvm[;',idx,']'
+[41]  ⍝⍀⍝     '' ('Pension Increases ',I) FOURDIT 'Year DEFINC',I,' sCEN_DEFINC',I,' ALLPVMdef',I,'← PAYINC',I,' sCEN_PAYINC',I,' ALLPVM',I,'← allpvmdefSY',I,'← allpvmdef',I,'← allpvmSY',I,'← allpvm',I,'←'
+[42]  ⍝⍀⍝     0 0⍴⎕ex 'DEFINC',I,' sCEN_DEFINC',I,' ALLPVMdef',I,' PAYINC',I,' sCEN_PAYINC',I,' ALLPVM',I,' allpvmdefSY',I,' allpvmdef',I,' allpvmSY',I,' allpvm',I
+[43]  ⍝⍀⍝ :endfor
+[44]  
+[45]  ⍝ ⍝⍀⍝ Year←⍳SPA
+[46]  ⍝ ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'Year DEFINC sCEN_DEFINC ALLPVMdef← PAYINC sCEN_PAYINC ALLPVM←'
+[47]  ⍝ ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'INCIND INCDAT incT←'
+[48]  ⍝ ⍝⍀⍝ '' 'Pension Increases' FOURDIT 'Year allpvmdefSY← allpvmdef← allpvmSY← allpvm←'
+    ∇

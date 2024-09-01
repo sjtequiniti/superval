@@ -1,1 +1,36 @@
-    ∇ ⍙DBXL_ScenCashFlow;no;cf;rIDs;tab;col[1]   ⍝ CONSWIN.sf#21[2]   ⍝ Populate Excel with the CashFlows[3]   [4]   1 XL_ActivateWorksheet 'CashFlow'[5]   'D↑' XL_RangeInsert 13 ⍬ (10+SIZE) ⍬[6]   (12 2 12 3) XL_PasteAll 13 2 (10+SIZE) 3[7]   [8]   ⍝ Insert Scenario columns as required and some shading[9]   (SIZE+1) Prepare_XLSheet 5,9 8 7 6+NoScen-2[10]  [11]  :for no :in ⍳⍴sIDs[12]      (no (⍴sIDs) (↑((⊂'Primary Basis'),descs)[no])) Win∆ProgressBar 'MemberUpdate'[13]  [14]      :if ~mt rIDs←(RunList for 'ScenarioID' (sIDs[no])) at 'ResultsCategoryID'[15]          ⍝ Expect a two column response - year (minimum value of 1) and then values[16]          tab←1 ⍙DBadoCONCommand "SELECT SVYear,SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList rIDs),") AND LiabilityTypeID=8 AND ContingencyID NOT IN (11) GROUP BY SVYear"[17]          cf←SIZE/0 ⋄ cf[tab[;⎕io]]←tab[;⎕io+1][18]          0 0⍴(⍉MATRIX cf) XL_Data RCtoA1 11 (3+no) (10+SIZE) (3+no)[19]      :endif[20]  :endfor[21]  [22]  (12 (4+NoScen) 12 (4+5×NoScen-1)) XL_PasteFormulas 11 (4+NoScen) (10+SIZE) (4+5×NoScen-1)[23]  [24]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on[25]  XL_AutoFit 1 4 (10+SIZE) (9+6×NoScen-2)[26]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off[27]  'CashFlow' XL_ProtectSheet 1[28]  [29]  1 XL_ActivateWorksheet 'CFGraph'[30]  :for no :in 1↓⍳⍴sIDs[31]      0 0⍴(((((('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'CFGraph') ⎕wi 'XChartObjects') ⎕wi 'xItem' 1) ⎕wi 'xChart') ⎕wi 'XSeriesCollection') ⎕wi 'XAdd' ('=CashFlow!',(RCtoA1 7 (3+no)),',CashFlow!',RCtoA1 11 (3+no) (11+SIZE) (3+no)) 2 1 0 0[32]  :endfor[33]  (((((('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'CFGraph') ⎕wi 'XChartObjects') ⎕wi 'xItem' 1) ⎕wi 'xChart') ⎕wi 'xLegend') ⎕wi 'xPosition' (↑⍙XL at '=xlLegendPositionBottom')[34]  'CFGraph' XL_ProtectSheet 1    ∇
+    ∇ ⍙DBXL_ScenCashFlow;no;cf;rIDs;tab;col
+[1]   ⍝ CONSWIN.sf#21
+[2]   ⍝ Populate Excel with the CashFlows
+[3]   
+[4]   1 XL_ActivateWorksheet 'CashFlow'
+[5]   'D↑' XL_RangeInsert 13 ⍬ (10+SIZE) ⍬
+[6]   (12 2 12 3) XL_PasteAll 13 2 (10+SIZE) 3
+[7]   
+[8]   ⍝ Insert Scenario columns as required and some shading
+[9]   (SIZE+1) Prepare_XLSheet 5,9 8 7 6+NoScen-2
+[10]  
+[11]  :for no :in ⍳⍴sIDs
+[12]      (no (⍴sIDs) (↑((⊂'Primary Basis'),descs)[no])) Win∆ProgressBar 'MemberUpdate'
+[13]  
+[14]      :if ~mt rIDs←(RunList for 'ScenarioID' (sIDs[no])) at 'ResultsCategoryID'
+[15]          ⍝ Expect a two column response - year (minimum value of 1) and then values
+[16]          tab←1 ⍙DBadoCONCommand "SELECT SVYear,SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList rIDs),") AND LiabilityTypeID=8 AND ContingencyID NOT IN (11) GROUP BY SVYear"
+[17]          cf←SIZE/0 ⋄ cf[tab[;⎕io]]←tab[;⎕io+1]
+[18]          0 0⍴(⍉MATRIX cf) XL_Data RCtoA1 11 (3+no) (10+SIZE) (3+no)
+[19]      :endif
+[20]  :endfor
+[21]  
+[22]  (12 (4+NoScen) 12 (4+5×NoScen-1)) XL_PasteFormulas 11 (4+NoScen) (10+SIZE) (4+5×NoScen-1)
+[23]  
+[24]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+[25]  XL_AutoFit 1 4 (10+SIZE) (9+6×NoScen-2)
+[26]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[27]  'CashFlow' XL_ProtectSheet 1
+[28]  
+[29]  1 XL_ActivateWorksheet 'CFGraph'
+[30]  :for no :in 1↓⍳⍴sIDs
+[31]      0 0⍴(((((('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'CFGraph') ⎕wi 'XChartObjects') ⎕wi 'xItem' 1) ⎕wi 'xChart') ⎕wi 'XSeriesCollection') ⎕wi 'XAdd' ('=CashFlow!',(RCtoA1 7 (3+no)),',CashFlow!',RCtoA1 11 (3+no) (11+SIZE) (3+no)) 2 1 0 0
+[32]  :endfor
+[33]  (((((('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'CFGraph') ⎕wi 'XChartObjects') ⎕wi 'xItem' 1) ⎕wi 'xChart') ⎕wi 'xLegend') ⎕wi 'xPosition' (↑⍙XL at '=xlLegendPositionBottom')
+[34]  'CFGraph' XL_ProtectSheet 1
+    ∇

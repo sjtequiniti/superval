@@ -1,0 +1,25 @@
+    ∇ PP∆MortSelect pp∆exit
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Select the appropriate lx and ly tables
+[3]   ⍝ Return (globally) pp∆LXexit pp∆lxexit pp∆LY pp∆ly
+[4]   
+[5]   :select pp∆exit ⍝ Survival post retirement age
+[6]   :caselist 'LR' 'NR' 'ER' 'L2' 'N2' 'E2' 'W ' 'W2' 'LT' 'NT' 'ET' 'DT' 'LO' 'NO' 'EO' 'DO' 'A' ⍝ Retirement, Leaving, Transfers and Accrued
+[7]       pp∆LXexit←pp∆LXpost ⋄ pp∆lxexit←pp∆lxpost
+[8]       :if ~pp∆Yret2D ⋄ pp∆LY←pp∆LYpost ⋄ pp∆ly←pp∆lypost ⋄ :endif
+[9]   :caselist 'D ' 'DL' 'DD' ⍝ Death in Service and in Deferment
+[10]      pp∆LXexit←pp∆lxexit←120⍴1 ⍝ LX's are not relevant
+[11]      :if ~pp∆Ydis2D ⋄ pp∆LY←pp∆LYdis ⋄ pp∆ly←pp∆lydis ⋄ :endif
+[12]  :caselist 'I ' 'I2' 'P ' 'PD' 'PR' 'P2' ⍝ Ill Health/PHI Retirement
+[13]      :if pp∆Xill2D ⋄ pp∆LXexit←120⍴1
+[14]      :else         ⋄ pp∆LXexit←pp∆LXill ⋄ pp∆lxexit←pp∆lxill
+[15]      :endif
+[16]      :if ~pp∆Yret2D ⋄ pp∆LY←pp∆LYpost ⋄ pp∆ly←pp∆lypost ⋄ :endif
+[17]  :else
+[18]      crash
+[19]  :endselect
+[20]  
+[21]  ⍝ Variable to store Spouse probabilities according to age at Exit, Start and End
+[22]  ⍝⍝⍝ pp∆SpouseProbs←,⊂0 3⍴0
+[23]  pp∆SpouseProbs←MATRIX 'Key' 'CF'
+    ∇

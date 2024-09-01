@@ -1,1 +1,19 @@
-    ∇ z←sw XL_HideRows rows;r[1]   ⍝ RSEWIN.sf#2[2]   ⍝ Hide or Unhide specified rows of the active worksheet[3]   ⍝ rows is the row numbers to be changed[4]   ⍝ If sw ←→ 1 hide[5]   ⍝    sw ←→ 0 unhide[6]   ⍝ If sw is ommitted return the state of the rows[7]   [8]     :if 0=⎕nc 'sw'  ⍝ Return the state of rows[9]       z←⍬[10]      :for r :in rows[11]          z←z,'xl' ⎕wi 'Rows().Hidden' r[12]      :endfor[13]    :else           ⍝ Set state[14]      :for r :in  rows[15]      'xl' ⎕wi 'Rows().Hidden' r sw[16]      :endfor[17]    :endif    ∇
+    ∇ z←sw XL_HideRows rows;r
+[1]   ⍝ RSEWIN.sf#2
+[2]   ⍝ Hide or Unhide specified rows of the active worksheet
+[3]   ⍝ rows is the row numbers to be changed
+[4]   ⍝ If sw ←→ 1 hide
+[5]   ⍝    sw ←→ 0 unhide
+[6]   ⍝ If sw is ommitted return the state of the rows
+[7]   
+[8]     :if 0=⎕nc 'sw'  ⍝ Return the state of rows
+[9]       z←⍬
+[10]      :for r :in rows
+[11]          z←z,'xl' ⎕wi 'Rows().Hidden' r
+[12]      :endfor
+[13]    :else           ⍝ Set state
+[14]      :for r :in  rows
+[15]      'xl' ⎕wi 'Rows().Hidden' r sw
+[16]      :endfor
+[17]    :endif
+    ∇

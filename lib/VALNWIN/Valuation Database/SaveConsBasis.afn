@@ -1,0 +1,20 @@
+    ∇ SaveConsBasis;Index;no;z;RunTime;File;tieno
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Save Valuation Basis to File for Consolidation Display
+[3]   
+[4]   :if ⍙dbopt
+[5]       File←ConsolidDir,'ValBasis'
+[6]       :if ~FileExist File,'.sf'
+[7]           0 0⍴CreateFile File 'Valuation Run Descriptions'
+[8]       :endif
+[9]   
+[10]      RunTime←1 ⍙DBTimeStamp ValnTimeStamp
+[11]      Index←File ReadFile 1 ⍝ Get all rows of Index (even Deleted)
+[12]      :if ∨/z←0,(DLTB¨Index at '∆_Name')≡¨⊂no←⍕ResultsCategoryID
+[13]          Index[z⍳1;Index[0;]⍳'∆_Description' '∆_Deleted']←RunTime ''
+[14]          →(0=File FTIE tieno←TieNumber File)/⎕lc
+[15]          Index ⎕freplace tieno,1 ⋄ ⎕funtie tieno
+[16]      :endif
+[17]      0 0⍴File SaveToFile no RunTime (pack 'rUNDESC')
+[18]  :endif
+    ∇

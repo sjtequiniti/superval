@@ -1,0 +1,49 @@
+    ∇ res←CREATE∆NEM;Xe;skip;Lage;SDurn;LDurn;Dskip;neMinAge;tieno
+[1]   ⍝ VALNWIN.sf#13
+[2]   ⍝ Details of New Entrant Ages, Salaries and Fund Growth
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   NOM←NRA↑DEC∆CHECK nOM ⋄ NESALS←NRA↑DEC∆CHECK neSALS
+[8]   ⍝ Only Entry when both Number and Salary specified
+[9]   :if   res←^/0≥NOM←NOM××NESALS
+[10]  :orif res←^/0≥NESALS←NESALS××NOM
+[11]      'Number of Members and New Entrant Salary must both be specified at all New Entrant Ages' VALN∆LOG 'Error'
+[12]      :return
+[13]  :endif
+[14]  
+[15]  FUNDTOT←projTerm OVERTAKE ,EXECUTE FUNDTOT ⍝ Fund Growth Vector
+[16]  :if 'G'=1↑GrowthInd ⋄ FUNDTOT←×\FUNDTOT ⋄ :endif
+[17]  AllowNegNE←zwb AllowNegNE
+[18]  
+[19]  :select ↑RepMeth
+[20]  :caselist ' ' 'N'
+[21]      FUNDTOT←(1,FUNDTOT)×CFTOT[2;0;0]+zwb ImmedNE
+[22]  :case 'S'
+[23]      FUNDTOT←(1,FUNDTOT)×CFTOT[2;0;7]+(zwb ImmedNE)×??? aVERAGE sALARY ⍝⍝⍝
+[24]      FUNDTOT←FUNDTOT××\1,projTerm OVERTAKE f
+[25]  :case 'R'
+[26]      FUNDTOT←(1,FUNDTOT)×(1+projTerm)↑+/CFTOT[2;;9 14]
+[27]  :endselect
+[28]  
+[29]  Maxterm←projTerm←100⌊projTerm
+[30]  :if uk≠1 ⋄ Maxterm←100⌊zwb MaxTerm ⋄ :endif
+[31]  
+[32]  :if 0∊⍴DataDateVars ⋄ InitialiseDefaults ⋄ :endif
+[33]  :if uk=1 ⋄ neSEX←SelSex ⋄ neCAT←CAT ⋄ :endif
+[34]  
+[35]  ⍝ Create the New Entrant Deck
+[36]  fNOM←¯3+RECL+⍳5 ⋄ RECL←RECL+5 ⍝ Add fNOM to the end of the record!!
+[37]  Xe←16 ⋄ skip←1 ⋄ Lage←NRA-1 ⋄ SDurn←LDurn←0 ⋄ Dskip←1 ⋄ neMinAge←15
+[38]  
+[39]  :if res←0=tieno←netie←CREATENEDECK
+[40]      'Unable to create New Entrant file' VALN∆LOG 'Error'
+[41]      :return
+[42]  :endif
+[43]  filesize←⎕nsize netie
+[44]  
+[45]  NUMRECS←⌊filesize÷RECL
+[46]  
+[47]  DateVars←(~^/' '=DateVars)⌿DateVars
+    ∇

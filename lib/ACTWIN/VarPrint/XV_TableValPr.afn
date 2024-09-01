@@ -1,1 +1,65 @@
-    ∇ Z←tid XV_TableValPr lines;hasTtl;pts;hasHds;isTbl;ln1;ln2;dep;rws;cap;thd;tbd;cnt;next;seps;∆;cmmt;tid∆;ttl;toc[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag a value-pair table in lines, if there. SJT 13feb10[3]   ⍝ Return number of lines read and rws of an HTML table.[4]   ⍝ Label-value pairs are separated by colons.[5]   ⍝ Reads ext vars: MAX_DEPTH STYLE_TH[6]   [7]   :If isTbl←' '∨.≠2⊃2↑lines                                                       ⍝ ASSUME 2nd line cannot be blank[8]   [9]       :If hasTtl←~':'∊↑,/2↑lines                                                  ⍝ ASSUME title always followed by col hds[10]          hasTtl←~1∊(DLTB↑lines)⎕SS '  '                                          ⍝ ASSUME title line has no internal double spaces[11]      :EndIf[12]  [13]      :If hasHds←~':'∊(hasTtl+1)⊃lines                                            ⍝ ASSUME col heads have no separators[14]          pts←XV_PartOnDblSpace (hasTtl+1)⊃lines                                  ⍝ ASSUME >1 space between col hds[15]          isTbl←^/1 0^.=' '=pts/(2,⍴pts)↑0 1⌽⊃lines[2/hasTtl+hasHds+1]            ⍝ TEST data cells start 1-col R of of col hds[16]      :Else[17]          isTbl←1=((hasTtl+1)⊃lines)+.=':'                                        ⍝ ASSUME only 1-col tables lack col hds[18]          pts←(⍴(hasTtl+1)⊃lines)↑1[19]      :EndIf[20]  [21]      :If isTbl                                                                   ⍝ TEST has ≥2 rows[22]          (ln1 ln2)←lines[hasTtl+hasHds+1 2][23]          isTbl←1^.≤':'+.=¨(+\pts)⊂ln1                                            ⍝ TEST each cell of 1st line contains ≤1 colon[24]      :EndIf[25]  [26]  :EndIf[27]  [28]  [29]  :If isTbl[30]  [31]      cmmt←⊂'<!-- XV_TableValPr -->'[32]  [33]      seps←∆/⍳⍴∆←':'=ln1                                                          ⍝ find separators[34]      next←MAX_DEPTH↑(hasTtl+hasHds)↓lines                                        ⍝ candidate data rows[35]      dep←+/∨/^⍀(⊃next)[;seps]=':'                                                ⍝ follow separators down[36]  [37]      rws←(⊂'tr')xtag¨,/XV_TagValPr¨DLTB¨(+\pts)⊂[2]⊃dep↑next[38]  [39]      :If hasTtl[40]          ttl←DLTB↑lines[41]          tid∆←⍕tid←tid+1[42]          cap←xtag/'h2' ('a name="', tid∆,'"') ttl[43]          toc←xtag/'li' ('a href="#',tid∆,'"') ttl[44]      :Else[45]          toc←cap←ttl←''[46]      :EndIf[47]  [48]      :If hasHds[49]          thd←'thead' xtag ⊂'tr' xtag↑,/(⊂'th colspan="2"',STYLE_TH)xtag¨DLTB¨(+\pts)⊂(hasTtl+1)⊃lines[50]          tbd←'tbody' xtag rws[51]      :Else[52]          thd←''[53]          tbd←rws[54]      :EndIf[55]  [56]      rws←cap,'table' xtag cmmt,thd,tbd[57]      cnt←hasTtl+hasHds+dep[58]  [59]  :Else[60]      (cnt rws toc)←0 '' ''                                                       ⍝ no table found[61]  :EndIf[62]  [63]  Z←cnt rws toc tid    ∇
+    ∇ Z←tid XV_TableValPr lines;hasTtl;pts;hasHds;isTbl;ln1;ln2;dep;rws;cap;thd;tbd;cnt;next;seps;∆;cmmt;tid∆;ttl;toc
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag a value-pair table in lines, if there. SJT 13feb10
+[3]   ⍝ Return number of lines read and rws of an HTML table.
+[4]   ⍝ Label-value pairs are separated by colons.
+[5]   ⍝ Reads ext vars: MAX_DEPTH STYLE_TH
+[6]   
+[7]   :If isTbl←' '∨.≠2⊃2↑lines                                                       ⍝ ASSUME 2nd line cannot be blank
+[8]   
+[9]       :If hasTtl←~':'∊↑,/2↑lines                                                  ⍝ ASSUME title always followed by col hds
+[10]          hasTtl←~1∊(DLTB↑lines)⎕SS '  '                                          ⍝ ASSUME title line has no internal double spaces
+[11]      :EndIf
+[12]  
+[13]      :If hasHds←~':'∊(hasTtl+1)⊃lines                                            ⍝ ASSUME col heads have no separators
+[14]          pts←XV_PartOnDblSpace (hasTtl+1)⊃lines                                  ⍝ ASSUME >1 space between col hds
+[15]          isTbl←^/1 0^.=' '=pts/(2,⍴pts)↑0 1⌽⊃lines[2/hasTtl+hasHds+1]            ⍝ TEST data cells start 1-col R of of col hds
+[16]      :Else
+[17]          isTbl←1=((hasTtl+1)⊃lines)+.=':'                                        ⍝ ASSUME only 1-col tables lack col hds
+[18]          pts←(⍴(hasTtl+1)⊃lines)↑1
+[19]      :EndIf
+[20]  
+[21]      :If isTbl                                                                   ⍝ TEST has ≥2 rows
+[22]          (ln1 ln2)←lines[hasTtl+hasHds+1 2]
+[23]          isTbl←1^.≤':'+.=¨(+\pts)⊂ln1                                            ⍝ TEST each cell of 1st line contains ≤1 colon
+[24]      :EndIf
+[25]  
+[26]  :EndIf
+[27]  
+[28]  
+[29]  :If isTbl
+[30]  
+[31]      cmmt←⊂'<!-- XV_TableValPr -->'
+[32]  
+[33]      seps←∆/⍳⍴∆←':'=ln1                                                          ⍝ find separators
+[34]      next←MAX_DEPTH↑(hasTtl+hasHds)↓lines                                        ⍝ candidate data rows
+[35]      dep←+/∨/^⍀(⊃next)[;seps]=':'                                                ⍝ follow separators down
+[36]  
+[37]      rws←(⊂'tr')xtag¨,/XV_TagValPr¨DLTB¨(+\pts)⊂[2]⊃dep↑next
+[38]  
+[39]      :If hasTtl
+[40]          ttl←DLTB↑lines
+[41]          tid∆←⍕tid←tid+1
+[42]          cap←xtag/'h2' ('a name="', tid∆,'"') ttl
+[43]          toc←xtag/'li' ('a href="#',tid∆,'"') ttl
+[44]      :Else
+[45]          toc←cap←ttl←''
+[46]      :EndIf
+[47]  
+[48]      :If hasHds
+[49]          thd←'thead' xtag ⊂'tr' xtag↑,/(⊂'th colspan="2"',STYLE_TH)xtag¨DLTB¨(+\pts)⊂(hasTtl+1)⊃lines
+[50]          tbd←'tbody' xtag rws
+[51]      :Else
+[52]          thd←''
+[53]          tbd←rws
+[54]      :EndIf
+[55]  
+[56]      rws←cap,'table' xtag cmmt,thd,tbd
+[57]      cnt←hasTtl+hasHds+dep
+[58]  
+[59]  :Else
+[60]      (cnt rws toc)←0 '' ''                                                       ⍝ no table found
+[61]  :EndIf
+[62]  
+[63]  Z←cnt rws toc tid
+    ∇

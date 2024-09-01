@@ -1,1 +1,49 @@
-    ∇ results←TableType FitDecrement data;⎕io;Index;CompNums;ctr;table;Rating;MaxSteps;i;subRes;results;age;rates;AVAGE;AVSAL;z;∆_CompNo;∆_Name;TableNames;tabname[1]   ⍝ DECRWIN.sf#17[2]   ⍝ Browse the Decrement file and try to find a fit to some supplied values.[3]   ⍝ GGK, Edsell Kilvington, July 2008[4]   ⍝[5]   ⍝ Our approach will be to fit the values using regression through the origin.[6]   ⍝ Note the "Loading" we generate is applied as a multiplier to the rate table[7]   ⍝ after rating up or down.[8]   [9]   ⎕io←1 ⋄ (age rates)← ⎕split [1]data ⍝ Separate the argument[10]  :if SType ⋄ (AVAGE AVSAL)←data[1;] ⋄ data←1 0↓data ⋄ :endif[11]  [12]  Index←DECRFile ReadFile 'Index'[13]  (∆_CompNo ∆_Name)←Index[1;]⍳'∆_CompNo' '∆_Name'[14]  z←Index[(⊃Index[;∆_Name]) TLU TableType,'000';]                ⍝ Get rid of the TT000 types[15]  Index←Index[((⊃Index[;∆_Name]) TLU TableType OVER caseDn TableType)~z;] ⍝ Want only our type[16]  Index←Index[⎕av⍋⊃Index[;∆_Name];]                              ⍝ Sort[17]  [18]  TableNames←Index[;∆_Name]                                      ⍝ The available tables[19]    CompNums←Index[;∆_CompNo]                                    ⍝ The matching component numbers[20]  Rating←-20⌊↑age                                                ⍝ Maximum -ve Rating in years[21]  [22]  results←0 5⍴'' 0 0 0 0 ⍝ [;1] Table Name, [;2] Rating, [;3] Loading, [;4] RSS, [;5] Fitted Values[23]  [24]  :for ctr :in ⍳⍴TableNames[25]      tabname←TableNames[ctr][26]      table←120↑DECRFile ReadFile CompNums[ctr]   ⍝ Read Decrements[27]      :if SType[28]          table←×\1+table[29]          table←AVSAL×table CDIV table[AVAGE+1][30]      :endif[31]      :if 1>MaxSteps←41⌊20+120-¯1↑age ⋄ :continue ⋄ :endif ⍝ How many times we can move along the table before we run out[32]      subRes←4↑[2]⍉MATRIX MaxSteps←Rating+¯1+⍳MaxSteps     ⍝ Each row: Rating, Loading, RSS, Fitted values[33]  [34]      :for i :in MaxSteps[35]          subRes[1+i-Rating;2 3 4] ← rates Regress0 table[1+i+age][36]      :endfor[37]  [38]      subRes←subRes[⍋subRes[;3];][39]      subRes←subRes[1;]                           ⍝ This is the best fit[40]  [41]      results←results⍪tabname,subRes[42]  :endfor[43]  results←results[⍋results[;4];]                  ⍝ Best Fit first[44]  results←(10⌊↑⍴results)↑[1]results             ⍝ The best 10 should be plenty[45]  [46]  ⍝ Turn the Loading (which is multiplicative) into a % loading[47]  results[;3]←100×results[;3]-1    ∇
+    ∇ results←TableType FitDecrement data;⎕io;Index;CompNums;ctr;table;Rating;MaxSteps;i;subRes;results;age;rates;AVAGE;AVSAL;z;∆_CompNo;∆_Name;TableNames;tabname
+[1]   ⍝ DECRWIN.sf#17
+[2]   ⍝ Browse the Decrement file and try to find a fit to some supplied values.
+[3]   ⍝ GGK, Edsell Kilvington, July 2008
+[4]   ⍝
+[5]   ⍝ Our approach will be to fit the values using regression through the origin.
+[6]   ⍝ Note the "Loading" we generate is applied as a multiplier to the rate table
+[7]   ⍝ after rating up or down.
+[8]   
+[9]   ⎕io←1 ⋄ (age rates)← ⎕split [1]data ⍝ Separate the argument
+[10]  :if SType ⋄ (AVAGE AVSAL)←data[1;] ⋄ data←1 0↓data ⋄ :endif
+[11]  
+[12]  Index←DECRFile ReadFile 'Index'
+[13]  (∆_CompNo ∆_Name)←Index[1;]⍳'∆_CompNo' '∆_Name'
+[14]  z←Index[(⊃Index[;∆_Name]) TLU TableType,'000';]                ⍝ Get rid of the TT000 types
+[15]  Index←Index[((⊃Index[;∆_Name]) TLU TableType OVER caseDn TableType)~z;] ⍝ Want only our type
+[16]  Index←Index[⎕av⍋⊃Index[;∆_Name];]                              ⍝ Sort
+[17]  
+[18]  TableNames←Index[;∆_Name]                                      ⍝ The available tables
+[19]    CompNums←Index[;∆_CompNo]                                    ⍝ The matching component numbers
+[20]  Rating←-20⌊↑age                                                ⍝ Maximum -ve Rating in years
+[21]  
+[22]  results←0 5⍴'' 0 0 0 0 ⍝ [;1] Table Name, [;2] Rating, [;3] Loading, [;4] RSS, [;5] Fitted Values
+[23]  
+[24]  :for ctr :in ⍳⍴TableNames
+[25]      tabname←TableNames[ctr]
+[26]      table←120↑DECRFile ReadFile CompNums[ctr]   ⍝ Read Decrements
+[27]      :if SType
+[28]          table←×\1+table
+[29]          table←AVSAL×table CDIV table[AVAGE+1]
+[30]      :endif
+[31]      :if 1>MaxSteps←41⌊20+120-¯1↑age ⋄ :continue ⋄ :endif ⍝ How many times we can move along the table before we run out
+[32]      subRes←4↑[2]⍉MATRIX MaxSteps←Rating+¯1+⍳MaxSteps     ⍝ Each row: Rating, Loading, RSS, Fitted values
+[33]  
+[34]      :for i :in MaxSteps
+[35]          subRes[1+i-Rating;2 3 4] ← rates Regress0 table[1+i+age]
+[36]      :endfor
+[37]  
+[38]      subRes←subRes[⍋subRes[;3];]
+[39]      subRes←subRes[1;]                           ⍝ This is the best fit
+[40]  
+[41]      results←results⍪tabname,subRes
+[42]  :endfor
+[43]  results←results[⍋results[;4];]                  ⍝ Best Fit first
+[44]  results←(10⌊↑⍴results)↑[1]results             ⍝ The best 10 should be plenty
+[45]  
+[46]  ⍝ Turn the Loading (which is multiplicative) into a % loading
+[47]  results[;3]←100×results[;3]-1
+    ∇

@@ -1,0 +1,26 @@
+    ∇ res←dict ReadDictFile desc;names;xxx
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Read a "file" component from a nested array dictionary (using either description or "component" number)
+[3]   ⍝ Other effects as for ReadFile ie packages returned unpacked in the ws
+[4]   ⍝   names can be used with a "pack"ed component either:
+[5]   ⍝       'NAMES' to return the list of names in the package; or
+[6]   ⍝       a list (character array) of objects (that "should" be in the package)
+[7]   
+[8]   :if 1=≡desc ⋄ names←'' ⋄ :else ⋄ (desc xxx names)←desc ⋄ :endif
+[9]   
+[10]  :if mt res←dict at ,desc ⍝ Sucessful read with description?
+[11]  :andif 82≠⎕dr desc       ⍝ Numeric argument?
+[12]  :andif desc≤⍴dict        ⍝ Within range?
+[13]      res←desc⊃dict
+[14]  :endif
+[15]  
+[16]  :if pchk res
+[17]      :if mt names ⋄ names←pnames res ⋄ :endif
+[18]      :if 'NAMES'≡UPPERCASE names
+[19]          res←pnames res
+[20]      :else
+[21]          names pdef res
+[22]          :if 82=⎕dr res←desc ⋄ res←(keysIn dict)⍳⊂desc ⋄ :endif
+[23]      :endif
+[24]  :endif
+    ∇

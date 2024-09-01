@@ -1,1 +1,27 @@
-    ∇ res←field Select_Batch parm;parent[1]   ⍝ PARMWIN.sf#42[2]   ⍝ Function to allow user control on Select Batch[3]   [4]   parent←'fmSelBatch.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[11]      :if mt (parent,'lvsavedBatch') ⎕wi 'list'[12]          res←'No Valuation Batch Parameter Sets found'[13]      :endif[14]  [15]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[16]  [17]  :case 'Valid' ⍝ Routine specific validation[18]  [19]  :case 'Run'[20]      SavedBatch←savedBatch[21]      res←'Quit'[22]  [23]  :case 'Quit'[24]  [25]  :endselect    ∇
+    ∇ res←field Select_Batch parm;parent
+[1]   ⍝ PARMWIN.sf#42
+[2]   ⍝ Function to allow user control on Select Batch
+[3]   
+[4]   parent←'fmSelBatch.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]      :if mt (parent,'lvsavedBatch') ⎕wi 'list'
+[12]          res←'No Valuation Batch Parameter Sets found'
+[13]      :endif
+[14]  
+[15]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[16]  
+[17]  :case 'Valid' ⍝ Routine specific validation
+[18]  
+[19]  :case 'Run'
+[20]      SavedBatch←savedBatch
+[21]      res←'Quit'
+[22]  
+[23]  :case 'Quit'
+[24]  
+[25]  :endselect
+    ∇

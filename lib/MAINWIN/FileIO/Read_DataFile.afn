@@ -1,0 +1,55 @@
+    ∇ REC←type Read∆DataFile R;NUMRECS;recs;startrec;tieno;RECL;max;xxx;size
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Read Data from a file
+[3]   ⍝   "type" is the type of file - currently only ASCII (Excel, Access and SQL Server proposed)
+[4]   ⍝   "R" will depend on the type of file being read
+[5]   ⍝ returns file data, as a matrix if Record(s)
+[6]   
+[7]   :select type
+[8]   :case 'ASCII'
+[9]       ⍝ Five distinct ways of reading ASCI files
+[10]      ⍝ 1.    Read Multiple Fixed length records - eg tie,size,RECL,(NN-NO) NO
+[11]      ⍝ 2.    Read single record (keep cache of records) eg tie,size,RECL,1,startrec
+[12]      ⍝ 3.    Read some or all Fixed length records requested (ignore size) eg tie,¯1,RECL,(-NUMRECS),startrec
+[13]      ⍝ 4.    Read Chunks limited by FileChunk eg tie,size,0,size,startbyte
+[14]      ⍝ 5.    Read all bytes requested (not limited by FileChunk) eg tie ¯1 0 size 0
+[15]  
+[16]      ⍝ R contains Tie Number, File size (if -ve do not apply maximum), Record Length (inc NL/LF or 0 for Characters),
+[17]      ⍝   Start Record/Character, Number of Records/Character (to be passed back limited to maximum, ¯1 for just one record read)
+[18]      (tieno size RECL recs startrec)←R
+[19]      :if size=0 ⋄ size←⎕nsize tieno
+[20]  ⍝⍝⍝        :if uSERisRSE ⋄ 'size was passed as zero' ⋄ ⎕si ⋄ :endif
+[21]      :endif
+[22]      :if 0=RECL                                                      ⍝ Reading string of characters
+[23]          :if size>0 ⋄ recs←recs⌊(size-startrec)⌊FileChunk ⋄ :endif   ⍝ Maximum Number of characters left
+[24]          :if recs=0 ⋄ REC←'' ⋄ :return ⋄ :endif                      ⍝ No data left - return empty string
+[25]          REC←⎕NREAD tieno,82,recs,startrec
+[26]      :else                                                           ⍝ Fixed length ASCII file
+[27]          :if 0=⎕nc 'REC∆ASCII'
+[28]              :if 0<max←size ⋄ max←(⌊size÷RECL)-startrec ⋄ :endif     ⍝ Maximum Number of records left
+[29]              :if     max=0  ⋄ REC←'' ⋄ :return                       ⍝ No data left - return empty string
+[30]              :elseif recs=1 ⋄ NUMRECS←max⌊1   ⌈⌊30000    ÷RECL       ⍝ Read a 30K chunk
+[31]              :elseif max>0  ⋄ NUMRECS←max⌊recs⌊⌊FileChunk÷RECL       ⍝ Limit to FileChunk for memory limits
+[32]              :else          ⋄ NUMRECS←∣recs                          ⍝ No limit - memory limits considered by calling code
+[33]              :endif
+[34]              ⍝ Read Data from file
+[35]              REC∆ASCII←(NUMRECS,RECL)⍴⎕NREAD tieno,82,RECL×NUMRECS startrec ⍝⍝⍝ 0 ¯2↓ (if drop of TCNL,TCLF required)
+[36]          :endif
+[37]          :if recs=1 ⋄ :andif 1<↑⍴REC∆ASCII                     ⍝ Return one record
+[38]              REC←REC∆ASCII[,⎕io;]
+[39]              REC∆ASCII←1↓[⎕io]REC∆ASCII                        ⍝ Reading one record at a time leaves a "global" REC∆ASCII until last record read
+[40]          :else
+[41]              REC←REC∆ASCII                                     ⍝ else return all records read
+[42]              xxx←⎕ex 'REC∆ASCII'
+[43]          :endif
+[44]      :endif
+[45]  :case 'CSV'
+[46]  
+[47]  :case 'Excel'
+[48]  
+[49]  :case 'Access'
+[50]  
+[51]  :case 'SQL Server'
+[52]  
+[53]  :endselect
+    ∇

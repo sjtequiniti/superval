@@ -1,0 +1,22 @@
+    ∇ ⍙⍙vars←FOURDITaliases ⍙⍙vars;∆;suffixes;vars
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Swap FOURDIT aliases
+[3]   ⍝ If `xyz` is an alias of `abc`, record it as `abc`
+[4]   ⍝ `abc` can have multiple aliases, but `xyz` can be an alias of only one variable
+[5]   ⍝ NB: if `xyz` is undefined, then `xyz`, not `abc`, is recorded as missing
+[6]   
+[7]   suffixes←⍙⍙vars~¨vars←⍙⍙vars~¨⊂'←→⊃' ⍝ Put suffixes aside
+[8]   
+[9]   :if uSERisRSE ⋄ :andif ∨/(lmt ↑FIXED_ALIASES)∊lmt ↑VARIABLE_ALIASES ⋄ crash ⋄ :endif
+[10]  
+[11]  ⍝ Could be two level Aliases (perhaps?)
+[12]  :while ∨/∆←vars∊keysIn VARIABLE_ALIASES
+[13]      (∆/vars)←VARIABLE_ALIASES at ∆/vars
+[14]  :endwhile
+[15]  
+[16]  :while ∨/∆←vars∊keysIn FIXED_ALIASES
+[17]      (∆/vars)←FIXED_ALIASES at ∆/vars
+[18]  :endwhile
+[19]  
+[20]  ⍙⍙vars←vars,¨suffixes
+    ∇

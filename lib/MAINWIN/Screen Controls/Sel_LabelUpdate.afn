@@ -1,0 +1,13 @@
+    ∇ spin Sel∆LabelUpdate field;i;n;value;list
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Update Right Label for "list" fields for List or ListViews
+[3]   ⍝ and En/Disable Spinner according to whether one selected
+[4]   
+[5]   (i n)←↑¨⍴¨(value list)←field ⎕wi 'Ref' 'value' 'list'
+[6]   
+[7]   (field ⎕wi '∆rightlabel') ⎕wi 'caption' (DLTMB 'I3,< of >,I3,< Selected>' ⎕fmt MATRIX i,n)
+[8]   
+[9]   :if 0≠⎕nc 'spin' ⋄ :andif ~0≡field ⎕wi '∆spinner'
+[10]      (field ⎕wi '∆spinner') ⎕wi 'enabled' ((~mt value)^^/1=DIFF list[;1]⍳value)
+[11]  :endif
+    ∇

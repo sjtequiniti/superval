@@ -1,1 +1,69 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Deferreds_AOS" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Deferreds_AOS" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmSV.fDefAOS.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)[10]  "FILES" Win∆Inherits "Defsfile"[11]  GetAbsFileList "Fund"[12]  warnings←warnings OVER "Deferreds Data File" Win∆FileRelative "FILES" "lrFILES"[13]  "fmSV.fDefAOS.fData.edFILES" ⎕wi "text" (DLTB FILES)[14]  GetAbsFileList "Fund"[15]  warnings←warnings OVER "Deferreds Data File" Win∆FileRelative "fILENAME" "lrfILENAME"[16]  "fmSV.fDefAOS.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)[17]  "Format" Win∆Inherits "FormatD"[18]  PickList←"fmSV.fDefAOS.fData.cbFormat" ⎕wi "list"[19]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"[20]  selection←(StripText PickList) ExactTLU DLTB StripText Format[21]  :if mt selection[22]      modified←⌈/modified,1[23]  :endif[24]  "fmSV.fDefAOS.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)[25]  "fmSV.fDefAOS.fData.ckUseSex" ⎕wi "value" (zwb UseSex)[26]  "fmSV.fDefAOS.fData.ckUseCat" ⎕wi "value" (zwb UseCat)[27]  PickList←"fmSV.fDefAOS.fData.lsCatSels" ⎕wi "list"[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels[29]      "fmSV.fDefAOS.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)[30]      modified←⌈/modified,"fmSV.fDefAOS.fData.lsCatSels" ⎕wi "value"[31]  :else[32]      "fmSV.fDefAOS.fData.lsCatSels" ⎕wi "visible" ¯1[33]      "fmSV.fDefAOS.fData.lsCatSels" ⎕wi "value" selection[34]      "fmSV.fDefAOS.fData.lsCatSels" ⎕wi "visible" (¯1+2×0)[35]  :endif[36]  "fmSV.fDefAOS.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)[37]  "fmSV.fDefAOS.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)[38]  PickList←"fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "list"[39]  :if 0∊⍴selection←PickList ExactTLU SStoMAT RetCode[40]      "fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)[41]      modified←⌈/modified,"fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "value"[42]  :else[43]      "fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "visible" ¯1[44]      "fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "value" selection[45]      "fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "visible" 1[46]  :endif[47]  PickList←"fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "list"[48]  :if 0∊⍴selection←PickList ExactTLU SStoMAT DISCode[49]      "fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)[50]      modified←⌈/modified,"fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "value"[51]  :else[52]      "fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "visible" ¯1[53]      "fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "value" selection[54]      "fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "visible" 1[55]  :endif[56]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Deferreds_AOS[57]      :for var :in spin Comment_Deferreds_AOS at "variable" "row" ⋄ (var row)←var[58]          "Deferreds_AOS" ParmColor ((FormFields for "variable" var) at "control"),var row 1[59]      :endfor[60]  :endif[61]  :if ~0∊⍴,warnings[62]      MDISPLAY DLTMB warnings,⎕tcnl[63]      Win∆AssignVars "fmSV.fDefAOS"[64]  :endif[65]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Deferreds_AOS" "" "Names"[66]      "fmSV.fDefAOS" ⎕wi "modified" 0[67]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Deferreds_AOS" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Deferreds_AOS" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmSV.fDefAOS.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)
+[10]  "FILES" Win∆Inherits "Defsfile"
+[11]  GetAbsFileList "Fund"
+[12]  warnings←warnings OVER "Deferreds Data File" Win∆FileRelative "FILES" "lrFILES"
+[13]  "fmSV.fDefAOS.fData.edFILES" ⎕wi "text" (DLTB FILES)
+[14]  GetAbsFileList "Fund"
+[15]  warnings←warnings OVER "Deferreds Data File" Win∆FileRelative "fILENAME" "lrfILENAME"
+[16]  "fmSV.fDefAOS.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[17]  "Format" Win∆Inherits "FormatD"
+[18]  PickList←"fmSV.fDefAOS.fData.cbFormat" ⎕wi "list"
+[19]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"
+[20]  selection←(StripText PickList) ExactTLU DLTB StripText Format
+[21]  :if mt selection
+[22]      modified←⌈/modified,1
+[23]  :endif
+[24]  "fmSV.fDefAOS.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)
+[25]  "fmSV.fDefAOS.fData.ckUseSex" ⎕wi "value" (zwb UseSex)
+[26]  "fmSV.fDefAOS.fData.ckUseCat" ⎕wi "value" (zwb UseCat)
+[27]  PickList←"fmSV.fDefAOS.fData.lsCatSels" ⎕wi "list"
+[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels
+[29]      "fmSV.fDefAOS.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)
+[30]      modified←⌈/modified,"fmSV.fDefAOS.fData.lsCatSels" ⎕wi "value"
+[31]  :else
+[32]      "fmSV.fDefAOS.fData.lsCatSels" ⎕wi "visible" ¯1
+[33]      "fmSV.fDefAOS.fData.lsCatSels" ⎕wi "value" selection
+[34]      "fmSV.fDefAOS.fData.lsCatSels" ⎕wi "visible" (¯1+2×0)
+[35]  :endif
+[36]  "fmSV.fDefAOS.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)
+[37]  "fmSV.fDefAOS.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)
+[38]  PickList←"fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "list"
+[39]  :if 0∊⍴selection←PickList ExactTLU SStoMAT RetCode
+[40]      "fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[41]      modified←⌈/modified,"fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "value"
+[42]  :else
+[43]      "fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "visible" ¯1
+[44]      "fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "value" selection
+[45]      "fmSV.fDefAOS.fExit.lsRetCode" ⎕wi "visible" 1
+[46]  :endif
+[47]  PickList←"fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "list"
+[48]  :if 0∊⍴selection←PickList ExactTLU SStoMAT DISCode
+[49]      "fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[50]      modified←⌈/modified,"fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "value"
+[51]  :else
+[52]      "fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "visible" ¯1
+[53]      "fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "value" selection
+[54]      "fmSV.fDefAOS.fExit.lsDISCode" ⎕wi "visible" 1
+[55]  :endif
+[56]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Deferreds_AOS
+[57]      :for var :in spin Comment_Deferreds_AOS at "variable" "row" ⋄ (var row)←var
+[58]          "Deferreds_AOS" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[59]      :endfor
+[60]  :endif
+[61]  :if ~0∊⍴,warnings
+[62]      MDISPLAY DLTMB warnings,⎕tcnl
+[63]      Win∆AssignVars "fmSV.fDefAOS"
+[64]  :endif
+[65]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Deferreds_AOS" "" "Names"
+[66]      "fmSV.fDefAOS" ⎕wi "modified" 0
+[67]  :endif
+    ∇

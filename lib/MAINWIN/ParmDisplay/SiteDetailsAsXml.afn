@@ -1,0 +1,38 @@
+    ∇ xml←SiteDetailsAsXml;∆
+[1]   ⍝ MAINWIN.sf#15
+[2]   
+[3]   ∆←xml←''
+[4]   
+[5]   ⍝ flags (displayed to all)
+[6]   ∆←∆,⊂('flag' xattr ('name' 'client-code') ('label' ('Extended Parameters',bBuck/' (Partial)'))) xtag CheckTranslate ⍕bBuck∨×ClntCode
+[7]   ∆←∆,⊂('flag' xattr ('name' 'asm-module' ) ('label' 'Accurate Scenario Modeller')) xtag CheckTranslate ⍕bASM
+[8]   ∆←∆,⊂('flag' xattr ('name' 'qsm-module' ) ('label' 'Quick Scenario Modeller'   )) xtag CheckTranslate ⍕bQSM
+[9]   ∆←∆,⊂('flag' xattr ('name' 'sql-server' ) ('label' 'SQL Server Database'       )) xtag CheckTranslate ⍕bSQLServer
+[10]  ∆←∆,⊂('flag' xattr ('name' 'db-open'    ) ('label' 'Open Database'             )) xtag CheckTranslate ⍕⍙dbopen
+[11]  ∆←∆,⊂('flag' xattr ('name' 'alm-module' ) ('label' 'ALM/LDI Module'            )) xtag CheckTranslate ⍕bALMLDI
+[12]  ∆←∆,⊂('flag' xattr ('name' 'aos-module' ) ('label' 'AOS Module'                )) xtag CheckTranslate ⍕AOSCtl
+[13]  ∆←∆,⊂('flag' xattr ('name' 'agg-bens'   ) ('label' 'Aggregated Benefits'       )) xtag CheckTranslate ⍕bAggBen
+[14]  ∆←∆,⊂('flag' xattr ('name' 'alt-nra'    ) ('label' 'Alternate NRA All Methods' )) xtag CheckTranslate ⍕bAltNRA
+[15]  ∆←∆,⊂('flag' xattr ('name' 'TVs-module' ) ('label' 'Transfer Values'           )) xtag CheckTranslate ⍕bTVs
+[16]  ∆←∆,⊂('flag' xattr ('name' 'hpc-module' ) ('label' ('Load Sharing',(¯1=bHPC)/' (Expiring',(,1 DATESPELL ⌽bHPCexpiry),')'))) xtag CheckTranslate ⍕∣bHPC
+[17]  xml←xml,'flags' xtag ∆
+[18]  
+[19]  ⍝ flags (displayed to Claybrook only)
+[20]  ∆←''
+[21]  ∆←∆,⊂('devflag' xattr ('name' 'runtime-apl') ('label' 'Runtime APL'       )) xtag CheckTranslate ⍕runtime
+[22]  ∆←∆,⊂('devflag' xattr ('name' 'xl-output'  ) ('label' 'Excel Output'      )) xtag CheckTranslate ⍕XLCtl
+[23]  ∆←∆,⊂('devflag' xattr ('name' 'exactval'   ) ('label' 'ExactVal'          )) xtag CheckTranslate ⍕bExactVal
+[24]  ∆←∆,⊂('devflag' xattr ('name' 'gad-module' ) ('label' 'GAD Parameters'    )) xtag CheckTranslate ⍕bGAD
+[25]  ∆←∆,⊂('devflag' xattr ('name' 'development') ('label' 'Development Mode'  )) xtag CheckTranslate ⍕development
+[26]  ∆←∆,⊂('devflag' xattr ('name' 'blanking'   ) ('label' 'Blanking'          )) xtag CheckTranslate ⍕bLANKING
+[27]  xml←xml,'devflags' xtag ∆
+[28]  
+[29]  ⍝ folders
+[30]  ∆←''
+[31]  ∆←∆,⊂('folder' xattr ('name' 'client-name')    ('label' 'Company'       )) xtag xmlEscape cOMPANY
+[32]  ∆←∆,⊂('folder' xattr ('name' 'system-folder')  ('label' 'Install Folder')) xtag xmlEscape SystemDir
+[33]  ∆←∆,⊂('folder' xattr ('name' 'library-folder') ('label' 'Library Folder')) xtag xmlEscape LibraryDir
+[34]  xml←xml,'folders' xtag ∆
+[35]  
+[36]  xml←'site' xtag xml
+    ∇

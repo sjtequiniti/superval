@@ -1,0 +1,14 @@
+    ∇ DATE←MigrateDates DATE;⎕io;BadDateList;z
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Convert unmigrated S21 Date Fields
+[3]   
+[4]   ⎕io←1 ⍝ ExactTLU is ⎕io 1
+[5]   BadDateList←⊃'DJS' 'DJF' 'LDATE' 'VDATE'
+[6]   :if ~0∊⍴z←DATE ExactTLU BadDateList
+[7]       :if 1=⍴⍴DATE
+[8]           DATE←,ConvertDates DATE
+[9]       :else
+[10]          DATE[z]←,¨ConvertDates¨(DATE←⎕split DATE)[z] ⋄ DATE←⊃DATE
+[11]      :endif
+[12]  :endif
+    ∇

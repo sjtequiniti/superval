@@ -1,0 +1,23 @@
+    ∇ UPDATENEDECK;col;REC;A;N
+[1]   ⍝ VALNWIN.sf#13
+[2]   ⍝ Reset New Entrant Records DOB, DJF, DJS and Variable Dates
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   REC←'ASCII' Read∆DataFile netie,¯1,RECL,(-NUMRECS),0
+[8]   REC[;col]←(0,2×2=⍴col)↓'ZI4' ⎕FMT 1+MatrixZWB REC[;col←(4⌊⍴fDOB)↑fDOB]
+[9]   :if 0≠⍴fDJS
+[10]      REC[;col]←(0,2×2=⍴col)↓'ZI4' ⎕FMT 1+MatrixZWB REC[;col←(4⌊⍴fDJS)↑fDJS]
+[11]  :endif
+[12]  :if 0≠⍴fDJF ⋄ :andif ~∨/fDJF∊fDOB,fDJS
+[13]      REC[;col]←(0,2×2=⍴col)↓'ZI4' ⎕FMT 1+MatrixZWB REC[;col←(4⌊⍴fDJF)↑fDJF]
+[14]  :endif
+[15]  ⍝ Variable Date Fields
+[16]  :for N :in ⍳1↑⍴DateVars
+[17]      :if 0≠⍴A←⍎'f',⍕DateVars[N;] ⋄ :andif ~∨/A∊fDOB,fDJS,fDJF
+[18]          REC[;col]←(0,2×2=⍴col)↓'ZI4' ⎕FMT 1+MatrixZWB REC[;col←(4⌊⍴A)↑A]
+[19]      :endif
+[20]  :endfor
+[21]  REC ⎕NREPLACE netie,0
+    ∇

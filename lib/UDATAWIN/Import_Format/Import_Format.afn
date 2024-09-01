@@ -1,1 +1,49 @@
-    ∇ res←field Import_Format parm;parent;tieno;cn;Type;Format;File[1]   ⍝ UDATAWIN.sf#2[2]   ⍝ Function to allow user control on Importing the Format[3]   [4]   parent←'fmImportFormat.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[11]  [12]      (parent,'bnImport_FormatSave') ⎕wi 'tooltip' 'Import SuperVal/21 Format'[13]  [14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[15]  [16]      :repeat[17]          :select ↑field[18]          :case 'cbFormatFile'[19]              FormatFile←MigFolder,(parent,'cbFormatFile') ⎕wi 'text'[20]              ((parent,'lvFormat') 'Import_Format') Win∆UpdateListview GetFPFDesc[21]          :endselect[22]      :until mt field←1↓field[23]  [24]  :case 'Valid' ⍝ Routine specific validation[25]  [26]  :case 'Run'[27]  [28]      :if 0≠File FSTIE (tieno←TieNumber File←MigFolder,FormatFile),1[29]          MDISPLAY 'Unable to tie ',FormatFile ⋄ :return[30]      :endif[31]  [32]      cn←(parent,'lvFormat') ⎕wi 'value'[33]      Type←↑⊃,(⊃ ⎕fread tieno,1)[cn;6] ⍝ Cope with both N and P going to Pen[34]      Format←⎕fread tieno,cn[35]      ⎕funtie tieno[36]  [37]      :if ~0∊⍴res←Format Assign_Import Type[38]          MDISPLAY res ⋄ :return[39]      :endif[40]      recl←¯1+zwb RECL[41]      FormatChanged←1[42]      parent ⎕wi '∆modified' 1[43]      res←'Quit'[44]  [45]  :case 'Quit' ⍝ Deleting "other" variables[46]  [47]  :endselect    ∇
+    ∇ res←field Import_Format parm;parent;tieno;cn;Type;Format;File
+[1]   ⍝ UDATAWIN.sf#2
+[2]   ⍝ Function to allow user control on Importing the Format
+[3]   
+[4]   parent←'fmImportFormat.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]  
+[12]      (parent,'bnImport_FormatSave') ⎕wi 'tooltip' 'Import SuperVal/21 Format'
+[13]  
+[14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[15]  
+[16]      :repeat
+[17]          :select ↑field
+[18]          :case 'cbFormatFile'
+[19]              FormatFile←MigFolder,(parent,'cbFormatFile') ⎕wi 'text'
+[20]              ((parent,'lvFormat') 'Import_Format') Win∆UpdateListview GetFPFDesc
+[21]          :endselect
+[22]      :until mt field←1↓field
+[23]  
+[24]  :case 'Valid' ⍝ Routine specific validation
+[25]  
+[26]  :case 'Run'
+[27]  
+[28]      :if 0≠File FSTIE (tieno←TieNumber File←MigFolder,FormatFile),1
+[29]          MDISPLAY 'Unable to tie ',FormatFile ⋄ :return
+[30]      :endif
+[31]  
+[32]      cn←(parent,'lvFormat') ⎕wi 'value'
+[33]      Type←↑⊃,(⊃ ⎕fread tieno,1)[cn;6] ⍝ Cope with both N and P going to Pen
+[34]      Format←⎕fread tieno,cn
+[35]      ⎕funtie tieno
+[36]  
+[37]      :if ~0∊⍴res←Format Assign_Import Type
+[38]          MDISPLAY res ⋄ :return
+[39]      :endif
+[40]      recl←¯1+zwb RECL
+[41]      FormatChanged←1
+[42]      parent ⎕wi '∆modified' 1
+[43]      res←'Quit'
+[44]  
+[45]  :case 'Quit' ⍝ Deleting "other" variables
+[46]  
+[47]  :endselect
+    ∇

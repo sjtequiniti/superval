@@ -1,1 +1,40 @@
-    ∇ TVRP1∆BENEFIT;BenType∆pp;Start∆pp;GP∆pp;IncType∆pp;Inc∆pp;Upin∆pp;SL∆pp;Con∆pp[1]   ⍝ DEFWIN.sf#10[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT TRANSFERS PENSION 1[3]   ⍝ v8.50 [EnhDef] DT/SJT summer 2010[4]   ⍝ REFINE: retrieve results from GMP array instead[5]   [6]   :if PubSect ⋄ :andif NRA>SPA[7]       TVRP1∆PubSect[8]   [9]   :else[10]      ⍝ Pension Projector Variables[11]      BenType∆pp←'P' ⋄ Start∆pp←,NRA⌈SPA⌈RetAge∆pp ⋄ GP∆pp←NX⍴,¯1↑,0⌈GPeriod-0⌈Start∆pp-(NRA⌈Age∆pp)[12]  [13]      ⍝ Pre 1988 GMP[14]      IncType∆pp←'G1' ⋄ Inc∆pp←TVB88GMPINC[15]  [16]      Upin∆pp←0 ⍝ Not "underpinned"[17]      Con∆pp←,(SL∆pp←NX⍴¯1↑,(1-GFRAC1)×PreGMPR)×0.5×Male[18]  [19]      PP∆CreateInterface[20]  [21]      Upin∆pp←1 ⍝ "Underpinned"[22]      Con∆pp←,(SL∆pp←NX⍴¯1↑,   GFRAC1 ×PreGMPR)×0.5×Male[23]  [24]      PP∆CreateInterface[25]  [26]      ⍝ Post 1988 GMP[27]      IncType∆pp←'G2' ⋄ Inc∆pp←TVA88GMPINC[28]  [29]      Upin∆pp←0 ⍝ Not "underpinned"[30]      Con∆pp←,(SL∆pp←NX⍴¯1↑,(1-GFRAC2)×PostGMPR)×0.5[31]  [32]      PP∆CreateInterface[33]  [34]      Upin∆pp←1 ⍝ "Underpinned"[35]      Con∆pp←,(SL∆pp←NX⍴¯1↑,   GFRAC2 ×PostGMPR)×0.5[36]  [37]      PP∆CreateInterface[38]  :endif    ∇
+    ∇ TVRP1∆BENEFIT;BenType∆pp;Start∆pp;GP∆pp;IncType∆pp;Inc∆pp;Upin∆pp;SL∆pp;Con∆pp
+[1]   ⍝ DEFWIN.sf#10
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT TRANSFERS PENSION 1
+[3]   ⍝ v8.50 [EnhDef] DT/SJT summer 2010
+[4]   ⍝ REFINE: retrieve results from GMP array instead
+[5]   
+[6]   :if PubSect ⋄ :andif NRA>SPA
+[7]       TVRP1∆PubSect
+[8]   
+[9]   :else
+[10]      ⍝ Pension Projector Variables
+[11]      BenType∆pp←'P' ⋄ Start∆pp←,NRA⌈SPA⌈RetAge∆pp ⋄ GP∆pp←NX⍴,¯1↑,0⌈GPeriod-0⌈Start∆pp-(NRA⌈Age∆pp)
+[12]  
+[13]      ⍝ Pre 1988 GMP
+[14]      IncType∆pp←'G1' ⋄ Inc∆pp←TVB88GMPINC
+[15]  
+[16]      Upin∆pp←0 ⍝ Not "underpinned"
+[17]      Con∆pp←,(SL∆pp←NX⍴¯1↑,(1-GFRAC1)×PreGMPR)×0.5×Male
+[18]  
+[19]      PP∆CreateInterface
+[20]  
+[21]      Upin∆pp←1 ⍝ "Underpinned"
+[22]      Con∆pp←,(SL∆pp←NX⍴¯1↑,   GFRAC1 ×PreGMPR)×0.5×Male
+[23]  
+[24]      PP∆CreateInterface
+[25]  
+[26]      ⍝ Post 1988 GMP
+[27]      IncType∆pp←'G2' ⋄ Inc∆pp←TVA88GMPINC
+[28]  
+[29]      Upin∆pp←0 ⍝ Not "underpinned"
+[30]      Con∆pp←,(SL∆pp←NX⍴¯1↑,(1-GFRAC2)×PostGMPR)×0.5
+[31]  
+[32]      PP∆CreateInterface
+[33]  
+[34]      Upin∆pp←1 ⍝ "Underpinned"
+[35]      Con∆pp←,(SL∆pp←NX⍴¯1↑,   GFRAC2 ×PostGMPR)×0.5
+[36]  
+[37]      PP∆CreateInterface
+[38]  :endif
+    ∇

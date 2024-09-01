@@ -1,0 +1,27 @@
+    ∇ res←NECR∆EAN;ValDATE
+[1]   ⍝ VALNWIN.sf#6
+[2]   ⍝ Calculate New Entrant Cont Rates for EAN Method
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   :if   res←(COCRind=2)^0=⍴fDJF
+[8]   :orif res←(COCRind=3)^0=⍴fDJS
+[9]       NERASE netie ⍝ Erase all open files
+[10]      NERASE tpr1 ⋄ :if PROPT ⋄ NERASE tpA ⋄ :endif
+[11]      NERASE tpI ⋄ :if aosind ⋄ NERASE tpS ⋄ :endif
+[12]      (unattended/'Log') MDISPLAY 'NoDJS' ⋄ :return
+[13]  :endif
+[14]  
+[15]  ⍝⍝⍝ ((⌊6×(0.51 0.334)[newent]+BatchRow-1) (6×TotalRuns) ('New Entrant Contribution Rates for ',DLTMB ⊃(BatchedNest[BatchRow;])[0 1 2])) Win∆ProgressBar 'FileUpdate'
+[16]  (BatchRow TotalRuns ('New Entrant Contribution Rates for ',DLTMB ⊃(BatchedNest[BatchRow;])[0 1 2])) Win∆ProgressBar 'FileUpdate'
+[17]  
+[18]  PREP∆STAND
+[19]  COCR←NEMAIN ⍝ Get Co Cont Rates
+[20]  
+[21]  ⍝ Reset Some PREP∆STAND Variables that are "used" by New Ent Run
+[22]  (2⌊aosenabled+2×~vDATEind) CREATEDATADESC Format ⋄ RECN←pAGE
+[23]  
+[24]  ⍝⍝⍝ ((⌊6×(1 0.6667)[newent]+BatchRow-1) (6×TotalRuns) (DLTMB ⊃(BatchedNest[BatchRow;])[0 1 2])) Win∆ProgressBar 'FileUpdate'
+[25]  (BatchRow TotalRuns (DLTMB ⊃(BatchedNest[BatchRow;])[0 1 2])) Win∆ProgressBar 'FileUpdate'
+    ∇

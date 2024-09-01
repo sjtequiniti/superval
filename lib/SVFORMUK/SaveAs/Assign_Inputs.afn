@@ -1,1 +1,34 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "SaveAs" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "SaveAs" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmSaveAs.cbSaveFile" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB SaveFile[11]  :if mt selection[12]          "fmSaveAs.cbSaveFile" ⎕wi "text" (DLTB SaveFile)[13]  :else[14]      "fmSaveAs.cbSaveFile" ⎕wi "value" selection[15]  :endif[16]  "fmSaveAs.ckEditFileDesc" ⎕wi "value" (zwb EditFileDesc)[17]  "fmSaveAs.edSaveFileDesc" ⎕wi "text" (DLTB SaveFileDesc)[18]  "fmSaveAs.edSavedDesc" ⎕wi "text" (DLTB SavedDesc)[19]  "fmSaveAs.edSavedID" ⎕wi "text" (DLTB SavedID)[20]  "fmSaveAs.ckSaveRep" ⎕wi "value" (zwb SaveRep)[21]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_SaveAs[22]      :for var :in spin Comment_SaveAs at "variable" "row" ⋄ (var row)←var[23]          "SaveAs" ParmColor ((FormFields for "variable" var) at "control"),var row 1[24]      :endfor[25]  :endif[26]  :if ~0∊⍴,warnings[27]      MDISPLAY DLTMB warnings,⎕tcnl[28]      Win∆AssignVars "fmSaveAs"[29]  :endif[30]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "SaveAs" "" "Names"[31]      "fmSaveAs" ⎕wi "modified" 0[32]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "SaveAs" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "SaveAs" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmSaveAs.cbSaveFile" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB SaveFile
+[11]  :if mt selection
+[12]          "fmSaveAs.cbSaveFile" ⎕wi "text" (DLTB SaveFile)
+[13]  :else
+[14]      "fmSaveAs.cbSaveFile" ⎕wi "value" selection
+[15]  :endif
+[16]  "fmSaveAs.ckEditFileDesc" ⎕wi "value" (zwb EditFileDesc)
+[17]  "fmSaveAs.edSaveFileDesc" ⎕wi "text" (DLTB SaveFileDesc)
+[18]  "fmSaveAs.edSavedDesc" ⎕wi "text" (DLTB SavedDesc)
+[19]  "fmSaveAs.edSavedID" ⎕wi "text" (DLTB SavedID)
+[20]  "fmSaveAs.ckSaveRep" ⎕wi "value" (zwb SaveRep)
+[21]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_SaveAs
+[22]      :for var :in spin Comment_SaveAs at "variable" "row" ⋄ (var row)←var
+[23]          "SaveAs" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[24]      :endfor
+[25]  :endif
+[26]  :if ~0∊⍴,warnings
+[27]      MDISPLAY DLTMB warnings,⎕tcnl
+[28]      Win∆AssignVars "fmSaveAs"
+[29]  :endif
+[30]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "SaveAs" "" "Names"
+[31]      "fmSaveAs" ⎕wi "modified" 0
+[32]  :endif
+    ∇

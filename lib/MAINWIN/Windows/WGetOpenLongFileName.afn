@@ -1,1 +1,179 @@
-    ∇ R←F WGetOpenLongFileName A;Dir;File;Filter;Ext;Flags;Title;Data;lpstrFilter;lpstrInitialDir;lpstrFile;lpstrDefExt;lpstrTitle;rc;rc2;hF;nMaxFile;lStructSize;nFilterIndex;OPENFILENAME;lpData;L;ReadOnly;M;⎕io;nVer;fMulti[1]   ⍝ MAINWIN.sf#2[2]   ⍝∇R←[flags] WGetOpenLongFileName specs -- Use common dialog box to get a file to open[3]   ⍝∇-----------------------------------------------------------------------[4]   ⍝∇F ←→ Optional flags. One or more of the following:[5]   ⍝∇ 1:OFN_READONLY - Read Only check box is initially checked.[6]   ⍝∇ 4:OFN_HIDEREADONLY - Hides the Read Only check box.[7]   ⍝∇ 8:OFN_NOCHANGEDIR - Restores the current directory to its original value if the[8]   ⍝∇                     user changed the directory while searching for files.[9]   ⍝∇ 32:OFN_ENABLEHOOK - Enables the hook function specified in the lpfnHook member.[10]  ⍝∇ 256:OFN_NOVALIDATE - Allow invalid characters in the returned filename.[11]  ⍝∇ 512:OFN_ALLOWMULTISELECT - Allow multiple selections.[12]  ⍝∇ 2048:OFN_PATHMUSTEXIST - Only valid paths can be specified.[13]  ⍝∇ 4096:OFN_FILEMUSTEXIST - Only existing files can be specified.[14]  ⍝∇ 8192:OFN_CREATEPROMPT - Notify the user when the file does not exist[15]  ⍝∇ 32768:OFN_NOREADONLYRETURN - File must not be Read Only or protected.[16]  ⍝∇ 524288:OFN_EXPLORER - Display Windows Explorer when OFN_ALLOWMULTISELECT enabled.[17]  ⍝∇[18]  ⍝∇A ←→ dir file ext title filters findex readonly[19]  ⍝∇      dir ←→ Default directory[20]  ⍝∇     file ←→ Default filename[21]  ⍝∇      ext ←→ Default extension[22]  ⍝∇    title ←→ Title bar caption[23]  ⍝∇  filters ←→ List of file filters.[24]  ⍝∇   findex ←→ Currently selected filter. (0=first filter)[25]  ⍝∇ readonly ←→ Read only check box status (1=checked)[26]  ⍝∇[27]  ⍝∇R ←→ dir file ext title filters findex readonly[28]  ⍝∇  OR[29]  ⍝∇R ←→ scalar error code.[30]  ⍝∇ Requires fns: D2C I2C W2C W_Mem WhwndOwner[31]  ⍝ -----------------------------------------------------------------------[32]  ⍝ Constants[33]   ⎕io←1 ⋄ nMaxFile ← 256 ⋄ lStructSize ← 76[34]  [35]  ⍝ Get Windows Version[36]  nVer← 4 ≤ 256∣ ⎕wcall 'GetVersion'[37]  [38]  ⍝ Break parameter vector into components.[39]   →(2=≡A)⍴L2 ⋄ A←⊂A[40]  L2:[41]   A←A,(⍴,A)↓'' '' '' '' 'All Files(*.*)|*.*' 0 0[42]   Dir←1⊃A ⋄ Dir←nMaxFile↑Dir,nMaxFile⍴⎕TCNUL[43]  ⍝ File←2⊃A ⋄ File←nMaxFile↑File,nMaxFile⍴⎕TCNUL[44]   Ext←3⊃A ⋄ Ext←4↑Ext,4⍴⎕TCNUL[45]   Title←4⊃A ⋄ Title←Title,⎕TCNUL[46]   Filter←5⊃A ⋄ Filter←(~' '=Filter)/Filter ⋄ Filter←Filter,4⍴⎕TCNUL[47]   nFilterIndex←6⊃A[48]   ReadOnly←7⊃A[49]  ⍝ Get flags.[50]   →(2=⎕NC 'F')⍴L5 ⋄ F←0[51]  L5: Flags←+/F[52]  ⍝ Convert flags to bits temporarily.[53]   Flags←(32⍴2)⊤Flags[54]  ⍝ Set the readonly flag[55]   Flags[32]←Flags[32]∨1=ReadOnly[56]  ⍝ If Windows 4.0 and later, force OFN_EXPLORER flag[57]   Flags[13]←Flags[13] ∨ nVer[58]  ⍝ Check for OFN_ALLOWMULTISELECT flag[59]   fMulti←Flags[23][60]  ⍝ Convert flags back to decimal.[61]   Flags←2⊥Flags[62]  ⍝ Separate filter entries with ⎕TCNUL ('∣' is the delim).[63]   Filter[(Filter∊'∣|')/⍳⍴Filter]←⎕TCNUL[64]  ⍝[65]   File←,2⊃A ⋄ File←File,(0⌈(nMaxFile× 1+7×fMulti)-⍴File)⍴⎕TCNUL[66]  ⍝ Build composite data.[67]   Data ← File,Filter,Dir,Ext,Title[68]  ⍝ Allocate a moveable global memory block for composite data.[69]   hF ← ⎕wcall ('GlobalAlloc') ('GMEM_MOVEABLE') ((⍳0)⍴⍴Data)[70]   ⎕ERROR (hF = 0)/'Unable to allocate memory'[71]  ⍝ Get a far pointer to the memory.[72]   lpData ← ⎕wcall 'GlobalLock' hF[73]   →(lpData ≠ 0)⍴L7 ⋄ rc ← ⎕wcall 'GlobalFree' hF ⋄ ⎕ERROR 'Unable to lock memory'[74]  ⍝ Write the data to the block.[75]  L7: Data W_Mem lpData[76]  ⍝ Get pointers into array.[77]   (lpstrFile lpstrFilter lpstrInitialDir lpstrDefExt lpstrTitle)←lpData++\0,⍴¨File Filter Dir Ext[78]  [79]  ⍝ Build OPENFILENAME Data structure.[80]   OPENFILENAME←''[81]  ⍝ lStructSize - Length of the structure, in bytes.[82]   OPENFILENAME←OPENFILENAME,D2C lStructSize[83]  ⍝ hwndOwner - Window handle of the window that owns the dialog box or NULL[84]   OPENFILENAME←OPENFILENAME,I2C WhwndOwner ⍝ 0[85]  ⍝ hInstance - Not used.[86]   OPENFILENAME←OPENFILENAME,I2C 0[87]  ⍝ lpstrFilter - Points to one or more pairs of null-terminated strings[88]  ⍝ specifying file filters.[89]   OPENFILENAME←OPENFILENAME,D2C lpstrFilter[90]  ⍝ lpstrCustomFilter - Not used.[91]   OPENFILENAME←OPENFILENAME,D2C 0[92]  ⍝ nMaxCustFilter - Not used.[93]   OPENFILENAME←OPENFILENAME,D2C 0[94]  ⍝ nFilterIndex - Initial file filter number.[95]   OPENFILENAME←OPENFILENAME,D2C nFilterIndex[96]  ⍝ lpstrFile - Points to the initial filename buffer.[97]   OPENFILENAME←OPENFILENAME,D2C lpstrFile[98]  ⍝ nMaxFile - Size, in bytes, of the lpstrFile buffer.[99]   OPENFILENAME←OPENFILENAME,D2C nMaxFile[100] ⍝ lpstrFileTitle - Not used.[101]  OPENFILENAME←OPENFILENAME,D2C 0[102] ⍝ nMaxFileTitle - Not used.[103]  OPENFILENAME←OPENFILENAME,D2C 0[104] ⍝ lpstrInitialDir - Points to the initial file directory string.[105]  OPENFILENAME←OPENFILENAME,D2C lpstrInitialDir[106] ⍝ lpstrTitle - Points to the title bar string.[107]  OPENFILENAME←OPENFILENAME,D2C lpstrTitle[108] ⍝ Flags - Specifies the dialog box initialization flags.[109]  OPENFILENAME←OPENFILENAME,D2C Flags[110] ⍝ nFileOffset - Not used.[111]  OPENFILENAME←OPENFILENAME,W2C 0[112] ⍝ nFileExtension - Not used.[113]  OPENFILENAME←OPENFILENAME,W2C 0[114] ⍝ lpstrDefExt - Points to the default extension string.[115]  OPENFILENAME←OPENFILENAME,D2C lpstrDefExt[116] ⍝ lCustData - Not used.[117]  OPENFILENAME←OPENFILENAME,D2C 0[118] ⍝ lpfnHook - Not used.[119]  OPENFILENAME←OPENFILENAME,D2C 0[120] ⍝ lpTemplateName -  Not used.[121]  OPENFILENAME←OPENFILENAME,D2C 0[122] [123] ⍝ Call the common dialog box function.[124]  (rc OPENFILENAME) ← ⎕wcall 'GetOpenFileName' OPENFILENAME[125] [126] ⍝ Read the results.[127]  Data←W_Mem lpData,82,⍴Data[128] ⍝ Unlock and free memory.[129]  0 0⍴ ⎕wcall 'GlobalUnlock' hF[130]  0 0⍴ ⎕wcall 'GlobalFree' hF[131] [132] ⍝ Get the extended error if any.[133]  →(rc≠0)⍴L10 ⋄ R←⎕wcall 'CommDlgExtendedError' ⋄ →0[134] [135] ⍝ Return results to user.[136] L10:[137] :if nVer = 0      ⍝ If Windows version < 4[138]  M ← (¯1+Data⍳⎕TCNUL)↑Data[139]  →(' '∊M)⍴L15[140]  L←(⌽∨\⌽M='\')/M ⋄ M←(⍴L)↓M ⋄ L←(-1<+/L='\')↓L ⍝ Single-file case[141]  →L20[142] L15:  ⍝ Multi-file case[143]  L←(¯1+M⍳' ')↑M[144]  M←(1+⍴L)↓M[145]  M[(M=' ')/⍳⍴M]←⎕tcnul[146]  M←M,⎕tcnul[147]  M←(¯1⌽⎕tcnul=M) ⎕penclose M[148]  M←¯1↓¨M[149]  →L20[150] :endif[151] [152] ⍝ If Windows version ≥ 4[153] :if fMulti[154]  ⍝ Multi-file case[155]  M←(((2⍴⎕tcnul)⍷Data)⍳1)↑Data[156]  M←(¯1⌽⎕tcnul=M) ⎕penclose M[157]  M←¯1↓¨M[158]  :if 1≠⍴M[159]     L←1⊃M[160]     M←1↓M[161]  :else[162]     M←1⊃M ⋄ L←(⌽∨\⌽(⊃M)='\')/M ⋄ M←,⊂(⍴L)↓M ⋄ L←(-1<+/L='\')↓L[163]  :endif[164] :else[165]  ⍝ Single-file case[166]  M←¯1↓(Data⍳⎕tcnul)↑Data[167]  L←(⌽∨\⌽M='\')/M ⋄ M←(⍴L)↓M ⋄ L←(-1<+/L='\')↓L[168] :endif[169] [170] L20: R ← ⊂L[171]  R ← R, ⊂M[172]  R ← R, ⊂(¯1+Ext⍳⎕TCNUL)↑Ext[173]  R ← R ,⊂(¯1+Title⍳⎕TCNUL)↑Title[174]  L ← Filter ⋄ L[(L=⎕TCNUL)/⍳⍴L]←'∣'[175]  R ← R, ⊂¯2↓L[176]  R ← R, 323 ⎕DR 4↑24↓OPENFILENAME[177]  R ← R, 2⊤323 ⎕DR 4↑52↓OPENFILENAME    ∇
+    ∇ R←F WGetOpenLongFileName A;Dir;File;Filter;Ext;Flags;Title;Data;lpstrFilter;lpstrInitialDir;lpstrFile;lpstrDefExt;lpstrTitle;rc;rc2;hF;nMaxFile;lStructSize;nFilterIndex;OPENFILENAME;lpData;L;ReadOnly;M;⎕io;nVer;fMulti
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝∇R←[flags] WGetOpenLongFileName specs -- Use common dialog box to get a file to open
+[3]   ⍝∇-----------------------------------------------------------------------
+[4]   ⍝∇F ←→ Optional flags. One or more of the following:
+[5]   ⍝∇ 1:OFN_READONLY - Read Only check box is initially checked.
+[6]   ⍝∇ 4:OFN_HIDEREADONLY - Hides the Read Only check box.
+[7]   ⍝∇ 8:OFN_NOCHANGEDIR - Restores the current directory to its original value if the
+[8]   ⍝∇                     user changed the directory while searching for files.
+[9]   ⍝∇ 32:OFN_ENABLEHOOK - Enables the hook function specified in the lpfnHook member.
+[10]  ⍝∇ 256:OFN_NOVALIDATE - Allow invalid characters in the returned filename.
+[11]  ⍝∇ 512:OFN_ALLOWMULTISELECT - Allow multiple selections.
+[12]  ⍝∇ 2048:OFN_PATHMUSTEXIST - Only valid paths can be specified.
+[13]  ⍝∇ 4096:OFN_FILEMUSTEXIST - Only existing files can be specified.
+[14]  ⍝∇ 8192:OFN_CREATEPROMPT - Notify the user when the file does not exist
+[15]  ⍝∇ 32768:OFN_NOREADONLYRETURN - File must not be Read Only or protected.
+[16]  ⍝∇ 524288:OFN_EXPLORER - Display Windows Explorer when OFN_ALLOWMULTISELECT enabled.
+[17]  ⍝∇
+[18]  ⍝∇A ←→ dir file ext title filters findex readonly
+[19]  ⍝∇      dir ←→ Default directory
+[20]  ⍝∇     file ←→ Default filename
+[21]  ⍝∇      ext ←→ Default extension
+[22]  ⍝∇    title ←→ Title bar caption
+[23]  ⍝∇  filters ←→ List of file filters.
+[24]  ⍝∇   findex ←→ Currently selected filter. (0=first filter)
+[25]  ⍝∇ readonly ←→ Read only check box status (1=checked)
+[26]  ⍝∇
+[27]  ⍝∇R ←→ dir file ext title filters findex readonly
+[28]  ⍝∇  OR
+[29]  ⍝∇R ←→ scalar error code.
+[30]  ⍝∇ Requires fns: D2C I2C W2C W_Mem WhwndOwner
+[31]  ⍝ -----------------------------------------------------------------------
+[32]  ⍝ Constants
+[33]   ⎕io←1 ⋄ nMaxFile ← 256 ⋄ lStructSize ← 76
+[34]  
+[35]  ⍝ Get Windows Version
+[36]  nVer← 4 ≤ 256∣ ⎕wcall 'GetVersion'
+[37]  
+[38]  ⍝ Break parameter vector into components.
+[39]   →(2=≡A)⍴L2 ⋄ A←⊂A
+[40]  L2:
+[41]   A←A,(⍴,A)↓'' '' '' '' 'All Files(*.*)|*.*' 0 0
+[42]   Dir←1⊃A ⋄ Dir←nMaxFile↑Dir,nMaxFile⍴⎕TCNUL
+[43]  ⍝ File←2⊃A ⋄ File←nMaxFile↑File,nMaxFile⍴⎕TCNUL
+[44]   Ext←3⊃A ⋄ Ext←4↑Ext,4⍴⎕TCNUL
+[45]   Title←4⊃A ⋄ Title←Title,⎕TCNUL
+[46]   Filter←5⊃A ⋄ Filter←(~' '=Filter)/Filter ⋄ Filter←Filter,4⍴⎕TCNUL
+[47]   nFilterIndex←6⊃A
+[48]   ReadOnly←7⊃A
+[49]  ⍝ Get flags.
+[50]   →(2=⎕NC 'F')⍴L5 ⋄ F←0
+[51]  L5: Flags←+/F
+[52]  ⍝ Convert flags to bits temporarily.
+[53]   Flags←(32⍴2)⊤Flags
+[54]  ⍝ Set the readonly flag
+[55]   Flags[32]←Flags[32]∨1=ReadOnly
+[56]  ⍝ If Windows 4.0 and later, force OFN_EXPLORER flag
+[57]   Flags[13]←Flags[13] ∨ nVer
+[58]  ⍝ Check for OFN_ALLOWMULTISELECT flag
+[59]   fMulti←Flags[23]
+[60]  ⍝ Convert flags back to decimal.
+[61]   Flags←2⊥Flags
+[62]  ⍝ Separate filter entries with ⎕TCNUL ('∣' is the delim).
+[63]   Filter[(Filter∊'∣|')/⍳⍴Filter]←⎕TCNUL
+[64]  ⍝
+[65]   File←,2⊃A ⋄ File←File,(0⌈(nMaxFile× 1+7×fMulti)-⍴File)⍴⎕TCNUL
+[66]  ⍝ Build composite data.
+[67]   Data ← File,Filter,Dir,Ext,Title
+[68]  ⍝ Allocate a moveable global memory block for composite data.
+[69]   hF ← ⎕wcall ('GlobalAlloc') ('GMEM_MOVEABLE') ((⍳0)⍴⍴Data)
+[70]   ⎕ERROR (hF = 0)/'Unable to allocate memory'
+[71]  ⍝ Get a far pointer to the memory.
+[72]   lpData ← ⎕wcall 'GlobalLock' hF
+[73]   →(lpData ≠ 0)⍴L7 ⋄ rc ← ⎕wcall 'GlobalFree' hF ⋄ ⎕ERROR 'Unable to lock memory'
+[74]  ⍝ Write the data to the block.
+[75]  L7: Data W_Mem lpData
+[76]  ⍝ Get pointers into array.
+[77]   (lpstrFile lpstrFilter lpstrInitialDir lpstrDefExt lpstrTitle)←lpData++\0,⍴¨File Filter Dir Ext
+[78]  
+[79]  ⍝ Build OPENFILENAME Data structure.
+[80]   OPENFILENAME←''
+[81]  ⍝ lStructSize - Length of the structure, in bytes.
+[82]   OPENFILENAME←OPENFILENAME,D2C lStructSize
+[83]  ⍝ hwndOwner - Window handle of the window that owns the dialog box or NULL
+[84]   OPENFILENAME←OPENFILENAME,I2C WhwndOwner ⍝ 0
+[85]  ⍝ hInstance - Not used.
+[86]   OPENFILENAME←OPENFILENAME,I2C 0
+[87]  ⍝ lpstrFilter - Points to one or more pairs of null-terminated strings
+[88]  ⍝ specifying file filters.
+[89]   OPENFILENAME←OPENFILENAME,D2C lpstrFilter
+[90]  ⍝ lpstrCustomFilter - Not used.
+[91]   OPENFILENAME←OPENFILENAME,D2C 0
+[92]  ⍝ nMaxCustFilter - Not used.
+[93]   OPENFILENAME←OPENFILENAME,D2C 0
+[94]  ⍝ nFilterIndex - Initial file filter number.
+[95]   OPENFILENAME←OPENFILENAME,D2C nFilterIndex
+[96]  ⍝ lpstrFile - Points to the initial filename buffer.
+[97]   OPENFILENAME←OPENFILENAME,D2C lpstrFile
+[98]  ⍝ nMaxFile - Size, in bytes, of the lpstrFile buffer.
+[99]   OPENFILENAME←OPENFILENAME,D2C nMaxFile
+[100] ⍝ lpstrFileTitle - Not used.
+[101]  OPENFILENAME←OPENFILENAME,D2C 0
+[102] ⍝ nMaxFileTitle - Not used.
+[103]  OPENFILENAME←OPENFILENAME,D2C 0
+[104] ⍝ lpstrInitialDir - Points to the initial file directory string.
+[105]  OPENFILENAME←OPENFILENAME,D2C lpstrInitialDir
+[106] ⍝ lpstrTitle - Points to the title bar string.
+[107]  OPENFILENAME←OPENFILENAME,D2C lpstrTitle
+[108] ⍝ Flags - Specifies the dialog box initialization flags.
+[109]  OPENFILENAME←OPENFILENAME,D2C Flags
+[110] ⍝ nFileOffset - Not used.
+[111]  OPENFILENAME←OPENFILENAME,W2C 0
+[112] ⍝ nFileExtension - Not used.
+[113]  OPENFILENAME←OPENFILENAME,W2C 0
+[114] ⍝ lpstrDefExt - Points to the default extension string.
+[115]  OPENFILENAME←OPENFILENAME,D2C lpstrDefExt
+[116] ⍝ lCustData - Not used.
+[117]  OPENFILENAME←OPENFILENAME,D2C 0
+[118] ⍝ lpfnHook - Not used.
+[119]  OPENFILENAME←OPENFILENAME,D2C 0
+[120] ⍝ lpTemplateName -  Not used.
+[121]  OPENFILENAME←OPENFILENAME,D2C 0
+[122] 
+[123] ⍝ Call the common dialog box function.
+[124]  (rc OPENFILENAME) ← ⎕wcall 'GetOpenFileName' OPENFILENAME
+[125] 
+[126] ⍝ Read the results.
+[127]  Data←W_Mem lpData,82,⍴Data
+[128] ⍝ Unlock and free memory.
+[129]  0 0⍴ ⎕wcall 'GlobalUnlock' hF
+[130]  0 0⍴ ⎕wcall 'GlobalFree' hF
+[131] 
+[132] ⍝ Get the extended error if any.
+[133]  →(rc≠0)⍴L10 ⋄ R←⎕wcall 'CommDlgExtendedError' ⋄ →0
+[134] 
+[135] ⍝ Return results to user.
+[136] L10:
+[137] :if nVer = 0      ⍝ If Windows version < 4
+[138]  M ← (¯1+Data⍳⎕TCNUL)↑Data
+[139]  →(' '∊M)⍴L15
+[140]  L←(⌽∨\⌽M='\')/M ⋄ M←(⍴L)↓M ⋄ L←(-1<+/L='\')↓L ⍝ Single-file case
+[141]  →L20
+[142] L15:  ⍝ Multi-file case
+[143]  L←(¯1+M⍳' ')↑M
+[144]  M←(1+⍴L)↓M
+[145]  M[(M=' ')/⍳⍴M]←⎕tcnul
+[146]  M←M,⎕tcnul
+[147]  M←(¯1⌽⎕tcnul=M) ⎕penclose M
+[148]  M←¯1↓¨M
+[149]  →L20
+[150] :endif
+[151] 
+[152] ⍝ If Windows version ≥ 4
+[153] :if fMulti
+[154]  ⍝ Multi-file case
+[155]  M←(((2⍴⎕tcnul)⍷Data)⍳1)↑Data
+[156]  M←(¯1⌽⎕tcnul=M) ⎕penclose M
+[157]  M←¯1↓¨M
+[158]  :if 1≠⍴M
+[159]     L←1⊃M
+[160]     M←1↓M
+[161]  :else
+[162]     M←1⊃M ⋄ L←(⌽∨\⌽(⊃M)='\')/M ⋄ M←,⊂(⍴L)↓M ⋄ L←(-1<+/L='\')↓L
+[163]  :endif
+[164] :else
+[165]  ⍝ Single-file case
+[166]  M←¯1↓(Data⍳⎕tcnul)↑Data
+[167]  L←(⌽∨\⌽M='\')/M ⋄ M←(⍴L)↓M ⋄ L←(-1<+/L='\')↓L
+[168] :endif
+[169] 
+[170] L20: R ← ⊂L
+[171]  R ← R, ⊂M
+[172]  R ← R, ⊂(¯1+Ext⍳⎕TCNUL)↑Ext
+[173]  R ← R ,⊂(¯1+Title⍳⎕TCNUL)↑Title
+[174]  L ← Filter ⋄ L[(L=⎕TCNUL)/⍳⍴L]←'∣'
+[175]  R ← R, ⊂¯2↓L
+[176]  R ← R, 323 ⎕DR 4↑24↓OPENFILENAME
+[177]  R ← R, 2⊤323 ⎕DR 4↑52↓OPENFILENAME
+    ∇

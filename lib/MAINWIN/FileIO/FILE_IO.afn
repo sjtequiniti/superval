@@ -1,0 +1,33 @@
+    ∇ Z←esc FILE∆IO Z;rows;size
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Return allowable Input File names (esc=0)
+[3]   ⍝    or available Input/output File names (esc=1)
+[4]   ⍝ in List Z given
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   size←⍴Z←UPPERCASE MATRIX ' ',' ',Z ⋄ Z←,Z
+[8]   
+[9]   ⍝ Exclude all of the following System Files
+[10]  rows←Z ⎕SS '.ASF' ⋄ rows←rows∨Z ⎕SS '.AWS' ⋄ rows←rows∨Z ⎕SS '.COM'
+[11]  rows←rows∨Z ⎕SS '.APL ' ⋄ rows←rows∨Z ⎕SS '\ '
+[12]  rows←rows∨Z ⎕SS '.SF ' ⋄ rows←rows∨Z ⎕SS '.WS ' ⋄ rows←rows∨Z ⎕SS '.W3 '
+[13]  rows←rows∨Z ⎕SS '.WK' ⋄ rows←rows∨Z ⎕SS '.WR1'
+[14]  rows←rows∨Z ⎕SS '.EXE' ⋄ rows←rows∨Z ⎕SS 'TEMP$$.'
+[15]  
+[16]  →esc/END ⍝ Exclude the Output files as well
+[17]  rows←rows∨Z ⎕SS ' VALID.' ⋄ rows←rows∨Z ⎕SS 'MOVEMENT.'
+[18]  rows←rows∨Z ⎕SS 'ANALYSIS.' ⋄ rows←rows∨Z ⎕SS '  DECINV.'
+[19]  rows←rows∨Z ⎕SS '  SALINV.' ⋄ rows←rows∨Z ⎕SS '  NEINV.'
+[20]  rows←rows∨Z ⎕SS '  NESINV.' ⋄ rows←rows∨Z ⎕SS 'DECPRINT.' ⋄ rows←rows∨Z ⎕SS 'ANNPRINT.'
+[21]  rows←rows∨Z ⎕SS 'VARPRINT.' ⋄ rows←rows∨Z ⎕SS 'ACCPRINT.'
+[22]  rows←rows∨Z ⎕SS ' IRR.' ⋄ rows←rows∨Z ⎕SS ' ANN.'
+[23]  rows←rows∨Z ⎕SS ' AGG' ⋄ rows←rows∨Z ⎕SS ' DAB' ⋄ rows←rows∨Z ⎕SS ' EAN'
+[24]  rows←rows∨Z ⎕SS ' AAN' ⋄ rows←rows∨Z ⎕SS ' NEC' ⋄ rows←rows∨Z ⎕SS ' NEM'
+[25]  rows←rows∨Z ⎕SS ' PUC' ⋄ rows←rows∨Z ⎕SS ' UCM' ⋄ rows←rows∨Z ⎕SS ' ABC'
+[26]  rows←rows∨Z ⎕SS ' PENM' ⋄ rows←rows∨Z ⎕SS ' DEFM'
+[27]  rows←rows∨Z ⎕SS ' PENF' ⋄ rows←rows∨Z ⎕SS ' DEFF'
+[28]  rows←rows∨Z ⎕SS 'BENEFITS.' ⋄ rows←rows∨Z ⎕SS ' ERROR.LOG' ⋄ rows←rows∨Z ⎕SS ' VALN.$LOG'
+[29]  rows←rows∨Z ⎕SS 'MEMBPROJ.' ⋄ rows←rows∨Z ⎕SS '  CHSINV.'
+[30]  
+[31]  END:Z← 0 1 ↓(~∨/size⍴rows)⌿size⍴Z
+    ∇

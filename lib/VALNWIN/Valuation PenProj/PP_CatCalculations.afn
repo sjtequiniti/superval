@@ -1,0 +1,60 @@
+    ∇ PP∆CatCalculations IsTOut;ValDATE
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Preliminary Category Level Calculations required for Pension Projector
+[3]   
+[4]   1 PP∆Process∆Output Cat∆Output
+[5]   
+[6]   ⍝ Adjustment Factor for Payment Frequency and Arrears/Advance
+[7]   pp∆FreqAdj←⍬⍴(pp∆FREQ+¯1+2×pp∆MODE)÷2×pp∆FREQ
+[8]   
+[9]   ⍝ Make some discount vectors
+[10]  pp∆vPre←×\1,(÷2/(LatestAge+newent×projTerm)OVERTAKE ,pp∆i)*0.5
+[11]  pp∆vMPPre←((⍴pp∆vPre)⍴0 1)/pp∆vPre ⍝ At t=0.5, 1.5, 2.5,...
+[12]  pp∆vPre←  ((⍴pp∆vPre)⍴1 0)/pp∆vPre ⍝ At t=0, 1, 2,...
+[13]  
+[14]  :if IsTOut
+[15]      pp∆vTVPre←×\1,(÷2/(LatestAge+newent×projTerm)OVERTAKE ,pp∆TVi)*0.5
+[16]      pp∆vMPTVPre←((⍴pp∆vTVPre)⍴0 1)/pp∆vTVPre ⍝ At t=0.5, 1.5, 2.5,...
+[17]      pp∆vTVPre←  ((⍴pp∆vTVPre)⍴1 0)/pp∆vTVPre ⍝ At t=0, 1, 2,...
+[18]  :endif
+[19]  
+[20]  pp∆vPost←×\1,(÷2/(120+newent×projTerm)OVERTAKE ,pp∆pi)*0.5
+[21]  pp∆vMPPost←((⍴pp∆vPost)⍴0 1)/pp∆vPost ⍝ At t=0.5, 1.5, 2.5,...
+[22]  pp∆vPost←  ((⍴pp∆vPost)⍴1 0)/pp∆vPost ⍝ At t=0, 1, 2,...
+[23]  ⍝ At "mid-points" (according to payment frequency)
+[24]  pp∆vMPPostAdj←pp∆vPost×(÷(121+newent×projTerm)OVERTAKE ,pp∆pi)*1-pp∆FreqAdj
+[25]  
+[26]  :if 'C'=pp∆INCIND ⋄ :orif 0∊⍴,pp∆INCDAT
+[27]     pp∆incprop←0.5
+[28]  :else
+[29]     ValDATE←¯3↑vDATE,prevind/pvDATE
+[30]     pp∆incprop←ValDATE DAYS (2 2⍴pp∆INCDAT),ValDATE[2]+0 1
+[31]     pp∆incprop←pp∆incprop÷365⌈pp∆incprop←1↑(0<pp∆incprop)/pp∆incprop
+[32]  :endif
+[33]  
+[34]  :if ¯1=pp∆IncTiming←(¯1 0,pp∆incprop,1)['DNPF'⍳pp∆IncTiming]
+[35]      pp∆incprop←1-0⌈1⌊pp∆incprop+pp∆FreqAdj-0.5 ⍝ Pre 8.50 treatment
+[36]  :else
+[37]      ⍝ Start Year Exits - First Year and Second Year after Exit
+[38]      ⍝ Prop of payments that increase applies × Prop of Increase applied
+[39]      pp∆incadj←pp∆IncTiming,1
+[40]  
+[41]      ⍝ Mid Year Exits -  First Year after Exit
+[42]      ⍝ Prop IF at Increase Date × Prop of Increase applied × "exposure"
+[43]      pp∆incadjMP←pp∆incprop×pp∆IncTiming×(1-0.5×pp∆IncTiming≠1)
+[44]  
+[45]      ⍝ Second Year after Exit
+[46]      ⍝ Prop IF full year +  Prop not IF full year × "exposure"
+[47]      pp∆incadjMP←pp∆incadjMP,pp∆incprop+(1-pp∆incprop)×(pp∆IncTiming+×pp∆IncTiming)÷2
+[48]  
+[49]      pp∆FREQ←⌊pp∆FREQ⌊1000000
+[50]      pp∆incprop←(+/pp∆incprop≤((~⎕io)+(⍳pp∆FREQ)-pp∆MODE)÷pp∆FREQ)÷pp∆FREQ
+[51]      ⍝⍝⍝ FIXME pp∆incprop is used incorrectly for mid year exits - understates Increases in firt year by half.
+[52]  :endif
+[53]  
+[54]  pp∆hMP←MID (pp∆h←120 OVERTAKE ,pp∆HXX),0
+[55]  
+[56]  pp∆ExitCodes←pp∆ExitCodestab for 5 4/(~IsTOut) IsTOut
+[57]  pp∆ExitCodes←pp∆ExitCodes for (ClassID∊¨pp∆ExitCodes at 'ClassID')
+[58]  pp∆ExitContID←pp∆ExitCodes at 'ContID' ⋄ pp∆SpouseContID←pp∆ExitCodes at 'SpouseContID' ⋄ pp∆ExitCol←pp∆ExitCodes at 'ExitCol' ⋄ pp∆ExitCodes←pp∆ExitCodes at 'Codes'
+    ∇

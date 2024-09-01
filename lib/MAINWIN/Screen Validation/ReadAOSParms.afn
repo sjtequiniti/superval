@@ -1,1 +1,14 @@
-    ∇ Z←ReadAOSParms rows;success;MESS;tab;FileSelections;FILES;fILENAME;Format;UseSex;UseCat;CatSels;UseSubs;DeleteSubs[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Read AOS Parameters localising parameters that clash with Basis Parameters[3]   [4]   :if ↑(success MESS)←2↑ClientFile ReadModule (MembGroup,'_AOS') '' (MembGroup,' Analysis of Surplus') '' errflag (MembGroup,' Analysis of Surplus Parameters')[5]       tab←⍙RULESdict ReadDictFile MembGroup,'_AOS'[6]       tab←tab for (10<tab at 'Row')                                   ⍝ Drop rows re localised parameters[7]       tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows[8]       relRules←relRules append tab[9]       ⍎comment_var,'←',comment_var,' append Comment_',MembGroup,'_AOS'[10]      expungelist←expungelist OVER ('Comment_',MembGroup,'_AOS') OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'[11]  :endif[12]  Z←MESS rows    ∇
+    ∇ Z←ReadAOSParms rows;success;MESS;tab;FileSelections;FILES;fILENAME;Format;UseSex;UseCat;CatSels;UseSubs;DeleteSubs
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Read AOS Parameters localising parameters that clash with Basis Parameters
+[3]   
+[4]   :if ↑(success MESS)←2↑ClientFile ReadModule (MembGroup,'_AOS') '' (MembGroup,' Analysis of Surplus') '' errflag (MembGroup,' Analysis of Surplus Parameters')
+[5]       tab←⍙RULESdict ReadDictFile MembGroup,'_AOS'
+[6]       tab←tab for (10<tab at 'Row')                                   ⍝ Drop rows re localised parameters
+[7]       tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows
+[8]       relRules←relRules append tab
+[9]       ⍎comment_var,'←',comment_var,' append Comment_',MembGroup,'_AOS'
+[10]      expungelist←expungelist OVER ('Comment_',MembGroup,'_AOS') OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'
+[11]  :endif
+[12]  Z←MESS rows
+    ∇

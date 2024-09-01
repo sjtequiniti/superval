@@ -1,1 +1,67 @@
-    ∇ res←RECON;File;recn;NUMRECS;REC;MAT;GMAT;tpr1;H1;DPAGE;I;FDJF;DFDJF;FNOM;DJF;NOM;DOB;FDOB;DFDOB;DOE;FDOE;DFDOE;FMOE;EXIT;CODE;N;rows;MOE;A;B;bDATE;eDATE;Active;Error;tieno;gROUP;RunTime;line;size[1]   ⍝ DATAWIN.sf#11[2]   ⍝ Sets up required global variables and data format, creates output[3]   ⍝ file, inserts results into matrix[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   res←'' ⋄ I←0 ⋄ PREPARE[8]   [9]   TIE:⎕NUNTIE tieno ⍝ Tieing file if available and looping through each deck[10]  →((1↑⍴FILES)<I←I+1)/FINISH ⋄ →(0=⍴File←DLTB FILES[I;])/⎕LC ⋄ →(~File NTIE tieno)/⎕LC[11]  [12]  MAT←100⍴recn←0 ⋄ NUMRECS←⌊(size←⎕NSIZE tieno)÷RECL ⍝ Set up vars for each deck[13]  (I (1↑⍴FILES) File) Win∆ProgressBar 'FileUpdate'[14]  [15]  ⍝ Set up loop(s) to read member data from file, do calculations[16]  READ:→(NUMRECS<recn←recn+1)/OUT[17]  REC←,'ASCII' Read∆DataFile tieno,size,RECL,1,recn-1 ⍝ Data loop[18]  ⍝ Display record number being processed[19]  (recn NUMRECS) Win∆ProgressBar 'MemberUpdate'[20]  [21]  :if ∨/' '≠NOM←REC[FNOM] ⍝ Numbers must be valid and scalar[22]  :andif ~(,1)≡⎕VI NOM[23]      Error←'InvFileNum' ⋄ →ERR[24]  :endif[25]  NOM←1⌈zwb NOM[26]  [27]  DOB←(DFDOB (vDATE- 0 0,120-20×Active)) DATEEXP REC[FDOB][28]  ⍝ Validate Date of Birth[29]  :if ~DATECHECK DOB ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif[30]  [31]  EXIT←0 ⋄ →(^/' '=(A←REC[FMOE]),B←REC[FDOE])/LAB[32]  EXIT←1 ⋄ rows←49 ⋄ →(^/' '=B)/LAB ⋄ EXIT←2 ⋄ rows←4[33]  [34]  DOE←(DFDOE (DOB+0 0,20×~Active)) DATEEXP B ⍝ Check DOE is not before Start[35]  ⍝ Validate Date of Exit[36]  :if ~DATECHECK DOE ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif[37]  →(BDATE<DOE←JUL DOE)/LAB ⋄ MAT[1]←MAT[1]+NOM ⋄ →READ[38]  [39]  ⍝ Check DJF is before End Date[40]  LAB:DJF←(DFDJF DOB) DATEEXP REC[FDJF][41]  ⍝ Validate Date Joined[42]  :if ~DATECHECK DJF ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif[43]  →(EDATE≥DJF←JUL DJF)/L3 ⋄ MAT[2]←MAT[2]+NOM ⋄ →READ[44]  [45]  L3:MAT[3+N]←MAT[3+N←DJF>BDATE]+NOM ⋄ →(0 1 =EXIT)/READ,L1 ⋄ →(DOE>EDATE)/READ[46]  L1:→(⍴MOE←CODE TLU A,' ')/L2 ⋄ MOE←1↑⍴CODE←CODE⍪A ⍝ Find if Exit Code exists[47]  L2:MAT[rows+MOE]←MAT[rows+MOE]+NOM ⋄ →READ ⍝ Insert in the Matrix[48]  [49]  OUT:GMAT←GMAT,MAT ⋄ PRINTRECON 100 1 ⍴MAT ⋄ →TIE ⍝ Write results to file[50]  [51]  ⍝ Write grand totals to file[52]  FINISH:→(1=¯1↑⍴GMAT)/END ⋄ File←'All Data'[53]  PRINTRECON GMAT←GMAT,+/GMAT[54]  END:FormName ⎕wi 'Focus'[55]  (gROUP,' at ',RunTime) BROWSE tpr1 ⋄ →ESC[56]  [57]  ERR: ⍝ on Error Process[58]  :if FileSelections[59]     MDISPLAY Error ('\' Win∆Child ,fILENAME) ⋄ res←parent,'fData.edfILENAME'[60]  :else[61]     MDISPLAY Error ('\' Win∆Child File) ⋄ res←parent,'fData.edFILES'[62]  :endif[63]  NERASE tpr1[64]  [65]  ESC:⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'    ∇
+    ∇ res←RECON;File;recn;NUMRECS;REC;MAT;GMAT;tpr1;H1;DPAGE;I;FDJF;DFDJF;FNOM;DJF;NOM;DOB;FDOB;DFDOB;DOE;FDOE;DFDOE;FMOE;EXIT;CODE;N;rows;MOE;A;B;bDATE;eDATE;Active;Error;tieno;gROUP;RunTime;line;size
+[1]   ⍝ DATAWIN.sf#11
+[2]   ⍝ Sets up required global variables and data format, creates output
+[3]   ⍝ file, inserts results into matrix
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   res←'' ⋄ I←0 ⋄ PREPARE
+[8]   
+[9]   TIE:⎕NUNTIE tieno ⍝ Tieing file if available and looping through each deck
+[10]  →((1↑⍴FILES)<I←I+1)/FINISH ⋄ →(0=⍴File←DLTB FILES[I;])/⎕LC ⋄ →(~File NTIE tieno)/⎕LC
+[11]  
+[12]  MAT←100⍴recn←0 ⋄ NUMRECS←⌊(size←⎕NSIZE tieno)÷RECL ⍝ Set up vars for each deck
+[13]  (I (1↑⍴FILES) File) Win∆ProgressBar 'FileUpdate'
+[14]  
+[15]  ⍝ Set up loop(s) to read member data from file, do calculations
+[16]  READ:→(NUMRECS<recn←recn+1)/OUT
+[17]  REC←,'ASCII' Read∆DataFile tieno,size,RECL,1,recn-1 ⍝ Data loop
+[18]  ⍝ Display record number being processed
+[19]  (recn NUMRECS) Win∆ProgressBar 'MemberUpdate'
+[20]  
+[21]  :if ∨/' '≠NOM←REC[FNOM] ⍝ Numbers must be valid and scalar
+[22]  :andif ~(,1)≡⎕VI NOM
+[23]      Error←'InvFileNum' ⋄ →ERR
+[24]  :endif
+[25]  NOM←1⌈zwb NOM
+[26]  
+[27]  DOB←(DFDOB (vDATE- 0 0,120-20×Active)) DATEEXP REC[FDOB]
+[28]  ⍝ Validate Date of Birth
+[29]  :if ~DATECHECK DOB ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif
+[30]  
+[31]  EXIT←0 ⋄ →(^/' '=(A←REC[FMOE]),B←REC[FDOE])/LAB
+[32]  EXIT←1 ⋄ rows←49 ⋄ →(^/' '=B)/LAB ⋄ EXIT←2 ⋄ rows←4
+[33]  
+[34]  DOE←(DFDOE (DOB+0 0,20×~Active)) DATEEXP B ⍝ Check DOE is not before Start
+[35]  ⍝ Validate Date of Exit
+[36]  :if ~DATECHECK DOE ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif
+[37]  →(BDATE<DOE←JUL DOE)/LAB ⋄ MAT[1]←MAT[1]+NOM ⋄ →READ
+[38]  
+[39]  ⍝ Check DJF is before End Date
+[40]  LAB:DJF←(DFDJF DOB) DATEEXP REC[FDJF]
+[41]  ⍝ Validate Date Joined
+[42]  :if ~DATECHECK DJF ⋄ Error←'InvFileDate' ⋄ →ERR ⋄ :endif
+[43]  →(EDATE≥DJF←JUL DJF)/L3 ⋄ MAT[2]←MAT[2]+NOM ⋄ →READ
+[44]  
+[45]  L3:MAT[3+N]←MAT[3+N←DJF>BDATE]+NOM ⋄ →(0 1 =EXIT)/READ,L1 ⋄ →(DOE>EDATE)/READ
+[46]  L1:→(⍴MOE←CODE TLU A,' ')/L2 ⋄ MOE←1↑⍴CODE←CODE⍪A ⍝ Find if Exit Code exists
+[47]  L2:MAT[rows+MOE]←MAT[rows+MOE]+NOM ⋄ →READ ⍝ Insert in the Matrix
+[48]  
+[49]  OUT:GMAT←GMAT,MAT ⋄ PRINTRECON 100 1 ⍴MAT ⋄ →TIE ⍝ Write results to file
+[50]  
+[51]  ⍝ Write grand totals to file
+[52]  FINISH:→(1=¯1↑⍴GMAT)/END ⋄ File←'All Data'
+[53]  PRINTRECON GMAT←GMAT,+/GMAT
+[54]  END:FormName ⎕wi 'Focus'
+[55]  (gROUP,' at ',RunTime) BROWSE tpr1 ⋄ →ESC
+[56]  
+[57]  ERR: ⍝ on Error Process
+[58]  :if FileSelections
+[59]     MDISPLAY Error ('\' Win∆Child ,fILENAME) ⋄ res←parent,'fData.edfILENAME'
+[60]  :else
+[61]     MDISPLAY Error ('\' Win∆Child File) ⋄ res←parent,'fData.edFILES'
+[62]  :endif
+[63]  NERASE tpr1
+[64]  
+[65]  ESC:⎕nuntie ⎕nnums,⎕xnnums  ⋄ Win∆ProgressBar 'Close'
+    ∇

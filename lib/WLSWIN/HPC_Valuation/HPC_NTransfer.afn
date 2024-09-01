@@ -1,0 +1,11 @@
+    ∇ tie HPC_NTransfer tieno;size;data
+[1]   ⍝ WLSWIN.sf#5
+[2]   ⍝ Reads a Compressed Native DOS file (tied to tieno) and writes out same into another
+[3]   ⍝ Native DOS File tied with 'tie'. The File is then erased.
+[4]   
+[5]   :if 0≠size←⎕nsize tieno ⍝ Size of File
+[6]       data←'inflate no_header wrapl=0' ⎕dr ⎕nread tieno 82 size
+[7]       data ⎕nappend tie
+[8]   :endif
+[9]   NERASE tieno,1 ⍝ Erase the original file
+    ∇

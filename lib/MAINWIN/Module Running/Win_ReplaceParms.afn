@@ -1,1 +1,18 @@
-    ∇ desc←File Win∆ReplaceParms parm;TYPE;ParmNo;i[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Determine if existing Parameter Set is to be replaced by Migrated one[3]   ⍝   else add [1] etc to Description and retry!![4]   [5]   (TYPE desc)←parm[6]   [7]   ParmNo←'' ⋄ i←0[8]   :while ~0∊⍴File ReadFile TYPE (desc,ParmNo) 'NAMES'[9]        :if 'Y'=ASK 'ReplaceParms' ('_ ' REPL TYPE) (desc,ParmNo)[10]           :leave[11]       :else[12]           ParmNo←' [',(⍕i←i+1),']'[13]       :endif[14]  :endwhile[15]  [16]  desc←desc,ParmNo    ∇
+    ∇ desc←File Win∆ReplaceParms parm;TYPE;ParmNo;i
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Determine if existing Parameter Set is to be replaced by Migrated one
+[3]   ⍝   else add [1] etc to Description and retry!!
+[4]   
+[5]   (TYPE desc)←parm
+[6]   
+[7]   ParmNo←'' ⋄ i←0
+[8]   :while ~0∊⍴File ReadFile TYPE (desc,ParmNo) 'NAMES'
+[9]        :if 'Y'=ASK 'ReplaceParms' ('_ ' REPL TYPE) (desc,ParmNo)
+[10]           :leave
+[11]       :else
+[12]           ParmNo←' [',(⍕i←i+1),']'
+[13]       :endif
+[14]  :endwhile
+[15]  
+[16]  desc←desc,ParmNo
+    ∇

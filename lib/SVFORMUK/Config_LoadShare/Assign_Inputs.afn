@@ -1,1 +1,61 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Config_LoadShare" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Config_LoadShare" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmMultiConfig.fConfig.cbMethSubProc" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB MethSubProc[11]  :if mt selection[12]      :if ~mt DLTB MethSubProc[13]          warnings←warnings OVER "Previous Selection for 'Method of Load Sharing' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmMultiConfig.fConfig.cbMethSubProc" ⎕wi "value" (¯1↑1,selection)[18]  "fmMultiConfig.fConfig.edMaxSubProc" ⎕wi "text" (DLTB MaxSubProc)[19]  "fmMultiConfig.fConfig.edMinSubProcMemb" ⎕wi "text" (DLTB MinSubProcMemb)[20]  "fmMultiConfig.fConfig.edMaxSubProcMemb" ⎕wi "text" (DLTB MaxSubProcMemb)[21]  PickList←"fmMultiConfig.fConfig.lvHTTPs" ⎕wi "list"[22]  :if 0∊⍴PickList[23]      value←⍬[24]  :else[25]      list←(1 0×⍴PickList)⍴""[26]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX HTTPs) OVER " ")[1;][27]          list←list,"⍺",(⊃PickList[;n])," "[28]      :endfor[29]      list←m2n list[30]      NameList←m2n MATRIX HTTPs[31]      value←(list∊NameList)/PickList[;1][32]  :endif[33]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[34]      value←PickList[1;1] ⋄ modified←1[35]  :endif[36]  "fmMultiConfig.fConfig.lvHTTPs" ⎕wi "value" value[37]  0 0⍴"fmMultiConfig.fConfig.lvHTTPs" ⎕wi "EnsureVisible" ((1↑value),1)[38]  PickList←"fmMultiConfig.fLogging.cbLogLevel" ⎕wi "list"[39]  selection←PickList ExactTLU DLTB LogLevel[40]  :if mt selection[41]      :if ~mt DLTB LogLevel[42]          warnings←warnings OVER "Previous Selection for 'Logging Level' is no longer available"[43]      :endif[44]      modified←⌈/modified,1[45]  :endif[46]  "fmMultiConfig.fLogging.cbLogLevel" ⎕wi "value" (¯1↑1,selection)[47]  "fmMultiConfig.fLogging.edLogHistory" ⎕wi "text" (DLTB LogHistory)[48]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Config_LoadShare[49]      :for var :in spin Comment_Config_LoadShare at "variable" "row" ⋄ (var row)←var[50]          "Config_LoadShare" ParmColor ((FormFields for "variable" var) at "control"),var row 1[51]      :endfor[52]  :endif[53]  :if ~0∊⍴,warnings[54]      MDISPLAY DLTMB warnings,⎕tcnl[55]      Win∆AssignVars "fmMultiConfig"[56]  :endif[57]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Config_LoadShare" "" "Names"[58]      "fmMultiConfig" ⎕wi "modified" 0[59]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Config_LoadShare" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Config_LoadShare" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmMultiConfig.fConfig.cbMethSubProc" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB MethSubProc
+[11]  :if mt selection
+[12]      :if ~mt DLTB MethSubProc
+[13]          warnings←warnings OVER "Previous Selection for 'Method of Load Sharing' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmMultiConfig.fConfig.cbMethSubProc" ⎕wi "value" (¯1↑1,selection)
+[18]  "fmMultiConfig.fConfig.edMaxSubProc" ⎕wi "text" (DLTB MaxSubProc)
+[19]  "fmMultiConfig.fConfig.edMinSubProcMemb" ⎕wi "text" (DLTB MinSubProcMemb)
+[20]  "fmMultiConfig.fConfig.edMaxSubProcMemb" ⎕wi "text" (DLTB MaxSubProcMemb)
+[21]  PickList←"fmMultiConfig.fConfig.lvHTTPs" ⎕wi "list"
+[22]  :if 0∊⍴PickList
+[23]      value←⍬
+[24]  :else
+[25]      list←(1 0×⍴PickList)⍴""
+[26]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX HTTPs) OVER " ")[1;]
+[27]          list←list,"⍺",(⊃PickList[;n])," "
+[28]      :endfor
+[29]      list←m2n list
+[30]      NameList←m2n MATRIX HTTPs
+[31]      value←(list∊NameList)/PickList[;1]
+[32]  :endif
+[33]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[34]      value←PickList[1;1] ⋄ modified←1
+[35]  :endif
+[36]  "fmMultiConfig.fConfig.lvHTTPs" ⎕wi "value" value
+[37]  0 0⍴"fmMultiConfig.fConfig.lvHTTPs" ⎕wi "EnsureVisible" ((1↑value),1)
+[38]  PickList←"fmMultiConfig.fLogging.cbLogLevel" ⎕wi "list"
+[39]  selection←PickList ExactTLU DLTB LogLevel
+[40]  :if mt selection
+[41]      :if ~mt DLTB LogLevel
+[42]          warnings←warnings OVER "Previous Selection for 'Logging Level' is no longer available"
+[43]      :endif
+[44]      modified←⌈/modified,1
+[45]  :endif
+[46]  "fmMultiConfig.fLogging.cbLogLevel" ⎕wi "value" (¯1↑1,selection)
+[47]  "fmMultiConfig.fLogging.edLogHistory" ⎕wi "text" (DLTB LogHistory)
+[48]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Config_LoadShare
+[49]      :for var :in spin Comment_Config_LoadShare at "variable" "row" ⋄ (var row)←var
+[50]          "Config_LoadShare" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[51]      :endfor
+[52]  :endif
+[53]  :if ~0∊⍴,warnings
+[54]      MDISPLAY DLTMB warnings,⎕tcnl
+[55]      Win∆AssignVars "fmMultiConfig"
+[56]  :endif
+[57]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Config_LoadShare" "" "Names"
+[58]      "fmMultiConfig" ⎕wi "modified" 0
+[59]  :endif
+    ∇

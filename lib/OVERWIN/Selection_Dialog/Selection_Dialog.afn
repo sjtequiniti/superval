@@ -1,1 +1,53 @@
-    ∇ res←field Selection_Dialog parm;parent;value;list;where[1]   ⍝ OVERWIN.sf#14[2]   ⍝ Function to allow user control on Selection Dialog Box[3]   [4]   parent←'fmSelection_Dialog.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       :if 0≠⎕nc 'OldTable' ⋄ Selections←MATRIX OldTable ⋄ :endif[10]      :if 0≠⎕nc 'OldParm'  ⋄ Selections←MATRIX OldParm  ⋄ :endif[11]  [12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[13]  [14]      (parent,'bnSelection_DialogSave') ⎕wi 'tooltip' 'Accept Current Selection'[15]      :if DecrParm[16]      :andif ~(,0)≡,where←⎕fi INIString uSER 'Decr_where' '0' PrefINI[17]          parent ⎕wi 'where' where[18]      :endif[19]      (parent,'edSearch') ⎕wi 'onChange' "0 0⍴(⊂⎕wi 'name') Selection_Dialog 'Change'"[20]  [21]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[22]  [23]      :repeat[24]          :select ↑field[25]              :case 'edSearch'[26]                  :if 0≠value←↑(UPPERCASE SelectionsDesc) TLU UPPERCASE (parent,'edSearch') ⎕wi 'text'[27]                      (parent,'lvSelections') ⎕wi 'value' value[28]                      0 0⍴(parent,'lvSelections') ⎕wi 'EnsureVisible' (value,1)[29]                  :endif[30]          :endselect[31]      :until mt field←1↓field[32]  [33]  :case 'Valid' ⍝ Routine specific validation[34]  [35]  :case 'Run'[36]      value←(parent,'lvSelections') ⎕wi 'value'[37]      list←(parent,'lvSelections') ⎕wi 'list'[38]      SelectionText←,⊃((value=list[;1])⌿list)[;3][39]      :if DecrParm[40]          (parent ⎕wi 'where') INIString uSER 'Decr_where' PrefINI[41]      :endif[42]      res←'Quit'[43]  [44]  :case 'Quit' ⍝ Deleting "other" variables[45]  [46]      0 0⍴⎕ex ''[47]  [48]  :endselect[49]  [50]  [51]      ∇
+    ∇ res←field Selection_Dialog parm;parent;value;list;where
+[1]   ⍝ OVERWIN.sf#14
+[2]   ⍝ Function to allow user control on Selection Dialog Box
+[3]   
+[4]   parent←'fmSelection_Dialog.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if 0≠⎕nc 'OldTable' ⋄ Selections←MATRIX OldTable ⋄ :endif
+[10]      :if 0≠⎕nc 'OldParm'  ⋄ Selections←MATRIX OldParm  ⋄ :endif
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]  
+[14]      (parent,'bnSelection_DialogSave') ⎕wi 'tooltip' 'Accept Current Selection'
+[15]      :if DecrParm
+[16]      :andif ~(,0)≡,where←⎕fi INIString uSER 'Decr_where' '0' PrefINI
+[17]          parent ⎕wi 'where' where
+[18]      :endif
+[19]      (parent,'edSearch') ⎕wi 'onChange' "0 0⍴(⊂⎕wi 'name') Selection_Dialog 'Change'"
+[20]  
+[21]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[22]  
+[23]      :repeat
+[24]          :select ↑field
+[25]              :case 'edSearch'
+[26]                  :if 0≠value←↑(UPPERCASE SelectionsDesc) TLU UPPERCASE (parent,'edSearch') ⎕wi 'text'
+[27]                      (parent,'lvSelections') ⎕wi 'value' value
+[28]                      0 0⍴(parent,'lvSelections') ⎕wi 'EnsureVisible' (value,1)
+[29]                  :endif
+[30]          :endselect
+[31]      :until mt field←1↓field
+[32]  
+[33]  :case 'Valid' ⍝ Routine specific validation
+[34]  
+[35]  :case 'Run'
+[36]      value←(parent,'lvSelections') ⎕wi 'value'
+[37]      list←(parent,'lvSelections') ⎕wi 'list'
+[38]      SelectionText←,⊃((value=list[;1])⌿list)[;3]
+[39]      :if DecrParm
+[40]          (parent ⎕wi 'where') INIString uSER 'Decr_where' PrefINI
+[41]      :endif
+[42]      res←'Quit'
+[43]  
+[44]  :case 'Quit' ⍝ Deleting "other" variables
+[45]  
+[46]      0 0⍴⎕ex ''
+[47]  
+[48]  :endselect
+[49]  
+[50]  
+[51]  
+    ∇

@@ -1,0 +1,87 @@
+    ∇ MAIN MembGroup;Ind∆Totals;Ind∆CFTOT;Ind∆AOS;QXret∆l
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   
+[7]   ⍝⍝⍝ 0 0⍴1 ⎕mf ⎕nl 3
+[8]   
+[9]   ⍝ Set up loop(s) to read member data from file, do calculations
+[10]  READ:→(NUMRECS<recn←recn+1)/FINISH ⋄ ⎕wgive 0
+[11]  :if hpcenabled ⋄ :andif 0=5∣recn
+[12]      :if hpcHTTP ⋄ 0 0⍴5 1 BrokerRequest 'pro?wid=',wid,'&tid=',tid,'&nrec=',⍕recn
+[13]      :else       ⋄ ⍙⍙hpcLogTie HPC_Log 'ResultsCategoryID=',(⍕ResultsCategoryID),' ! Record Number=',⍕recn
+[14]      :endif
+[15]  :endif
+[16]  REC←,'ASCII' Read∆DataFile dattie,filesize,RECL,1,recn-1 ⍝ Input data loop.
+[17]  lowerAge←1
+[18]  
+[19]  (recn NUMRECS) Win∆ProgressBar 'MemberUpdate'
+[20]  
+[21]  NoInd←aggopt[0]∨summopt∨('*'≠REC[RECL-3])∨(uk≠0)×~test
+[22]  ⍝⍝⍝ :if test
+[23]  ⍝⌿⍝ →(recn>1000)/FINISH ⋄ →NoInd/READ ⋄ trecn←trecn+1
+[24]  ⍝⍝⍝ :endif
+[25]  
+[26]  EDATE←VDATE ⋄ EXIT←ACTIVE ⍝ Indication of Exit/Active Status
+[27]  →(∨/EXIT[0 5],~aosind)/IN ⋄ BDATE←vDATE+0 0,PerToEnt-⌈ValPer
+[28]  
+[29]  LOOP:CREATEDATANUMS prevind←~prevind
+[30]  :if prevind ⋄ termAdjFin←PerToEnt
+[31]  :else       ⋄ termAdjFin←pvDATE YDAYS EDATE
+[32]  :endif
+[33]  aosterm←prevind×PerToEnt-ResSize
+[34]  
+[35]  ⍝⍝⍝ FIXME: Adjust Financials by termAdjFin here
+[36]  ⍝⍝⍝ Do not recalculate DYNRATB88 and DYNRATA88 for AOS FinAdjTable :if GMPLRInc
+[37]  
+[38]  ⍝ Set Valution Dates - One for Valuation purposes and one for Benefits
+[39]  ⍝ Differs in AOS for New Entrants at Previous Valaution (prior to entry!)
+[40]  IN:ValDATE←¯3↑EDATE,prevind/BDATE
+[41]  VDATE←¯3↑ValDATE,(∨/prevind^EXIT[2 4])/,neDATE[entryInd;]
+[42]  
+[43]  :if ~suppressText ⋄ :andif lowerAge ⋄ Ind∆Totals←(⍴TOTALS)⍴0 ⋄ :endif
+[44]  
+[45]  ⍝ Set up vectors of serv/memb, salaries, AC's after check they are active
+[46]  →(exitind←PRELIM ∨/(~+/×∣KnownExit)×EXIT[0 5],EXIT[3 4]×~aosind)/L1
+[47]  Ind∆CFTOT←STD∆CALCS ⍝ Main calculation program
+[48]  →prevind/LOOP
+[49]  →(L1,L3)[aosind×1+⍳∨/EXIT[3 4]]
+[50]  :if ~suppressText
+[51]      CFTOT←CFTOT+3 120 16↑AgeMult×Ind∆CFTOT
+[52]      ⍝mpuCONTS∆TOT←mpuCONTS∆TOT+(NRA-14)↑mpuCONTS
+[53]      TOTALS←TOTALS+AgeMult×Ind∆Totals
+[54]  :endif
+[55]  
+[56]  :if AgeInterp
+[57]      ⍙DBWriteTempDB 1 ⍝ Force write of records to Temp DB (to get age weighting)
+[58]      :if fscopt ⋄ XL_StoreScen ⋄ :endif
+[59]      →((1≠AgeMult)^~lowerAge←~lowerAge)/IN
+[60]  :endif
+[61]  
+[62]  →(~aosind)/READ
+[63]  
+[64]  ⍝ Write Current Valn AOS Numbers in Matrix and Add to Total
+[65]  L3:aos∆TOTS[aosrow;;]←aos∆TOTS[aosrow;;]+AOS∆TOTS∆CV Ind∆AOS
+[66]  VDATE←vDATE ⋄ →(∨/EXIT[1 2])/READ
+[67]  L1:(' ' join 'Record:' (⍕recn) (REC[fNAME]) (REC[fSEX]) (REC[fDOB]) 'EXCLUDED:  Not in-force at the Valuation Date') VALN∆LOG 'Warning'
+[68]  →(summopt∨aggopt[0]∨hpcenabled)/READ
+[69]  SUMMREC←' '⍪MATRIX 6↑NAME,' ',SEX,(,'I3,<   >' ⎕FMT X0),'Not in-force'
+[70]  (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN ⋄ →READ
+[71]  FINISH:
+[72]  :if hpcenabled
+[73]      :if hpcHTTP ⋄ 0 0⍴1 BrokerRequest 'pro?wid=',wid,'&tid=',tid,'&nrec=',⍕NUMRECS
+[74]      :else       ⋄ ⍙⍙hpcLogTie HPC_Log 'ResultsCategoryID=',(⍕ResultsCategoryID),' ! Record Number=',⍕NUMRECS
+[75]      :endif
+[76]  :endif
+[77]  
+[78]  :if uk=1 ⋄ NERASE dattie
+[79]  :else    ⋄ ⎕nuntie dattie
+[80]  :endif
+[81]  
+[82]  :if aggopt[0] ⋄ AGG∆CALCS ⋄ :endif
+[83]  
+[84]  ⍝⍝⍝ crash
+[85]  ⍝⍝⍝ ]wstime
+    ∇

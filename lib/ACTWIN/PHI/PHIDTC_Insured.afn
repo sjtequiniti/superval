@@ -1,1 +1,20 @@
-    ∇ PHIDTC∆Insured;BenType∆pp;IncType∆pp;SL∆pp;FSL∆pp;ExitProbs∆pp;GLTAB;PHIIDCASH;GLAVPER;phiidcash[1]   ⍝ ACTWIN.sf#8[2]   ⍝ The Insured Lump Sum[3]   ⍝[4]   GLTAB←NX↑(GLOCCL×ENX_1↑X0↓prIDC)+GLADD[5]   GLAVPER←1⌈ENX_1⌊glavper[6]   phiidcash←ENX↑[1]PHIIDCASH←GLTAB×[1]PHIGLBEN[7]   :if GLAVPER≠0[8]       phiidcash←0,+\phiidcash,(GLAVPER-1)/phiidcash[;,ENX_1][9]       PHIIDCASH←PHISYBen×NX↑[1]((GLAVPER↓[1]phiidcash)-(-GLAVPER)↓[1]phiidcash) CDIV GLAVPER[10]  :endif[11]  ⍝[12]  ⍝ Pension Projector Variables[13]  BenType∆pp←'I' ⋄ IncType∆pp←'C' ⋄ SL∆pp←NX↑[1]ENX_1↑[1]PHIIDCASH ⋄ FSL∆pp←⍬[14]  [15]  ⍝ The benefit includes the Premium Rate so the exit probability is just "survival"[16]  ExitProbs∆pp←PHItPx ⍝ Probability of Death post PHI pre Cease Age[17]  [18]  PP∆CreateInterface    ∇
+    ∇ PHIDTC∆Insured;BenType∆pp;IncType∆pp;SL∆pp;FSL∆pp;ExitProbs∆pp;GLTAB;PHIIDCASH;GLAVPER;phiidcash
+[1]   ⍝ ACTWIN.sf#8
+[2]   ⍝ The Insured Lump Sum
+[3]   ⍝
+[4]   GLTAB←NX↑(GLOCCL×ENX_1↑X0↓prIDC)+GLADD
+[5]   GLAVPER←1⌈ENX_1⌊glavper
+[6]   phiidcash←ENX↑[1]PHIIDCASH←GLTAB×[1]PHIGLBEN
+[7]   :if GLAVPER≠0
+[8]       phiidcash←0,+\phiidcash,(GLAVPER-1)/phiidcash[;,ENX_1]
+[9]       PHIIDCASH←PHISYBen×NX↑[1]((GLAVPER↓[1]phiidcash)-(-GLAVPER)↓[1]phiidcash) CDIV GLAVPER
+[10]  :endif
+[11]  ⍝
+[12]  ⍝ Pension Projector Variables
+[13]  BenType∆pp←'I' ⋄ IncType∆pp←'C' ⋄ SL∆pp←NX↑[1]ENX_1↑[1]PHIIDCASH ⋄ FSL∆pp←⍬
+[14]  
+[15]  ⍝ The benefit includes the Premium Rate so the exit probability is just "survival"
+[16]  ExitProbs∆pp←PHItPx ⍝ Probability of Death post PHI pre Cease Age
+[17]  
+[18]  PP∆CreateInterface
+    ∇

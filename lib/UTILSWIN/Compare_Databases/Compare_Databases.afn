@@ -1,0 +1,62 @@
+    ∇ res←field Compare_Databases parm;parent;valid;ok;report;LogFile;tpL
+[1]   ⍝ UTILSWIN.sf#8
+[2]   ⍝ Function to allow user control on Compare Databases
+[3]   
+[4]   parent←'fmDBCompare.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]  
+[12]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[13]  
+[14]      :repeat
+[15]          :select ↑field
+[16]          :case 'edFile1'
+[17]              :if ∨/'.MDF'⍷UPPERCASE File1←(parent,'edFile1') ⎕wi 'text'
+[18]                  (parent,'edFile1') ⎕wi 'text' ('[SQL Server]  ',Win∆Parent '\' Win∆Child File1)
+[19]              :endif
+[20]          :case 'edFile2'
+[21]              :if ∨/'.MDF'⍷UPPERCASE File2←(parent,'edFile1') ⎕wi 'text'
+[22]                  (parent,'edFile2') ⎕wi 'text' ('[SQL Server]  ',Win∆Parent '\' Win∆Child File2)
+[23]              :endif
+[24]          :endselect
+[25]      :until mt field←1↓field
+[26]  
+[27]  :case 'Valid' ⍝ Routine specific validation
+[28]  
+[29]      valid←'[SQL SERVER]  ' '.MDB ' '.ACCDB '
+[30]      :if ~∨/∨/¨valid⍷¨⊂UPPERCASE File1,' '
+[31]          res←'Invalid File for First Selection.  Please select a Database'
+[32]          Win∆SetFocus parent,'edFile1' ⋄ :return
+[33]      :endif
+[34]      :if ~∨/∨/¨valid⍷¨⊂UPPERCASE File2,' '
+[35]          res←'Invalid File for Second Selection.  Please select a Database'
+[36]          Win∆SetFocus parent,'edFile2' ⋄ :return
+[37]      :endif
+[38]      :if (UPPERCASE File1)≡UPPERCASE File2
+[39]          res←"Can't compare a database with itself.  Please select different Databases"
+[40]          Win∆SetFocus parent,'edFile2' ⋄ :return
+[41]      :endif
+[42]  
+[43]  :case 'Run'
+[44]  
+[45]      :if ¯1=↑(ok report)←0 CompareDB File1 File2
+[46]          MDISPLAY report ⋄ res←'' ⋄ :return
+[47]      :elseif ok=1
+[48]          MDISPLAY 'Databases Match'
+[49]      :else
+[50]          →(0=tpL←NCREATE LogFile←InputDir,'DBCompare.$log')/⎕lc ⍝ Keep trying until success
+[51]          report ⎕nappend tpL
+[52]          BROWSE 'ß',LogFile
+[53]          ⎕nuntie tpL
+[54]      :endif
+[55]  
+[56]      res←'Quit'
+[57]  
+[58]  :case 'Quit' ⍝ Deleting "other" variables
+[59]  
+[60]  :endselect
+    ∇

@@ -1,0 +1,84 @@
+    ∇ SERV∆CALCS;i;tm;T;∆
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Do all Various Service Calcs
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   ⍝ Calculate membership and service.  Use Best guess if date(s) not given
+[7]   :if uk=1 ⋄ T←⍳ENX←1+ENX_1←0⌈NRA-X0
+[8]   :else    ⋄ T←⍳ENX←1+ENX_1←0⌈⍬⍴'YN' DURN (DOB+0 0,X0),NRD
+[9]   :endif
+[10]  NX_1←¯1+NX←ENX+LNX←0⌈(LatestRA⌈X0+∆)-X0⌈NRA+(~bGAD)×∆←+0⌈⌈+/KnownExit
+[11]  (SNX GNX)←0⌈LNX⌊(SPA⌈PHIEndAge⌈NRA∆G)-LRA⌈0,NRA∆G ⍝ To project Bens to (at least) SPA or PHIEndAge or NRA∆G
+[12]  XMP←(MID X←X0+⍳NX),NX_1+X0 ⋄ ERA←ENX_1+X0
+[13]  ⍝⍝⍝ FIXME!!!
+[14]  :if dab ⋄ CP←,(NX-SNX)⌊0⌈contper-term ⍝ Member's Control Period
+[15]  :else   ⋄ CP←, NX     ⌊0⌈contper-term ⍝ Member's Control Period
+[16]  :endif
+[17]  
+[18]  :if IsDeferred ⋄ DecPS←PS←0 ⋄ :return ⋄ :endif
+[19]  
+[20]  ⍝ No Entry Dates ⍝⍝⍝ Changed "X" to "X0" in Aust testing
+[21]  PM←PS←TM-FM←FS←NX↑(-X0<nra)↓(TS←TM←0⌈servrnd DURN ValDATE,NRD)-T
+[22]  :if servind ⋄ :andif 0≠LNX-SNX ⋄ PM←PS←(ENX_1↑PM),PM[ENX_1]+(LNX+1) OVERTAKE ⍳1+LNX-SNX ⋄ :endif
+[23]  :if bGAD ⋄ PMMP←PSMP←TM-FMMP←FSMP←(MID FM),0
+[24]  :else    ⋄ PMMP←PSMP←TM-FMMP←FSMP←NX↑MID (-LNX)↓FM
+[25]  :endif
+[26]  
+[27]  :if ~IsDeferred
+[28]      :if 0≠⍴fDJF ⍝ Date Joined Fund/Scheme ⍝⍝⍝ Changed "X" to "X0" in Aust testing
+[29]          PSMP←PMMP←PS⌈NX OVERTAKE (MID ENX↑PS←PM←NX OVERTAKE ((-(X0<nra)∨~servind)↓T+servrnd DURN DJF,ValDATE),TM),TS←TM←TM⌈0⌈servrnd DURN DJF,NRD ⋄ TS←TM←TS⌈¯1↑PS
+[30]          :if servind ⋄ :andif 0≠LNX-SNX
+[31]              PSMP←PMMP←PS⌈(MID PM),¯1↑PM←PS←((ENX_1↑PM),PM[ENX_1]+LNX OVERTAKE ⍳1+LNX-SNX),TM⌈servrnd DURN DJF,LRD
+[32]          :endif
+[33]      :endif
+[34]      :if 0≠⍴fDJS ⍝ Calculate service. Equal membership if Service date not given
+[35]          PSMP←     PS⌈NX OVERTAKE (MID ENX↑PS←   NX OVERTAKE ((-(X0<nra)∨~servind)↓T+servrnd DURN DJS,ValDATE),TS),TS   ←   0⌈servrnd DURN DJS,NRD ⋄ TS←   TS⌈¯1↑PS
+[36]          :if servind ⋄ :andif 0≠LNX-SNX
+[37]              PSMP←     PS⌈(MID PS),¯1↑   PS←((ENX_1↑PS),PS[ENX_1]+LNX OVERTAKE ⍳1+LNX-SNX),TS⌈servrnd DURN DJS,LRD
+[38]          :endif
+[39]      :endif
+[40]  :endif
+[41]  PS←0⌈PS ⋄ PSMP←0⌈PSMP ⋄ PM←0⌈PM ⋄ PMMP←0⌈PMMP
+[42]  ERD←NRD ⋄ ts←(TS,TM)[erSind] ⍝ Early Retirement Age -skip if equal NRA
+[43]  →(nra≤ERA←ERA⌈⌊/erA,(nra-0⌈ts-erS),(nra+0.5×0⌊erSUM-nra+ts),0⌈DOB YDAYS⍎erDATE)/L1
+[44]  
+[45]  :if uk=1 ⋄ crash ⋄ :endif ⍝ Make sure UK does not get here!!!!!
+[46]  
+[47]  ⍝ Modify membership and service to allow for Early Retirement
+[48]  ERD←(⌊0.5+ERA×365.25)DATEOFFSET DOB ⋄ ⍎(ERA=⌊ERA)/'ERD←DOB+0 0,ERA'
+[49]  T←⍳NX←1+NX_1←0⌈⍬⍴'YN' DURN(DOB+0 0,X0),ERD
+[50]  PMMP←TM-FMMP←FSMP←(MID FM),¯1↑FM←FS←(NX_1↑FM),100∣0⌈servrnd DURN ERD,NRD
+[51]  PSMP←TS-FSMP ⋄ PM←PM[0],TM-1↓FM ⋄ PS←PS[0],TS-1↓FS ⋄ →(0=⍴fDJF)/djs
+[52]  PS[NX_1]←PS[NX_1]⌈PM[NX_1]←PM[NX_1]⌈servrnd DURN DJF,ERD
+[53]  djs:→(0=⍴fDJS)/L1 ⍝ Calc service (= membership if not given)
+[54]  PS[NX_1]←PS[NX_1]⌈100∣servrnd DURN DJS,ERD
+[55]  XMP←(MID X←X0+⍳NX),NX_1+X0 ⋄ ERA←ENX_1+X0
+[56]  
+[57]  ⍝ Calculate ages X at t=0,1, ..,ERA and at mid-points as well, XMP
+[58]  ⍝ NX is no. of ages including ERA - Set period to ERA to 0 if X0≥ERA
+[59]  L1:overage←X0≥ERA,nra ⋄ Xret←(ENX_1↑XMP),ENX_1↓X
+[60]  :if uk=1 ⋄ :andif ~IsDeferred ⍝ Maximum Service may vary by age - set at Member level
+[61]         SRVMAXMP←(MID    SRVMAX),¯1↑   SRVMAX←,   SRVMAXT[X] ⋄ MaxServ←SRVMAX ⋄ MaxServMP←SRVMAXMP
+[62]      DISSRVMAXMP←(MID DISSRVMAX),¯1↑DISSRVMAX←,DISSRVMAXT[X]
+[63]       IHSRVMAXMP←(MID  IHSRVMAX),¯1↑ IHSRVMAX←, IHSRVMAXT[X]
+[64]  :else
+[65]      MaxServMP←MaxServ
+[66]  :endif
+[67]  ⍝ Vars used in the Apportionment of the Past Serv Liab and PUC Norm Cost
+[68]  ps←MaxServ⌊psNoMax←(PS,[¯0.5]PM)[pucind;]
+[69]  ⍝⍝⍝ fs←ps-1↑ps ⋄ fsNoMax←psNoMax-1↑psNoMax
+[70]  psmp←(PSMP,[¯0.5]PMMP)[pucind;]
+[71]  psmp←(((¯1,NX)[ProRate])↑MaxServMP)⌊psmpNoMax←((¯1,NX)[ProRate])↑psmp,(TS,TM)[pucind]
+[72]  ⍝⍝⍝ fsmp←psmp-1↑ps ⋄ fsmpNoMax←psmpNoMax-1↑psNoMax
+[73]  :if uk≠1
+[74]      ProRation←(4,(1+No∆Bens+uk=0),NX)⍴0
+[75]      :for i :in ⍳⍴MaxInd
+[76]          ProRation[;i;]←(4,NX)⍴(-NX)↑(psNoMax-psNoMax[0]),MaxInd[i]/ps-ps[0]
+[77]      :endfor
+[78]  :endif
+[79]  0 0 ⍴⎕EX 'RPR RPR1 RPR2 MPR MPR1 MPR2 DPR DPR1 DPR2 WPR WPR1 WPR2 WPRP'
+[80]  t←0⌈(pRA⌊ERA)-X0 ⍝ Preserved Period
+[81]  
+[82]  :if DecPS←~^/DurnDate=' ' ⋄ DecPS←(⍎DurnDate) YDAYS ValDATE ⋄ :endif
+    ∇

@@ -1,1 +1,55 @@
-    ∇ CASH∆ONTOP∆PPF;FASMP∆CASH;SERV∆CASH;temp;SERV∆POST97;SERV∆POST09;SERV∆PRE;ratio;JoinDate[1]   ⍝ ACTWIN.sf#4[2]   ⍝[3]   :if ClntCode=3 ⋄ :orif bBuck[4]       CTYPE∆L←CTYPE2[5]       COMACC∆L←COMACC2[6]       COMSAL∆L←COMSAL2[7]       COMDAT∆L←COMDAT2[8]       COMMULT∆L←COMMULT2[9]   :else[10]      CTYPE∆L←CTYPE[11]      COMACC∆L←COMACC[12]      COMSAL∆L←COMSAL[13]      COMDAT∆L←COMDAT[14]      COMMULT∆L←COMMULT[15]  :endif[16]  CALCCASH←LTONTOP←LTONTOP∆DID←LTONTOPPRE∆DID←LTONTOPPOST97∆DID←LTONTOPPOST09∆DID←0×PRE97[17]  :select CTYPE∆L   ⍝ ∆L variables are used for DID cash[18]      :caselist 1 2 3 8 9[19]          :return[20]      :case 5[21]          SERV∆CASH←1↑((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)⌊⍎'P',COMDAT∆L[22]          ratio←SERV∆CASH CDIV 1↑⍎'P',COMDAT∆L ⍝ Ensure that scaling of Pre and Post is the same[23]          :if 'M'=COMDAT∆L ⋄ JoinDate←DJF ⋄ :else ⋄ JoinDate←DJS ⋄ :endif[24]          SERV∆POST97←SERV∆CASH-SERV∆PRE←ratio×(1↑⍎'P',COMDAT∆L)⌊100∣0⌈servrnd DURN JoinDate,,VDATE DATEMIN 6 4 1997[25]          :if ^/VDATE=,VDATE DATEMAX 6 4 2009 ⍝ Post 6 4 2009 Valuation[26]              SERV∆POST97←SERV∆POST97⌊ratio×(1↑⍎'P',COMDAT∆L)⌊100∣0⌈servrnd DURN (JoinDate DATEMAX 6 4 1997),VDATE DATEMIN 6 4 2009[27]          :endif[28]          SERV∆POST09←SERV∆CASH-SERV∆PRE+SERV∆POST97[29]          FASMP∆CASH←FASMPvec[;COMSAL∆L][30]          :if ppf ⍝ Variable is a different shape - assume all PPFNRA1[31]              LTONTOP∆DID[⎕io;]←  CALCCASH[⎕io;]←         COMACC∆L×SERV∆CASH  ×FASMP∆CASH[32]              LTONTOPPRE[⎕io;]←   LTONTOPPRE∆DID[⎕io;]←   COMACC∆L×SERV∆PRE   ×FASMP∆CASH[33]              LTONTOPPOST97[⎕io;]←LTONTOPPOST97∆DID[⎕io;]←COMACC∆L×SERV∆POST97×FASMP∆CASH[34]              LTONTOPPOST09[⎕io;]←LTONTOPPOST09∆DID[⎕io;]←COMACC∆L×SERV∆POST09×FASMP∆CASH[35]          :else[36]              LTONTOP∆DID←  CALCCASH←         COMACC∆L×SERV∆CASH  ×FASMP∆CASH[37]              LTONTOPPRE←   LTONTOPPRE∆DID←   COMACC∆L×SERV∆PRE   ×FASMP∆CASH[38]              LTONTOPPOST97←LTONTOPPOST97∆DID←COMACC∆L×SERV∆POST97×FASMP∆CASH[39]              LTONTOPPOST09←LTONTOPPOST09∆DID←COMACC∆L×SERV∆POST09×FASMP∆CASH[40]          :endif[41]      :caselist 4 6 7[42]          temp←COMMULT∆L[43]          CALCCASH←         temp×PRE97+POST97+POST09[44]          LTONTOPPRE←       temp×PRE97[45]          LTONTOPPOST97←    temp×POST97[46]          LTONTOPPOST09←    temp×POST09[47]          LTONTOP∆DID←      temp×PRE97∆DID+POST97∆DID+POST09∆DID[48]          LTONTOPPRE∆DID←   temp×PRE97∆DID[49]          LTONTOPPOST97∆DID←temp×POST97∆DID[50]          LTONTOPPOST09∆DID←temp×POST09∆DID[51]  :endselect[52]  ⍝[53]  LTONTOP←CALCCASH    ∇
+    ∇ CASH∆ONTOP∆PPF;FASMP∆CASH;SERV∆CASH;temp;SERV∆POST97;SERV∆POST09;SERV∆PRE;ratio;JoinDate
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝
+[3]   :if ClntCode=3 ⋄ :orif bBuck
+[4]       CTYPE∆L←CTYPE2
+[5]       COMACC∆L←COMACC2
+[6]       COMSAL∆L←COMSAL2
+[7]       COMDAT∆L←COMDAT2
+[8]       COMMULT∆L←COMMULT2
+[9]   :else
+[10]      CTYPE∆L←CTYPE
+[11]      COMACC∆L←COMACC
+[12]      COMSAL∆L←COMSAL
+[13]      COMDAT∆L←COMDAT
+[14]      COMMULT∆L←COMMULT
+[15]  :endif
+[16]  CALCCASH←LTONTOP←LTONTOP∆DID←LTONTOPPRE∆DID←LTONTOPPOST97∆DID←LTONTOPPOST09∆DID←0×PRE97
+[17]  :select CTYPE∆L   ⍝ ∆L variables are used for DID cash
+[18]      :caselist 1 2 3 8 9
+[19]          :return
+[20]      :case 5
+[21]          SERV∆CASH←1↑((ENX_1↑SRVMAXMP),ENX_1↓SRVMAX)⌊⍎'P',COMDAT∆L
+[22]          ratio←SERV∆CASH CDIV 1↑⍎'P',COMDAT∆L ⍝ Ensure that scaling of Pre and Post is the same
+[23]          :if 'M'=COMDAT∆L ⋄ JoinDate←DJF ⋄ :else ⋄ JoinDate←DJS ⋄ :endif
+[24]          SERV∆POST97←SERV∆CASH-SERV∆PRE←ratio×(1↑⍎'P',COMDAT∆L)⌊100∣0⌈servrnd DURN JoinDate,,VDATE DATEMIN 6 4 1997
+[25]          :if ^/VDATE=,VDATE DATEMAX 6 4 2009 ⍝ Post 6 4 2009 Valuation
+[26]              SERV∆POST97←SERV∆POST97⌊ratio×(1↑⍎'P',COMDAT∆L)⌊100∣0⌈servrnd DURN (JoinDate DATEMAX 6 4 1997),VDATE DATEMIN 6 4 2009
+[27]          :endif
+[28]          SERV∆POST09←SERV∆CASH-SERV∆PRE+SERV∆POST97
+[29]          FASMP∆CASH←FASMPvec[;COMSAL∆L]
+[30]          :if ppf ⍝ Variable is a different shape - assume all PPFNRA1
+[31]              LTONTOP∆DID[⎕io;]←  CALCCASH[⎕io;]←         COMACC∆L×SERV∆CASH  ×FASMP∆CASH
+[32]              LTONTOPPRE[⎕io;]←   LTONTOPPRE∆DID[⎕io;]←   COMACC∆L×SERV∆PRE   ×FASMP∆CASH
+[33]              LTONTOPPOST97[⎕io;]←LTONTOPPOST97∆DID[⎕io;]←COMACC∆L×SERV∆POST97×FASMP∆CASH
+[34]              LTONTOPPOST09[⎕io;]←LTONTOPPOST09∆DID[⎕io;]←COMACC∆L×SERV∆POST09×FASMP∆CASH
+[35]          :else
+[36]              LTONTOP∆DID←  CALCCASH←         COMACC∆L×SERV∆CASH  ×FASMP∆CASH
+[37]              LTONTOPPRE←   LTONTOPPRE∆DID←   COMACC∆L×SERV∆PRE   ×FASMP∆CASH
+[38]              LTONTOPPOST97←LTONTOPPOST97∆DID←COMACC∆L×SERV∆POST97×FASMP∆CASH
+[39]              LTONTOPPOST09←LTONTOPPOST09∆DID←COMACC∆L×SERV∆POST09×FASMP∆CASH
+[40]          :endif
+[41]      :caselist 4 6 7
+[42]          temp←COMMULT∆L
+[43]          CALCCASH←         temp×PRE97+POST97+POST09
+[44]          LTONTOPPRE←       temp×PRE97
+[45]          LTONTOPPOST97←    temp×POST97
+[46]          LTONTOPPOST09←    temp×POST09
+[47]          LTONTOP∆DID←      temp×PRE97∆DID+POST97∆DID+POST09∆DID
+[48]          LTONTOPPRE∆DID←   temp×PRE97∆DID
+[49]          LTONTOPPOST97∆DID←temp×POST97∆DID
+[50]          LTONTOPPOST09∆DID←temp×POST09∆DID
+[51]  :endselect
+[52]  ⍝
+[53]  LTONTOP←CALCCASH
+    ∇

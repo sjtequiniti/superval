@@ -1,1 +1,40 @@
-    ∇ res←field DBW_ChangeType parm;parent;∆[1]   ⍝ DATAWIN.sf#27[2]   ⍝ Function to allow user control on Data Build change Type[3]   [4]   parent←'fmDBW_Change.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       pdef DBW_changetype[10]  [11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[12]      (parent,'cbDataType') ⎕wi 'enabled' (~standard) ⍝ Can't change Data Type of Standards[13]  [14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[15]  [16]      :repeat[17]          :select ↑field[18]          :case 'cbDataType'[19]              ∆←'CDN'=↑(parent,'cbDataType') ⎕wi 'text'[20]              (parent,'eddateFmt') ⎕wi 'enabled' (∆[2])[21]              (parent,'cbNumericType') ⎕wi 'enabled' (∆[3])[22]              0 0⍴(⊂'cbNumericType') DBW_ChangeType 'Change'[23]          :case 'cbNumericType'[24]              (parent,'ckaveraged') ⎕wi 'enabled' (∆←((parent,'cbNumericType') ⎕wi 'enabled')^'T'=↑(parent,'cbNumericType') ⎕wi 'text')[25]              (parent,'ckaveraged') ⎕wi 'value' (∆×(parent,'ckaveraged') ⎕wi 'value')[26]          :endselect[27]      :until mt field←1↓field[28]  [29]  :case 'Valid' ⍝ Routine specific validation[30]  [31]  :case 'Run'[32]  [33]      DBW_changetype←pack 'DataType dateFmt  NumericType averaged' ⍝ Return new settings (if changed else return original)[34]      res←'Quit'[35]  [36]  :case 'Quit' ⍝ Deleting "other" variables[37]  [38]  :endselect    ∇
+    ∇ res←field DBW_ChangeType parm;parent;∆
+[1]   ⍝ DATAWIN.sf#27
+[2]   ⍝ Function to allow user control on Data Build change Type
+[3]   
+[4]   parent←'fmDBW_Change.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       pdef DBW_changetype
+[10]  
+[11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[12]      (parent,'cbDataType') ⎕wi 'enabled' (~standard) ⍝ Can't change Data Type of Standards
+[13]  
+[14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[15]  
+[16]      :repeat
+[17]          :select ↑field
+[18]          :case 'cbDataType'
+[19]              ∆←'CDN'=↑(parent,'cbDataType') ⎕wi 'text'
+[20]              (parent,'eddateFmt') ⎕wi 'enabled' (∆[2])
+[21]              (parent,'cbNumericType') ⎕wi 'enabled' (∆[3])
+[22]              0 0⍴(⊂'cbNumericType') DBW_ChangeType 'Change'
+[23]          :case 'cbNumericType'
+[24]              (parent,'ckaveraged') ⎕wi 'enabled' (∆←((parent,'cbNumericType') ⎕wi 'enabled')^'T'=↑(parent,'cbNumericType') ⎕wi 'text')
+[25]              (parent,'ckaveraged') ⎕wi 'value' (∆×(parent,'ckaveraged') ⎕wi 'value')
+[26]          :endselect
+[27]      :until mt field←1↓field
+[28]  
+[29]  :case 'Valid' ⍝ Routine specific validation
+[30]  
+[31]  :case 'Run'
+[32]  
+[33]      DBW_changetype←pack 'DataType dateFmt  NumericType averaged' ⍝ Return new settings (if changed else return original)
+[34]      res←'Quit'
+[35]  
+[36]  :case 'Quit' ⍝ Deleting "other" variables
+[37]  
+[38]  :endselect
+    ∇

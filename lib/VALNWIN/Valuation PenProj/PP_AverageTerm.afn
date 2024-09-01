@@ -1,0 +1,13 @@
+    ∇ avterm←probs PP∆AverageTerm terms
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Determine the Weighted Average Term
+[3]   
+[4]   :if AgeInterp ⋄ :andif lowerAge ⋄ :andif AgeMult≠1
+[5]       avterm←¯1
+[6]   :else
+[7]       avterm←(+/probs×terms) CDIV +/probs
+[8]       terms←(0≠probs)/terms ⍝ Non-zero prob terms
+[9]       avterm←∣avterm-terms ⍝ Period between average and each non-zero prob terms
+[10]      avterm←⌊↑(avterm=⌊/avterm)/terms ⍝ Find the closest
+[11]  :endif
+    ∇

@@ -1,0 +1,25 @@
+    ∇ L writeHtmReport xml;atts;htmPath;∆;xslPath
+[1]   ⍝ MAINWIN.sf#13
+[2]   ⍝ Revn: sjt10feb15 sjt21feb15
+[3]   ⍝       sjt17nov15 * JavaScript; encoding
+[4]   ⍝       sjt12oct17 * include SV version
+[5]   (htmPath xslPath)←L
+[6]   
+[7]   ⍝ environment values
+[8]   ∆←  ⊂'ts'              (DLTB,0 DATESPELL ⎕TS)
+[9]   ∆←∆,⊂'sysdir'           SystemDir
+[10]  ∆←∆,⊂'inpdir'           InputDir
+[11]  ∆←∆,⊂'libdir'           LibraryDir
+[12]  ∆←∆,⊂'valuation-date'  (SDATE vDATE)
+[13]  ∆←∆,⊂'scheme-name'      cLIENT
+[14]  ∆←∆,⊂'sv-version'       version ⍝ may include ⍺ ß
+[15]  
+[16]  xml←eis ('report' xattr ∆) xtag xml
+[17]  
+[18]  ⍝⍝∆←'<?xml version="1.0" encoding="US-ASCII" ?>'                  ⍝ XML declaration
+[19]  ∆←'<?xml version="1.0" encoding="Windows-1252" ?>'              ⍝ XML declaration
+[20]  ∆←xslPath xslTransform fixAplEncoding join ∆ push xml
+[21]  ∆←'/£/&#163;' TEXTREPL ∆                                        ⍝ fault in ⎕NAPPEND
+[22]  ∆←importCss importJavaScript ∆
+[23]  ∆ nfile_put_contents htmPath
+    ∇

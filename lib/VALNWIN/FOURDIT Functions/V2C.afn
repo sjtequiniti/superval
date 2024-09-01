@@ -1,0 +1,102 @@
+    ∇ Z←format V2C R;xxx;cnt;C;N;type;txt;f;r;c;mv;cols;mat
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Character representation of value R, count of items, multivalue flag
+[3]   ⍝ Z: (flg) + (int) + txt
+[4]   ⍝ txt:
+[5]   ⍝  num vec => char mat
+[6]   ⍝  char vec => char vec
+[7]   ⍝  char mat => char mat
+[8]   ⍝  num 1-col mat => char mat
+[9]   ⍝  2D num => nested char mat
+[10]  ⍝  ... and some rogue cases
+[11]  ⍝ Tests:
+[12]  ⍝?⍝ 0 1 '' ≡ V2C ''                                             ⍝ char single value (empty)
+[13]  ⍝?⍝ 1 0 (0 1⍴'') ≡ V2C ⍬                                        ⍝ num multi value (#0)
+[14]  ⍝?⍝ 0 1 (,'3') ≡ V2C 3                                          ⍝ num single value
+[15]  ⍝?⍝ 0 1 (,'10')≡V2C 10                                          ⍝ num single value that is power of 10
+[16]  ⍝?⍝ 0 1 (,'3') ≡ V2C '3'                                        ⍝ char single value
+[17]  ⍝?⍝ 0 1 'abc' ≡ V2C 'abc'                                       ⍝ char single value
+[18]  ⍝?⍝ 0 1 '123' ≡ V2C 123                                         ⍝ num single value
+[19]  ⍝?⍝ 1 2 (2 1⍴'13') ≡ V2C 1 3                                    ⍝ num multi value (#2)
+[20]  ⍝?⍝ 1 3 ('I1' ⎕FMT ∆) ≡ V2C ∆←3 1⍴1 2 3                         ⍝ num multi value (#3)
+[21]  ⍝?⍝ 1 3 ('I1' ⎕FMT ∆) ≡ V2C ∆←1 2 3                             ⍝ num multi value (#3)
+[22]  ⍝?⍝ 0 0 (,¨(3 4⍴(2+¯1 1×⎕IO)/'I1' 'I2')⎕FMT¨∆) ≡ V2C ∆←3 4⍴⍳12  ⍝ num 2D table
+[23]  ⍝?⍝ 1 4 ∆ ≡ V2C ∆←⊃'the' 'quick' 'brown' 'fox'                  ⍝ char multi value (#4)
+[24]  ⍝?⍝ 1 2 ∆ ≡ V2C ∆←2 2⍴'123' '456' '789' '012'                   ⍝ char 2D table
+[25]  ⍝?⍝ 0 1 '3.1416' ≡ V2C ○1                                       ⍝ fp num single value
+[26]  ⍝?⍝ 1 3 ('F6.4' ⎕FMT ∆) ≡ V2C ∆←1 2 3×○1                        ⍝ fp num multi value (#3)
+[27]  ⍝?⍝ 0 1 ' 9 Nov 2015' ≡ V2C 9 11 2015                           ⍝ date 09nov15
+[28]  ⍝?⍝ 1 3  (⊃'cat' 'dog' 'fish')≡  ''V2C 'cat' 'dog' 'fish'       ⍝ vector of strings
+[29]  ⍝?⍝ (1 2 (2 8⍴'1 2 1.203 4 3.40')) ≡ V2C (2 2⍴⍳4)(1.2 3.4)      ⍝ numeric table and vector
+[30]  ⍝?⍝ (1 2 (2 11⍴' 1 2 1.2000 3 4 3.4000')) ≡ ('I2,I2,F7.4' V2C (2 2⍴⍳4)(1.2 3.4))    ⍝ numeric table and vector
+[31]  ⍝ Vern: sjt17sep15
+[32]  ⍝ Revn: sjt01oct15 * multivalue flag in result
+[33]  ⍝       sjt09nov15 * date
+[34]  ⍝       dnp12nov15 * vectors of strings
+[35]  ⍝       sjt06sep16 * numeric vectors and/or matrices
+[36]  ⍝       dnp22aug17 * powers of 10
+[37]  :if 2≠⎕NC 'format' ⋄ format←'' ⋄ :endif                         ⍝ default format string
+[38]  (C N)←'CN'
+[39]  type←(C N)[' ' 0⍳⎕FIRST 0⍴⎕TYPE ⎕FIRST R]
+[40]  :select ≡R
+[41]  :case 0
+[42]      (mv cnt)←0 1
+[43]      :select type
+[44]      :case C ⋄ txt←,R
+[45]      :case N ⋄ txt←,(format ⍙⍙fmt R) ⎕FMT R                      ⍝ char/num single value
+[46]      :endselect
+[47]  :case 1
+[48]      :select rank R
+[49]      :case 1 ⍝ simple vector
+[50]          :select type
+[51]          :case N
+[52]              :if format≡'date' ⋄ :orif isDate⌽R
+[53]                  mv←0 ⋄ cnt←1 ⋄ txt←,0 DATESPELL⌽R               ⍝ date 09nov15
+[54]              :else
+[55]                  mv←1 ⋄ cnt←↑⍴R ⋄ txt←(format ⍙⍙fmt R) ⎕FMT R      ⍝ num multi value
+[56]              :endif
+[57]          :case C ⋄ mv←0 ⋄ cnt←1 ⋄ txt←R                          ⍝ char single value
+[58]          :endselect
+[59]      :case 2 ⍝ simple matrix
+[60]          :select type
+[61]          :case C ⋄ mv←1 ⋄ cnt←tally R ⋄ txt←R                    ⍝ char matrix
+[62]          :case N
+[63]              (r c)←⍴R ⋄ f←eis format ⍙⍙fmt R
+[64]              :if c=1 ⋄ mv←1 ⋄ cnt←r ⋄ txt←(⎕FIRST f) ⎕FMT R      ⍝ num multi value
+[65]              :else                                               ⍝ 2D table
+[66]                  mv←cnt←0
+[67]                  txt←⍉⎕MIX ⎕SPLIT¨f ⎕FMT¨⎕SPLIT[⎕IO] R
+[68]              :endif
+[69]          :endselect
+[70]      :endselect
+[71]  :else ⍝ nested
+[72]      :select type
+[73]      :case C
+[74]          (mv cnt)←1 (tally R)                                    ⍝ dnp12nov15
+[75]          :select rank R
+[76]          :caselist 0 1 ⋄ txt←⊃,R                                 ⍝ char multi value
+[77]          :case 2       ⋄ txt←R                                   ⍝ 2D table already cast to char
+[78]          :endselect
+[79]      :case N
+[80]          :select rank R                                          ⍝ 06sep16
+[81]          :caselist 1
+[82]              :if 0∊(rank¨R)∊1 2      ⋄ ⎕ERROR 'RANK ERROR'
+[83]              :elseif ~same tally¨R   ⋄ ⎕ERROR 'LENGTH ERROR'
+[84]              :else                                               ⍝ numeric vectors and/or matrices
+[85]                  xxx←⎕DEF ScriptFollowing
+[86]                  ⍝ ∇ Z←cols Z
+[87]                  ⍝ [1] :if 1=rank Z ⋄ Z←,[⎕IO+.5] Z ⋄ :endif
+[88]                  ⍝ ∇
+[89]                  mat←↑,/cols¨R                                   ⍝ breaks unless same tally¨R
+[90]                  (mv cnt)←1 (tally mat)
+[91]                  :if mt format ⋄ format←',< >,' join ⍙⍙fmt mat ⋄ :endif
+[92]                  txt←format ⎕FMT mat
+[93]              :endif
+[94]          :else
+[95]              ⎕ERROR 'DOMAIN ERROR'
+[96]          :endselect
+[97]      :endselect
+[98]  :endselect
+[99]  
+[100] Z←mv cnt txt
+    ∇

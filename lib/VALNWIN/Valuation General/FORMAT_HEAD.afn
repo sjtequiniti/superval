@@ -1,0 +1,25 @@
+    ∇ SUMMREC←type FORMAT∆HEAD Z;fmt
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Format Header Output for All Methods
+[3]   ⍝ Different according to Output use
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   SUMMREC← ¯5 132 ↑ 0 1 0 1 ⍀'CM<->I18' ⎕FMT Z[0; 0 11]
+[7]   SUMMREC[1 3 ;25+⍳5]← 2 5 ⍴¯10↑'Total Past',(~NotPUC)/'NormCAcc''d'
+[8]   →⍎'L',⍕type ⍝ Branch According to type of Output Required
+[9]   ⍝ Individual Member Listing
+[10]  L0:SUMMREC[1;⍳8]←(6↑(MTInd/'* '),NAME),¯2↑SEX
+[11]  SUMMREC[3;⍳9]←'I9' ⎕FMT X0 ⋄ →F0
+[12]  ⍝ Summarised Member Listing
+[13]  L1:SUMMREC[1;⍳4]←(' *'[MTInd]),'LI3' ⎕FMT X0
+[14]  SUMMREC[3;⍳9]←'CI9' ⎕FMT Z[1;0]
+[15]  F0:SUMMREC[1 3 ;18+⍳6]← 2 6 ⍴DECTOYYMM Z[1; 3 4]CDIV Z[1;0] ⋄ →0
+[16]  ⍝ Totals of Individual/Summarised Member Listings
+[17]  L2:fmt←'I18' ⋄ →F2
+[18]  ⍝ New Entrant Model Projection Listing
+[19]  L3:SUMMREC[1;(⍳3),7+⍳18]←'LI3,Q< Members>CM<->LF18.1' ⎕FMT MATRIX term,Z[1;0]
+[20]  SUMMREC[3;⍳25]←'CLF25.1' ⎕FMT 1↑FUNDTOT ⋄ →0
+[21]  ⍝ Totals of New Entrant Model Projection Listings
+[22]  L4:fmt←'F18.1'
+[23]  F2:SUMMREC[1;⍳25]←('<TOTAL: >,Q< Members>CM<->L',fmt)⎕FMT Z[1;0] ⋄ →0
+    ∇

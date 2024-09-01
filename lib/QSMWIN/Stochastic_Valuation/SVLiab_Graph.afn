@@ -1,0 +1,26 @@
+    ∇ LiabView←SVLiab_Graph liabilities;bb;ppt;∆
+[1]   ⍝ QSMWIN.sf#7
+[2]   ⍝ Graph the Liabities
+[3]   
+[4]   (parent,'picLiabGraph') ⎕wi 'visible' 1
+[5]   
+[6]   :if mt LiabView←(parent,'picLiabGraph') ⎕wi 'self'
+[7]       :return ⍝ Graph Control doesn't exist yet!!
+[8]   :endif
+[9]   psWipe parent,'picLiabGraph'
+[10]  
+[11]  chSet 'HMargin' 60 36
+[12]  chSet 'Heading' 'Liabilities'
+[13]  chSet 'HFont' 'tii,12,blue'
+[14]  chSet 'XCaption' 'Scenario'
+[15]  chSet 'XLab' (⍕¨⍳scenarios)
+[16]  chSet 'YRange' (⌊/0.9×liabilities),(⌈/0,1.1×,liabilities)
+[17]  chSet 'Style' 'nomarkers'
+[18]  chPlot (⍳scenarios),[1.5]liabilities
+[19]  
+[20]  :if ~mt LiabView←chClose
+[21]      bb←psReadHeader LiabView '%%BoundingBox:' ⍝ Bounding Box
+[22]      ppt←.5+.×(((parent,'picLiabGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+[23]      ps_exec LiabView (parent,'picLiabGraph') ppt ps∆cmap 1
+[24]  :endif
+    ∇

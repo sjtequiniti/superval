@@ -1,0 +1,36 @@
+    ∇ sql←indexed ⍙DBSQLCreateTable arg;table;lookup;tab;NL;nullable;onekey;multikey;key;t;types;∆;fields;sizes
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Create a Table in the SQL Server Connection object ADOcon using TSQL as Data Definition Language
+[3]   ⍝ Cf ⍙DBCreateTable
+[4]   ⍝ table: table name and index to ⍙SCHEMADict with fields + types + keys
+[5]   ⍝ fields: fieldnames
+[6]   ⍝ types: types
+[7]   ⍝ sizes: sizes (for Char fields) +ve integer
+[8]   ⍝ keys: keyflags Y in [1] marks primary key
+[9]   ⍝ NB: ADOX Catalog.Create method not supported by SQL Server providers
+[10]  
+[11]  :if 2=≡arg ⋄ (lookup table)←arg
+[12]  :else      ⋄  lookup←table ←arg
+[13]  :endif
+[14]  
+[15]  tab←⍙SCHEMADict at lookup
+[16]  tab←tab for ZWB¨(⊂'()') embrace¨tab at 'Alternate' ⍝ Alternate Fields for different licences
+[17]  tab←tab for ZWB¨(⊂'()') embrace¨tab at 'Relevant'  ⍝ Relevant Fields for different options
+[18]  
+[19]  NL←⎕TCNL
+[20]  
+[21]  (fields types sizes)←tab at 'Fields' 'SQLSType' 'Size'
+[22]  :if ∨/∆←fields∊⊂'TableID' ⍝ Reserved Name needs to be enclosed in []
+[23]      (∆/fields)←(⊂'[]') embrace ¨∆/fields
+[24]  :endif
+[25]  nullable←'Y'=↑¨tab at 'Null'
+[26]  onekey←~multikey←1<+/key←indexed^'Y'=↑¨tab at 'Indexed'
+[27]  
+[28]  t←'field' 'type'⍪' ',¨⍉⎕mix fields types
+[29]  t←t amend 'size' ((∨/¨(caseUp¨types) ⎕SS¨⊂'CHAR') ⎕REPL¨(⊂'()')embrace¨sizes)
+[30]  t←t amend 'nullable' ((~nullable)⎕REPL¨⊂' NOT NULL')
+[31]  t←t amend 'primary' ((onekey^key)⎕REPL¨⊂' PRIMARY KEY')
+[32]  ∆←,/valsIn t select 'field' 'type' 'size' 'nullable' 'primary'
+[33]  ∆←∆,multikey/⊂' CONSTRAINT pk_',table,' PRIMARY KEY ','()' embrace ',' join key/fields
+[34]  sql←'CREATE TABLE ',table,' ','()' embrace NL embrace (',',NL) join ∆
+    ∇

@@ -1,0 +1,52 @@
+    ∇ L ⍙DBSummariseMem R;∆;allkeys;allsums;sums;ind;keysname;sumsname;keys;vals;EXTEND;ckname;cvname;csname;cachesize;s;CHUNKSIZE;chunk;size;tk;splitkeys;newkeys
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Summarise records in data cache; update cached keys and sums; empty data cache
+[3]   ⍝ L: (strs) keysname sumsname
+[4]   ⍝ keysname: (str) name of global
+[5]   ⍝ sumsname: (str) name of global
+[6]   ⍝ R: cached-keys-name(str) & cached-vals-name(str) & cache-size(int)
+[7]   ⍝ keys: (char mat)
+[8]   ⍝ vals: (float vec)
+[9]   ⍝ Vern: sjt16aug16
+[10]  ⍝       sjt20aug16 * pass caches by reference; keep keys and vals distinct in ⍵
+[11]  ⍝       sjt24aug16 * compare algorithms
+[12]  ⍝       sjt25aug16 * loop for speed!! :-(
+[13]  EXTEND←1E5 ⍝                                                                    ⍝ # by which to extend sums vector
+[14]  
+[15]  (keysname sumsname)←L
+[16]  (ckname cvname csname)←R                                                        ⍝ names of cached keys and vals; cache size
+[17]  cachesize←⍎csname
+[18]  
+[19]  keys←⍎ckname,'[⍳cachesize;]'                                                    ⍝ cached keys
+[20]  vals←⍎cvname,'[⍳cachesize]'                                                     ⍝ cached values
+[21]  allkeys←⍎keysname ⋄ allsums←⍎sumsname
+[22]  
+[23]  ⍝ Disgracefully, looping through the key/value arrays is faster than using the primitives
+[24]  ⍝ even though it requires repeatedly 'nubbing' the same elements
+[25]  splitkeys←⎕SPLIT keys                                                           ⍝ faster to split all then index
+[26]  s←0 ⋄ tk←tally keys ⋄ CHUNKSIZE←3E4
+[27]  :repeat
+[28]      chunk←s+⍳CHUNKSIZE⌊tk-s
+[29]      newkeys←splitkeys[chunk]
+[30]      allkeys←nub allkeys,newkeys                                                 ⍝ wasteful repeated nubs of early elements; cf MAINWIN.12.nubk
+[31]      size←tally allkeys
+[32]      :if size>tally allsums ⋄ allsums←(size+15E3)↑allsums ⋄ :endif
+[33]      (ind sums)←(allkeys⍳newkeys) KeySum vals[chunk]                             ⍝ shorter allkeys => faster ⍳
+[34]      allsums[ind]←allsums[ind]+sums                                              ⍝ increment summary
+[35]  :until tk<s←s+CHUNKSIZE
+[36]  
+[37]  
+[38]  ⍝ single-pass version ..........................................................
+[39]  ⍝⍝ ⍝⍝allkeys←allkeys,nubk keys~allkeys                                           ⍝ include new keys slightly slower
+[40]  ⍝⍝ allkeys←nubcm allkeys⍪keys                                                  ⍝ include new keys
+[41]  ⍝⍝ :if (tally allsums)<∆←tally allkeys ⋄ allsums←(∆+EXTEND)↑allsums ⋄ :endif   ⍝ extend sums vector?
+[42]  ⍝⍝ (ind sums)←(↑⍳/⎕SPLIT¨allkeys keys) KeySum vals                             ⍝ summarise table records
+[43]  ⍝⍝ allsums[ind]←allsums[ind]+sums                                              ⍝ increment summary
+[44]  
+[45]  ⍝ cache updated sum keys and vals
+[46]  ⍎keysname,"←allkeys" ⋄ ⍎sumsname,"←allsums"                                     ⍝ cache updated sum keys and values
+[47]  
+[48]  ⍝ no need to empty data cache: calling fns
+[49]  ⍝ * ⍙DBInsertTempData will reset with next records
+[50]  ⍝ * ⍙DBSummarise will expunge cache variables
+    ∇

@@ -1,1 +1,72 @@
-    ∇ res←field Approximate_GMP parm;parent;value;list;Z;cdate[1]   ⍝ UDATAWIN.sf#4[2]   ⍝ Function to allow user control on Approximate GMP Calculator[3]   [4]   parent←'fmApproximate_GMP.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       TotNumVars←CharVars←DateVars←0 0⍴''[10]      Format←HyphenSwap Format[11]      (CalcDATE lrCalcDATE)←'Date' SwapRelFields CalcDATE lrCalcDATE[12]      (BDATE lrBDATE)←'Date' SwapRelFields BDATE lrBDATE[13]      (EDATE lrEDATE)←'Date' SwapRelFields EDATE lrEDATE[14]  [15]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[16]  [17]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[18]  [19]      :repeat[20]          :select ↑field[21]          :case 'cbFormat' ⍝[22]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format[23]              value←(parent,'cbSAL') ⎕wi 'text'[24]              (parent,'cbSAL') ⎕wi 'list' (list←1 0↓GetVarNumList 'Salary')[25]              (parent,'cbSAL') ⎕wi 'value' (¯1↑1,(StripText list) ExactTLU StripText value)[26]              (parent,'cbSAL') ⎕wi 'extent' ((1↑(parent,'cbSAL') ⎕wi 'extent'),20+¯1↑CharSize×⍴list)[27]          :endselect[28]      :until mt field←1↓field[29]  [30]  :case 'Valid' ⍝ Routine specific validation[31]  [32]      ⍝ Check Calculation Date is after 5 4 1978[33]      cdate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrCalcDATE CalcDATE[34]      :if 0>COD1 DAYS cdate[35]          res←'EarlyDate' (,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX COD1)[36]          Win∆SetFocus parent,'cbCalcDATE' ⋄ :return[37]      :endif[38]  [39]      CREATEDATADESC Format ⍝ Create data format[40]      :if 0∊⍴,fGMP0 ⍝ Check GMP fields are specified[41]      :orif 0∊⍴,fGMPE0[42]          Win∆SetFocus parent,'cbFormat'[43]          res←'NoGMPs' ⋄ :return[44]      :endif[45]  [46]  ⍝⍝   Z←((0≠⍴fDJF)/'FS'[1+×uk]),(0≠⍴fDJS)/'SC'[1+×uk] ⍝ Check Service field is specified[47]  ⍝⍝   :if ~(1↑servind)∊Z[48]     :if 0∊⍴fDJF[49]  ⍝⍝        Win∆SetFocus parent,'fservind.opservind_1'[50]          Win∆SetFocus parent,'cbFormat'[51]          res←'NoDJS' ⋄ :return[52]     :endif[53]  [54]  :case 'Run'[55]  [56]      'res←APPROX∆GMP' Win∆ProgressBar 'Start'[57]      :if ''≡res ⍝ If Successful Run[58]          res←'Quit'[59]      :else[60]          Win∆SetFocus res ⋄ res←''[61]      :endif[62]  [63]  :case 'Quit' ⍝ Deleting "other" variables[64]  [65]      0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars[66]      0 0⍴⎕ex 'd','f',DateVars[67]      0 0⍴DeleteVars 'ActFormat'[68]      0 0⍴⎕ex 'FormatType'[69]  [70]  :endselect    ∇
+    ∇ res←field Approximate_GMP parm;parent;value;list;Z;cdate
+[1]   ⍝ UDATAWIN.sf#4
+[2]   ⍝ Function to allow user control on Approximate GMP Calculator
+[3]   
+[4]   parent←'fmApproximate_GMP.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       TotNumVars←CharVars←DateVars←0 0⍴''
+[10]      Format←HyphenSwap Format
+[11]      (CalcDATE lrCalcDATE)←'Date' SwapRelFields CalcDATE lrCalcDATE
+[12]      (BDATE lrBDATE)←'Date' SwapRelFields BDATE lrBDATE
+[13]      (EDATE lrEDATE)←'Date' SwapRelFields EDATE lrEDATE
+[14]  
+[15]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[16]  
+[17]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[18]  
+[19]      :repeat
+[20]          :select ↑field
+[21]          :case 'cbFormat' ⍝
+[22]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[23]              value←(parent,'cbSAL') ⎕wi 'text'
+[24]              (parent,'cbSAL') ⎕wi 'list' (list←1 0↓GetVarNumList 'Salary')
+[25]              (parent,'cbSAL') ⎕wi 'value' (¯1↑1,(StripText list) ExactTLU StripText value)
+[26]              (parent,'cbSAL') ⎕wi 'extent' ((1↑(parent,'cbSAL') ⎕wi 'extent'),20+¯1↑CharSize×⍴list)
+[27]          :endselect
+[28]      :until mt field←1↓field
+[29]  
+[30]  :case 'Valid' ⍝ Routine specific validation
+[31]  
+[32]      ⍝ Check Calculation Date is after 5 4 1978
+[33]      cdate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrCalcDATE CalcDATE
+[34]      :if 0>COD1 DAYS cdate
+[35]          res←'EarlyDate' (,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX COD1)
+[36]          Win∆SetFocus parent,'cbCalcDATE' ⋄ :return
+[37]      :endif
+[38]  
+[39]      CREATEDATADESC Format ⍝ Create data format
+[40]      :if 0∊⍴,fGMP0 ⍝ Check GMP fields are specified
+[41]      :orif 0∊⍴,fGMPE0
+[42]          Win∆SetFocus parent,'cbFormat'
+[43]          res←'NoGMPs' ⋄ :return
+[44]      :endif
+[45]  
+[46]  ⍝⍝   Z←((0≠⍴fDJF)/'FS'[1+×uk]),(0≠⍴fDJS)/'SC'[1+×uk] ⍝ Check Service field is specified
+[47]  ⍝⍝   :if ~(1↑servind)∊Z
+[48]     :if 0∊⍴fDJF
+[49]  ⍝⍝        Win∆SetFocus parent,'fservind.opservind_1'
+[50]          Win∆SetFocus parent,'cbFormat'
+[51]          res←'NoDJS' ⋄ :return
+[52]     :endif
+[53]  
+[54]  :case 'Run'
+[55]  
+[56]      'res←APPROX∆GMP' Win∆ProgressBar 'Start'
+[57]      :if ''≡res ⍝ If Successful Run
+[58]          res←'Quit'
+[59]      :else
+[60]          Win∆SetFocus res ⋄ res←''
+[61]      :endif
+[62]  
+[63]  :case 'Quit' ⍝ Deleting "other" variables
+[64]  
+[65]      0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars
+[66]      0 0⍴⎕ex 'd','f',DateVars
+[67]      0 0⍴DeleteVars 'ActFormat'
+[68]      0 0⍴⎕ex 'FormatType'
+[69]  
+[70]  :endselect
+    ∇

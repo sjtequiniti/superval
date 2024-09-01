@@ -1,0 +1,75 @@
+    ∇ res←field Create_Database parm;parent;sqlDatabase;cursor;AgeInterp;lock;tempDB;list;index;∆
+[1]   ⍝ UTILSWIN.sf#11
+[2]   ⍝ Function to allow user control on Creating SQL Database
+[3]   
+[4]   parent←'fmCreateDB.' ⋄ res←0⍴'' ⍝ Default response
+[5]   sqlDatabase←1
+[6]   
+[7]   :select parm
+[8]   :case 'Prepare'
+[9]   
+[10]      :if 0=⎕nc 'sql_properties'
+[11]          :if mt sqlConName ⋄ :orif mt ConfigFile ReadFile 'Configure_SQL' sqlConName ⋄ :orif accesslevel<zwb SQLAccess
+[12]              res←'SQL Server Connection properties not specified.',⎕tcnl
+[13]              res←res,'First update your User details (Tools/Administration/Manage Users)'
+[14]              :return
+[15]          :endif
+[16]          sql_properties←⊃spin m2n¨property propvalue
+[17]          sqlTimeout←zwb SQLTimeout
+[18]          0 0⍴DeleteVars 'Configure_SQL'
+[19]      :endif
+[20]  
+[21]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[22]  
+[23]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[24]  
+[25]      list←m2n (parent,'cbDBFile') ⎕wi 'list'
+[26]      :if (⊂'Unable to connect to SQL Server databases')∊list
+[27]          res←'Unable to connect to SQL Server databases'
+[28]      :else
+[29]          index←ConfigFile ReadFile 1         ⍝ ConfigFile index
+[30]          index←index for (0,~(1↓index at '∆_Name')∊'SQL_Access' 'Configure_SQL' 'AddScheme_Database') ⍝ SQL Database
+[31]          index←index for '∆_Deleted' 'Y'                                                              ⍝ Retired Database
+[32]          list←⊃list,¨(∆←list∊index at '∆_Name') sel¨⊂' (Retired)'
+[33]          list←list[∊((~∆) ∆)sel¨⊂(⍳↑⍴list);]
+[34]          (parent,'cbDBFile') ⎕wi 'list' list
+[35]      :endif
+[36]  
+[37]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[38]  
+[39]      :repeat
+[40]          :select ↑field
+[41]          :case 'cbDBFile'
+[42]              :if ~(UPPERCASE sqlPrefix)≡(⍴sqlPrefix)↑UPPERCASE DBFile←(parent,'cbDBFile') ⎕wi 'text'
+[43]                  (parent,'cbDBFile') ⎕wi 'text' (sqlPrefix,DBFile)
+[44]              :endif
+[45]          :endselect
+[46]      :until mt field←1↓field
+[47]  
+[48]  :case 'Valid' ⍝ Routine specific validation
+[49]  
+[50]  :case 'Run'
+[51]  
+[52]      ((⊂parent,'bnCreate_Database'),¨'Save' 'Quit' 'Help') MultiWI 'enabled' 0
+[53]      0 0⍴'ADOcon' ⎕wi 'Create' 'ADODB.Connection'
+[54]      'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[55]      'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[56]      :if ×(parent,'cbDBFile') ⎕wi 'value' ⍝ Update the Database
+[57]          Update_SQLDatabase DBFile
+[58]      :else
+[59]          0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'
+[60]          cursor←'ADOrst' ⎕wi 'adOpenStatic' ⋄ lock←'ADOrst' ⎕wi 'adLockOptimistic'
+[61]          AgeInterp←1 ⋄ tempDB←1
+[62]          1 0 ⍙DBSQLXL_Tables DBFile
+[63]          ⍙DBInitialise 1
+[64]          0 0⍴(⊂'ADOrst') ⎕WI¨'XClose' 'Close' 'Delete'   ⍝ avoid XOpen after XClose of Connection object
+[65]          MDISPLAY DBFile,' database successfully created.'
+[66]      :endif
+[67]      0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[68]      0 0⍴(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete'   ⍝ avoid XOpen after XClose of Connection object
+[69]      res←'Quit'
+[70]  
+[71]  :case 'Quit' ⍝ Deleting "other" variables
+[72]  
+[73]  :endselect
+    ∇

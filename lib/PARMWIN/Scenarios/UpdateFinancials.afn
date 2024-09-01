@@ -1,1 +1,42 @@
-    ∇ var←var UpdateFinancials arg;Rel;FinName;ScenName;ScenValue;idx;vals;z;IDX;∆;I;i;parms;File;stem;exist;tieno;ResSize;term;Abs[1]   ⍝ PARMWIN.sf#24[2]   ⍝ Update a Financials Variable with Scenario Values[3]   [4]   (Rel Abs term)←3↑arg ⋄ (FinName ScenName ScenValue)←m2n¨3↓arg ⋄ var←'⋄' StripText¨m2n var[5]   [6]   IDX←FinName⍳ScenName ⋄ idx←ScenName⍳FinName[IDX][7]   [8]   :if Rel ⋄ :orif term≠0[9]       ResSize←0 ⍝ Valuation Variable required for MergeRates[10]      :for ∆ :in spin IDX idx ⋄ (I i)←∆[11]          vals←term MergeRates parms←↑¨((~Abs)/var[I]) ((Rel∨Abs)/ScenValue[i])[12]          vals←DLTMB '¯-' REPL ' ' join DTDot¨'0' DTZ¨DLTB¨(' '=vals) ⎕penclose vals←4⍕vals[13]          :if ∨/∆←∨/¨(⊂'.CSV')⍷¨UPPERCASE¨parms ⍝ if csv file involved[14]              parms←(¯4×∆)↓¨parms ⍝ Drop trailing .csv[15]              :if ∨/~∆←∆∨mt¨parms[16]                  ((~∆)/parms)←(⊂'/+-/-') TEXTREPL¨(⊂'/ / +') TEXTREPL¨'+',¨DLTMB¨(~∆)/parms[17]              :endif[18]              :if      Rel ⋄ stem←(' (adjusted by ' join parms),')'[19]              :else        ⋄ stem←∊parms[20]              :endif[21]              stem←stem,(×term)/' from ',DatavDATE~'/'[22]  [23]              exist←z←0 ⋄ File←stem,'.csv'[24]              :while FileExist YieldDir,File[25]              :andif ~exist←(EXECUTE vals)≡ExecuteRates ⊂File[26]                  File←stem,' [',(⍕z←z+1),']','.csv'[27]              :endwhile[28]              :if ~exist[29]                  tieno←NCREATE YieldDir,File[30]                  (' ,' REPL vals) APPEND tieno[31]                  ⎕nuntie tieno[32]              :endif[33]              vals←File[34]          :endif[35]          ScenValue[i]←⊂vals[36]      :endfor[37]  :endif[38]  [39]  var[IDX]←ScenValue[idx][40]  var←⊃var    ∇
+    ∇ var←var UpdateFinancials arg;Rel;FinName;ScenName;ScenValue;idx;vals;z;IDX;∆;I;i;parms;File;stem;exist;tieno;ResSize;term;Abs
+[1]   ⍝ PARMWIN.sf#24
+[2]   ⍝ Update a Financials Variable with Scenario Values
+[3]   
+[4]   (Rel Abs term)←3↑arg ⋄ (FinName ScenName ScenValue)←m2n¨3↓arg ⋄ var←'⋄' StripText¨m2n var
+[5]   
+[6]   IDX←FinName⍳ScenName ⋄ idx←ScenName⍳FinName[IDX]
+[7]   
+[8]   :if Rel ⋄ :orif term≠0
+[9]       ResSize←0 ⍝ Valuation Variable required for MergeRates
+[10]      :for ∆ :in spin IDX idx ⋄ (I i)←∆
+[11]          vals←term MergeRates parms←↑¨((~Abs)/var[I]) ((Rel∨Abs)/ScenValue[i])
+[12]          vals←DLTMB '¯-' REPL ' ' join DTDot¨'0' DTZ¨DLTB¨(' '=vals) ⎕penclose vals←4⍕vals
+[13]          :if ∨/∆←∨/¨(⊂'.CSV')⍷¨UPPERCASE¨parms ⍝ if csv file involved
+[14]              parms←(¯4×∆)↓¨parms ⍝ Drop trailing .csv
+[15]              :if ∨/~∆←∆∨mt¨parms
+[16]                  ((~∆)/parms)←(⊂'/+-/-') TEXTREPL¨(⊂'/ / +') TEXTREPL¨'+',¨DLTMB¨(~∆)/parms
+[17]              :endif
+[18]              :if      Rel ⋄ stem←(' (adjusted by ' join parms),')'
+[19]              :else        ⋄ stem←∊parms
+[20]              :endif
+[21]              stem←stem,(×term)/' from ',DatavDATE~'/'
+[22]  
+[23]              exist←z←0 ⋄ File←stem,'.csv'
+[24]              :while FileExist YieldDir,File
+[25]              :andif ~exist←(EXECUTE vals)≡ExecuteRates ⊂File
+[26]                  File←stem,' [',(⍕z←z+1),']','.csv'
+[27]              :endwhile
+[28]              :if ~exist
+[29]                  tieno←NCREATE YieldDir,File
+[30]                  (' ,' REPL vals) APPEND tieno
+[31]                  ⎕nuntie tieno
+[32]              :endif
+[33]              vals←File
+[34]          :endif
+[35]          ScenValue[i]←⊂vals
+[36]      :endfor
+[37]  :endif
+[38]  
+[39]  var[IDX]←ScenValue[idx]
+[40]  var←⊃var
+    ∇

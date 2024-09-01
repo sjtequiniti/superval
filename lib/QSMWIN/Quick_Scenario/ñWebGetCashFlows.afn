@@ -1,1 +1,117 @@
-    ∇ ⍙WebGetCashFlows;sql;group;row;rows;tab;ContID;fs;vals;spvals;pay;∆;discount;inflator;cfs;spcfs;cash;yrval;spyrval;ContTable;ExpTable;conTable;table;fld;cont;accrualadjust;accadj;termam;amount;disc;benID;memcontID;resID;spcontID;benbasis;ind;zeromsk[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Get Cash Flows relating to each row[3]   ⍝ Values for CasBenefit are:  0 - Pension, 1 - 1D Cash, ¯1 - Cash (related to Valuation Basis or Future CARE, spread as Pension and capitalised),[4]   ⍝                             2 - 2D (Deferred) Cash, 3 - Capitalised Transfer Out Pensions (ultimately changed to 1/¯1)[5]   [6]   ContTable←ContingencyTable for ((∨⌿¨(⊂'Contributions')⍷¨ContingencyTable at 'Contingency')∨(∨⌿¨(⊂'Premiums')⍷¨ContingencyTable at 'Contingency'))[7]   ExpTable←ContingencyTable for (∨⌿¨(⊂'Expenses')⍷¨ContingencyTable at 'Contingency')[8]   [9]   cash←⍳0 ⋄ inflator←discount←cfs←spcfs←0×accrualadjust←(rows←rowsIn restab)⍴⊂1[10]  termam←(zwb TERMAM1),zwb TERMAM2 ⋄ amount←(zwb amortamount1),zwb amortamount2[11]  [12]  :for row :in ⍳rows[13]      tab←restab for row=⍳rows[14]      (row rows (' ' join ⍕¨↑¨tab at 'ClassName' 'Sex' 'ResultsCategoryID' 'BenefitBasis' 'BenefitTypeID')) Win∆ProgressBar 'MemberUpdate'[15]      resID←' AND ResultsCategoryID=',⍕tab at 'ResultsCategoryID'[16]  [17]      ⍝⍝⍝ Temporary Fix for Cash Split by Pension Increase ⍝⍝⍝[18]      :if 35=∆←↑tab at 'BenefitTypeID'[19]          benID←' AND BenefitTypeID IN (35, 44, 45, 46, 47)'[20]      :else[21]          benID←' AND BenefitTypeID=','¯-' REPL ⍕∆[22]      :endif[23]  [24]      :if     ∆=11  ⋄ conTable←ContTable[25]      :elseif ∆=32  ⋄ conTable←ExpTable[26]      :elseif ∆=33  ⋄ conTable←ContingencyTable for 'Contingency' 'Additional Liability'[27]      :elseif ∆=999 ⋄ conTable←ContingencyTable for 'Contingency' 'Amortisation Dummy'[28]      :else         ⋄ conTable←BenTable[29]      :endif[30]      conTable←conTable for (⊂'StartYear'),(~(uk=1)^∆∊9 10)^↑tab at 'StartYear'[31]      :if ∆≠999 ⋄ :andif 0≠ContID←↑↑tab at 'ContingencyID'[32]          conTable←conTable for (⊂'Member'),,ContID[33]      :endif[34]      vals←spvals←MATRIX 'InPay' 'Pay' 'Val'[35]      :if ~mt ∆←(∊conTable at (⊂'Member'),(~mortadj)/⊂'Spouse')~0 ⍝ Member Non-Cash Benefits[36]          memcontID←' AND ContingencyID IN (',(0 ⍙DBNumList ∆),')'[37]          :if ContID=11 ⋄ table←'ResultsData' ⋄ fld←'SVYear'          ⋄ fs←''  ⍝ V1% Contributions not in AltScenData[38]          :else         ⋄ table←'AltScenData' ⋄ fld←'YearIntoPayment' ⋄ fs←' AND FSAccrual',((1+↑tab at 'PastService')⊃'<>' '=' ),'0'[39]          :endif[40]          ⍝⍝⍝ sql←'SELECT YearLeftService, ',fld,' SVYear, SUM(SVValue) FROM ',table,' WHERE LiabilityTypeID=8'[41]          sql←'SELECT ',fld,', SVYear, SUM(SVValue) FROM ',table,' WHERE LiabilityTypeID=8'[42]          ⍝⍝⍝ group←' GROUP BY YearLeftService, ',fld,', SVYear'[43]          group←' GROUP BY ',fld,', SVYear'[44]          vals←vals OVER 1 ⍙DBadoCONCommand sql,resID,benID,memcontID,fs,anddbid,group[45]      :endif[46]      :if mortadj  ⋄ :andif ~mt ∆←(↑conTable at 'Spouse')~0           ⍝ Spouse Non-Cash Benefits[47]          spcontID←' AND ContingencyID IN (',(0 ⍙DBNumList ∆),')'[48]          spvals←spvals OVER 1 ⍙DBadoCONCommand sql,resID,benID,spcontID,fs,anddbid,group[49]      :endif[50]  [51]      benbasis←↑tab at 'BenefitBasis'[52]      ⍝ Included in Cash are Cash Benefits and Contributions, Additional Liability, Pensioners Cash and Amortisation Contributions[53]      :if 1=ind←((↑tab at 'BenefitTypeID')∊1 11 33 35 36)∨(∨/'Cash'⍷benbasis)∨∨/(↑tab at 'ContingencyID')∊10 28[54]      :andif ∆←∨/'CARE'⍷benbasis                             ⍝ Indicate "special" Cash if CARE (by cash = ¯1)[55]          ind←ind-2×∆^~∨/∨/¨'IR Maximum' 'Accrual x Salary' '% of A-Day Cash'⍷¨⊂benbasis ⍝ but not IR Maximum, Accrual x Salary and % of A-Day Cash[56]      :endif[57]      :if ContID∊2 4                                          ⍝ Deferred Cash (Independent Slices/PUPs or Pensions) - treat as Pension[58]      :andif (↑tab at 'BenefitTypeID')∊1 35 36 44 45 46 47[59]      :andif (~≡/vals at 'InPay' 'Pay')^0=rowsIn spvals[60]          ind←2[61]      :endif[62]      :if ContID∊31 32 33 37 38 39                            ⍝ Capitalised Transfer Out Pensions[63]      :andif ~(↑tab at 'BenefitTypeID')∊1 35 36[64]      :andif (≡/vals at 'InPay' 'Pay')^0=rowsIn spvals[65]          ind←3[66]      :endif[67]      cash←cash,ind[68]  [69]  ⍝⍝⍝    :if ∨/'Cash'⍷↑tab at 'BenefitBasis'                 ⍝ Pensioners Cash[70]  ⍝⍝⍝    :orif (≡/ vals at 'InPay' 'Pay')^0=rowsIn spvals    ⍝ Cash Benefits and Special case of Spouse only cash flows eg NSPUP DAR[71]      :if 1=¯1↑cash                                          ⍝ Use Pension arrays if Cash is CARE[72]          yrval←MATRIX maxyr⍴0[73]          yrval[;vals at 'Pay']←vals at 'Val'[74]          cont←(∆←↑tab at 'ContingencyID')∊10 28 ⍝ Special case for Amortisation conts[75]          discount[row]←disc←0 0 0 cont ⍙WebDeflator tab[76]          inflator[row]←     0 0 1 cont ⍙WebDeflator tab[77]          :if cont ⍝ Special case for Amortisation conts[78]              ((↑disc) (↑termam[1+∆=28])) ⍙WebAmortisation 'Initialisation'[79]              accrualadjust[row]←⊂accadj[80]          :endif[81]      :else                                       ⍝ Non-Cash Benefits[82]            vals←  vals groupby 'InPay' ('Pay' 'Val')[83]          spvals←spvals groupby 'InPay' ('Pay' 'Val')[84]          spyrval←yrval←(maxpay,maxyr)⍴0[85]          :for pay :in nub (↑vals),↑spvals[86]              :if ~mt ∆←↑vals at pay[87]                  yrval[pay;∆ at 'Pay']←∆ at 'Val'[88]              :endif[89]              :if mortadj[90]              :andif ~mt ∆←↑spvals at pay[91]                  spyrval[pay;∆ at 'Pay']←∆ at 'Val'[92]              :endif[93]          :endfor[94]          spcfs[row]←⊂-spyrval[95]          discount[row]←0 1 0 0 ⍙WebDeflator tab[96]          inflator[row]←0 1 1 0 ⍙WebDeflator tab[97]      :endif[98]      cfs[row]←⊂-yrval[99]  :endfor[100] [101] ⍝ Make up Member and Spouse CashFlows for Benefits with no Liability (for Priority Commutation)[102] ⍙WebCreateCashFlows zeromsk←(1=zwb¨restab at 'CashRate')^(∊restab at 'BenefitTypeID')∊2 3 4 5 6 7[103] [104] restab←restab amend 'CashBenefit' cash[105] restab←restab amend 'MemberCashFlow' cfs[106] restab←restab amend 'SpouseCashFlow' spcfs[107] restab←restab amend 'Inflator' inflator[108] restab←restab amend 'Discount' discount[109] restab←restab amend 'AccrualLimit' accrualadjust[110] restab←restab amend 'CashZeroPension' zeromsk[111] restab←restab amend 'LiabilityValue' ((~zeromsk)×restab at 'LiabilityValue')[112] ⍝⍝⍝ :if ∨/∆←(vals←restab at 'BenefitBasis')∊⊂'Cash' ⍝ Remove Pensioners Cash Indicator (to avoid confusion with CARE)[113] ⍝⍝⍝    (∆/vals)←⊂''[114] ⍝⍝⍝    restab←restab amend 'BenefitBasis' vals[115] ⍝⍝⍝ :endif    ∇
+    ∇ ⍙WebGetCashFlows;sql;group;row;rows;tab;ContID;fs;vals;spvals;pay;∆;discount;inflator;cfs;spcfs;cash;yrval;spyrval;ContTable;ExpTable;conTable;table;fld;cont;accrualadjust;accadj;termam;amount;disc;benID;memcontID;resID;spcontID;benbasis;ind;zeromsk
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Get Cash Flows relating to each row
+[3]   ⍝ Values for CasBenefit are:  0 - Pension, 1 - 1D Cash, ¯1 - Cash (related to Valuation Basis or Future CARE, spread as Pension and capitalised),
+[4]   ⍝                             2 - 2D (Deferred) Cash, 3 - Capitalised Transfer Out Pensions (ultimately changed to 1/¯1)
+[5]   
+[6]   ContTable←ContingencyTable for ((∨⌿¨(⊂'Contributions')⍷¨ContingencyTable at 'Contingency')∨(∨⌿¨(⊂'Premiums')⍷¨ContingencyTable at 'Contingency'))
+[7]   ExpTable←ContingencyTable for (∨⌿¨(⊂'Expenses')⍷¨ContingencyTable at 'Contingency')
+[8]   
+[9]   cash←⍳0 ⋄ inflator←discount←cfs←spcfs←0×accrualadjust←(rows←rowsIn restab)⍴⊂1
+[10]  termam←(zwb TERMAM1),zwb TERMAM2 ⋄ amount←(zwb amortamount1),zwb amortamount2
+[11]  
+[12]  :for row :in ⍳rows
+[13]      tab←restab for row=⍳rows
+[14]      (row rows (' ' join ⍕¨↑¨tab at 'ClassName' 'Sex' 'ResultsCategoryID' 'BenefitBasis' 'BenefitTypeID')) Win∆ProgressBar 'MemberUpdate'
+[15]      resID←' AND ResultsCategoryID=',⍕tab at 'ResultsCategoryID'
+[16]  
+[17]      ⍝⍝⍝ Temporary Fix for Cash Split by Pension Increase ⍝⍝⍝
+[18]      :if 35=∆←↑tab at 'BenefitTypeID'
+[19]          benID←' AND BenefitTypeID IN (35, 44, 45, 46, 47)'
+[20]      :else
+[21]          benID←' AND BenefitTypeID=','¯-' REPL ⍕∆
+[22]      :endif
+[23]  
+[24]      :if     ∆=11  ⋄ conTable←ContTable
+[25]      :elseif ∆=32  ⋄ conTable←ExpTable
+[26]      :elseif ∆=33  ⋄ conTable←ContingencyTable for 'Contingency' 'Additional Liability'
+[27]      :elseif ∆=999 ⋄ conTable←ContingencyTable for 'Contingency' 'Amortisation Dummy'
+[28]      :else         ⋄ conTable←BenTable
+[29]      :endif
+[30]      conTable←conTable for (⊂'StartYear'),(~(uk=1)^∆∊9 10)^↑tab at 'StartYear'
+[31]      :if ∆≠999 ⋄ :andif 0≠ContID←↑↑tab at 'ContingencyID'
+[32]          conTable←conTable for (⊂'Member'),,ContID
+[33]      :endif
+[34]      vals←spvals←MATRIX 'InPay' 'Pay' 'Val'
+[35]      :if ~mt ∆←(∊conTable at (⊂'Member'),(~mortadj)/⊂'Spouse')~0 ⍝ Member Non-Cash Benefits
+[36]          memcontID←' AND ContingencyID IN (',(0 ⍙DBNumList ∆),')'
+[37]          :if ContID=11 ⋄ table←'ResultsData' ⋄ fld←'SVYear'          ⋄ fs←''  ⍝ V1% Contributions not in AltScenData
+[38]          :else         ⋄ table←'AltScenData' ⋄ fld←'YearIntoPayment' ⋄ fs←' AND FSAccrual',((1+↑tab at 'PastService')⊃'<>' '=' ),'0'
+[39]          :endif
+[40]          ⍝⍝⍝ sql←'SELECT YearLeftService, ',fld,' SVYear, SUM(SVValue) FROM ',table,' WHERE LiabilityTypeID=8'
+[41]          sql←'SELECT ',fld,', SVYear, SUM(SVValue) FROM ',table,' WHERE LiabilityTypeID=8'
+[42]          ⍝⍝⍝ group←' GROUP BY YearLeftService, ',fld,', SVYear'
+[43]          group←' GROUP BY ',fld,', SVYear'
+[44]          vals←vals OVER 1 ⍙DBadoCONCommand sql,resID,benID,memcontID,fs,anddbid,group
+[45]      :endif
+[46]      :if mortadj  ⋄ :andif ~mt ∆←(↑conTable at 'Spouse')~0           ⍝ Spouse Non-Cash Benefits
+[47]          spcontID←' AND ContingencyID IN (',(0 ⍙DBNumList ∆),')'
+[48]          spvals←spvals OVER 1 ⍙DBadoCONCommand sql,resID,benID,spcontID,fs,anddbid,group
+[49]      :endif
+[50]  
+[51]      benbasis←↑tab at 'BenefitBasis'
+[52]      ⍝ Included in Cash are Cash Benefits and Contributions, Additional Liability, Pensioners Cash and Amortisation Contributions
+[53]      :if 1=ind←((↑tab at 'BenefitTypeID')∊1 11 33 35 36)∨(∨/'Cash'⍷benbasis)∨∨/(↑tab at 'ContingencyID')∊10 28
+[54]      :andif ∆←∨/'CARE'⍷benbasis                             ⍝ Indicate "special" Cash if CARE (by cash = ¯1)
+[55]          ind←ind-2×∆^~∨/∨/¨'IR Maximum' 'Accrual x Salary' '% of A-Day Cash'⍷¨⊂benbasis ⍝ but not IR Maximum, Accrual x Salary and % of A-Day Cash
+[56]      :endif
+[57]      :if ContID∊2 4                                          ⍝ Deferred Cash (Independent Slices/PUPs or Pensions) - treat as Pension
+[58]      :andif (↑tab at 'BenefitTypeID')∊1 35 36 44 45 46 47
+[59]      :andif (~≡/vals at 'InPay' 'Pay')^0=rowsIn spvals
+[60]          ind←2
+[61]      :endif
+[62]      :if ContID∊31 32 33 37 38 39                            ⍝ Capitalised Transfer Out Pensions
+[63]      :andif ~(↑tab at 'BenefitTypeID')∊1 35 36
+[64]      :andif (≡/vals at 'InPay' 'Pay')^0=rowsIn spvals
+[65]          ind←3
+[66]      :endif
+[67]      cash←cash,ind
+[68]  
+[69]  ⍝⍝⍝    :if ∨/'Cash'⍷↑tab at 'BenefitBasis'                 ⍝ Pensioners Cash
+[70]  ⍝⍝⍝    :orif (≡/ vals at 'InPay' 'Pay')^0=rowsIn spvals    ⍝ Cash Benefits and Special case of Spouse only cash flows eg NSPUP DAR
+[71]      :if 1=¯1↑cash                                          ⍝ Use Pension arrays if Cash is CARE
+[72]          yrval←MATRIX maxyr⍴0
+[73]          yrval[;vals at 'Pay']←vals at 'Val'
+[74]          cont←(∆←↑tab at 'ContingencyID')∊10 28 ⍝ Special case for Amortisation conts
+[75]          discount[row]←disc←0 0 0 cont ⍙WebDeflator tab
+[76]          inflator[row]←     0 0 1 cont ⍙WebDeflator tab
+[77]          :if cont ⍝ Special case for Amortisation conts
+[78]              ((↑disc) (↑termam[1+∆=28])) ⍙WebAmortisation 'Initialisation'
+[79]              accrualadjust[row]←⊂accadj
+[80]          :endif
+[81]      :else                                       ⍝ Non-Cash Benefits
+[82]            vals←  vals groupby 'InPay' ('Pay' 'Val')
+[83]          spvals←spvals groupby 'InPay' ('Pay' 'Val')
+[84]          spyrval←yrval←(maxpay,maxyr)⍴0
+[85]          :for pay :in nub (↑vals),↑spvals
+[86]              :if ~mt ∆←↑vals at pay
+[87]                  yrval[pay;∆ at 'Pay']←∆ at 'Val'
+[88]              :endif
+[89]              :if mortadj
+[90]              :andif ~mt ∆←↑spvals at pay
+[91]                  spyrval[pay;∆ at 'Pay']←∆ at 'Val'
+[92]              :endif
+[93]          :endfor
+[94]          spcfs[row]←⊂-spyrval
+[95]          discount[row]←0 1 0 0 ⍙WebDeflator tab
+[96]          inflator[row]←0 1 1 0 ⍙WebDeflator tab
+[97]      :endif
+[98]      cfs[row]←⊂-yrval
+[99]  :endfor
+[100] 
+[101] ⍝ Make up Member and Spouse CashFlows for Benefits with no Liability (for Priority Commutation)
+[102] ⍙WebCreateCashFlows zeromsk←(1=zwb¨restab at 'CashRate')^(∊restab at 'BenefitTypeID')∊2 3 4 5 6 7
+[103] 
+[104] restab←restab amend 'CashBenefit' cash
+[105] restab←restab amend 'MemberCashFlow' cfs
+[106] restab←restab amend 'SpouseCashFlow' spcfs
+[107] restab←restab amend 'Inflator' inflator
+[108] restab←restab amend 'Discount' discount
+[109] restab←restab amend 'AccrualLimit' accrualadjust
+[110] restab←restab amend 'CashZeroPension' zeromsk
+[111] restab←restab amend 'LiabilityValue' ((~zeromsk)×restab at 'LiabilityValue')
+[112] ⍝⍝⍝ :if ∨/∆←(vals←restab at 'BenefitBasis')∊⊂'Cash' ⍝ Remove Pensioners Cash Indicator (to avoid confusion with CARE)
+[113] ⍝⍝⍝    (∆/vals)←⊂''
+[114] ⍝⍝⍝    restab←restab amend 'BenefitBasis' vals
+[115] ⍝⍝⍝ :endif
+    ∇

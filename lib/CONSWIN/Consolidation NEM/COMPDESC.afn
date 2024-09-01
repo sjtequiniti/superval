@@ -1,1 +1,22 @@
-    ∇ res←COMPDESC size;OLDD;OLDC;SCR;A;B;BASIS[1]   ⍝ CONSWIN.sf#2[2]   ⍝ Compare BASIS and rUNDESC[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   TSC ⍝ Retrieve Run Description of Valuation Run[8]   'rUNDESC' pdef ⎕FREAD 20,row[9]   BASIS←rUNDESC ⋄ BASIS[4;52+⍳26]←' ' ⋄ BASIS[5;41+⍳10]←' '[10]  'TEMP$$.RUN' ⎕NTIE ¯111 ⋄ rUNDESC← 0 ¯2 ↓size⍴⎕NREAD ¯111,82,(×/size),0[11]  'TEMP$$.RUN' ⎕NERASE ¯111[12]  →(res←(1 0 ↓BASIS)≡ 1 0 ↓rUNDESC)/0[13]  →((A←⍴BASIS)≡B←⍴rUNDESC)/LAB ⋄ BASIS←(A⌈B)↑BASIS ⋄ rUNDESC←(A⌈B)↑rUNDESC[14]  LAB:→(res←0=⍴ROWS←((,~^/BASIS=rUNDESC)/⍳1↑⍴BASIS)~0)/0 ⋄ CLS[15]  SCR← 10 78 ↑(78↑'      Original Valuation Run Basis Details')⍪BASIS[,ROWS;⍳78][16]  SCR←⎕AV[205]⍪(SCR⍪ 10 78 ↑(78↑'      New Entrant Model Run Basis Details')⍪rUNDESC[,ROWS;⍳78])⍪⎕AV[205][17]  0 0 22 80 ⎕WPUT(1 20 1 /⎕AV[201 186 200]),SCR, 1 20 1 /⎕AV[187 186 188][18]  1 1 1 78 ⎕WPUT 15 ⋄ 11 1 1 78 ⎕WPUT 15[19]  →(~res←(22 ASK 'Basis Details Differ between Valn + New Ent Runs. Do you wish to Continue?' OVER 'NnYy')∊'Yy')/0[20]  RSC    ∇
+    ∇ res←COMPDESC size;OLDD;OLDC;SCR;A;B;BASIS
+[1]   ⍝ CONSWIN.sf#2
+[2]   ⍝ Compare BASIS and rUNDESC
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   TSC ⍝ Retrieve Run Description of Valuation Run
+[8]   'rUNDESC' pdef ⎕FREAD 20,row
+[9]   BASIS←rUNDESC ⋄ BASIS[4;52+⍳26]←' ' ⋄ BASIS[5;41+⍳10]←' '
+[10]  'TEMP$$.RUN' ⎕NTIE ¯111 ⋄ rUNDESC← 0 ¯2 ↓size⍴⎕NREAD ¯111,82,(×/size),0
+[11]  'TEMP$$.RUN' ⎕NERASE ¯111
+[12]  →(res←(1 0 ↓BASIS)≡ 1 0 ↓rUNDESC)/0
+[13]  →((A←⍴BASIS)≡B←⍴rUNDESC)/LAB ⋄ BASIS←(A⌈B)↑BASIS ⋄ rUNDESC←(A⌈B)↑rUNDESC
+[14]  LAB:→(res←0=⍴ROWS←((,~^/BASIS=rUNDESC)/⍳1↑⍴BASIS)~0)/0 ⋄ CLS
+[15]  SCR← 10 78 ↑(78↑'      Original Valuation Run Basis Details')⍪BASIS[,ROWS;⍳78]
+[16]  SCR←⎕AV[205]⍪(SCR⍪ 10 78 ↑(78↑'      New Entrant Model Run Basis Details')⍪rUNDESC[,ROWS;⍳78])⍪⎕AV[205]
+[17]  0 0 22 80 ⎕WPUT(1 20 1 /⎕AV[201 186 200]),SCR, 1 20 1 /⎕AV[187 186 188]
+[18]  1 1 1 78 ⎕WPUT 15 ⋄ 11 1 1 78 ⎕WPUT 15
+[19]  →(~res←(22 ASK 'Basis Details Differ between Valn + New Ent Runs. Do you wish to Continue?' OVER 'NnYy')∊'Yy')/0
+[20]  RSC
+    ∇

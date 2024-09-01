@@ -1,1 +1,30 @@
-    ∇ ConsExport;tpr1;fmt;SUMMREC;LAB;TOTS;ABtot[1]   ⍝ CONSWIN.sf#10[2]   ⍝ Saves results of consolidation[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   TOTS←GTOTS×10*3×sfac ⋄ ABtot←ABTOT×10*3×sfac[8]   tpr1←OPEN∆TPR∆FILE 'SP',ValMeth,'CON'[9]   [10]  SUMMREC←DLTMB (4 3 ⍴'  ,,,, ,, ,,'),BenNames[⍳4;][11]  SUMMREC←SUMMREC,',,,,Member,Company,Expenses,Inv.,,PV,Per Memb,GL Premium'[12]  SUMMREC←SUMMREC OVER 'Year,Normal,Early,Pens,Cash,Pens,Cash,Pens,Cash,Pens,Total,Pensions,Conts,Conts,',((uk=0)/'and Tax'),',Income,Assets,1% Sal,Expenses,',DLTMB BenNames[2;],',',BenNames[3;],',',BenNames[5;][13]  fmt←'<,M⊂-⊃I>,LI3,<,⊂,⊃>' ⎕FMT 7⌈2+⌊10⍟⌈⌿1⍪TOTS ⋄ fmt[18;]←',M⊂-⊃F9.2,⊂,⊃'[14]  (SUMMREC OVER('I5,⊂,⊃',,fmt)⎕FMT(¯1+⍳SIZE),TOTS)APPEND tpr1[15]  [16]  SUMMREC←' ' OVER ',Net,Deferred,Default'[17]  SUMMREC←SUMMREC OVER 'Year,Assets,Acc Ben,Acc Ben',PROPT/',AB 1,AB 2,AB 3,AB 4,AB 5,AB 6,AB 7'[18]  fmt←'<,M⊂-⊃I>,LI3,<,⊂,⊃>' ⎕FMT 7⌈2+⌊10⍟⌈⌿1⍪ABtot←(TOTS[;16]-ABtot[;1]×~penind),ABtot[19]  (SUMMREC OVER('I5,⊂,⊃',,fmt)⎕FMT(¯1+⍳SIZE),ABtot)APPEND tpr1[20]  [21]  SUMMREC←' ' OVER ',Number of,New,Normal,Early,,,,Total Annual,New,Normal,Early'[22]  SUMMREC←SUMMREC OVER 'Year,Members,Entrants',LAB,',Salaries,Entrants',LAB←DLTMB ',',BenExits[1 1 2 3 4 ;][23]  fmt←'I2' ⎕FMT 15⌈5+⌊10⍟⌈⌿1⍪FUNDTOT[;⍳14] ⋄ fmt←',',(7/'FI'),fmt,(7 6⍴'.2,⊂,⊃') OVER 7 4⍴',⊂,⊃'[24]  (SUMMREC OVER('I5,⊂,⊃',,fmt)⎕FMT(¯1+⍳1↑⍴FUNDTOT),FUNDTOT[;⍳14])APPEND tpr1[25]  [26]  MDISPLAY 'OutputFile' (DLTB (tpr1=⎕xnnums)⌿⎕xnnames)[27]  ⎕NUNTIE tpr1[28]  'fmConsReview.bnCons_ReviewExport' ⎕wi 'enabled' 0    ∇
+    ∇ ConsExport;tpr1;fmt;SUMMREC;LAB;TOTS;ABtot
+[1]   ⍝ CONSWIN.sf#10
+[2]   ⍝ Saves results of consolidation
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   TOTS←GTOTS×10*3×sfac ⋄ ABtot←ABTOT×10*3×sfac
+[8]   tpr1←OPEN∆TPR∆FILE 'SP',ValMeth,'CON'
+[9]   
+[10]  SUMMREC←DLTMB (4 3 ⍴'  ,,,, ,, ,,'),BenNames[⍳4;]
+[11]  SUMMREC←SUMMREC,',,,,Member,Company,Expenses,Inv.,,PV,Per Memb,GL Premium'
+[12]  SUMMREC←SUMMREC OVER 'Year,Normal,Early,Pens,Cash,Pens,Cash,Pens,Cash,Pens,Total,Pensions,Conts,Conts,',((uk=0)/'and Tax'),',Income,Assets,1% Sal,Expenses,',DLTMB BenNames[2;],',',BenNames[3;],',',BenNames[5;]
+[13]  fmt←'<,M⊂-⊃I>,LI3,<,⊂,⊃>' ⎕FMT 7⌈2+⌊10⍟⌈⌿1⍪TOTS ⋄ fmt[18;]←',M⊂-⊃F9.2,⊂,⊃'
+[14]  (SUMMREC OVER('I5,⊂,⊃',,fmt)⎕FMT(¯1+⍳SIZE),TOTS)APPEND tpr1
+[15]  
+[16]  SUMMREC←' ' OVER ',Net,Deferred,Default'
+[17]  SUMMREC←SUMMREC OVER 'Year,Assets,Acc Ben,Acc Ben',PROPT/',AB 1,AB 2,AB 3,AB 4,AB 5,AB 6,AB 7'
+[18]  fmt←'<,M⊂-⊃I>,LI3,<,⊂,⊃>' ⎕FMT 7⌈2+⌊10⍟⌈⌿1⍪ABtot←(TOTS[;16]-ABtot[;1]×~penind),ABtot
+[19]  (SUMMREC OVER('I5,⊂,⊃',,fmt)⎕FMT(¯1+⍳SIZE),ABtot)APPEND tpr1
+[20]  
+[21]  SUMMREC←' ' OVER ',Number of,New,Normal,Early,,,,Total Annual,New,Normal,Early'
+[22]  SUMMREC←SUMMREC OVER 'Year,Members,Entrants',LAB,',Salaries,Entrants',LAB←DLTMB ',',BenExits[1 1 2 3 4 ;]
+[23]  fmt←'I2' ⎕FMT 15⌈5+⌊10⍟⌈⌿1⍪FUNDTOT[;⍳14] ⋄ fmt←',',(7/'FI'),fmt,(7 6⍴'.2,⊂,⊃') OVER 7 4⍴',⊂,⊃'
+[24]  (SUMMREC OVER('I5,⊂,⊃',,fmt)⎕FMT(¯1+⍳1↑⍴FUNDTOT),FUNDTOT[;⍳14])APPEND tpr1
+[25]  
+[26]  MDISPLAY 'OutputFile' (DLTB (tpr1=⎕xnnums)⌿⎕xnnames)
+[27]  ⎕NUNTIE tpr1
+[28]  'fmConsReview.bnCons_ReviewExport' ⎕wi 'enabled' 0
+    ∇

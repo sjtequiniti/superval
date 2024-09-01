@@ -1,0 +1,35 @@
+    ∇ res←ClientCheck CallingModule;ind;Error;folderwarning
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Check on Scheme Details in Selected Folder
+[3]   
+[4]   0 0⍴(SystemDir,'OVERWIN') ReadFile 'Client'
+[5]   
+[6]   0 0⍴ReadModule 'Client' 'None' ⍝ Read Defaults
+[7]   
+[8]   :if ind←~mt ClientFile ReadFile 'Client' ⋄ :andif ecflag
+[9]       LocalLicence ⍝ Get "local" Licence
+[10]  :endif
+[11]  :if 0=⎕nc 'ListviewDict' ⋄ ListviewDict←MATRIX 'Module' 'Control' 'Parameters' 'Sort' ⋄ :endif
+[12]  
+[13]  folderwarning←0 ⍝⍝⍝ ⋄ HPCWarning←∣bHPC
+[14]  :if ~ind ⋄ :orif ~mt Error←0 Client_Valid ⊂'All' ⋄ :orif (~bGAD)^zwb SpMortCheck
+[15]      :if ind ⋄ :andif ~mt Error ⋄ MDISPLAY Error ⋄ :endif
+[16]      ClientDetails CallingModule
+[17]  :endif
+[18]  
+[19]  :if ~res←~80∊⎕xfnums ⍝ Entry to Folder aborted
+[20]      0 0⍴(SystemDir,'OVERWIN') ReadFile 'Client'
+[21]      'CreateVars' RunModule 'Client' ⍝ Create Client Vars
+[22]      :if ecflag
+[23]          :if ~ind ⋄ LocalLicence ⋄ :endif ⍝ Get "local" Licence
+[24]          :if accesslevel=9
+[25]          :andif ~0≡FormName ⎕wi '∆decrfile' ⍝ Check all Default Tables exist on file
+[26]              1 DecrFileCheck DECRFile
+[27]              FactorFileCheck FactorFile
+[28]          :endif
+[29]      :endif
+[30]      'Client' UpdateParametersIndex 1
+[31]  :endif
+[32]  
+[33]  0 0⍴(SystemDir,'OVERWIN') DeleteModule 'Client'
+    ∇

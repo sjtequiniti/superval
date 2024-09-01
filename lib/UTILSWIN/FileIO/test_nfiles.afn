@@ -1,0 +1,35 @@
+    ∇ retries←test_nfiles folder;⎕ELX;xxx;tno;SHARED;EXCLUSIVE;filename;nsize;BLOCK;RECORD;ENCODING;DROCER;renamed;L;∆;go
+[1]   ⍝ UTILSWIN.sf#7
+[2]   ⍝ Exercise file subsystem on native files
+[3]   ⍝ folder: (str) filepath ending in '\'
+[4]   ⍝ retries: (ints) number of retry attempts (⍴tally ⎕CR 'test_nfiles')
+[5]   ⍝ Vern: sjt14jan16
+[6]   (ENCODING EXCLUSIVE SHARED)←82 2 66 ⍝ constants
+[7]   filename←folder,'nativetest.dat'
+[8]   renamed←folder,'renamed.dat'
+[9]   DROCER←⌽RECORD←(∊¯10↑¨⍕¨10×⍳8),⎕TCNL ⎕TCLF ⍝ 82-char record
+[10]  BLOCK←82000⍴RECORD
+[11]  tno←(⌊/0,⎕XNNUMS)-1
+[12]  retries←erase⍴0
+[13]  
+[14]  ⎕ELX←"⎕WGIVE 0×L←↑⎕LC,⎕DL .5 ⋄ retries[L]←∆+go←10>∆←retries[L] ⋄ →go↑L ⋄ ⎕ERROR,⎕DM"
+[15]  
+[16]  random:     random_error 5
+[17]  
+[18]  create:     filename ⎕XNCREATE tno
+[19]  untie:      ⎕NUNTIE tno
+[20]  
+[21]  stie:       filename ⎕XNTIE tno SHARED
+[22]  append:     BLOCK ⎕NAPPEND tno
+[23]  size:       nsize←⎕NSIZE tno
+[24]  names:      xxx←⎕XNNAMES
+[25]  nums:       xxx←⎕XNNUMS
+[26]  read:       xxx←⎕NREAD tno ENCODING nsize 0
+[27]  replace:    DROCER ⎕NREPLACE tno 83 ⍝ reverse 2nd line
+[28]  rename:     renamed ⎕XNRENAME tno
+[29]  untie2:     ⎕NUNTIE tno
+[30]  xtie:       renamed ⎕XNTIE tno EXCLUSIVE
+[31]  pad:        100000 ⎕NRESIZE tno
+[32]  truncate:   1000 ⎕NRESIZE tno
+[33]  erase:      renamed ⎕XNERASE tno
+    ∇

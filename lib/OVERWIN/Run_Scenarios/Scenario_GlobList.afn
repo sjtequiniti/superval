@@ -1,1 +1,19 @@
-    ∇ type Scenario_GlobList tab;vars;msk[1]   ⍝ OVERWIN.sf#29[2]   ⍝ type is either 'Fin' 'RelNum' 'ParmsM' (or ParmsMS') 'ParmsI' 'ParmsX' 'ParmsD' 'ParmsW' 'ParmsR' 'ParmsT' 'ParmsL' 'ParmsS' 'ParmsN'[3]   ⍝ Get a list of pointer names used in the Bases[4]   [5]   :select type[6]   :caselist 'ParmsC' 'ParmsP' 'ParmsY' 'ParmsK' 'ParmsO' 'ParmsA' 'ParmsE' 'ParmsB'[7]       :return[8]   :else[9]       :if ∨/msk←∊2=⍴¨⍴¨vars←⍎¨tab at 'Field'[10]          vars←((~msk)/vars),DLTB¨,⊃⎕split ¨msk/vars[11]      :endif[12]      vars←(~^/¨⎕vi¨,¨vars)/vars ⍝ Remove numeric values (RelNum)[13]      vars←(~mt¨vars)/vars ⍝ Remove Blank values[14]  [15]      ScenGlobList←ScenGlobList OVER ⊃spin ((⍴vars)⍴⊂type) vars[16]  :endselect[17]      ∇
+    ∇ type Scenario_GlobList tab;vars;msk
+[1]   ⍝ OVERWIN.sf#29
+[2]   ⍝ type is either 'Fin' 'RelNum' 'ParmsM' (or ParmsMS') 'ParmsI' 'ParmsX' 'ParmsD' 'ParmsW' 'ParmsR' 'ParmsT' 'ParmsL' 'ParmsS' 'ParmsN'
+[3]   ⍝ Get a list of pointer names used in the Bases
+[4]   
+[5]   :select type
+[6]   :caselist 'ParmsC' 'ParmsP' 'ParmsY' 'ParmsK' 'ParmsO' 'ParmsA' 'ParmsE' 'ParmsB'
+[7]       :return
+[8]   :else
+[9]       :if ∨/msk←∊2=⍴¨⍴¨vars←⍎¨tab at 'Field'
+[10]          vars←((~msk)/vars),DLTB¨,⊃⎕split ¨msk/vars
+[11]      :endif
+[12]      vars←(~^/¨⎕vi¨,¨vars)/vars ⍝ Remove numeric values (RelNum)
+[13]      vars←(~mt¨vars)/vars ⍝ Remove Blank values
+[14]  
+[15]      ScenGlobList←ScenGlobList OVER ⊃spin ((⍴vars)⍴⊂type) vars
+[16]  :endselect
+[17]  
+    ∇

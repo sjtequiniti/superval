@@ -1,1 +1,136 @@
-    ∇ GET∆PPFValues type;idx;ppfinc;from;to;over;tab;z[1]   ⍝ UVALNWIN.sf#2[2]   ⍝ Get PPF Override values[3]   [4]   ppfI20←,1+0.01×zwb PPFi20 ⋄ ppfI←,1+0.01×zwb PPFi[5]   :if ~mt defIMPORIG ⋄ m_PPFIMPORIG2←f_PPFIMPORIG2←m_PPFIMPORIG←f_PPFIMPORIG←m_PPFSIMPORIG←f_PPFSIMPORIG←defIMPORIG ⋄ :endif[6]   [7]   :if (⊂type)∊'Actives' 'Deferreds' ⍝ Pre-Retirement and Post Retirement variations[8]       lrIR←PPFi ⋄ IR←'PPF Override'[9]   [10]      lrpi←PPFpiF ⋄ pi←'PPF Override' ⍝ The post-retirement Interest Rate[11]      ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊⊂"pi"'[12]      :if ×z←rowsIn tab←Comment_PPF_Yields for (Comment_PPF_Yields at 'variable')∊⊂"PPFpiF"[13]          tab←tab amend 'variable' (z/⊂'pi')[14]          ⍎comment_var,'←',comment_var,' append tab'[15]      :endif[16]  [17]      ppfinc←⍕100×¯1+PPFINC←,(100+zwb PPFpiF)÷100+zwb PPFpiI[18]  [19]      lrNDYNINC←⍕0 ⋄ NDYNINC←'PPF Override'[20]      lrDYNINC←ppfinc ⋄ DYNINC←'PPF Override'[21]      ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊"IR" "NDYNINC" "DYNINC"'[22]      :if ×z←rowsIn tab←Comment_PPF_Yields for (Comment_PPF_Yields at 'variable')∊⊂"PPFi"[23]          tab←tab amend 'variable' (z/⊂'IR')[24]          ⍎comment_var,'←',comment_var,' append tab'[25]      :endif[26]  [27]      ⍝ Pre Retirement Mortality[28]      m_DPRETABXX←m_PPFDPRE ⋄ lrm_DPRETABXX1←lrm_PPFDPRE1 ⋄ m_DPREORIG←m_PPFDPREORIG ⋄ m_DPREMEMB←''[29]      f_DPRETABXX←f_PPFDPRE ⋄ lrf_DPRETABXX1←lrf_PPFDPRE1 ⋄ f_DPREORIG←f_PPFDPREORIG ⋄ f_DPREMEMB←''[30]      m_miDPREMORTIMPR←f_miDPREMORTIMPR←'2D Table' ⋄ m_miDPRERATEIMPR←f_miDPRERATEIMPR←'1'[31]      m_miDPREIMPTBLcsv←m_PPFIMPTBL2csv ⋄ m_miDPREIMPTBL←m_PPFIMPTBL2 ⋄ lrm_miDPREIMPTBL1←lrm_PPFIMPTBL21 ⋄ m_miDPREIMPORIG←m_PPFIMPORIG2[32]      f_miDPREIMPTBLcsv←f_PPFIMPTBL2csv ⋄ f_miDPREIMPTBL←f_PPFIMPTBL2 ⋄ lrf_miDPREIMPTBL1←lrf_PPFIMPTBL21 ⋄ f_miDPREIMPORIG←f_PPFIMPORIG2[33]  [34]      over←"m_DPREMEMB" "f_DPREMEMB" "m_miDPREMORTIMPR" "f_miDPREMORTIMPR" "m_miDPRERATEIMPR" "f_miDPRERATEIMPR"[35]      from←"m_PPFDPRE"   "f_PPFDPRE"   "m_PPFDPREORIG" "f_PPFDPREORIG" "m_PPFIMPTBL2csv"   "m_PPFIMPTBL2"   "m_PPFIMPORIG2"   "f_PPFIMPTBL2csv"   "f_PPFIMPTBL2"   "f_PPFIMPORIG2"[36]      to  ←"m_DPRETABXX" "f_DPRETABXX" "m_DPREORIG"    "f_DPREORIG"    "m_miDPREIMPTBLcsv" "m_miDPREIMPTBL" "m_miDPREIMPORIG" "f_miDPREIMPTBLcsv" "f_miDPREIMPTBL" "f_miDPREIMPORIG"[37]      ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊over,to'[38]      :if ×rowsIn tab←Comment_PPF_Overrides for (Comment_PPF_Overrides at 'variable')∊from[39]          tab←tab amend 'variable' (from to map tab at 'variable')[40]          ⍎comment_var,'←',comment_var,' append tab'[41]      :endif[42]  :else[43]      lrpi←PPFPENpiF ⋄ pi←'PPF Override' ⍝ The post-retirement Interest Rate[44]      ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊⊂"pi"'[45]      :if ×z←rowsIn tab←Comment_PPF_Yields for (Comment_PPF_Yields at 'variable')∊⊂"PPFPENpiF"[46]          tab←tab amend 'variable' (z/⊂'pi')[47]          ⍎comment_var,'←',comment_var,' append tab'[48]      :endif[49]  [50]      ppfinc←⍕100×¯1+,(100+zwb PPFPENpiF)÷100+zwb PPFPENpiI[51]  :endif[52]  [53]  ⍝ Post Retirement Mortality[54]  m_DPOSTTABXX←m_PPFDPOST ⋄ lrm_DPOSTTABXX1←lrm_PPFDPOST1 ⋄ m_DPOSTORIG←m_PPFDPOSTORIG[55]  f_DPOSTTABXX←f_PPFDPOST ⋄ lrf_DPOSTTABXX1←lrf_PPFDPOST1 ⋄ f_DPOSTORIG←f_PPFDPOSTORIG ⋄ m_DPOSTMEMB←f_DPOSTMEMB←''[56]  m_miDPOSTMORTIMPR←f_miDPOSTMORTIMPR←'2D Table' ⋄ m_miDPOSTRATEIMPR←f_miDPOSTRATEIMPR←'1'[57]  m_miDPOSTIMPTBLcsv←m_PPFIMPTBLcsv ⋄ m_miDPOSTIMPTBL←m_PPFIMPTBL ⋄ lrm_miDPOSTIMPTBL1←lrm_PPFIMPTBL1 ⋄ m_miDPOSTIMPORIG←m_PPFIMPORIG[58]  f_miDPOSTIMPTBLcsv←f_PPFIMPTBLcsv ⋄ f_miDPOSTIMPTBL←f_PPFIMPTBL ⋄ lrf_miDPOSTIMPTBL1←lrf_PPFIMPTBL1 ⋄ f_miDPOSTIMPORIG←f_PPFIMPORIG[59]  [60]  m_SDPOSTTABXX←m_PPFSDPOST ⋄ lrm_SDPOSTTABXX1←lrm_PPFSDPOST1 ⋄ m_SDPOSTORIG←m_PPFSDPOSTORIG[61]  f_SDPOSTTABXX←f_PPFSDPOST ⋄ lrf_SDPOSTTABXX1←lrf_PPFSDPOST1 ⋄ f_SDPOSTORIG←f_PPFSDPOSTORIG ⋄ m_SDPOSTMEMB←f_SDPOSTMEMB←''[62]  m_miSDPOSTMORTIMPR←f_miSDPOSTMORTIMPR←'2D Table' ⋄ m_miSDPOSTRATEIMPR←f_miSDPOSTRATEIMPR←'1'[63]  m_miSDPOSTIMPTBLcsv←m_PPFSIMPTBLcsv ⋄ m_miSDPOSTIMPTBL←m_PPFSIMPTBL ⋄ lrm_miSDPOSTIMPTBL1←lrm_PPFSIMPTBL1 ⋄ m_miSDPOSTIMPORIG←m_PPFSIMPORIG[64]  f_miSDPOSTIMPTBLcsv←f_PPFSIMPTBLcsv ⋄ f_miSDPOSTIMPTBL←f_PPFSIMPTBL ⋄ lrf_miSDPOSTIMPTBL1←lrf_PPFSIMPTBL1 ⋄ f_miSDPOSTIMPORIG←f_PPFSIMPORIG[65]  [66]  over←"m_DPOSTMEMB" "f_DPOSTMEMB" "m_SDPOSTMEMB" "f_SDPOSTMEMB" "m_miDPOSTMORTIMPR" "f_miDPOSTMORTIMPR" "m_miSDPOSTMORTIMPR" "f_miSDPOSTMORTIMPR" "m_miDPOSTRATEIMPR" "f_miDPOSTRATEIMPR" "m_miSDPOSTRATEIMPR" "f_miSDPOSTRATEIMPR"[67]  from←"m_PPFDPOST"   "f_PPFDPOST"   "f_PPFSDPOST"   "m_PPFSDPOST"   "m_PPFDPOSTORIG" "f_PPFDPOSTORIG" "f_PPFSDPOSTORIG" "m_PPFSDPOSTORIG" "m_PPFIMPTBLcsv"     "m_PPFIMPTBL"     "m_PPFIMPORIG"     "f_PPFIMPTBLcsv"     "f_PPFIMPTBL"     "f_PPFIMPORIG"     "f_PPFSIMPTBLcsv"     "f_PPFSIMPTBL"     "f_PPFSIMPORIG"     "m_PPFSIMPTBLcsv"     "m_PPFSIMPTBL"     "m_PPFSIMPORIG"[68]  to  ←"m_DPOSTTABXX" "f_DPOSTTABXX" "f_SDPOSTTABXX" "m_SDPOSTTABXX" "m_DPOSTORIG"    "f_DPOSTORIG"    "f_SDPOSTORIG"    "m_SDPOSTORIG"    "m_miDPOSTIMPTBLcsv" "m_miDPOSTIMPTBL" "m_miDPOSTIMPORIG" "f_miDPOSTIMPTBLcsv" "f_miDPOSTIMPTBL" "f_miDPOSTIMPORIG" "f_miSDPOSTIMPTBLcsv" "f_miSDPOSTIMPTBL" "f_miSDPOSTIMPORIG" "m_miSDPOSTIMPTBLcsv" "m_miSDPOSTIMPTBL" "m_miSDPOSTIMPORIG"[69]  ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊over,to'[70]  :if ×rowsIn tab←Comment_PPF_Overrides for (Comment_PPF_Overrides at 'variable')∊from[71]      tab←tab amend 'variable' (from to map tab at 'variable')[72]      ⍎comment_var,'←',comment_var,' append tab'[73]  :endif[74]  [75]  ⍝ Proportion Married[76]  :if zwb m_HTABind ⋄ m_HXX←3↑[1]m_PPFHTAB  ⋄ lrm_HXX1←lrm_PPFHTAB1  ⋄ m_PropMarr←m_PPFPropMarr  ⋄ from←"m_PPFHTAB[1;]"  "m_PPFPropMarr"[77]  :else             ⋄ m_HXX←3↑[1]m_PPFHTAB2 ⋄ lrm_HXX1←lrm_PPFHTAB21 ⋄ m_PropMarr←m_PPFPropMarr2 ⋄ from←"m_PPFHTAB2[1;]" "m_PPFPropMarr2"[78]  :endif[79]  :if zwb f_HTABind ⋄ f_HXX←3↑[1]f_PPFHTAB  ⋄ lrf_HXX1←lrf_PPFHTAB1  ⋄ f_PropMarr←f_PPFPropMarr  ⋄ from←from,"f_PPFHTAB[1;]"  "f_PPFPropMarr2"[80]  :else             ⋄ f_HXX←3↑[1]f_PPFHTAB2 ⋄ lrf_HXX1←lrf_PPFHTAB21 ⋄ f_PropMarr←f_PPFPropMarr2 ⋄ from←from,"f_PPFHTAB2[1;]" "f_PPFPropMarr2"[81]  :endif[82]  to←"m_HXX[1;]" "m_PropMarr" "f_HXX[1;]" "f_PropMarr"[83]  ⍝ Age Difference[84]  m_AGEDIF←m_PPFAGEDIF ⋄ m_AGEDIFT←lrm_AGEDIFT←''[85]  f_AGEDIF←f_PPFAGEDIF ⋄ f_AGEDIFT←lrf_AGEDIFT←''[86]  SPMethod←'Retirement'[87]  [88]  GPeriod←'0'[89]  INCIND←'Continuous'[90]  IncTiming←'Default'[91]  [92]  over←"m_HXX[2;]" "m_HXX[3;]" "f_HXX[2;]" "f_HXX[3;]" "m_AGEDIFT" "f_AGEDIFT" "SPMethod" "GPeriod" "INCIND" "IncTimimg"[93]  from←from,"m_PPFAGEDIF" "f_PPFAGEDIF"[94]  to  ←to  ,"m_AGEDIF"    "f_AGEDIF"[95]  ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊over,to'[96]  :if ×rowsIn tab←Comment_PPF_Overrides for (Comment_PPF_Overrides at 'variable')∊from[97]      tab←tab amend 'variable' (from to map tab at 'variable')[98]      ⍎comment_var,'←',comment_var,' append tab'[99]  :endif[100] [101] :select type[102] :case 'Actives'[103]     SWindic←'Use Pre-Ret Int for Accrued/Wdls'[104]        REVDEFIND←⊃(↑⍴   REVDEFIND)⍴⊂'Rate 2'[105]     AltREVDEFIND←⊃(↑⍴AltREVDEFIND)⍴⊂'Rate 2'[106] [107]     ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊"SWindic" "REVDEFIND" "AltREVDEFIND"'[108] :case 'Deferreds'[109]     :if zwb MOOOverride ⋄ MOO←⊃CheckTranslate¨⍕¨(⊂'Pre 97')≡¨m2n PPFPAYINC ⋄ :endif[110] [111]     ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊⊂"MOO"'[112]     :if ×z←rowsIn tab←Comment_PPF_Details for (Comment_PPF_Details at 'variable')∊⊂"MOOOverride"[113]         tab←tab amend 'variable' (z/⊂'MOO') ⋄ tab←tab amend 'row' (⍳z)[114]         ⍎comment_var,'←',comment_var,' append tab'[115]     :endif[116] :case 'Pensioners'[117]     GMPREV2←'0' ⍝ Force use of input rate[118]     GMPREV1←p_PPFGMPREV1 ⋄ lrGMPREV1←lrp_PPFGMPREV1 ⋄ sCEN_GMPREV1←sCEN_p_PPFGMPREV1[119]     lrB88GMPINC←lrA88GMPINC←'0' ⋄ B88GMPINC←A88GMPINC←'PPF Override'[120]     DEFINC←PPFDEFINC ⋄ lrDEFINC←lrPPFDEFINC ⋄ sCEN_DEFINC←sCEN_PPFDEFINC[121] [122]     idx←(m2n PPFPAYINC)∊'97 to 09' 'Post 09'[123]     lrPAYINC←(↑⍴lrPAYINC)⍴⊂ppfinc ⋄ PAYINC←⊃(↑⍴PAYINC)⍴⊂'PPF Override'[124]     lrPAYINC[WHERE ~idx]←⊂,'0' ⋄ lrPAYINC←MATRIX ⊃lrPAYINC[125] [126]     over←"GMPREV2" "B88GMPINC" "A88GMPINC" "PAYINC"[127]     from←"p_PPFGMPREV1" "PPFDEFINC"[128]     to  ←"GMPREV1"      "DEFINC"[129]     ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊over,to'[130]     :if ×z←rowsIn tab←Comment_PPF_Details for (Comment_PPF_Details at 'variable')∊from[131]         tab←tab amend 'variable' (from to map tab at 'variable')[132]         ⍎comment_var,'←',comment_var,' append tab' ⋄ tab←tab amend 'row' (((tab at 'variable')∊⊂'DEFINC') sel¨⊂1)[133]     :endif[134] :endselect    ∇
+    ∇ GET∆PPFValues type;idx;ppfinc;from;to;over;tab;z
+[1]   ⍝ UVALNWIN.sf#2
+[2]   ⍝ Get PPF Override values
+[3]   
+[4]   ppfI20←,1+0.01×zwb PPFi20 ⋄ ppfI←,1+0.01×zwb PPFi
+[5]   :if ~mt defIMPORIG ⋄ m_PPFIMPORIG2←f_PPFIMPORIG2←m_PPFIMPORIG←f_PPFIMPORIG←m_PPFSIMPORIG←f_PPFSIMPORIG←defIMPORIG ⋄ :endif
+[6]   
+[7]   :if (⊂type)∊'Actives' 'Deferreds' ⍝ Pre-Retirement and Post Retirement variations
+[8]       lrIR←PPFi ⋄ IR←'PPF Override'
+[9]   
+[10]      lrpi←PPFpiF ⋄ pi←'PPF Override' ⍝ The post-retirement Interest Rate
+[11]      ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊⊂"pi"'
+[12]      :if ×z←rowsIn tab←Comment_PPF_Yields for (Comment_PPF_Yields at 'variable')∊⊂"PPFpiF"
+[13]          tab←tab amend 'variable' (z/⊂'pi')
+[14]          ⍎comment_var,'←',comment_var,' append tab'
+[15]      :endif
+[16]  
+[17]      ppfinc←⍕100×¯1+PPFINC←,(100+zwb PPFpiF)÷100+zwb PPFpiI
+[18]  
+[19]      lrNDYNINC←⍕0 ⋄ NDYNINC←'PPF Override'
+[20]      lrDYNINC←ppfinc ⋄ DYNINC←'PPF Override'
+[21]      ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊"IR" "NDYNINC" "DYNINC"'
+[22]      :if ×z←rowsIn tab←Comment_PPF_Yields for (Comment_PPF_Yields at 'variable')∊⊂"PPFi"
+[23]          tab←tab amend 'variable' (z/⊂'IR')
+[24]          ⍎comment_var,'←',comment_var,' append tab'
+[25]      :endif
+[26]  
+[27]      ⍝ Pre Retirement Mortality
+[28]      m_DPRETABXX←m_PPFDPRE ⋄ lrm_DPRETABXX1←lrm_PPFDPRE1 ⋄ m_DPREORIG←m_PPFDPREORIG ⋄ m_DPREMEMB←''
+[29]      f_DPRETABXX←f_PPFDPRE ⋄ lrf_DPRETABXX1←lrf_PPFDPRE1 ⋄ f_DPREORIG←f_PPFDPREORIG ⋄ f_DPREMEMB←''
+[30]      m_miDPREMORTIMPR←f_miDPREMORTIMPR←'2D Table' ⋄ m_miDPRERATEIMPR←f_miDPRERATEIMPR←'1'
+[31]      m_miDPREIMPTBLcsv←m_PPFIMPTBL2csv ⋄ m_miDPREIMPTBL←m_PPFIMPTBL2 ⋄ lrm_miDPREIMPTBL1←lrm_PPFIMPTBL21 ⋄ m_miDPREIMPORIG←m_PPFIMPORIG2
+[32]      f_miDPREIMPTBLcsv←f_PPFIMPTBL2csv ⋄ f_miDPREIMPTBL←f_PPFIMPTBL2 ⋄ lrf_miDPREIMPTBL1←lrf_PPFIMPTBL21 ⋄ f_miDPREIMPORIG←f_PPFIMPORIG2
+[33]  
+[34]      over←"m_DPREMEMB" "f_DPREMEMB" "m_miDPREMORTIMPR" "f_miDPREMORTIMPR" "m_miDPRERATEIMPR" "f_miDPRERATEIMPR"
+[35]      from←"m_PPFDPRE"   "f_PPFDPRE"   "m_PPFDPREORIG" "f_PPFDPREORIG" "m_PPFIMPTBL2csv"   "m_PPFIMPTBL2"   "m_PPFIMPORIG2"   "f_PPFIMPTBL2csv"   "f_PPFIMPTBL2"   "f_PPFIMPORIG2"
+[36]      to  ←"m_DPRETABXX" "f_DPRETABXX" "m_DPREORIG"    "f_DPREORIG"    "m_miDPREIMPTBLcsv" "m_miDPREIMPTBL" "m_miDPREIMPORIG" "f_miDPREIMPTBLcsv" "f_miDPREIMPTBL" "f_miDPREIMPORIG"
+[37]      ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊over,to'
+[38]      :if ×rowsIn tab←Comment_PPF_Overrides for (Comment_PPF_Overrides at 'variable')∊from
+[39]          tab←tab amend 'variable' (from to map tab at 'variable')
+[40]          ⍎comment_var,'←',comment_var,' append tab'
+[41]      :endif
+[42]  :else
+[43]      lrpi←PPFPENpiF ⋄ pi←'PPF Override' ⍝ The post-retirement Interest Rate
+[44]      ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊⊂"pi"'
+[45]      :if ×z←rowsIn tab←Comment_PPF_Yields for (Comment_PPF_Yields at 'variable')∊⊂"PPFPENpiF"
+[46]          tab←tab amend 'variable' (z/⊂'pi')
+[47]          ⍎comment_var,'←',comment_var,' append tab'
+[48]      :endif
+[49]  
+[50]      ppfinc←⍕100×¯1+,(100+zwb PPFPENpiF)÷100+zwb PPFPENpiI
+[51]  :endif
+[52]  
+[53]  ⍝ Post Retirement Mortality
+[54]  m_DPOSTTABXX←m_PPFDPOST ⋄ lrm_DPOSTTABXX1←lrm_PPFDPOST1 ⋄ m_DPOSTORIG←m_PPFDPOSTORIG
+[55]  f_DPOSTTABXX←f_PPFDPOST ⋄ lrf_DPOSTTABXX1←lrf_PPFDPOST1 ⋄ f_DPOSTORIG←f_PPFDPOSTORIG ⋄ m_DPOSTMEMB←f_DPOSTMEMB←''
+[56]  m_miDPOSTMORTIMPR←f_miDPOSTMORTIMPR←'2D Table' ⋄ m_miDPOSTRATEIMPR←f_miDPOSTRATEIMPR←'1'
+[57]  m_miDPOSTIMPTBLcsv←m_PPFIMPTBLcsv ⋄ m_miDPOSTIMPTBL←m_PPFIMPTBL ⋄ lrm_miDPOSTIMPTBL1←lrm_PPFIMPTBL1 ⋄ m_miDPOSTIMPORIG←m_PPFIMPORIG
+[58]  f_miDPOSTIMPTBLcsv←f_PPFIMPTBLcsv ⋄ f_miDPOSTIMPTBL←f_PPFIMPTBL ⋄ lrf_miDPOSTIMPTBL1←lrf_PPFIMPTBL1 ⋄ f_miDPOSTIMPORIG←f_PPFIMPORIG
+[59]  
+[60]  m_SDPOSTTABXX←m_PPFSDPOST ⋄ lrm_SDPOSTTABXX1←lrm_PPFSDPOST1 ⋄ m_SDPOSTORIG←m_PPFSDPOSTORIG
+[61]  f_SDPOSTTABXX←f_PPFSDPOST ⋄ lrf_SDPOSTTABXX1←lrf_PPFSDPOST1 ⋄ f_SDPOSTORIG←f_PPFSDPOSTORIG ⋄ m_SDPOSTMEMB←f_SDPOSTMEMB←''
+[62]  m_miSDPOSTMORTIMPR←f_miSDPOSTMORTIMPR←'2D Table' ⋄ m_miSDPOSTRATEIMPR←f_miSDPOSTRATEIMPR←'1'
+[63]  m_miSDPOSTIMPTBLcsv←m_PPFSIMPTBLcsv ⋄ m_miSDPOSTIMPTBL←m_PPFSIMPTBL ⋄ lrm_miSDPOSTIMPTBL1←lrm_PPFSIMPTBL1 ⋄ m_miSDPOSTIMPORIG←m_PPFSIMPORIG
+[64]  f_miSDPOSTIMPTBLcsv←f_PPFSIMPTBLcsv ⋄ f_miSDPOSTIMPTBL←f_PPFSIMPTBL ⋄ lrf_miSDPOSTIMPTBL1←lrf_PPFSIMPTBL1 ⋄ f_miSDPOSTIMPORIG←f_PPFSIMPORIG
+[65]  
+[66]  over←"m_DPOSTMEMB" "f_DPOSTMEMB" "m_SDPOSTMEMB" "f_SDPOSTMEMB" "m_miDPOSTMORTIMPR" "f_miDPOSTMORTIMPR" "m_miSDPOSTMORTIMPR" "f_miSDPOSTMORTIMPR" "m_miDPOSTRATEIMPR" "f_miDPOSTRATEIMPR" "m_miSDPOSTRATEIMPR" "f_miSDPOSTRATEIMPR"
+[67]  from←"m_PPFDPOST"   "f_PPFDPOST"   "f_PPFSDPOST"   "m_PPFSDPOST"   "m_PPFDPOSTORIG" "f_PPFDPOSTORIG" "f_PPFSDPOSTORIG" "m_PPFSDPOSTORIG" "m_PPFIMPTBLcsv"     "m_PPFIMPTBL"     "m_PPFIMPORIG"     "f_PPFIMPTBLcsv"     "f_PPFIMPTBL"     "f_PPFIMPORIG"     "f_PPFSIMPTBLcsv"     "f_PPFSIMPTBL"     "f_PPFSIMPORIG"     "m_PPFSIMPTBLcsv"     "m_PPFSIMPTBL"     "m_PPFSIMPORIG"
+[68]  to  ←"m_DPOSTTABXX" "f_DPOSTTABXX" "f_SDPOSTTABXX" "m_SDPOSTTABXX" "m_DPOSTORIG"    "f_DPOSTORIG"    "f_SDPOSTORIG"    "m_SDPOSTORIG"    "m_miDPOSTIMPTBLcsv" "m_miDPOSTIMPTBL" "m_miDPOSTIMPORIG" "f_miDPOSTIMPTBLcsv" "f_miDPOSTIMPTBL" "f_miDPOSTIMPORIG" "f_miSDPOSTIMPTBLcsv" "f_miSDPOSTIMPTBL" "f_miSDPOSTIMPORIG" "m_miSDPOSTIMPTBLcsv" "m_miSDPOSTIMPTBL" "m_miSDPOSTIMPORIG"
+[69]  ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊over,to'
+[70]  :if ×rowsIn tab←Comment_PPF_Overrides for (Comment_PPF_Overrides at 'variable')∊from
+[71]      tab←tab amend 'variable' (from to map tab at 'variable')
+[72]      ⍎comment_var,'←',comment_var,' append tab'
+[73]  :endif
+[74]  
+[75]  ⍝ Proportion Married
+[76]  :if zwb m_HTABind ⋄ m_HXX←3↑[1]m_PPFHTAB  ⋄ lrm_HXX1←lrm_PPFHTAB1  ⋄ m_PropMarr←m_PPFPropMarr  ⋄ from←"m_PPFHTAB[1;]"  "m_PPFPropMarr"
+[77]  :else             ⋄ m_HXX←3↑[1]m_PPFHTAB2 ⋄ lrm_HXX1←lrm_PPFHTAB21 ⋄ m_PropMarr←m_PPFPropMarr2 ⋄ from←"m_PPFHTAB2[1;]" "m_PPFPropMarr2"
+[78]  :endif
+[79]  :if zwb f_HTABind ⋄ f_HXX←3↑[1]f_PPFHTAB  ⋄ lrf_HXX1←lrf_PPFHTAB1  ⋄ f_PropMarr←f_PPFPropMarr  ⋄ from←from,"f_PPFHTAB[1;]"  "f_PPFPropMarr2"
+[80]  :else             ⋄ f_HXX←3↑[1]f_PPFHTAB2 ⋄ lrf_HXX1←lrf_PPFHTAB21 ⋄ f_PropMarr←f_PPFPropMarr2 ⋄ from←from,"f_PPFHTAB2[1;]" "f_PPFPropMarr2"
+[81]  :endif
+[82]  to←"m_HXX[1;]" "m_PropMarr" "f_HXX[1;]" "f_PropMarr"
+[83]  ⍝ Age Difference
+[84]  m_AGEDIF←m_PPFAGEDIF ⋄ m_AGEDIFT←lrm_AGEDIFT←''
+[85]  f_AGEDIF←f_PPFAGEDIF ⋄ f_AGEDIFT←lrf_AGEDIFT←''
+[86]  SPMethod←'Retirement'
+[87]  
+[88]  GPeriod←'0'
+[89]  INCIND←'Continuous'
+[90]  IncTiming←'Default'
+[91]  
+[92]  over←"m_HXX[2;]" "m_HXX[3;]" "f_HXX[2;]" "f_HXX[3;]" "m_AGEDIFT" "f_AGEDIFT" "SPMethod" "GPeriod" "INCIND" "IncTimimg"
+[93]  from←from,"m_PPFAGEDIF" "f_PPFAGEDIF"
+[94]  to  ←to  ,"m_AGEDIF"    "f_AGEDIF"
+[95]  ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊over,to'
+[96]  :if ×rowsIn tab←Comment_PPF_Overrides for (Comment_PPF_Overrides at 'variable')∊from
+[97]      tab←tab amend 'variable' (from to map tab at 'variable')
+[98]      ⍎comment_var,'←',comment_var,' append tab'
+[99]  :endif
+[100] 
+[101] :select type
+[102] :case 'Actives'
+[103]     SWindic←'Use Pre-Ret Int for Accrued/Wdls'
+[104]        REVDEFIND←⊃(↑⍴   REVDEFIND)⍴⊂'Rate 2'
+[105]     AltREVDEFIND←⊃(↑⍴AltREVDEFIND)⍴⊂'Rate 2'
+[106] 
+[107]     ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊"SWindic" "REVDEFIND" "AltREVDEFIND"'
+[108] :case 'Deferreds'
+[109]     :if zwb MOOOverride ⋄ MOO←⊃CheckTranslate¨⍕¨(⊂'Pre 97')≡¨m2n PPFPAYINC ⋄ :endif
+[110] 
+[111]     ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊⊂"MOO"'
+[112]     :if ×z←rowsIn tab←Comment_PPF_Details for (Comment_PPF_Details at 'variable')∊⊂"MOOOverride"
+[113]         tab←tab amend 'variable' (z/⊂'MOO') ⋄ tab←tab amend 'row' (⍳z)
+[114]         ⍎comment_var,'←',comment_var,' append tab'
+[115]     :endif
+[116] :case 'Pensioners'
+[117]     GMPREV2←'0' ⍝ Force use of input rate
+[118]     GMPREV1←p_PPFGMPREV1 ⋄ lrGMPREV1←lrp_PPFGMPREV1 ⋄ sCEN_GMPREV1←sCEN_p_PPFGMPREV1
+[119]     lrB88GMPINC←lrA88GMPINC←'0' ⋄ B88GMPINC←A88GMPINC←'PPF Override'
+[120]     DEFINC←PPFDEFINC ⋄ lrDEFINC←lrPPFDEFINC ⋄ sCEN_DEFINC←sCEN_PPFDEFINC
+[121] 
+[122]     idx←(m2n PPFPAYINC)∊'97 to 09' 'Post 09'
+[123]     lrPAYINC←(↑⍴lrPAYINC)⍴⊂ppfinc ⋄ PAYINC←⊃(↑⍴PAYINC)⍴⊂'PPF Override'
+[124]     lrPAYINC[WHERE ~idx]←⊂,'0' ⋄ lrPAYINC←MATRIX ⊃lrPAYINC
+[125] 
+[126]     over←"GMPREV2" "B88GMPINC" "A88GMPINC" "PAYINC"
+[127]     from←"p_PPFGMPREV1" "PPFDEFINC"
+[128]     to  ←"GMPREV1"      "DEFINC"
+[129]     ⍎comment_var,'←',comment_var,' for ~(',comment_var,' at "variable")∊over,to'
+[130]     :if ×z←rowsIn tab←Comment_PPF_Details for (Comment_PPF_Details at 'variable')∊from
+[131]         tab←tab amend 'variable' (from to map tab at 'variable')
+[132]         ⍎comment_var,'←',comment_var,' append tab' ⋄ tab←tab amend 'row' (((tab at 'variable')∊⊂'DEFINC') sel¨⊂1)
+[133]     :endif
+[134] :endselect
+    ∇

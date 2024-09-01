@@ -1,1 +1,83 @@
-    ∇ RF_AdjustVars;no;∆;list;fld[1]   ⍝ DATAWIN.sf#23[2]   ⍝ Adjust the Grid Variables to match Data Format[3]   [4]   ⍝ Remove "deleted" Data Format Fields from existing variables[5]   :if ~mt DLTB DataField_1[6]   :andif 0∊∆←(m2n DataField_1)∊m2n numfields[7]       (DataField_1 IncType_1 M_SXX_1 F_SXX_1 IncFreq_1 IncRevDate_1 M_IncAge_1 F_IncAge_1 IncRevaln_1 IncIncreases_1 IncFormula_1)←(⊂∆) sel1¨DataField_1 IncType_1 M_SXX_1 F_SXX_1 IncFreq_1 IncRevDate_1 M_IncAge_1 F_IncAge_1 IncRevaln_1 IncIncreases_1 IncFormula_1[8]       (DataField_2 IncType_2 M_SXX_2 F_SXX_2 IncFreq_2 IncRevDate_2 M_IncAge_2 F_IncAge_2 IncRevaln_2 IncIncreases_2 IncFormula_2)←(⊂∆) sel1¨DataField_2 IncType_2 M_SXX_2 F_SXX_2 IncFreq_2 IncRevDate_2 M_IncAge_2 F_IncAge_2 IncRevaln_2 IncIncreases_2 IncFormula_2[9]       (DataField_3 IncType_3 M_SXX_3 F_SXX_3 IncFreq_3 IncRevDate_3 M_IncAge_3 F_IncAge_3 IncRevaln_3 IncIncreases_3 IncFormula_3)←(⊂∆) sel1¨DataField_3 IncType_3 M_SXX_3 F_SXX_3 IncFreq_3 IncRevDate_3 M_IncAge_3 F_IncAge_3 IncRevaln_3 IncIncreases_3 IncFormula_3[10]      (DataField_4 IncType_4 M_SXX_4 F_SXX_4 IncFreq_4 IncRevDate_4 M_IncAge_4 F_IncAge_4 IncRevaln_4 IncIncreases_4 IncFormula_4)←(⊂∆) sel1¨DataField_4 IncType_4 M_SXX_4 F_SXX_4 IncFreq_4 IncRevDate_4 M_IncAge_4 F_IncAge_4 IncRevaln_4 IncIncreases_4 IncFormula_4[11]      (DataField_5 IncType_5 M_SXX_5 F_SXX_5 IncFreq_5 IncRevDate_5 M_IncAge_5 F_IncAge_5 IncRevaln_5 IncIncreases_5 IncFormula_5)←(⊂∆) sel1¨DataField_5 IncType_5 M_SXX_5 F_SXX_5 IncFreq_5 IncRevDate_5 M_IncAge_5 F_IncAge_5 IncRevaln_5 IncIncreases_5 IncFormula_5[12]      (DataField_6 IncType_6 M_SXX_6 F_SXX_6 IncFreq_6 IncRevDate_6 M_IncAge_6 F_IncAge_6 IncRevaln_6 IncIncreases_6 IncFormula_6)←(⊂∆) sel1¨DataField_6 IncType_6 M_SXX_6 F_SXX_6 IncFreq_6 IncRevDate_6 M_IncAge_6 F_IncAge_6 IncRevaln_6 IncIncreases_6 IncFormula_6[13]      (DataField_7 IncType_7 M_SXX_7 F_SXX_7 IncFreq_7 IncRevDate_7 M_IncAge_7 F_IncAge_7 IncRevaln_7 IncIncreases_7 IncFormula_7)←(⊂∆) sel1¨DataField_7 IncType_7 M_SXX_7 F_SXX_7 IncFreq_7 IncRevDate_7 M_IncAge_7 F_IncAge_7 IncRevaln_7 IncIncreases_7 IncFormula_7[14]      (DataField_8 IncType_8 M_SXX_8 F_SXX_8 IncFreq_8 IncRevDate_8 M_IncAge_8 F_IncAge_8 IncRevaln_8 IncIncreases_8 IncFormula_8)←(⊂∆) sel1¨DataField_8 IncType_8 M_SXX_8 F_SXX_8 IncFreq_8 IncRevDate_8 M_IncAge_8 F_IncAge_8 IncRevaln_8 IncIncreases_8 IncFormula_8[15]      (DataField_9 IncType_9 M_SXX_9 F_SXX_9 IncFreq_9 IncRevDate_9 M_IncAge_9 F_IncAge_9 IncRevaln_9 IncIncreases_9 IncFormula_9)←(⊂∆) sel1¨DataField_9 IncType_9 M_SXX_9 F_SXX_9 IncFreq_9 IncRevDate_9 M_IncAge_9 F_IncAge_9 IncRevaln_9 IncIncreases_9 IncFormula_9[16]  :endif[17]  [18]  ⍝ Add new Data Format Fields to existing variables[19]  :if ~mt ∆←(m2n numfields)~m2n DataField_1[20]      ⍝ Initialise Variables if First pass when all variables empty[21]      :if mt DataField_1[22]          DataField_1←DataField_2←DataField_3←DataField_4←DataField_5←DataField_6←DataField_7←DataField_8←DataField_9←⊃∆[23]          IncType_1←m2n (⍴list←m2n numfields)↑[1]IncType_1[24]  [25]          :select datatype[26]          :case 'Actives'[27]  ⍝⍝⍝            :if (fld←⊂'Previous Salary')                    ∊list ⋄ IncType_1[list⍳fld]←⊂'Inflation' ⋄ :endif ⍝ Not used standardly except AOS/Experience (users may have "fudged")[28]              :if (fld←⊂'Current Salary')                     ∊list ⋄ IncType_1[list⍳fld]←⊂'Inflation' ⋄ :endif[29]              :if (fld←⊂'Acc Conts')                          ∊list ⋄ IncType_1[list⍳fld]←⊂'Interest'  ⋄ :endif[30]              :if (fld←⊂'Acc Conts without Interest')         ∊list ⋄ IncType_1[list⍳fld]←⊂'None'      ⋄ :endif[31]              :if (fld←⊂'Acc Employer Conts without Interest')∊list ⋄ IncType_1[list⍳fld]←⊂'None'      ⋄ :endif[32]          :case 'Deferreds'[33]              :if (fld←⊂'Underpin')                           ∊list ⋄ IncType_1[list⍳fld]←⊂'Interest'  ⋄ :endif[34]          :case 'Pensioners'[35]          :endselect[36]          IncType_1←IncType_2←IncType_3←IncType_4←IncType_5←IncType_6←IncType_7←IncType_8←IncType_9←⊃IncType_1[37]      :else[38]          DataField_1←DataField_2←DataField_3←DataField_4←DataField_5←DataField_6←DataField_7←DataField_8←DataField_9←DataField_1 OVER ⊃∆ ⍝ Put new fields at the bottom[39]          (IncType_1 IncType_2 IncType_3 IncType_4 IncType_5 IncType_6 IncType_7 IncType_8 IncType_9)←(↑⍴numfields)↑[1]¨IncType_1 IncType_2 IncType_3 IncType_4 IncType_5 IncType_6 IncType_7 IncType_8 IncType_9[40]      :endif[41]      (M_SXX_1 F_SXX_1 IncFreq_1 IncRevDate_1 M_IncAge_1 F_IncAge_1 IncRevaln_1 IncIncreases_1 IncFormula_1)←(↑⍴numfields)↑[1]¨M_SXX_1 F_SXX_1 IncFreq_1 IncRevDate_1 M_IncAge_1 F_IncAge_1 IncRevaln_1 IncIncreases_1 IncFormula_1[42]      (M_SXX_2 F_SXX_2 IncFreq_2 IncRevDate_2 M_IncAge_2 F_IncAge_2 IncRevaln_2 IncIncreases_2 IncFormula_2)←(↑⍴numfields)↑[1]¨M_SXX_2 F_SXX_2 IncFreq_2 IncRevDate_2 M_IncAge_2 F_IncAge_2 IncRevaln_2 IncIncreases_2 IncFormula_2[43]      (M_SXX_3 F_SXX_3 IncFreq_3 IncRevDate_3 M_IncAge_3 F_IncAge_3 IncRevaln_3 IncIncreases_3 IncFormula_3)←(↑⍴numfields)↑[1]¨M_SXX_3 F_SXX_3 IncFreq_3 IncRevDate_3 M_IncAge_3 F_IncAge_3 IncRevaln_3 IncIncreases_3 IncFormula_3[44]      (M_SXX_4 F_SXX_4 IncFreq_4 IncRevDate_4 M_IncAge_4 F_IncAge_4 IncRevaln_4 IncIncreases_4 IncFormula_4)←(↑⍴numfields)↑[1]¨M_SXX_4 F_SXX_4 IncFreq_4 IncRevDate_4 M_IncAge_4 F_IncAge_4 IncRevaln_4 IncIncreases_4 IncFormula_4[45]      (M_SXX_5 F_SXX_5 IncFreq_5 IncRevDate_5 M_IncAge_5 F_IncAge_5 IncRevaln_5 IncIncreases_5 IncFormula_5)←(↑⍴numfields)↑[1]¨M_SXX_5 F_SXX_5 IncFreq_5 IncRevDate_5 M_IncAge_5 F_IncAge_5 IncRevaln_5 IncIncreases_5 IncFormula_5[46]      (M_SXX_6 F_SXX_6 IncFreq_6 IncRevDate_6 M_IncAge_6 F_IncAge_6 IncRevaln_6 IncIncreases_6 IncFormula_6)←(↑⍴numfields)↑[1]¨M_SXX_6 F_SXX_6 IncFreq_6 IncRevDate_6 M_IncAge_6 F_IncAge_6 IncRevaln_6 IncIncreases_6 IncFormula_6[47]      (M_SXX_7 F_SXX_7 IncFreq_7 IncRevDate_7 M_IncAge_7 F_IncAge_7 IncRevaln_7 IncIncreases_7 IncFormula_7)←(↑⍴numfields)↑[1]¨M_SXX_7 F_SXX_7 IncFreq_7 IncRevDate_7 M_IncAge_7 F_IncAge_7 IncRevaln_7 IncIncreases_7 IncFormula_7[48]      (M_SXX_8 F_SXX_8 IncFreq_8 IncRevDate_8 M_IncAge_8 F_IncAge_8 IncRevaln_8 IncIncreases_8 IncFormula_8)←(↑⍴numfields)↑[1]¨M_SXX_8 F_SXX_8 IncFreq_8 IncRevDate_8 M_IncAge_8 F_IncAge_8 IncRevaln_8 IncIncreases_8 IncFormula_8[49]      (M_SXX_9 F_SXX_9 IncFreq_9 IncRevDate_9 M_IncAge_9 F_IncAge_9 IncRevaln_9 IncIncreases_9 IncFormula_9)←(↑⍴numfields)↑[1]¨M_SXX_9 F_SXX_9 IncFreq_9 IncRevDate_9 M_IncAge_9 F_IncAge_9 IncRevaln_9 IncIncreases_9 IncFormula_9[50]  :endif[51]  [52]  ⍝ Adjust Category Selection lists to remove Categories previously selected[53]  :for no :in rf_Variations↑⍕¨⍳9[54]      :if no='1' ⋄ list←catlist[55]      :else      ⋄ list←⊃(m2n list)~m2n SStoMAT ⍎'CatSels_',⍕¯1+zwb no[56]      :endif[57]      (parent,"pgAdjustment",no,".lsCatSels_",no) ⎕wi "list" list[58]  :endfor[59]  [60]  ⍝ Write new variables back to Form[61]  ((⊂'fmRoll_Forward.'),¨'ckpagetrick' 'ckinputstrick' 'sRoll_Forward.pgData.fData.cbFormat') MultiWI 'suppress' 1[62]  Assign_Inputs 0[63]  ((⊂'fmRoll_Forward.'),¨'ckpagetrick' 'ckinputstrick' 'sRoll_Forward.pgData.fData.cbFormat') MultiWI 'suppress' 0[64]  [65]  :select datatype[66]  :case 'Actives'[67]      :for no :in rf_Variations↑⍕¨⍳9[68]          (parent,'pgAdjustment',no,'.fGMP.ckGMPFixed_',no) ⎕wi 'value' 0[69]      :endfor[70]      GMPFixed_1←GMPFixed_2←GMPFixed_3←GMPFixed_4←GMPFixed_5←GMPFixed_6←GMPFixed_7←GMPFixed_8←GMPFixed_9←'0'[71]  :case 'Deferreds'[72]  :case 'Pensioners'[73]      :for no :in rf_Variations↑⍕¨⍳9[74]          (parent,'pgAdjustment',no,'.fGMP.ckGMPLRinc_',no) ⎕wi 'value' 0[75]      :endfor[76]      GMPLRinc_1←GMPLRinc_2←GMPLRinc_3←GMPLRinc_4←GMPLRinc_5←GMPLRinc_6←GMPLRinc_7←GMPLRinc_8←GMPLRinc_9←'0'[77]  :endselect[78]  :for no :in rf_Variations↑⍕¨⍳9[79]      (parent,'pgAdjustment',no,'.fGMP.ckGMPFixed_',no) ⎕wi 'enabled' (~datatype≡'Actives')[80]      (parent,'pgAdjustment',no,'.fGMP.ckGMPLRinc_',no) ⎕wi 'enabled' (~datatype≡'Pensioners')[81]  :endfor    ∇
+    ∇ RF_AdjustVars;no;∆;list;fld
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ Adjust the Grid Variables to match Data Format
+[3]   
+[4]   ⍝ Remove "deleted" Data Format Fields from existing variables
+[5]   :if ~mt DLTB DataField_1
+[6]   :andif 0∊∆←(m2n DataField_1)∊m2n numfields
+[7]       (DataField_1 IncType_1 M_SXX_1 F_SXX_1 IncFreq_1 IncRevDate_1 M_IncAge_1 F_IncAge_1 IncRevaln_1 IncIncreases_1 IncFormula_1)←(⊂∆) sel1¨DataField_1 IncType_1 M_SXX_1 F_SXX_1 IncFreq_1 IncRevDate_1 M_IncAge_1 F_IncAge_1 IncRevaln_1 IncIncreases_1 IncFormula_1
+[8]       (DataField_2 IncType_2 M_SXX_2 F_SXX_2 IncFreq_2 IncRevDate_2 M_IncAge_2 F_IncAge_2 IncRevaln_2 IncIncreases_2 IncFormula_2)←(⊂∆) sel1¨DataField_2 IncType_2 M_SXX_2 F_SXX_2 IncFreq_2 IncRevDate_2 M_IncAge_2 F_IncAge_2 IncRevaln_2 IncIncreases_2 IncFormula_2
+[9]       (DataField_3 IncType_3 M_SXX_3 F_SXX_3 IncFreq_3 IncRevDate_3 M_IncAge_3 F_IncAge_3 IncRevaln_3 IncIncreases_3 IncFormula_3)←(⊂∆) sel1¨DataField_3 IncType_3 M_SXX_3 F_SXX_3 IncFreq_3 IncRevDate_3 M_IncAge_3 F_IncAge_3 IncRevaln_3 IncIncreases_3 IncFormula_3
+[10]      (DataField_4 IncType_4 M_SXX_4 F_SXX_4 IncFreq_4 IncRevDate_4 M_IncAge_4 F_IncAge_4 IncRevaln_4 IncIncreases_4 IncFormula_4)←(⊂∆) sel1¨DataField_4 IncType_4 M_SXX_4 F_SXX_4 IncFreq_4 IncRevDate_4 M_IncAge_4 F_IncAge_4 IncRevaln_4 IncIncreases_4 IncFormula_4
+[11]      (DataField_5 IncType_5 M_SXX_5 F_SXX_5 IncFreq_5 IncRevDate_5 M_IncAge_5 F_IncAge_5 IncRevaln_5 IncIncreases_5 IncFormula_5)←(⊂∆) sel1¨DataField_5 IncType_5 M_SXX_5 F_SXX_5 IncFreq_5 IncRevDate_5 M_IncAge_5 F_IncAge_5 IncRevaln_5 IncIncreases_5 IncFormula_5
+[12]      (DataField_6 IncType_6 M_SXX_6 F_SXX_6 IncFreq_6 IncRevDate_6 M_IncAge_6 F_IncAge_6 IncRevaln_6 IncIncreases_6 IncFormula_6)←(⊂∆) sel1¨DataField_6 IncType_6 M_SXX_6 F_SXX_6 IncFreq_6 IncRevDate_6 M_IncAge_6 F_IncAge_6 IncRevaln_6 IncIncreases_6 IncFormula_6
+[13]      (DataField_7 IncType_7 M_SXX_7 F_SXX_7 IncFreq_7 IncRevDate_7 M_IncAge_7 F_IncAge_7 IncRevaln_7 IncIncreases_7 IncFormula_7)←(⊂∆) sel1¨DataField_7 IncType_7 M_SXX_7 F_SXX_7 IncFreq_7 IncRevDate_7 M_IncAge_7 F_IncAge_7 IncRevaln_7 IncIncreases_7 IncFormula_7
+[14]      (DataField_8 IncType_8 M_SXX_8 F_SXX_8 IncFreq_8 IncRevDate_8 M_IncAge_8 F_IncAge_8 IncRevaln_8 IncIncreases_8 IncFormula_8)←(⊂∆) sel1¨DataField_8 IncType_8 M_SXX_8 F_SXX_8 IncFreq_8 IncRevDate_8 M_IncAge_8 F_IncAge_8 IncRevaln_8 IncIncreases_8 IncFormula_8
+[15]      (DataField_9 IncType_9 M_SXX_9 F_SXX_9 IncFreq_9 IncRevDate_9 M_IncAge_9 F_IncAge_9 IncRevaln_9 IncIncreases_9 IncFormula_9)←(⊂∆) sel1¨DataField_9 IncType_9 M_SXX_9 F_SXX_9 IncFreq_9 IncRevDate_9 M_IncAge_9 F_IncAge_9 IncRevaln_9 IncIncreases_9 IncFormula_9
+[16]  :endif
+[17]  
+[18]  ⍝ Add new Data Format Fields to existing variables
+[19]  :if ~mt ∆←(m2n numfields)~m2n DataField_1
+[20]      ⍝ Initialise Variables if First pass when all variables empty
+[21]      :if mt DataField_1
+[22]          DataField_1←DataField_2←DataField_3←DataField_4←DataField_5←DataField_6←DataField_7←DataField_8←DataField_9←⊃∆
+[23]          IncType_1←m2n (⍴list←m2n numfields)↑[1]IncType_1
+[24]  
+[25]          :select datatype
+[26]          :case 'Actives'
+[27]  ⍝⍝⍝            :if (fld←⊂'Previous Salary')                    ∊list ⋄ IncType_1[list⍳fld]←⊂'Inflation' ⋄ :endif ⍝ Not used standardly except AOS/Experience (users may have "fudged")
+[28]              :if (fld←⊂'Current Salary')                     ∊list ⋄ IncType_1[list⍳fld]←⊂'Inflation' ⋄ :endif
+[29]              :if (fld←⊂'Acc Conts')                          ∊list ⋄ IncType_1[list⍳fld]←⊂'Interest'  ⋄ :endif
+[30]              :if (fld←⊂'Acc Conts without Interest')         ∊list ⋄ IncType_1[list⍳fld]←⊂'None'      ⋄ :endif
+[31]              :if (fld←⊂'Acc Employer Conts without Interest')∊list ⋄ IncType_1[list⍳fld]←⊂'None'      ⋄ :endif
+[32]          :case 'Deferreds'
+[33]              :if (fld←⊂'Underpin')                           ∊list ⋄ IncType_1[list⍳fld]←⊂'Interest'  ⋄ :endif
+[34]          :case 'Pensioners'
+[35]          :endselect
+[36]          IncType_1←IncType_2←IncType_3←IncType_4←IncType_5←IncType_6←IncType_7←IncType_8←IncType_9←⊃IncType_1
+[37]      :else
+[38]          DataField_1←DataField_2←DataField_3←DataField_4←DataField_5←DataField_6←DataField_7←DataField_8←DataField_9←DataField_1 OVER ⊃∆ ⍝ Put new fields at the bottom
+[39]          (IncType_1 IncType_2 IncType_3 IncType_4 IncType_5 IncType_6 IncType_7 IncType_8 IncType_9)←(↑⍴numfields)↑[1]¨IncType_1 IncType_2 IncType_3 IncType_4 IncType_5 IncType_6 IncType_7 IncType_8 IncType_9
+[40]      :endif
+[41]      (M_SXX_1 F_SXX_1 IncFreq_1 IncRevDate_1 M_IncAge_1 F_IncAge_1 IncRevaln_1 IncIncreases_1 IncFormula_1)←(↑⍴numfields)↑[1]¨M_SXX_1 F_SXX_1 IncFreq_1 IncRevDate_1 M_IncAge_1 F_IncAge_1 IncRevaln_1 IncIncreases_1 IncFormula_1
+[42]      (M_SXX_2 F_SXX_2 IncFreq_2 IncRevDate_2 M_IncAge_2 F_IncAge_2 IncRevaln_2 IncIncreases_2 IncFormula_2)←(↑⍴numfields)↑[1]¨M_SXX_2 F_SXX_2 IncFreq_2 IncRevDate_2 M_IncAge_2 F_IncAge_2 IncRevaln_2 IncIncreases_2 IncFormula_2
+[43]      (M_SXX_3 F_SXX_3 IncFreq_3 IncRevDate_3 M_IncAge_3 F_IncAge_3 IncRevaln_3 IncIncreases_3 IncFormula_3)←(↑⍴numfields)↑[1]¨M_SXX_3 F_SXX_3 IncFreq_3 IncRevDate_3 M_IncAge_3 F_IncAge_3 IncRevaln_3 IncIncreases_3 IncFormula_3
+[44]      (M_SXX_4 F_SXX_4 IncFreq_4 IncRevDate_4 M_IncAge_4 F_IncAge_4 IncRevaln_4 IncIncreases_4 IncFormula_4)←(↑⍴numfields)↑[1]¨M_SXX_4 F_SXX_4 IncFreq_4 IncRevDate_4 M_IncAge_4 F_IncAge_4 IncRevaln_4 IncIncreases_4 IncFormula_4
+[45]      (M_SXX_5 F_SXX_5 IncFreq_5 IncRevDate_5 M_IncAge_5 F_IncAge_5 IncRevaln_5 IncIncreases_5 IncFormula_5)←(↑⍴numfields)↑[1]¨M_SXX_5 F_SXX_5 IncFreq_5 IncRevDate_5 M_IncAge_5 F_IncAge_5 IncRevaln_5 IncIncreases_5 IncFormula_5
+[46]      (M_SXX_6 F_SXX_6 IncFreq_6 IncRevDate_6 M_IncAge_6 F_IncAge_6 IncRevaln_6 IncIncreases_6 IncFormula_6)←(↑⍴numfields)↑[1]¨M_SXX_6 F_SXX_6 IncFreq_6 IncRevDate_6 M_IncAge_6 F_IncAge_6 IncRevaln_6 IncIncreases_6 IncFormula_6
+[47]      (M_SXX_7 F_SXX_7 IncFreq_7 IncRevDate_7 M_IncAge_7 F_IncAge_7 IncRevaln_7 IncIncreases_7 IncFormula_7)←(↑⍴numfields)↑[1]¨M_SXX_7 F_SXX_7 IncFreq_7 IncRevDate_7 M_IncAge_7 F_IncAge_7 IncRevaln_7 IncIncreases_7 IncFormula_7
+[48]      (M_SXX_8 F_SXX_8 IncFreq_8 IncRevDate_8 M_IncAge_8 F_IncAge_8 IncRevaln_8 IncIncreases_8 IncFormula_8)←(↑⍴numfields)↑[1]¨M_SXX_8 F_SXX_8 IncFreq_8 IncRevDate_8 M_IncAge_8 F_IncAge_8 IncRevaln_8 IncIncreases_8 IncFormula_8
+[49]      (M_SXX_9 F_SXX_9 IncFreq_9 IncRevDate_9 M_IncAge_9 F_IncAge_9 IncRevaln_9 IncIncreases_9 IncFormula_9)←(↑⍴numfields)↑[1]¨M_SXX_9 F_SXX_9 IncFreq_9 IncRevDate_9 M_IncAge_9 F_IncAge_9 IncRevaln_9 IncIncreases_9 IncFormula_9
+[50]  :endif
+[51]  
+[52]  ⍝ Adjust Category Selection lists to remove Categories previously selected
+[53]  :for no :in rf_Variations↑⍕¨⍳9
+[54]      :if no='1' ⋄ list←catlist
+[55]      :else      ⋄ list←⊃(m2n list)~m2n SStoMAT ⍎'CatSels_',⍕¯1+zwb no
+[56]      :endif
+[57]      (parent,"pgAdjustment",no,".lsCatSels_",no) ⎕wi "list" list
+[58]  :endfor
+[59]  
+[60]  ⍝ Write new variables back to Form
+[61]  ((⊂'fmRoll_Forward.'),¨'ckpagetrick' 'ckinputstrick' 'sRoll_Forward.pgData.fData.cbFormat') MultiWI 'suppress' 1
+[62]  Assign_Inputs 0
+[63]  ((⊂'fmRoll_Forward.'),¨'ckpagetrick' 'ckinputstrick' 'sRoll_Forward.pgData.fData.cbFormat') MultiWI 'suppress' 0
+[64]  
+[65]  :select datatype
+[66]  :case 'Actives'
+[67]      :for no :in rf_Variations↑⍕¨⍳9
+[68]          (parent,'pgAdjustment',no,'.fGMP.ckGMPFixed_',no) ⎕wi 'value' 0
+[69]      :endfor
+[70]      GMPFixed_1←GMPFixed_2←GMPFixed_3←GMPFixed_4←GMPFixed_5←GMPFixed_6←GMPFixed_7←GMPFixed_8←GMPFixed_9←'0'
+[71]  :case 'Deferreds'
+[72]  :case 'Pensioners'
+[73]      :for no :in rf_Variations↑⍕¨⍳9
+[74]          (parent,'pgAdjustment',no,'.fGMP.ckGMPLRinc_',no) ⎕wi 'value' 0
+[75]      :endfor
+[76]      GMPLRinc_1←GMPLRinc_2←GMPLRinc_3←GMPLRinc_4←GMPLRinc_5←GMPLRinc_6←GMPLRinc_7←GMPLRinc_8←GMPLRinc_9←'0'
+[77]  :endselect
+[78]  :for no :in rf_Variations↑⍕¨⍳9
+[79]      (parent,'pgAdjustment',no,'.fGMP.ckGMPFixed_',no) ⎕wi 'enabled' (~datatype≡'Actives')
+[80]      (parent,'pgAdjustment',no,'.fGMP.ckGMPLRinc_',no) ⎕wi 'enabled' (~datatype≡'Pensioners')
+[81]  :endfor
+    ∇

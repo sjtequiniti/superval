@@ -1,0 +1,26 @@
+    ∇ larg ParmCommAdjust arg;type;row;∆;tab;rows;Parameters_Comment;module;list
+[1]   ⍝ UTILSWIN.sf#9
+[2]   ⍝ Adjust the Parameter Comments for any changes in row caused by user insertion/deletion of multiply occurring items
+[3]   
+[4]   (module list)←larg
+[5]   list←lmt qtrim¨m2n list
+[6]   
+[7]   :if ×rowsIn Parameters_Comment←⍎'Comment_',module
+[8]   :andif ∨/∆←(Parameters_Comment at 'variable')∊list
+[9]       tab←Parameters_Comment for ∆
+[10]      Parameters_Comment←Parameters_Comment for ~∆
+[11]      (type row)←arg
+[12]      :select type
+[13]      :case 'Insert'
+[14]          rows←tab at 'row'
+[15]          tab←tab amend 'row' (rows+row≤rows)
+[16]      :case 'Delete'
+[17]          :if ×rowsIn tab←tab for ~row=tab at 'row'
+[18]              rows←tab at 'row'
+[19]              tab←tab amend 'row' (rows-row<rows)
+[20]          :endif
+[21]      :endselect
+[22]      Parameters_Comment←Parameters_Comment append tab
+[23]      ⍎'Comment_',module,'←Parameters_Comment'
+[24]  :endif
+    ∇

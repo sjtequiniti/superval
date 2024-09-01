@@ -1,1 +1,74 @@
-    ∇ ConsolidationOutput;⎕io;neIND;GROUP;COCR;ParmDesc;ParmTS;SUMMREC;lramorti;ConsIndex;list;Convert_Vars;RUNDESC;NotPUC;dab;runs;runslist;valind;contper;insind;TargetBen;bencap;fscopt;aosind;VDATE;ExactAge;pVDATE;∆;MESS;ConsDBName[1]   ⍝ OVERWIN.sf#19[2]   ⍝ Create a Consolidation output based on Valuation Runs[3]   ⎕io←1[4]   0 0⍴ClientFile ReadFile 'Consolidation' ConsolidParms[5]   [6]   ConsDBName←consDBName[7]   :if (~sqlDatabase)^(⊂UPPERCASE ConsDBName)∊UPPERCASE¨Win∆Parent¨m2n ⎕xlib ConsolidDir,'*.*db'[8]   :orif              (⊂UPPERCASE ConsDBName)∊UPPERCASE¨Win∆Parent¨m2n ⎕xlib OutputDir,'*.xls*'[9]   :orif sqlDatabase ^¯1↑ConsDBName ⍙DBExists 2[10]      MESS←MESS∆TRANS 'AlreadyFile' (((1+sqlDatabase)⊃'Database File' 'SQL Server Database'),' or Excel File named "',ConsDBName,'"')[11]      MESS VALN∆LOG 'Error'[12]      MDISPLAY MESS[13]  :endif[14]  [15]  GROUP←COCR←MATRIX ' '[16]  (amorti lramorti)←2↑FinConvert amorti (lramorti1 OVER lramorti2 OVER lramorti3)[17]  (IR     lrIR    )←2↑FinConvert IR     lrIR[18]  (EXPf   lrEXPf  )←2↑FinConvert EXPf   lrEXPf[19]  :if uk=1 ⋄ (Expi lrExpi)←2↑FinConvert Expi lrExpi ⋄ :endif[20]  [21]  :if (⊂'PP')∊2↑¨list←BatchedNest at 'Valn Method'[22]      valind←'PP',(∨/'3'∊¨list) means '3' else 'F'[23]  :elseif mt list←list~'PEN' 'DEF'[24]      valind←'AAN'[25]  :else[26]      valind←↑list[27]  :endif[28]  [29]  :if NotPUC←~'PUC'≡valind[30]      contper←''[31]      insind←'No' OVER 1 0↓insind[32]  :else[33]      contper←↑(BatchedNest for 'Valn Method' 'PUC') at 'Control Period'[34]      insind←(↑(BatchedNest for 'Valn Method' 'PUC') at 'Insured Cost') OVER 1 0↓insind[35]  :endif[36]  :if dab←valind≡'DAB'[37]      TargetBen←↑(BatchedNest for 'Valn Method' 'DAB') at 'Target Benefit'[38]      contper←↑(BatchedNest for 'Valn Method' 'DAB') at 'Control Period'[39]  :else[40]      TargetBen←''[41]  :endif[42]  [43]  bencap←↑BatchedNest at 'Cap Accrued Benefits'[44]  fscopt←(1+^/'Y'=↑¨BatchedNest at 'ALM/LDI Interface')⊃'No' ((1+HLDII)⊃'Exclude Left Service' 'Include Left Service')[45]  aosind←(1+^/'Y'=↑¨BatchedNest at 'AOS')⊃'No' 'Yes'[46]  neIND←(1+∨/'Y'=↑¨BatchedNest at 'New Entrants')⊃'No' 'Yes'[47]  [48]  VDATE←'DD/MM/YYYY' DATE∆FMT ('P'=↑↑BatchedNest at 'Valn Date') means pvDATE else vDATE[49]  ExactAge←(↑⎕av⍒↑¨∆)⊃∆←lmt BatchedNest at 'Exact Age Interpolation'[50]  pVDATE←('Y'=↑aosind)/'DD/MM/YYYY' DATE∆FMT pvDATE[51]  [52]  ConsIndex←CreateValnRunIndex 0[53]  runs←ValuationRunList at 'ResultsCategoryID'[54]  ConsIndex←ConsIndex for (⊂'ID'),runs[55]  ConsIndex←ConsIndex amend 'sex' (('Females ' 'Males ')[⎕io+'M'=ConsIndex at 'sex'])[56]  ∆←×ConsIndex at 'neActID'[57]  ConsIndex←ConsIndex amend 'desc' ((DLTB¨∆\∆/⊂':...........'),¨(' ' join¨spin ConsIndex at 'basisfile' 'sex' 'basisdesc'),¨(~∆)\(~∆)/('' ' Interpolated')[⎕io+'Y'=↑¨ConsIndex at 'exact age'])[58]  [59]  runslist←⊃'⍺',¨(⊂'⍺') join¨spin (ConsIndex for (⊂'ID'), ValuationRunList at 'ResultsCategoryID') at 'scenario' 'desc' 'outfile' 'outime' 'version'[60]  [61]  0 0⍴(SystemDir,'CONSWIN') ReadFile 'Consolidation'[62]  SUMMREC←1 HyphenSwap ClientFile CONS_RunDesc ConsolidParms[63]  ParmDesc←RUNDESC[64]  ParmTS←⍙DBTimeStamp ↑((ClientFile ReadFile 'Index') for '∆_Description' RUNDESC) at '∆_TimeModified'[65]  [66]  0 0⍴(SystemDir,'SVFORM',Win∆CountryCode) ReadFile 'Consolidation' '' 'Convert_Vars'[67]  0 0⍴(SystemDir,'CONSWIN') ReadFile 'Consolidation Database'[68]  CONSOLID∆DB[69]  0 0⍴(SystemDir,'CONSWIN') DeleteModule 'Consolidation Database'[70]  0 0⍴(SystemDir,'CONSWIN') DeleteModule 'Consolidation'[71]  [72]  DeleteVars 'Consolidation'    ∇
+    ∇ ConsolidationOutput;⎕io;neIND;GROUP;COCR;ParmDesc;ParmTS;SUMMREC;lramorti;ConsIndex;list;Convert_Vars;RUNDESC;NotPUC;dab;runs;runslist;valind;contper;insind;TargetBen;bencap;fscopt;aosind;VDATE;ExactAge;pVDATE;∆;MESS;ConsDBName
+[1]   ⍝ OVERWIN.sf#19
+[2]   ⍝ Create a Consolidation output based on Valuation Runs
+[3]   ⎕io←1
+[4]   0 0⍴ClientFile ReadFile 'Consolidation' ConsolidParms
+[5]   
+[6]   ConsDBName←consDBName
+[7]   :if (~sqlDatabase)^(⊂UPPERCASE ConsDBName)∊UPPERCASE¨Win∆Parent¨m2n ⎕xlib ConsolidDir,'*.*db'
+[8]   :orif              (⊂UPPERCASE ConsDBName)∊UPPERCASE¨Win∆Parent¨m2n ⎕xlib OutputDir,'*.xls*'
+[9]   :orif sqlDatabase ^¯1↑ConsDBName ⍙DBExists 2
+[10]      MESS←MESS∆TRANS 'AlreadyFile' (((1+sqlDatabase)⊃'Database File' 'SQL Server Database'),' or Excel File named "',ConsDBName,'"')
+[11]      MESS VALN∆LOG 'Error'
+[12]      MDISPLAY MESS
+[13]  :endif
+[14]  
+[15]  GROUP←COCR←MATRIX ' '
+[16]  (amorti lramorti)←2↑FinConvert amorti (lramorti1 OVER lramorti2 OVER lramorti3)
+[17]  (IR     lrIR    )←2↑FinConvert IR     lrIR
+[18]  (EXPf   lrEXPf  )←2↑FinConvert EXPf   lrEXPf
+[19]  :if uk=1 ⋄ (Expi lrExpi)←2↑FinConvert Expi lrExpi ⋄ :endif
+[20]  
+[21]  :if (⊂'PP')∊2↑¨list←BatchedNest at 'Valn Method'
+[22]      valind←'PP',(∨/'3'∊¨list) means '3' else 'F'
+[23]  :elseif mt list←list~'PEN' 'DEF'
+[24]      valind←'AAN'
+[25]  :else
+[26]      valind←↑list
+[27]  :endif
+[28]  
+[29]  :if NotPUC←~'PUC'≡valind
+[30]      contper←''
+[31]      insind←'No' OVER 1 0↓insind
+[32]  :else
+[33]      contper←↑(BatchedNest for 'Valn Method' 'PUC') at 'Control Period'
+[34]      insind←(↑(BatchedNest for 'Valn Method' 'PUC') at 'Insured Cost') OVER 1 0↓insind
+[35]  :endif
+[36]  :if dab←valind≡'DAB'
+[37]      TargetBen←↑(BatchedNest for 'Valn Method' 'DAB') at 'Target Benefit'
+[38]      contper←↑(BatchedNest for 'Valn Method' 'DAB') at 'Control Period'
+[39]  :else
+[40]      TargetBen←''
+[41]  :endif
+[42]  
+[43]  bencap←↑BatchedNest at 'Cap Accrued Benefits'
+[44]  fscopt←(1+^/'Y'=↑¨BatchedNest at 'ALM/LDI Interface')⊃'No' ((1+HLDII)⊃'Exclude Left Service' 'Include Left Service')
+[45]  aosind←(1+^/'Y'=↑¨BatchedNest at 'AOS')⊃'No' 'Yes'
+[46]  neIND←(1+∨/'Y'=↑¨BatchedNest at 'New Entrants')⊃'No' 'Yes'
+[47]  
+[48]  VDATE←'DD/MM/YYYY' DATE∆FMT ('P'=↑↑BatchedNest at 'Valn Date') means pvDATE else vDATE
+[49]  ExactAge←(↑⎕av⍒↑¨∆)⊃∆←lmt BatchedNest at 'Exact Age Interpolation'
+[50]  pVDATE←('Y'=↑aosind)/'DD/MM/YYYY' DATE∆FMT pvDATE
+[51]  
+[52]  ConsIndex←CreateValnRunIndex 0
+[53]  runs←ValuationRunList at 'ResultsCategoryID'
+[54]  ConsIndex←ConsIndex for (⊂'ID'),runs
+[55]  ConsIndex←ConsIndex amend 'sex' (('Females ' 'Males ')[⎕io+'M'=ConsIndex at 'sex'])
+[56]  ∆←×ConsIndex at 'neActID'
+[57]  ConsIndex←ConsIndex amend 'desc' ((DLTB¨∆\∆/⊂':...........'),¨(' ' join¨spin ConsIndex at 'basisfile' 'sex' 'basisdesc'),¨(~∆)\(~∆)/('' ' Interpolated')[⎕io+'Y'=↑¨ConsIndex at 'exact age'])
+[58]  
+[59]  runslist←⊃'⍺',¨(⊂'⍺') join¨spin (ConsIndex for (⊂'ID'), ValuationRunList at 'ResultsCategoryID') at 'scenario' 'desc' 'outfile' 'outime' 'version'
+[60]  
+[61]  0 0⍴(SystemDir,'CONSWIN') ReadFile 'Consolidation'
+[62]  SUMMREC←1 HyphenSwap ClientFile CONS_RunDesc ConsolidParms
+[63]  ParmDesc←RUNDESC
+[64]  ParmTS←⍙DBTimeStamp ↑((ClientFile ReadFile 'Index') for '∆_Description' RUNDESC) at '∆_TimeModified'
+[65]  
+[66]  0 0⍴(SystemDir,'SVFORM',Win∆CountryCode) ReadFile 'Consolidation' '' 'Convert_Vars'
+[67]  0 0⍴(SystemDir,'CONSWIN') ReadFile 'Consolidation Database'
+[68]  CONSOLID∆DB
+[69]  0 0⍴(SystemDir,'CONSWIN') DeleteModule 'Consolidation Database'
+[70]  0 0⍴(SystemDir,'CONSWIN') DeleteModule 'Consolidation'
+[71]  
+[72]  DeleteVars 'Consolidation'
+    ∇

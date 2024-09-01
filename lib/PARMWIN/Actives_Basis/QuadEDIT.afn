@@ -1,1 +1,19 @@
-    ∇ QuadEDIT FN;Session;LIST[1]   ⍝ PARMWIN.sf#6[2]   ⍝ Use the APL Editor[3]   [4]   Edit_Msg FN[5]   0 0⍴⎕wcall 'ShowWindow' (APLFrame) 'SW_RESTORE'  ⍝ Restore APL Session[6]   LIST←APLWindows                       ⍝ List of Current "Sessions"[7]   LIST←,(LIST[;3]∊⊂'Edit')⌿LIST[;,2]    ⍝ Consider only Edit Session Numbers[8]   Wedit (,⍕FN)~' '                      ⍝ Start built-in editor[9]   0 0⍴⎕wcall 'SetWindowText' (APLFrame) ('APL+Win (running ',SystemName,')')[10]  Session←APLWindows                    ⍝ List of Current "sessions"[11]  Session←,(Session[;3]∊⊂'Edit')⌿Session[;,2] ⍝ Consider only Edit Sessions[12]  Session←(~Session∊LIST)/Session       ⍝ Find the "New One"[13]  LP:0 0⍴⎕DL 0.25                       ⍝ Wait for the next test[14]  →(Session∊APLWindows[;2])⍴LP[15]  :if development ⋄ 0 0⍴⎕wcall 'ShowWindow' (APLFrame) 'SW_MINIMIZE' ⍝ Minimise APL Session again[16]  :else           ⋄ 0 0⍴⎕wcall 'ShowWindow' (APLFrame) 'SW_HIDE' ⍝ Hide APL Session again[17]  :endif    ∇
+    ∇ QuadEDIT FN;Session;LIST
+[1]   ⍝ PARMWIN.sf#6
+[2]   ⍝ Use the APL Editor
+[3]   
+[4]   Edit_Msg FN
+[5]   0 0⍴⎕wcall 'ShowWindow' (APLFrame) 'SW_RESTORE'  ⍝ Restore APL Session
+[6]   LIST←APLWindows                       ⍝ List of Current "Sessions"
+[7]   LIST←,(LIST[;3]∊⊂'Edit')⌿LIST[;,2]    ⍝ Consider only Edit Session Numbers
+[8]   Wedit (,⍕FN)~' '                      ⍝ Start built-in editor
+[9]   0 0⍴⎕wcall 'SetWindowText' (APLFrame) ('APL+Win (running ',SystemName,')')
+[10]  Session←APLWindows                    ⍝ List of Current "sessions"
+[11]  Session←,(Session[;3]∊⊂'Edit')⌿Session[;,2] ⍝ Consider only Edit Sessions
+[12]  Session←(~Session∊LIST)/Session       ⍝ Find the "New One"
+[13]  LP:0 0⍴⎕DL 0.25                       ⍝ Wait for the next test
+[14]  →(Session∊APLWindows[;2])⍴LP
+[15]  :if development ⋄ 0 0⍴⎕wcall 'ShowWindow' (APLFrame) 'SW_MINIMIZE' ⍝ Minimise APL Session again
+[16]  :else           ⋄ 0 0⍴⎕wcall 'ShowWindow' (APLFrame) 'SW_HIDE' ⍝ Hide APL Session again
+[17]  :endif
+    ∇

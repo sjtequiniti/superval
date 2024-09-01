@@ -1,1 +1,78 @@
-    ∇ ⍙DBXL_HEAD∆BASES;NoBases;ClassBase;Cat;sql;data;N;ID;z;col;ClassID[1]   ⍝ CONSWIN.sf#11[2]   ⍝ Fn to output the basis details for the runs consolidated[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   →SKIP/0[8]   ⍝ Valuation Run History[9]   :for ID :in runs[10]      0 0⍴2 XL_RunDetails ID[11]  :endfor[12]  [13]  ConsXL_BasisWrite[14]  [15]  sql←"SELECT BasisFile, BasisCategoryID, DataCategory, BasisCategory, ResultsCategoryID FROM ResultsCategory WHERE ResultsCategoryID IN ("[16]  [17]  ⍝ Basis Details for each Membership Class[18]  :if ~mt runsA[19]      data←DLTB¨1 ⍙DBadoCONCommand sql,(0 ⍙DBNumList runsA~runsNE),")"[20]      data←data[⍋⊃data[;5];][21]      :if z←^/data[1;1]≡¨data[;1] ⋄ 0 0⍴data[1;1] XL_Data 'ActBasisFile'[22]      :else                       ⋄ 0 0⍴'Various' XL_Data 'ActBasisFile'[23]      :endif[24]      ClassID←1 ⋄ ClassBase←20000 ⋄ NoBases←0 ⋄ 0 XL_ActivateWorksheet 'ActBases'[25]      :for N :in ⍳⍴,runsA~runsNE[26]          ID←(,runsA~runsNE)[N][27]          (N (⍴runs~runsNE) (↑(ConsIndex for 'ID' ID) at 'desc')) Win∆ProgressBar 'MemberUpdate'[28]  [29]          N←(∊data[;5])⍳ID[30]          Cat←(⍕10000∣data[N;2]),'()' embrace ⊃data[N;3] ⍝ Can get Category clashes[31]          NoBases←NoBases+×col←Cat ⍙DBXL_BasisWrite ID[32]          :if ~z ⋄ 0 0⍴data[N;1] XL_Data RCtoA1 6 col ⋄ :endif[33]      :endfor[34]      'ActBases' XL_ProtectSheet 1[35]      0 0⍴NoBases XL_Data 'NoActBases'[36]  :endif[37]  [38]  :if ~mt runsD[39]      data←DLTB¨1 ⍙DBadoCONCommand sql,(0 ⍙DBNumList runsD),")"[40]      data←data[⍋⊃data[;5];][41]      :if z←^/data[1;1]≡¨data[;1] ⋄ 0 0⍴data[1;1] XL_Data 'DefBasisFile'[42]      :else                       ⋄ 0 0⍴'Various' XL_Data 'DefBasisFile'[43]      :endif[44]      ClassID←3 ⋄ ClassBase←10000 ⋄ NoBases←0 ⋄ 0 XL_ActivateWorksheet 'DefBases'[45]      :for N :in ⍳⍴,runsD[46]          ID←(,runsD)[N][47]          ((N+⍴runsA~runsNE) (⍴runs~runsNE) (↑(ConsIndex for 'ID' ID) at 'desc')) Win∆ProgressBar 'MemberUpdate'[48]  [49]          N←(∊data[;5])⍳ID[50]          Cat←(⍕10000∣data[N;2]),'()' embrace ⊃data[N;3] ⍝ Can get Category clashes[51]          NoBases←NoBases+×col←Cat ⍙DBXL_BasisWrite ID[52]          :if ~z ⋄ 0 0⍴data[N;1] XL_Data RCtoA1 6 col ⋄ :endif[53]      :endfor[54]      'DefBases' XL_ProtectSheet 1[55]      0 0⍴NoBases XL_Data 'NoDefBases'[56]  :endif[57]  [58]  :if ~mt runsP[59]      data←DLTB¨1 ⍙DBadoCONCommand sql,(0 ⍙DBNumList runsP),")"[60]      data←data[⍋⊃data[;5];][61]      :if z←^/data[1;1]≡¨data[;1] ⋄ 0 0⍴data[1;1] XL_Data 'PenBasisFile'[62]      :else                       ⋄ 0 0⍴'Various' XL_Data 'PenBasisFile'[63]      :endif[64]      ClassID←4 ⋄ ClassBase←NoBases←0 ⋄ 0 XL_ActivateWorksheet 'PenBases'[65]      :for N :in ⍳⍴,runsP[66]          ID←(,runsP)[N][67]          ((N+⍴runsD,runsA~runsNE) (⍴runs~runsNE) (↑(ConsIndex for 'ID' ID) at 'desc')) Win∆ProgressBar 'MemberUpdate'[68]  [69]          N←(∊data[;5])⍳ID[70]          Cat←(⍕10000∣data[N;2]),'()' embrace ⊃data[N;3] ⍝ Can get Category clashes[71]          NoBases←NoBases+×col←Cat ⍙DBXL_BasisWrite ID[72]          :if ~z ⋄ 0 0⍴data[N;1] XL_Data RCtoA1 6 col ⋄ :endif[73]      :endfor[74]      'PenBases' XL_ProtectSheet 1[75]      0 0⍴NoBases XL_Data 'NoPenBases'[76]  :endif    ∇
+    ∇ ⍙DBXL_HEAD∆BASES;NoBases;ClassBase;Cat;sql;data;N;ID;z;col;ClassID
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ Fn to output the basis details for the runs consolidated
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   →SKIP/0
+[8]   ⍝ Valuation Run History
+[9]   :for ID :in runs
+[10]      0 0⍴2 XL_RunDetails ID
+[11]  :endfor
+[12]  
+[13]  ConsXL_BasisWrite
+[14]  
+[15]  sql←"SELECT BasisFile, BasisCategoryID, DataCategory, BasisCategory, ResultsCategoryID FROM ResultsCategory WHERE ResultsCategoryID IN ("
+[16]  
+[17]  ⍝ Basis Details for each Membership Class
+[18]  :if ~mt runsA
+[19]      data←DLTB¨1 ⍙DBadoCONCommand sql,(0 ⍙DBNumList runsA~runsNE),")"
+[20]      data←data[⍋⊃data[;5];]
+[21]      :if z←^/data[1;1]≡¨data[;1] ⋄ 0 0⍴data[1;1] XL_Data 'ActBasisFile'
+[22]      :else                       ⋄ 0 0⍴'Various' XL_Data 'ActBasisFile'
+[23]      :endif
+[24]      ClassID←1 ⋄ ClassBase←20000 ⋄ NoBases←0 ⋄ 0 XL_ActivateWorksheet 'ActBases'
+[25]      :for N :in ⍳⍴,runsA~runsNE
+[26]          ID←(,runsA~runsNE)[N]
+[27]          (N (⍴runs~runsNE) (↑(ConsIndex for 'ID' ID) at 'desc')) Win∆ProgressBar 'MemberUpdate'
+[28]  
+[29]          N←(∊data[;5])⍳ID
+[30]          Cat←(⍕10000∣data[N;2]),'()' embrace ⊃data[N;3] ⍝ Can get Category clashes
+[31]          NoBases←NoBases+×col←Cat ⍙DBXL_BasisWrite ID
+[32]          :if ~z ⋄ 0 0⍴data[N;1] XL_Data RCtoA1 6 col ⋄ :endif
+[33]      :endfor
+[34]      'ActBases' XL_ProtectSheet 1
+[35]      0 0⍴NoBases XL_Data 'NoActBases'
+[36]  :endif
+[37]  
+[38]  :if ~mt runsD
+[39]      data←DLTB¨1 ⍙DBadoCONCommand sql,(0 ⍙DBNumList runsD),")"
+[40]      data←data[⍋⊃data[;5];]
+[41]      :if z←^/data[1;1]≡¨data[;1] ⋄ 0 0⍴data[1;1] XL_Data 'DefBasisFile'
+[42]      :else                       ⋄ 0 0⍴'Various' XL_Data 'DefBasisFile'
+[43]      :endif
+[44]      ClassID←3 ⋄ ClassBase←10000 ⋄ NoBases←0 ⋄ 0 XL_ActivateWorksheet 'DefBases'
+[45]      :for N :in ⍳⍴,runsD
+[46]          ID←(,runsD)[N]
+[47]          ((N+⍴runsA~runsNE) (⍴runs~runsNE) (↑(ConsIndex for 'ID' ID) at 'desc')) Win∆ProgressBar 'MemberUpdate'
+[48]  
+[49]          N←(∊data[;5])⍳ID
+[50]          Cat←(⍕10000∣data[N;2]),'()' embrace ⊃data[N;3] ⍝ Can get Category clashes
+[51]          NoBases←NoBases+×col←Cat ⍙DBXL_BasisWrite ID
+[52]          :if ~z ⋄ 0 0⍴data[N;1] XL_Data RCtoA1 6 col ⋄ :endif
+[53]      :endfor
+[54]      'DefBases' XL_ProtectSheet 1
+[55]      0 0⍴NoBases XL_Data 'NoDefBases'
+[56]  :endif
+[57]  
+[58]  :if ~mt runsP
+[59]      data←DLTB¨1 ⍙DBadoCONCommand sql,(0 ⍙DBNumList runsP),")"
+[60]      data←data[⍋⊃data[;5];]
+[61]      :if z←^/data[1;1]≡¨data[;1] ⋄ 0 0⍴data[1;1] XL_Data 'PenBasisFile'
+[62]      :else                       ⋄ 0 0⍴'Various' XL_Data 'PenBasisFile'
+[63]      :endif
+[64]      ClassID←4 ⋄ ClassBase←NoBases←0 ⋄ 0 XL_ActivateWorksheet 'PenBases'
+[65]      :for N :in ⍳⍴,runsP
+[66]          ID←(,runsP)[N]
+[67]          ((N+⍴runsD,runsA~runsNE) (⍴runs~runsNE) (↑(ConsIndex for 'ID' ID) at 'desc')) Win∆ProgressBar 'MemberUpdate'
+[68]  
+[69]          N←(∊data[;5])⍳ID
+[70]          Cat←(⍕10000∣data[N;2]),'()' embrace ⊃data[N;3] ⍝ Can get Category clashes
+[71]          NoBases←NoBases+×col←Cat ⍙DBXL_BasisWrite ID
+[72]          :if ~z ⋄ 0 0⍴data[N;1] XL_Data RCtoA1 6 col ⋄ :endif
+[73]      :endfor
+[74]      'PenBases' XL_ProtectSheet 1
+[75]      0 0⍴NoBases XL_Data 'NoPenBases'
+[76]  :endif
+    ∇

@@ -1,0 +1,42 @@
+    ∇ PP∆Ind_Memb;NO
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Variables Required for:
+[3]   ⍝ IND∆MEMB:  NO, VC, VRB, VMB, VDB, VWB, PVTV, FV, PVFV, INDVAB, TVVAL, FVVAL, (TOTVAB updated)
+[4]   ⍝ TOT∆MEMB:  VC, VRB, VMB, VDB, VWB, TOTS, TOTVAB
+[5]   ⍝ Varprint: Underpin figures for each decrement
+[6]   
+[7]   ⍝⍝⍝⍝ Underpin
+[8]   ⍝⍝⍝:select pp∆exit
+[9]   ⍝⍝⍝:caselist 'LR' 'NR' 'ER' 'L2' 'N2' 'E2'
+[10]  ⍝⍝⍝:caselist 'W ' 'W2' 'DD'
+[11]  ⍝⍝⍝:caselist 'LT' 'NT' 'ET'
+[12]  ⍝⍝⍝:caselist 'LO' 'NO' 'EO'
+[13]  ⍝⍝⍝:endselect
+[14]  
+[15]  :if NotPUC ⍝ Drop off Insured Results
+[16]      PVTV←PVTV+0 ¯1↓pp∆PresValue[0;;]
+[17]      PVFV←PVFV+0 ¯1↓pp∆PresValue[0;;]-pp∆PresValue[1;;]
+[18]      TOTS[;1+pp∆exitcol×pp∆exitcol<4]←TOTS[;1+pp∆exitcol×pp∆exitcol<4]+(pp∆NX,pp∆CP)[dab]↑+/0 ¯1↓pp∆PresValue[0;;]
+[19]  :else
+[20]      TOTS[;1+pp∆exitcol×pp∆exitcol<4]←TOTS[;1+pp∆exitcol×pp∆exitcol<4]++/0 ¯1↓pp∆NormC
+[21]  :endif
+[22]  
+[23]  :if ~(⊂pp∆exit)∊↑,/¯1↓¨pp∆ExitCodes
+[24]      :select pp∆exit
+[25]      :case 'ER' ⋄ rFV←FV ⋄ rPVFV←PVFV ⋄ rPVTV←PVTV ⋄ rFVVAL←FVVAL ⋄ rTVVAL←TVVAL ⋄ rINDVAB←INDVAB
+[26]                   UFUNDR←UFUNDR+pp∆UFUND[;0] ⋄ FUFUNDR←FUFUNDR+pp∆UFUND[;1]
+[27]      :case 'DL' ⋄ mFV←FV ⋄ mPVFV←PVFV ⋄ mPVTV←PVTV ⋄ mFVVAL←FVVAL ⋄ mTVVAL←TVVAL ⋄ mINDVAB←INDVAB
+[28]      :case 'PR' ⋄ dFV←FV ⋄ dPVFV←PVFV ⋄ dPVTV←PVTV ⋄ dFVVAL←FVVAL ⋄ dTVVAL←TVVAL ⋄ dINDVAB←INDVAB
+[29]      :case 'DD' ⋄ wFV←FV ⋄ wPVFV←PVFV ⋄ wPVTV←PVTV ⋄ wFVVAL←FVVAL ⋄ wTVVAL←TVVAL ⋄ wINDVAB←INDVAB
+[30]                   UFUNDW←UFUNDW+pp∆UFUND[;0] ⋄ FUFUNDW←FUFUNDW+pp∆UFUND[;1]
+[31]      :case 'ET' ⋄ TFV←FV ⋄ TPVFV←PVFV ⋄ TPVTV←PVTV ⋄ TFVVAL←FVVAL ⋄ TTVVAL←TVVAL ⋄ TINDVAB←INDVAB
+[32]                   UFUNDT←UFUNDT+pp∆UFUND[;0] ⋄ FUFUNDT←FUFUNDT+pp∆UFUND[;1]
+[33]      :case 'DT' ⋄ tFV←FV ⋄ tPVFV←PVFV ⋄ tPVTV←PVTV ⋄ tFVVAL←FVVAL ⋄ tTVVAL←TVVAL ⋄ tINDVAB←INDVAB
+[34]      :case 'EO' ⋄ OFV←FV ⋄ OPVFV←PVFV ⋄ OPVTV←PVTV ⋄ OFVVAL←FVVAL ⋄ OTVVAL←TVVAL ⋄ OINDVAB←INDVAB
+[35]                   UFUNDO←UFUNDO+pp∆UFUND[;0] ⋄ FUFUNDO←FUFUNDO+pp∆UFUND[;1]
+[36]      :case 'DO' ⋄ oFV←FV ⋄ oPVFV←PVFV ⋄ oPVTV←PVTV ⋄ oFVVAL←FVVAL ⋄ oTVVAL←TVVAL ⋄ oINDVAB←INDVAB
+[37]      :endselect
+[38]  
+[39]      NO←pp∆exitcol ⋄ IND∆MEMB
+[40]  :endif
+    ∇

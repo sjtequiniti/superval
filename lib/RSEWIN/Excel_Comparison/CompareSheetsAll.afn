@@ -1,1 +1,17 @@
-    ∇ sheets1 CompareSheetsAll sheets2;Sheets2;Sheets1;i;MatchingSheets[1]   ⍝ RSEWIN.sf#2[2]   ⍝ Compare the sheets in Workbook1 and Workbook2[3]   ⍝ These are open (SuperVal) workbooks with 16 sheets (called the same name).[4]   ⍝ HOWEVER they may not be in the same order.[5]   wb1 ⎕wi 'XActivate'[6]   Sheets1←⊃XL_WorksheetNames ⍳sheets1[7]   [8]   wb2 ⎕wi 'XActivate'[9]   Sheets2←⊃XL_WorksheetNames ⍳sheets2[10]  [11]  MatchingSheets←Sheets2 ExcelCompROWFIND Sheets1[12]  :for i :in ⍳sheets1[13]     (i sheets1 (Sheets2[i;])) Win∆ProgressBar 'MemberUpdate'[14]     i CompareSheets MatchingSheets[i][15]  :endfor    ∇
+    ∇ sheets1 CompareSheetsAll sheets2;Sheets2;Sheets1;i;MatchingSheets
+[1]   ⍝ RSEWIN.sf#2
+[2]   ⍝ Compare the sheets in Workbook1 and Workbook2
+[3]   ⍝ These are open (SuperVal) workbooks with 16 sheets (called the same name).
+[4]   ⍝ HOWEVER they may not be in the same order.
+[5]   wb1 ⎕wi 'XActivate'
+[6]   Sheets1←⊃XL_WorksheetNames ⍳sheets1
+[7]   
+[8]   wb2 ⎕wi 'XActivate'
+[9]   Sheets2←⊃XL_WorksheetNames ⍳sheets2
+[10]  
+[11]  MatchingSheets←Sheets2 ExcelCompROWFIND Sheets1
+[12]  :for i :in ⍳sheets1
+[13]     (i sheets1 (Sheets2[i;])) Win∆ProgressBar 'MemberUpdate'
+[14]     i CompareSheets MatchingSheets[i]
+[15]  :endfor
+    ∇

@@ -1,1 +1,24 @@
-    ∇ yieldDir←YieldFolder;Dir;z[1]   ⍝ OVERWIN.sf#10[2]   ⍝ Return the Client Yield Folder[3]   [4]   :if ~''≡yieldDir←UPPERCASE INIString 'SV Folders' 'Yield Curve' '' (InputDir,'svscheme.ini')[5]       :if ∨/z←'~'∊¨Dir←(Dir='\') ⎕penclose Dir←'\',yieldDir[6]       :andif ∨/z←9=,⊃⍴¨Dir←z/Dir[7]       :andif ∨/(8-~⎕io)=(Dir←z/Dir)⍳¨⊂'~'[8]           yieldDir←'' ⍝ Ignore Short Directories[9]       :endif[10]      yieldDir←(yieldDir InputDir) ConvertDir 'Absolute'[11]  [12]      :if ~FolderExist yieldDir ⍝ Check if valid Folder[13]          yieldDir←''[14]      :endif[15]  ⍝⍝⍝    elx←⎕elx ⋄ ⎕elx←"⎕elx←elx ⋄ yieldDir←'' ⋄ →⎕lc+1"[16]  ⍝⍝⍝    0 0⍴⎕xlib yieldDir ⋄ ⎕elx←elx ⍝ Check if valid Folder ⍝⍝⍝ Could use FileExist?[17]  :endif[18]  [19]  ⍝ use InputDir as default for selection[20]  :if ''≡yieldDir ⋄ yieldDir←InputDir ⋄ :endif[21]  [22]  yieldDir←FullFolder yieldDir ⍝ Add Backslash    ∇
+    ∇ yieldDir←YieldFolder;Dir;z
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ Return the Client Yield Folder
+[3]   
+[4]   :if ~''≡yieldDir←UPPERCASE INIString 'SV Folders' 'Yield Curve' '' (InputDir,'svscheme.ini')
+[5]       :if ∨/z←'~'∊¨Dir←(Dir='\') ⎕penclose Dir←'\',yieldDir
+[6]       :andif ∨/z←9=,⊃⍴¨Dir←z/Dir
+[7]       :andif ∨/(8-~⎕io)=(Dir←z/Dir)⍳¨⊂'~'
+[8]           yieldDir←'' ⍝ Ignore Short Directories
+[9]       :endif
+[10]      yieldDir←(yieldDir InputDir) ConvertDir 'Absolute'
+[11]  
+[12]      :if ~FolderExist yieldDir ⍝ Check if valid Folder
+[13]          yieldDir←''
+[14]      :endif
+[15]  ⍝⍝⍝    elx←⎕elx ⋄ ⎕elx←"⎕elx←elx ⋄ yieldDir←'' ⋄ →⎕lc+1"
+[16]  ⍝⍝⍝    0 0⍴⎕xlib yieldDir ⋄ ⎕elx←elx ⍝ Check if valid Folder ⍝⍝⍝ Could use FileExist?
+[17]  :endif
+[18]  
+[19]  ⍝ use InputDir as default for selection
+[20]  :if ''≡yieldDir ⋄ yieldDir←InputDir ⋄ :endif
+[21]  
+[22]  yieldDir←FullFolder yieldDir ⍝ Add Backslash
+    ∇

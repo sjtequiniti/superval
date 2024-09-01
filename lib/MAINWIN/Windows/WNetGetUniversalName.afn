@@ -1,1 +1,46 @@
-    ∇ res←WNetGetUniversalName Folder;⎕elx;hF;MaxPath;pData;arg;Data;hU;pRes;Res;errcode;ptr[1]   ⍝ MAINWIN.sf#2[2]   ⍝ Returns the UNC path[3]   [4]   ⎕elx←'→err'[5]   [6]    hF←hU←0[7]   [8]    Folder←Folder,⎕tcnul                                           ⍝ null-terminate Folder[9]    →(0=hF←⎕wcall 'GlobalAlloc' 'GMEM_MOVEABLE' (↑⍴Folder))/⍙exit  ⍝ allocate memory[10]   →(0=pData←⎕wcall 'GlobalLock' hF)/⍙exit                        ⍝ get ptr to memory[11]   Folder W_Mem pData                                             ⍝ write data to memory[12]  [13]   MaxPath←50+⎕wcall 'W_Const' 'MAX_PATH'                         ⍝ size of path[14]  [15]   Res←MaxPath⍴⎕tcnul                                             ⍝ null-terminate space for return[16]   →(0=hU←⎕wcall 'GlobalAlloc' 'GMEM_MOVEABLE' (↑⍴Res))/⍙exit     ⍝ allocate memory[17]   →(0=pRes←⎕wcall 'GlobalLock' hU)/⍙exit                         ⍝ get ptr to memory[18]   Res W_Mem pRes[19]  [20]   arg←    ⊂pData                                                 ⍝ Folder Name[21]   arg←arg,⊂1                                                     ⍝ Universal_Name value (0 for Remote_Name)[22]   arg←arg,⊂pRes                                                  ⍝ Position of result[23]   arg←arg,⊂I2C MaxPath                                           ⍝ size of result[24]  [25]  :if 0=↑(errcode ptr)←2↑⎕wcall (⊂'WNetGetUniversalName'),arg[26]      res←(W_Mem ptr,0,MaxPath)~⎕tcnul[27]      res←((WHERE res ⎕ss '\\')-⎕io)↓res[28]  :elseif 2250=errcode[29]      res←¯1↓Folder[30]  :else[31]      res←''[32]  :endif[33]  ⍙exit:[34]   :if hF≠0 ⍝ free pointer to Data[35]       0 0⍴⎕wcall 'GlobalUnlock' hF ⍝ unlock memory[36]       0 0⍴⎕wcall 'GlobalFree' hF   ⍝ free memory[37]   :endif[38]   :if hU≠0 ⍝ free pointer to Data[39]       0 0⍴⎕wcall 'GlobalUnlock' hU ⍝ unlock memory[40]       0 0⍴⎕wcall 'GlobalFree' hU   ⍝ free memory[41]   :endif[42]  :return[43]  [44]  err: res←Folder ⍝ Not needed for Access Datbases    ∇
+    ∇ res←WNetGetUniversalName Folder;⎕elx;hF;MaxPath;pData;arg;Data;hU;pRes;Res;errcode;ptr
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝ Returns the UNC path
+[3]   
+[4]   ⎕elx←'→err'
+[5]   
+[6]    hF←hU←0
+[7]   
+[8]    Folder←Folder,⎕tcnul                                           ⍝ null-terminate Folder
+[9]    →(0=hF←⎕wcall 'GlobalAlloc' 'GMEM_MOVEABLE' (↑⍴Folder))/⍙exit  ⍝ allocate memory
+[10]   →(0=pData←⎕wcall 'GlobalLock' hF)/⍙exit                        ⍝ get ptr to memory
+[11]   Folder W_Mem pData                                             ⍝ write data to memory
+[12]  
+[13]   MaxPath←50+⎕wcall 'W_Const' 'MAX_PATH'                         ⍝ size of path
+[14]  
+[15]   Res←MaxPath⍴⎕tcnul                                             ⍝ null-terminate space for return
+[16]   →(0=hU←⎕wcall 'GlobalAlloc' 'GMEM_MOVEABLE' (↑⍴Res))/⍙exit     ⍝ allocate memory
+[17]   →(0=pRes←⎕wcall 'GlobalLock' hU)/⍙exit                         ⍝ get ptr to memory
+[18]   Res W_Mem pRes
+[19]  
+[20]   arg←    ⊂pData                                                 ⍝ Folder Name
+[21]   arg←arg,⊂1                                                     ⍝ Universal_Name value (0 for Remote_Name)
+[22]   arg←arg,⊂pRes                                                  ⍝ Position of result
+[23]   arg←arg,⊂I2C MaxPath                                           ⍝ size of result
+[24]  
+[25]  :if 0=↑(errcode ptr)←2↑⎕wcall (⊂'WNetGetUniversalName'),arg
+[26]      res←(W_Mem ptr,0,MaxPath)~⎕tcnul
+[27]      res←((WHERE res ⎕ss '\\')-⎕io)↓res
+[28]  :elseif 2250=errcode
+[29]      res←¯1↓Folder
+[30]  :else
+[31]      res←''
+[32]  :endif
+[33]  ⍙exit:
+[34]   :if hF≠0 ⍝ free pointer to Data
+[35]       0 0⍴⎕wcall 'GlobalUnlock' hF ⍝ unlock memory
+[36]       0 0⍴⎕wcall 'GlobalFree' hF   ⍝ free memory
+[37]   :endif
+[38]   :if hU≠0 ⍝ free pointer to Data
+[39]       0 0⍴⎕wcall 'GlobalUnlock' hU ⍝ unlock memory
+[40]       0 0⍴⎕wcall 'GlobalFree' hU   ⍝ free memory
+[41]   :endif
+[42]  :return
+[43]  
+[44]  err: res←Folder ⍝ Not needed for Access Datbases
+    ∇

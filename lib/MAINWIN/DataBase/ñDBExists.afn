@@ -1,0 +1,51 @@
+    ∇ Z←⍙dbname ⍙DBExists arg;xxx;tie;found;DBID;IDs;DBNames;∆;IDleft
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Determine if Database exists (and (delete Access database and) create new, if temporary)
+[3]   ⍝ arg is a flag to indicate type of database
+[4]   ⍝   0   Open Valuation Database (for adding new Database - SQL Server only)
+[5]   ⍝   1   Valuation Database (for "creation" or ¯1 if simply connecting)
+[6]   ⍝   2   Consolidation Database (for "creation" or ¯2 if simply connecting)
+[7]   ⍝   3   Scenario Database (for "creation" or ¯3 if simply connecting)
+[8]   ⍝ Reads: sqlDatabase sqlTimeout ValnResultsDB ConsolidDir InputDir
+[9]   
+[10]  :if sqlDatabase                                             ⍝ Database found on SQL Server instance
+[11]      xxx←'ADOcon' 'ADOrst' ⎕WI¨(⊂'Create') pr¨'ADODB.Connection' 'ADODB.Recordset' ⍝ Create ADO Connection and Record Set Objects
+[12]      'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[13]      'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[14]      ⍙DBSQLOpen 'Database' 'Master'
+[15]      'ADOrst' ⎕WI 'XOpen' 'sys.databases' ('ADOcon' ⎕wi 'obj') ('ADOrst' ⎕wi 'adOpenStatic') ('ADOrst' ⎕wi 'adLockOptimistic')
+[16]      'ADOrst' ⎕WI 'Filter' ("name=",1 ⍙DBString ValnResultsDB)
+[17]      found←×'ADOrst' ⎕WI 'xRecordCount'
+[18]      xxx←(⊂'ADOrst') ⎕WI¨'XClose' 'Close' 'Delete'
+[19]      DBID←found×1000000×sqlschemeID                                ⍝ Valuations DatabaseID
+[20]      :if found ⍝⍝⍝ ⋄ :andif (∣arg)∊2 3
+[21]          xxx←'ADOcon' ⎕WI 'XClose'
+[22]          ⍙DBSQLOpen 'Database' ValnResultsDB
+[23]          :if arg≠0
+[24]              :if ⍙dbname≡ValnResultsDB ⋄ ⍙dbname←'Valuation Runs' ⋄ :endif
+[25]              (IDs DBNames)←⎕split ⍉DLTB¨1 ⍙DBadoCONCommand "SELECT DatabaseID, DatabaseName FROM Identification WHERE SchemeID=",⍕sqlschemeID
+[26]              :if found←∨/∆←DBNames∊⊂⍙dbname                ⍝ Return the DatabaseID if found
+[27]                  DBID←↑↑∆/IDs
+[28]              :else ⍝ Next Available Number (99 non-valuation databases available) then re-use any earlier deleted Database IDs
+[29]                                          ⍝ (note: up 9999 ResultsCategoryIDs in each database)
+[30]                  :if 0=DBID←↑(+/IDleft≤⌈/∊IDs)⌽IDleft←(DBID+10000×(⍳100)-⎕io)~∊IDs ⋄ DBID←¯1 ⋄ :endif ⍝ ¯1 if no DBs left
+[31]              :endif
+[32]          :endif
+[33]      :endif
+[34]      :if arg>0
+[35]          0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[36]          xxx←(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete'
+[37]      :endif
+[38]  :else
+[39]      :if ~':'∊⍙dbname ⋄ :andif ~^/'\'=2↑⍙dbname              ⍝ Check to see if folder already specified
+[40]          ⍙dbname←((⎕io+0=arg)⊃ConsolidDir InputDir),⍙dbname
+[41]      :endif
+[42]      :if ~(⊂UPPERCASE Win∆Child ⍙dbname)∊'MDB' 'ACCDB'       ⍝ Check to see if file type already specified
+[43]          ⍙dbname←⍙dbname,(⎕io+∨/'ACE'⍷progid)⊃'.mdb' '.accdb'
+[44]      :endif
+[45]      found←(~mt progid)^FileExist ⍙dbname
+[46]      DBID←0
+[47]  :endif
+[48]  
+[49]  Z←⍙dbname DBID found
+    ∇

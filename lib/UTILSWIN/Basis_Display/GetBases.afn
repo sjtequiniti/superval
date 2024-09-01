@@ -1,0 +1,20 @@
+    ∇ res←GetBases;PickList;NameList;sortorder;SortList;∆
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ Return Listview variables of Bases according to other folder settings
+[3]   
+[4]   :if otherfolder ⋄ :andif ∨/∆←~(⊂'')≡¨foldertab at 'Folder'
+[5]       (NameList sortorder)←↑¨(foldertab for ∆) at 'NameList' 'sortorder'
+[6]       PickList←↑OVER/(foldertab for ∆) at 'PickList'
+[7]       SortList←∊(foldertab for ∆) at 'SortList'
+[8]       res←PickList NameList sortorder SortList
+[9]   :else
+[10]      :if ×rowsIn foldertab ⋄ :andif ∨/∆←(⊂'')≡¨foldertab at 'Folder'
+[11]          res←↑¨(foldertab for ∆) at 'PickList' 'NameList' 'sortorder' 'SortList'
+[12]          foldertab←foldertab amend 'InUse' ∆
+[13]      :else
+[14]          res←('Actives_Basis' 'Deferreds_Basis' 'Pensioners_Basis') GetParmDesc 'BasisFile'
+[15]          foldertab←folderhead OVER 1 '',res
+[16]          foldertab←foldertab  OVER 0 InputDir,InputDir FixListViewVars res
+[17]      :endif
+[18]  :endif
+    ∇

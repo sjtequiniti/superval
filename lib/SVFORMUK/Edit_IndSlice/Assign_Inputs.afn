@@ -1,1 +1,412 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Edit_IndSlice" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Edit_IndSlice" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   :if (⊂"pgSlice")∊"fmEditIndSlice.sEdit_IndSlice" ⎕wi "pages"[10]  "Formattrick" Win∆Inherits "FormatA"[11]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.cbFormattrick" ⎕wi "list"[12]  selection←PickList ExactTLU DLTB Formattrick[13]  :if mt selection[14]      modified←⌈/modified,0[15]  :endif[16]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.cbFormattrick" ⎕wi "value" (¯1↑0,selection)[17]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.edSLICEDESC" ⎕wi "text" (DLTB SLICEDESC)[18]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbstdate" ⎕wi "list"[19]  selection←(StripText PickList) ExactTLU DLTB StripText stdate[20]  :if mt selection[21]      modified←⌈/modified,0[22]  :endif[23]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbstdate" ⎕wi "value" (¯1↑0,selection)[24]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.edminsdat" ⎕wi "text" (DLTB minsdat)[25]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbfndate" ⎕wi "list"[26]  selection←(StripText PickList) ExactTLU DLTB StripText fndate[27]  :if mt selection[28]      modified←⌈/modified,0[29]  :endif[30]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbfndate" ⎕wi "value" (¯1↑0,selection)[31]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.edmaxfdat" ⎕wi "text" (DLTB maxfdat)[32]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbsERVrND" ⎕wi "list"[33]  selection←PickList ExactTLU DLTB sERVrND[34]  :if mt selection[35]      :if ~mt DLTB sERVrND[36]          warnings←warnings OVER "Previous Selection for 'Service Rounding Override' is no longer available"[37]      :endif[38]      modified←⌈/modified,0[39]  :endif[40]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbsERVrND" ⎕wi "value" (¯1↑0,selection)[41]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbaddyrs" ⎕wi "list"[42]  selection←(StripText PickList) ExactTLU DLTB StripText addyrs[43]  :if mt selection[44]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbaddyrs" ⎕wi "text" (DLTB addyrs)[45]  :else[46]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbaddyrs" ⎕wi "value" selection[47]  :endif[48]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayStart" ⎕wi "list"[49]  selection←(StripText PickList) ExactTLU DLTB StripText m_PayStart[50]  :if mt selection[51]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayStart" ⎕wi "text" (DLTB m_PayStart)[52]  :else[53]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayStart" ⎕wi "value" selection[54]  :endif[55]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayStart" ⎕wi "list"[56]  selection←(StripText PickList) ExactTLU DLTB StripText f_PayStart[57]  :if mt selection[58]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayStart" ⎕wi "text" (DLTB f_PayStart)[59]  :else[60]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayStart" ⎕wi "value" selection[61]  :endif[62]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayEnd" ⎕wi "list"[63]  selection←(StripText PickList) ExactTLU DLTB StripText m_PayEnd[64]  :if mt selection[65]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayEnd" ⎕wi "text" (DLTB m_PayEnd)[66]  :else[67]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayEnd" ⎕wi "value" selection[68]  :endif[69]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayEnd" ⎕wi "list"[70]  selection←(StripText PickList) ExactTLU DLTB StripText f_PayEnd[71]  :if mt selection[72]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayEnd" ⎕wi "text" (DLTB f_PayEnd)[73]  :else[74]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayEnd" ⎕wi "value" selection[75]  :endif[76]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbrevdefind" ⎕wi "list"[77]  selection←PickList ExactTLU DLTB revdefind[78]  :if mt selection[79]      :if ~mt DLTB revdefind[80]          warnings←warnings OVER "Previous Selection for 'Revaluation in Deferment' is no longer available"[81]      :endif[82]      modified←⌈/modified,1[83]  :endif[84]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbrevdefind" ⎕wi "value" (¯1↑1,selection)[85]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbdynind" ⎕wi "list"[86]  selection←PickList ExactTLU DLTB dynind[87]  :if mt selection[88]      :if ~mt DLTB dynind[89]          warnings←warnings OVER "Previous Selection for 'Pension Increases in Payment' is no longer available"[90]      :endif[91]      modified←⌈/modified,1[92]  :endif[93]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbdynind" ⎕wi "value" (¯1↑1,selection)[94]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbdynind2" ⎕wi "list"[95]  selection←PickList ExactTLU DLTB dynind2[96]  :if mt selection[97]      :if ~mt DLTB dynind2[98]          warnings←warnings OVER "Previous Selection for 'Pension Increases Pre Start' is no longer available"[99]      :endif[100]     modified←⌈/modified,1[101] :endif[102] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbdynind2" ⎕wi "value" (¯1↑1,selection)[103] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.ckupinslind" ⎕wi "value" (zwb upinslind)[104] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbaccbasis" ⎕wi "list"[105] selection←PickList ExactTLU DLTB accbasis[106] :if mt selection[107]     :if ~mt DLTB accbasis[108]         warnings←warnings OVER "Previous Selection for 'Benefit Basis' is no longer available"[109]     :endif[110]     modified←⌈/modified,1[111] :endif[112] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbaccbasis" ⎕wi "value" (¯1↑1,selection)[113] [114] :if ~bGAD[115] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbbarbind" ⎕wi "list"[116] selection←PickList ExactTLU DLTB barbind[117] :if mt selection[118]     :if ~mt DLTB barbind[119]         warnings←warnings OVER "Previous Selection for 'ERF Tables' is no longer available"[120]     :endif[121]     modified←⌈/modified,1[122] :endif[123] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbbarbind" ⎕wi "value" (¯1↑1,selection)[124] :endif[125] [126] :if bGAD[127] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbbarbind" ⎕wi "list"[128] selection←PickList ExactTLU DLTB barbind[129] :if mt selection[130]     :if ~mt DLTB barbind[131]         warnings←warnings OVER "Previous Selection for 'ERF/LRF Tables' is no longer available"[132]     :endif[133]     modified←⌈/modified,1[134] :endif[135] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbbarbind" ⎕wi "value" (¯1↑1,selection)[136] :endif[137] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.edwarfrac2" ⎕wi "text" (DLTB warfrac2)[138] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cktier2defined" ⎕wi "value" (zwb tier2defined)[139] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cktier3defined" ⎕wi "value" (zwb tier3defined)[140] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbm_ppfnra" ⎕wi "list"[141] selection←PickList ExactTLU DLTB m_ppfnra[142] :if mt selection[143]     :if ~mt DLTB m_ppfnra[144]         warnings←warnings OVER "Previous Selection for 'Male PPF NRA (Levy Valuations)' is no longer available"[145]     :endif[146]     modified←⌈/modified,1[147] :endif[148] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbm_ppfnra" ⎕wi "value" (¯1↑1,selection)[149] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbf_ppfnra" ⎕wi "list"[150] selection←PickList ExactTLU DLTB f_ppfnra[151] :if mt selection[152]     :if ~mt DLTB f_ppfnra[153]         warnings←warnings OVER "Previous Selection for 'Female PPF NRA (Levy Valuations)' is no longer available"[154]     :endif[155]     modified←⌈/modified,1[156] :endif[157] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbf_ppfnra" ⎕wi "value" (¯1↑1,selection)[158] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbppfpayinca" ⎕wi "list"[159] selection←PickList ExactTLU DLTB ppfpayinca[160] :if mt selection[161]     :if ~mt DLTB ppfpayinca[162]         warnings←warnings OVER "Previous Selection for 'PPF Service Period' is no longer available"[163]     :endif[164]     modified←⌈/modified,1[165] :endif[166] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbppfpayinca" ⎕wi "value" (¯1↑1,selection)[167] :endif[168] :if (⊂"pgTier1")∊"fmEditIndSlice.sEdit_IndSlice" ⎕wi "pages"[169] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbTIERSAL1" ⎕wi "list"[170] selection←PickList ExactTLU DLTB TIERSAL[1;][171] :if mt selection[172]     :if ~mt DLTB TIERSAL[1;][173]         warnings←warnings OVER "Previous Selection for 'Salary' is no longer available"[174]     :endif[175]     modified←⌈/modified,0[176] :endif[177] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbTIERSAL1" ⎕wi "value" (¯1↑0,selection)[178] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.edaccmlt1" ⎕wi "text" (DLTB accmlt[1;])[179] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.edaccdiv1" ⎕wi "text" (DLTB accdiv[1;])[180] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbaccdata1" ⎕wi "list"[181] selection←(StripText PickList) ExactTLU DLTB StripText accdata[1;][182] :if mt selection[183]     :if ~mt DLTB accdata[1;][184]         warnings←warnings OVER "Previous Selection for 'Accrual Rate Data Item' is no longer available"[185]     :endif[186]     modified←⌈/modified,0[187] :endif[188] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbaccdata1" ⎕wi "value" (¯1↑0,selection)[189] 0 0⍴GetDecrList "List"[190] warnings←warnings OVER "Accrual Rate Table" Win∆CheckDecr (ACCRUALTAB[1;]) (lrACCRUALTAB1)[191] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.edACCRUALTAB1" ⎕wi "text" (DLTB ACCRUALTAB[1;])[192] 0 0⍴GetDecrList "List"[193] warnings←warnings OVER "Accelerated Service Table" Win∆CheckDecr (SERVICETAB[1;]) (lrSERVICETAB1)[194] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.edSERVICETAB1" ⎕wi "text" (DLTB SERVICETAB[1;])[195] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbFIXED1" ⎕wi "list"[196] selection←(StripText PickList) ExactTLU DLTB StripText FIXED[1;][197] :if mt selection[198]     :if ~mt DLTB FIXED[1;][199]         warnings←warnings OVER "Previous Selection for 'Fixed Pension' is no longer available"[200]     :endif[201]     modified←⌈/modified,0[202] :endif[203] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbFIXED1" ⎕wi "value" (¯1↑0,selection)[204] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbminpen1" ⎕wi "list"[205] selection←(StripText PickList) ExactTLU DLTB StripText minpen[1;][206] :if mt selection[207]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbminpen1" ⎕wi "text" (DLTB minpen[1;])[208] :else[209]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbminpen1" ⎕wi "value" selection[210] :endif[211] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbmaxpen1" ⎕wi "list"[212] selection←(StripText PickList) ExactTLU DLTB StripText maxpen[1;][213] :if mt selection[214]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbmaxpen1" ⎕wi "text" (DLTB maxpen[1;])[215] :else[216]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbmaxpen1" ⎕wi "value" selection[217] :endif[218] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbpenadj1" ⎕wi "list"[219] warnings←warnings OVER "Pension Adjustment Factor" Win∆NumRelative "penadj[1;]" "lrpenadj1" ('Scalar')[220] selection←(StripText PickList) ExactTLU DLTB StripText penadj[1;][221] :if mt selection[222]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbpenadj1" ⎕wi "text" (DLTB penadj[1;])[223] :else[224]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbpenadj1" ⎕wi "value" selection[225] :endif[226] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.ckDEDUCTTIER11" ⎕wi "value" (zwb DEDUCTTIER1[1;])[227] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.ckDEDUCTTIER21" ⎕wi "value" (zwb DEDUCTTIER2[1;])[228] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbm_ppfadj1" ⎕wi "list"[229] warnings←warnings OVER "Male PPF Adjustment Factor" Win∆NumRelative "m_ppfadj[1;]" "lrm_ppfadj1" ('Scalar')[230] selection←(StripText PickList) ExactTLU DLTB StripText m_ppfadj[1;][231] :if mt selection[232]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbm_ppfadj1" ⎕wi "text" (DLTB m_ppfadj[1;])[233] :else[234]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbm_ppfadj1" ⎕wi "value" selection[235] :endif[236] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbf_ppfadj1" ⎕wi "list"[237] warnings←warnings OVER "Female PPF Adjustment Factor" Win∆NumRelative "f_ppfadj[1;]" "lrf_ppfadj1" ('Scalar')[238] selection←(StripText PickList) ExactTLU DLTB StripText f_ppfadj[1;][239] :if mt selection[240]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbf_ppfadj1" ⎕wi "text" (DLTB f_ppfadj[1;])[241] :else[242]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbf_ppfadj1" ⎕wi "value" selection[243] :endif[244] :endif[245] :if (⊂"pgTier2")∊"fmEditIndSlice.sEdit_IndSlice" ⎕wi "pages"[246] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbTIERSAL2" ⎕wi "list"[247] selection←PickList ExactTLU DLTB TIERSAL[2;][248] :if mt selection[249]     :if ~mt DLTB TIERSAL[2;][250]         warnings←warnings OVER "Previous Selection for 'Salary' is no longer available"[251]     :endif[252]     modified←⌈/modified,0[253] :endif[254] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbTIERSAL2" ⎕wi "value" (¯1↑0,selection)[255] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.edaccmlt2" ⎕wi "text" (DLTB accmlt[2;])[256] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.edaccdiv2" ⎕wi "text" (DLTB accdiv[2;])[257] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbaccdata2" ⎕wi "list"[258] selection←(StripText PickList) ExactTLU DLTB StripText accdata[2;][259] :if mt selection[260]     :if ~mt DLTB accdata[2;][261]         warnings←warnings OVER "Previous Selection for 'Accrual Rate Data Item' is no longer available"[262]     :endif[263]     modified←⌈/modified,0[264] :endif[265] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbaccdata2" ⎕wi "value" (¯1↑0,selection)[266] 0 0⍴GetDecrList "List"[267] warnings←warnings OVER "Accrual Rate Table" Win∆CheckDecr (ACCRUALTAB[2;]) (lrACCRUALTAB2)[268] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.edACCRUALTAB2" ⎕wi "text" (DLTB ACCRUALTAB[2;])[269] 0 0⍴GetDecrList "List"[270] warnings←warnings OVER "Accelerated Service Table" Win∆CheckDecr (SERVICETAB[2;]) (lrSERVICETAB2)[271] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.edSERVICETAB2" ⎕wi "text" (DLTB SERVICETAB[2;])[272] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbFIXED2" ⎕wi "list"[273] selection←(StripText PickList) ExactTLU DLTB StripText FIXED[2;][274] :if mt selection[275]     :if ~mt DLTB FIXED[2;][276]         warnings←warnings OVER "Previous Selection for 'Fixed Pension' is no longer available"[277]     :endif[278]     modified←⌈/modified,0[279] :endif[280] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbFIXED2" ⎕wi "value" (¯1↑0,selection)[281] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbminpen2" ⎕wi "list"[282] selection←(StripText PickList) ExactTLU DLTB StripText minpen[2;][283] :if mt selection[284]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbminpen2" ⎕wi "text" (DLTB minpen[2;])[285] :else[286]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbminpen2" ⎕wi "value" selection[287] :endif[288] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbmaxpen2" ⎕wi "list"[289] selection←(StripText PickList) ExactTLU DLTB StripText maxpen[2;][290] :if mt selection[291]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbmaxpen2" ⎕wi "text" (DLTB maxpen[2;])[292] :else[293]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbmaxpen2" ⎕wi "value" selection[294] :endif[295] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbpenadj2" ⎕wi "list"[296] warnings←warnings OVER "Pension Adjustment Factor" Win∆NumRelative "penadj[2;]" "lrpenadj2" ('Scalar')[297] selection←(StripText PickList) ExactTLU DLTB StripText penadj[2;][298] :if mt selection[299]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbpenadj2" ⎕wi "text" (DLTB penadj[2;])[300] :else[301]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbpenadj2" ⎕wi "value" selection[302] :endif[303] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.ckDEDUCTTIER12" ⎕wi "value" (zwb DEDUCTTIER1[2;])[304] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.ckDEDUCTTIER22" ⎕wi "value" (zwb DEDUCTTIER2[2;])[305] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbm_ppfadj2" ⎕wi "list"[306] warnings←warnings OVER "Male PPF Adjustment Factor" Win∆NumRelative "m_ppfadj[2;]" "lrm_ppfadj2" ('Scalar')[307] selection←(StripText PickList) ExactTLU DLTB StripText m_ppfadj[2;][308] :if mt selection[309]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbm_ppfadj2" ⎕wi "text" (DLTB m_ppfadj[2;])[310] :else[311]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbm_ppfadj2" ⎕wi "value" selection[312] :endif[313] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbf_ppfadj2" ⎕wi "list"[314] warnings←warnings OVER "Female PPF Adjustment Factor" Win∆NumRelative "f_ppfadj[2;]" "lrf_ppfadj2" ('Scalar')[315] selection←(StripText PickList) ExactTLU DLTB StripText f_ppfadj[2;][316] :if mt selection[317]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbf_ppfadj2" ⎕wi "text" (DLTB f_ppfadj[2;])[318] :else[319]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbf_ppfadj2" ⎕wi "value" selection[320] :endif[321] :endif[322] :if (⊂"pgTier3")∊"fmEditIndSlice.sEdit_IndSlice" ⎕wi "pages"[323] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbTIERSAL3" ⎕wi "list"[324] selection←PickList ExactTLU DLTB TIERSAL[3;][325] :if mt selection[326]     :if ~mt DLTB TIERSAL[3;][327]         warnings←warnings OVER "Previous Selection for 'Salary' is no longer available"[328]     :endif[329]     modified←⌈/modified,0[330] :endif[331] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbTIERSAL3" ⎕wi "value" (¯1↑0,selection)[332] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.edaccmlt3" ⎕wi "text" (DLTB accmlt[3;])[333] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.edaccdiv3" ⎕wi "text" (DLTB accdiv[3;])[334] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbaccdata3" ⎕wi "list"[335] selection←(StripText PickList) ExactTLU DLTB StripText accdata[3;][336] :if mt selection[337]     :if ~mt DLTB accdata[3;][338]         warnings←warnings OVER "Previous Selection for 'Accrual Rate Data Item' is no longer available"[339]     :endif[340]     modified←⌈/modified,0[341] :endif[342] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbaccdata3" ⎕wi "value" (¯1↑0,selection)[343] 0 0⍴GetDecrList "List"[344] warnings←warnings OVER "Accrual Rate Table" Win∆CheckDecr (ACCRUALTAB[3;]) (lrACCRUALTAB3)[345] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.edACCRUALTAB3" ⎕wi "text" (DLTB ACCRUALTAB[3;])[346] 0 0⍴GetDecrList "List"[347] warnings←warnings OVER "Accelerated Service Table" Win∆CheckDecr (SERVICETAB[3;]) (lrSERVICETAB3)[348] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.edSERVICETAB3" ⎕wi "text" (DLTB SERVICETAB[3;])[349] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbFIXED3" ⎕wi "list"[350] selection←(StripText PickList) ExactTLU DLTB StripText FIXED[3;][351] :if mt selection[352]     :if ~mt DLTB FIXED[3;][353]         warnings←warnings OVER "Previous Selection for 'Fixed Pension' is no longer available"[354]     :endif[355]     modified←⌈/modified,0[356] :endif[357] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbFIXED3" ⎕wi "value" (¯1↑0,selection)[358] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbminpen3" ⎕wi "list"[359] selection←(StripText PickList) ExactTLU DLTB StripText minpen[3;][360] :if mt selection[361]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbminpen3" ⎕wi "text" (DLTB minpen[3;])[362] :else[363]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbminpen3" ⎕wi "value" selection[364] :endif[365] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbmaxpen3" ⎕wi "list"[366] selection←(StripText PickList) ExactTLU DLTB StripText maxpen[3;][367] :if mt selection[368]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbmaxpen3" ⎕wi "text" (DLTB maxpen[3;])[369] :else[370]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbmaxpen3" ⎕wi "value" selection[371] :endif[372] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbpenadj3" ⎕wi "list"[373] warnings←warnings OVER "Pension Adjustment Factor" Win∆NumRelative "penadj[3;]" "lrpenadj3" ('Scalar')[374] selection←(StripText PickList) ExactTLU DLTB StripText penadj[3;][375] :if mt selection[376]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbpenadj3" ⎕wi "text" (DLTB penadj[3;])[377] :else[378]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbpenadj3" ⎕wi "value" selection[379] :endif[380] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.ckDEDUCTTIER13" ⎕wi "value" (zwb DEDUCTTIER1[3;])[381] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.ckDEDUCTTIER23" ⎕wi "value" (zwb DEDUCTTIER2[3;])[382] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbm_ppfadj3" ⎕wi "list"[383] warnings←warnings OVER "Male PPF Adjustment Factor" Win∆NumRelative "m_ppfadj[3;]" "lrm_ppfadj3" ('Scalar')[384] selection←(StripText PickList) ExactTLU DLTB StripText m_ppfadj[3;][385] :if mt selection[386]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbm_ppfadj3" ⎕wi "text" (DLTB m_ppfadj[3;])[387] :else[388]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbm_ppfadj3" ⎕wi "value" selection[389] :endif[390] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbf_ppfadj3" ⎕wi "list"[391] warnings←warnings OVER "Female PPF Adjustment Factor" Win∆NumRelative "f_ppfadj[3;]" "lrf_ppfadj3" ('Scalar')[392] selection←(StripText PickList) ExactTLU DLTB StripText f_ppfadj[3;][393] :if mt selection[394]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbf_ppfadj3" ⎕wi "text" (DLTB f_ppfadj[3;])[395] :else[396]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbf_ppfadj3" ⎕wi "value" selection[397] :endif[398] :endif[399] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Edit_IndSlice[400]     :for var :in spin Comment_Edit_IndSlice at "variable" "row" ⋄ (var row)←var[401]         "Edit_IndSlice" ParmColor ((FormFields for "variable" var) at "control"),var row 1[402]     :endfor[403] :endif[404] :if ~0∊⍴,warnings[405]     MDISPLAY DLTMB warnings,⎕tcnl[406]     Win∆AssignVars "fmEditIndSlice.sEdit_IndSlice"[407] :endif[408] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Edit_IndSlice" "" "Names"[409]     "fmEditIndSlice.sEdit_IndSlice" ⎕wi "modified" 0[410] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Edit_IndSlice" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Edit_IndSlice" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   :if (⊂"pgSlice")∊"fmEditIndSlice.sEdit_IndSlice" ⎕wi "pages"
+[10]  "Formattrick" Win∆Inherits "FormatA"
+[11]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.cbFormattrick" ⎕wi "list"
+[12]  selection←PickList ExactTLU DLTB Formattrick
+[13]  :if mt selection
+[14]      modified←⌈/modified,0
+[15]  :endif
+[16]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.cbFormattrick" ⎕wi "value" (¯1↑0,selection)
+[17]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.edSLICEDESC" ⎕wi "text" (DLTB SLICEDESC)
+[18]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbstdate" ⎕wi "list"
+[19]  selection←(StripText PickList) ExactTLU DLTB StripText stdate
+[20]  :if mt selection
+[21]      modified←⌈/modified,0
+[22]  :endif
+[23]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbstdate" ⎕wi "value" (¯1↑0,selection)
+[24]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.edminsdat" ⎕wi "text" (DLTB minsdat)
+[25]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbfndate" ⎕wi "list"
+[26]  selection←(StripText PickList) ExactTLU DLTB StripText fndate
+[27]  :if mt selection
+[28]      modified←⌈/modified,0
+[29]  :endif
+[30]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbfndate" ⎕wi "value" (¯1↑0,selection)
+[31]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.edmaxfdat" ⎕wi "text" (DLTB maxfdat)
+[32]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbsERVrND" ⎕wi "list"
+[33]  selection←PickList ExactTLU DLTB sERVrND
+[34]  :if mt selection
+[35]      :if ~mt DLTB sERVrND
+[36]          warnings←warnings OVER "Previous Selection for 'Service Rounding Override' is no longer available"
+[37]      :endif
+[38]      modified←⌈/modified,0
+[39]  :endif
+[40]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbsERVrND" ⎕wi "value" (¯1↑0,selection)
+[41]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbaddyrs" ⎕wi "list"
+[42]  selection←(StripText PickList) ExactTLU DLTB StripText addyrs
+[43]  :if mt selection
+[44]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbaddyrs" ⎕wi "text" (DLTB addyrs)
+[45]  :else
+[46]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fService.cbaddyrs" ⎕wi "value" selection
+[47]  :endif
+[48]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayStart" ⎕wi "list"
+[49]  selection←(StripText PickList) ExactTLU DLTB StripText m_PayStart
+[50]  :if mt selection
+[51]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayStart" ⎕wi "text" (DLTB m_PayStart)
+[52]  :else
+[53]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayStart" ⎕wi "value" selection
+[54]  :endif
+[55]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayStart" ⎕wi "list"
+[56]  selection←(StripText PickList) ExactTLU DLTB StripText f_PayStart
+[57]  :if mt selection
+[58]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayStart" ⎕wi "text" (DLTB f_PayStart)
+[59]  :else
+[60]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayStart" ⎕wi "value" selection
+[61]  :endif
+[62]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayEnd" ⎕wi "list"
+[63]  selection←(StripText PickList) ExactTLU DLTB StripText m_PayEnd
+[64]  :if mt selection
+[65]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayEnd" ⎕wi "text" (DLTB m_PayEnd)
+[66]  :else
+[67]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbm_PayEnd" ⎕wi "value" selection
+[68]  :endif
+[69]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayEnd" ⎕wi "list"
+[70]  selection←(StripText PickList) ExactTLU DLTB StripText f_PayEnd
+[71]  :if mt selection
+[72]          "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayEnd" ⎕wi "text" (DLTB f_PayEnd)
+[73]  :else
+[74]      "fmEditIndSlice.sEdit_IndSlice.pgSlice.fAges.cbf_PayEnd" ⎕wi "value" selection
+[75]  :endif
+[76]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbrevdefind" ⎕wi "list"
+[77]  selection←PickList ExactTLU DLTB revdefind
+[78]  :if mt selection
+[79]      :if ~mt DLTB revdefind
+[80]          warnings←warnings OVER "Previous Selection for 'Revaluation in Deferment' is no longer available"
+[81]      :endif
+[82]      modified←⌈/modified,1
+[83]  :endif
+[84]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbrevdefind" ⎕wi "value" (¯1↑1,selection)
+[85]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbdynind" ⎕wi "list"
+[86]  selection←PickList ExactTLU DLTB dynind
+[87]  :if mt selection
+[88]      :if ~mt DLTB dynind
+[89]          warnings←warnings OVER "Previous Selection for 'Pension Increases in Payment' is no longer available"
+[90]      :endif
+[91]      modified←⌈/modified,1
+[92]  :endif
+[93]  "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbdynind" ⎕wi "value" (¯1↑1,selection)
+[94]  PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbdynind2" ⎕wi "list"
+[95]  selection←PickList ExactTLU DLTB dynind2
+[96]  :if mt selection
+[97]      :if ~mt DLTB dynind2
+[98]          warnings←warnings OVER "Previous Selection for 'Pension Increases Pre Start' is no longer available"
+[99]      :endif
+[100]     modified←⌈/modified,1
+[101] :endif
+[102] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbdynind2" ⎕wi "value" (¯1↑1,selection)
+[103] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.ckupinslind" ⎕wi "value" (zwb upinslind)
+[104] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbaccbasis" ⎕wi "list"
+[105] selection←PickList ExactTLU DLTB accbasis
+[106] :if mt selection
+[107]     :if ~mt DLTB accbasis
+[108]         warnings←warnings OVER "Previous Selection for 'Benefit Basis' is no longer available"
+[109]     :endif
+[110]     modified←⌈/modified,1
+[111] :endif
+[112] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbaccbasis" ⎕wi "value" (¯1↑1,selection)
+[113] 
+[114] :if ~bGAD
+[115] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbbarbind" ⎕wi "list"
+[116] selection←PickList ExactTLU DLTB barbind
+[117] :if mt selection
+[118]     :if ~mt DLTB barbind
+[119]         warnings←warnings OVER "Previous Selection for 'ERF Tables' is no longer available"
+[120]     :endif
+[121]     modified←⌈/modified,1
+[122] :endif
+[123] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbbarbind" ⎕wi "value" (¯1↑1,selection)
+[124] :endif
+[125] 
+[126] :if bGAD
+[127] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbbarbind" ⎕wi "list"
+[128] selection←PickList ExactTLU DLTB barbind
+[129] :if mt selection
+[130]     :if ~mt DLTB barbind
+[131]         warnings←warnings OVER "Previous Selection for 'ERF/LRF Tables' is no longer available"
+[132]     :endif
+[133]     modified←⌈/modified,1
+[134] :endif
+[135] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cbbarbind" ⎕wi "value" (¯1↑1,selection)
+[136] :endif
+[137] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.edwarfrac2" ⎕wi "text" (DLTB warfrac2)
+[138] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cktier2defined" ⎕wi "value" (zwb tier2defined)
+[139] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fSlice.cktier3defined" ⎕wi "value" (zwb tier3defined)
+[140] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbm_ppfnra" ⎕wi "list"
+[141] selection←PickList ExactTLU DLTB m_ppfnra
+[142] :if mt selection
+[143]     :if ~mt DLTB m_ppfnra
+[144]         warnings←warnings OVER "Previous Selection for 'Male PPF NRA (Levy Valuations)' is no longer available"
+[145]     :endif
+[146]     modified←⌈/modified,1
+[147] :endif
+[148] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbm_ppfnra" ⎕wi "value" (¯1↑1,selection)
+[149] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbf_ppfnra" ⎕wi "list"
+[150] selection←PickList ExactTLU DLTB f_ppfnra
+[151] :if mt selection
+[152]     :if ~mt DLTB f_ppfnra
+[153]         warnings←warnings OVER "Previous Selection for 'Female PPF NRA (Levy Valuations)' is no longer available"
+[154]     :endif
+[155]     modified←⌈/modified,1
+[156] :endif
+[157] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbf_ppfnra" ⎕wi "value" (¯1↑1,selection)
+[158] PickList←"fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbppfpayinca" ⎕wi "list"
+[159] selection←PickList ExactTLU DLTB ppfpayinca
+[160] :if mt selection
+[161]     :if ~mt DLTB ppfpayinca
+[162]         warnings←warnings OVER "Previous Selection for 'PPF Service Period' is no longer available"
+[163]     :endif
+[164]     modified←⌈/modified,1
+[165] :endif
+[166] "fmEditIndSlice.sEdit_IndSlice.pgSlice.fPPF.cbppfpayinca" ⎕wi "value" (¯1↑1,selection)
+[167] :endif
+[168] :if (⊂"pgTier1")∊"fmEditIndSlice.sEdit_IndSlice" ⎕wi "pages"
+[169] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbTIERSAL1" ⎕wi "list"
+[170] selection←PickList ExactTLU DLTB TIERSAL[1;]
+[171] :if mt selection
+[172]     :if ~mt DLTB TIERSAL[1;]
+[173]         warnings←warnings OVER "Previous Selection for 'Salary' is no longer available"
+[174]     :endif
+[175]     modified←⌈/modified,0
+[176] :endif
+[177] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbTIERSAL1" ⎕wi "value" (¯1↑0,selection)
+[178] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.edaccmlt1" ⎕wi "text" (DLTB accmlt[1;])
+[179] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.edaccdiv1" ⎕wi "text" (DLTB accdiv[1;])
+[180] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbaccdata1" ⎕wi "list"
+[181] selection←(StripText PickList) ExactTLU DLTB StripText accdata[1;]
+[182] :if mt selection
+[183]     :if ~mt DLTB accdata[1;]
+[184]         warnings←warnings OVER "Previous Selection for 'Accrual Rate Data Item' is no longer available"
+[185]     :endif
+[186]     modified←⌈/modified,0
+[187] :endif
+[188] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbaccdata1" ⎕wi "value" (¯1↑0,selection)
+[189] 0 0⍴GetDecrList "List"
+[190] warnings←warnings OVER "Accrual Rate Table" Win∆CheckDecr (ACCRUALTAB[1;]) (lrACCRUALTAB1)
+[191] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.edACCRUALTAB1" ⎕wi "text" (DLTB ACCRUALTAB[1;])
+[192] 0 0⍴GetDecrList "List"
+[193] warnings←warnings OVER "Accelerated Service Table" Win∆CheckDecr (SERVICETAB[1;]) (lrSERVICETAB1)
+[194] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.edSERVICETAB1" ⎕wi "text" (DLTB SERVICETAB[1;])
+[195] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbFIXED1" ⎕wi "list"
+[196] selection←(StripText PickList) ExactTLU DLTB StripText FIXED[1;]
+[197] :if mt selection
+[198]     :if ~mt DLTB FIXED[1;]
+[199]         warnings←warnings OVER "Previous Selection for 'Fixed Pension' is no longer available"
+[200]     :endif
+[201]     modified←⌈/modified,0
+[202] :endif
+[203] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAccrual.cbFIXED1" ⎕wi "value" (¯1↑0,selection)
+[204] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbminpen1" ⎕wi "list"
+[205] selection←(StripText PickList) ExactTLU DLTB StripText minpen[1;]
+[206] :if mt selection
+[207]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbminpen1" ⎕wi "text" (DLTB minpen[1;])
+[208] :else
+[209]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbminpen1" ⎕wi "value" selection
+[210] :endif
+[211] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbmaxpen1" ⎕wi "list"
+[212] selection←(StripText PickList) ExactTLU DLTB StripText maxpen[1;]
+[213] :if mt selection
+[214]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbmaxpen1" ⎕wi "text" (DLTB maxpen[1;])
+[215] :else
+[216]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbmaxpen1" ⎕wi "value" selection
+[217] :endif
+[218] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbpenadj1" ⎕wi "list"
+[219] warnings←warnings OVER "Pension Adjustment Factor" Win∆NumRelative "penadj[1;]" "lrpenadj1" ('Scalar')
+[220] selection←(StripText PickList) ExactTLU DLTB StripText penadj[1;]
+[221] :if mt selection
+[222]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbpenadj1" ⎕wi "text" (DLTB penadj[1;])
+[223] :else
+[224]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.cbpenadj1" ⎕wi "value" selection
+[225] :endif
+[226] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.ckDEDUCTTIER11" ⎕wi "value" (zwb DEDUCTTIER1[1;])
+[227] "fmEditIndSlice.sEdit_IndSlice.pgTier1.fAdjust.ckDEDUCTTIER21" ⎕wi "value" (zwb DEDUCTTIER2[1;])
+[228] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbm_ppfadj1" ⎕wi "list"
+[229] warnings←warnings OVER "Male PPF Adjustment Factor" Win∆NumRelative "m_ppfadj[1;]" "lrm_ppfadj1" ('Scalar')
+[230] selection←(StripText PickList) ExactTLU DLTB StripText m_ppfadj[1;]
+[231] :if mt selection
+[232]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbm_ppfadj1" ⎕wi "text" (DLTB m_ppfadj[1;])
+[233] :else
+[234]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbm_ppfadj1" ⎕wi "value" selection
+[235] :endif
+[236] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbf_ppfadj1" ⎕wi "list"
+[237] warnings←warnings OVER "Female PPF Adjustment Factor" Win∆NumRelative "f_ppfadj[1;]" "lrf_ppfadj1" ('Scalar')
+[238] selection←(StripText PickList) ExactTLU DLTB StripText f_ppfadj[1;]
+[239] :if mt selection
+[240]         "fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbf_ppfadj1" ⎕wi "text" (DLTB f_ppfadj[1;])
+[241] :else
+[242]     "fmEditIndSlice.sEdit_IndSlice.pgTier1.fPPF.cbf_ppfadj1" ⎕wi "value" selection
+[243] :endif
+[244] :endif
+[245] :if (⊂"pgTier2")∊"fmEditIndSlice.sEdit_IndSlice" ⎕wi "pages"
+[246] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbTIERSAL2" ⎕wi "list"
+[247] selection←PickList ExactTLU DLTB TIERSAL[2;]
+[248] :if mt selection
+[249]     :if ~mt DLTB TIERSAL[2;]
+[250]         warnings←warnings OVER "Previous Selection for 'Salary' is no longer available"
+[251]     :endif
+[252]     modified←⌈/modified,0
+[253] :endif
+[254] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbTIERSAL2" ⎕wi "value" (¯1↑0,selection)
+[255] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.edaccmlt2" ⎕wi "text" (DLTB accmlt[2;])
+[256] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.edaccdiv2" ⎕wi "text" (DLTB accdiv[2;])
+[257] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbaccdata2" ⎕wi "list"
+[258] selection←(StripText PickList) ExactTLU DLTB StripText accdata[2;]
+[259] :if mt selection
+[260]     :if ~mt DLTB accdata[2;]
+[261]         warnings←warnings OVER "Previous Selection for 'Accrual Rate Data Item' is no longer available"
+[262]     :endif
+[263]     modified←⌈/modified,0
+[264] :endif
+[265] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbaccdata2" ⎕wi "value" (¯1↑0,selection)
+[266] 0 0⍴GetDecrList "List"
+[267] warnings←warnings OVER "Accrual Rate Table" Win∆CheckDecr (ACCRUALTAB[2;]) (lrACCRUALTAB2)
+[268] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.edACCRUALTAB2" ⎕wi "text" (DLTB ACCRUALTAB[2;])
+[269] 0 0⍴GetDecrList "List"
+[270] warnings←warnings OVER "Accelerated Service Table" Win∆CheckDecr (SERVICETAB[2;]) (lrSERVICETAB2)
+[271] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.edSERVICETAB2" ⎕wi "text" (DLTB SERVICETAB[2;])
+[272] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbFIXED2" ⎕wi "list"
+[273] selection←(StripText PickList) ExactTLU DLTB StripText FIXED[2;]
+[274] :if mt selection
+[275]     :if ~mt DLTB FIXED[2;]
+[276]         warnings←warnings OVER "Previous Selection for 'Fixed Pension' is no longer available"
+[277]     :endif
+[278]     modified←⌈/modified,0
+[279] :endif
+[280] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAccrual.cbFIXED2" ⎕wi "value" (¯1↑0,selection)
+[281] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbminpen2" ⎕wi "list"
+[282] selection←(StripText PickList) ExactTLU DLTB StripText minpen[2;]
+[283] :if mt selection
+[284]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbminpen2" ⎕wi "text" (DLTB minpen[2;])
+[285] :else
+[286]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbminpen2" ⎕wi "value" selection
+[287] :endif
+[288] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbmaxpen2" ⎕wi "list"
+[289] selection←(StripText PickList) ExactTLU DLTB StripText maxpen[2;]
+[290] :if mt selection
+[291]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbmaxpen2" ⎕wi "text" (DLTB maxpen[2;])
+[292] :else
+[293]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbmaxpen2" ⎕wi "value" selection
+[294] :endif
+[295] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbpenadj2" ⎕wi "list"
+[296] warnings←warnings OVER "Pension Adjustment Factor" Win∆NumRelative "penadj[2;]" "lrpenadj2" ('Scalar')
+[297] selection←(StripText PickList) ExactTLU DLTB StripText penadj[2;]
+[298] :if mt selection
+[299]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbpenadj2" ⎕wi "text" (DLTB penadj[2;])
+[300] :else
+[301]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.cbpenadj2" ⎕wi "value" selection
+[302] :endif
+[303] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.ckDEDUCTTIER12" ⎕wi "value" (zwb DEDUCTTIER1[2;])
+[304] "fmEditIndSlice.sEdit_IndSlice.pgTier2.fAdjust.ckDEDUCTTIER22" ⎕wi "value" (zwb DEDUCTTIER2[2;])
+[305] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbm_ppfadj2" ⎕wi "list"
+[306] warnings←warnings OVER "Male PPF Adjustment Factor" Win∆NumRelative "m_ppfadj[2;]" "lrm_ppfadj2" ('Scalar')
+[307] selection←(StripText PickList) ExactTLU DLTB StripText m_ppfadj[2;]
+[308] :if mt selection
+[309]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbm_ppfadj2" ⎕wi "text" (DLTB m_ppfadj[2;])
+[310] :else
+[311]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbm_ppfadj2" ⎕wi "value" selection
+[312] :endif
+[313] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbf_ppfadj2" ⎕wi "list"
+[314] warnings←warnings OVER "Female PPF Adjustment Factor" Win∆NumRelative "f_ppfadj[2;]" "lrf_ppfadj2" ('Scalar')
+[315] selection←(StripText PickList) ExactTLU DLTB StripText f_ppfadj[2;]
+[316] :if mt selection
+[317]         "fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbf_ppfadj2" ⎕wi "text" (DLTB f_ppfadj[2;])
+[318] :else
+[319]     "fmEditIndSlice.sEdit_IndSlice.pgTier2.fPPF.cbf_ppfadj2" ⎕wi "value" selection
+[320] :endif
+[321] :endif
+[322] :if (⊂"pgTier3")∊"fmEditIndSlice.sEdit_IndSlice" ⎕wi "pages"
+[323] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbTIERSAL3" ⎕wi "list"
+[324] selection←PickList ExactTLU DLTB TIERSAL[3;]
+[325] :if mt selection
+[326]     :if ~mt DLTB TIERSAL[3;]
+[327]         warnings←warnings OVER "Previous Selection for 'Salary' is no longer available"
+[328]     :endif
+[329]     modified←⌈/modified,0
+[330] :endif
+[331] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbTIERSAL3" ⎕wi "value" (¯1↑0,selection)
+[332] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.edaccmlt3" ⎕wi "text" (DLTB accmlt[3;])
+[333] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.edaccdiv3" ⎕wi "text" (DLTB accdiv[3;])
+[334] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbaccdata3" ⎕wi "list"
+[335] selection←(StripText PickList) ExactTLU DLTB StripText accdata[3;]
+[336] :if mt selection
+[337]     :if ~mt DLTB accdata[3;]
+[338]         warnings←warnings OVER "Previous Selection for 'Accrual Rate Data Item' is no longer available"
+[339]     :endif
+[340]     modified←⌈/modified,0
+[341] :endif
+[342] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbaccdata3" ⎕wi "value" (¯1↑0,selection)
+[343] 0 0⍴GetDecrList "List"
+[344] warnings←warnings OVER "Accrual Rate Table" Win∆CheckDecr (ACCRUALTAB[3;]) (lrACCRUALTAB3)
+[345] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.edACCRUALTAB3" ⎕wi "text" (DLTB ACCRUALTAB[3;])
+[346] 0 0⍴GetDecrList "List"
+[347] warnings←warnings OVER "Accelerated Service Table" Win∆CheckDecr (SERVICETAB[3;]) (lrSERVICETAB3)
+[348] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.edSERVICETAB3" ⎕wi "text" (DLTB SERVICETAB[3;])
+[349] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbFIXED3" ⎕wi "list"
+[350] selection←(StripText PickList) ExactTLU DLTB StripText FIXED[3;]
+[351] :if mt selection
+[352]     :if ~mt DLTB FIXED[3;]
+[353]         warnings←warnings OVER "Previous Selection for 'Fixed Pension' is no longer available"
+[354]     :endif
+[355]     modified←⌈/modified,0
+[356] :endif
+[357] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAccrual.cbFIXED3" ⎕wi "value" (¯1↑0,selection)
+[358] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbminpen3" ⎕wi "list"
+[359] selection←(StripText PickList) ExactTLU DLTB StripText minpen[3;]
+[360] :if mt selection
+[361]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbminpen3" ⎕wi "text" (DLTB minpen[3;])
+[362] :else
+[363]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbminpen3" ⎕wi "value" selection
+[364] :endif
+[365] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbmaxpen3" ⎕wi "list"
+[366] selection←(StripText PickList) ExactTLU DLTB StripText maxpen[3;]
+[367] :if mt selection
+[368]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbmaxpen3" ⎕wi "text" (DLTB maxpen[3;])
+[369] :else
+[370]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbmaxpen3" ⎕wi "value" selection
+[371] :endif
+[372] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbpenadj3" ⎕wi "list"
+[373] warnings←warnings OVER "Pension Adjustment Factor" Win∆NumRelative "penadj[3;]" "lrpenadj3" ('Scalar')
+[374] selection←(StripText PickList) ExactTLU DLTB StripText penadj[3;]
+[375] :if mt selection
+[376]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbpenadj3" ⎕wi "text" (DLTB penadj[3;])
+[377] :else
+[378]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.cbpenadj3" ⎕wi "value" selection
+[379] :endif
+[380] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.ckDEDUCTTIER13" ⎕wi "value" (zwb DEDUCTTIER1[3;])
+[381] "fmEditIndSlice.sEdit_IndSlice.pgTier3.fAdjust.ckDEDUCTTIER23" ⎕wi "value" (zwb DEDUCTTIER2[3;])
+[382] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbm_ppfadj3" ⎕wi "list"
+[383] warnings←warnings OVER "Male PPF Adjustment Factor" Win∆NumRelative "m_ppfadj[3;]" "lrm_ppfadj3" ('Scalar')
+[384] selection←(StripText PickList) ExactTLU DLTB StripText m_ppfadj[3;]
+[385] :if mt selection
+[386]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbm_ppfadj3" ⎕wi "text" (DLTB m_ppfadj[3;])
+[387] :else
+[388]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbm_ppfadj3" ⎕wi "value" selection
+[389] :endif
+[390] PickList←"fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbf_ppfadj3" ⎕wi "list"
+[391] warnings←warnings OVER "Female PPF Adjustment Factor" Win∆NumRelative "f_ppfadj[3;]" "lrf_ppfadj3" ('Scalar')
+[392] selection←(StripText PickList) ExactTLU DLTB StripText f_ppfadj[3;]
+[393] :if mt selection
+[394]         "fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbf_ppfadj3" ⎕wi "text" (DLTB f_ppfadj[3;])
+[395] :else
+[396]     "fmEditIndSlice.sEdit_IndSlice.pgTier3.fPPF.cbf_ppfadj3" ⎕wi "value" selection
+[397] :endif
+[398] :endif
+[399] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Edit_IndSlice
+[400]     :for var :in spin Comment_Edit_IndSlice at "variable" "row" ⋄ (var row)←var
+[401]         "Edit_IndSlice" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[402]     :endfor
+[403] :endif
+[404] :if ~0∊⍴,warnings
+[405]     MDISPLAY DLTMB warnings,⎕tcnl
+[406]     Win∆AssignVars "fmEditIndSlice.sEdit_IndSlice"
+[407] :endif
+[408] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Edit_IndSlice" "" "Names"
+[409]     "fmEditIndSlice.sEdit_IndSlice" ⎕wi "modified" 0
+[410] :endif
+    ∇

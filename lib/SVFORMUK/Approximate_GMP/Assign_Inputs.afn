@@ -1,1 +1,82 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Approximate_GMP" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Approximate_GMP" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmApproximate_GMP.cbCalcDATE" ⎕wi "list"[10]  warnings←warnings OVER "Calculation Date" Win∆DateRelative "CalcDATE" "lrCalcDATE"[11]  selection←(StripText PickList) ExactTLU DLTB StripText CalcDATE[12]  :if mt selection[13]          "fmApproximate_GMP.cbCalcDATE" ⎕wi "text" (DLTB CalcDATE)[14]  :else[15]      "fmApproximate_GMP.cbCalcDATE" ⎕wi "value" selection[16]  :endif[17]  "fILENAME" Win∆Inherits "Actsfile"[18]  GetAbsFileList "Fund"[19]  warnings←warnings OVER "Input Data File" Win∆FileRelative "fILENAME" "lrfILENAME"[20]  "fmApproximate_GMP.edfILENAME" ⎕wi "text" (DLTB fILENAME)[21]  "Format" Win∆Inherits "FormatA"[22]  PickList←"fmApproximate_GMP.cbFormat" ⎕wi "list"[23]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"[24]  selection←(StripText PickList) ExactTLU DLTB StripText Format[25]  :if mt selection[26]      modified←⌈/modified,1[27]  :endif[28]  "fmApproximate_GMP.cbFormat" ⎕wi "value" (¯1↑1,selection)[29]  "fmApproximate_GMP.edFILE" ⎕wi "text" (DLTB FILE)[30]  PickList←"fmApproximate_GMP.cbSAL" ⎕wi "list"[31]  selection←(StripText PickList) ExactTLU DLTB StripText SAL[32]  :if mt selection[33]      :if ~mt DLTB SAL[34]          warnings←warnings OVER "Previous Selection for 'Salary' is no longer available"[35]      :endif[36]      modified←⌈/modified,1[37]  :endif[38]  "fmApproximate_GMP.cbSAL" ⎕wi "value" (¯1↑1,selection)[39]  PickList←"fmApproximate_GMP.cblel" ⎕wi "list"[40]  selection←PickList ExactTLU DLTB lel[41]  :if mt selection[42]          "fmApproximate_GMP.cblel" ⎕wi "text" (DLTB lel)[43]  :else[44]      "fmApproximate_GMP.cblel" ⎕wi "value" selection[45]  :endif[46]  PickList←"fmApproximate_GMP.cbuel" ⎕wi "list"[47]  selection←PickList ExactTLU DLTB uel[48]  :if mt selection[49]          "fmApproximate_GMP.cbuel" ⎕wi "text" (DLTB uel)[50]  :else[51]      "fmApproximate_GMP.cbuel" ⎕wi "value" selection[52]  :endif[53]  PickList←"fmApproximate_GMP.cbBDATE" ⎕wi "list"[54]  warnings←warnings OVER "Minimum Start Date" Win∆DateRelative "BDATE" "lrBDATE"[55]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE[56]  :if mt selection[57]          "fmApproximate_GMP.cbBDATE" ⎕wi "text" (DLTB BDATE)[58]  :else[59]      "fmApproximate_GMP.cbBDATE" ⎕wi "value" selection[60]  :endif[61]  PickList←"fmApproximate_GMP.cbEDATE" ⎕wi "list"[62]  warnings←warnings OVER "Maximum End Date" Win∆DateRelative "EDATE" "lrEDATE"[63]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE[64]  :if mt selection[65]          "fmApproximate_GMP.cbEDATE" ⎕wi "text" (DLTB EDATE)[66]  :else[67]      "fmApproximate_GMP.cbEDATE" ⎕wi "value" selection[68]  :endif[69]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Approximate_GMP[70]      :for var :in spin Comment_Approximate_GMP at "variable" "row" ⋄ (var row)←var[71]          "Approximate_GMP" ParmColor ((FormFields for "variable" var) at "control"),var row 1[72]      :endfor[73]  :endif[74]  :if ~0∊⍴,warnings[75]      MDISPLAY DLTMB warnings,⎕tcnl[76]      Win∆AssignVars "fmApproximate_GMP"[77]  :endif[78]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Approximate_GMP" "" "Names"[79]      "fmApproximate_GMP" ⎕wi "modified" 0[80]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Approximate_GMP" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Approximate_GMP" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmApproximate_GMP.cbCalcDATE" ⎕wi "list"
+[10]  warnings←warnings OVER "Calculation Date" Win∆DateRelative "CalcDATE" "lrCalcDATE"
+[11]  selection←(StripText PickList) ExactTLU DLTB StripText CalcDATE
+[12]  :if mt selection
+[13]          "fmApproximate_GMP.cbCalcDATE" ⎕wi "text" (DLTB CalcDATE)
+[14]  :else
+[15]      "fmApproximate_GMP.cbCalcDATE" ⎕wi "value" selection
+[16]  :endif
+[17]  "fILENAME" Win∆Inherits "Actsfile"
+[18]  GetAbsFileList "Fund"
+[19]  warnings←warnings OVER "Input Data File" Win∆FileRelative "fILENAME" "lrfILENAME"
+[20]  "fmApproximate_GMP.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[21]  "Format" Win∆Inherits "FormatA"
+[22]  PickList←"fmApproximate_GMP.cbFormat" ⎕wi "list"
+[23]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"
+[24]  selection←(StripText PickList) ExactTLU DLTB StripText Format
+[25]  :if mt selection
+[26]      modified←⌈/modified,1
+[27]  :endif
+[28]  "fmApproximate_GMP.cbFormat" ⎕wi "value" (¯1↑1,selection)
+[29]  "fmApproximate_GMP.edFILE" ⎕wi "text" (DLTB FILE)
+[30]  PickList←"fmApproximate_GMP.cbSAL" ⎕wi "list"
+[31]  selection←(StripText PickList) ExactTLU DLTB StripText SAL
+[32]  :if mt selection
+[33]      :if ~mt DLTB SAL
+[34]          warnings←warnings OVER "Previous Selection for 'Salary' is no longer available"
+[35]      :endif
+[36]      modified←⌈/modified,1
+[37]  :endif
+[38]  "fmApproximate_GMP.cbSAL" ⎕wi "value" (¯1↑1,selection)
+[39]  PickList←"fmApproximate_GMP.cblel" ⎕wi "list"
+[40]  selection←PickList ExactTLU DLTB lel
+[41]  :if mt selection
+[42]          "fmApproximate_GMP.cblel" ⎕wi "text" (DLTB lel)
+[43]  :else
+[44]      "fmApproximate_GMP.cblel" ⎕wi "value" selection
+[45]  :endif
+[46]  PickList←"fmApproximate_GMP.cbuel" ⎕wi "list"
+[47]  selection←PickList ExactTLU DLTB uel
+[48]  :if mt selection
+[49]          "fmApproximate_GMP.cbuel" ⎕wi "text" (DLTB uel)
+[50]  :else
+[51]      "fmApproximate_GMP.cbuel" ⎕wi "value" selection
+[52]  :endif
+[53]  PickList←"fmApproximate_GMP.cbBDATE" ⎕wi "list"
+[54]  warnings←warnings OVER "Minimum Start Date" Win∆DateRelative "BDATE" "lrBDATE"
+[55]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE
+[56]  :if mt selection
+[57]          "fmApproximate_GMP.cbBDATE" ⎕wi "text" (DLTB BDATE)
+[58]  :else
+[59]      "fmApproximate_GMP.cbBDATE" ⎕wi "value" selection
+[60]  :endif
+[61]  PickList←"fmApproximate_GMP.cbEDATE" ⎕wi "list"
+[62]  warnings←warnings OVER "Maximum End Date" Win∆DateRelative "EDATE" "lrEDATE"
+[63]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE
+[64]  :if mt selection
+[65]          "fmApproximate_GMP.cbEDATE" ⎕wi "text" (DLTB EDATE)
+[66]  :else
+[67]      "fmApproximate_GMP.cbEDATE" ⎕wi "value" selection
+[68]  :endif
+[69]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Approximate_GMP
+[70]      :for var :in spin Comment_Approximate_GMP at "variable" "row" ⋄ (var row)←var
+[71]          "Approximate_GMP" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[72]      :endfor
+[73]  :endif
+[74]  :if ~0∊⍴,warnings
+[75]      MDISPLAY DLTMB warnings,⎕tcnl
+[76]      Win∆AssignVars "fmApproximate_GMP"
+[77]  :endif
+[78]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Approximate_GMP" "" "Names"
+[79]      "fmApproximate_GMP" ⎕wi "modified" 0
+[80]  :endif
+    ∇

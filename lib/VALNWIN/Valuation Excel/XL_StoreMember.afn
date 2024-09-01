@@ -1,0 +1,44 @@
+    ∇ XL_StoreMember;z;ID;row;ndata;cdata;fmt;Age;top
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Store the data required for the Excel Output
+[3]   
+[4]   ndata←0 (37+3×AgeInterp)⍴' '  ⋄ cdata←0 (40+3×AgeInterp)⍴' ' ⍝ Member data
+[5]   :if ClassID≠4
+[6]       ID←recn XL_MemberID fMOE
+[7]   :else
+[8]       ID←recn XL_MemberID fMOT
+[9]       ⍝⍝⍝ top←((⍴fTOP)⌊2⌈11-⍴DLTMB ID)↑TOP ⋄ ⍝⍝⍝ ID←top,(⍴top)↓ID ⍝⍝⍝ AOS?
+[10]  :endif
+[11]  Age←dbXe×~(∨/EXIT[3 4])^(aggopt[0]∨csvind∨summopt)
+[12]  :if AgeInterp ⋄ Age←6 2⍕Age
+[13]  :else         ⋄ Age←3 0⍕Age
+[14]  :endif
+[15]  
+[16]  :for z :in ⍳↑⍴⍙dataflds
+[17]      :if 0=⎕nc ⊃⍙dataflds[z;1] ⍝ Current Field not defined
+[18]      :orif (summopt∨csvind∨aggopt[0])^'N'≠↑⊃⍙dataflds[z;2] ⍝ Only group numeric fields
+[19]      :orif (~aosind)^'p'=↑⊃⍙dataflds[z;1]
+[20]          ⍝ Nothing to be stored
+[21]      :else
+[22]          :select DLTMB ⊃⍙dataflds[z;1]
+[23]          :case 'fNAME' ⋄ :if 0∊⍴DLTMB row←NAME ⋄ row←ID ⋄ :endif
+[24]          :case 'fNOM'  ⋄ row←⍕NOM ⍝ Get calculated Number of Members
+[25]          :case 'fY0'   ⋄ row←⍕Y0 ⍝ or Spouse's Age (add ×~summopt∨csvind∨aggopt[0] if not required when grouped)
+[26]          :else         ⋄ row←REC[⍎⊃⍙dataflds[z;1]]
+[27]          :endselect
+[28]          :if ∨/row≠' ' ⍝ Do not store blank fields
+[29]              :if 'D'=↑⊃⍙dataflds[z;2] ⍝ Special treatment for date fields
+[30]                  fmt←⍎DLTMB 'd',⊃⍙dataflds[z;1] ⍝ Adjust for date Format to YYYY/MM/DD
+[31]                  row←' 0' REPL ((fmt∊'Yy')/row),'/',(2↑((fmt∊'Mm')/row),'07'),'/',2↑((fmt∊'Dd')/row),'15'
+[32]              :endif
+[33]              :if 'N'=↑⊃⍙dataflds[z;2] ⍝ Num fields
+[34]                  ndata←ndata⍪ID,(5↑⍕⊃⍙dataflds[z;0]),Age,17↑row
+[35]              :else ⍝ Char/Date fields
+[36]                  cdata←cdata⍪ID,(5↑⍕⊃⍙dataflds[z;0]),Age,20↑row
+[37]              :endif
+[38]          :endif
+[39]      :endif
+[40]  :endfor
+[41]  
+[42]  ndata APPEND xl_ndatatie ⋄ cdata APPEND xl_cdatatie
+    ∇

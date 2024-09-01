@@ -1,1 +1,54 @@
-    ∇ res←EDIT∆CHECK;z;cols;fmt;FV1;FV2;FV3;FV4;FV5;FV6;⎕ELX;elx[1]   ⍝ DATAWIN.sf#9[2]   ⍝ Checking Input[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   res←0⍴''[8]   [9]   :for z :in (⍳6)~4 ⍝ Input Col specs in order[10]      :if 0∊⍴DLTMB cols←⍎'fV',⍕z ⋄ :continue ⋄ :endif[11]      :if 0>DIFF cols←2⍴(MatrixZWB cols)~0[12]          Win∆SetFocus parent,'fInputs.edfV',(⍕z),'1'[13]          res←'1st>2nd' ⋄ :return[14]      :endif[15]  :endfor[16]  [17]  :for z :in 5 6 ⍝ Date Specs match[18]      :if 0≠⍴,res←(0⍴'') CHECKCOLS (parent,'fInputs') ('fV',⍕z)[19]          Win∆SetFocus parent,'fInputs.edfV',(⍕z),'1' ⋄ :return[20]      :endif[21]  :endfor[22]  [23]  :if 0>DIFF 2⍴(MatrixZWB FV)~0 ⍝ Output cols in order[24]      Win∆SetFocus parent,'fOutput.edFV1'[25]      res←'1st>2nd' ⋄ :return[26]  :endif[27]  [28]  :if 0∊⍴DLTMB (parent,'fOutput.eddFV') ⎕wi 'text'[29]      fmt←zwb (parent,'fOutput.edDecP') ⎕wi 'text'[30]      :if fmt>¯2+2⌈⍴COLS FV[31]          res←'InvEntry' 'Invalid number of Decimal Places for the size of field'[32]          Win∆SetFocus parent,'fOutput.edDecP' ⋄ :return[33]      :endif[34]  :else[35]      :if 0≠⍴,res←(0⍴'') CHECKCOLS (parent,'fOutput') ('FV')[36]          Win∆SetFocus parent,'fOutput.edFV1' ⋄ :return[37]      :endif[38]  :endif[39]  [40]  ⍝ Trap Errors in their Code[41]  :if ~0∊⍴DLTMB fV1 ⋄ FV1←10⍴1+0.1×2≥⍴COLS fV1 ⋄ :endif[42]  :if ~0∊⍴DLTMB fV2 ⋄ FV2←10⍴2+0.2×2≥⍴COLS fV2 ⋄ :endif[43]  :if ~0∊⍴DLTMB fV3 ⋄ FV3←10⍴3+0.3×2≥⍴COLS fV3 ⋄ :endif[44]  :if ~0∊⍴DLTMB fV4 ⋄ FV4←10⍴' ' ⋄ :endif[45]  :if ~0∊⍴DLTMB fV5 ⋄ FV5←10 3⍴vDATE ⋄ :endif[46]  :if ~0∊⍴DLTMB fV6 ⋄ FV6←10 3⍴20 11 2050⌊vDATE+1 ⋄ :endif[47]  [48]  elx←⎕ELX ⋄ ⎕ELX←'→ERR' ⋄ 0 0 ⍴⍎Formula ⋄ →end[49]  [50]  ⍝ Error Messages if formula in error[51]  ERR:res←'InvFormula' (⎕DM[⍳¯1+⎕DM⍳⎕AV[13+⎕IO]])[52]  end:⎕ELX←elx    ∇
+    ∇ res←EDIT∆CHECK;z;cols;fmt;FV1;FV2;FV3;FV4;FV5;FV6;⎕ELX;elx
+[1]   ⍝ DATAWIN.sf#9
+[2]   ⍝ Checking Input
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   res←0⍴''
+[8]   
+[9]   :for z :in (⍳6)~4 ⍝ Input Col specs in order
+[10]      :if 0∊⍴DLTMB cols←⍎'fV',⍕z ⋄ :continue ⋄ :endif
+[11]      :if 0>DIFF cols←2⍴(MatrixZWB cols)~0
+[12]          Win∆SetFocus parent,'fInputs.edfV',(⍕z),'1'
+[13]          res←'1st>2nd' ⋄ :return
+[14]      :endif
+[15]  :endfor
+[16]  
+[17]  :for z :in 5 6 ⍝ Date Specs match
+[18]      :if 0≠⍴,res←(0⍴'') CHECKCOLS (parent,'fInputs') ('fV',⍕z)
+[19]          Win∆SetFocus parent,'fInputs.edfV',(⍕z),'1' ⋄ :return
+[20]      :endif
+[21]  :endfor
+[22]  
+[23]  :if 0>DIFF 2⍴(MatrixZWB FV)~0 ⍝ Output cols in order
+[24]      Win∆SetFocus parent,'fOutput.edFV1'
+[25]      res←'1st>2nd' ⋄ :return
+[26]  :endif
+[27]  
+[28]  :if 0∊⍴DLTMB (parent,'fOutput.eddFV') ⎕wi 'text'
+[29]      fmt←zwb (parent,'fOutput.edDecP') ⎕wi 'text'
+[30]      :if fmt>¯2+2⌈⍴COLS FV
+[31]          res←'InvEntry' 'Invalid number of Decimal Places for the size of field'
+[32]          Win∆SetFocus parent,'fOutput.edDecP' ⋄ :return
+[33]      :endif
+[34]  :else
+[35]      :if 0≠⍴,res←(0⍴'') CHECKCOLS (parent,'fOutput') ('FV')
+[36]          Win∆SetFocus parent,'fOutput.edFV1' ⋄ :return
+[37]      :endif
+[38]  :endif
+[39]  
+[40]  ⍝ Trap Errors in their Code
+[41]  :if ~0∊⍴DLTMB fV1 ⋄ FV1←10⍴1+0.1×2≥⍴COLS fV1 ⋄ :endif
+[42]  :if ~0∊⍴DLTMB fV2 ⋄ FV2←10⍴2+0.2×2≥⍴COLS fV2 ⋄ :endif
+[43]  :if ~0∊⍴DLTMB fV3 ⋄ FV3←10⍴3+0.3×2≥⍴COLS fV3 ⋄ :endif
+[44]  :if ~0∊⍴DLTMB fV4 ⋄ FV4←10⍴' ' ⋄ :endif
+[45]  :if ~0∊⍴DLTMB fV5 ⋄ FV5←10 3⍴vDATE ⋄ :endif
+[46]  :if ~0∊⍴DLTMB fV6 ⋄ FV6←10 3⍴20 11 2050⌊vDATE+1 ⋄ :endif
+[47]  
+[48]  elx←⎕ELX ⋄ ⎕ELX←'→ERR' ⋄ 0 0 ⍴⍎Formula ⋄ →end
+[49]  
+[50]  ⍝ Error Messages if formula in error
+[51]  ERR:res←'InvFormula' (⎕DM[⍳¯1+⎕DM⍳⎕AV[13+⎕IO]])
+[52]  end:⎕ELX←elx
+    ∇

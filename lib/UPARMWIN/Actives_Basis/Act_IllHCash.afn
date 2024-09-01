@@ -1,0 +1,58 @@
+    ∇ field Act_IllHCash parm;page;MESS;isActive;sex
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Do Initialisation, Changes and Validation of Ill Health Cash Page
+[3]   
+[4]   page←'pgIHCash.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]   
+[9]   :case 'Init'
+[10]      (parent,page,'fButtons.bnActives_BasisEditRC') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[11]  
+[12]  :case 'Change'
+[13]      :select field
+[14]      :caselist 'cbm_ILLCOMTABParm' 'cbf_ILLCOMTABParm'
+[15]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fCommF.',field) ⎕wi 'text'),'"'
+[16]              sex←(↑('M' 'Fem')[1+'f'=field[3]]),'ale '
+[17]              MESS←2⊃((sex,'Ill-Health Commutation Tables Parameter Set') 0) GET∆CommTabGlobals 2↓field
+[18]              :if ~openParameters∨changedParm
+[19]                  changedParm←1
+[20]                  (parent,page,'fCommF.',field) ⎕wi 'suppress' 1
+[21]                  Assign_Inputs 1
+[22]                  (parent,page,'fCommF.',field) ⎕wi 'suppress' 0
+[23]                  changedParm←0
+[24]              :endif
+[25]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[26]          :endif
+[27]      :case 'cbILLCashParm'
+[28]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fIHCash.',field) ⎕wi 'text'),'"'
+[29]              isActive←1
+[30]              MESS←2⊃('Ill-Health Retirement Cash Parameter Set' 0) GET∆RetCashGlobals 2↓field
+[31]              :if ~openParameters∨changedParm
+[32]                  changedParm←1
+[33]                  (parent,page,'fIHCash.',field) ⎕wi 'suppress' 1
+[34]                  Assign_Inputs 1
+[35]                  (parent,page,'fIHCash.',field) ⎕wi 'suppress' 0
+[36]                  changedParm←0
+[37]              :endif
+[38]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[39]          :endif
+[40]      :case 'cbSDParmIHC'
+[41]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fIHPros.',field) ⎕wi 'text'),'"'
+[42]              MESS←2⊃('Ill-Health Cash Spreading Dates Parameter Set' 0) GET∆SpDateGlobals 2↓field
+[43]              :if ~openParameters∨changedParm
+[44]                  changedParm←1
+[45]                  (parent,page,'fIHPros.',field) ⎕wi 'suppress' 1
+[46]                  Assign_Inputs 1
+[47]                  (parent,page,'fIHPros.',field) ⎕wi 'suppress' 0
+[48]                  changedParm←0
+[49]              :endif
+[50]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[51]          :endif
+[52]      :endselect
+[53]  
+[54]  :case 'Valid'
+[55]  
+[56]  :endselect
+    ∇

@@ -1,0 +1,66 @@
+    ∇ res←ACTIVE;EXIT;DATE;A;Z;DOT;term
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Checks whether a member is active: Returns 1 if active and 0 if exit
+[3]   ⍝ Not active if Date of Exit is less than Val. Date or if Mode of Exit
+[4]   ⍝ is non-blank and Date of Exit is blank or not defined.
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   
+[7]   DOB←(dfDOB (VDATE- 0 0 100)) DATEEXP REC[fDOB]
+[8]   →neIND/res←0
+[9]   :if IsDeferred
+[10]      :if 0≠⍴fLD ⋄ LD←(dfLD DOB) DATEEXP REC[fLD]
+[11]      :else      ⋄ LD←¯3↑VDATE,aosind/pvDATE
+[12]      :endif
+[13]      neDATE←2 3⍴LD
+[14]  :else
+[15]      DJF←DJS←100 0 0
+[16]      :if 0≠⍴fDJS ⋄ DJS←(dfDJS DOB) DATEEXP REC[fDJS] ⋄ :endif
+[17]      :if 0≠⍴fDJF ⋄ DJF←(dfDJF DOB) DATEEXP REC[fDJF] ⋄ :endif
+[18]      neDATE←2 3⍴DJS,DJF
+[19]  :endif
+[20]  
+[21]  KnownExit←4/0
+[22]  :if EXIT←∨/' '≠MOT←(1⌈⍴fMOE)↑REC[fMOE]
+[23]      KnownExit←6↑((~aosind)^'$'=↑MOT)×('Retirement' 'Death',((1+IsDeferred)/¨'Ill-Health' 'Withdrawal'),'Transfer' '$$$$$$$$$$')∊⊂DLTB 1↓MOT ⍝ Make IH and With unmatchable for Deferreds
+[24]      :if aosind ⍝ Mid Valuation Exit if No Date of Exit
+[25]          DOE←midVDATE
+[26]      :endif
+[27]  :endif
+[28]  :if ∨/' '≠REC[fDOE]
+[29]      EXIT←jvDATE≥DOT←JUL DOE←(dfDOE DOB) DATEEXP REC[fDOE]
+[30]      :if ∨/KnownExit
+[31]          term←(¯0.00000001×term=0)+term←'DN' DURN VDATE,DOE ⍝ Special case of exit at Valuation Date
+[32]          KnownExit←KnownExit×term
+[33]      :endif
+[34]      →(res←6↑DOT≤bDATE)/0 ⍝ Pre Previous Valuation Exits
+[35]  :else
+[36]      KnownExit←KnownExit×¯0.00000001 ⍝ Exit at Valn Date if Date for KnownExit is not given
+[37]  :endif
+[38]  
+[39]  ⍝ Check the entry dates and allows entry up to day after valuation date
+[40]  ⍝ Exit if Post Valuation Entrant
+[41]  →(res←¯6↑∨/(DATE←,JUL neDATE)>jvDATE)/0
+[42]  ⍝ Indicate if Old or New Exit, Old or New Active
+[43]  res←(⍳6)∊1+aosrow←⍬⍴(2×EXIT)+DATE[entryInd]>bDATE
+[44]  
+[45]  →(~aosind)/0 ⍝ Rest is for Analysis of Surplus
+[46]  
+[47]  ⍝ Periods from Prev Val Date to Entry and Exit - Defaults for Old Actives
+[48]  ResMult←∆ResMult ⋄ ExitMult←ResSize/PerToEnt←0
+[49]  
+[50]  ⍝ Determine AOS Results Plane
+[51]  →res[1 2]/0,L1 ⋄ →(~0∊⍴Z←MOE TLU MOT)/F0
+[52]  Z←1↑⍴MOE←MOE⍪MOT ⋄ aos∆TOTS←aos∆TOTS⍪2⌿(⍴aos∆TOTS[,0;;])⍴0
+[53]  
+[54]  F0:aosrow←⍬⍴aosrow+2×Z-1 ⍝ Assume Mid Point Exit if No Date
+[55]  EDATE←DOE ⋄ ExitMult←365.25×ValPer÷2 ⋄ →(^/' '=REC[fDOE])/L0 ⋄ ExitMult←jvDATE-DOT
+[56]  
+[57]  ⍝ Calculation Subtraction in respect of Exits
+[58]  L0:A←+/(ExitMult←ExitMult÷365.25)≥+\⌽ResMult
+[59]  ExitMult←(-ResSize)↑(1∣ExitMult),(-A+1)↑ResMult ⋄ →res[3]/0
+[60]  
+[61]  ⍝ Calculation Subtraction in respect of Entrants
+[62]  L1:A←+/(PerToEnt←(DATE[entryInd]-bDATE)÷365.25)≥+\ResMult
+[63]  ResMult←(-ResSize)↑((+/(A+1)↑ResMult)-PerToEnt),(A+1)↓ResMult
+[64]  PerToEnt←A
+    ∇

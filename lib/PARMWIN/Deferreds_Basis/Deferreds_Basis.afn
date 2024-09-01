@@ -1,1 +1,88 @@
-    ∇ res←field Deferreds_Basis parm;parent;text;page;no[1]   ⍝ PARMWIN.sf#13[2]   ⍝ Function to allow user control on Editing Deferreds Basis[3]   [4]   parent←'fmSV.sDefBasis.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       Format←HyphenSwap Format[10]      FixRelFields 'Deferreds'[11]      pENSIONS←No∆Pens/0[12]      0 0⍴Deferreds_Basis 'Lock' ⍝ Lock Spreadsheet Cells[13]      penind←LJUSTIFY penind,no⍀(no←~∨/' '≠penind)⌿(No∆Pens,7)⍴'Pension'[14]      Benefits_Vars[15]      comment_var←'Comment_Deferreds_Basis'[16]  [17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[18]      :for no :in ⍳No∆Pens[19]          (parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'ColText' no ('Benefit ',⍕no)[20]      :endfor[21]      0 0⍴('ckpiind' 'cbFormat') Deferreds_Basis 'Change'[22]      Display∆Access basAccess[1 2][23]  [24]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[25]  [26]      :repeat[27]          :select ↑field[28]          :caselist 'edFILES' 'edfILENAME' 'ckFileSelections' 'ckUseSex' 'ckUseCat' 'lsCatSels' 'ckUseSubs'[29]              (parent,'pgMain.fData.') Win∆FileChanges ↑field[30]          :case 'cbFormat'[31]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format[32]              Format←(parent,'pgMain.fData.cbFormat') ⎕wi 'text'[33]              (parent,'pgMain.fData.') Win∆FileChanges ↑field[34]              :if 0≠⎕nc 'fLS'[35]                  (parent,'pgMain.fFinancial.edj') ⎕wi 'enabled' (0≠⍴fLS)[36]              :endif[37]              :if 0≠⎕nc 'fANP1'[38]                  :for no :in ⍳No∆Pens[39]                      pENSIONS[no]←×⍴⍎'fANP',⍕no[40]                      (parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'SetColHidden' no no (0=⍴⍎'fANP',⍕no)[41]                  :endfor[42]              :endif[43]          :case 'ckpiind'[44]              (parent,'pgMain.fFinancial.edpi') ⎕wi 'enabled' ((parent,'pgMain.fFinancial.ckpiind') ⎕wi 'value')[45]          :case 'ckMortImp'[46]              (1↓(parent,'pgDemographic.fImprove') ⎕wi 'children') MultiWI 'enabled' ((parent,'pgDemographic.fImprove.ckMortImp') ⎕wi 'value')[47]          :endselect[48]      :until mt field←1↓field[49]  [50]  :case 'Lock'[51]      :if ~0∊⍴(SSName←parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'self'[52]          SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1)[53]      :endif[54]  [55]  :case 'Unlock'[56]      :if ~0∊⍴(SSName←parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'self'[57]          SSName Win∆F1SSProtectCells 'Unlock'[58]      :endif[59]  [60]  :case 'PageChange'[61]  [62]      :select page←DLTMB ↑field[63]      :caselist ' ' ' '[64]  [65]      :endselect[66]  [67]  :case 'Valid' ⍝ Routine specific validation[68]  [69]      :repeat[70]          :select DLTMB ↑field[71]          :case 'All'[72]              res←('pgMain' 'pgDemographic' 'pgBenefits') Deferreds_Basis 'Valid'[73]          :caselist ' ' ' '[74]              page←DLTMB ↑field[75]  [76]          :endselect[77]      :until mt field←1↓field[78]  [79]  :case 'Run'[80]  [81]      res←'Quit'[82]  [83]  :case 'Quit' ⍝ Deleting "other" variables[84]      0 0⍴⎕ex 'FormatType Filesettings pENSIONS BasisFile comment_var'[85]  [86]  :endselect    ∇
+    ∇ res←field Deferreds_Basis parm;parent;text;page;no
+[1]   ⍝ PARMWIN.sf#13
+[2]   ⍝ Function to allow user control on Editing Deferreds Basis
+[3]   
+[4]   parent←'fmSV.sDefBasis.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       Format←HyphenSwap Format
+[10]      FixRelFields 'Deferreds'
+[11]      pENSIONS←No∆Pens/0
+[12]      0 0⍴Deferreds_Basis 'Lock' ⍝ Lock Spreadsheet Cells
+[13]      penind←LJUSTIFY penind,no⍀(no←~∨/' '≠penind)⌿(No∆Pens,7)⍴'Pension'
+[14]      Benefits_Vars
+[15]      comment_var←'Comment_Deferreds_Basis'
+[16]  
+[17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[18]      :for no :in ⍳No∆Pens
+[19]          (parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'ColText' no ('Benefit ',⍕no)
+[20]      :endfor
+[21]      0 0⍴('ckpiind' 'cbFormat') Deferreds_Basis 'Change'
+[22]      Display∆Access basAccess[1 2]
+[23]  
+[24]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[25]  
+[26]      :repeat
+[27]          :select ↑field
+[28]          :caselist 'edFILES' 'edfILENAME' 'ckFileSelections' 'ckUseSex' 'ckUseCat' 'lsCatSels' 'ckUseSubs'
+[29]              (parent,'pgMain.fData.') Win∆FileChanges ↑field
+[30]          :case 'cbFormat'
+[31]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[32]              Format←(parent,'pgMain.fData.cbFormat') ⎕wi 'text'
+[33]              (parent,'pgMain.fData.') Win∆FileChanges ↑field
+[34]              :if 0≠⎕nc 'fLS'
+[35]                  (parent,'pgMain.fFinancial.edj') ⎕wi 'enabled' (0≠⍴fLS)
+[36]              :endif
+[37]              :if 0≠⎕nc 'fANP1'
+[38]                  :for no :in ⍳No∆Pens
+[39]                      pENSIONS[no]←×⍴⍎'fANP',⍕no
+[40]                      (parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'SetColHidden' no no (0=⍴⍎'fANP',⍕no)
+[41]                  :endfor
+[42]              :endif
+[43]          :case 'ckpiind'
+[44]              (parent,'pgMain.fFinancial.edpi') ⎕wi 'enabled' ((parent,'pgMain.fFinancial.ckpiind') ⎕wi 'value')
+[45]          :case 'ckMortImp'
+[46]              (1↓(parent,'pgDemographic.fImprove') ⎕wi 'children') MultiWI 'enabled' ((parent,'pgDemographic.fImprove.ckMortImp') ⎕wi 'value')
+[47]          :endselect
+[48]      :until mt field←1↓field
+[49]  
+[50]  :case 'Lock'
+[51]      :if ~0∊⍴(SSName←parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'self'
+[52]          SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1)
+[53]      :endif
+[54]  
+[55]  :case 'Unlock'
+[56]      :if ~0∊⍴(SSName←parent,'pgBenefits.fPensions.ssPensions') ⎕wi 'self'
+[57]          SSName Win∆F1SSProtectCells 'Unlock'
+[58]      :endif
+[59]  
+[60]  :case 'PageChange'
+[61]  
+[62]      :select page←DLTMB ↑field
+[63]      :caselist ' ' ' '
+[64]  
+[65]      :endselect
+[66]  
+[67]  :case 'Valid' ⍝ Routine specific validation
+[68]  
+[69]      :repeat
+[70]          :select DLTMB ↑field
+[71]          :case 'All'
+[72]              res←('pgMain' 'pgDemographic' 'pgBenefits') Deferreds_Basis 'Valid'
+[73]          :caselist ' ' ' '
+[74]              page←DLTMB ↑field
+[75]  
+[76]          :endselect
+[77]      :until mt field←1↓field
+[78]  
+[79]  :case 'Run'
+[80]  
+[81]      res←'Quit'
+[82]  
+[83]  :case 'Quit' ⍝ Deleting "other" variables
+[84]      0 0⍴⎕ex 'FormatType Filesettings pENSIONS BasisFile comment_var'
+[85]  
+[86]  :endselect
+    ∇

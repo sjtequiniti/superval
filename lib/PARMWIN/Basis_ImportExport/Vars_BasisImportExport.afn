@@ -1,1 +1,32 @@
-    ∇ Z←Vars_BasisImportExport;SSName;MaxCol;Header;i;SaveFile;SavePath[1]   ⍝ PARMWIN.sf#19[2]   ⍝ Determine the basis fields to be imported/exported using "global" Fields[3]   ⍝  Assumes that basis fields are on Pages on a selector[4]   ⍝ Returns CurrValue exportname and exportlabel[5]   [6]   SaveFile←'\' Win∆Child InputsFile ⍝ Default to "current" Basis File[7]   :if 0∊⍴,SavePath←'\' Win∆Parent InputsFile ⍝ and use the "current" folder[8]       SavePath←InputDir ⍝⍝⍝ May not work for all types of files[9]   :endif[10]  [11]  exportbeyond←1 ⍝ Flag whether exported values can add extra rows to variable[12]  [13]  :select exportfield ⎕wi 'class'[14]  :case 'Tree' ⍝ Benefit Function(s)[15]      Z←Vars_TreeImportExport exportfield[16]  :case 'ActiveControl ',⍙⍙classID,⍙⍙licenceKey ⍝ F1SS[17]      Z←Vars_F1SSImportExport exportfield[18]  :else[19]      Z←Vars_RestImportExport exportfield[20]  :endselect[21]  [22]  :if 254≥↑⍴Header←↑Z[23]      (SSName←"fmExport.ssParms") ⎕wi "MaxCol" (MaxCol←1+¯1↑⍴2⊃Z)[24]      :for i :in 2↓⍳MaxCol[25]          SSName ⎕wi "ColText" i (Header[i-2;])[26]      :endfor[27]      SSName Win∆F1SSSetSelection 1 1 1 MaxCol[28]      SSName ⎕wi 'FontBold' 1[29]      SSName ⎕wi 'HdrHeight' (220×1+0⌈⌈/+/Header=⎕tcnl)[30]  :endif    ∇
+    ∇ Z←Vars_BasisImportExport;SSName;MaxCol;Header;i;SaveFile;SavePath
+[1]   ⍝ PARMWIN.sf#19
+[2]   ⍝ Determine the basis fields to be imported/exported using "global" Fields
+[3]   ⍝  Assumes that basis fields are on Pages on a selector
+[4]   ⍝ Returns CurrValue exportname and exportlabel
+[5]   
+[6]   SaveFile←'\' Win∆Child InputsFile ⍝ Default to "current" Basis File
+[7]   :if 0∊⍴,SavePath←'\' Win∆Parent InputsFile ⍝ and use the "current" folder
+[8]       SavePath←InputDir ⍝⍝⍝ May not work for all types of files
+[9]   :endif
+[10]  
+[11]  exportbeyond←1 ⍝ Flag whether exported values can add extra rows to variable
+[12]  
+[13]  :select exportfield ⎕wi 'class'
+[14]  :case 'Tree' ⍝ Benefit Function(s)
+[15]      Z←Vars_TreeImportExport exportfield
+[16]  :case 'ActiveControl ',⍙⍙classID,⍙⍙licenceKey ⍝ F1SS
+[17]      Z←Vars_F1SSImportExport exportfield
+[18]  :else
+[19]      Z←Vars_RestImportExport exportfield
+[20]  :endselect
+[21]  
+[22]  :if 254≥↑⍴Header←↑Z
+[23]      (SSName←"fmExport.ssParms") ⎕wi "MaxCol" (MaxCol←1+¯1↑⍴2⊃Z)
+[24]      :for i :in 2↓⍳MaxCol
+[25]          SSName ⎕wi "ColText" i (Header[i-2;])
+[26]      :endfor
+[27]      SSName Win∆F1SSSetSelection 1 1 1 MaxCol
+[28]      SSName ⎕wi 'FontBold' 1
+[29]      SSName ⎕wi 'HdrHeight' (220×1+0⌈⌈/+/Header=⎕tcnl)
+[30]  :endif
+    ∇

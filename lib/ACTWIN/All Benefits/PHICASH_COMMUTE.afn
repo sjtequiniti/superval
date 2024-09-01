@@ -1,1 +1,45 @@
-    ∇ PHICASH∆COMMUTE;CASHIR;MAXCASH;XSERACCPN;CASHT;∆C;T1[1]   ⍝ ACTWIN.sf#4[2]   ⍝[3]   ⍝ Commuted retirement pension[4]   XSERACCPN←PHIERACCPEN ⍝ Initialise as whole[5]   :if ~CGMP ⍝ If GMP is ignored the XS is taken to be the whole[6]       T1←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIERACCPEN)[⎕io;;]  ⍝ T1 is a temp var[7]       XSERACCPN[;⎕io;;;;;;]←XSERACCPN[;⎕io;;;;;;] MultiDimMult (0⌈T1-[1]GMPR) CDIV T1[8]   :endif[9]   PHICOMT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]XSERACCPN  ⍝ Sum over all but Dyn Time and Term[10]  CASHT←PHICOMT×(⍴PHICOMT)⍴4⌿cfs[11]  :if ~CTYPE∆L∊2 8 9[12]      CASHIR←PHIIRCASH⌊PHICALCCASH⌊MAXCASH←+/[⎕io]+/[⎕io+1]CASHT[13]      3 PHICASH∆SPLIT ''[14]  :else   ⍝ Calculate the lower of Commutable pension and 0.25×Pen, taking priorities into account[15]      1 PHICASH∆SPLIT2 ''[16]  :endif[17]  ⍝ Put numbers in full matrix[18]  PHICOMPEN[⎕io  ;⎕io  ;;;;;;]←XSERACCPN[⎕io  ;⎕io  ;;;;;;] MultiDimMult CASH1S CDIV CASHT[⎕io  ;⎕io  ;;][19]  PHICOMPEN[⎕io+1;⎕io  ;;;;;;]←XSERACCPN[⎕io+1;⎕io  ;;;;;;] MultiDimMult CASH1M CDIV CASHT[⎕io+1;⎕io  ;;][20]  PHICOMPEN[⎕io+2;⎕io  ;;;;;;]←XSERACCPN[⎕io+2;⎕io  ;;;;;;] MultiDimMult CASH1L CDIV CASHT[⎕io+2;⎕io  ;;][21]  PHICOMPEN[⎕io+3;⎕io  ;;;;;;]←XSERACCPN[⎕io+3;⎕io  ;;;;;;] MultiDimMult CASH14 CDIV CASHT[⎕io+3;⎕io  ;;][22]  PHICOMPEN[⎕io  ;⎕io+1;;;;;;]←XSERACCPN[⎕io  ;⎕io+1;;;;;;] MultiDimMult CASH2S CDIV CASHT[⎕io  ;⎕io+1;;][23]  PHICOMPEN[⎕io+1;⎕io+1;;;;;;]←XSERACCPN[⎕io+1;⎕io+1;;;;;;] MultiDimMult CASH2M CDIV CASHT[⎕io+1;⎕io+1;;][24]  PHICOMPEN[⎕io+2;⎕io+1;;;;;;]←XSERACCPN[⎕io+2;⎕io+1;;;;;;] MultiDimMult CASH2L CDIV CASHT[⎕io+2;⎕io+1;;][25]  PHICOMPEN[⎕io+3;⎕io+1;;;;;;]←XSERACCPN[⎕io+3;⎕io+1;;;;;;] MultiDimMult CASH24 CDIV CASHT[⎕io+3;⎕io+1;;][26]  PHICOMPEN[⎕io  ;⎕io+2;;;;;;]←XSERACCPN[⎕io  ;⎕io+2;;;;;;] MultiDimMult CASH3S CDIV CASHT[⎕io  ;⎕io+2;;][27]  PHICOMPEN[⎕io+1;⎕io+2;;;;;;]←XSERACCPN[⎕io+1;⎕io+2;;;;;;] MultiDimMult CASH3M CDIV CASHT[⎕io+1;⎕io+2;;][28]  PHICOMPEN[⎕io+2;⎕io+2;;;;;;]←XSERACCPN[⎕io+2;⎕io+2;;;;;;] MultiDimMult CASH3L CDIV CASHT[⎕io+2;⎕io+2;;][29]  PHICOMPEN[⎕io+3;⎕io+2;;;;;;]←XSERACCPN[⎕io+3;⎕io+2;;;;;;] MultiDimMult CASH34 CDIV CASHT[⎕io+3;⎕io+2;;][30]  ⍝ Create totals[31]  PHICOMPENNDYN←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]PHICOMPEN[⎕io  ;;;;;;;][32]  PHICOMPENDYN ←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]PHICOMPEN[⎕io+1;;;;;;;][33]  PHICOMPENLDYN←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]PHICOMPEN[⎕io+2;;;;;;;][34]  PHICOMPENDYN4←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]PHICOMPEN[⎕io+3;;;;;;;][35]  [36]  PHICOMT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN  ⍝ Sum over all but Dyn Time and Term[37]  splitPHICASHN←+/[⎕io]PHICOMT[⎕io  ;;;] MultiDimMult (NX,NX)⍴CASHFAC1 ⋄ splitPHICASHD←+/[⎕io]PHICOMT[⎕io+1;;;] MultiDimMult (NX,NX)⍴CASHFAC2[38]  splitPHICASHL←+/[⎕io]PHICOMT[⎕io+2;;;] MultiDimMult (NX,NX)⍴CASHFAC3 ⋄ splitPHICASH4←+/[⎕io]PHICOMT[⎕io+3;;;] MultiDimMult (NX,NX)⍴CASHFAC4[39]  PHICASH ←PHICASH +comPHICASH ←splitPHICASHN+splitPHICASHD+splitPHICASHL+splitPHICASH4[40]  [41]  splitPHIFCASHN←PHICOMT[⎕io  ;⎕io+2;;]×(NX,NX)⍴CASHFAC1 ⋄ splitPHIFCASHD←PHICOMT[⎕io+1;⎕io+2;;]×(NX,NX)⍴CASHFAC2[42]  splitPHIFCASHL←PHICOMT[⎕io+2;⎕io+2;;]×(NX,NX)⍴CASHFAC3 ⋄ splitPHIFCASH4←PHICOMT[⎕io+3;⎕io+2;;]×(NX,NX)⍴CASHFAC4[43]  PHIFCASH←PHIFCASH+comPHIFCASH←splitPHIFCASHN+splitPHIFCASHD+splitPHIFCASHL+splitPHIFCASH4    ∇
+    ∇ PHICASH∆COMMUTE;CASHIR;MAXCASH;XSERACCPN;CASHT;∆C;T1
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝
+[3]   ⍝ Commuted retirement pension
+[4]   XSERACCPN←PHIERACCPEN ⍝ Initialise as whole
+[5]   :if ~CGMP ⍝ If GMP is ignored the XS is taken to be the whole
+[6]       T1←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIERACCPEN)[⎕io;;]  ⍝ T1 is a temp var
+[7]       XSERACCPN[;⎕io;;;;;;]←XSERACCPN[;⎕io;;;;;;] MultiDimMult (0⌈T1-[1]GMPR) CDIV T1
+[8]   :endif
+[9]   PHICOMT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]XSERACCPN  ⍝ Sum over all but Dyn Time and Term
+[10]  CASHT←PHICOMT×(⍴PHICOMT)⍴4⌿cfs
+[11]  :if ~CTYPE∆L∊2 8 9
+[12]      CASHIR←PHIIRCASH⌊PHICALCCASH⌊MAXCASH←+/[⎕io]+/[⎕io+1]CASHT
+[13]      3 PHICASH∆SPLIT ''
+[14]  :else   ⍝ Calculate the lower of Commutable pension and 0.25×Pen, taking priorities into account
+[15]      1 PHICASH∆SPLIT2 ''
+[16]  :endif
+[17]  ⍝ Put numbers in full matrix
+[18]  PHICOMPEN[⎕io  ;⎕io  ;;;;;;]←XSERACCPN[⎕io  ;⎕io  ;;;;;;] MultiDimMult CASH1S CDIV CASHT[⎕io  ;⎕io  ;;]
+[19]  PHICOMPEN[⎕io+1;⎕io  ;;;;;;]←XSERACCPN[⎕io+1;⎕io  ;;;;;;] MultiDimMult CASH1M CDIV CASHT[⎕io+1;⎕io  ;;]
+[20]  PHICOMPEN[⎕io+2;⎕io  ;;;;;;]←XSERACCPN[⎕io+2;⎕io  ;;;;;;] MultiDimMult CASH1L CDIV CASHT[⎕io+2;⎕io  ;;]
+[21]  PHICOMPEN[⎕io+3;⎕io  ;;;;;;]←XSERACCPN[⎕io+3;⎕io  ;;;;;;] MultiDimMult CASH14 CDIV CASHT[⎕io+3;⎕io  ;;]
+[22]  PHICOMPEN[⎕io  ;⎕io+1;;;;;;]←XSERACCPN[⎕io  ;⎕io+1;;;;;;] MultiDimMult CASH2S CDIV CASHT[⎕io  ;⎕io+1;;]
+[23]  PHICOMPEN[⎕io+1;⎕io+1;;;;;;]←XSERACCPN[⎕io+1;⎕io+1;;;;;;] MultiDimMult CASH2M CDIV CASHT[⎕io+1;⎕io+1;;]
+[24]  PHICOMPEN[⎕io+2;⎕io+1;;;;;;]←XSERACCPN[⎕io+2;⎕io+1;;;;;;] MultiDimMult CASH2L CDIV CASHT[⎕io+2;⎕io+1;;]
+[25]  PHICOMPEN[⎕io+3;⎕io+1;;;;;;]←XSERACCPN[⎕io+3;⎕io+1;;;;;;] MultiDimMult CASH24 CDIV CASHT[⎕io+3;⎕io+1;;]
+[26]  PHICOMPEN[⎕io  ;⎕io+2;;;;;;]←XSERACCPN[⎕io  ;⎕io+2;;;;;;] MultiDimMult CASH3S CDIV CASHT[⎕io  ;⎕io+2;;]
+[27]  PHICOMPEN[⎕io+1;⎕io+2;;;;;;]←XSERACCPN[⎕io+1;⎕io+2;;;;;;] MultiDimMult CASH3M CDIV CASHT[⎕io+1;⎕io+2;;]
+[28]  PHICOMPEN[⎕io+2;⎕io+2;;;;;;]←XSERACCPN[⎕io+2;⎕io+2;;;;;;] MultiDimMult CASH3L CDIV CASHT[⎕io+2;⎕io+2;;]
+[29]  PHICOMPEN[⎕io+3;⎕io+2;;;;;;]←XSERACCPN[⎕io+3;⎕io+2;;;;;;] MultiDimMult CASH34 CDIV CASHT[⎕io+3;⎕io+2;;]
+[30]  ⍝ Create totals
+[31]  PHICOMPENNDYN←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]PHICOMPEN[⎕io  ;;;;;;;]
+[32]  PHICOMPENDYN ←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]PHICOMPEN[⎕io+1;;;;;;;]
+[33]  PHICOMPENLDYN←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]PHICOMPEN[⎕io+2;;;;;;;]
+[34]  PHICOMPENDYN4←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]PHICOMPEN[⎕io+3;;;;;;;]
+[35]  
+[36]  PHICOMT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN  ⍝ Sum over all but Dyn Time and Term
+[37]  splitPHICASHN←+/[⎕io]PHICOMT[⎕io  ;;;] MultiDimMult (NX,NX)⍴CASHFAC1 ⋄ splitPHICASHD←+/[⎕io]PHICOMT[⎕io+1;;;] MultiDimMult (NX,NX)⍴CASHFAC2
+[38]  splitPHICASHL←+/[⎕io]PHICOMT[⎕io+2;;;] MultiDimMult (NX,NX)⍴CASHFAC3 ⋄ splitPHICASH4←+/[⎕io]PHICOMT[⎕io+3;;;] MultiDimMult (NX,NX)⍴CASHFAC4
+[39]  PHICASH ←PHICASH +comPHICASH ←splitPHICASHN+splitPHICASHD+splitPHICASHL+splitPHICASH4
+[40]  
+[41]  splitPHIFCASHN←PHICOMT[⎕io  ;⎕io+2;;]×(NX,NX)⍴CASHFAC1 ⋄ splitPHIFCASHD←PHICOMT[⎕io+1;⎕io+2;;]×(NX,NX)⍴CASHFAC2
+[42]  splitPHIFCASHL←PHICOMT[⎕io+2;⎕io+2;;]×(NX,NX)⍴CASHFAC3 ⋄ splitPHIFCASH4←PHICOMT[⎕io+3;⎕io+2;;]×(NX,NX)⍴CASHFAC4
+[43]  PHIFCASH←PHIFCASH+comPHIFCASH←splitPHIFCASHN+splitPHIFCASHD+splitPHIFCASHL+splitPHIFCASH4
+    ∇

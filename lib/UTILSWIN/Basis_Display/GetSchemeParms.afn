@@ -1,0 +1,21 @@
+    ∇ res←larg GetSchemeParms path;ClientFile;⍙MortAssdict;AbsDict;⍙FinAssdict;inputDir;micsvDir;yieldDir;InputDir;YieldDir;MIcsvDir
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ Get the Scheme Parameters relevant to the folder with the Basis file
+[3]   
+[4]   :if (UPPERCASE ↑larg)≡UPPERCASE path
+[5]       res←larg
+[6]   :else
+[7]       ClientFile←path,INIString 'SV Parameter Files' 'ClientFile' '' (path,'svscheme.ini')
+[8]   
+[9]       0 0⍴(SystemDir,'OVERWIN') ReadFile 'Client'
+[10]      'CreateVars' RunModule 'Client' ⍝ Create Client Vars
+[11]      0 0⍴(SystemDir,'OVERWIN') DeleteModule 'Client'
+[12]      (InputDir YieldDir MIcsvDir)←inputDir yieldDir micsvDir
+[13]  
+[14]      AbsDict←UpdateAbsDict 'Client'
+[15]      ⍙FinAssdict←GetFinList ''
+[16]      ⍙MortAssdict←GetMortList 'Update'
+[17]  
+[18]      res←InputDir YieldDir MIcsvDir ClientFile ⍙FinAssdict ⍙MortAssdict AbsDict
+[19]  :endif
+    ∇

@@ -1,1 +1,39 @@
-    ∇ res←field Set_Font parm;parent;z[1]   ⍝ OVERWIN.sf#16[2]   ⍝ Function to allow user control on Setting the Font[3]   [4]   parent←'fmSetFont.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]      FontStyle←INIString uSER 'B_FontStyle' 'Roman' PrefINI[11]      FontSize←INIString uSER 'B_FontSize' 'Normal' PrefINI[12]      :if CallingModule≡'Help'[13]          FontStyle←INIString uSER 'H_FontStyle' FontStyle PrefINI[14]          FontSize←INIString uSER 'H_FontSize' FontSize PrefINI[15]      :endif[16]  [17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[18]  [19]      parent ⎕wi 'caption' (SystemName,' - Set Font')[20]      (parent,'bnSet_FontSave') ⎕wi 'tooltip' 'Select Font Settings'[21]  [22]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[23]  [24]  :case 'Valid' ⍝ Routine specific validation[25]  [26]  :case 'Run'[27]      z←1↑CallingModule[28]      FontStyle INIString uSER (z,'_FontStyle') PrefINI[29]      FontSize INIString uSER (z,'_FontSize') PrefINI[30]      'Change' RunSetFont CallingModule[31]  [32]      parent ⎕wi 'modified' 0[33]      res←'Quit'[34]  [35]  :case 'Quit' ⍝ Deleting "other" variables[36]  [37]  :endselect    ∇
+    ∇ res←field Set_Font parm;parent;z
+[1]   ⍝ OVERWIN.sf#16
+[2]   ⍝ Function to allow user control on Setting the Font
+[3]   
+[4]   parent←'fmSetFont.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]      FontStyle←INIString uSER 'B_FontStyle' 'Roman' PrefINI
+[11]      FontSize←INIString uSER 'B_FontSize' 'Normal' PrefINI
+[12]      :if CallingModule≡'Help'
+[13]          FontStyle←INIString uSER 'H_FontStyle' FontStyle PrefINI
+[14]          FontSize←INIString uSER 'H_FontSize' FontSize PrefINI
+[15]      :endif
+[16]  
+[17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[18]  
+[19]      parent ⎕wi 'caption' (SystemName,' - Set Font')
+[20]      (parent,'bnSet_FontSave') ⎕wi 'tooltip' 'Select Font Settings'
+[21]  
+[22]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[23]  
+[24]  :case 'Valid' ⍝ Routine specific validation
+[25]  
+[26]  :case 'Run'
+[27]      z←1↑CallingModule
+[28]      FontStyle INIString uSER (z,'_FontStyle') PrefINI
+[29]      FontSize INIString uSER (z,'_FontSize') PrefINI
+[30]      'Change' RunSetFont CallingModule
+[31]  
+[32]      parent ⎕wi 'modified' 0
+[33]      res←'Quit'
+[34]  
+[35]  :case 'Quit' ⍝ Deleting "other" variables
+[36]  
+[37]  :endselect
+    ∇

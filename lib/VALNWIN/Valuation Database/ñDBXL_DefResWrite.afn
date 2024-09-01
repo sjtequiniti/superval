@@ -1,0 +1,175 @@
+    ∇ ⍙DBXL_DefResWrite data;pos;NoMembers;tab;size;z;deleted;didtab;sql;contID
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Write the Deferreds Valuation Results in to Excel
+[3]   
+[4]   →(0∊⍴data)/0 ⍝ Skip if no members
+[5]   
+[6]   NoMembers←XL_Data 'NoMembers'
+[7]   pos←(14+NoMembers-↑⍴data) 0 (13+NoMembers) 0
+[8]   
+[9]   1 XL_ActivateWorksheet 'StatCalc'
+[10]  0 0⍴data[;⍳2] XL_Data RCtoA1 pos+0 1 0 2
+[11]  
+[12]  ⍝ Copy formulae for these cells
+[13]  (3 3 3 7) XL_PasteFormulas pos+0 3 0 7
+[14]  
+[15]  1 XL_ActivateWorksheet 'IndivRes'
+[16]  deleted←114×ppf ⍝ No of colums deleted in setup
+[17]  (13 7 13,157-deleted) XL_PasteFormats pos+¯1 7 0,157-deleted
+[18]  0 0⍴data[;⍳2] XL_Data RCtoA1 pos+0 1 0 2
+[19]  
+[20]  ⍝ Copy formulae for these cells
+[21]  (3 3 3 6) XL_PasteFormulas pos+0 3 0 6
+[22]  
+[23]  data[;8+⎕io]←data[;8+⎕io]×~×data[;2+⎕io]
+[24]  0 0⍴(0 3↓data) XL_Data RCtoA1 pos+0 7 0 12
+[25]  
+[26]  :if ppf
+[27]      0 0⍴(×"LiabilityTypeID = 3" ⍙DBXL_ExtractRes "DataItemID" (24)) XL_Data RCtoA1 pos+4⍴0 5 ⍝ Capped flag
+[28]  
+[29]      ⍝ Paste Formulas for Total Calculations
+[30]      (7,130-deleted) XL_PasteFormulas pos+4⍴0,130-deleted
+[31]      (7,134-deleted) XL_PasteFormulas pos+4⍴0,134-deleted
+[32]      (7,138-deleted) XL_PasteFormulas pos+4⍴0,138-deleted
+[33]      (7,142-deleted) XL_PasteFormulas pos+4⍴0,142-deleted
+[34]      (7,(146-deleted),7,(147-deleted)) XL_PasteFormulas pos+4⍴0,(146-deleted),0,(147-deleted)
+[35]      (8,148-deleted) XL_PasteFormulas pos+4⍴0,148-deleted
+[36]      (9,(152-deleted),9,(157-deleted)) XL_PasteFormulas pos+4⍴0,(152-deleted),0,(157-deleted)
+[37]  
+[38]      0 0⍴("LiabilityTypeID = 7 AND DataItemID IN (9, 10)" ⍙DBXL_ExtractRes "BenefitTypeID" (12 13 34)) XL_Data RCtoA1 pos+0⌈0 127 0 129-deleted
+[39]      0 0⍴("LiabilityTypeID = 7 AND DataItemID = 41"       ⍙DBXL_ExtractRes "BenefitTypeID" (38 39 40)) XL_Data RCtoA1 pos+0⌈0 131 0 133-deleted
+[40]  
+[41]      tab←-"LiabilityTypeID = 3 AND BenefitTypeID = 12" ⍙DBXL_ExtractRes "ContingencyID" ( 2  6 12)
+[42]      0 0⍴ tab[;,⎕io+1]                XL_Data RCtoA1 pos+4⍴0⌈0 149      -deleted
+[43]      0 0⍴(tab[;,⎕io],+/tab[;⎕io+1 2]) XL_Data RCtoA1 pos+  0⌈0 135 0 136-deleted
+[44]      tab←-"LiabilityTypeID = 3 AND BenefitTypeID = 13" ⍙DBXL_ExtractRes "ContingencyID" ( 2  6 12)
+[45]      0 0⍴ tab[;,⎕io+1]                XL_Data RCtoA1 pos+4⍴0⌈0 150      -deleted
+[46]      0 0⍴(tab[;,⎕io],+/tab[;⎕io+1 2]) XL_Data RCtoA1 pos+  0⌈0 139 0 140-deleted
+[47]      tab←-"LiabilityTypeID = 3 AND BenefitTypeID = 34" ⍙DBXL_ExtractRes "ContingencyID" ( 2  6 12)
+[48]      0 0⍴ tab[;,⎕io+1]                XL_Data RCtoA1 pos+4⍴0⌈0 151      -deleted
+[49]      0 0⍴(tab[;,⎕io],+/tab[;⎕io+1 2]) XL_Data RCtoA1 pos+  0⌈0 143 0 144-deleted
+[50]      tab←-"LiabilityTypeID = 3 AND DataItemID = 14"    ⍙DBXL_ExtractRes "BenefitTypeID" (38 39 40)
+[51]      0 0⍴ tab[;,⎕io  ]                XL_Data RCtoA1 pos+4⍴0⌈0 137      -deleted
+[52]      0 0⍴ tab[;,⎕io+1]                XL_Data RCtoA1 pos+4⍴0⌈0 141      -deleted
+[53]      0 0⍴ tab[;,⎕io+2]                XL_Data RCtoA1 pos+4⍴0⌈0 145      -deleted
+[54]  :else
+[55]      (7,73-deleted) XL_PasteFormulas pos+4⍴0,73-deleted
+[56]      (7,76-deleted) XL_PasteFormulas pos+4⍴0,76-deleted
+[57]  
+[58]      ⍝ Discontinuance Benefits
+[59]      0 0⍴(-"LiabilityTypeID = 3 AND ContingencyID IN (2, 12) AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (2 3)) XL_Data RCtoA1 pos+0⌈0 59 0 60-deleted
+[60]      0 0⍴(-"LiabilityTypeID = 3 AND ContingencyID IN (2, 12) AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (4 5)) XL_Data RCtoA1 pos+0⌈0 61 0 62-deleted
+[61]      0 0⍴(-"LiabilityTypeID = 3 AND ContingencyID IN (2, 12) AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (6 7)) XL_Data RCtoA1 pos+0⌈0 63 0 64-deleted
+[62]      0 0⍴(-"LiabilityTypeID = 3 AND ContingencyID IN (2, 12) AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (8 31)) XL_Data RCtoA1 pos+0⌈0 65 0 66-deleted
+[63]  
+[64]      didtab←       +/"LiabilityTypeID = 3 AND ContingencyID = 6 AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (35 44 45 46 47)
+[65]      didtab←didtab++/"LiabilityTypeID = 3 AND ContingencyID = 6 AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (1 36) ⍝⍝⍝ 54 55 56 57 if Cot Split by PI
+[66]      didtab←didtab++/"LiabilityTypeID = 3 AND ContingencyID = 6 AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (4 5)
+[67]      didtab←didtab++/"LiabilityTypeID = 3 AND ContingencyID = 6 AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (6 7)
+[68]      didtab←didtab++/"LiabilityTypeID = 3 AND ContingencyID = 6 AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (8 31)
+[69]      didtab←-     (+/"LiabilityTypeID = 3 AND ContingencyID = 6 AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (2 3)),[0.5]didtab
+[70]      0 0⍴didtab XL_Data RCtoA1 pos+0⌈0 74 0 75-deleted
+[71]  
+[72]      tab←   +/"LiabilityTypeID = 3 AND ContingencyID IN (2, 12) AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (35 44 45 46 47)
+[73]      tab←-tab,"LiabilityTypeID = 3 AND ContingencyID IN (2, 12) AND DataItemID = 14" ⍙DBXL_ExtractRes "BenefitTypeID" (36 1) ⍝⍝⍝ "+/"54 55 56 57 if Cot Split by PI
+[74]      tab[;⎕io+2]←tab[;⎕io+2]++/didtab
+[75]      0 0⍴tab XL_Data RCtoA1 pos+0⌈0 67 0 69-deleted
+[76]  
+[77]      tab←-"LiabilityTypeID = 3 AND DataItemID = 14" ⍙DBXL_ExtractRes "ContingencyID" (2 6 12)
+[78]      0 0⍴(tab[;⎕io+,0],+/0 1↓tab) XL_Data RCtoA1 pos+0⌈0 71 0 72-deleted
+[79]  
+[80]      :if bencap
+[81]          0 0⍴(×"LiabilityTypeID = 3" ⍙DBXL_ExtractRes "DataItemID" (24)) XL_Data RCtoA1 pos+4⍴0 5 ⍝ Capped flag
+[82]          (8,134-deleted+7) XL_PasteFormulas pos+4⍴0,134-deleted+7
+[83]      :endif
+[84]      ⍝ Paste Formulas for Demographic and Total PS/FS Calculations
+[85]      (7 22) XL_PasteFormulas pos+4⍴0 22
+[86]      (7 46) XL_PasteFormulas pos+4⍴0 46
+[87]  
+[88]      ⍝ PUPs at Valuation Date
+[89]      (7,20-deleted) XL_PasteFormulas pos+4⍴0,20-deleted
+[90]      0 0⍴("DataItemID = 31"  ⍙DBXL_ExtractRes "BenefitTypeID" (2 3)) XL_Data RCtoA1 pos+0 13 0 14
+[91]      0 0⍴("DataItemID = 31"  ⍙DBXL_ExtractRes "BenefitTypeID" (4 5)) XL_Data RCtoA1 pos+0 15 0 16
+[92]      0 0⍴("DataItemID = 31"  ⍙DBXL_ExtractRes "BenefitTypeID" (6 7)) XL_Data RCtoA1 pos+0 17 0 18
+[93]      0 0⍴("DataItemID = 31"  ⍙DBXL_ExtractRes "BenefitTypeID" (31) ) XL_Data RCtoA1 pos+0 19 0 19
+[94]  
+[95]      0 0⍴("LiabilityTypeID = 7" ⍙DBXL_ExtractRes "DataItemID" (25)) XL_Data RCtoA1 pos+4⍴0 21 ⍝ NRA PUP
+[96]  
+[97]      ⍝ Retirement Benefits
+[98]      0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID IN (1, 2, 7, 12) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" ( 2  3)) XL_Data RCtoA1 pos+0 23 0 24
+[99]      0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID IN (1, 2, 7, 12) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" ( 4  5)) XL_Data RCtoA1 pos+0 25 0 26
+[100]     0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID IN (1, 2, 7, 12) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" ( 6  7)) XL_Data RCtoA1 pos+0 27 0 28
+[101]     0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID IN (1, 2, 7, 12) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" ( 8 31)) XL_Data RCtoA1 pos+0 29 0 30
+[102]     0 0⍴(⍉MATRIX -+/"LiabilityTypeID = 1 AND ContingencyID IN (1, 2, 7, 12) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (35 44 45 46 47)) XL_Data RCtoA1 pos+0 31 0 31 ⍝ Split Cash
+[103]     0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID IN (1, 2, 7, 12) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (36  1)) XL_Data RCtoA1 pos+0 32 0 33 ⍝⍝⍝ "+/"54 55 56 57 if Cot Split by PI
+[104] 
+[105]     tab←-"LiabilityTypeID = 1 AND DataItemID = 13" ⍙DBXL_ExtractRes "ContingencyID" (1 2 7 12) ⋄ tab←(+/tab[;⍳2]),[0.5]+/tab[;2+⍳2]
+[106]     0 0⍴tab XL_Data RCtoA1 pos+0 34 0 35
+[107] 
+[108]     ⍝ Death in Deferment Benefits
+[109]     0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (2 3)) XL_Data RCtoA1 pos+0 36 0 37
+[110]     0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (4 5)) XL_Data RCtoA1 pos+0 38 0 39
+[111]     0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (6 7)) XL_Data RCtoA1 pos+0 40 0 41
+[112]     0 0⍴(-"LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (8 31)) XL_Data RCtoA1 pos+0 42 0 43
+[113]     tab←    +/"LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (35 44 45 46 47)
+[114]     tab←tab++/"LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (1 36) ⍝⍝⍝ 54 55 56 57 if Cot Split by PI
+[115]     0 0⍴(⍉MATRIX -tab) XL_Data RCtoA1 pos+0 44 0 44
+[116] 
+[117]     ⍝ Transfer Out Benefits
+[118]     0 0⍴(-  "LiabilityTypeID = 1 AND ContingencyID IN (31, 32, 34, 35, 37, 38, 40, 41) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (2 3))  XL_Data RCtoA1 pos+0 47 0 48
+[119]     0 0⍴(-  "LiabilityTypeID = 1 AND ContingencyID IN (31, 32, 34, 35, 37, 38, 40, 41) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (4 5))  XL_Data RCtoA1 pos+0 49 0 50
+[120]     0 0⍴(-  "LiabilityTypeID = 1 AND ContingencyID IN (31, 32, 34, 35, 37, 38, 40, 41) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (6 7))  XL_Data RCtoA1 pos+0 51 0 52
+[121]     0 0⍴(-  "LiabilityTypeID = 1 AND ContingencyID IN (31, 32, 34, 35, 37, 38, 40, 41) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (8 31)) XL_Data RCtoA1 pos+0 53 0 54
+[122]     tab←    +/"LiabilityTypeID = 1 AND ContingencyID IN (31, 32, 34, 35, 37, 38, 40, 41) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (35 44 45 46 47)
+[123]     tab←tab++/"LiabilityTypeID = 1 AND ContingencyID IN (31, 32, 34, 35, 37, 38, 40, 41) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (36) ⍝⍝⍝ 54 55 56 57 if Cot Split by PI
+[124]     0 0⍴(⍉MATRIX -tab) XL_Data RCtoA1 pos+0 55 0 55
+[125]     0 0⍴(-  "LiabilityTypeID = 1 AND ContingencyID IN (31, 32, 34, 35, 37, 38, 40, 41) AND DataItemID = 13" ⍙DBXL_ExtractRes "BenefitTypeID" (1))    XL_Data RCtoA1 pos+0 56 0 56
+[126] 
+[127]     tab←-"LiabilityTypeID = 1 AND DataItemID = 13" ⍙DBXL_ExtractRes "ContingencyID" (31 32 37 38 34 35 40 41) ⋄ tab←(+/tab[;⍳4]),[0.5]+/tab[;4+⍳4]
+[128]     0 0⍴tab XL_Data RCtoA1 pos+0 57 0 58
+[129] 
+[130]     ⍝ Retirement Valuation Factors
+[131]     sql←⍙DBPivot "AVG" "MemberAge" "MemberResults" ("ResultsCategoryID=",(DLTB CatID)," AND LiabilityTypeID = 1 AND ContingencyID IN (1, 2, 7, 12)") "MemberID" "DataItemID" (27) membercount
+[132]     0 0⍴(0 1↓data[;⎕io+1] XL_Pivot sql 0) XL_Data RCtoA1 pos+0 77 0 77
+[133]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 2  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID" (1 2 7 12)) XL_Data RCtoA1 pos+0 78 0 79
+[134]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 3  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID" (1 2 7 12)) XL_Data RCtoA1 pos+0 80 0 81
+[135]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 4  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID" (1 2 7 12)) XL_Data RCtoA1 pos+0 82 0 83
+[136]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 5  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID" (1 2 7 12)) XL_Data RCtoA1 pos+0 84 0 85
+[137]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 6  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID" (1 2 7 12)) XL_Data RCtoA1 pos+0 86 0 87
+[138]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 7  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID" (1 2 7 12)) XL_Data RCtoA1 pos+0 88 0 89
+[139]     0 0⍴(            +/                          "LiabilityTypeID = 1 AND BenefitTypeID = 31 AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID" (    7 12)) XL_Data RCtoA1 pos+0 90 0 90
+[140] 
+[141]     ⍝ Death in Deferment Valuation Factors
+[142]     sql←⍙DBPivot "AVG" "MemberAge" "MemberResults" ("ResultsCategoryID=",(DLTB CatID)," AND LiabilityTypeID = 1 AND ContingencyID = 6") "MemberID" "DataItemID" (27) membercount
+[143]     0 0⍴(0 1↓data[;⎕io+1] XL_Pivot sql 0) XL_Data RCtoA1 pos+0 91 0 91
+[144]     0 0⍴("LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 27"  ⍙DBXL_ExtractRes "BenefitTypeID" (2 3)) XL_Data RCtoA1 pos+0 92 0 93
+[145]     0 0⍴("LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 27"  ⍙DBXL_ExtractRes "BenefitTypeID" (4 5)) XL_Data RCtoA1 pos+0 94 0 95
+[146]     0 0⍴("LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 27"  ⍙DBXL_ExtractRes "BenefitTypeID" (6 7)) XL_Data RCtoA1 pos+0 96 0 97
+[147]     0 0⍴("LiabilityTypeID = 1 AND ContingencyID = 6 AND DataItemID = 27"  ⍙DBXL_ExtractRes "BenefitTypeID" (31) ) XL_Data RCtoA1 pos+0 98 0 98
+[148] 
+[149]     ⍝ Transfer Out Valuation Factors
+[150]     :if ~∨/(contID←37 38 40 41)∊,1 ⍙DBadoCONCommand "SELECT DISTINCT ContingencyID FROM MemberResults WHERE ResultsCategoryID=",(DLTB CatID)," AND DataItemID=27"
+[151]         contID←31 32 34 35
+[152]     :endif
+[153]     sql←⍙DBPivot "AVG" "MemberAge" "MemberResults" ("ResultsCategoryID=",(DLTB CatID)," AND LiabilityTypeID = 1 AND ContingencyID IN (",(⍙DBNumList contID),")") "MemberID" "DataItemID" (27) membercount
+[154]     0 0⍴(0 1↓data[;⎕io+1] XL_Pivot sql 0) XL_Data RCtoA1 pos+0 99 0 99
+[155]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 2  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID"    contID ) XL_Data RCtoA1 pos+0 100 0 101
+[156]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 3  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID"    contID ) XL_Data RCtoA1 pos+0 102 0 103
+[157]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 4  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID"    contID ) XL_Data RCtoA1 pos+0 104 0 105
+[158]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 5  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID"    contID ) XL_Data RCtoA1 pos+0 106 0 107
+[159]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 6  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID"    contID ) XL_Data RCtoA1 pos+0 108 0 109
+[160]     0 0⍴(↑,[⎕io+0.5]/+/¨1 0 1 0 ⎕penclose[1+⎕io] "LiabilityTypeID = 1 AND BenefitTypeID = 7  AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID"    contID ) XL_Data RCtoA1 pos+0 110 0 111
+[161]     0 0⍴(            +/                          "LiabilityTypeID = 1 AND BenefitTypeID = 31 AND DataItemID IN (27, 28)" ⍙DBXL_ExtractRes "ContingencyID" (2↓contID)) XL_Data RCtoA1 pos+0 112 0 112
+[162] 
+[163]     ⍝ Discontinuance Valuation Factors
+[164]     sql←⍙DBPivot "AVG" "MemberAge" "MemberResults" ("ResultsCategoryID=",(DLTB CatID)," AND LiabilityTypeID = 3 AND ContingencyID = 2") "MemberID" "DataItemID" (29) membercount
+[165]     0 0⍴(0 1↓data[;⎕io+1] XL_Pivot sql 0) XL_Data RCtoA1 pos+0 113 0 113
+[166]     0 0⍴("LiabilityTypeID = 3 AND BenefitTypeID = 2  AND DataItemID IN (29, 30)" ⍙DBXL_ExtractRes "ContingencyID" (2 12)) XL_Data RCtoA1 pos+0 114 0 115
+[167]     0 0⍴("LiabilityTypeID = 3 AND BenefitTypeID = 3  AND DataItemID IN (29, 30)" ⍙DBXL_ExtractRes "ContingencyID" (2 12)) XL_Data RCtoA1 pos+0 116 0 117
+[168]     0 0⍴("LiabilityTypeID = 3 AND BenefitTypeID = 4  AND DataItemID IN (29, 30)" ⍙DBXL_ExtractRes "ContingencyID" (2 12)) XL_Data RCtoA1 pos+0 118 0 119
+[169]     0 0⍴("LiabilityTypeID = 3 AND BenefitTypeID = 5  AND DataItemID IN (29, 30)" ⍙DBXL_ExtractRes "ContingencyID" (2 12)) XL_Data RCtoA1 pos+0 120 0 121
+[170]     0 0⍴("LiabilityTypeID = 3 AND BenefitTypeID = 6  AND DataItemID IN (29, 30)" ⍙DBXL_ExtractRes "ContingencyID" (2 12)) XL_Data RCtoA1 pos+0 122 0 123
+[171]     0 0⍴("LiabilityTypeID = 3 AND BenefitTypeID = 7  AND DataItemID IN (29, 30)" ⍙DBXL_ExtractRes "ContingencyID" (2 12)) XL_Data RCtoA1 pos+0 124 0 125
+[172]     0 0⍴("LiabilityTypeID = 3 AND BenefitTypeID = 31 AND DataItemID IN (29, 30)" ⍙DBXL_ExtractRes "ContingencyID" (  12)) XL_Data RCtoA1 pos+0 126 0 126
+[173] :endif
+    ∇

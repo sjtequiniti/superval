@@ -1,0 +1,87 @@
+    ∇ SetAccess;tno;size;MethSubProc
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Set access to some Menu Items
+[3]   
+[4]   (FormName,'.mMainDevelop.mUpdate') ⎕wi 'visible' uSERisRSE
+[5]   (FormName,'.mMainTools.mAdmin') ⎕wi 'visible' (accesslevel=9)
+[6]   :if accesslevel=9
+[7]       :if 0≠UsageLog FSTIE (tno←TieNumber UsageLog) 1
+[8]           MDISPLAY 'Unable to tie USAGELOG.SFL. Please report to Claybrook' ⍝ dnp17jun15
+[9]       :else
+[10]          size←¯1↑⎕fsize tno ⋄ ⎕funtie tno
+[11]          (FormName,'.mMainTools.mAdmin.mUPack') ⎕wi 'enabled' (size>5000000)
+[12]          :if size>20000000
+[13]              MDISPLAY 'Recoverable Space in Usage Log File exceeds 20Mb - suggest Compression (Tools/Administration/Compress Usage File)'
+[14]          :endif
+[15]      :endif
+[16]  :endif
+[17]  (FormName,'.mMainData.mEditor'   ) ⎕wi 'enabled' (datAccess[3]≤accesslevel)
+[18]  (FormName,'.mMainData.mCalc'     ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[19]  (FormName,'.mMainCalc.mCalc'     ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[20]  (FormName,'.mMainData.mDataMerge') ⎕wi 'enabled' AOSCtl
+[21]  (FormName,'.mMainBasis.mScheme.mAOS'       ) ⎕wi 'enabled' AOSCtl
+[22]  (FormName,'.mMainBasis.mAudit.mScheme.mAOS') ⎕wi 'enabled' AOSCtl
+[23]  (FormName,'.mMainValn.mCashflow'           ) ⎕wi 'enabled' (⍙dbopen∨bALMLDI)
+[24]  (FormName,'.mMainBasis.mScheme.mDemography.mRates' ) ⎕wi 'enabled' bASM
+[25]  (FormName,'.mMainBasis.mScheme.mDemography.mSpouse') ⎕wi 'enabled' bASM
+[26]  (FormName,'.mMainBasis.mScheme.mRetirement.mRetAge') ⎕wi 'enabled' bASM
+[27]  (FormName,'.mMainBasis.mScheme.mRetirement.mRetF'  ) ⎕wi 'enabled' bASM
+[28]  (FormName,'.mMainBasis.mScheme.mRetirement.mCommT' ) ⎕wi 'enabled' bASM
+[29]  (FormName,'.mMainBasis.mScen'                      ) ⎕wi 'enabled' bASM
+[30]  (FormName,'.mMainBasis.mScenReport'                ) ⎕wi 'enabled' bASM
+[31]  (FormName,'.mMainBasis.mUpdBases'                  ) ⎕wi 'enabled' (bASM^basAccess[2]≤accesslevel)
+[32]  (FormName,'.mMainValn.mScen'                       ) ⎕wi 'enabled' bASM
+[33]  (FormName,'.mMainValn.mScenExcel'                  ) ⎕wi 'enabled' bASM
+[34]  ⍝⍝⍝ (FormName,'.mMainValn.mChecks'                     ) ⎕wi 'enabled' (bAON∨ecflag)
+[35]  (FormName,'.mMainValn.mQScen'                      ) ⎕wi 'visible' ecflag
+[36]  (FormName,'.mMainValn.mQScen.mPostProcess'         ) ⎕wi 'enabled' (bQSM∨bAON)
+[37]  (FormName,'.mMainValn.mQScen.mConfig'              ) ⎕wi 'enabled' bQSM
+[38]  (FormName,'.mMainValn.mQScen.mQuickScen'           ) ⎕wi 'enabled' bQSM
+[39]  (FormName,'.mMainValn.mQScen.mRollForward'         ) ⎕wi 'enabled' bQSM
+[40]  (FormName,'.mMainValn.mQScen.mStochastic'          ) ⎕wi 'enabled' bQSM
+[41]  (FormName,'.mMainBasis.mAudit.mScheme.mDemography.mRates' ) ⎕wi 'enabled' bASM
+[42]  (FormName,'.mMainBasis.mAudit.mScheme.mDemography.mSpouse') ⎕wi 'enabled' bASM
+[43]  (FormName,'.mMainBasis.mAudit.mScheme.mRetirement.mRetAge') ⎕wi 'enabled' bASM
+[44]  (FormName,'.mMainBasis.mAudit.mScheme.mRetirement.mRetF'  ) ⎕wi 'enabled' bASM
+[45]  (FormName,'.mMainBasis.mAudit.mScheme.mRetirement.mCommT' ) ⎕wi 'enabled' bASM
+[46]  (FormName,'.mMainBasis.mAudit.mScen'                      ) ⎕wi 'enabled' bASM
+[47]  (FormName,'.mMainTools.mSubProc.mConfig'    ) ⎕wi 'visible' ((∣bHPC)^accesslevel=9)
+[48]  (FormName,'.mMainTools.mSubProc.mBroker'    ) ⎕wi 'enabled'  (∣bHPC)
+[49]  :if ∣bHPC
+[50]      MethSubProc←'' ⋄ 0 0⍴PrefFile ReadFile 'Config_LoadShare' '' 'MethSubProc'
+[51]      (FormName,'.mMainTools.mSubProc.mBroker') ⎕wi 'enabled' ('H'=↑MethSubProc)
+[52]  :endif
+[53]  :if uk≠1
+[54]  ⍝⍝⍝    (FormName,'.mMainFund.mMig' ) ⎕wi 'enabled' (genAccess[2]≤accesslevel) ⍝????
+[55]      (FormName,'.mMainBasis.mMig') ⎕wi 'enabled' (genAccess[2]≤accesslevel) ⍝???? Set in Client for UK
+[56]      (FormName,'.mMainData.mAdjust') ⎕wi 'enabled' (datAccess[5]≤accesslevel)
+[57]      (FormName,'.mMainCalc.mAdjust') ⎕wi 'enabled' (datAccess[5]≤accesslevel)
+[58]      (FormName,'.mMainData.mAdjust.mConts' ) ⎕wi 'enabled' (datAccess[5]≤accesslevel)
+[59]      (FormName,'.mMainData.mAdjust.mConts2') ⎕wi 'enabled' (datAccess[5]≤accesslevel)
+[60]      (FormName,'.mMainCalc.mAdjust.mConts' ) ⎕wi 'enabled' (datAccess[5]≤accesslevel)
+[61]      (FormName,'.mMainCalc.mAdjust.mConts2') ⎕wi 'enabled' (datAccess[5]≤accesslevel)
+[62]  :elseif uk=1
+[63]      (FormName,'.mMainTools.mAdmin.mClntSwitch') ⎕wi 'visible' bExactVal
+[64]      (FormName,'.mMainTools.mAdmin.mSQL') ⎕wi 'enabled' bSQLServer
+[65]      (FormName,'.mMainData.mAdjustConts'   ) ⎕wi 'enabled' (AOSCtl^datAccess[5]≤accesslevel)
+[66]      (FormName,'.mMainCalc.mAdjustConts'   ) ⎕wi 'enabled' (AOSCtl^datAccess[5]≤accesslevel)
+[67]      (FormName,'.mMainData.mMSAR'          ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[68]      (FormName,'.mMainCalc.mMSAR'          ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[69]      (FormName,'.mMainData.mRollForward'   ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[70]      (FormName,'.mMainData.mGMP.mAccurate' ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[71]      (FormName,'.mMainData.mGMP.mApprox'   ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[72]      (FormName,'.mMainCalc.mGMP.mAccurate' ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[73]      (FormName,'.mMainCalc.mGMP.mApprox'   ) ⎕wi 'enabled' (datAccess[4]≤accesslevel)
+[74]      (FormName,'.mMainTables.mRates.mBulk' ) ⎕wi 'visible' (ecflag∨bPwC^rtAccess[2]≤accesslevel)
+[75]      (FormName,'.mMainBasis.mScheme.mRetirement.mCash'  ) ⎕wi 'enabled' bASM
+[76]      (FormName,'.mMainBasis.mScheme.mSpread'            ) ⎕wi 'enabled' bASM
+[77]      (FormName,'.mMainBasis.mCreateGlobals'             ) ⎕wi 'enabled' bASM
+[78]      (FormName,'.mMainBasis.mAudit.mScheme.mRetirement.mCash'  ) ⎕wi 'enabled' bASM
+[79]      (FormName,'.mMainBasis.mAudit.mScheme.mSpread'            ) ⎕wi 'enabled' bASM
+[80]      (FormName,'.mMainTools.mAdmin.mMig.mAudit')  ⎕wi 'visible' (ClntCode=3)
+[81]      (FormName,'.mMainBasis.mScheme.mDemography.mSelMort')          ⎕wi 'enabled' bGAD
+[82]  ⍝    (FormName,'.mMainBasis.mScheme.mRetirement.mRetAgeTab')        ⎕wi 'enabled' bGAD
+[83]      (FormName,'.mMainBasis.mAudit.mScheme.mDemography.mSelMort')   ⎕wi 'enabled' bGAD
+[84]  ⍝    (FormName,'.mMainBasis.mAudit.mScheme.mRetirement.mRetAgeTab') ⎕wi 'enabled' bGAD
+[85]  :endif
+    ∇

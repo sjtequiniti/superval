@@ -1,1 +1,31 @@
-    ∇ PageView←PPFYieldsGraph;values[1]   ⍝ PPFWIN.sf#4[2]   ⍝ Graph the PPF Yields[3]   [4]   PageView←0⍴''[5]   :if mt (parent,'picPretty') ⎕wi 'self' ⋄ :orif mt YIELDDATE[6]       :return ⍝ Graph Control doesn't exist yet!![7]   :endif[8]   [9]   chSet 'HMargin' 60 36[10]  chSet 'Heading' 'PPF Yields'[11]  chSet 'HFont' 'tii,12,blue'[12]  chSet 'Style' 'boxed,xyplot,grid'[13]  chSet 'Grid' 'dotted,fine'[14]  chSet 'XStyle' 'date'[15]  chSet 'YCaption' '%'[16]  chSet 'XCaption' 'Date'[17]  [18]  values←MatrixZWB PPFi OVER PPFi20 OVER PPFPENpiI OVER PPFPENpiF OVER PPFpiI OVER PPFpiF[19]  chSet 'YRange' (⌊/0,values),⌈/values[20]  [21]  chSet 'Style' 'lines,markers'[22]  chSet 'Key' 'Pre Ret,Post 2009 Pre Ret,Pensioner Post Ret (With Increases),Pensioner Post Ret (No Increases),Non-Pensioner Post Ret (With Increases),Non-Pensioner Post Ret (No Increases)'[23]  chSet 'KFont' 'he,7'[24]  chPlot (MATRIX ¯2415014+JUL 'DD/MM/YYYY' DATEEXP YIELDDATE),EXECUTE PPFi,' ',PPFi20,' ',PPFPENpiI,' ',PPFPENpiF,' ',PPFpiI,' ',PPFpiF[25]  [26]  PageView←chClose[27]  [28]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box[29]  ppt←.5+.×(((parent,'picPretty') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point    ∇
+    ∇ PageView←PPFYieldsGraph;values
+[1]   ⍝ PPFWIN.sf#4
+[2]   ⍝ Graph the PPF Yields
+[3]   
+[4]   PageView←0⍴''
+[5]   :if mt (parent,'picPretty') ⎕wi 'self' ⋄ :orif mt YIELDDATE
+[6]       :return ⍝ Graph Control doesn't exist yet!!
+[7]   :endif
+[8]   
+[9]   chSet 'HMargin' 60 36
+[10]  chSet 'Heading' 'PPF Yields'
+[11]  chSet 'HFont' 'tii,12,blue'
+[12]  chSet 'Style' 'boxed,xyplot,grid'
+[13]  chSet 'Grid' 'dotted,fine'
+[14]  chSet 'XStyle' 'date'
+[15]  chSet 'YCaption' '%'
+[16]  chSet 'XCaption' 'Date'
+[17]  
+[18]  values←MatrixZWB PPFi OVER PPFi20 OVER PPFPENpiI OVER PPFPENpiF OVER PPFpiI OVER PPFpiF
+[19]  chSet 'YRange' (⌊/0,values),⌈/values
+[20]  
+[21]  chSet 'Style' 'lines,markers'
+[22]  chSet 'Key' 'Pre Ret,Post 2009 Pre Ret,Pensioner Post Ret (With Increases),Pensioner Post Ret (No Increases),Non-Pensioner Post Ret (With Increases),Non-Pensioner Post Ret (No Increases)'
+[23]  chSet 'KFont' 'he,7'
+[24]  chPlot (MATRIX ¯2415014+JUL 'DD/MM/YYYY' DATEEXP YIELDDATE),EXECUTE PPFi,' ',PPFi20,' ',PPFPENpiI,' ',PPFPENpiF,' ',PPFpiI,' ',PPFpiF
+[25]  
+[26]  PageView←chClose
+[27]  
+[28]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box
+[29]  ppt←.5+.×(((parent,'picPretty') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+    ∇

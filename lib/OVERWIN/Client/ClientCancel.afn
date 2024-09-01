@@ -1,1 +1,28 @@
-    ∇ ClientCancel;Error[1]   ⍝ OVERWIN.sf#10[2]   ⍝ User pressed Cancel on the Scheme Details[3]   [4]   Win∆AssignVars ControlName[5]   [6]   :if ControlName ⎕wi '∆haserrors'[7]   :orif ~0∊⍴Error←(⊂'All') Client 'Valid'[8]       ControlName ⎕wi '∆haserrors' 1[9]       :if 0≠⎕nc 'Error' ⋄ :andif (CallingModule≡'SchemeDetails')∨(0=ControlName ⎕wi 'modified')[10]          MDISPLAY Error ⋄ :return[11]      :elseif ~CallingModule≡'SchemeDetails'[12]          :if 'N'=ASK 'Valid Scheme Details required.',⎕tcnl,'Do you want to abort opening new Scheme?'[13]              :return[14]          :else[15]              ControlName ⎕wi '∆modified' 1[16]              0 0⍴(Folder 80) FolderHeld 'End'[17]              →end[18]          :endif[19]      :endif[20]  :endif[21]  [22]  ⍝ Migration can cause ClientFile to be created w/o Client Details saved[23]  :if mt ClientFile ReadFile 'Client' '' 'NAMES'[24]      'Run' RunModule 'Client' ⋄ :return ⍝ If not yet saved[25]  :endif[26]  end:'Quit' RunModule 'Client'    ∇
+    ∇ ClientCancel;Error
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ User pressed Cancel on the Scheme Details
+[3]   
+[4]   Win∆AssignVars ControlName
+[5]   
+[6]   :if ControlName ⎕wi '∆haserrors'
+[7]   :orif ~0∊⍴Error←(⊂'All') Client 'Valid'
+[8]       ControlName ⎕wi '∆haserrors' 1
+[9]       :if 0≠⎕nc 'Error' ⋄ :andif (CallingModule≡'SchemeDetails')∨(0=ControlName ⎕wi 'modified')
+[10]          MDISPLAY Error ⋄ :return
+[11]      :elseif ~CallingModule≡'SchemeDetails'
+[12]          :if 'N'=ASK 'Valid Scheme Details required.',⎕tcnl,'Do you want to abort opening new Scheme?'
+[13]              :return
+[14]          :else
+[15]              ControlName ⎕wi '∆modified' 1
+[16]              0 0⍴(Folder 80) FolderHeld 'End'
+[17]              →end
+[18]          :endif
+[19]      :endif
+[20]  :endif
+[21]  
+[22]  ⍝ Migration can cause ClientFile to be created w/o Client Details saved
+[23]  :if mt ClientFile ReadFile 'Client' '' 'NAMES'
+[24]      'Run' RunModule 'Client' ⋄ :return ⍝ If not yet saved
+[25]  :endif
+[26]  end:'Quit' RunModule 'Client'
+    ∇

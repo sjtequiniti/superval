@@ -1,0 +1,62 @@
+    ∇ tab←tab UpdateAbsDict Module;list;∆;z;Names
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Create a dictionary of Scheme fields that can be used in parameter lists or inherited values
+[3]   ⍝ tab is the exisitng "AbsDict" (or nothing for Module "Client")
+[4]   
+[5]   :if Module≡'Client' ⍝ Being (re)created by pass through Client
+[6]       tab←MATRIX 'Module' 'Type' 'Description' 'Variable' 'Parameter' 'Valid' 'List'
+[7]   :else
+[8]       tab←tab for (~(tab at 'Module')∊⊂Module) ⍝ Remove previous entries for Module
+[9]   :endif
+[10]  
+[11]  :select Module
+[12]  :case 'Client' ⍝ Files, Formats and (not UK) Date and Numeric Constants
+[13]      ∆←  (⊂'Date'  ),⊃spin (  'Current' 'Previous',¨⊂' Valuation Date')            list (      ⍎¨list←  'vDATE' 'pvDATE'                )
+[14]      ∆←∆⍪(⊂'File'  ),⊃spin (  'Actives' 'Deferreds' 'Pensioners',¨⊂' Data File')   list (DTDot¨⍎¨list←  'Actsfile' 'Defsfile' 'Pensfile')
+[15]      ∆←∆⍪(⊂'Check' ),⊃spin (,⊂'Default File Selection')                            list (      ⍎¨list←,⊂'fILESelections'                )
+[16]      ∆←∆⍪(⊂'Format'),⊃spin (  'Actives' 'Deferreds' 'Pensioners',¨⊂' Data Format') list (      ⍎¨list←  'FormatA' 'FormatD' 'FormatP'   )
+[17]      tab←tab⍪((⊂Module),∆,⊂''),∆[;1+⎕io]
+[18]      :if uk≠1 ⍝ Scheme Date and Numeric Constants in Scheme Details
+[19]          tab←tab UpdateAbsDict 'Constants'
+[20]      :endif
+[21]  
+[22]      tab←InitAbsDict tab ⍝ Add Financial Constants and UK Date and Numeric Constants
+[23]  
+[24]  :case 'Financials' ⍝ Financial Numeric Constants only (see ⍙FinAssdict for Financial assumptions)
+[25]      :if ~mt FinNumName
+[26]          :if 0≠⎕nc 'FinNumComment' ⋄ FinNumDesc←FinNumComment ⋄ 0 0⍴⎕ex 'FinNumComment' ⋄ :endif
+[27]          tab←tab⍪((⊂Module),(⊂'Number'),(⊃spin m2n¨FinNumDesc FinNumName FinNumValue),ValidStrings FinNumValue),'-' DTZ¨DLTB¨(⊂' - ') join¨spin m2n¨FinNumName FinNumDesc
+[28]      :endif
+[29]  
+[30]  :case 'Constants' ⍝ Scheme Date and Numeric Constants
+[31]      :if ~mt DateName
+[32]          tab←tab⍪((⊂Module),(⊂'Date'),(⊃spin m2n¨DateComment DateName DateValue),⊂''),'-' DTZ¨DLTB¨(⊂' - ') join¨spin m2n¨DateName DateComment
+[33]      :endif
+[34]      :if ~mt NumName
+[35]          tab←tab⍪((⊂Module),(⊂'Number'),(⊃spin m2n¨NumComment NumName NumValue),ValidStrings NumValue),'-' DTZ¨DLTB¨(⊂' - ') join¨spin m2n¨NumName NumComment
+[36]      :endif
+[37]  
+[38]  :case 'Basis' ⍝ Category Date and Numeric Constants
+[39]      :if uk≠1
+[40]          :if 0≠⎕nc 'CatDateName' ⋄ :andif ~mt CatDateName
+[41]              tab←tab⍪((⊂Module),(⊂'Date'),(⊃spin m2n¨CatDateComment CatDateName CatDateValue),⊂''),'-' DTZ¨DLTB¨(⊂' - ') join¨spin m2n¨CatDateName CatDateComment
+[42]          :endif
+[43]          :if 0≠⎕nc 'CatNumName' ⋄ :andif ~mt CatNumName
+[44]              tab←tab⍪((⊂Module),(⊂'Number'),(⊃spin m2n¨CatNumComment CatNumName CatNumValue),ValidStrings CatNumValue),'-' DTZ¨DLTB¨(⊂' - ') join¨spin m2n¨CatNumName CatNumComment
+[45]          :endif
+[46]      :endif
+[47]  
+[48]  :case 'Data' ⍝ Member Data Variables
+[49]      z←×∊⍴¨⍎¨m2n SStoMAT DateStandVars,DLTMB '⍺','f',DateVars
+[50]      :if ~mt Names←z⌿SStoMAT DateStandNames,DLTMB '⍺',DateDesc
+[51]          tab←tab⍪((⊂Module),(⊂'Date'),((⊃spin m2n¨Names Names),⊂''),⊂''),(⊂'')
+[52]      :endif
+[53]      z←×∊⍴¨⍎¨m2n SStoMAT FixNumStandVars,VarNumStandVars,DLTMB '⍺','f',TotNumVars
+[54]      :if ~mt Names←z⌿SStoMAT FixNumStandNames,VarNumStandNames,DLTMB '⍺',TotNumDesc
+[55]          tab←tab⍪((⊂Module),(⊂'Number'),((⊃spin m2n¨Names Names),⊂''),⊂⊂'Scalar'),(⊂'')
+[56]      :endif
+[57]  
+[58]  :endselect
+[59]  
+[60]  tab←tab for (~mt¨DLTB¨tab at 'Parameter')∨((tab at 'Module')∊⊂'Data') ⍝ Remove empty
+    ∇

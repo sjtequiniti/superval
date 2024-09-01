@@ -1,0 +1,58 @@
+    ∇ CREATE∆MEMCONT;var;contsfn;fn;F
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Fn to create the Member Conts Variables
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   
+[8]   →IsDeferred/0 ⍝ Not needed for Enhanced Deferreds
+[9]   
+[10]  contsSAL←↑¯1+SALdesc ExactTLU contsSAL
+[11]  FinAdjTable←FinAdjTable OVER 'j' 'j' (j←termAdjFin BlendRates j sCEN_j)
+[12]  :if uk≠1 ⋄ jdef←,1+0.01×ExecuteRates jdef sCEN_jdef
+[13]  :else    ⋄ FinAdjTable←FinAdjTable OVER 'jdef' 'jdef' (jdef←termAdjFin BlendRates jdef sCEN_jdef)
+[14]             jdef←×\1,2/(LatestRA+newent×projTerm) OVERTAKE jdef*0.5
+[15]  :endif
+[16]  var←(zwb contsCease),(↑contsCeaseDate)='FS'[×uk]
+[17]  :if 0∊⍴DLTB contsAdditCR←DescToVariableUK contsAdditCR ⋄ contsAdditCR←'0' ⋄ :endif
+[18]  
+[19]  :select contsDEF
+[20]  :caselist '' 'None'
+[21]      contsr←0,0 ⋄ contsl←var ⋄ contsfn←1
+[22]  
+[23]  :case 'Fixed Percentage of Salary'
+[24]      contsr←(0.01×zwb contsCR),0 ⋄ contsl←var ⋄ contsfn←1
+[25]  
+[26]  :case 'Differing Percentages on up to 10 Salary Bands'
+[27]      contsl←var ⋄ contsr←(10↑0.01×MatrixZWB contsBandCR),('B'=↑contsBandmeth),0 ⋄ contsfn←2
+[28]      ⍝ 9 Band Limits (and infinity)
+[29]      contslimits←10 OVERTAKE (1↓MatrixZWB contsBand),1E20
+[30]      ⍝ Apply Inflation Vector for Limits to create Limits Array
+[31]      FinAdjTable←FinAdjTable OVER 'contsF' 'contsF' (contsF←termAdjFin BlendRates (~ValMeth≡'UCM')/¨contsF sCEN_contsF)
+[32]      contslimits←contslimits∘.×(×\F)÷(F←(LatestRA+newent×projTerm) OVERTAKE contsF)*0.5
+[33]  
+[34]  :case 'Varying Percentage of Salary based on Attained Age'
+[35]      contsr←var,0 ⋄ contsfn←3
+[36]      contsl←100↑0.01×¯1 DEC∆CHECK contsAgeTab
+[37]  
+[38]  :case 'Varying Percentage of Salary based on Age at Entry'
+[39]      contsr←((↑contsEntryDate)='FS'[×uk]),var,0 ⋄ contsfn←4
+[40]      contsl←100↑0.01×¯1 DEC∆CHECK contsAgeTab
+[41]  
+[42]  :case 'Varying Percentage of Salary based on Duration from Valn Date'
+[43]      contsr←var,0 ⋄ contsfn←5
+[44]      contsl←100↑0.01×¯1 DEC∆CHECK contsDurnTab
+[45]  
+[46]  :case 'Salary Bands Table with Differing Percentages'
+[47]      contsr←('B'=↑contsBandmeth),(VDATE[2]-zwb contsSalBase),var,0,(0.01×MatrixZWB contsBandCR) ⋄ contsfn←8
+[48]      :if ^/0=1↑[0]contsl←⊃(LatestAge+newent×projTerm) OVERTAKE¨1 MID¨DTZ¨⎕split ¯1 DEC∆CHECK contsSalTab
+[49]          contsl←1↓[0]contsl
+[50]      :endif
+[51]      contsl←contsl⍪1E20
+[52]  
+[53]  :endselect
+[54]  
+[55]  fn←⍎,'<CONT>,ZI2' ⎕FMT contsfn ⋄ fn[0;12+⍳4]←'MEMB'
+[56]  0 0⍴⎕DEF SStoMAT '/⍺/conts' TEXTREPL '⍵',fn
+    ∇

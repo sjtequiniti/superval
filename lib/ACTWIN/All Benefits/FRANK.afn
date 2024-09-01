@@ -1,1 +1,56 @@
-    ∇ res←larg FRANK mat;D;DPROP;DSPA;G;GN;GR;GTEE;INT;L;LSPA;INC4;SPA4;LPROP;N;NPROP;PROP4;NSPA;V;W;X;Y;Z;⎕IO[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Franking module[3]   ⍝ larg = 0 for PEN, 1 for PUP[4]   ⍝ 'mat' is matrix of passed parameters[5]   ⍝ for Public Service case the GMP at NRA is passed as mat[;7]. This was in the original Specification but was subsequently removed.[6]   ⎕IO←1 ⍝??⍝ Do we need ⎕io set???[7]   D←mat[;⎕io] ⋄ N←mat[;⎕io+1] ⋄ L←mat[;⎕io+2] ⋄ INC4←mat[;⎕io+3] ⋄ GR←mat[;⎕io+4] ⋄ G←mat[;⎕io+5][8]   [9]   :if 0=⌊larg ⍝ Retirement[10]      DSPA←escfact1×D[11]      NSPA←escfact2×N[12]      LSPA←escfact6×L[13]      SPA4←escfact8×INC4[14]      INT←(DSPA-D)+(NSPA-N)+(LSPA-L)+SPA4-INC4[15]      GTEE←GR-G[16]      :select OFFCOD[17]      :case 0       ⋄ GTEE←0⌈GTEE[18]      :case 1       ⋄ GTEE←0⌈GTEE-INT×G CDIV D+N+L+INC4[19]      :case 2       ⋄ GTEE←0⌈GTEE-INT[20]      :case 3       ⋄ GTEE←0⌈(GTEE-INT)×(ENX_1,(LNX+1-SNX),SNX)/0 1 0[21]      :caselist 4 5 ⋄ GTEE←GTEE×0 ⍝ 5 catches case where OFFCOD is undefined (or irrelevant)[22]      :endselect[23]  :else  ⍝ Paid-Up Pensions[24]      DSPA←D×escfact3[25]      NSPA←N×escfact4[26]      LSPA←L×escfact7[27]      SPA4←INC4×escfact9[28]      :if PubSect ⋄ :andif NRA<SPA[29]          GTEE←(GR⌈DSPA+NSPA+LSPA+SPA4)-DSPA+NSPA+LSPA+SPA4 ⍝⍝⍝ 0⌈GR-DSPA+NSPA+LSPA+SPA4 ????[30]      :else[31]          INT←(DSPA-D)+(NSPA-N)+(LSPA-L)+SPA4-INC4[32]          GTEE←GR-GN←G×1+GMPREV[33]          :select OFFCOD[34]          :case 0       ⋄ GTEE←0⌈GTEE[35]          :case 1       ⋄ GTEE←0⌈GTEE-INT×GN CDIV D+N+L+INC4[36]          :caselist 2 3 ⋄ GTEE←0⌈GTEE-INT[37]          :caselist 4 5 ⋄ GTEE←GTEE×0 ⍝ 5 catches case where OFFCOD is undefined (or irrelevant)[38]          :endselect[39]      :endif[40]  :endif[41]  ⍝[42]  X←0⌈DSPA+(GTEE-GR)×DPROP←DSPA CDIV NSPA+DSPA+LSPA+SPA4[43]  Y←0⌈LSPA+(GTEE-GR)×LPROP←LSPA CDIV NSPA+DSPA+LSPA+SPA4[44]  V←0⌈SPA4+(GTEE-GR)×PROP4←SPA4 CDIV NSPA+DSPA+LSPA+SPA4[45]  W←0⌈NSPA+(GTEE-GR)×NPROP←1-DPROP+LPROP+PROP4 ⍝ Make sure that it goes somewhere[46]  Z←V+W+X+Y+GR[47]  ⍝[48]  ⍝⍝⍝ GX←GTEE-GR[49]  ⍝[50]  res←W,X,Y,V,[1.1]Z[51]  ⍝⍝⍝ :if test ⋄ :andif larg=⌊larg[52]  ⍝⌿⍝ :if larg=⌊larg[53]  ⍝⌿⍝    AUDIT ∆A ⋄ AUDIT ∆B,'abcdee'[1+OFFCOD] ⋄ AUDIT ∆C ⋄ AUDIT ∆D[54]  ⍝⌿⍝ :endif    ∇
+    ∇ res←larg FRANK mat;D;DPROP;DSPA;G;GN;GR;GTEE;INT;L;LSPA;INC4;SPA4;LPROP;N;NPROP;PROP4;NSPA;V;W;X;Y;Z;⎕IO
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Franking module
+[3]   ⍝ larg = 0 for PEN, 1 for PUP
+[4]   ⍝ 'mat' is matrix of passed parameters
+[5]   ⍝ for Public Service case the GMP at NRA is passed as mat[;7]. This was in the original Specification but was subsequently removed.
+[6]   ⎕IO←1 ⍝??⍝ Do we need ⎕io set???
+[7]   D←mat[;⎕io] ⋄ N←mat[;⎕io+1] ⋄ L←mat[;⎕io+2] ⋄ INC4←mat[;⎕io+3] ⋄ GR←mat[;⎕io+4] ⋄ G←mat[;⎕io+5]
+[8]   
+[9]   :if 0=⌊larg ⍝ Retirement
+[10]      DSPA←escfact1×D
+[11]      NSPA←escfact2×N
+[12]      LSPA←escfact6×L
+[13]      SPA4←escfact8×INC4
+[14]      INT←(DSPA-D)+(NSPA-N)+(LSPA-L)+SPA4-INC4
+[15]      GTEE←GR-G
+[16]      :select OFFCOD
+[17]      :case 0       ⋄ GTEE←0⌈GTEE
+[18]      :case 1       ⋄ GTEE←0⌈GTEE-INT×G CDIV D+N+L+INC4
+[19]      :case 2       ⋄ GTEE←0⌈GTEE-INT
+[20]      :case 3       ⋄ GTEE←0⌈(GTEE-INT)×(ENX_1,(LNX+1-SNX),SNX)/0 1 0
+[21]      :caselist 4 5 ⋄ GTEE←GTEE×0 ⍝ 5 catches case where OFFCOD is undefined (or irrelevant)
+[22]      :endselect
+[23]  :else  ⍝ Paid-Up Pensions
+[24]      DSPA←D×escfact3
+[25]      NSPA←N×escfact4
+[26]      LSPA←L×escfact7
+[27]      SPA4←INC4×escfact9
+[28]      :if PubSect ⋄ :andif NRA<SPA
+[29]          GTEE←(GR⌈DSPA+NSPA+LSPA+SPA4)-DSPA+NSPA+LSPA+SPA4 ⍝⍝⍝ 0⌈GR-DSPA+NSPA+LSPA+SPA4 ????
+[30]      :else
+[31]          INT←(DSPA-D)+(NSPA-N)+(LSPA-L)+SPA4-INC4
+[32]          GTEE←GR-GN←G×1+GMPREV
+[33]          :select OFFCOD
+[34]          :case 0       ⋄ GTEE←0⌈GTEE
+[35]          :case 1       ⋄ GTEE←0⌈GTEE-INT×GN CDIV D+N+L+INC4
+[36]          :caselist 2 3 ⋄ GTEE←0⌈GTEE-INT
+[37]          :caselist 4 5 ⋄ GTEE←GTEE×0 ⍝ 5 catches case where OFFCOD is undefined (or irrelevant)
+[38]          :endselect
+[39]      :endif
+[40]  :endif
+[41]  ⍝
+[42]  X←0⌈DSPA+(GTEE-GR)×DPROP←DSPA CDIV NSPA+DSPA+LSPA+SPA4
+[43]  Y←0⌈LSPA+(GTEE-GR)×LPROP←LSPA CDIV NSPA+DSPA+LSPA+SPA4
+[44]  V←0⌈SPA4+(GTEE-GR)×PROP4←SPA4 CDIV NSPA+DSPA+LSPA+SPA4
+[45]  W←0⌈NSPA+(GTEE-GR)×NPROP←1-DPROP+LPROP+PROP4 ⍝ Make sure that it goes somewhere
+[46]  Z←V+W+X+Y+GR
+[47]  ⍝
+[48]  ⍝⍝⍝ GX←GTEE-GR
+[49]  ⍝
+[50]  res←W,X,Y,V,[1.1]Z
+[51]  ⍝⍝⍝ :if test ⋄ :andif larg=⌊larg
+[52]  ⍝⌿⍝ :if larg=⌊larg
+[53]  ⍝⌿⍝    AUDIT ∆A ⋄ AUDIT ∆B,'abcdee'[1+OFFCOD] ⋄ AUDIT ∆C ⋄ AUDIT ∆D
+[54]  ⍝⌿⍝ :endif
+    ∇

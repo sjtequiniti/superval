@@ -1,1 +1,115 @@
-    ∇ PREPARE;N;Z;H0;i;SUMMREC;size[1]   ⍝ DATAWIN.sf#10[2]   ⍝ Sets up required global variables, creates output file and header.[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   ('Current File:' 'Record Number:') Win∆ProgressBar 'SetLabels'[8]   'Running Data Validation' Win∆ProgressBar 'Open'[9]   [10]  RunTime←DLTMB 1 DATESPELL ⎕ts[11]  tpr1←OPEN∆TPR∆FILE 'VALID' ⍝ Output file[12]  ValidFormat←1 HyphenSwap ValidFormat[13]  SUMMREC←ClientFile VALID_RunDesc SaveCN[14]  [15]  Convert_Vars ⋄ aosenabled CREATEDATADESC ValidFormat[16]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Validation ',FormatType[17]  [18]  (FixNumStandNames FixNumStandVars)←SStoMAT¨FixNumStandNames FixNumStandVars[19]  (VarNumStandNames VarNumStandVars)←SStoMAT¨VarNumStandNames VarNumStandVars[20]  (DateStandNames   DateStandVars  )←SStoMAT¨DateStandNames   DateStandVars[21]  [22]  Z←(⍳↑⍴FixNumStandVars)~FixNumStandVars ExactTLU 'fNOM' ⍝ Remove Number of Members forom range validation[23]  NUMS←FixNumStandVars [Z;] OVER VarNumStandVars[24]  NAME←FixNumStandNames[Z;] OVER VarNumStandNames[25]  i←↑⍴NAME ⋄ testrow←(i,2)⍴¯1 ⋄ salmult←i/1 ⋄ prevind←i/0[26]  ind←FormatType≡'Pen'[27]  [28]  :if uk=1 ⋄ :orif FormatType≡'Act' ⍝ Different Routines for AUS/SA Deferreds/Pensioners[29]      Category←((-↑⍴Category),1⌈⍴fCAT)↑1 0↓Category[30]  [31]      :if 0∊⍴ValidNonS←(0 2⌈⍴ValidNonS)↑MATRIX ValidNonS ⍝ Convert if not already[32]          ValidNonS←(2/⎕split TotNumVars),[1.5](2×↑⍴TotNumVars)⍴(,'0') '9999999999'[33]      :endif[34]      size←↑↑⍴¨MATRIX¨ValidNonS[;,2][35]      size←(↑⍴ValidNonS),size[36]  [37]      N←0.5×↑⍴params←size⍴⊃,MatrixZWB ¨ValidNonS[;,2][38]      :if uk=0[39]          params←(MatrixZWB MinBM) OVER (MatrixZWB MaxBM) OVER params ⍝ Rows 8 and 9[40]          params←(MatrixZWB MinCR) OVER (MatrixZWB MaxCR) OVER params ⍝ Rows 6 and 7[41]          i←NUMS ExactTLU ⊃'fDCR' 'fPCR' ⋄ testrow[i;]←((⍴,i),2)⍴6 7[42]          i←NUMS ExactTLU 'fBM' ⋄ testrow[i;]←((⍴,i),2)⍴8 9[43]      :else[44]          params←0⍪0⍪params ⋄ params←0⍪0⍪params[45]      :endif[46]      :if FormatType≡'Act'[47]          params←(MatrixZWB MinSal) OVER (MatrixZWB MaxSal) OVER params ⍝ Rows 4 and 5[48]          i←NUMS ExactTLU ⊃'fSAL' 'fPSAL' ⋄ testrow[i;]←((⍴,i),2)⍴4 5[49]          salmult[i]←(salfreq='ASQMLFW')/ 1 2 4 12 13 26.09 52.18[50]          prevind[¯1↑i]←1[51]      :else[52]          params←0⍪0⍪params[53]      :endif[54]      params←(365.25×MatrixZWB MinAgeF) OVER (365.25×MatrixZWB MaxAgeF) OVER params ⍝ Rows 2 and 3[55]      params←(365.25×MatrixZWB MinAgeM) OVER (365.25×MatrixZWB MaxAgeM) OVER params ⍝ Rows 0 and 1[56]  [57]      i←NUMS ExactTLU ⊃'fBOE' 'fBOT' 'fTPP' ⋄ prevind[i]←2[58]  [59]      NUMS←NUMS OVER 'f',TotNumVars ⋄ NAME←NAME OVER TotNumVars[60]      testrow←testrow OVER (N,2)⍴9+⍳2×N ⋄ salmult←salmult,(N/1)-2×AvNEDs[61]      prevind←prevind,N/2 ⋄ DATES←'f',DateVars[62]  [63]      ⍝ Add info to Header and Make up Control Totals Header[64]      N←↑⍴Z←((-+/^\⌽Z=' ')⌽Z←((-N),9)↑NAME),' '[65]      H3←H3,(2 1 ⍴' ')OVER(,(N⍴ 1 0)⍀(N⍴ 1 0)⌿Z)OVER,(N⍴ 0 1)⍀(N⍴ 0 1)⌿Z[66]      :if aosenabled[67]          H0← 0 26 ↓H3 ⋄ H0[1;]←(¯1↑⍴H0)⍴' Previous ' ⋄ H3←H3,H0[68]      :endif[69]  [70]  :else ⍝ Create Deferreds or Pensioners data format[71]      Category←((-↑⍴Category),1⌈⍴fPCAT)↑1 0↓Category[72]  [73]  crash ⍝⍝⍝ FIXME Changes made??[74]  [75]      params←(2,↑⍴MinPen1)⍴0 ⋄ NUMS←1⊖NUMS ⋄ NAME←1⊖NAME[76]      :for i :in ⍳No∆Pens[77]          params←params OVER MatrixZWB ⍎'MinPen',⍕i[78]          params←params OVER MatrixZWB ⍎'MaxPen',⍕i[79]      :endfor[80]      :for i :in ⍳No∆Pens[81]          params←params OVER MatrixZWB ⍎'MinRpc',⍕i[82]          params←params OVER MatrixZWB ⍎'MaxRpc',⍕i[83]      :endfor[84]      :if ~ind[85]          params←params OVER (MatrixZWB MinLS) OVER MatrixZWB MaxLS[86]      :endif[87]  [88]      i←NUMS ExactTLU '<fANP>,LI2' ⎕FMT ⍳16 ⋄ testrow[i;]←((⍴,i),2)⍴(2×⍴,i)↑1+⍳32[89]      salmult[i]←(penfreq='ASQMLFW')/ 1 2 4 12 13 26.09 52.18[90]      i←NUMS ExactTLU '<fREV>,LI2' ⎕FMT ⍳16 ⋄ testrow[i;]←((⍴,i),2)⍴(2×⍴,i)↑1+⍳32[91]      salmult[i]←(penfreq='ASQMLFW')/ 1 2 4 12 13 26.09 52.18[92]      i←NUMS ExactTLU '<fRpc>,LI2' ⎕FMT ⍳No∆Pens ⋄ testrow[i;]←((⍴,i),2)⍴(2×⍴,i)↑(1+2×No∆Pens)+⍳2×No∆Pens[93]      i←NUMS ExactTLU 'fLS' ⋄ testrow[i;]←((⍴,i),2)⍴(1+No∆Pens×2+2×uk≠1)+⍳2[94]      i←NUMS ExactTLU 'fBOT' ⋄ prevind[i]←2[95]  [96]      DATES← 0 6 ⍴''[97]      :select uk[98]      :case 0[99]          H4←(0,¯10×ind)↓H4[100]     :case 2[101]         H4←(158 10 10 10 /1,ind,1,~ind)/H4[102]     :endselect[103]     :if aosenabled[104]         H0← 0 38 ↓H4 ⋄ H0[1;]←(¯1↑⍴H0)⍴'  Previous' ⋄ H4←H4,H0[105]     :endif[106] :endif[107] [108] H1←((¯1↑⍴H1) WRITE∆HEAD 'DATA VALIDATION') OVER H1[109] SPAGE←↑(¯4 0↓H1) OUTPUT tpr1,0[110] EDATE←JUL VDATE←EDATE ⋄ BDATE←JUL BDATE ⋄ PROPT←zwb PROPT[111] prevind←(2×~zwb Blank)⌈prevind ⍝ Non-Blank Warnings Indicator[112] tieno←'Native' TieNumber ''[113] :if aosenabled ⋄ CREATEDATANUMS ⋄ :endif    ∇
+    ∇ PREPARE;N;Z;H0;i;SUMMREC;size
+[1]   ⍝ DATAWIN.sf#10
+[2]   ⍝ Sets up required global variables, creates output file and header.
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ('Current File:' 'Record Number:') Win∆ProgressBar 'SetLabels'
+[8]   'Running Data Validation' Win∆ProgressBar 'Open'
+[9]   
+[10]  RunTime←DLTMB 1 DATESPELL ⎕ts
+[11]  tpr1←OPEN∆TPR∆FILE 'VALID' ⍝ Output file
+[12]  ValidFormat←1 HyphenSwap ValidFormat
+[13]  SUMMREC←ClientFile VALID_RunDesc SaveCN
+[14]  
+[15]  Convert_Vars ⋄ aosenabled CREATEDATADESC ValidFormat
+[16]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Validation ',FormatType
+[17]  
+[18]  (FixNumStandNames FixNumStandVars)←SStoMAT¨FixNumStandNames FixNumStandVars
+[19]  (VarNumStandNames VarNumStandVars)←SStoMAT¨VarNumStandNames VarNumStandVars
+[20]  (DateStandNames   DateStandVars  )←SStoMAT¨DateStandNames   DateStandVars
+[21]  
+[22]  Z←(⍳↑⍴FixNumStandVars)~FixNumStandVars ExactTLU 'fNOM' ⍝ Remove Number of Members forom range validation
+[23]  NUMS←FixNumStandVars [Z;] OVER VarNumStandVars
+[24]  NAME←FixNumStandNames[Z;] OVER VarNumStandNames
+[25]  i←↑⍴NAME ⋄ testrow←(i,2)⍴¯1 ⋄ salmult←i/1 ⋄ prevind←i/0
+[26]  ind←FormatType≡'Pen'
+[27]  
+[28]  :if uk=1 ⋄ :orif FormatType≡'Act' ⍝ Different Routines for AUS/SA Deferreds/Pensioners
+[29]      Category←((-↑⍴Category),1⌈⍴fCAT)↑1 0↓Category
+[30]  
+[31]      :if 0∊⍴ValidNonS←(0 2⌈⍴ValidNonS)↑MATRIX ValidNonS ⍝ Convert if not already
+[32]          ValidNonS←(2/⎕split TotNumVars),[1.5](2×↑⍴TotNumVars)⍴(,'0') '9999999999'
+[33]      :endif
+[34]      size←↑↑⍴¨MATRIX¨ValidNonS[;,2]
+[35]      size←(↑⍴ValidNonS),size
+[36]  
+[37]      N←0.5×↑⍴params←size⍴⊃,MatrixZWB ¨ValidNonS[;,2]
+[38]      :if uk=0
+[39]          params←(MatrixZWB MinBM) OVER (MatrixZWB MaxBM) OVER params ⍝ Rows 8 and 9
+[40]          params←(MatrixZWB MinCR) OVER (MatrixZWB MaxCR) OVER params ⍝ Rows 6 and 7
+[41]          i←NUMS ExactTLU ⊃'fDCR' 'fPCR' ⋄ testrow[i;]←((⍴,i),2)⍴6 7
+[42]          i←NUMS ExactTLU 'fBM' ⋄ testrow[i;]←((⍴,i),2)⍴8 9
+[43]      :else
+[44]          params←0⍪0⍪params ⋄ params←0⍪0⍪params
+[45]      :endif
+[46]      :if FormatType≡'Act'
+[47]          params←(MatrixZWB MinSal) OVER (MatrixZWB MaxSal) OVER params ⍝ Rows 4 and 5
+[48]          i←NUMS ExactTLU ⊃'fSAL' 'fPSAL' ⋄ testrow[i;]←((⍴,i),2)⍴4 5
+[49]          salmult[i]←(salfreq='ASQMLFW')/ 1 2 4 12 13 26.09 52.18
+[50]          prevind[¯1↑i]←1
+[51]      :else
+[52]          params←0⍪0⍪params
+[53]      :endif
+[54]      params←(365.25×MatrixZWB MinAgeF) OVER (365.25×MatrixZWB MaxAgeF) OVER params ⍝ Rows 2 and 3
+[55]      params←(365.25×MatrixZWB MinAgeM) OVER (365.25×MatrixZWB MaxAgeM) OVER params ⍝ Rows 0 and 1
+[56]  
+[57]      i←NUMS ExactTLU ⊃'fBOE' 'fBOT' 'fTPP' ⋄ prevind[i]←2
+[58]  
+[59]      NUMS←NUMS OVER 'f',TotNumVars ⋄ NAME←NAME OVER TotNumVars
+[60]      testrow←testrow OVER (N,2)⍴9+⍳2×N ⋄ salmult←salmult,(N/1)-2×AvNEDs
+[61]      prevind←prevind,N/2 ⋄ DATES←'f',DateVars
+[62]  
+[63]      ⍝ Add info to Header and Make up Control Totals Header
+[64]      N←↑⍴Z←((-+/^\⌽Z=' ')⌽Z←((-N),9)↑NAME),' '
+[65]      H3←H3,(2 1 ⍴' ')OVER(,(N⍴ 1 0)⍀(N⍴ 1 0)⌿Z)OVER,(N⍴ 0 1)⍀(N⍴ 0 1)⌿Z
+[66]      :if aosenabled
+[67]          H0← 0 26 ↓H3 ⋄ H0[1;]←(¯1↑⍴H0)⍴' Previous ' ⋄ H3←H3,H0
+[68]      :endif
+[69]  
+[70]  :else ⍝ Create Deferreds or Pensioners data format
+[71]      Category←((-↑⍴Category),1⌈⍴fPCAT)↑1 0↓Category
+[72]  
+[73]  crash ⍝⍝⍝ FIXME Changes made??
+[74]  
+[75]      params←(2,↑⍴MinPen1)⍴0 ⋄ NUMS←1⊖NUMS ⋄ NAME←1⊖NAME
+[76]      :for i :in ⍳No∆Pens
+[77]          params←params OVER MatrixZWB ⍎'MinPen',⍕i
+[78]          params←params OVER MatrixZWB ⍎'MaxPen',⍕i
+[79]      :endfor
+[80]      :for i :in ⍳No∆Pens
+[81]          params←params OVER MatrixZWB ⍎'MinRpc',⍕i
+[82]          params←params OVER MatrixZWB ⍎'MaxRpc',⍕i
+[83]      :endfor
+[84]      :if ~ind
+[85]          params←params OVER (MatrixZWB MinLS) OVER MatrixZWB MaxLS
+[86]      :endif
+[87]  
+[88]      i←NUMS ExactTLU '<fANP>,LI2' ⎕FMT ⍳16 ⋄ testrow[i;]←((⍴,i),2)⍴(2×⍴,i)↑1+⍳32
+[89]      salmult[i]←(penfreq='ASQMLFW')/ 1 2 4 12 13 26.09 52.18
+[90]      i←NUMS ExactTLU '<fREV>,LI2' ⎕FMT ⍳16 ⋄ testrow[i;]←((⍴,i),2)⍴(2×⍴,i)↑1+⍳32
+[91]      salmult[i]←(penfreq='ASQMLFW')/ 1 2 4 12 13 26.09 52.18
+[92]      i←NUMS ExactTLU '<fRpc>,LI2' ⎕FMT ⍳No∆Pens ⋄ testrow[i;]←((⍴,i),2)⍴(2×⍴,i)↑(1+2×No∆Pens)+⍳2×No∆Pens
+[93]      i←NUMS ExactTLU 'fLS' ⋄ testrow[i;]←((⍴,i),2)⍴(1+No∆Pens×2+2×uk≠1)+⍳2
+[94]      i←NUMS ExactTLU 'fBOT' ⋄ prevind[i]←2
+[95]  
+[96]      DATES← 0 6 ⍴''
+[97]      :select uk
+[98]      :case 0
+[99]          H4←(0,¯10×ind)↓H4
+[100]     :case 2
+[101]         H4←(158 10 10 10 /1,ind,1,~ind)/H4
+[102]     :endselect
+[103]     :if aosenabled
+[104]         H0← 0 38 ↓H4 ⋄ H0[1;]←(¯1↑⍴H0)⍴'  Previous' ⋄ H4←H4,H0
+[105]     :endif
+[106] :endif
+[107] 
+[108] H1←((¯1↑⍴H1) WRITE∆HEAD 'DATA VALIDATION') OVER H1
+[109] SPAGE←↑(¯4 0↓H1) OUTPUT tpr1,0
+[110] EDATE←JUL VDATE←EDATE ⋄ BDATE←JUL BDATE ⋄ PROPT←zwb PROPT
+[111] prevind←(2×~zwb Blank)⌈prevind ⍝ Non-Blank Warnings Indicator
+[112] tieno←'Native' TieNumber ''
+[113] :if aosenabled ⋄ CREATEDATANUMS ⋄ :endif
+    ∇

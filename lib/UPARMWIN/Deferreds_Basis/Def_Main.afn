@@ -1,0 +1,33 @@
+    ∇ field Def_Main parm;page;z;col;SSName
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Main Page
+[3]   
+[4]   page←'pgMain.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]       TotNumVars←CharVars←DateVars←0 0⍴''
+[9]       Format←HyphenSwap Format
+[10]  
+[11]  :case 'Init'
+[12]      (parent,page) ⎕wi 'imageindex' 4
+[13]  
+[14]  :case 'PageChange'
+[15]      'Deferreds' TVBasisUpdate ⊂'TVCFSame'
+[16]  
+[17]  :case 'Change'
+[18]      :select field
+[19]      :caselist 'edfILENAME' 'lsCatSels'
+[20]          (parent,page,'fData.') Win∆FileChanges field
+[21]      :case 'cbFormat'
+[22]          ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[23]          Format←(parent,page,'fData.cbFormat') ⎕wi 'text'
+[24]          (parent,page,'fData.') Win∆FileChanges field
+[25]      :case 'ckIndPUPs'
+[26]          Def_IndPUPs 'Vars'
+[27]      :endselect
+[28]  
+[29]  :case 'Valid'
+[30]  
+[31]  :endselect
+    ∇

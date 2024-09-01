@@ -1,1 +1,31 @@
-    ∇ LINE∆AOS∆PEN;SUMMREC;TOTS;col;Z[1]   ⍝ PENWIN.sf#3[2]   ⍝   Summary Listing for AOS[3]   ⍝ This is only executed if "aosind" equals 1 ie user asks for a Analysis[4]   ⍝ of Surplus listing. Creates a summary record for the member and appends[5]   ⍝ to DOS File TEMP$$.AOS.  Updates grand totals also.[6]   ⍝ V2.50u RE 1/1/96 Standardised[7]   TOTS←2/0 ⋄ →(~∨/EXIT[3 4])/L0[8]   col←1 ⋄ →(aosrow∊ 2 3)/F0 ⍝ Skip to F0: if Unspecified Mode of Exit[9]   →(0∊⍴Z←CODE TLU MOE[¯1+⌊aosrow÷2;])/F0 ⋄ col←CODEcol[Z-1][10]  [11]  F0:TOTS[col]←Ind∆AOS[13;last]+Ind∆AOS[16;last]-Ind∆AOS[14;last]+Ind∆AOS[17;last] ⍝ Actual Release on Exit[12]  [13]  ⍝ Expected Release[14]  L0:TOTS←TOTS-2↑,+⌿Ind∆AOS[(2+⍳3),9+⍳3;last][15]  [16]  ⍝ New Entrant Strain[17]  TOTS←((∨/EXIT[2 4])×-Ind∆AOS[0;0]+Ind∆AOS[6;last]),TOTS[18]  [19]  ⍝ Pension Increases Profits/Losses - Reserve Release[20]  TOTS←TOTS,Ind∆AOS[0;last]+Ind∆AOS[7;last]-Ind∆AOS[13;last]+Ind∆AOS[16;last][21]  ⍝ Pension Payments Profits[22]  TOTS←TOTS,Ind∆AOS[5;last]+Ind∆AOS[12;last]-Ind∆AOS[15;last]+Ind∆AOS[18;last][23]  ⍝ Calculation Error[24]  TOTS←TOTS,(+/Ind∆AOS[0;0],,Ind∆AOS[(1+⍳4),6,8+⍳4;last])-+⌿Ind∆AOS[0 5 7 12;last][25]  [26]  STOTS←STOTS+TOTS←1,(+/(ANP×ADJ),(GMP0×preADJ),(GMPE0×postADJ)),TOTS,+/TOTS ⍝ Total Profit & Grand Totals[27]  [28]  SUMMREC←AOSUMM,,'7BCM<->I11,CM<->I12' ⎕FMT MATRIX 1↓TOTS[29]  (APAGE ARECN)←H8 OUTPUT tpS,APAGE,ARECN    ∇
+    ∇ LINE∆AOS∆PEN;SUMMREC;TOTS;col;Z
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝   Summary Listing for AOS
+[3]   ⍝ This is only executed if "aosind" equals 1 ie user asks for a Analysis
+[4]   ⍝ of Surplus listing. Creates a summary record for the member and appends
+[5]   ⍝ to DOS File TEMP$$.AOS.  Updates grand totals also.
+[6]   ⍝ V2.50u RE 1/1/96 Standardised
+[7]   TOTS←2/0 ⋄ →(~∨/EXIT[3 4])/L0
+[8]   col←1 ⋄ →(aosrow∊ 2 3)/F0 ⍝ Skip to F0: if Unspecified Mode of Exit
+[9]   →(0∊⍴Z←CODE TLU MOE[¯1+⌊aosrow÷2;])/F0 ⋄ col←CODEcol[Z-1]
+[10]  
+[11]  F0:TOTS[col]←Ind∆AOS[13;last]+Ind∆AOS[16;last]-Ind∆AOS[14;last]+Ind∆AOS[17;last] ⍝ Actual Release on Exit
+[12]  
+[13]  ⍝ Expected Release
+[14]  L0:TOTS←TOTS-2↑,+⌿Ind∆AOS[(2+⍳3),9+⍳3;last]
+[15]  
+[16]  ⍝ New Entrant Strain
+[17]  TOTS←((∨/EXIT[2 4])×-Ind∆AOS[0;0]+Ind∆AOS[6;last]),TOTS
+[18]  
+[19]  ⍝ Pension Increases Profits/Losses - Reserve Release
+[20]  TOTS←TOTS,Ind∆AOS[0;last]+Ind∆AOS[7;last]-Ind∆AOS[13;last]+Ind∆AOS[16;last]
+[21]  ⍝ Pension Payments Profits
+[22]  TOTS←TOTS,Ind∆AOS[5;last]+Ind∆AOS[12;last]-Ind∆AOS[15;last]+Ind∆AOS[18;last]
+[23]  ⍝ Calculation Error
+[24]  TOTS←TOTS,(+/Ind∆AOS[0;0],,Ind∆AOS[(1+⍳4),6,8+⍳4;last])-+⌿Ind∆AOS[0 5 7 12;last]
+[25]  
+[26]  STOTS←STOTS+TOTS←1,(+/(ANP×ADJ),(GMP0×preADJ),(GMPE0×postADJ)),TOTS,+/TOTS ⍝ Total Profit & Grand Totals
+[27]  
+[28]  SUMMREC←AOSUMM,,'7BCM<->I11,CM<->I12' ⎕FMT MATRIX 1↓TOTS
+[29]  (APAGE ARECN)←H8 OUTPUT tpS,APAGE,ARECN
+    ∇

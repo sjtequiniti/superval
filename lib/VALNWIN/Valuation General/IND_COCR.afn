@@ -1,0 +1,17 @@
+    ∇ IND∆COCR;desc
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Fn to write out Company Cont Rate for Individual for EAN and NEC
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   SUMMREC← 1 132 ⍴' ' ⋄ →(ValMeth≡'EAN')⍴(L1,L2,L3,L3)[COCRind]
+[7]   SUMMREC←SUMMREC⍪132↑DLTMB '<Net (Before Tax) Company Cont. Rate = ( (>,CI9,< +>,CI6,< +>,CI6,< +>,CI6,< ->,CI9,< ) x 1 + >,F6.3,< ) / >,CI8,< = >,M<->F8.2,<% and £>,CI7,< in the First Year.>' ⎕FMT MATRIX GTOTS,PMEXP,MCEXP,SALEXP,CONTS,EXPCC,PVCONTS1pc,COCR,+/INS ⋄ →L5
+[8]   L1:SUMMREC←SUMMREC⍪132↑'Fixed Company Contribution Rate (including Expenses',((uk=0)/' and Tax'),') of ',,'M<->F6.2,<% of Member''s Salary.>' ⎕FMT COCR ⋄ →END
+[9]   L2:desc←'Assumed Average Age at Entry to ',(2 6 ⍴'Fund  Scheme')[×uk;] ⋄ →L0
+[10]  L3:desc←'Age at Entry to ',EntryDate
+[11]  L0:SUMMREC←SUMMREC⍪132↑'Net Company Contribution Rate for ',desc,,'< of >,I2,< is >,M<->F6.2,<% of Member''s Salary.>' ⎕FMT MATRIX Xe,COCR[Xe]
+[12]  ⍝ Co Cont Rate as a % of Salaries
+[13]  L5:SUMMREC←SUMMREC⍪' '⍪(CONThead)⍪(12/' '),,'20BM<->F6.2' ⎕FMT 20↑cocr
+[14]  →(×uk)/END ⋄ SUMMREC←(SUMMREC⍪' ')⍪132↑DLTMB '** Company Contribution Tax Rate(s) (%) - ',,'F6.2' ⎕FMT 100×COCTax
+[15]  END:IPAGE←1↑(¯4 0 ↓H1)OUTPUT tpI,IPAGE
+    ∇

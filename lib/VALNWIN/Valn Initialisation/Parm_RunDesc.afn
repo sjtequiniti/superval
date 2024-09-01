@@ -1,0 +1,55 @@
+    ∇ res←Parm_RunDesc
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Create a Run Description of Batch Parameters
+[3]   
+[4]   res←('Valuation Method') ValName
+[5]   
+[6]   res←res OVER "Valuation Run Options" ""
+[7]   :if uk=1 ⋄ res←res OVER ("    ","Sex Selection") SelSex ⋄ :endif
+[8]   res←res OVER ("    ","Test Valuation Run") test
+[9]   res←res OVER ("    ","Interpolated Exact Age Results") AgeInterp
+[10]  :if ~(⊂ValMeth)∊'PEN' 'PPA' 'PPD' 'PPP',(uk≠1)/⊂'DEF'
+[11]      res←res OVER ("    ","Aggregate Benefits before Valuing") aggopt
+[12]  :endif
+[13]  :if uk≠1 ⋄ res←res OVER ("    ","Accrued Benefit Calculations") PROPT ⋄ :endif
+[14]  :if (⊂ValMeth)∊'PUC' 'UCM' 'DAB'
+[15]      res←res OVER ("    ","Control Period") (contper," years")
+[16]  :endif
+[17]  :if (⊂ValMeth)∊'PUC' 'UCM' ⋄ res←res OVER ("    ","Insured Benefits in Normal Cost") insind ⋄ :endif
+[18]  :if ValMeth≡'DAB'          ⋄ res←res OVER ("    ","Target Accrued Benefit") abNO ⋄ :endif
+[19]  :if ~(⊂ValMeth)∊'DEF' 'PEN' 'PPA' 'PPD' 'PPP'
+[20]      res←res OVER ("    ","New Entrant Model Replacement") newent
+[21]      :if 'Y'=↑newent
+[22]          res←res OVER ("    ","New Entrant Model Parameters") NEparms
+[23]      :endif
+[24]  :endif
+[25]  res←res OVER ("    ","Valuation Date Indicator") vDATEind
+[26]  :if ~scenario
+[27]      res←res OVER ("    ","Analysis of Surplus") aosind
+[28]  :endif
+[29]  :if ~(⊂ValMeth)∊'PEN' 'PPA' 'PPD' 'PPP'
+[30]      res←res OVER ("    ","Cap Accrued Benefits") bencap
+[31]  :endif
+[32]  :if ValMeth≡'PPD'
+[33]      res←res OVER ("    ","S143 Entry Valuation") s143
+[34]  :endif
+[35]  
+[36]  res←res OVER "Output Options" ""
+[37]  :if uk≠1 ⋄ res←res OVER ("    ","Decrement and Other Rates") decopt ⋄ :endif
+[38]  :if uk≠1 ⋄ res←res OVER ("    ","Print Benefits") pbens ⋄ :endif
+[39]  res←res OVER ("    ","Input Data File in Text Output") dataind
+[40]  :if ~(⊂ValMeth)∊'NEC' 'PEN' 'PPA' 'PPD' 'PPP',(uk≠1)/⊂'DEF'
+[41]      res←res OVER ("    ","Summarise Results by Age") summopt
+[42]  :elseif (⊂ValMeth)∊(⊂'PEN'),(uk≠1)/⊂'DEF'
+[43]      res←res OVER ("    ","Summarise Results for Members") memsumm
+[44]  :endif
+[45]  res←res OVER ("    ","Store Results for Consolidation") KeepResult
+[46]  :if ~(⊂ValMeth)∊'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP'
+[47]      res←res OVER ("    ","ALM/LDI Interface Required") fscopt
+[48]      res←res OVER ("    ","ALM/LDI Include Year Left Service") (CheckTranslate ⍕HLDII)
+[49]      res←res OVER ("    ","ALM/LDI Separate Spouse Cash Flows") (CheckTranslate ⍕SpouseCF)
+[50]      res←res OVER ("    ","Individual Member Cash Flows") (CheckTranslate IndCashFlow)
+[51]      res←res OVER ("    ","Output Valuation Factor Tables") (CheckTranslate VFtables)
+[52]  :endif
+[53]  res←res OVER ("    ","Export Individual Member Results") csvind
+    ∇

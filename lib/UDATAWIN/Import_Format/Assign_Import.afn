@@ -1,1 +1,149 @@
-    ∇ res←Format Assign_Import FormatType;type;AvTot;From;To;z;Desc;Name;pFrom;pTo[1]   ⍝ UDATAWIN.sf#2[2]   ⍝ Get Imported Format and Assign to Screen Controls/Variable[3]   [4]   ⍝  Format has the following format:[5]   ⍝  3 - Description of Variable[6]   ⍝  4 - Name of Variable[7]   ⍝  5 - Variable Type - NDC (also Evaluate, Formula, Value not coped with!)[8]   ⍝  6 and 7 - Current Column Specifications[9]   ⍝  8 and 9 - Previous Column Specifications[10]  ⍝  10 - Date Format[11]  ⍝  11 - Value (Record Length!!, Salary Freq)[12]  ⍝  12 - NE Data Default[13]  ⍝  13 - Average or Total for Non-Standard (1↑ is T or A)[14]  [15]  res←''[16]  ⍝ Because they are in fixed order I can pick them by absolute rows!!!![17]  RECL←DLTMB (⊃Format[11])[1;][18]  [19]  :select FormatType[20]  :case 'A' ⍝ Actives[21]      :if 19>↑⍴⊃Format[4] ⋄ :orif ~'salfreq'≡DLTMB (⊃Format[4])[19;] ⋄ res←'Invalid Data Format' ⋄ :endif[22]  [23]      fNOM←1 Set_Format 2  ⋄ fNAME←1 Set_Format 3[24]      fSEX←0 Set_Format 4  ⋄ fCAT←(uk≠2) Set_Format 5[25]      fDOB←1 Set_Format 6  ⋄ dfDOB←' /' REPL DLTB (⊃Format[10])[6;][26]      fDJS←1 Set_Format 7  ⋄ dfDJS←' /' REPL DLTB (⊃Format[10])[7;][27]      fDJF←1 Set_Format 8  ⋄ dfDJF←' /' REPL DLTB (⊃Format[10])[8;][28]      fDOE←1 Set_Format 10 ⋄ dfDOE←' /' REPL DLTB (⊃Format[10])[10;][29]      fMOE←1 Set_Format 9  ⋄ fBOE ←1 Set_Format 11[30]      fSAL←1 Set_Format 13 ⋄ pfPSAL←pfSAL←AOSCtl/fPSAL←1 Set_Format 12[31]      (fACW pfACW)←2 Set_Format 14 ⋄ (fACWO pfACWO)←2 Set_Format 15[32]      (fEACWO pfEACWO)←2 Set_Format 16[33]      (fGMP0 pfGMP0)←2 Set_Format 17 ⋄ (fGMPE0 pfGMPE0)←2 Set_Format 18[34]      salfreq←DLTMB (⊃Format[11])[19;][35]  [36]      ⍝ Now the Non-standards[37]      z←~(×/' '=From←'BLI4' ⎕fmt 19 0↓⊃Format[6])^×/' '=To←'BLI4' ⎕fmt 19 0↓⊃Format[7][38]      From←z⌿From ⋄ To←z⌿To[39]      type←z/(19 0↓⊃Format[5])[;1] ⋄ AvTot←z/((19 0↓⊃Format[13]),' ')[;1][40]      Name←z⌿19 0↓⊃Format[4] ⋄ Desc←z⌿19 0↓⊃Format[3][41]      pFrom←z⌿'BLI4' ⎕fmt 19 0↓⊃Format[8] ⋄ pTo←z⌿'BLI4' ⎕fmt 19 0↓⊃Format[9][42]      DateFmt←z⌿19 0↓⊃Format[10][43]  [44]      z←~(Desc←m2n Desc)≡¨(m2n Name) ⍝ Only Descriptions different from Name[45]      Desc←⊃z\z/Desc[46]  [47]      TotNumVars←(z←(type='N')^AvTot≠'A')⌿Name ⍝ Default to "T" if blank!![48]      TotNumFrom←z⌿From ⋄ TotNumTo←z⌿To ⋄ pTotNumFrom←AOSCtl/z⌿pFrom ⋄ pTotNumTo←AOSCtl/z⌿pTo ⋄ TotNumDesc←z⌿Desc[49]  [50]      AvNumVars←(z←(type='N')^AvTot='A')⌿Name[51]      AvNumFrom←z⌿From ⋄ AvNumTo←z⌿To ⋄ pAvNumFrom←AOSCtl/z⌿pFrom ⋄ pAvNumTo←AOSCtl/z⌿pTo ⋄ AvNumDesc←z⌿Desc[52]  [53]      DateVars←(z←type='D')⌿Name ⋄ DateDesc←z⌿Desc ⋄ DateFrom←z⌿From ⋄ DateTo←z⌿To ⋄ DateFmt←z⌿DateFmt[54]      CharVars←(z←type='C')⌿Name ⋄ CharDesc←z⌿Desc ⋄ CharFrom←z⌿From ⋄ CharTo←z⌿To[55]  [56]  :case 'D' ⍝ Deferreds[57]      :if ecflag ⋄ crash ⋄ :else ⋄ :return ⋄ :endif ⍝ Should not be used anymore[58]  [59]  :case 'E' ⍝ (New) Enhanced Deferreds[60]      :if 14>↑⍴⊃Format[4] ⋄ :orif ~'GMPE0'≡DLTMB (⊃Format[4])[14;] ⋄ res←'Invalid Data Format' ⋄ :endif[61]  [62]      fNOM←1 Set_Format 2  ⋄ fNAME←1 Set_Format 3[63]      fSEX←0 Set_Format 4  ⋄ fCAT←(uk≠2) Set_Format 5[64]      fDOB←1 Set_Format 6  ⋄ dfDOB←' /' REPL DLTB (⊃Format[10])[6;][65]      fLD← 1 Set_Format 7  ⋄ dfLD ←' /' REPL DLTB (⊃Format[10])[7;][66]      fMOE←1 Set_Format 8[67]      fDOE←1 Set_Format 9  ⋄ dfDOE←' /' REPL DLTB (⊃Format[10])[9;][68]      fTOP←1 Set_Format 10 ⋄ fBOT←1 Set_Format 11[69]      (fACW pfACW)←2 Set_Format 12[70]      (fGMP0 pfGMP0)←2 Set_Format 13 ⋄ (fGMPE0 pfGMPE0)←2 Set_Format 14[71]  [72]      ⍝ Now the Non-standards[73]      z←~(×/' '=From←'BLI4' ⎕fmt 14 0↓⊃Format[6])^×/' '=To←'BLI4' ⎕fmt 14 0↓⊃Format[7][74]      From←z⌿From ⋄ To←z⌿To[75]      type←z/(14 0↓⊃Format[5])[;1] ⋄ AvTot←z/((14 0↓⊃Format[13]),' ')[;1][76]      Name←z⌿14 0↓⊃Format[4] ⋄ Desc←z⌿14 0↓⊃Format[3][77]      pFrom←z⌿'BLI4' ⎕fmt 14 0↓⊃Format[8] ⋄ pTo←z⌿'BLI4' ⎕fmt 14 0↓⊃Format[9][78]      DateFmt←z⌿14 0↓⊃Format[10][79]  [80]      z←~(Desc←m2n Desc)≡¨(m2n Name) ⍝ Only Descriptions different from Name[81]      Desc←⊃z\z/Desc[82]  [83]      TotNumVars←(z←(type='N')^AvTot≠'A')⌿Name ⍝ Default to "T" if blank!![84]      TotNumFrom←z⌿From ⋄ TotNumTo←z⌿To ⋄ pTotNumFrom←AOSCtl/z⌿pFrom ⋄ pTotNumTo←AOSCtl/z⌿pTo ⋄ TotNumDesc←z⌿Desc[85]  [86]      AvNumVars←(z←(type='N')^AvTot='A')⌿Name[87]      AvNumFrom←z⌿From ⋄ AvNumTo←z⌿To ⋄ pAvNumFrom←AOSCtl/z⌿pFrom ⋄ pAvNumTo←AOSCtl/z⌿pTo ⋄ AvNumDesc←z⌿Desc[88]  [89]      DateVars←(z←type='D')⌿Name ⋄ DateDesc←z⌿Desc ⋄ DateFrom←z⌿From ⋄ DateTo←z⌿To ⋄ DateFmt←z⌿DateFmt[90]      CharVars←(z←type='C')⌿Name ⋄ CharDesc←z⌿Desc ⋄ CharFrom←z⌿From ⋄ CharTo←z⌿To[91]  [92]  :case 'P' ⍝ Pensioners[93]      :if 31>↑⍴⊃Format[4] ⋄ :orif ~'ANP16'≡DLTMB (⊃Format[4])[31;] ⋄ res←'Invalid Data Format' ⋄ :endif[94]  [95]      fNAME←1 Set_Format 2 ⋄ fSEX←0 Set_Format 3[96]      fCAT←(uk≠2) Set_Format 4 ⋄ fMS←0 Set_Format 5[97]      fDOB ←1 Set_Format 6 ⋄ dfDOB ←' /' REPL DLTB (⊃Format[10])[6;][98]      fSDOB←1 Set_Format 7 ⋄ dfSDOB←' /' REPL DLTB (⊃Format[10])[7;][99]      fLD  ←1 Set_Format 8 ⋄ dfLD  ←' /' REPL DLTB (⊃Format[10])[8;][100]     fDPC ←1 Set_Format 9 ⋄ dfDPC ←' /' REPL DLTB (⊃Format[10])[9;][101]     fDOT←1 Set_Format 10 ⋄ dfDOT ←' /' REPL DLTB (⊃Format[10])[10;][102]     fMOT←1 Set_Format 11[103]     penfreq←DLTMB (⊃Format[11])[15;][104] [105]     ⍝ Now the Non-standards[106]     z←~(×/' '=From←'BLI4' ⎕fmt (⊃Format[6])[12,15+⍳16;])^×/' '=To←'BLI4' ⎕fmt (⊃Format[7])[12,15+⍳16;][107]     TotNumFrom←z⌿From ⋄ TotNumTo←z⌿To[108]     TotNumVars←'q',z⌿(⊃Format[4])[12,15+⍳16;] ⋄ TotNumDesc←z⌿(⊃Format[3])[12,15+⍳16;][109] [110]     AvNumVars←1 0⍴' '[111] [112] :case 'N' ⍝ New (Enhanced) Pensioners[113]     :if 18>↑⍴⊃Format[4] ⋄ :orif ~'GMPE0'≡DLTMB (⊃Format[4])[18;] ⋄ res←'Invalid Data Format' ⋄ :endif[114] [115]     fNAME←1 Set_Format 2 ⋄ fSEX←0 Set_Format 3[116]     fCAT←(uk≠2) Set_Format 4 ⋄ fMS←0 Set_Format 5[117]     fDOB ←1 Set_Format 6 ⋄ dfDOB ←' /' REPL DLTB (⊃Format[10])[6;][118]     fSDOB←1 Set_Format 7 ⋄ dfSDOB←' /' REPL DLTB (⊃Format[10])[7;][119]     fLD  ←1 Set_Format 8 ⋄ dfLD  ←' /' REPL DLTB (⊃Format[10])[8;][120]     fDPC ←1 Set_Format 9 ⋄ dfDPC ←' /' REPL DLTB (⊃Format[10])[9;][121]     fDOT←1 Set_Format 10 ⋄ dfDOT ←' /' REPL DLTB (⊃Format[10])[10;][122]     fMOT←1 Set_Format 11 ⋄ fTOP←1 Set_Format 12[123]     fBOT←1 Set_Format 13 ⋄ fTPP←1 Set_Format 14[124]     fMEMORSP←0 Set_Format 15 ⋄ penfreq←DLTMB (⊃Format[11])[16;][125]     (fGMP0 pfGMP0)←2 Set_Format 17 ⋄ (fGMPE0 pfGMPE0)←2 Set_Format 18[126] [127]     ⍝ Now the Non-standards[128]     z←~(×/' '=From←'BLI4' ⎕fmt 18 0↓⊃Format[6])^×/' '=To←'BLI4' ⎕fmt 18 0↓⊃Format[7][129]     From←z⌿From ⋄ To←z⌿To[130]     type←z/(18 0↓⊃Format[5])[;1] ⋄ Name←z⌿18 0↓⊃Format[4] ⋄ Desc←z⌿18 0↓⊃Format[3][131]     pFrom←z⌿'BLI4' ⎕fmt 18 0↓⊃Format[8] ⋄ pTo←z⌿'BLI4' ⎕fmt 18 0↓⊃Format[9][132]     DateFmt←z⌿18 0↓⊃Format[10][133] [134]     z←~(Desc←m2n Desc)≡¨(m2n Name) ⍝ Only Descriptions different from Name[135]     Desc←⊃z\z/Desc[136] [137]     TotNumVars←(z←type='N')⌿Name ⋄ TotNumDesc←z⌿Desc[138]     TotNumFrom←z⌿From ⋄ TotNumTo←z⌿To ⋄ pTotNumFrom←AOSCtl/z⌿pFrom ⋄ pTotNumTo←AOSCtl/z⌿pTo[139]     DateVars←(z←type='D')⌿Name ⋄ DateDesc←z⌿Desc ⋄ DateFrom←z⌿From ⋄ DateTo←z⌿To ⋄ DateFmt←z⌿DateFmt[140]     CharVars←(z←type='C')⌿Name ⋄ CharDesc←z⌿Desc ⋄ CharFrom←z⌿From ⋄ CharTo←z⌿To[141] [142]     AvNumVars←1 0⍴' '[143] [144] :endselect[145] [146] ValidNonS←2/(m2n AvNumVars OVER TotNumVars)~''[147] ValidNonS←ValidNonS,[1.5]((⍴ValidNonS)⍴(,'0') '9999999999')    ∇
+    ∇ res←Format Assign_Import FormatType;type;AvTot;From;To;z;Desc;Name;pFrom;pTo
+[1]   ⍝ UDATAWIN.sf#2
+[2]   ⍝ Get Imported Format and Assign to Screen Controls/Variable
+[3]   
+[4]   ⍝  Format has the following format:
+[5]   ⍝  3 - Description of Variable
+[6]   ⍝  4 - Name of Variable
+[7]   ⍝  5 - Variable Type - NDC (also Evaluate, Formula, Value not coped with!)
+[8]   ⍝  6 and 7 - Current Column Specifications
+[9]   ⍝  8 and 9 - Previous Column Specifications
+[10]  ⍝  10 - Date Format
+[11]  ⍝  11 - Value (Record Length!!, Salary Freq)
+[12]  ⍝  12 - NE Data Default
+[13]  ⍝  13 - Average or Total for Non-Standard (1↑ is T or A)
+[14]  
+[15]  res←''
+[16]  ⍝ Because they are in fixed order I can pick them by absolute rows!!!!
+[17]  RECL←DLTMB (⊃Format[11])[1;]
+[18]  
+[19]  :select FormatType
+[20]  :case 'A' ⍝ Actives
+[21]      :if 19>↑⍴⊃Format[4] ⋄ :orif ~'salfreq'≡DLTMB (⊃Format[4])[19;] ⋄ res←'Invalid Data Format' ⋄ :endif
+[22]  
+[23]      fNOM←1 Set_Format 2  ⋄ fNAME←1 Set_Format 3
+[24]      fSEX←0 Set_Format 4  ⋄ fCAT←(uk≠2) Set_Format 5
+[25]      fDOB←1 Set_Format 6  ⋄ dfDOB←' /' REPL DLTB (⊃Format[10])[6;]
+[26]      fDJS←1 Set_Format 7  ⋄ dfDJS←' /' REPL DLTB (⊃Format[10])[7;]
+[27]      fDJF←1 Set_Format 8  ⋄ dfDJF←' /' REPL DLTB (⊃Format[10])[8;]
+[28]      fDOE←1 Set_Format 10 ⋄ dfDOE←' /' REPL DLTB (⊃Format[10])[10;]
+[29]      fMOE←1 Set_Format 9  ⋄ fBOE ←1 Set_Format 11
+[30]      fSAL←1 Set_Format 13 ⋄ pfPSAL←pfSAL←AOSCtl/fPSAL←1 Set_Format 12
+[31]      (fACW pfACW)←2 Set_Format 14 ⋄ (fACWO pfACWO)←2 Set_Format 15
+[32]      (fEACWO pfEACWO)←2 Set_Format 16
+[33]      (fGMP0 pfGMP0)←2 Set_Format 17 ⋄ (fGMPE0 pfGMPE0)←2 Set_Format 18
+[34]      salfreq←DLTMB (⊃Format[11])[19;]
+[35]  
+[36]      ⍝ Now the Non-standards
+[37]      z←~(×/' '=From←'BLI4' ⎕fmt 19 0↓⊃Format[6])^×/' '=To←'BLI4' ⎕fmt 19 0↓⊃Format[7]
+[38]      From←z⌿From ⋄ To←z⌿To
+[39]      type←z/(19 0↓⊃Format[5])[;1] ⋄ AvTot←z/((19 0↓⊃Format[13]),' ')[;1]
+[40]      Name←z⌿19 0↓⊃Format[4] ⋄ Desc←z⌿19 0↓⊃Format[3]
+[41]      pFrom←z⌿'BLI4' ⎕fmt 19 0↓⊃Format[8] ⋄ pTo←z⌿'BLI4' ⎕fmt 19 0↓⊃Format[9]
+[42]      DateFmt←z⌿19 0↓⊃Format[10]
+[43]  
+[44]      z←~(Desc←m2n Desc)≡¨(m2n Name) ⍝ Only Descriptions different from Name
+[45]      Desc←⊃z\z/Desc
+[46]  
+[47]      TotNumVars←(z←(type='N')^AvTot≠'A')⌿Name ⍝ Default to "T" if blank!!
+[48]      TotNumFrom←z⌿From ⋄ TotNumTo←z⌿To ⋄ pTotNumFrom←AOSCtl/z⌿pFrom ⋄ pTotNumTo←AOSCtl/z⌿pTo ⋄ TotNumDesc←z⌿Desc
+[49]  
+[50]      AvNumVars←(z←(type='N')^AvTot='A')⌿Name
+[51]      AvNumFrom←z⌿From ⋄ AvNumTo←z⌿To ⋄ pAvNumFrom←AOSCtl/z⌿pFrom ⋄ pAvNumTo←AOSCtl/z⌿pTo ⋄ AvNumDesc←z⌿Desc
+[52]  
+[53]      DateVars←(z←type='D')⌿Name ⋄ DateDesc←z⌿Desc ⋄ DateFrom←z⌿From ⋄ DateTo←z⌿To ⋄ DateFmt←z⌿DateFmt
+[54]      CharVars←(z←type='C')⌿Name ⋄ CharDesc←z⌿Desc ⋄ CharFrom←z⌿From ⋄ CharTo←z⌿To
+[55]  
+[56]  :case 'D' ⍝ Deferreds
+[57]      :if ecflag ⋄ crash ⋄ :else ⋄ :return ⋄ :endif ⍝ Should not be used anymore
+[58]  
+[59]  :case 'E' ⍝ (New) Enhanced Deferreds
+[60]      :if 14>↑⍴⊃Format[4] ⋄ :orif ~'GMPE0'≡DLTMB (⊃Format[4])[14;] ⋄ res←'Invalid Data Format' ⋄ :endif
+[61]  
+[62]      fNOM←1 Set_Format 2  ⋄ fNAME←1 Set_Format 3
+[63]      fSEX←0 Set_Format 4  ⋄ fCAT←(uk≠2) Set_Format 5
+[64]      fDOB←1 Set_Format 6  ⋄ dfDOB←' /' REPL DLTB (⊃Format[10])[6;]
+[65]      fLD← 1 Set_Format 7  ⋄ dfLD ←' /' REPL DLTB (⊃Format[10])[7;]
+[66]      fMOE←1 Set_Format 8
+[67]      fDOE←1 Set_Format 9  ⋄ dfDOE←' /' REPL DLTB (⊃Format[10])[9;]
+[68]      fTOP←1 Set_Format 10 ⋄ fBOT←1 Set_Format 11
+[69]      (fACW pfACW)←2 Set_Format 12
+[70]      (fGMP0 pfGMP0)←2 Set_Format 13 ⋄ (fGMPE0 pfGMPE0)←2 Set_Format 14
+[71]  
+[72]      ⍝ Now the Non-standards
+[73]      z←~(×/' '=From←'BLI4' ⎕fmt 14 0↓⊃Format[6])^×/' '=To←'BLI4' ⎕fmt 14 0↓⊃Format[7]
+[74]      From←z⌿From ⋄ To←z⌿To
+[75]      type←z/(14 0↓⊃Format[5])[;1] ⋄ AvTot←z/((14 0↓⊃Format[13]),' ')[;1]
+[76]      Name←z⌿14 0↓⊃Format[4] ⋄ Desc←z⌿14 0↓⊃Format[3]
+[77]      pFrom←z⌿'BLI4' ⎕fmt 14 0↓⊃Format[8] ⋄ pTo←z⌿'BLI4' ⎕fmt 14 0↓⊃Format[9]
+[78]      DateFmt←z⌿14 0↓⊃Format[10]
+[79]  
+[80]      z←~(Desc←m2n Desc)≡¨(m2n Name) ⍝ Only Descriptions different from Name
+[81]      Desc←⊃z\z/Desc
+[82]  
+[83]      TotNumVars←(z←(type='N')^AvTot≠'A')⌿Name ⍝ Default to "T" if blank!!
+[84]      TotNumFrom←z⌿From ⋄ TotNumTo←z⌿To ⋄ pTotNumFrom←AOSCtl/z⌿pFrom ⋄ pTotNumTo←AOSCtl/z⌿pTo ⋄ TotNumDesc←z⌿Desc
+[85]  
+[86]      AvNumVars←(z←(type='N')^AvTot='A')⌿Name
+[87]      AvNumFrom←z⌿From ⋄ AvNumTo←z⌿To ⋄ pAvNumFrom←AOSCtl/z⌿pFrom ⋄ pAvNumTo←AOSCtl/z⌿pTo ⋄ AvNumDesc←z⌿Desc
+[88]  
+[89]      DateVars←(z←type='D')⌿Name ⋄ DateDesc←z⌿Desc ⋄ DateFrom←z⌿From ⋄ DateTo←z⌿To ⋄ DateFmt←z⌿DateFmt
+[90]      CharVars←(z←type='C')⌿Name ⋄ CharDesc←z⌿Desc ⋄ CharFrom←z⌿From ⋄ CharTo←z⌿To
+[91]  
+[92]  :case 'P' ⍝ Pensioners
+[93]      :if 31>↑⍴⊃Format[4] ⋄ :orif ~'ANP16'≡DLTMB (⊃Format[4])[31;] ⋄ res←'Invalid Data Format' ⋄ :endif
+[94]  
+[95]      fNAME←1 Set_Format 2 ⋄ fSEX←0 Set_Format 3
+[96]      fCAT←(uk≠2) Set_Format 4 ⋄ fMS←0 Set_Format 5
+[97]      fDOB ←1 Set_Format 6 ⋄ dfDOB ←' /' REPL DLTB (⊃Format[10])[6;]
+[98]      fSDOB←1 Set_Format 7 ⋄ dfSDOB←' /' REPL DLTB (⊃Format[10])[7;]
+[99]      fLD  ←1 Set_Format 8 ⋄ dfLD  ←' /' REPL DLTB (⊃Format[10])[8;]
+[100]     fDPC ←1 Set_Format 9 ⋄ dfDPC ←' /' REPL DLTB (⊃Format[10])[9;]
+[101]     fDOT←1 Set_Format 10 ⋄ dfDOT ←' /' REPL DLTB (⊃Format[10])[10;]
+[102]     fMOT←1 Set_Format 11
+[103]     penfreq←DLTMB (⊃Format[11])[15;]
+[104] 
+[105]     ⍝ Now the Non-standards
+[106]     z←~(×/' '=From←'BLI4' ⎕fmt (⊃Format[6])[12,15+⍳16;])^×/' '=To←'BLI4' ⎕fmt (⊃Format[7])[12,15+⍳16;]
+[107]     TotNumFrom←z⌿From ⋄ TotNumTo←z⌿To
+[108]     TotNumVars←'q',z⌿(⊃Format[4])[12,15+⍳16;] ⋄ TotNumDesc←z⌿(⊃Format[3])[12,15+⍳16;]
+[109] 
+[110]     AvNumVars←1 0⍴' '
+[111] 
+[112] :case 'N' ⍝ New (Enhanced) Pensioners
+[113]     :if 18>↑⍴⊃Format[4] ⋄ :orif ~'GMPE0'≡DLTMB (⊃Format[4])[18;] ⋄ res←'Invalid Data Format' ⋄ :endif
+[114] 
+[115]     fNAME←1 Set_Format 2 ⋄ fSEX←0 Set_Format 3
+[116]     fCAT←(uk≠2) Set_Format 4 ⋄ fMS←0 Set_Format 5
+[117]     fDOB ←1 Set_Format 6 ⋄ dfDOB ←' /' REPL DLTB (⊃Format[10])[6;]
+[118]     fSDOB←1 Set_Format 7 ⋄ dfSDOB←' /' REPL DLTB (⊃Format[10])[7;]
+[119]     fLD  ←1 Set_Format 8 ⋄ dfLD  ←' /' REPL DLTB (⊃Format[10])[8;]
+[120]     fDPC ←1 Set_Format 9 ⋄ dfDPC ←' /' REPL DLTB (⊃Format[10])[9;]
+[121]     fDOT←1 Set_Format 10 ⋄ dfDOT ←' /' REPL DLTB (⊃Format[10])[10;]
+[122]     fMOT←1 Set_Format 11 ⋄ fTOP←1 Set_Format 12
+[123]     fBOT←1 Set_Format 13 ⋄ fTPP←1 Set_Format 14
+[124]     fMEMORSP←0 Set_Format 15 ⋄ penfreq←DLTMB (⊃Format[11])[16;]
+[125]     (fGMP0 pfGMP0)←2 Set_Format 17 ⋄ (fGMPE0 pfGMPE0)←2 Set_Format 18
+[126] 
+[127]     ⍝ Now the Non-standards
+[128]     z←~(×/' '=From←'BLI4' ⎕fmt 18 0↓⊃Format[6])^×/' '=To←'BLI4' ⎕fmt 18 0↓⊃Format[7]
+[129]     From←z⌿From ⋄ To←z⌿To
+[130]     type←z/(18 0↓⊃Format[5])[;1] ⋄ Name←z⌿18 0↓⊃Format[4] ⋄ Desc←z⌿18 0↓⊃Format[3]
+[131]     pFrom←z⌿'BLI4' ⎕fmt 18 0↓⊃Format[8] ⋄ pTo←z⌿'BLI4' ⎕fmt 18 0↓⊃Format[9]
+[132]     DateFmt←z⌿18 0↓⊃Format[10]
+[133] 
+[134]     z←~(Desc←m2n Desc)≡¨(m2n Name) ⍝ Only Descriptions different from Name
+[135]     Desc←⊃z\z/Desc
+[136] 
+[137]     TotNumVars←(z←type='N')⌿Name ⋄ TotNumDesc←z⌿Desc
+[138]     TotNumFrom←z⌿From ⋄ TotNumTo←z⌿To ⋄ pTotNumFrom←AOSCtl/z⌿pFrom ⋄ pTotNumTo←AOSCtl/z⌿pTo
+[139]     DateVars←(z←type='D')⌿Name ⋄ DateDesc←z⌿Desc ⋄ DateFrom←z⌿From ⋄ DateTo←z⌿To ⋄ DateFmt←z⌿DateFmt
+[140]     CharVars←(z←type='C')⌿Name ⋄ CharDesc←z⌿Desc ⋄ CharFrom←z⌿From ⋄ CharTo←z⌿To
+[141] 
+[142]     AvNumVars←1 0⍴' '
+[143] 
+[144] :endselect
+[145] 
+[146] ValidNonS←2/(m2n AvNumVars OVER TotNumVars)~''
+[147] ValidNonS←ValidNonS,[1.5]((⍴ValidNonS)⍴(,'0') '9999999999')
+    ∇

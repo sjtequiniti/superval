@@ -1,1 +1,61 @@
-    ∇ FunctionEdit;FN;Action;FNlist;QuadCR;n;i;TimeStamp;fn;Qcr;visible[1]   ⍝ PARMWIN.sf#6[2]   ⍝ "Less Crude" version of a synchronous editor[3]   ⍝ Assumptions:  (if not met, then the program fails)[4]   ⍝ * MDI child windows are maximized (i.e. only one activity is visible) (can be overcome in APL+Win 3.5!)[5]   ⍝ * a function is edited (code is easy to change)[6]   ⍝ * editor invoked successfully (could check ⍴FN and ⎕nc FN as in Wedit!)[7]   [8]   :if 0∊⍴,FN←FunctionName ⋄ :return ⋄ :endif ⍝ Not a Benefit!![9]   QuadCR←⎕cr ¨FNlist←(m2n FunctionList[;⍳10]),¨⊂'∆BENEFIT'[10]  [11]  Action←FormName ⎕wi 'onClose' ⋄ visible←1⌈∣FormName ⎕wi 'visible'[12]  FormName ⎕wi 'onClose' 'Edit_Msg FN ⋄ ⎕wres←0'[13]  FormName ⎕wi "caption" ((FormName ⎕wi "caption")," - Editing Benefit Function")[14]  ControlName ⎕wi 'enabled' 0               ⍝ Make SuperVal Disabled[15]  ((⊂'fmSV.bnActives_Basis'),¨'Save' 'Quit') MultiWI 'visible' ¯1[16]  ((⊂'fmSV.mActives_Basis'),¨'File' 'GoTo' 'Help') MultiWI 'enabled' 0[17]  [18]  fn←TimeStamp←0⍴''[19]  :if 1≥1↑⍴(~^/' '=Qcr)⌿Qcr←⎕cr FN[20]      0 0⍴⎕def Qcr←fn←BenefitName CREATEFN FN[21]  :endif[22]  :if '⍝ Last Modified'≡15↑(Qcr OVER ' ')[2;][23]      TimeStamp←(⎕cr FN)[2;][24]      0 0⍴⎕defl FN,'[~1]' ⍝ Remove Last Modified Timestamp line[25]  :endif[26]  [27]  QuadEDIT FN[28]  [29]  :if fn≡⎕cr FN ⋄ 0 0⍴⎕def MATRIX FN ⋄ :endif[30]  [31]  :if ~0∊⍴TimeStamp[32]      0 0⍴⎕defl FN,'[0.5]',TimeStamp[33]  :endif[34]  [35]  :for n :in ⍳⍴FNlist[36]      :if ~(⊃QuadCR[n])≡⎕cr FN←DLTMB ⊃FNlist[n] ⍝ Changes have been made![37]          i←⍬⍴FunctionList[;⍳10] ExactTLU '∆' StripText FN[38]          :if 2≤1↑⍴⎕cr FN[39]          :andif '⍝ Last Modified'≡15↑(⎕cr FN)[2;][40]              0 0⍴⎕defl FN,'[~1]' ⍝ Remove Last Modified Timestamp line[41]          :endif[42]          :if '←'∊⎕cr FN[43]              0 0⍴⎕defl FN,'[0.5]⍝ Last Modified by ',uSER,':  ',,1 DATESPELL ⎕ts[44]          :endif[45]          (FunctionList[i;10+⍳10],'[',(20↓,FunctionList[i;]),']') SSASSIGN '∆⍺⍺'[46]      :endif[47]  :endfor[48]  [49]  FormName ⎕wi 'onClose' Action[50]  FormName ⎕wi 'caption' (¯1↓StripText FormName ⎕wi 'caption')[51]  FormName ⎕wi 'visible' visible[52]  ((⊂'fmSV.mActives_Basis'),¨'File' 'GoTo' 'Help') MultiWI 'enabled' 1[53]  ControlName ⎕wi 'enabled' 1               ⍝ Make SuperVal reenabled[54]  ((⊂'fmSV.bnActives_Basis'),¨'Save' 'Quit') MultiWI 'visible' 1[55]  [56]  0 0⍴"fmEditMsg" ⎕wi "Delete"[57]  FormName ⎕wi "pointer" 0[58]  [59]  0 0⍴(⊂'trBenefit') Actives_Basis 'Change'    ∇
+    ∇ FunctionEdit;FN;Action;FNlist;QuadCR;n;i;TimeStamp;fn;Qcr;visible
+[1]   ⍝ PARMWIN.sf#6
+[2]   ⍝ "Less Crude" version of a synchronous editor
+[3]   ⍝ Assumptions:  (if not met, then the program fails)
+[4]   ⍝ * MDI child windows are maximized (i.e. only one activity is visible) (can be overcome in APL+Win 3.5!)
+[5]   ⍝ * a function is edited (code is easy to change)
+[6]   ⍝ * editor invoked successfully (could check ⍴FN and ⎕nc FN as in Wedit!)
+[7]   
+[8]   :if 0∊⍴,FN←FunctionName ⋄ :return ⋄ :endif ⍝ Not a Benefit!!
+[9]   QuadCR←⎕cr ¨FNlist←(m2n FunctionList[;⍳10]),¨⊂'∆BENEFIT'
+[10]  
+[11]  Action←FormName ⎕wi 'onClose' ⋄ visible←1⌈∣FormName ⎕wi 'visible'
+[12]  FormName ⎕wi 'onClose' 'Edit_Msg FN ⋄ ⎕wres←0'
+[13]  FormName ⎕wi "caption" ((FormName ⎕wi "caption")," - Editing Benefit Function")
+[14]  ControlName ⎕wi 'enabled' 0               ⍝ Make SuperVal Disabled
+[15]  ((⊂'fmSV.bnActives_Basis'),¨'Save' 'Quit') MultiWI 'visible' ¯1
+[16]  ((⊂'fmSV.mActives_Basis'),¨'File' 'GoTo' 'Help') MultiWI 'enabled' 0
+[17]  
+[18]  fn←TimeStamp←0⍴''
+[19]  :if 1≥1↑⍴(~^/' '=Qcr)⌿Qcr←⎕cr FN
+[20]      0 0⍴⎕def Qcr←fn←BenefitName CREATEFN FN
+[21]  :endif
+[22]  :if '⍝ Last Modified'≡15↑(Qcr OVER ' ')[2;]
+[23]      TimeStamp←(⎕cr FN)[2;]
+[24]      0 0⍴⎕defl FN,'[~1]' ⍝ Remove Last Modified Timestamp line
+[25]  :endif
+[26]  
+[27]  QuadEDIT FN
+[28]  
+[29]  :if fn≡⎕cr FN ⋄ 0 0⍴⎕def MATRIX FN ⋄ :endif
+[30]  
+[31]  :if ~0∊⍴TimeStamp
+[32]      0 0⍴⎕defl FN,'[0.5]',TimeStamp
+[33]  :endif
+[34]  
+[35]  :for n :in ⍳⍴FNlist
+[36]      :if ~(⊃QuadCR[n])≡⎕cr FN←DLTMB ⊃FNlist[n] ⍝ Changes have been made!
+[37]          i←⍬⍴FunctionList[;⍳10] ExactTLU '∆' StripText FN
+[38]          :if 2≤1↑⍴⎕cr FN
+[39]          :andif '⍝ Last Modified'≡15↑(⎕cr FN)[2;]
+[40]              0 0⍴⎕defl FN,'[~1]' ⍝ Remove Last Modified Timestamp line
+[41]          :endif
+[42]          :if '←'∊⎕cr FN
+[43]              0 0⍴⎕defl FN,'[0.5]⍝ Last Modified by ',uSER,':  ',,1 DATESPELL ⎕ts
+[44]          :endif
+[45]          (FunctionList[i;10+⍳10],'[',(20↓,FunctionList[i;]),']') SSASSIGN '∆⍺⍺'
+[46]      :endif
+[47]  :endfor
+[48]  
+[49]  FormName ⎕wi 'onClose' Action
+[50]  FormName ⎕wi 'caption' (¯1↓StripText FormName ⎕wi 'caption')
+[51]  FormName ⎕wi 'visible' visible
+[52]  ((⊂'fmSV.mActives_Basis'),¨'File' 'GoTo' 'Help') MultiWI 'enabled' 1
+[53]  ControlName ⎕wi 'enabled' 1               ⍝ Make SuperVal reenabled
+[54]  ((⊂'fmSV.bnActives_Basis'),¨'Save' 'Quit') MultiWI 'visible' 1
+[55]  
+[56]  0 0⍴"fmEditMsg" ⎕wi "Delete"
+[57]  FormName ⎕wi "pointer" 0
+[58]  
+[59]  0 0⍴(⊂'trBenefit') Actives_Basis 'Change'
+    ∇

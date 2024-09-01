@@ -1,0 +1,41 @@
+    ∇ ⍙⍙msk←HPC_APLMonitor ⍙⍙allmsk;⍙⍙worker;ResultsCategoryID;⍙⍙InputDir;⍙⍙Split;⍙⍙StartRec;⍙⍙EndRec;⍙⍙NewEnt;schemafiles;xxx;⍙⍙recn;⍙⍙CurrentRec;⍙⍙repeats;⍙⍙rundesc;ClassID;SelSex;basisDesc;ScenarioDesc;⍙⍙TotMemb;⍙⍙currentRec;⍙⍙Memb
+[1]   ⍝ WLSWIN.sf#5
+[2]   ⍝ Process the Finalisation of sub-process Valuation run in APL COM Object
+[3]   
+[4]   ⍙⍙TotMemb←+/(⍙⍙SubProcTab at 'EndRec')-¯1+⍙⍙SubProcTab at 'StartRec'
+[5]   
+[6]   :repeat
+[7]       :for ⍙⍙msk :in ⍙⍙allmsk
+[8]           (⍙⍙worker ResultsCategoryID ⍙⍙InputDir ⍙⍙Split ⍙⍙StartRec ⍙⍙EndRec ⍙⍙NewEnt ⍙⍙rundesc)←↑¨(⍙⍙SubProcTab for ⍙⍙msk) at 'worker' 'ResCatID' 'InputDir' 'Split' 'StartRec' 'EndRec' 'NewEnt' 'RunDesc'
+[9]           (⍙⍙CurrentRec ⍙⍙repeats)←⍙⍙SubProcTab at 'CurrentRec' 'Repeats'
+[10]  
+[11]          ⍙⍙recn←⍙⍙worker ⎕wi 'xVariable' 'recn'                                          ⍝ ⍙⍙recn is incremented to ⍙⍙EndRec+1
+[12]  
+[13]          ⍙⍙currentRec←⍙⍙CurrentRec ⋄ (⍙⍙msk/⍙⍙CurrentRec)←⍙⍙recn
+[14]          ⍙⍙SubProcTab←⍙⍙SubProcTab amend 'CurrentRec' ⍙⍙CurrentRec
+[15]  
+[16]          :if ⍙⍙EndRec<⍙⍙recn
+[17]              0 HPC_Finalisation ⍙⍙SubProcTab for ⍙⍙msk
+[18]              →end
+[19]          :elseif 3=(⍙⍙msk/⍙⍙repeats)←(⍙⍙recn=⍙⍙msk/⍙⍙CurrentRec)×1+⍙⍙msk/⍙⍙repeats                 ⍝ Increment ⍙⍙repeats by 1 if ⍙⍙recn has not changed (3 and run has failed)
+[20]              VALN∆Errors←MATRIX ↑⍙⍙worker ⎕wi 'xVariable' 'VALN∆Errors'
+[21]              :if ⍙⍙recn=0
+[22]                  (⍙⍙worker ⎕wi 'xVariable' 'errmsg') VALN∆LOG 'Error'
+[23]              :endif
+[24]              (ClassID SelSex basisDesc ScenarioDesc)←(⍙⍙SubProcTab for ⍙⍙msk) at 'ClassID' 'SelSex' 'basisDesc' 'ScenarioDesc'
+[25]              ('ERROR:  Sub-Process Valuation Task for "',⍙⍙rundesc,'" crashed during processing on Record Number ',⍕⍙⍙recn) VALN∆LOG 'Add'
+[26]              (⍙⍙worker ⎕wi 'SysCall' '⎕dm') VALN∆LOG 'Add'
+[27]              AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Valuation crashed in sub-Process'
+[28]              →end
+[29]          :else
+[30]              ⍙⍙SubProcTab←⍙⍙SubProcTab amend 'Repeats' ⍙⍙repeats
+[31]              ⍙⍙Memb←+/0⌈⍙⍙CurrentRec-¯1+⍙⍙SubProcTab at 'StartRec'
+[32]              (⍙⍙Memb ⍙⍙TotMemb) Win∆ProgressBar 'MemberUpdate'
+[33]              0 0⍴⎕dl 1                                                               ⍝ Delay before checking again
+[34]          :endif
+[35]      :endfor
+[36]  :endrepeat
+[37]  
+[38]  end:⍙⍙worker ⎕WI 'xvisible' 0
+[39]  xxx←(⊂⍙⍙worker) ⎕WI¨'Close' 'Delete'                                      ⍝ Clean up sub-process
+    ∇

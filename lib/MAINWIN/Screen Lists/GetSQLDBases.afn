@@ -1,0 +1,43 @@
+    ∇ res←GetSQLDBases type;xxx;∆;⎕elx;elx
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a list of SQL databases
+[3]   ⍝ type can be any of:
+[4]   ⍝   ''  SuperVal Database Files (prefixed with SV)
+[5]   ⍝   0   Scheme Temporary Database (not indexed) - probably not used
+[6]   ⍝   1   Scheme Valuation Database - probably not used
+[7]   ⍝   2   Scheme Consolidation Database
+[8]   ⍝   3   Scheme Scenario Database
+[9]   
+[10]  res←0 0⍴'' ⋄ elx←⎕elx
+[11]  :select type
+[12]  :case 'Client'
+[13]      res←(2↓(ConfigFile ReadFile 'Index') at '∆_Name')~'SQL_Access' 'Configure_SQL' 'AddScheme_Database'
+[14]  :case ''
+[15]      xxx←'ADOcon' 'ADOrst' ⎕WI¨(⊂'Create') pr¨'ADODB.Connection' 'ADODB.Recordset' ⍝ Create ADO Connection and Record Set Objects
+[16]      'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[17]      'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[18]      ⎕elx←'res←"Unable to connect to SQL Server databases" ⋄ →end'
+[19]      'ADOcon' ⎕WI 'XOpen' (⍙DBconnectionString sql_properties OVER 'Database' 'master')
+[20]      ⎕elx←elx
+[21]      'ADOrst' ⎕WI 'XOpen' 'sys.databases' ('ADOcon' ⎕wi 'obj') ('ADOrst' ⎕wi 'adOpenStatic') ('ADOrst' ⎕wi 'adLockOptimistic')
+[22]      res←'ADOrst' ⎕wi 'XGetRows'
+[23]      0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[24]      xxx←'ADOrst' 'ADOcon' ∘.⎕WI 'XClose' 'Close' 'Delete'   ⍝ avoid XOpen after XClose of Connection object
+[25]  
+[26]      ∆←∨/¨(⊂UPPERCASE sqlPrefix)≡¨UPPERCASE¨(⍴sqlPrefix)↑¨res←res[;1]
+[27]      res←∆/res
+[28]  :else
+[29]      :if sqlDatabase ⍝ Valuation/Consolidation/Scenario Databases
+[30]          xxx←'ADOcon' ⎕wi 'Create' 'ADODB.Connection'
+[31]          'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[32]          'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[33]          'ADOcon' ⎕WI 'XOpen' (⍙DBconnectionString sql_properties OVER 'Database' SQLDBName)
+[34]          res←DLTB¨,1 ⍙DBadoCONCommand "SELECT DatabaseName FROM Identification WHERE SchemeID=",(⍕sqlschemeID)," AND DataBaseType IN (",(', ' join 1 ⍙DBString¨type/'Client' 'Consolidation' 'Scenario'),")"
+[35]  
+[36]          0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[37]          xxx←(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete'   ⍝ avoid XOpen after XClose of Connection object
+[38]      :endif
+[39]  :endselect
+[40]  
+[41]  end:res←'SQL Databases' OVER ⊃res
+    ∇

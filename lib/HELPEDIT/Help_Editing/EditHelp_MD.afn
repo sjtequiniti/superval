@@ -1,1 +1,30 @@
-    ∇ EditHelp_MD;seln;File;helpdir;topic;exes;exe[1]   ⍝ HELPEDIT.sf#2[2]   ⍝ Run the editor on the selected topic[3]   ⍝ Should only be one item in Help Field list[4]   ⍝ Requires a text editor to be registered for Markdown (*.MD) files[5]   ⍝ Revn: sjt07jun16 * SeaMonkey installed in Program Files (x86)[6]   ⍝       sjt15jul16 * Markdown source files[7]   :if 1≠↑⍴seln←'fmHelpEdit.lsHelpField' ⎕wi 'list'[8]       MDISPLAY 'Select a Help Field OR a Parameter Field first'[9]   :else[10]      helpdir←HelpFolder,'html\topics\' ⍝ FIXME[11]      topic←DLTB seln[12]      File←helpdir,UPPERCASE topic,'.md'[13]      :if ~FileExist File[14]          (join('/',⎕TCNL,'/',⎕TCNL ⎕TCLF)TEXTREPL ScriptFollowing) nfile_put_contents File[15]          ⍝ # Your title for {topic} here[16]          ⍝[17]          ⍝ To begin at the beginning...[18]          ⍝[19]          ⍝ ## A heading[20]          ⍝[21]      :endif[22]      :if ~mt exe←(2⊃⎕wcall 'FindExecutable' File '' (1000⍴⎕TCNUL))~⎕TCNUL[23]      :andif FileExist exe[24]          0 0⍴⎕wcall 'WinExec' ('"',exe,'" -edit ',File) ''[25]      :else[26]          MDISPLAY 'No editor associated with Markdown files (*.MD)'[27]      :endif[28]  :endif    ∇
+    ∇ EditHelp_MD;seln;File;helpdir;topic;exes;exe
+[1]   ⍝ HELPEDIT.sf#2
+[2]   ⍝ Run the editor on the selected topic
+[3]   ⍝ Should only be one item in Help Field list
+[4]   ⍝ Requires a text editor to be registered for Markdown (*.MD) files
+[5]   ⍝ Revn: sjt07jun16 * SeaMonkey installed in Program Files (x86)
+[6]   ⍝       sjt15jul16 * Markdown source files
+[7]   :if 1≠↑⍴seln←'fmHelpEdit.lsHelpField' ⎕wi 'list'
+[8]       MDISPLAY 'Select a Help Field OR a Parameter Field first'
+[9]   :else
+[10]      helpdir←HelpFolder,'html\topics\' ⍝ FIXME
+[11]      topic←DLTB seln
+[12]      File←helpdir,UPPERCASE topic,'.md'
+[13]      :if ~FileExist File
+[14]          (join('/',⎕TCNL,'/',⎕TCNL ⎕TCLF)TEXTREPL ScriptFollowing) nfile_put_contents File
+[15]          ⍝ # Your title for {topic} here
+[16]          ⍝
+[17]          ⍝ To begin at the beginning...
+[18]          ⍝
+[19]          ⍝ ## A heading
+[20]          ⍝
+[21]      :endif
+[22]      :if ~mt exe←(2⊃⎕wcall 'FindExecutable' File '' (1000⍴⎕TCNUL))~⎕TCNUL
+[23]      :andif FileExist exe
+[24]          0 0⍴⎕wcall 'WinExec' ('"',exe,'" -edit ',File) ''
+[25]      :else
+[26]          MDISPLAY 'No editor associated with Markdown files (*.MD)'
+[27]      :endif
+[28]  :endif
+    ∇

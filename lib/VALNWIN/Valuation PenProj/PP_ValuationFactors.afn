@@ -1,0 +1,30 @@
+    ∇ arg PP∆ValuationFactors CF;rev;loading;ID;ann;revann;DataItemID;indiv;key;msk;tab
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Turn the benefit cash flow into Valuation factor
+[3]   ⍝ At average point of exit for the individual or for all ages for Category
+[4]   
+[5]   :if pp∆year=pp∆benyear ⋄ :andif incIndivVF
+[6]       (rev loading)←arg
+[7]       :if indiv←pp∆benyear=↑pp∆VFYear[pp∆row;] ⋄ :orif VFtables^(mt loading)^(~pp∆accrued)
+[8]           indiv←indiv×indiv-2×pp∆accrued∨~mt loading              ⍝ Factors only required for Individual
+[9]           :if rev=0 ⋄ :andif ~rev←0=pp∆TotBen[pp∆benyear] ⋄ rev←↑pp∆TotCon CDIV pp∆TotBen[pp∆benyear] ⋄ :endif
+[10]          revann←rev×ann←↑pp∆defdisc×pp∆incdef×(+/CF×pp∆size↑pp∆discpost)÷pp∆exitdisc
+[11]          DataItemID←27+(2×pp∆accrued)+×pp∆End[pp∆row;0]          ⍝ For Life or Temporary
+[12]          key←pp∆X0 BenefitTypeID ContingencyID DataItemID pp∆Xatexit pp∆benyear (pp∆Identifier[pp∆row;]) indiv
+[13]          :if pp∆accrued ⋄ VFtab←VFtab OVER key,3  revann ann
+[14]          :else
+[15]              :for ID :in LiabID
+[16]                  :if (⊂pp∆exit)∊'DO' 'DT' ⍝ Death in Deferment for Transfers
+[17]                  :andif ∨/msk←(⎕split valsIn  VFtab select (keysIn VFtab)~'Value' 'ValueNoRev')∊⊂key,⊂ID
+[18]                      tab←VFtab for msk
+[19]                      tab←tab amend 'Value'      (revann+tab at 'Value')
+[20]                      tab←tab amend 'ValueNoRev' (   ann+tab at 'ValueNoRev')
+[21]                           VFtab←(VFtab for ~msk) append tab
+[22]                  :else
+[23]                           VFtab←VFtab OVER key,ID revann ann
+[24]                  :endif
+[25]              :endfor
+[26]          :endif
+[27]      :endif
+[28]  :endif
+    ∇

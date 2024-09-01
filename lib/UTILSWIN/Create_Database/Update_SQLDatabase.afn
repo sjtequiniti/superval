@@ -1,0 +1,31 @@
+    ∇ Update_SQLDatabase ⍙dbname;index;tieno;row;col;∆;MESS
+[1]   ⍝ UTILSWIN.sf#11
+[2]   ⍝ Update Database for any Version changes
+[3]   
+[4]   :if ∨/' (Retired)'⍷⍙dbname
+[5]       ⍙dbname←¯10↓⍙dbname
+[6]       :if ∆←'Y'='YN' ASK 'Do you want to un-Retire the ',⍙dbname,' database?'
+[7]       :andif ~ConfigFile FSTIE tieno←TieNumber ConfigFile
+[8]           index←⎕fread tieno,1
+[9]           row←1+(index at '∆_Name')⍳⊂⍙dbname
+[10]          col←(keysIn index)⍳⊂'∆_Deleted'
+[11]          index[row;col]←⊂''
+[12]          index ⎕freplace tieno,1
+[13]          ⎕funtie tieno
+[14]          MDISPLAY ⍙dbname,' database successfully un-Retired.'
+[15]      :else
+[16]          :if ∆ ⋄ MDISPLAY 'Unable to un-Retire ',⍙dbname,' database at the moment.'
+[17]          :else ⋄ MDISPLAY ⍙dbname,' database was not un-Retired.'
+[18]          :endif
+[19]          :return
+[20]      :endif
+[21]  :endif
+[22]  
+[23]  ⍙DBSQLOpen 'Database' ⍙dbname
+[24]  
+[25]  :if ~mt MESS←1 Database_Migration ⍙dbname
+[26]      MDISPLAY MESS
+[27]  :else
+[28]      MDISPLAY 'No updating required for the ',⍙dbname,' database.'
+[29]  :endif
+    ∇

@@ -1,0 +1,32 @@
+    ∇ ∆_CompNo←File AddToFile Component;∆_Index;tieno;∆_Description;∆_TimeStamp;∆_Name;time;∆_TimeNum
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Add a Component to File
+[3]   ⍝ "File" should be the File name with full path
+[4]   ⍝ Component can be either:
+[5]   ⍝    the Number of the component
+[6]   ⍝    the "type" of the Component and (optional) Parameter Description
+[7]   
+[8]   ⍝ The result ∆_CompNo is:
+[9]   ⍝    component number of the Component added (last)
+[10]  
+[11]  ∆_Index←File ReadFile 1 ⍝ Nested Index
+[12]  tieno←TieNumber File
+[13]  →(0≠File FSTIE tieno)/⎕LC ⍝ Tie the File
+[14]  
+[15]  :if (⎕dr ↑Component)∊11 323 ⍝ Numeric Argument
+[16]      :repeat
+[17]          time←⎕frdci tieno,∆_CompNo←(pack '') ⎕fappend tieno
+[18]          ∆_TimeStamp←,1 DATESPELL 3↓time ⋄ ∆_TimeNum←(2+⎕io)⊃time
+[19]          ∆_Index←∆_Index⍪∆_CompNo '' '' ((uk=1)/ClntCode) uSER ∆_TimeStamp uSER ∆_TimeStamp ∆_TimeNum version ''
+[20]      :until ∆_CompNo=↑Component
+[21]  :else ⍝ Append a component for Module
+[22]      (∆_Name ∆_Description)←2↑Component
+[23]      :if 0∊⍴,∆_Description ⋄ ∆_Description←DLTMB ('_ ' REPL ∆_Name),' Parameters for ',cLIENT ⋄ :endif
+[24]      time←⎕frdci tieno,∆_CompNo←(pack '') ⎕fappend tieno
+[25]      ∆_TimeStamp←,1 DATESPELL 3↓time ⋄ ∆_TimeNum←(2+⎕io)⊃time
+[26]      ∆_Index←∆_Index⍪∆_CompNo ∆_Name (DLTB ∆_Description) ((uk=1)/ClntCode) uSER ∆_TimeStamp uSER ∆_TimeStamp ∆_TimeNum version ''
+[27]  :endif
+[28]   ∆_Index[⎕io+1;∆_Index[⎕io;]⍳'∆_UserModified' '∆_TSModified' '∆_TimeModified' '∆_VersModified']←uSER ∆_TimeStamp ∆_TimeNum version
+[29]  
+[30]  ∆_Index ⎕freplace tieno,1
+    ∇

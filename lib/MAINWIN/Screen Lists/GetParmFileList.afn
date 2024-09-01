@@ -1,0 +1,38 @@
+    ∇ res←Type GetParmFileList Folder;⎕elx;elx;z;Index;folder;File;ParmFileList;ParmFileDesc
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get List of Parameter Files of the type "Type" (FileType and Country Code) and File Descriptions
+[3]   
+[4]   ParmFileList←ParmFileDesc←0⍴⊂'' ⋄ elx←⎕elx
+[5]   
+[6]   Folder←eis Folder
+[7]   :if Type[⎕io]∊'PrefFile' 'ConfigFile' ⋄ Type[⎕io+1]←⊂'' ⋄ :endif ⍝ Preference File is Universal
+[8]   :if Type[⎕io]≡⊂'LibraryFile' ⍝ LibraryFile will access both ClientFile and GlobalsFile
+[9]       Type[⎕io]←⊂'ClientFile' ⍝⍝⍝ ⋄ Folder←InputDir LibraryDir
+[10]  :endif ⍝⍝⍝
+[11]  
+[12]  ⎕elx←'⎕elx←elx ⋄ →FolderNotFound' ⍝ If Folder does not exist!!
+[13]  folder←↑Folder ⋄ ParmFileList←Win∆Parent¨m2n ⎕xlib folder,'*.sf' ⋄ ⎕elx←elx
+[14]  ParmFileList←(~(UPPERCASE¨ParmFileList)∊'SVINVRES' 'INVRES' 'SVVALRES' 'VALRES' 'VALBASIS')/ParmFileList
+[15]  ParmFileList←(⊂folder),¨ParmFileList
+[16]  FolderNotFound:
+[17]  
+[18]  ⎕elx←'→folderNotFound' ⍝ If Folder does not exist!!
+[19]  :if ~mt folder←,⊃1↓Folder ⍝ Library Folder Files
+[20]      ParmFileList←ParmFileList,(⊂'{Library}'),¨Win∆Parent¨m2n ⎕xlib folder,'*.sf'
+[21]  folderNotFound:
+[22]  :endif
+[23]  
+[24]  ⎕elx←elx ⋄ z←⍳0
+[25]  
+[26]  :for File :in ParmFileList
+[27]      :if '{Library}'≡9↑File ⋄ File←LibraryDir,9↓File ⋄ :endif
+[28]      :if 2≠≡Index←File ReadFile 'Index' ⋄ z←z,0
+[29]      :elseif ¯1↑z←z,Type≡Index[⎕io+1;Index[⎕io;]⍳'∆_Name' '∆_Code']
+[30]          ParmFileDesc←ParmFileDesc,Index[⎕io+1;Index[⎕io;]⍳⊂'∆_Description']
+[31]      :endif
+[32]  :endfor
+[33]  
+[34]  ParmFileList←'\' Win∆Child¨z/ParmFileList ⋄ ParmFileList←UPPERCASE ⊃(ParmFileList⍳¨⊂'}')↑¨ParmFileList ⍝??? DropText?
+[35]  
+[36]  res←⊃¨ParmFileList ParmFileDesc
+    ∇

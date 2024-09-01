@@ -1,0 +1,47 @@
+    ∇ httpno ModifyReq_Broker defn;httpIPADDR;httpPORT;httpMAXPROC;httpFOLDER;msk;httpRESPLIMIT;httpWSSIZE;httpABANDON;httpCHECK;httpSHUTDOWN;httpNAME;desc;httpTYPE
+[1]   ⍝ WLSWIN.sf#2
+[2]   ⍝ Add a new or edit an existing HTTP Request Broker using "defn"
+[3]   
+[4]   (httpIPADDR httpPORT httpMAXPROC httpFOLDER httpRESPLIMIT httpWSSIZE httpABANDON httpCHECK httpSHUTDOWN httpNAME httpTYPE)←defn
+[5]   
+[6]   :repeat
+[7]       0 0⍴PrefFile ReadFile 'Config_LoadShare'
+[8]   :until 82=⎕dr 'EditMultiProc' ⋄ :orif 0=EditMultiProc ⋄ :orif 60<1E¯6×(TIMEBASE ⎕ts)-EditMultiProc ⋄ :orif 0=⎕dl 0.25
+[9]   EditMultiProc←TIMEBASE ⎕ts
+[10]  0 0⍴PrefFile SaveToFile 'Config_LoadShare' '' (pack 'EditMultiProc') 1
+[11]  
+[12]  :if 0=⎕nc 'httpno'
+[13]      :if (⊂httpTYPE)∊'My Machine' 'Local IP Address'
+[14]          msk←(httpTYPE⍷HTTPnames)[;⎕io]
+[15]          desc←httpTYPE,' ',⍕↑(⍳1000)~∊⎕fi ¨'0',¨m2n '(' StripText (⍴httpTYPE)↓[⎕io+1]msk⌿HTTPnames
+[16]      :else ⋄ desc←httpNAME
+[17]      :endif
+[18]  
+[19]      HTTPipaddr   ←HTTPipaddr    OVER httpIPADDR
+[20]      HTTPport     ←HTTPport      OVER httpPORT
+[21]      HTTPresplimit←HTTPresplimit OVER httpRESPLIMIT
+[22]      HTTPmaxproc  ←HTTPmaxproc   OVER httpMAXPROC
+[23]      HTTPfolder   ←HTTPfolder    OVER httpFOLDER
+[24]      HTTPwssize   ←HTTPwssize    OVER httpWSSIZE
+[25]      HTTPabandon  ←HTTPabandon   OVER httpABANDON
+[26]      HTTPcheck    ←HTTPcheck     OVER httpCHECK
+[27]      HTTPshutdown ←HTTPshutdown  OVER httpSHUTDOWN
+[28]      HTTPeditable ←HTTPeditable  OVER '0'
+[29]      HTTPactive   ←HTTPactive    OVER '0'
+[30]  
+[31]      :if httpIPADDR≡'127.0.0.1'
+[32]          httpIPADDR←WGetComputerName
+[33]      :endif
+[34]      HTTPnames←HTTPnames OVER desc,' ','()' embrace httpIPADDR,':',httpPORT,'{}' embrace httpMAXPROC
+[35]  :else
+[36]      httpFOLDER    ASSIGN∆Dict 'HTTPfolder[',(⍕httpno),';]'
+[37]      httpRESPLIMIT ASSIGN∆Dict 'HTTPresplimit[',(⍕httpno),';]'
+[38]      httpWSSIZE    ASSIGN∆Dict 'HTTPwssize[',(⍕httpno),';]'
+[39]      httpABANDON   ASSIGN∆Dict 'HTTPabandon[',(⍕httpno),';]'
+[40]      httpCHECK     ASSIGN∆Dict 'HTTPcheck[',(⍕httpno),';]'
+[41]      httpSHUTDOWN  ASSIGN∆Dict 'HTTPshutdown[',(⍕httpno),';]'
+[42]  :endif
+[43]  
+[44]  EditMultiProc←0
+[45]  0 0⍴PrefFile SaveToFile 'Config_LoadShare' '' (pack ⍙VALUESdict ReadDictFile 'Config_LoadShare' '' 'names')
+    ∇

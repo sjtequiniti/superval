@@ -1,0 +1,43 @@
+    ∇ res←XL_Create ExcelRunButton;⎕elx;tries
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Create/Initialise the Excel instance called 'XL' attached to the ExcelRunButton object
+[3]   ⍝ NOTE:  Do not try to pass instance name as an argument (APL/Excel connection fails)
+[4]   
+[5]   :if mt '#' ⎕wi 'XInfo' 'Excel.Application' ⋄ res←'Excel Application not registered on this computer' ⋄ :return ⋄ :endif ⍝ Check if Excel is installed
+[6]   
+[7]   XL_Quit                                    ⍝ Delete any existing "XL" object
+[8]   
+[9]   res←'Unable to initiate Excel Application' ⍝ Error returned if anything else fails
+[10]  tries←0 ⋄ ⎕elx←'0 0⍴⎕dl 0.2 ⋄ →Retry'      ⍝ 5 retries with pause
+[11]  Retry:
+[12]  :if 5=tries←tries+1 ⋄ ⎕elx←'→0' ⋄ :endif
+[13]  0 0⍴'XL' ⎕wi 'Create' 'Excel.Application'  ⍝ Application Object
+[14]  
+[15]  ⎕elx←'→0'
+[16]  'XL' ⎕wi 'xEnableEvents' 0                 ⍝ Disable Macros
+[17]  0 0⍴'XL' ⎕wi 'DisplayAlerts' 0             ⍝ Turn off Excel Alerts
+[18]  ('XL' ⎕wi 'xAutoRecover') ⎕wi 'xEnabled' 0 ⍝ Disable AutoRecover
+[19]  ⍝⍝⍝ 'XL' ⎕wi 'visible' 1 ⍝⍝⍝ For Testing only
+[20]  
+[21]  :if (ExcelVersion←zwb 'XL' ⎕wi 'xVersion')≠ExcelVersion
+[22]      ExcelVersion INIString 'Excel' 'Version' (UserProfDir,INIFile) ⍝ Store Excel version
+[23]      0 0⍴⎕ex '⍙XL' ⍝ Just in case they differ by version
+[24]  :endif
+[25]  
+[26]  ⍝ Make Excel Instance exclusive
+[27]  :if 15>ExcelVersion ⍝ Bug in Excel 2013/2016
+[28]      :if uSERisRSE ⋄ 0 0⍴⎕wcall 'SetParent' ('XL' ⎕wi 'xHwnd') ('#' ⎕wi 'hwndmain')
+[29]      :else         ⋄ 0 0⍴⎕wcall 'SetParent' ('XL' ⎕wi 'xHwnd') (ExcelRunButton ⎕wi 'hwnd')
+[30]      :endif
+[31]  :endif
+[32]  
+[33]  :if 0=⎕nc '⍙XL' ⍝ Create a global table of Excel Constants
+[34]      ⍙XL←    '=xlCalculationSemiautomatic' '=xlCalculationManual' '=xlFormatFromLeftOrAbove' '=xlFormatFromRightOrBelow'
+[35]      ⍙XL←⍙XL,'=xlHAlignCenter' '=xlHAlignLeft' '=xlPasteFormats' '=xlLegendPositionBottom'
+[36]      ⍙XL←⍙XL,'=xlShiftDown' '=xlShiftToLeft' '=xlShiftToRight' '=xlShiftUp'
+[37]  
+[38]      ⍙XL←⍙XL OVER (⊂'XL') ⎕wi¨⍙XL
+[39]  :endif
+[40]  
+[41]  res←'' ⍝ Success
+    ∇

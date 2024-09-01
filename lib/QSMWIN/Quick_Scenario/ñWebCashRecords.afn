@@ -1,1 +1,41 @@
-    ∇ newtab←newtab ⍙WebCashRecords arg;parttab;NO;partliab;newliab;ratio;ind;monly;mult;pens;cfs;BenID[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Create Cash records from the corresponding Pension records[3]   ⍝ ind is flag for full pension cashflows (% of Pension with Valn Basis)[4]   [5]   (parttab ind)←arg ⋄ NO←rowsIn newtab[6]   [7]   newtab←newtab amend 'CashBenefit'       (NO⍴,¯1)                                        ⍝ Indicator of Pension cash flows for Cash[8]   newtab←newtab amend 'Commutation'       (NO⍴parttab at 'Commutation')[9]   newtab←newtab amend 'CashOnTop'         (NO⍴parttab at 'CashOnTop')[10]  newtab←newtab amend 'BenefitTypeID'     (NO⍴BenID←parttab at 'BenefitTypeID')[11]  newtab←newtab amend 'BenefitBasis'      (NO⍴parttab at 'BenefitBasis')[12]  newtab←newtab amend 'MemberOnly'        (NO⍴parttab at 'MemberOnly')[13]  :if 36=↑BenID ⍝ Cash on Top[14]      newtab←newtab amend 'CashRate'      (mult←NO⍴parttab at 'CashRate')  ⍝ COT Multiple of Pension[15]  :else ⋄                                  mult←   newtab  at 'CashRate'   ⍝ Commutation Rate[16]  :endif[17]  :if monly←(~ind)⌈parttab at 'MemberOnly' ⋄ newtab←newtab amend 'SpouseCashFlow' (NO⍴⊂0) ⋄ :endif[18]  :if 1=↑⍴partliab←↑+/(parttab at 'Discount')×(parttab at 'MemberCashFlow')+(~monly)×parttab at 'SpouseCashFlow'[19]      partliab←maxpay↑,partliab[20]  :else[21]      partliab←+/partliab[22]  :endif[23]  [24]  :if ind[25]      newliab←(⊂¨mult)×¨+/¨(newtab at 'Discount')×↑+/newtab at 'MemberCashFlow' 'SpouseCashFlow'[26]      ratio←⊂partliab CDIV ↑+/newliab[27]      newtab←newtab amend 'VBFactAdjust' (NO⍴(⊂incmsk)×¨⍉¨maxyr⌿¨MATRIX¨mult×ratio)[28]      newtab←newtab amend 'CashZeroPension' (NO⍴0)[29]      newtab←newtab amend 'LiabilityValue' (+/¨newliab×¨ratio)[30]  :else[31]      newtab←newtab amend 'PostInterestGroup' (NO⍴⊂'')[32]      newtab←newtab amend 'IncreaseGroup'     (NO⍴⊂'')[33]      newtab←newtab amend 'MemberMortAdjust'  (NO⍴⊂1)[34]      newtab←newtab amend 'SpouseMortAdjust'  (NO⍴⊂1)[35]      newtab←newtab amend 'CashZeroPension'   (NO⍴0)[36]      newliab←+/¨(newtab at 'Discount')×cfs←mult×((⊂penfymsk)×¨newtab at 'MemberCashFlow')[37]      newtab←newtab amend 'MemberCashFlow' (cfs×[1]¨ratio←⊂partliab CDIV ↑+/newliab)[38]      newtab←newtab amend 'LiabilityValue' (+/¨newliab×¨ ratio)[39]  :endif    ∇
+    ∇ newtab←newtab ⍙WebCashRecords arg;parttab;NO;partliab;newliab;ratio;ind;monly;mult;pens;cfs;BenID
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Create Cash records from the corresponding Pension records
+[3]   ⍝ ind is flag for full pension cashflows (% of Pension with Valn Basis)
+[4]   
+[5]   (parttab ind)←arg ⋄ NO←rowsIn newtab
+[6]   
+[7]   newtab←newtab amend 'CashBenefit'       (NO⍴,¯1)                                        ⍝ Indicator of Pension cash flows for Cash
+[8]   newtab←newtab amend 'Commutation'       (NO⍴parttab at 'Commutation')
+[9]   newtab←newtab amend 'CashOnTop'         (NO⍴parttab at 'CashOnTop')
+[10]  newtab←newtab amend 'BenefitTypeID'     (NO⍴BenID←parttab at 'BenefitTypeID')
+[11]  newtab←newtab amend 'BenefitBasis'      (NO⍴parttab at 'BenefitBasis')
+[12]  newtab←newtab amend 'MemberOnly'        (NO⍴parttab at 'MemberOnly')
+[13]  :if 36=↑BenID ⍝ Cash on Top
+[14]      newtab←newtab amend 'CashRate'      (mult←NO⍴parttab at 'CashRate')  ⍝ COT Multiple of Pension
+[15]  :else ⋄                                  mult←   newtab  at 'CashRate'   ⍝ Commutation Rate
+[16]  :endif
+[17]  :if monly←(~ind)⌈parttab at 'MemberOnly' ⋄ newtab←newtab amend 'SpouseCashFlow' (NO⍴⊂0) ⋄ :endif
+[18]  :if 1=↑⍴partliab←↑+/(parttab at 'Discount')×(parttab at 'MemberCashFlow')+(~monly)×parttab at 'SpouseCashFlow'
+[19]      partliab←maxpay↑,partliab
+[20]  :else
+[21]      partliab←+/partliab
+[22]  :endif
+[23]  
+[24]  :if ind
+[25]      newliab←(⊂¨mult)×¨+/¨(newtab at 'Discount')×↑+/newtab at 'MemberCashFlow' 'SpouseCashFlow'
+[26]      ratio←⊂partliab CDIV ↑+/newliab
+[27]      newtab←newtab amend 'VBFactAdjust' (NO⍴(⊂incmsk)×¨⍉¨maxyr⌿¨MATRIX¨mult×ratio)
+[28]      newtab←newtab amend 'CashZeroPension' (NO⍴0)
+[29]      newtab←newtab amend 'LiabilityValue' (+/¨newliab×¨ratio)
+[30]  :else
+[31]      newtab←newtab amend 'PostInterestGroup' (NO⍴⊂'')
+[32]      newtab←newtab amend 'IncreaseGroup'     (NO⍴⊂'')
+[33]      newtab←newtab amend 'MemberMortAdjust'  (NO⍴⊂1)
+[34]      newtab←newtab amend 'SpouseMortAdjust'  (NO⍴⊂1)
+[35]      newtab←newtab amend 'CashZeroPension'   (NO⍴0)
+[36]      newliab←+/¨(newtab at 'Discount')×cfs←mult×((⊂penfymsk)×¨newtab at 'MemberCashFlow')
+[37]      newtab←newtab amend 'MemberCashFlow' (cfs×[1]¨ratio←⊂partliab CDIV ↑+/newliab)
+[38]      newtab←newtab amend 'LiabilityValue' (+/¨newliab×¨ ratio)
+[39]  :endif
+    ∇

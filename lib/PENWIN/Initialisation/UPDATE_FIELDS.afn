@@ -1,1 +1,37 @@
-    ∇ UPDATE∆FIELDS;vars;z;FIndex[1]   ⍝ PENWIN.sf#2[2]   ⍝ Convert all Financial fields (swap field and label and create CONSDYN)[3]   [4]   DEFINC←'<' StripText DEFINC[5]   PAYINC←'<' StripText PAYINC[6]   ADJFAC←'<' StripText ADJFAC[7]   [8]   (preADJ  lrpreADJ) ←SwapNumFields preADJ  lrpreADJ[9]   (postADJ lrpostADJ)←SwapNumFields postADJ lrpostADJ[10]  (ADJFAC  lrADJFAC )←⊃¨spin SwapNumFields¨spin m2n¨ADJFAC  lrADJFAC[11]  [12]  (pi lrpi)                            ←2↑FinConvert pi lrpi[13]  (B88GMPINC lrB88GMPINC CONSB88GMPINC)←  FinConvert B88GMPINC lrB88GMPINC[14]  (A88GMPINC lrA88GMPINC CONSA88GMPINC)←  FinConvert A88GMPINC lrA88GMPINC[15]  (GMPREV1 lrGMPREV1)                  ←2↑FinConvert GMPREV1 lrGMPREV1[16]  (DEFINC lrDEFINC)                    ←2↑FinConvert DEFINC lrDEFINC[17]  (PAYINC lrPAYINC CONSPAYINC)         ←  FinConvert PAYINC lrPAYINC[18]  (PRESPAREV lrPRESPAREV)              ←2↑FinConvert PRESPAREV lrPRESPAREV[19]  [20]  :if bencap[21]      (DYNINCPre  lrDYNINCPre  CONSDYNINCPre) ←  FinConvert DYNINCPre  lrDYNINCPre[22]      (DYNINCPost lrDYNINCPost CONSDYNINCPost)←  FinConvert DYNINCPost lrDYNINCPost[23]  :elseif ppf[24]      PPFDEFINC←'<' StripText PPFDEFINC[25]      (PPFDEFINC lrPPFDEFINC)          ←2↑FinConvert PPFDEFINC lrPPFDEFINC[26]      (p_PPFGMPREV1 lrp_PPFGMPREV1)    ←2↑FinConvert p_PPFGMPREV1 lrp_PPFGMPREV1[27]  :endif[28]  [29]  FactorsTable←MATRIX 'Factor' 'Dates' 'Rates' 'Description' 'Timestamp'[30]  :if zwb GMPREV2[31]      FIndex←FactorFile ReadFile 'Index'[32]      FactorsTable←FactorsTable OVER (⊂'GMPFixed'),('GMPFixed' FACTOR 'All'),DLTB¨↑¨(FIndex for '∆_Name' 'GMPFixed') at '∆_Description' '∆_TSModified'[33]  :endif[34]  [35]  No_Pensions←⍕↑⍴PENDATA    ∇
+    ∇ UPDATE∆FIELDS;vars;z;FIndex
+[1]   ⍝ PENWIN.sf#2
+[2]   ⍝ Convert all Financial fields (swap field and label and create CONSDYN)
+[3]   
+[4]   DEFINC←'<' StripText DEFINC
+[5]   PAYINC←'<' StripText PAYINC
+[6]   ADJFAC←'<' StripText ADJFAC
+[7]   
+[8]   (preADJ  lrpreADJ) ←SwapNumFields preADJ  lrpreADJ
+[9]   (postADJ lrpostADJ)←SwapNumFields postADJ lrpostADJ
+[10]  (ADJFAC  lrADJFAC )←⊃¨spin SwapNumFields¨spin m2n¨ADJFAC  lrADJFAC
+[11]  
+[12]  (pi lrpi)                            ←2↑FinConvert pi lrpi
+[13]  (B88GMPINC lrB88GMPINC CONSB88GMPINC)←  FinConvert B88GMPINC lrB88GMPINC
+[14]  (A88GMPINC lrA88GMPINC CONSA88GMPINC)←  FinConvert A88GMPINC lrA88GMPINC
+[15]  (GMPREV1 lrGMPREV1)                  ←2↑FinConvert GMPREV1 lrGMPREV1
+[16]  (DEFINC lrDEFINC)                    ←2↑FinConvert DEFINC lrDEFINC
+[17]  (PAYINC lrPAYINC CONSPAYINC)         ←  FinConvert PAYINC lrPAYINC
+[18]  (PRESPAREV lrPRESPAREV)              ←2↑FinConvert PRESPAREV lrPRESPAREV
+[19]  
+[20]  :if bencap
+[21]      (DYNINCPre  lrDYNINCPre  CONSDYNINCPre) ←  FinConvert DYNINCPre  lrDYNINCPre
+[22]      (DYNINCPost lrDYNINCPost CONSDYNINCPost)←  FinConvert DYNINCPost lrDYNINCPost
+[23]  :elseif ppf
+[24]      PPFDEFINC←'<' StripText PPFDEFINC
+[25]      (PPFDEFINC lrPPFDEFINC)          ←2↑FinConvert PPFDEFINC lrPPFDEFINC
+[26]      (p_PPFGMPREV1 lrp_PPFGMPREV1)    ←2↑FinConvert p_PPFGMPREV1 lrp_PPFGMPREV1
+[27]  :endif
+[28]  
+[29]  FactorsTable←MATRIX 'Factor' 'Dates' 'Rates' 'Description' 'Timestamp'
+[30]  :if zwb GMPREV2
+[31]      FIndex←FactorFile ReadFile 'Index'
+[32]      FactorsTable←FactorsTable OVER (⊂'GMPFixed'),('GMPFixed' FACTOR 'All'),DLTB¨↑¨(FIndex for '∆_Name' 'GMPFixed') at '∆_Description' '∆_TSModified'
+[33]  :endif
+[34]  
+[35]  No_Pensions←⍕↑⍴PENDATA
+    ∇

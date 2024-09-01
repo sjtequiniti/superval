@@ -1,0 +1,17 @@
+    ∇ arg FlattenPropertyRules rules;∆
+[1]   ⍝ UTILSWIN.sf#5
+[2]   ⍝ Common initialisation of relRules for fast reference
+[3]   ⍝ arg indicates if Editable Property to be considered
+[4]   ⍝ Sets: ALLDEPENS ALLEPREFS ALLPROPS ALLREFS ALLRULES FIELDS PROPERTIES
+[5]   ⍝ Revn: sjt13jun14 sjt17apr15 sjt01may15
+[6]   FIELDS←rules at 'Field'                                             ⍝ all fields with rules defined
+[7]   PROPERTIES←'Relevant' 'Required',arg/⊂'Editable'
+[8]   
+[9]   ALLPROPS ←,FIELDS∘.,'.',¨PROPERTIES
+[10]  ALLRULES ←,valsIn rules select PROPERTIES                           ⍝ v[ALLPROPS]: executable rules
+[11]  ALLREFS  ←,valsIn rules select PROPERTIES,¨ ⊂' Refs'                ⍝ v[ALLPROPS]: lists of refs to other fields
+[12]  ALLEPREFS←,valsIn rules select PROPERTIES,¨ ⊂' EPs'                 ⍝ v[ALLPROPS]: lists of EPs referred to in rules
+[13]  ALLDEPENS←×↑¨⍴¨ALLEPREFS                                            ⍝ v[ALLPROPS]: flag properties that require EPs
+[14]  
+[15]  ⍙CACHE←'' push ''                                                   ⍝ dictionary of values and property values
+    ∇

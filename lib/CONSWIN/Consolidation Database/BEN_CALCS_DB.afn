@@ -1,1 +1,86 @@
-    ∇ arg BEN∆CALCS∆DB runs;N;esc;COCR;INS;ResultsCategoryID;tax;V;no;sql;values;exp;∆[1]   ⍝ CONSWIN.sf#11[2]   ⍝ Read cash flow results from file[3]   ⍝ Create Database records for "consolidation" cash flows - relating to expenses, additional AGG conts[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   esc←1↑arg ⋄ COCR←1↓arg[8]   :if ValMeth≡'AGG' ⋄ V←((⍴V)⍴0 1)/V←×\1,(÷2/TERMPC OVERTAKE amorti)*0.5 ⋄ :endif[9]   [10]  :for N :in ⍳⍴runs[11]      ResultsCategoryID←runs[N] ⋄ exp←200/0[12]      sql←"SELECT SVYear,SVValue FROM ResultsData_NoIndex WHERE ResultsCategoryID=%1 AND ContingencyID=%2 AND LiabilityTypeID=%3"[13]  [14]      :if 0≠EXPSAL ⋄ :orif ValMeth≡'AGG'[15]          no←⍴values←(ResultsCategoryID 11 8) ⍙DBSQLRead sql ⍝ V1% Contributions (for Expenses/Agg Conts)[16]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 11 8 12) 0 (⍳200)) ⍙DBValnRecords -exp←200↑EXPSAL×values[17]  [18]          :if ValMeth≡'AGG' ⍝ Aggregate Contributions[19]              ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 9 8 12) 0 (⍳no)) ⍙DBValnRecords ∆←COCR[N]×values ⍝ Aggregate Conts cash flow[20]              ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 9 8 12) 0 (⍳no)) ⍙DBValnRecords -∆←EXPCC×∆ ⍝ Aggregate Conts expenses[21]              exp←exp+200↑∆[22]              ⍝⍝⍝ Aust tax ???[23]  [24]              :if salind∨esc ⍝ Aggregate Additional Salary related Conts[25]                  no←⍬⍴⍴values←SALPC×TERMPC↑values[26]                  AdditConts[⎕io+1]←AdditConts[⎕io+1]++/values×V[27]                  ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 (10+18×bQSM)  8 12) 0 (⍳no)) ⍙DBValnRecords values[28]                  ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 (10+18×bQSM)  6 13) 0 0) ⍙DBValnRecords +/values×V[29]                  ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 (10+18×bQSM)  8 12) 0 (⍳no)) ⍙DBValnRecords ∆←-EXPCC×values[30]                  ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 (10+18×bQSM) 12 13) 0 0) ⍙DBValnRecords +/∆×V[31]                  ⍝⍝⍝ Aust tax ???[32]                  :if bQSM[33]                      ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 (10+18×bQSM)  6 93) 0 0) ⍙DBValnRecords +/values×V[34]                      ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 (10+18×bQSM) 12 93) 0 0) ⍙DBValnRecords +/∆×V[35]                  :endif[36]              :endif[37]          :endif[38]      :endif[39]  [40]      no←⍬⍴⍴values←(ResultsCategoryID 16 7 0) ⍙DBSQLRead "SELECT SVYear,SVValue FROM ResultsData_NoIndex WHERE ResultsCategoryID=%1 AND ContingencyID=%2 AND LiabilityTypeID=%3 AND SVAge=%4"[41]      :if 0≠EXPPM[42]          exp←exp+200↑∆←EXPPM×values ⍝ Per Member Expenses[43]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 16 8 12) 0 (⍳no)) ⍙DBValnRecords -∆[44]      :endif[45]      no←↑⍴ExpSFMAT←(no 0⌈⍴ExpSFMAT)↑ExpSFMAT ⋄ ExpSFMAT←ExpSFMAT,no↑values[46]  [47]      :if 0≠EXPMC[48]          no←⍴values←(ResultsCategoryID 8 8) ⍙DBSQLRead sql[49]          exp←exp+200↑∆←EXPMC×values ⍝ Member Contributions Expenses[50]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 8 8 12) 0 (⍳no)) ⍙DBValnRecords -∆[51]      :endif[52]  [53]      :if 0≠EXPCC[54]          no←⍴values←(ResultsCategoryID 9 8) ⍙DBSQLRead sql[55]          exp←exp+200↑∆←EXPCC×values ⍝ Company Contributions Expenses[56]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 9 8 12) 0 (⍳no)) ⍙DBValnRecords -∆[57]      :endif[58]  [59]      ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 9 8 12) 0 (⍳200)) ⍙DBValnRecords (~(⊂ValMeth)∊'AGG' 'EAN')×exp ⍝ Co Conts to cover expenses[60]  [61]      :if tax←uk=0 ⍝ Aust Conts Tax[62]          :if (⊂ValMeth)∊'AGG' 'EAN' ⍝ AGG or EAN[63]              tax←(1-EXPCC)×(0⌈values-no↑exp)×no↑TaxRates[64]          :else ⍝ AAN PUC or DAB[65]              tax←((0⌈values) CDIV 1-no↑TaxRates)-0⌈values[66]              ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 9 8 12) 0 (⍳no)) ⍙DBValnRecords (~(⊂ValMeth)∊'AGG' 'EAN')×tax ⍝ Co Conts to cover tax[67]          :endif[68]      :endif[69]  ⍝⍝⍝    TAX←,TAX,+/contper↑tax×no↑vMP[70]  [71]      :if NotPUC ⋄ :orif ~insind ⍝ Insurance Contributions[72]          sql←"SELECT SVYear,SVValue FROM ResultsData_NoIndex WHERE ResultsCategoryID=%1 AND BenefitTypeID=%2 AND LiabilityTypeID=%3"[73]  [74]          no←⍴values←-(ResultsCategoryID 9 8) ⍙DBSQLRead sql[75]  ⍝⍝⍝        INS←(contper↑values)×contper↑vMP[76]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 29 8 12) 0 (⍳no)) ⍙DBValnRecords   -EXPCC ×values ⍝ Expenses on Insurance[77]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 29 8 12) 0 (⍳no)) ⍙DBValnRecords (1+EXPCC)×values ⍝ Conts to cover Insurance plus Expenses[78]  [79]          no←⍴values←-(ResultsCategoryID 10 8) ⍙DBSQLRead sql[80]  ⍝⍝⍝        EXP←,EXP,INS+(contper↑values)×contper↑vMP[81]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 30 8 12) 0 (⍳no)) ⍙DBValnRecords   -EXPCC ×values ⍝ Expenses on Insurance[82]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 30 8 12) 0 (⍳no)) ⍙DBValnRecords (1+EXPCC)×values ⍝ Conts to cover Insurance plus Expenses[83]      :endif[84]  :endfor    ∇
+    ∇ arg BEN∆CALCS∆DB runs;N;esc;COCR;INS;ResultsCategoryID;tax;V;no;sql;values;exp;∆
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ Read cash flow results from file
+[3]   ⍝ Create Database records for "consolidation" cash flows - relating to expenses, additional AGG conts
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   esc←1↑arg ⋄ COCR←1↓arg
+[8]   :if ValMeth≡'AGG' ⋄ V←((⍴V)⍴0 1)/V←×\1,(÷2/TERMPC OVERTAKE amorti)*0.5 ⋄ :endif
+[9]   
+[10]  :for N :in ⍳⍴runs
+[11]      ResultsCategoryID←runs[N] ⋄ exp←200/0
+[12]      sql←"SELECT SVYear,SVValue FROM ResultsData_NoIndex WHERE ResultsCategoryID=%1 AND ContingencyID=%2 AND LiabilityTypeID=%3"
+[13]  
+[14]      :if 0≠EXPSAL ⋄ :orif ValMeth≡'AGG'
+[15]          no←⍴values←(ResultsCategoryID 11 8) ⍙DBSQLRead sql ⍝ V1% Contributions (for Expenses/Agg Conts)
+[16]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 11 8 12) 0 (⍳200)) ⍙DBValnRecords -exp←200↑EXPSAL×values
+[17]  
+[18]          :if ValMeth≡'AGG' ⍝ Aggregate Contributions
+[19]              ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 9 8 12) 0 (⍳no)) ⍙DBValnRecords ∆←COCR[N]×values ⍝ Aggregate Conts cash flow
+[20]              ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 9 8 12) 0 (⍳no)) ⍙DBValnRecords -∆←EXPCC×∆ ⍝ Aggregate Conts expenses
+[21]              exp←exp+200↑∆
+[22]              ⍝⍝⍝ Aust tax ???
+[23]  
+[24]              :if salind∨esc ⍝ Aggregate Additional Salary related Conts
+[25]                  no←⍬⍴⍴values←SALPC×TERMPC↑values
+[26]                  AdditConts[⎕io+1]←AdditConts[⎕io+1]++/values×V
+[27]                  ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 (10+18×bQSM)  8 12) 0 (⍳no)) ⍙DBValnRecords values
+[28]                  ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 (10+18×bQSM)  6 13) 0 0) ⍙DBValnRecords +/values×V
+[29]                  ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 (10+18×bQSM)  8 12) 0 (⍳no)) ⍙DBValnRecords ∆←-EXPCC×values
+[30]                  ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 (10+18×bQSM) 12 13) 0 0) ⍙DBValnRecords +/∆×V
+[31]                  ⍝⍝⍝ Aust tax ???
+[32]                  :if bQSM
+[33]                      ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 (10+18×bQSM)  6 93) 0 0) ⍙DBValnRecords +/values×V
+[34]                      ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 (10+18×bQSM) 12 93) 0 0) ⍙DBValnRecords +/∆×V
+[35]                  :endif
+[36]              :endif
+[37]          :endif
+[38]      :endif
+[39]  
+[40]      no←⍬⍴⍴values←(ResultsCategoryID 16 7 0) ⍙DBSQLRead "SELECT SVYear,SVValue FROM ResultsData_NoIndex WHERE ResultsCategoryID=%1 AND ContingencyID=%2 AND LiabilityTypeID=%3 AND SVAge=%4"
+[41]      :if 0≠EXPPM
+[42]          exp←exp+200↑∆←EXPPM×values ⍝ Per Member Expenses
+[43]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 16 8 12) 0 (⍳no)) ⍙DBValnRecords -∆
+[44]      :endif
+[45]      no←↑⍴ExpSFMAT←(no 0⌈⍴ExpSFMAT)↑ExpSFMAT ⋄ ExpSFMAT←ExpSFMAT,no↑values
+[46]  
+[47]      :if 0≠EXPMC
+[48]          no←⍴values←(ResultsCategoryID 8 8) ⍙DBSQLRead sql
+[49]          exp←exp+200↑∆←EXPMC×values ⍝ Member Contributions Expenses
+[50]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 8 8 12) 0 (⍳no)) ⍙DBValnRecords -∆
+[51]      :endif
+[52]  
+[53]      :if 0≠EXPCC
+[54]          no←⍴values←(ResultsCategoryID 9 8) ⍙DBSQLRead sql
+[55]          exp←exp+200↑∆←EXPCC×values ⍝ Company Contributions Expenses
+[56]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 9 8 12) 0 (⍳no)) ⍙DBValnRecords -∆
+[57]      :endif
+[58]  
+[59]      ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 9 8 12) 0 (⍳200)) ⍙DBValnRecords (~(⊂ValMeth)∊'AGG' 'EAN')×exp ⍝ Co Conts to cover expenses
+[60]  
+[61]      :if tax←uk=0 ⍝ Aust Conts Tax
+[62]          :if (⊂ValMeth)∊'AGG' 'EAN' ⍝ AGG or EAN
+[63]              tax←(1-EXPCC)×(0⌈values-no↑exp)×no↑TaxRates
+[64]          :else ⍝ AAN PUC or DAB
+[65]              tax←((0⌈values) CDIV 1-no↑TaxRates)-0⌈values
+[66]              ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 9 8 12) 0 (⍳no)) ⍙DBValnRecords (~(⊂ValMeth)∊'AGG' 'EAN')×tax ⍝ Co Conts to cover tax
+[67]          :endif
+[68]      :endif
+[69]  ⍝⍝⍝    TAX←,TAX,+/contper↑tax×no↑vMP
+[70]  
+[71]      :if NotPUC ⋄ :orif ~insind ⍝ Insurance Contributions
+[72]          sql←"SELECT SVYear,SVValue FROM ResultsData_NoIndex WHERE ResultsCategoryID=%1 AND BenefitTypeID=%2 AND LiabilityTypeID=%3"
+[73]  
+[74]          no←⍴values←-(ResultsCategoryID 9 8) ⍙DBSQLRead sql
+[75]  ⍝⍝⍝        INS←(contper↑values)×contper↑vMP
+[76]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 29 8 12) 0 (⍳no)) ⍙DBValnRecords   -EXPCC ×values ⍝ Expenses on Insurance
+[77]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 29 8 12) 0 (⍳no)) ⍙DBValnRecords (1+EXPCC)×values ⍝ Conts to cover Insurance plus Expenses
+[78]  
+[79]          no←⍴values←-(ResultsCategoryID 10 8) ⍙DBSQLRead sql
+[80]  ⍝⍝⍝        EXP←,EXP,INS+(contper↑values)×contper↑vMP
+[81]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((32 30 8 12) 0 (⍳no)) ⍙DBValnRecords   -EXPCC ×values ⍝ Expenses on Insurance
+[82]          ⍙dbfundres←⍙dbfundres⍪ResultsCategoryID,((11 30 8 12) 0 (⍳no)) ⍙DBValnRecords (1+EXPCC)×values ⍝ Conts to cover Insurance plus Expenses
+[83]      :endif
+[84]  :endfor
+    ∇

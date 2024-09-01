@@ -1,0 +1,17 @@
+    ∇ res←field ConcatLabel label;x;z;∆;pos
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Concenate a parameter field and its label
+[3]   
+[4]   (x z)←~mt¨(field label)←DLTB¨field label
+[5]   :if ×pos←↑1+WHERE ⎕av[⎕io+175]=label
+[6]       :if ×∆←↑¯1+WHERE '{'=field ⋄ :orif ×∆←↑WHERE '⋄'=field
+[7]                             res←(∆↑field),(pos↑label),' ',(∆↓field),' ',pos↓label
+[8]       :else               ⋄ res←  field,' '       ,label
+[9]       :endif
+[10]      res←DLTMB res
+[11]  :elseif ∨/'{skip'⍷label ⋄ res←x/field,' '       ,label
+[12]  :elseif x               ⋄ res←  field,' ',z/' <',label,'>'
+[13]  :else                   ⋄ res←''
+[14]  :endif
+[15]  res←'⋄ ' REPL res
+    ∇

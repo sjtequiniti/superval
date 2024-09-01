@@ -1,1 +1,76 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Basis_Update" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Basis_Update" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmUpdBases.lvSavedScens" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SavedScens) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX SavedScens[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmUpdBases.lvSavedScens" ⎕wi "value" value[25]  0 0⍴"fmUpdBases.lvSavedScens" ⎕wi "EnsureVisible" ((1↑value),1)[26]  "fmUpdBases.ckupdateScheme" ⎕wi "value" (zwb updateScheme)[27]  PickList←"fmUpdBases.lvSavedParms" ⎕wi "list"[28]  :if 0∊⍴PickList[29]      value←⍬[30]  :else[31]      list←(1 0×⍴PickList)⍴""[32]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SavedParms) OVER " ")[1;][33]          list←list,"⍺",(⊃PickList[;n])," "[34]      :endfor[35]      list←m2n list[36]      NameList←m2n MATRIX SavedParms[37]      value←(list∊NameList)/PickList[;1][38]  :endif[39]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[40]      value←PickList[1;1] ⋄ modified←1[41]  :endif[42]  "fmUpdBases.lvSavedParms" ⎕wi "value" value[43]  0 0⍴"fmUpdBases.lvSavedParms" ⎕wi "EnsureVisible" ((1↑value),1)[44]  PickList←"fmUpdBases.cbTargetFile" ⎕wi "list"[45]  selection←PickList ExactTLU DLTB TargetFile[46]  :if mt selection[47]          "fmUpdBases.cbTargetFile" ⎕wi "text" (DLTB TargetFile)[48]  :else[49]      "fmUpdBases.cbTargetFile" ⎕wi "value" selection[50]  :endif[51]  "fmUpdBases.edTargetFileDesc" ⎕wi "text" (DLTB TargetFileDesc)[52]  PickList←"fmUpdBases.cbFinSavedDesc" ⎕wi "list"[53]  selection←PickList ExactTLU DLTB FinSavedDesc[54]  :if mt selection[55]      :if ~mt DLTB FinSavedDesc[56]          warnings←warnings OVER "Previous Selection for 'Current Financial Parameter Set' is no longer available"[57]      :endif[58]      modified←⌈/modified,1[59]  :endif[60]  "fmUpdBases.cbFinSavedDesc" ⎕wi "value" (¯1↑1,selection)[61]  "fmUpdBases.edFinNewDesc" ⎕wi "text" (DLTB FinNewDesc)[62]  "fmUpdBases.ckCreateFin" ⎕wi "value" (zwb CreateFin)[63]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Basis_Update[64]      :for var :in spin Comment_Basis_Update at "variable" "row" ⋄ (var row)←var[65]          "Basis_Update" ParmColor ((FormFields for "variable" var) at "control"),var row 1[66]      :endfor[67]  :endif[68]  :if ~0∊⍴,warnings[69]      MDISPLAY DLTMB warnings,⎕tcnl[70]      Win∆AssignVars "fmUpdBases"[71]  :endif[72]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Basis_Update" "" "Names"[73]      "fmUpdBases" ⎕wi "modified" 0[74]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Basis_Update" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Basis_Update" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmUpdBases.lvSavedScens" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SavedScens) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX SavedScens
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmUpdBases.lvSavedScens" ⎕wi "value" value
+[25]  0 0⍴"fmUpdBases.lvSavedScens" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  "fmUpdBases.ckupdateScheme" ⎕wi "value" (zwb updateScheme)
+[27]  PickList←"fmUpdBases.lvSavedParms" ⎕wi "list"
+[28]  :if 0∊⍴PickList
+[29]      value←⍬
+[30]  :else
+[31]      list←(1 0×⍴PickList)⍴""
+[32]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SavedParms) OVER " ")[1;]
+[33]          list←list,"⍺",(⊃PickList[;n])," "
+[34]      :endfor
+[35]      list←m2n list
+[36]      NameList←m2n MATRIX SavedParms
+[37]      value←(list∊NameList)/PickList[;1]
+[38]  :endif
+[39]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[40]      value←PickList[1;1] ⋄ modified←1
+[41]  :endif
+[42]  "fmUpdBases.lvSavedParms" ⎕wi "value" value
+[43]  0 0⍴"fmUpdBases.lvSavedParms" ⎕wi "EnsureVisible" ((1↑value),1)
+[44]  PickList←"fmUpdBases.cbTargetFile" ⎕wi "list"
+[45]  selection←PickList ExactTLU DLTB TargetFile
+[46]  :if mt selection
+[47]          "fmUpdBases.cbTargetFile" ⎕wi "text" (DLTB TargetFile)
+[48]  :else
+[49]      "fmUpdBases.cbTargetFile" ⎕wi "value" selection
+[50]  :endif
+[51]  "fmUpdBases.edTargetFileDesc" ⎕wi "text" (DLTB TargetFileDesc)
+[52]  PickList←"fmUpdBases.cbFinSavedDesc" ⎕wi "list"
+[53]  selection←PickList ExactTLU DLTB FinSavedDesc
+[54]  :if mt selection
+[55]      :if ~mt DLTB FinSavedDesc
+[56]          warnings←warnings OVER "Previous Selection for 'Current Financial Parameter Set' is no longer available"
+[57]      :endif
+[58]      modified←⌈/modified,1
+[59]  :endif
+[60]  "fmUpdBases.cbFinSavedDesc" ⎕wi "value" (¯1↑1,selection)
+[61]  "fmUpdBases.edFinNewDesc" ⎕wi "text" (DLTB FinNewDesc)
+[62]  "fmUpdBases.ckCreateFin" ⎕wi "value" (zwb CreateFin)
+[63]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Basis_Update
+[64]      :for var :in spin Comment_Basis_Update at "variable" "row" ⋄ (var row)←var
+[65]          "Basis_Update" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[66]      :endfor
+[67]  :endif
+[68]  :if ~0∊⍴,warnings
+[69]      MDISPLAY DLTMB warnings,⎕tcnl
+[70]      Win∆AssignVars "fmUpdBases"
+[71]  :endif
+[72]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Basis_Update" "" "Names"
+[73]      "fmUpdBases" ⎕wi "modified" 0
+[74]  :endif
+    ∇

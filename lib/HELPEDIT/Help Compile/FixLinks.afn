@@ -1,1 +1,49 @@
-    ∇ Z←pageMd FixLinks R;∆;string;found;anch;bookmarks;stem;href;newanchor[1]   ⍝ HELPEDIT.sf#4[2]   ⍝ Check link targets are bookmarks on this page[3]   ⍝   or exist or will exist in docs\;[4]   ⍝   else create as solo topic if MD in topics\;[5]   ⍝   else link to 404 and log the problem.[6]   ⍝ Sets: MISSINGLINKS[7]   ⍝ Reads: adir ht AllPages DocsMds ImgFiles TopicMds ZERO[8]   ⍝ Vern: sjt16Oct18[9]   ⍝       sjt29nov19 * image files; HTTPS; link case[10]  [11]  bookmarks←caseDn¨(ht for 'pageMd' pageMd) at 'bookmark'         ⍝ bookmarks for this page[12]  Z←0⍴string←R[13]  found←']('⍷string                                               ⍝ starts of anchor href[14]  [15]  :while ∨/found[16]      ∆←(found⍳1)-1                                               ⍝   start of next anchor href[17]      (Z string found)←(Z,∆↑string) push ∆↓¨string found[18]      ∆←string⍳')'                                                ⍝   find end of anchor[19]      (anch string found)←(⊂2↓¯1↓∆↑string),(∆↓¨string found)[20]      anch←caseDn anch                                            ⍝   anchors all l/c[21]  ⍝   :if 'HTTP://'≡UPPERCASE 7↑anch                              ⍝   if absolute URL[22]      :if ∨/'http://' 'https://'∊7 8↑¨⊂anch                       ⍝   if absolute URL[23]      :orif (⊂anch)∊ImgFiles                                      ⍝   if an image file[24]          newanchor←anch                                          ⍝     copy it[25]      :else[26]          stem←(-(⌽href)⍳'.')↓href←(1-(⌽∆)⍳'/')↑∆←anch[27]          :if (⊂stem)∊bookmarks                                   ⍝   if on current page[28]              newanchor←'#',stem                                  ⍝     use as bookmark[29]          :else                                                   ⍝   else[30]              :if   (⊂href)∊DocsMds                               ⍝     if already in docs/[31]              :orif (⊂href)∊AllPages                              ⍝     or will be[32]                  newanchor←href                                  ⍝       use as is[33]              :elseif (⊂href)∊TopicMds                            ⍝     if in topics/[34]                  DocsMds←DocsMds,⊂href                           ⍝       list immediately to prevent futile recursion[35]                  MakeSoloTopicMd href                            ⍝       NB recurses (indirectly) to follow links[36]                  newanchor←href                                  ⍝       use as is[37]              :else                                               ⍝     else destination unknown[38]                  ∆←'from docs\',pageMd,' to ',href[39]                  MISSINGLINKS←MISSINGLINKS,⊂∆                    ⍝       append to list for logging[40]                  newanchor←'deadlink.md'                         ⍝       link to 404 page[41]              :endif[42]          :endif[43]      :endif[44]      Z←Z,'](',newanchor,')'[45]  :endwhile[46]  [47]  Z←Z,string    ∇
+    ∇ Z←pageMd FixLinks R;∆;string;found;anch;bookmarks;stem;href;newanchor
+[1]   ⍝ HELPEDIT.sf#4
+[2]   ⍝ Check link targets are bookmarks on this page
+[3]   ⍝   or exist or will exist in docs\;
+[4]   ⍝   else create as solo topic if MD in topics\;
+[5]   ⍝   else link to 404 and log the problem.
+[6]   ⍝ Sets: MISSINGLINKS
+[7]   ⍝ Reads: adir ht AllPages DocsMds ImgFiles TopicMds ZERO
+[8]   ⍝ Vern: sjt16Oct18
+[9]   ⍝       sjt29nov19 * image files; HTTPS; link case
+[10]  
+[11]  bookmarks←caseDn¨(ht for 'pageMd' pageMd) at 'bookmark'         ⍝ bookmarks for this page
+[12]  Z←0⍴string←R
+[13]  found←']('⍷string                                               ⍝ starts of anchor href
+[14]  
+[15]  :while ∨/found
+[16]      ∆←(found⍳1)-1                                               ⍝   start of next anchor href
+[17]      (Z string found)←(Z,∆↑string) push ∆↓¨string found
+[18]      ∆←string⍳')'                                                ⍝   find end of anchor
+[19]      (anch string found)←(⊂2↓¯1↓∆↑string),(∆↓¨string found)
+[20]      anch←caseDn anch                                            ⍝   anchors all l/c
+[21]  ⍝   :if 'HTTP://'≡UPPERCASE 7↑anch                              ⍝   if absolute URL
+[22]      :if ∨/'http://' 'https://'∊7 8↑¨⊂anch                       ⍝   if absolute URL
+[23]      :orif (⊂anch)∊ImgFiles                                      ⍝   if an image file
+[24]          newanchor←anch                                          ⍝     copy it
+[25]      :else
+[26]          stem←(-(⌽href)⍳'.')↓href←(1-(⌽∆)⍳'/')↑∆←anch
+[27]          :if (⊂stem)∊bookmarks                                   ⍝   if on current page
+[28]              newanchor←'#',stem                                  ⍝     use as bookmark
+[29]          :else                                                   ⍝   else
+[30]              :if   (⊂href)∊DocsMds                               ⍝     if already in docs/
+[31]              :orif (⊂href)∊AllPages                              ⍝     or will be
+[32]                  newanchor←href                                  ⍝       use as is
+[33]              :elseif (⊂href)∊TopicMds                            ⍝     if in topics/
+[34]                  DocsMds←DocsMds,⊂href                           ⍝       list immediately to prevent futile recursion
+[35]                  MakeSoloTopicMd href                            ⍝       NB recurses (indirectly) to follow links
+[36]                  newanchor←href                                  ⍝       use as is
+[37]              :else                                               ⍝     else destination unknown
+[38]                  ∆←'from docs\',pageMd,' to ',href
+[39]                  MISSINGLINKS←MISSINGLINKS,⊂∆                    ⍝       append to list for logging
+[40]                  newanchor←'deadlink.md'                         ⍝       link to 404 page
+[41]              :endif
+[42]          :endif
+[43]      :endif
+[44]      Z←Z,'](',newanchor,')'
+[45]  :endwhile
+[46]  
+[47]  Z←Z,string
+    ∇

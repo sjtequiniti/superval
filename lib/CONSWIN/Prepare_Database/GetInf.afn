@@ -1,1 +1,19 @@
-    ∇ Z←ContID GetInf arg;tab;dataitem[1]   ⍝ CONSWIN.sf#18[2]   ⍝ Get the underlying inflation for "dataitem"[3]   ⍝  fas specifies if FAS period is required[4]   [5]   :if 2=⍴⍴arg ⍝ table supplied[6]       dataitem←↑¨arg at 'Salary'[7]   :else[8]       dataitem←arg[9]   :endif[10]  [11]  :if mt dataitem[12]  :orif 0=rowsIn tab←saltab for 'SALdesc' dataitem[13]      Z←'' 0,mtFin[14]  :else[15]      Z←↑¨tab at 'RevDate' 'FASperiod' 'SALname' 'SALgroup' 'SALinf' 'SALcap' 'SALcollar' 'SALinftabid'[16]      Z[2]←Z[2]×∨/ContID∊2 12 21 22 23 26 27,(tab at 'FASCease')/1 7 3 6 25 4 13 24 5 14[17]  :endif    ∇
+    ∇ Z←ContID GetInf arg;tab;dataitem
+[1]   ⍝ CONSWIN.sf#18
+[2]   ⍝ Get the underlying inflation for "dataitem"
+[3]   ⍝  fas specifies if FAS period is required
+[4]   
+[5]   :if 2=⍴⍴arg ⍝ table supplied
+[6]       dataitem←↑¨arg at 'Salary'
+[7]   :else
+[8]       dataitem←arg
+[9]   :endif
+[10]  
+[11]  :if mt dataitem
+[12]  :orif 0=rowsIn tab←saltab for 'SALdesc' dataitem
+[13]      Z←'' 0,mtFin
+[14]  :else
+[15]      Z←↑¨tab at 'RevDate' 'FASperiod' 'SALname' 'SALgroup' 'SALinf' 'SALcap' 'SALcollar' 'SALinftabid'
+[16]      Z[2]←Z[2]×∨/ContID∊2 12 21 22 23 26 27,(tab at 'FASCease')/1 7 3 6 25 4 13 24 5 14
+[17]  :endif
+    ∇

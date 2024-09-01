@@ -1,1 +1,54 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Basis_ImportExport" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Basis_ImportExport" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmExport.lvSavedParms" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SavedParms) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX SavedParms[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmExport.lvSavedParms" ⎕wi "value" value[25]  0 0⍴"fmExport.lvSavedParms" ⎕wi "EnsureVisible" ((1↑value),1)[26]  "fmExport.ssParms" ⎕wi "XClearRange" 1 1 ("fmExport.ssParms" ⎕wi "MaxRow") ("fmExport.ssParms" ⎕wi "MaxCol") 3[27]  MaxRow←MaxCol←1[28]  value←(1 50⌈⍴value)↑value←MATRIX ExportFile[29]  MaxCol←"fmExport.ssParms" ⎕wi "MaxCol"[30]  "fmExport.ssParms" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[31]  "fmExport.ssParms" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)[32]  value←(1 50⌈⍴value)↑value←MATRIX ExportBasis[33]  MaxCol←"fmExport.ssParms" ⎕wi "MaxCol"[34]  "fmExport.ssParms" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[35]  "fmExport.ssParms" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)[36]  "fmExport.ssParms" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[37]  (MaxRow MaxCol)←"fmExport.ssParms" ⎕wi "xGetActiveCell" 0 0[38]  "fmExport.ssParms" ⎕wi "xSetActiveCell" (MaxRow⌊"fmExport.ssParms" ⎕wi "xMaxRow") (MaxCol⌊"fmExport.ssParms" ⎕wi "xMaxCol")[39]  "fmExport.ssParms" ⎕wi "xmodified" 0[40]  "fmExport.ssParms" ⎕wi "onXModified" "('fmExport.' (Win∆Parent 'fmExport.')) MultiWI 'modified' ('fmExport.ssParms' ⎕wi 'xmodified')"[41]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Basis_ImportExport[42]      :for var :in spin Comment_Basis_ImportExport at "variable" "row" ⋄ (var row)←var[43]          "Basis_ImportExport" ParmColor ((FormFields for "variable" var) at "control"),var row 1[44]      :endfor[45]  :endif[46]  :if ~0∊⍴,warnings[47]      MDISPLAY DLTMB warnings,⎕tcnl[48]      Win∆AssignVars "fmExport"[49]  :endif[50]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Basis_ImportExport" "" "Names"[51]      "fmExport" ⎕wi "modified" 0[52]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Basis_ImportExport" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Basis_ImportExport" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmExport.lvSavedParms" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SavedParms) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX SavedParms
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmExport.lvSavedParms" ⎕wi "value" value
+[25]  0 0⍴"fmExport.lvSavedParms" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  "fmExport.ssParms" ⎕wi "XClearRange" 1 1 ("fmExport.ssParms" ⎕wi "MaxRow") ("fmExport.ssParms" ⎕wi "MaxCol") 3
+[27]  MaxRow←MaxCol←1
+[28]  value←(1 50⌈⍴value)↑value←MATRIX ExportFile
+[29]  MaxCol←"fmExport.ssParms" ⎕wi "MaxCol"
+[30]  "fmExport.ssParms" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[31]  "fmExport.ssParms" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)
+[32]  value←(1 50⌈⍴value)↑value←MATRIX ExportBasis
+[33]  MaxCol←"fmExport.ssParms" ⎕wi "MaxCol"
+[34]  "fmExport.ssParms" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[35]  "fmExport.ssParms" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)
+[36]  "fmExport.ssParms" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[37]  (MaxRow MaxCol)←"fmExport.ssParms" ⎕wi "xGetActiveCell" 0 0
+[38]  "fmExport.ssParms" ⎕wi "xSetActiveCell" (MaxRow⌊"fmExport.ssParms" ⎕wi "xMaxRow") (MaxCol⌊"fmExport.ssParms" ⎕wi "xMaxCol")
+[39]  "fmExport.ssParms" ⎕wi "xmodified" 0
+[40]  "fmExport.ssParms" ⎕wi "onXModified" "('fmExport.' (Win∆Parent 'fmExport.')) MultiWI 'modified' ('fmExport.ssParms' ⎕wi 'xmodified')"
+[41]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Basis_ImportExport
+[42]      :for var :in spin Comment_Basis_ImportExport at "variable" "row" ⋄ (var row)←var
+[43]          "Basis_ImportExport" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[44]      :endfor
+[45]  :endif
+[46]  :if ~0∊⍴,warnings
+[47]      MDISPLAY DLTMB warnings,⎕tcnl
+[48]      Win∆AssignVars "fmExport"
+[49]  :endif
+[50]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Basis_ImportExport" "" "Names"
+[51]      "fmExport" ⎕wi "modified" 0
+[52]  :endif
+    ∇

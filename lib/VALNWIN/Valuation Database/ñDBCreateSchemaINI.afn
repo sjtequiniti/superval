@@ -1,0 +1,15 @@
+    ∇ res←filename ⍙DBCreateSchemaINI table;tab
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Create contents of a schema.ini for loading csv files into Access
+[3]   
+[4]   tab←⍙SCHEMADict at table
+[5]   tab←tab for ZWB¨(⊂'()') embrace¨tab at 'Alternate'      ⍝ Alternate Fields for different licences
+[6]   tab←tab for ZWB¨(⊂'()') embrace¨tab at 'Relevant'       ⍝ Relevant Fields for different options
+[7]   :if ~'SVCONSDB.CSV'≡UPPERCASE filename                  ⍝ Special case for Consolidation
+[8]       tab←tab for ~'Y'=↑¨tab at 'Constant'                ⍝ Remove Constant fields - can be included in INSERT INTO command
+[9]   :endif
+[10]  
+[11]  res←('[]' embrace filename) OVER 'Format=FixedLength' OVER 'ColNameHeader=False'
+[12]  res←res OVER ⊃(m2n 'P<Col>Q<=>I6,' ⎕fmt (~⎕io)+⍳rowsIn tab),¨(⊂' Width ') join¨spin (' ' join ¨spin tab at 'Fields' 'AccessType') (⍕¨⌊∣ZWB¨tab at 'Cols')
+[13]  res←res OVER 'CharacterSet=ANSI' OVER ' '
+    ∇

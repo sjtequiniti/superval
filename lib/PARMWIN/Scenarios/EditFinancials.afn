@@ -1,1 +1,25 @@
-    ∇ EditFinancials;ts;warnings;LocalGlobals[1]   ⍝ PARMWIN.sf#24[2]   ⍝ Allow the edit of Financials Parameter Sets[3]   [4]   Win∆AssignVars ControlName[5]   [6]   ts←ClientFile ReadFile 'Financials' FinDefault 'TSTAMP'[7]   [8]   'PARMWIN' CallModule 'Financials'[9]   [10]  UpdateVarLists ⊂'GetClientParms'[11]  [12]  ⍝ Adjust Financials Table if changes made to Currently Selected Financials[13]  :if ~ts≡ClientFile ReadFile 'Financials' FinDefault 'TSTAMP'[14]      LocalGlobals←↑gucommon 1 'Fin' 'RelNum'[15]      0 0⍴ScenarioFins      'Prepare'[16]      warnings←ScenarioFins 'Vars'[17]      :if ~mt warnings[18]          MDISPLAY DLTMB warnings,⎕tcnl[19]      :endif[20]  [21]      Assign_Inputs 1[22]      0 0⍴((zwb ScenRel)⌽'ckScenRel' 'ckScenAbs') Scenarios 'Change' ⍝ Fudge to get a Financials columns hidden!!!![23]  :endif    ∇
+    ∇ EditFinancials;ts;warnings;LocalGlobals
+[1]   ⍝ PARMWIN.sf#24
+[2]   ⍝ Allow the edit of Financials Parameter Sets
+[3]   
+[4]   Win∆AssignVars ControlName
+[5]   
+[6]   ts←ClientFile ReadFile 'Financials' FinDefault 'TSTAMP'
+[7]   
+[8]   'PARMWIN' CallModule 'Financials'
+[9]   
+[10]  UpdateVarLists ⊂'GetClientParms'
+[11]  
+[12]  ⍝ Adjust Financials Table if changes made to Currently Selected Financials
+[13]  :if ~ts≡ClientFile ReadFile 'Financials' FinDefault 'TSTAMP'
+[14]      LocalGlobals←↑gucommon 1 'Fin' 'RelNum'
+[15]      0 0⍴ScenarioFins      'Prepare'
+[16]      warnings←ScenarioFins 'Vars'
+[17]      :if ~mt warnings
+[18]          MDISPLAY DLTMB warnings,⎕tcnl
+[19]      :endif
+[20]  
+[21]      Assign_Inputs 1
+[22]      0 0⍴((zwb ScenRel)⌽'ckScenRel' 'ckScenAbs') Scenarios 'Change' ⍝ Fudge to get a Financials columns hidden!!!!
+[23]  :endif
+    ∇

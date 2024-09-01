@@ -1,1 +1,28 @@
-    ∇ res←GetCompare;PickList;NameList;sortorder;ClassID;tab[1]   ⍝ CONSWIN.sf#12[2]   ⍝ Create the Listview variables[3]   [4]   :if 0=⎕nc 'DBIndex' ⋄ :orif 0=rowsIn DBIndex ⋄ :orif mt DLTB MembClass[5]       PickList←0 9⍴''[6]   :else[7]       tab←DBIndex for ('AzDP'⍳↑MembClass)=DBIndex at 'classid'[8]       tab←tab for (zwb PPFbasis)=(⊂'PP')≡¨2↑¨tab at 'method'[9]       :if mt PickList←1 0 1 1 1 1 1 1 1\⊃spin tab at 'BasisID' 'method' 'basisfile' 'basisdesc' 'vdate' 'capped' 'scenario' 'version'[10]          PickList←0 9⍴''[11]      :else[12]          PickList[;2]←⊂1 ⍝ 0 ¯2[13]      :endif[14]  :endif[15]  [16]  NameList←         MATRIX 'Valuation Method'     (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  1 1 0 1[17]  NameList←NameList⍪MATRIX 'Basis File'           (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  2 2 0 1[18]  NameList←NameList⍪MATRIX 'Basis Description'    (¯1↑Win∆TextSize ⊃PickList[;5]) 'left'  3 3 0 1[19]  NameList←NameList⍪MATRIX 'Valuation Date'       (¯1↑Win∆TextSize ⊃PickList[;6]) 'right' 4 4 0 1[20]  NameList←NameList⍪MATRIX 'Capped Run'           (¯1↑Win∆TextSize ⊃PickList[;7]) 'left'  5 5 0 1[21]  NameList←NameList⍪MATRIX 'Scenario Description' (¯1↑Win∆TextSize ⊃PickList[;8]) 'left'  6 6 0 1[22]  NameList←NameList⍪MATRIX 'Version'              (¯1↑Win∆TextSize ⊃PickList[;9]) 'left'  7 7 0 1[23]  [24]  sortorder←'⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha' ⍝ How columns are sorted[25]  [26]  res←PickList NameList sortorder (PickList[;1])    ∇
+    ∇ res←GetCompare;PickList;NameList;sortorder;ClassID;tab
+[1]   ⍝ CONSWIN.sf#12
+[2]   ⍝ Create the Listview variables
+[3]   
+[4]   :if 0=⎕nc 'DBIndex' ⋄ :orif 0=rowsIn DBIndex ⋄ :orif mt DLTB MembClass
+[5]       PickList←0 9⍴''
+[6]   :else
+[7]       tab←DBIndex for ('AzDP'⍳↑MembClass)=DBIndex at 'classid'
+[8]       tab←tab for (zwb PPFbasis)=(⊂'PP')≡¨2↑¨tab at 'method'
+[9]       :if mt PickList←1 0 1 1 1 1 1 1 1\⊃spin tab at 'BasisID' 'method' 'basisfile' 'basisdesc' 'vdate' 'capped' 'scenario' 'version'
+[10]          PickList←0 9⍴''
+[11]      :else
+[12]          PickList[;2]←⊂1 ⍝ 0 ¯2
+[13]      :endif
+[14]  :endif
+[15]  
+[16]  NameList←         MATRIX 'Valuation Method'     (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  1 1 0 1
+[17]  NameList←NameList⍪MATRIX 'Basis File'           (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  2 2 0 1
+[18]  NameList←NameList⍪MATRIX 'Basis Description'    (¯1↑Win∆TextSize ⊃PickList[;5]) 'left'  3 3 0 1
+[19]  NameList←NameList⍪MATRIX 'Valuation Date'       (¯1↑Win∆TextSize ⊃PickList[;6]) 'right' 4 4 0 1
+[20]  NameList←NameList⍪MATRIX 'Capped Run'           (¯1↑Win∆TextSize ⊃PickList[;7]) 'left'  5 5 0 1
+[21]  NameList←NameList⍪MATRIX 'Scenario Description' (¯1↑Win∆TextSize ⊃PickList[;8]) 'left'  6 6 0 1
+[22]  NameList←NameList⍪MATRIX 'Version'              (¯1↑Win∆TextSize ⊃PickList[;9]) 'left'  7 7 0 1
+[23]  
+[24]  sortorder←'⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha' ⍝ How columns are sorted
+[25]  
+[26]  res←PickList NameList sortorder (PickList[;1])
+    ∇

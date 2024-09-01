@@ -1,1 +1,311 @@
-    ∇ R←CB RBClient PARAMS;⎕IO;C;carg;CL;DATA;HDR;HOST;I;ID;IPADDR;J;L;NEW;PATH;PORT;PS;PW;S;SOFAR;SIZE;SN;T;U;V;X;XEQ;RESPLIMIT[1]   ⍝ HPCWIN.sf#2[2]   ⍝ Talks with an http server.  PARAMS is:[3]   ⍝   1⊃ host name (ipaddress of Server, e.g. 'www.yahoo.com' or '12.34.56.0')[4]   ⍝   2⊃ port number (of particular Server application, e.g. 80)[5]   ⍝   3⊃ path or command or choice (e.g. 'path' in "GET /path HTTP/1.0")[6]   ⍝   4⊃ character vector to send (for POST only); does a GET if empty[7]   ⍝      or omitted[8]   ⍝ PROXY SERVER: if running within an environment that is screened by[9]   ⍝ a Web Proxy Server (firewall), include these items:[10]  ⍝   5⊃ the char vec Proxy IP address ("Proxy Server IP Address")[11]  ⍝   6⊃ the integer scalar Proxy port number ("Proxy Server Port No.")[12]  ⍝   7⊃ the char vec userid expected by the Proxy ("Internet UserID")[13]  ⍝   8⊃ the char vec password expected by the Proxy ("Internet Password")[14]  ⍝ Return character vector error message if any problem.  Otherwise,[15]  ⍝ returns response from server, as a two-item nest of character vectors.[16]  ⍝ First item is the header from the server; second item is the file (as[17]  ⍝ a character vector that can be ⎕NAPPENDed to build the file).[18]  ⍝ If PARAMS is 0 or 1, this is a callback and CB is the callback code.[19]  ⍝ If PARAMS is not 0 and CB is given, it is an expression (e.g.[20]  ⍝ 'FOO carg') executed within RBClient each time a significant event[21]  ⍝ happens (say, to update a status display); the value of the variable[22]  ⍝ <carg> tells what that event is:[23]  ⍝   carg        event[24]  ⍝     1        Connecting...[25]  ⍝     2        Waiting to send...[26]  ⍝     3 m {n}  Sending request..., m bytes so far {of n bytes}[27]  ⍝     4        Finished sending[28]  ⍝     5 m {n}  Reading..., m bytes so far {of n bytes}[29]  ⍝     6        Composing result...[30]  ⍝     7        Done.[31]  ⍝ Within the CB expression, if given, do not do ⎕WGIVE 0 or the[32]  ⍝ equivalent, such as ⎕FHOLD or ⎕DL (or event processing gets out of[33]  ⍝ order); just do your business and get out.  If, within a provided CB[34]  ⍝ expression, you decide to terminate the process (say, because the user[35]  ⍝ has pressed a Cancel button), run 'cancel' RBClient 0, and then exit.[36]  ⍝ The process will terminate immediately; the result of RBClient will be[37]  ⍝ 'Cancelled'.[38]  ⍝[39]  ⍝[40]   ⎕IO←1 ⋄ RESPLIMIT←⍙⍙httpRESPLIMIT[41]   →(PARAMS≡0)/L7 ⍝ Branch if a callback (code in CB)[42]   →(PARAMS≡1)/L27 ⍝ ToBase64 coding[43]  ⍝ To allow ⍎XEQ at significant events:[44]   ⍎(0=⎕NC 'CB')/"CB←''" ⋄ XEQ←CB[45]   carg←1 ⋄ ⍎XEQ ⍝ Connecting...[46]  ⍝[47]   (IPADDR PORT PATH RESPLIMIT)←4↑PARAMS[48]  ⍝⍝⍝  (IPADDR PORT PATH)←3↑PARAMS[49]  ⍝ Drop "http://" prefix, if any, from Host addr:[50]   T←7↑IPADDR ⋄ IPADDR←(7×(T≡'HTTP://')∨T≡'http://')↓IPADDR[51]   HOST←IPADDR,':',(⍕PORT),'/'[52]  ⍝ PATH needs ldg but not trlg slash:[53]   PATH←(-'/'=¯1↑PATH)↓PATH ⋄ PATH←(('/'≠1↑PATH)⍴'/'),PATH[54]   DATA←'' ⋄ →(4=⍴PARAMS)/L0 ⋄ DATA←,5⊃PARAMS[55]  ⍝[56]  ⍝ Extract userid and password if a Proxy Server:[57]  L0:ID←PW←'' ⋄ →(PS←6≤⍴PARAMS)↓L0a ⋄ (U PORT ID PW)←6↓PARAMS[58]  ⍝ Drop "http://" prefix, if any, from Proxy URL:[59]   T←7↑U ⋄ U←IPADDR←(7×(T≡'HTTP://')∨T≡'http://')↓U[60]  ⍝ Note that PORT and IPADDR are for Proxy Server, not Host Server.[61]  ⍝[62]  ⍝ Branch if IPADDR is already in "dotted quad" format:[63]  L0a:→(^/IPADDR∊'0123456789.')/L1[64]  ⍝ Else convert IPADDR to dotted quad (making connection if needed):[65]   T←⎕NI 'GetHostByName' IPADDR[66]   R←'Unable to GetHostByName' ⋄ →(0≠1⊃T)/0 ⍝ Exit if unable[67]   U←7⊃T ⋄ IPADDR←(⍴U)⊃U ⍝ Use the last address returned[68]  ⍝[69]  ⍝ Loop on existing sockets to see if we already have a match:[70]  L1:T←⎕NI 'Sockets' ⋄ I←0[71]  L2:I←I+1 ⋄ →(NEW←I>⍴T)/L3[72]   SN←T[I] ⋄ →(0≠⍬⍴U←SN ⎕NI 'GetPeerName')/L2[73]   →(PORT IPADDR≡U[5 6])/L4 ⋄ →L2[74]  L3:SN←3⊃⎕NI 'Socket' ⍝ Create a new socket if no match found[75]  ⍝[76]  ⍝ Set up information associated with this socket --[77]  ⍝ Place data in a user property if small (≤10000 bytes) or in a native[78]  ⍝ file if large, because it is surprisingly faster to read from a[79]  ⍝ native file than to extract from a user property![80]  L4:→(10000≥S←⍬⍴⍴DATA)/L4A[81]   U←(⊃↑/⎕WCALL 'GetTempPath' ' ' (256⍴⎕TCNUL)),'T',((⍕4↓⎕TS)~' '),'.APL'[82]   V←⎕NNUMS,⎕XNNUMS ⋄ T←-(V∊-⍳⍴V)⍳0[83]  ⍝ Create file in a local fn to catch error if any; if error, don't use[84]  ⍝ file...save in user property:[85]   →(⍎⎕DEF '∇R←X;⎕ELX',⎕TCNL,'[1]⎕ELX←"→R←0"⋄U ⎕NCREATE T⋄R←1∇')↓L4A[86]   DATA ⎕NAPPEND T[87]   T←'Set' ('∆filebuffname' U) ('∆filebufftie' T) ('∆sendbuffer' '') ⋄ →L4B[88]  ⍝ ∆sent: bytes of DATA sent so far; ∆size: bytes of DATA:[89]  L4A:T←'Set' ('∆sendbuffer' DATA) ('∆filebufftie' 0) ('∆sent' 0)[90]  ⍝ Server-specified content length (0 if not checked yet, ¯1 if none[91]  ⍝ given by server; ¯2 if given as 0; +N if given as N; -N if big but[92]  ⍝ unable to store contents in a file), bytes read so far (excluding hdr[93]  ⍝ once known), hdr to send to server:[94]  L4B:T←T,('∆contentlength' 0) ('∆sofar' 0) ('∆sendhdr' '') ('∆size' S)[95]  ⍝ Path, host, header of file returned from server:[96]   T←T,('∆path' (PATH HOST ID PW PS)) ('∆header' '')[97]  ⍝ Post-header data (file) read so far; time of last event:[98]   U←SN ⎕NI T,('∆readbuffer' '') ('∆ts' (⎕AI[2]))[99]  ⍝[100] ⍝ If new, request a connection to http server and wait for callbacks:[101]  →NEW↓L5 ⋄ T←SN ⎕NI 'blockingmode' 'nonblocking' ⍝ Make socket event-based[102]  T←SN ⎕NI 'Control' 'nogives' ⍝ Disallow "give" during ⎕NI opns[103] ⍝ ...when connection established:[104]  T←'Set' ('onConnectNotify' '"connect" RBClient 0')[105] ⍝ ...when network system buffers available:[106]  T←T,⊂'onWriteNotify' '"send" RBClient 0'[107] ⍝ ...when data available to read:[108]  T←T,⊂'onReadNotify' '"read" RBClient 0'[109] ⍝ ...when connection close received:[110]  U←SN ⎕NI T,⊂'onCloseNotify' '"close" RBClient 0'[111] ⍝ Note: the event handlers are all set at once and are not reset.[112] ⍝  Resetting them causes extraneous events, so leave them be, making[113] ⍝  sure to handle meaningless events.[114]  T←SN ⎕NI 'Connect' PORT IPADDR ⍝ Make connection if needed[115] ⍝ 10035 (WSAEWOULDBLOCK) is possible, but okay, since 'nonblocking':[116]  →(T[1]=0)/L5 ⋄ →(T≡¯1 10035)/L5[117]  T←SN ⎕NI 'Close' ⋄ R←'Unable to Connect' ⋄ →0[118] ⍝[119] ⍝ Build a form 'NiWait' (unless it already exists) to contain a timer[120] ⍝ that awakes every 5 seconds to see if there's been no response for[121] ⍝ 10 seconds.[122] L5:→(×⍴'NiWait' ⎕WI 'self')/L5B ⍝ Branch if form exists[123]  T←'NiWait' ⎕WI 'New' 'Form' 'Hide' ('style' 4) ⍝ 4=Keep hidden at Wait[124]  T←'NiWait.timer' ⎕WI 'New' 'Timer' ('onTimer' '"time" RBClient 0')[125] ⍝[126] L5B:'NiWait.timer' ⎕WI 'interval' (RESPLIMIT÷2) ⍝ Every 1/2 of response limit[127] ⍝ Init explicit result:[128]  'NiWait' ⎕WI 'Set' ('∆sn' SN) ('∆xeq' XEQ) ('value' ('' ''))[129] ⍝[130] ⍝ If an existing socket, continue as if a connect callback:[131]  →NEW/L5C ⋄ 'connect' RBClient 0[132] ⍝[133] L5C:R←'NiWait' ⎕WI 'Wait' ⍝ Result comes from the 'value' property[134]  carg←7 ⋄ ⍎XEQ ⋄ →0 ⍝ Done[135] ⍝[136] ⍝[137] ⍝ Callbacks; exit if NiWait form is gone, e.g. from 'cancel'[138] L7:→(0∊⍴'NiWait' ⎕WI 'self')/0[139]  (SN XEQ)←'NiWait' ⎕WI 'Ref' '∆sn' '∆xeq' ⋄ →(SN∊⎕NI 'Sockets')/L8[140]  'NiWait' ⎕WI 'Delete' ⋄ →0 ⍝ Delete form if socket is closed[141] L8:⎕NSELF←SN ⍝ To eliminate need for left arg to ⎕NI[142] ⍝[143] ⍝ Branch by type of callback:[144]  T←'connect' 'send' 'read' 'result' 'close' 'time' 'cancel'[145]  →(L9,L10,L11,L21,L24,L25,L26)[T⍳⊂CB][146] ⍝[147] ⍝[148] ⍝ 'connect'[149] ⍝ Connection has been established; Send and Recv now possible:[150] L9:(T S)←⎕NI 'Ref' '∆path' '∆size' ⋄ (PATH HOST ID PW PS)←T[151]  ⎕NI '∆ts' (⎕AI[2]) ⍝ Update time of latest activity[152] ⍝ Construct HTTP "GET" or "POST" message to be sent:[153]  C←⎕TCNL,⎕TCLF ⋄ U←×S[154]  T←((U/'POST '),(~U)/'GET '),(PS/'http://',HOST),PATH,' HTTP/1.1',C[155]  T←T,(PS/'Proxy-'),'Connection: Keep-Alive',C[156]  T←T,'User-Agent: Mozilla/4.0 (compatible; MSIE 5.0; Windows NT)',C[157]  T←T,'Host: ',HOST,C[158]  T←T,'Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*',C[159]  T←T,'Accept-Language: en-us',C[160]  T←T,PS/'Proxy-Authorization: Basic ',((ID,':',PW) RBClient 1),C[161]  T←T,U/'Content-Type: application/x-www-form-urlencoded',C[162]  T←T,'Accept-Encoding: gzip, deflate',C[163]  T←T,U/'Content-Length: ',(⍕S),C[164]  T←T,C ⍝ Empty line marks end of header[165]  ⎕NI '∆sendhdr' T ⋄ carg←2 ⋄ ⍎XEQ ⋄ →0 ⍝ Waiting to send...[166] ⍝ Now we'll wait for the system buffers to be ready (WriteNotify event)[167] ⍝[168] ⍝[169] ⍝ 'send'[170] ⍝ Network system buffers available; ready to Send:[171] ⍝ Get header and some of the data...[172] L10:(HDR DATA SOFAR SIZE)←⎕NI 'Ref' '∆sendhdr' '∆sendbuffer' '∆sent' '∆size'[173]  →((SOFAR≥SIZE)^0=V←⍴HDR)/0 ⍝ Exit if nothing to do[174] ⍝ If on file, read enough to send 32K bytes (incl header):[175]  →(0=T←⎕NI '∆filebufftie')/L10B[176] L10A:U←0⌈((1024×32)-V)⌊SIZE-SOFAR ⋄ DATA←⎕NREAD T,82,U,SOFAR[177] L10B:→V↓L10C ⋄ DATA←HDR,DATA ⍝ Include hdr in data to send[178] ⍝ Try sending; result is no. chrs sent; update HDR remaining, since this[179] ⍝ may take more than one callback:[180] L10C:⎕NI '∆ts' (⎕AI[2]) ⍝ Update time of latest activity[181]  carg←3,(SOFAR+⍴DATA),V+SIZE ⋄ ⍎XEQ ⍝ Sending m bytes so far of n bytes[182]  →(0∊⍴'NiWait' ⎕WI 'self')/0 ⍝ Sending request (cancel?)[183]  U←3⊃⎕NI 'Send' DATA 'char' ⋄ HDR←U↓HDR[184]  ⎕NI '∆sendhdr' HDR ⋄ →(SIZE=0)/L10E ⋄ SOFAR←SOFAR+0⌈U-V[185]  ⎕NI '∆sent' SOFAR ⋄ DATA←(U⌈V)↓DATA ⋄ →(T≠0)/L10D[186]  ⎕NI '∆sendbuffer' DATA ⋄ →L10E ⍝ Data in user property[187] ⍝ Data in native file; if all was sent and there's more, keep sending:[188] L10D:V←⍴HDR ⋄ →((0=⍴DATA)^SOFAR<SIZE)/L10A[189] ⍝ Exit if not all sent (wsaewouldblock); erase file if done:[190]  →(×⍴DATA)/0 ⋄ (⎕NI '∆filebuffname') ⎕NERASE T ⋄ →L10F[191] L10E:→((SOFAR≥SIZE)^0=⍴HDR)↓0 ⍝ Exit unless done[192] L10F:carg←4 ⋄ ⍎XEQ ⋄ →0 ⍝ Finished sending[193] ⍝[194] ⍝[195] ⍝ 'read'[196] ⍝ Data has arrived; ready to Recv.[197] ⍝ If you do a 'Recv' for each 'onReadNotify', you will get all the[198] ⍝ data.  However, for efficiency it's best to do as many 'Recv's as[199] ⍝ you can (while still getting data) rather than wait for the next[200] ⍝ 'onReadNotify'; this generally amounts to 6 to 8 Recv's.  Meanwhile,[201] ⍝ the corresponding 5 to 7 'onReadNotify' events will queue up, but as[202] ⍝ long as we handle empty reads, we'll be fine.  Furthermore, if we[203] ⍝ get to the end of the data and delete the socket, those queued[204] ⍝ events are simply discarded, saving that processing.  Note: 8 is[205] ⍝ the "magic" number counter based on "Windows Socket Network[206] ⍝ Programming."[207] L11:⎕NI '∆ts' (⎕AI[2]) ⍝ Update time of latest activity[208]  (CL S)←⎕NI 'Ref' '∆contentlength' '∆sofar' ⋄ V←0 ⋄ I←1[209] ⍝[210] L12:→(I>8)/L13 ⍝ Stop when no more data or 8 iterations (at least 1)[211]  →(0≠J←1⊃U←⎕NI 'Recv' 'char')/L13 ⋄ V←V+⍴T←3⊃U ⍝ Get anything?[212]  DATA←(⎕NI '∆readbuffer'),T ⋄ ⎕NI '∆readbuffer' DATA ⍝ Save it[213]  carg←5,(S+V),(2<∣CL)⍴∣CL ⋄ ⍎XEQ ⍝ Reading..., m bytes so far of n bytes[214]  →(0∊⍴⎕NI 'Sockets')/0 ⍝ Cancel?[215]  I←I+1 ⋄ →L12[216] ⍝[217] ⍝ Kill socket if error:[218] L13:→((J=¯1)^U[2]≠10035)↓L14 ⋄ T←⎕NI 'Close' ⋄ →0[219] L14:→(V=0)/0 ⍝ Exit if nothing read[220]  ⎕NI '∆sofar' (S←S+V)[221] ⍝[222] ⍝ Process incoming data and generate result when all data is received:[223]  →(CL≠0)/L18 ⍝ If just starting...[224] ⍝ If we don't have all the header yet, exit:[225]  I←(DATA ⎕SS 4⍴⎕TCNL,⎕TCLF)⍳1 ⋄ →(I>⍴DATA)/0[226]  L←HDR←(I+3)↑DATA ⋄ DATA←(I+3)↓DATA ⍝ Peel off header; cvt to lower case:[227]  ⎕NI '∆sofar' (S←⍴DATA) ⍝ Omit header chars in ∆sofar[228]  J←¯1+⎕AV⍳'Aa' ⋄ T←26≥I←⎕AV[J[1]+⍳26]⍳L ⋄ (T/L)←⎕AV[J[2]+T/I][229] ⍝ If no content-length, set to ¯1; if 0, set to ¯2:[230]  I←(L ⎕SS U←'content-length:')⍳1[231]  CL←(¯1+I+⍴U)↓L ⋄ CL←⍬⍴(⎕FI (¯1+CL⍳⎕TCNL)↑CL),¯1 ⋄ CL←(CL,¯2)[⎕IO+CL=0][232]  U←⎕NI 'Set' ('∆contentlength' CL) ('∆header' HDR)[233] ⍝[234]  →(CL>10000)/L14A ⍝ If CL is big, branch to use a temp file[235]  ⎕NI '∆readbuffer' DATA[236]  →((S≥CL)^CL≠¯1)/L20 ⋄ →0 ⍝ Exit if no CL, or if more data to come[237] ⍝[238] ⍝ A temp file is used because it is surprisingly faster to append[239] ⍝ to a native file than to catenate to a user property![240] L14A:U←(⊃↑/⎕WCALL 'GetTempPath' ' ' (256⍴⎕TCNUL)),'T',((⍕4↓⎕TS)~' '),'.APL'[241]  V←⎕NNUMS,⎕XNNUMS ⋄ T←-(V∊-⍳⍴V)⍳0[242] ⍝ Create file in a local fn to catch error if any; if error, don't use[243] ⍝ file...save CL as neg no.:[244]  →(⍎⎕DEF '∇R←X;⎕ELX',⎕TCNL,'[1]⎕ELX←"→R←0"⋄U ⎕NCREATE T⋄R←1∇')/L15[245]  ⎕NI ('∆contentlength' (-CL)) ⋄ →L16 ⍝ Couldn't create file[246] L15:DATA ⎕NAPPEND T[247]  V←⎕NI 'Set' ('∆filebuffname' U) ('∆filebufftie' T) ('∆readbuffer' '')[248] L16:→(S<CL)/0 ⋄ →L20 ⍝ Exit if not enough yet[249] ⍝[250] ⍝ If CL is not too big, get data from buffer:[251] L18:→(CL>10000)/L19 ⍝ CL=¯2 case already handled above[252]  →((S≥∣CL)^CL≠¯1)/L20 ⋄ →0 ⍝ Exit if no CL, or if more data to come[253] ⍝[254] ⍝ If CL>10000, move from user prop to existing temp file:[255] L19:T←⎕NI '∆filebufftie' ⋄ ⎕NI '∆readbuffer' '' ⋄ DATA ⎕NAPPEND T[256]  →(S<CL)/0 ⍝ Exit if we haven't read it all yet[257] ⍝[258] ⍝ If we're here, we have all the data.  Read data and assign it to the[259] ⍝ 'value' property of the 'NiWait' timer object.[260] L20:'result' RBClient 0 ⋄ →0[261] ⍝[262] ⍝[263] ⍝ 'result'[264] ⍝ Time to shut down and return what we can[265] L21:carg←6 ⋄ ⍎XEQ ⍝ Composing result[266]  →(0∊⍴'NiWait' ⎕WI 'self')/0 ⍝ Exit if form already gone[267]  T←'NiWait.timer' ⎕WI 'Set' ('interval' 1000000) ('onTimer' '')[268] ⍝ Error if CL was never set:[269]  V←'Nothing received' ⋄ →(0=CL←⎕NI '∆contentlength')/L23A[270] ⍝ For large file transfers use native files:[271]  →(CL>10000)/L22 ⋄ →((CL=¯1)^0=⍴DATA←⎕NI '∆readbuffer')/L23A[272]  →(CL=¯1)/L23 ⋄ CL←(CL≠¯2)×∣CL ⋄ →L22A[273] L22:(U T)←⎕NI 'Ref' '∆filebuffname' '∆filebufftie'[274]  DATA←⎕NREAD T,82,2↑⎕NSIZE T ⋄ U ⎕NERASE T[275] L22A:V←'Content-length not received' ⋄ →(CL>⍴DATA)/L23A[276]  →(CL=⍴DATA)/L23 ⋄ DATA←CL↑DATA[277] L23:V←(⎕NI '∆header') DATA ⍝ Include header[278] L23A:'NiWait' ⎕WI 'value' V[279]  T←⎕NI 'Close' ⍝ Kill socket[280]  T←'NiWait' ⎕WI 'Delete' ⋄ →0 ⍝ Delete form, ending Wait, to get result[281] ⍝[282] ⍝[283] ⍝ 'close'[284] ⍝ Connection close received; return what we can.[285] ⍝ This is how we know to stop when no "Content-length:" is given.[286] L24:'read' RBClient 0 ⋄ 'result' RBClient 0 ⋄ →0[287] ⍝[288] ⍝[289] ⍝ 'time'[290] ⍝ Triggered every 5 secs to check for 10 secs of silence or a dead[291] ⍝ socket; if so, retrieve result:[292] L25:→(⎕AI[2]<(RESPLIMIT÷1000)+⎕NI '∆ts')/0 ⍝ Exit if not yet 10 seconds[293]  'result' RBClient 0 ⋄ →0 ⍝ Time has expired, so return result[294] ⍝[295] ⍝[296] ⍝ 'cancel'[297] ⍝ Called within XEQ to shut down the transfer:[298] L26:'NiWait' ⎕WI 'value' 'Cancelled' ⋄ T←⎕NI 'Close' ⍝ Error result[299]  T←'NiWait' ⎕WI 'Delete' ⋄ →0[300] ⍝[301] ⍝[302] ⍝ 'ToBase64'[303] ⍝ Convert character vector C to "Base64" character vector,[304] ⍝ translating each set of 3 characters to 4 readable ASCII[305] ⍝ characters.[306] L27:⎕IO←0 ⋄ L←⍴CB ⋄ (J X)←3 4×S←⌈L÷3[307]  I←⎕AV⍳82 ⎕DR,((X,2)⍴0),(X,6)⍴11 ⎕DR (S,3)⍴CB,⎕AV[0 0][308]  C←'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'[309]  R←X↑((L+X-J)↑C[I]),'=='    ∇
+    ∇ R←CB RBClient PARAMS;⎕IO;C;carg;CL;DATA;HDR;HOST;I;ID;IPADDR;J;L;NEW;PATH;PORT;PS;PW;S;SOFAR;SIZE;SN;T;U;V;X;XEQ;RESPLIMIT
+[1]   ⍝ HPCWIN.sf#2
+[2]   ⍝ Talks with an http server.  PARAMS is:
+[3]   ⍝   1⊃ host name (ipaddress of Server, e.g. 'www.yahoo.com' or '12.34.56.0')
+[4]   ⍝   2⊃ port number (of particular Server application, e.g. 80)
+[5]   ⍝   3⊃ path or command or choice (e.g. 'path' in "GET /path HTTP/1.0")
+[6]   ⍝   4⊃ character vector to send (for POST only); does a GET if empty
+[7]   ⍝      or omitted
+[8]   ⍝ PROXY SERVER: if running within an environment that is screened by
+[9]   ⍝ a Web Proxy Server (firewall), include these items:
+[10]  ⍝   5⊃ the char vec Proxy IP address ("Proxy Server IP Address")
+[11]  ⍝   6⊃ the integer scalar Proxy port number ("Proxy Server Port No.")
+[12]  ⍝   7⊃ the char vec userid expected by the Proxy ("Internet UserID")
+[13]  ⍝   8⊃ the char vec password expected by the Proxy ("Internet Password")
+[14]  ⍝ Return character vector error message if any problem.  Otherwise,
+[15]  ⍝ returns response from server, as a two-item nest of character vectors.
+[16]  ⍝ First item is the header from the server; second item is the file (as
+[17]  ⍝ a character vector that can be ⎕NAPPENDed to build the file).
+[18]  ⍝ If PARAMS is 0 or 1, this is a callback and CB is the callback code.
+[19]  ⍝ If PARAMS is not 0 and CB is given, it is an expression (e.g.
+[20]  ⍝ 'FOO carg') executed within RBClient each time a significant event
+[21]  ⍝ happens (say, to update a status display); the value of the variable
+[22]  ⍝ <carg> tells what that event is:
+[23]  ⍝   carg        event
+[24]  ⍝     1        Connecting...
+[25]  ⍝     2        Waiting to send...
+[26]  ⍝     3 m {n}  Sending request..., m bytes so far {of n bytes}
+[27]  ⍝     4        Finished sending
+[28]  ⍝     5 m {n}  Reading..., m bytes so far {of n bytes}
+[29]  ⍝     6        Composing result...
+[30]  ⍝     7        Done.
+[31]  ⍝ Within the CB expression, if given, do not do ⎕WGIVE 0 or the
+[32]  ⍝ equivalent, such as ⎕FHOLD or ⎕DL (or event processing gets out of
+[33]  ⍝ order); just do your business and get out.  If, within a provided CB
+[34]  ⍝ expression, you decide to terminate the process (say, because the user
+[35]  ⍝ has pressed a Cancel button), run 'cancel' RBClient 0, and then exit.
+[36]  ⍝ The process will terminate immediately; the result of RBClient will be
+[37]  ⍝ 'Cancelled'.
+[38]  ⍝
+[39]  ⍝
+[40]   ⎕IO←1 ⋄ RESPLIMIT←⍙⍙httpRESPLIMIT
+[41]   →(PARAMS≡0)/L7 ⍝ Branch if a callback (code in CB)
+[42]   →(PARAMS≡1)/L27 ⍝ ToBase64 coding
+[43]  ⍝ To allow ⍎XEQ at significant events:
+[44]   ⍎(0=⎕NC 'CB')/"CB←''" ⋄ XEQ←CB
+[45]   carg←1 ⋄ ⍎XEQ ⍝ Connecting...
+[46]  ⍝
+[47]   (IPADDR PORT PATH RESPLIMIT)←4↑PARAMS
+[48]  ⍝⍝⍝  (IPADDR PORT PATH)←3↑PARAMS
+[49]  ⍝ Drop "http://" prefix, if any, from Host addr:
+[50]   T←7↑IPADDR ⋄ IPADDR←(7×(T≡'HTTP://')∨T≡'http://')↓IPADDR
+[51]   HOST←IPADDR,':',(⍕PORT),'/'
+[52]  ⍝ PATH needs ldg but not trlg slash:
+[53]   PATH←(-'/'=¯1↑PATH)↓PATH ⋄ PATH←(('/'≠1↑PATH)⍴'/'),PATH
+[54]   DATA←'' ⋄ →(4=⍴PARAMS)/L0 ⋄ DATA←,5⊃PARAMS
+[55]  ⍝
+[56]  ⍝ Extract userid and password if a Proxy Server:
+[57]  L0:ID←PW←'' ⋄ →(PS←6≤⍴PARAMS)↓L0a ⋄ (U PORT ID PW)←6↓PARAMS
+[58]  ⍝ Drop "http://" prefix, if any, from Proxy URL:
+[59]   T←7↑U ⋄ U←IPADDR←(7×(T≡'HTTP://')∨T≡'http://')↓U
+[60]  ⍝ Note that PORT and IPADDR are for Proxy Server, not Host Server.
+[61]  ⍝
+[62]  ⍝ Branch if IPADDR is already in "dotted quad" format:
+[63]  L0a:→(^/IPADDR∊'0123456789.')/L1
+[64]  ⍝ Else convert IPADDR to dotted quad (making connection if needed):
+[65]   T←⎕NI 'GetHostByName' IPADDR
+[66]   R←'Unable to GetHostByName' ⋄ →(0≠1⊃T)/0 ⍝ Exit if unable
+[67]   U←7⊃T ⋄ IPADDR←(⍴U)⊃U ⍝ Use the last address returned
+[68]  ⍝
+[69]  ⍝ Loop on existing sockets to see if we already have a match:
+[70]  L1:T←⎕NI 'Sockets' ⋄ I←0
+[71]  L2:I←I+1 ⋄ →(NEW←I>⍴T)/L3
+[72]   SN←T[I] ⋄ →(0≠⍬⍴U←SN ⎕NI 'GetPeerName')/L2
+[73]   →(PORT IPADDR≡U[5 6])/L4 ⋄ →L2
+[74]  L3:SN←3⊃⎕NI 'Socket' ⍝ Create a new socket if no match found
+[75]  ⍝
+[76]  ⍝ Set up information associated with this socket --
+[77]  ⍝ Place data in a user property if small (≤10000 bytes) or in a native
+[78]  ⍝ file if large, because it is surprisingly faster to read from a
+[79]  ⍝ native file than to extract from a user property!
+[80]  L4:→(10000≥S←⍬⍴⍴DATA)/L4A
+[81]   U←(⊃↑/⎕WCALL 'GetTempPath' ' ' (256⍴⎕TCNUL)),'T',((⍕4↓⎕TS)~' '),'.APL'
+[82]   V←⎕NNUMS,⎕XNNUMS ⋄ T←-(V∊-⍳⍴V)⍳0
+[83]  ⍝ Create file in a local fn to catch error if any; if error, don't use
+[84]  ⍝ file...save in user property:
+[85]   →(⍎⎕DEF '∇R←X;⎕ELX',⎕TCNL,'[1]⎕ELX←"→R←0"⋄U ⎕NCREATE T⋄R←1∇')↓L4A
+[86]   DATA ⎕NAPPEND T
+[87]   T←'Set' ('∆filebuffname' U) ('∆filebufftie' T) ('∆sendbuffer' '') ⋄ →L4B
+[88]  ⍝ ∆sent: bytes of DATA sent so far; ∆size: bytes of DATA:
+[89]  L4A:T←'Set' ('∆sendbuffer' DATA) ('∆filebufftie' 0) ('∆sent' 0)
+[90]  ⍝ Server-specified content length (0 if not checked yet, ¯1 if none
+[91]  ⍝ given by server; ¯2 if given as 0; +N if given as N; -N if big but
+[92]  ⍝ unable to store contents in a file), bytes read so far (excluding hdr
+[93]  ⍝ once known), hdr to send to server:
+[94]  L4B:T←T,('∆contentlength' 0) ('∆sofar' 0) ('∆sendhdr' '') ('∆size' S)
+[95]  ⍝ Path, host, header of file returned from server:
+[96]   T←T,('∆path' (PATH HOST ID PW PS)) ('∆header' '')
+[97]  ⍝ Post-header data (file) read so far; time of last event:
+[98]   U←SN ⎕NI T,('∆readbuffer' '') ('∆ts' (⎕AI[2]))
+[99]  ⍝
+[100] ⍝ If new, request a connection to http server and wait for callbacks:
+[101]  →NEW↓L5 ⋄ T←SN ⎕NI 'blockingmode' 'nonblocking' ⍝ Make socket event-based
+[102]  T←SN ⎕NI 'Control' 'nogives' ⍝ Disallow "give" during ⎕NI opns
+[103] ⍝ ...when connection established:
+[104]  T←'Set' ('onConnectNotify' '"connect" RBClient 0')
+[105] ⍝ ...when network system buffers available:
+[106]  T←T,⊂'onWriteNotify' '"send" RBClient 0'
+[107] ⍝ ...when data available to read:
+[108]  T←T,⊂'onReadNotify' '"read" RBClient 0'
+[109] ⍝ ...when connection close received:
+[110]  U←SN ⎕NI T,⊂'onCloseNotify' '"close" RBClient 0'
+[111] ⍝ Note: the event handlers are all set at once and are not reset.
+[112] ⍝  Resetting them causes extraneous events, so leave them be, making
+[113] ⍝  sure to handle meaningless events.
+[114]  T←SN ⎕NI 'Connect' PORT IPADDR ⍝ Make connection if needed
+[115] ⍝ 10035 (WSAEWOULDBLOCK) is possible, but okay, since 'nonblocking':
+[116]  →(T[1]=0)/L5 ⋄ →(T≡¯1 10035)/L5
+[117]  T←SN ⎕NI 'Close' ⋄ R←'Unable to Connect' ⋄ →0
+[118] ⍝
+[119] ⍝ Build a form 'NiWait' (unless it already exists) to contain a timer
+[120] ⍝ that awakes every 5 seconds to see if there's been no response for
+[121] ⍝ 10 seconds.
+[122] L5:→(×⍴'NiWait' ⎕WI 'self')/L5B ⍝ Branch if form exists
+[123]  T←'NiWait' ⎕WI 'New' 'Form' 'Hide' ('style' 4) ⍝ 4=Keep hidden at Wait
+[124]  T←'NiWait.timer' ⎕WI 'New' 'Timer' ('onTimer' '"time" RBClient 0')
+[125] ⍝
+[126] L5B:'NiWait.timer' ⎕WI 'interval' (RESPLIMIT÷2) ⍝ Every 1/2 of response limit
+[127] ⍝ Init explicit result:
+[128]  'NiWait' ⎕WI 'Set' ('∆sn' SN) ('∆xeq' XEQ) ('value' ('' ''))
+[129] ⍝
+[130] ⍝ If an existing socket, continue as if a connect callback:
+[131]  →NEW/L5C ⋄ 'connect' RBClient 0
+[132] ⍝
+[133] L5C:R←'NiWait' ⎕WI 'Wait' ⍝ Result comes from the 'value' property
+[134]  carg←7 ⋄ ⍎XEQ ⋄ →0 ⍝ Done
+[135] ⍝
+[136] ⍝
+[137] ⍝ Callbacks; exit if NiWait form is gone, e.g. from 'cancel'
+[138] L7:→(0∊⍴'NiWait' ⎕WI 'self')/0
+[139]  (SN XEQ)←'NiWait' ⎕WI 'Ref' '∆sn' '∆xeq' ⋄ →(SN∊⎕NI 'Sockets')/L8
+[140]  'NiWait' ⎕WI 'Delete' ⋄ →0 ⍝ Delete form if socket is closed
+[141] L8:⎕NSELF←SN ⍝ To eliminate need for left arg to ⎕NI
+[142] ⍝
+[143] ⍝ Branch by type of callback:
+[144]  T←'connect' 'send' 'read' 'result' 'close' 'time' 'cancel'
+[145]  →(L9,L10,L11,L21,L24,L25,L26)[T⍳⊂CB]
+[146] ⍝
+[147] ⍝
+[148] ⍝ 'connect'
+[149] ⍝ Connection has been established; Send and Recv now possible:
+[150] L9:(T S)←⎕NI 'Ref' '∆path' '∆size' ⋄ (PATH HOST ID PW PS)←T
+[151]  ⎕NI '∆ts' (⎕AI[2]) ⍝ Update time of latest activity
+[152] ⍝ Construct HTTP "GET" or "POST" message to be sent:
+[153]  C←⎕TCNL,⎕TCLF ⋄ U←×S
+[154]  T←((U/'POST '),(~U)/'GET '),(PS/'http://',HOST),PATH,' HTTP/1.1',C
+[155]  T←T,(PS/'Proxy-'),'Connection: Keep-Alive',C
+[156]  T←T,'User-Agent: Mozilla/4.0 (compatible; MSIE 5.0; Windows NT)',C
+[157]  T←T,'Host: ',HOST,C
+[158]  T←T,'Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*',C
+[159]  T←T,'Accept-Language: en-us',C
+[160]  T←T,PS/'Proxy-Authorization: Basic ',((ID,':',PW) RBClient 1),C
+[161]  T←T,U/'Content-Type: application/x-www-form-urlencoded',C
+[162]  T←T,'Accept-Encoding: gzip, deflate',C
+[163]  T←T,U/'Content-Length: ',(⍕S),C
+[164]  T←T,C ⍝ Empty line marks end of header
+[165]  ⎕NI '∆sendhdr' T ⋄ carg←2 ⋄ ⍎XEQ ⋄ →0 ⍝ Waiting to send...
+[166] ⍝ Now we'll wait for the system buffers to be ready (WriteNotify event)
+[167] ⍝
+[168] ⍝
+[169] ⍝ 'send'
+[170] ⍝ Network system buffers available; ready to Send:
+[171] ⍝ Get header and some of the data...
+[172] L10:(HDR DATA SOFAR SIZE)←⎕NI 'Ref' '∆sendhdr' '∆sendbuffer' '∆sent' '∆size'
+[173]  →((SOFAR≥SIZE)^0=V←⍴HDR)/0 ⍝ Exit if nothing to do
+[174] ⍝ If on file, read enough to send 32K bytes (incl header):
+[175]  →(0=T←⎕NI '∆filebufftie')/L10B
+[176] L10A:U←0⌈((1024×32)-V)⌊SIZE-SOFAR ⋄ DATA←⎕NREAD T,82,U,SOFAR
+[177] L10B:→V↓L10C ⋄ DATA←HDR,DATA ⍝ Include hdr in data to send
+[178] ⍝ Try sending; result is no. chrs sent; update HDR remaining, since this
+[179] ⍝ may take more than one callback:
+[180] L10C:⎕NI '∆ts' (⎕AI[2]) ⍝ Update time of latest activity
+[181]  carg←3,(SOFAR+⍴DATA),V+SIZE ⋄ ⍎XEQ ⍝ Sending m bytes so far of n bytes
+[182]  →(0∊⍴'NiWait' ⎕WI 'self')/0 ⍝ Sending request (cancel?)
+[183]  U←3⊃⎕NI 'Send' DATA 'char' ⋄ HDR←U↓HDR
+[184]  ⎕NI '∆sendhdr' HDR ⋄ →(SIZE=0)/L10E ⋄ SOFAR←SOFAR+0⌈U-V
+[185]  ⎕NI '∆sent' SOFAR ⋄ DATA←(U⌈V)↓DATA ⋄ →(T≠0)/L10D
+[186]  ⎕NI '∆sendbuffer' DATA ⋄ →L10E ⍝ Data in user property
+[187] ⍝ Data in native file; if all was sent and there's more, keep sending:
+[188] L10D:V←⍴HDR ⋄ →((0=⍴DATA)^SOFAR<SIZE)/L10A
+[189] ⍝ Exit if not all sent (wsaewouldblock); erase file if done:
+[190]  →(×⍴DATA)/0 ⋄ (⎕NI '∆filebuffname') ⎕NERASE T ⋄ →L10F
+[191] L10E:→((SOFAR≥SIZE)^0=⍴HDR)↓0 ⍝ Exit unless done
+[192] L10F:carg←4 ⋄ ⍎XEQ ⋄ →0 ⍝ Finished sending
+[193] ⍝
+[194] ⍝
+[195] ⍝ 'read'
+[196] ⍝ Data has arrived; ready to Recv.
+[197] ⍝ If you do a 'Recv' for each 'onReadNotify', you will get all the
+[198] ⍝ data.  However, for efficiency it's best to do as many 'Recv's as
+[199] ⍝ you can (while still getting data) rather than wait for the next
+[200] ⍝ 'onReadNotify'; this generally amounts to 6 to 8 Recv's.  Meanwhile,
+[201] ⍝ the corresponding 5 to 7 'onReadNotify' events will queue up, but as
+[202] ⍝ long as we handle empty reads, we'll be fine.  Furthermore, if we
+[203] ⍝ get to the end of the data and delete the socket, those queued
+[204] ⍝ events are simply discarded, saving that processing.  Note: 8 is
+[205] ⍝ the "magic" number counter based on "Windows Socket Network
+[206] ⍝ Programming."
+[207] L11:⎕NI '∆ts' (⎕AI[2]) ⍝ Update time of latest activity
+[208]  (CL S)←⎕NI 'Ref' '∆contentlength' '∆sofar' ⋄ V←0 ⋄ I←1
+[209] ⍝
+[210] L12:→(I>8)/L13 ⍝ Stop when no more data or 8 iterations (at least 1)
+[211]  →(0≠J←1⊃U←⎕NI 'Recv' 'char')/L13 ⋄ V←V+⍴T←3⊃U ⍝ Get anything?
+[212]  DATA←(⎕NI '∆readbuffer'),T ⋄ ⎕NI '∆readbuffer' DATA ⍝ Save it
+[213]  carg←5,(S+V),(2<∣CL)⍴∣CL ⋄ ⍎XEQ ⍝ Reading..., m bytes so far of n bytes
+[214]  →(0∊⍴⎕NI 'Sockets')/0 ⍝ Cancel?
+[215]  I←I+1 ⋄ →L12
+[216] ⍝
+[217] ⍝ Kill socket if error:
+[218] L13:→((J=¯1)^U[2]≠10035)↓L14 ⋄ T←⎕NI 'Close' ⋄ →0
+[219] L14:→(V=0)/0 ⍝ Exit if nothing read
+[220]  ⎕NI '∆sofar' (S←S+V)
+[221] ⍝
+[222] ⍝ Process incoming data and generate result when all data is received:
+[223]  →(CL≠0)/L18 ⍝ If just starting...
+[224] ⍝ If we don't have all the header yet, exit:
+[225]  I←(DATA ⎕SS 4⍴⎕TCNL,⎕TCLF)⍳1 ⋄ →(I>⍴DATA)/0
+[226]  L←HDR←(I+3)↑DATA ⋄ DATA←(I+3)↓DATA ⍝ Peel off header; cvt to lower case:
+[227]  ⎕NI '∆sofar' (S←⍴DATA) ⍝ Omit header chars in ∆sofar
+[228]  J←¯1+⎕AV⍳'Aa' ⋄ T←26≥I←⎕AV[J[1]+⍳26]⍳L ⋄ (T/L)←⎕AV[J[2]+T/I]
+[229] ⍝ If no content-length, set to ¯1; if 0, set to ¯2:
+[230]  I←(L ⎕SS U←'content-length:')⍳1
+[231]  CL←(¯1+I+⍴U)↓L ⋄ CL←⍬⍴(⎕FI (¯1+CL⍳⎕TCNL)↑CL),¯1 ⋄ CL←(CL,¯2)[⎕IO+CL=0]
+[232]  U←⎕NI 'Set' ('∆contentlength' CL) ('∆header' HDR)
+[233] ⍝
+[234]  →(CL>10000)/L14A ⍝ If CL is big, branch to use a temp file
+[235]  ⎕NI '∆readbuffer' DATA
+[236]  →((S≥CL)^CL≠¯1)/L20 ⋄ →0 ⍝ Exit if no CL, or if more data to come
+[237] ⍝
+[238] ⍝ A temp file is used because it is surprisingly faster to append
+[239] ⍝ to a native file than to catenate to a user property!
+[240] L14A:U←(⊃↑/⎕WCALL 'GetTempPath' ' ' (256⍴⎕TCNUL)),'T',((⍕4↓⎕TS)~' '),'.APL'
+[241]  V←⎕NNUMS,⎕XNNUMS ⋄ T←-(V∊-⍳⍴V)⍳0
+[242] ⍝ Create file in a local fn to catch error if any; if error, don't use
+[243] ⍝ file...save CL as neg no.:
+[244]  →(⍎⎕DEF '∇R←X;⎕ELX',⎕TCNL,'[1]⎕ELX←"→R←0"⋄U ⎕NCREATE T⋄R←1∇')/L15
+[245]  ⎕NI ('∆contentlength' (-CL)) ⋄ →L16 ⍝ Couldn't create file
+[246] L15:DATA ⎕NAPPEND T
+[247]  V←⎕NI 'Set' ('∆filebuffname' U) ('∆filebufftie' T) ('∆readbuffer' '')
+[248] L16:→(S<CL)/0 ⋄ →L20 ⍝ Exit if not enough yet
+[249] ⍝
+[250] ⍝ If CL is not too big, get data from buffer:
+[251] L18:→(CL>10000)/L19 ⍝ CL=¯2 case already handled above
+[252]  →((S≥∣CL)^CL≠¯1)/L20 ⋄ →0 ⍝ Exit if no CL, or if more data to come
+[253] ⍝
+[254] ⍝ If CL>10000, move from user prop to existing temp file:
+[255] L19:T←⎕NI '∆filebufftie' ⋄ ⎕NI '∆readbuffer' '' ⋄ DATA ⎕NAPPEND T
+[256]  →(S<CL)/0 ⍝ Exit if we haven't read it all yet
+[257] ⍝
+[258] ⍝ If we're here, we have all the data.  Read data and assign it to the
+[259] ⍝ 'value' property of the 'NiWait' timer object.
+[260] L20:'result' RBClient 0 ⋄ →0
+[261] ⍝
+[262] ⍝
+[263] ⍝ 'result'
+[264] ⍝ Time to shut down and return what we can
+[265] L21:carg←6 ⋄ ⍎XEQ ⍝ Composing result
+[266]  →(0∊⍴'NiWait' ⎕WI 'self')/0 ⍝ Exit if form already gone
+[267]  T←'NiWait.timer' ⎕WI 'Set' ('interval' 1000000) ('onTimer' '')
+[268] ⍝ Error if CL was never set:
+[269]  V←'Nothing received' ⋄ →(0=CL←⎕NI '∆contentlength')/L23A
+[270] ⍝ For large file transfers use native files:
+[271]  →(CL>10000)/L22 ⋄ →((CL=¯1)^0=⍴DATA←⎕NI '∆readbuffer')/L23A
+[272]  →(CL=¯1)/L23 ⋄ CL←(CL≠¯2)×∣CL ⋄ →L22A
+[273] L22:(U T)←⎕NI 'Ref' '∆filebuffname' '∆filebufftie'
+[274]  DATA←⎕NREAD T,82,2↑⎕NSIZE T ⋄ U ⎕NERASE T
+[275] L22A:V←'Content-length not received' ⋄ →(CL>⍴DATA)/L23A
+[276]  →(CL=⍴DATA)/L23 ⋄ DATA←CL↑DATA
+[277] L23:V←(⎕NI '∆header') DATA ⍝ Include header
+[278] L23A:'NiWait' ⎕WI 'value' V
+[279]  T←⎕NI 'Close' ⍝ Kill socket
+[280]  T←'NiWait' ⎕WI 'Delete' ⋄ →0 ⍝ Delete form, ending Wait, to get result
+[281] ⍝
+[282] ⍝
+[283] ⍝ 'close'
+[284] ⍝ Connection close received; return what we can.
+[285] ⍝ This is how we know to stop when no "Content-length:" is given.
+[286] L24:'read' RBClient 0 ⋄ 'result' RBClient 0 ⋄ →0
+[287] ⍝
+[288] ⍝
+[289] ⍝ 'time'
+[290] ⍝ Triggered every 5 secs to check for 10 secs of silence or a dead
+[291] ⍝ socket; if so, retrieve result:
+[292] L25:→(⎕AI[2]<(RESPLIMIT÷1000)+⎕NI '∆ts')/0 ⍝ Exit if not yet 10 seconds
+[293]  'result' RBClient 0 ⋄ →0 ⍝ Time has expired, so return result
+[294] ⍝
+[295] ⍝
+[296] ⍝ 'cancel'
+[297] ⍝ Called within XEQ to shut down the transfer:
+[298] L26:'NiWait' ⎕WI 'value' 'Cancelled' ⋄ T←⎕NI 'Close' ⍝ Error result
+[299]  T←'NiWait' ⎕WI 'Delete' ⋄ →0
+[300] ⍝
+[301] ⍝
+[302] ⍝ 'ToBase64'
+[303] ⍝ Convert character vector C to "Base64" character vector,
+[304] ⍝ translating each set of 3 characters to 4 readable ASCII
+[305] ⍝ characters.
+[306] L27:⎕IO←0 ⋄ L←⍴CB ⋄ (J X)←3 4×S←⌈L÷3
+[307]  I←⎕AV⍳82 ⎕DR,((X,2)⍴0),(X,6)⍴11 ⎕DR (S,3)⍴CB,⎕AV[0 0]
+[308]  C←'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+[309]  R←X↑((L+X-J)↑C[I]),'=='
+    ∇

@@ -1,1 +1,43 @@
-    ∇ res←field Client_File parm;parent;z[1]   ⍝ OVERWIN.sf#3[2]   ⍝ Function to allow user control on Selection of Client File[3]   [4]   parent←'fmClientFile.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   :case 'Prepare' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[8]       InputsType←'ClientFile'[9]   [10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[11]      clientFile←INIString 'SV Parameter Files' 'ClientFile' '' (InputDir,'svscheme.ini')[12]  [13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[14]      parent ⎕wi '∆parm' 1 ⍝ Parameter File Lists and Descriptions[15]  [16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[17]  [18]      :repeat[19]          :select ↑field[20]              :case ' '[21]          :endselect[22]      :until mt field←1↓field[23]  [24]  :case 'Valid' ⍝ Routine specific validation[25]  [26]      ⍝ Filename must be New or in the current ParmFile List[27]      z←FileExist InputDir,clientFile,'.sf'[28]      :if 1=z+×⍴(1 0↓GetParmFiles 1) ExactTLU clientFile[29]          res←'InvFile' clientFile[30]          Win∆SetFocus parent,'cbclientFile' ⋄ :return[31]      :endif[32]  [33]  :case 'Run'[34]      (UPPERCASE clientFile) INIString 'SV Parameter Files' 'ClientFile' (InputDir,'svscheme.ini')[35]      parent ⎕wi 'modified' 0 ⍝ Skip Ignore Changes[36]      res←'Quit'[37]  [38]  :case 'Quit' ⍝ Deleting "other" variables[39]      0 0⍴⎕ex 'InputsType'[40]  [41]  :endselect    ∇
+    ∇ res←field Client_File parm;parent;z
+[1]   ⍝ OVERWIN.sf#3
+[2]   ⍝ Function to allow user control on Selection of Client File
+[3]   
+[4]   parent←'fmClientFile.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[8]       InputsType←'ClientFile'
+[9]   
+[10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[11]      clientFile←INIString 'SV Parameter Files' 'ClientFile' '' (InputDir,'svscheme.ini')
+[12]  
+[13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[14]      parent ⎕wi '∆parm' 1 ⍝ Parameter File Lists and Descriptions
+[15]  
+[16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[17]  
+[18]      :repeat
+[19]          :select ↑field
+[20]              :case ' '
+[21]          :endselect
+[22]      :until mt field←1↓field
+[23]  
+[24]  :case 'Valid' ⍝ Routine specific validation
+[25]  
+[26]      ⍝ Filename must be New or in the current ParmFile List
+[27]      z←FileExist InputDir,clientFile,'.sf'
+[28]      :if 1=z+×⍴(1 0↓GetParmFiles 1) ExactTLU clientFile
+[29]          res←'InvFile' clientFile
+[30]          Win∆SetFocus parent,'cbclientFile' ⋄ :return
+[31]      :endif
+[32]  
+[33]  :case 'Run'
+[34]      (UPPERCASE clientFile) INIString 'SV Parameter Files' 'ClientFile' (InputDir,'svscheme.ini')
+[35]      parent ⎕wi 'modified' 0 ⍝ Skip Ignore Changes
+[36]      res←'Quit'
+[37]  
+[38]  :case 'Quit' ⍝ Deleting "other" variables
+[39]      0 0⍴⎕ex 'InputsType'
+[40]  
+[41]  :endselect
+    ∇

@@ -1,0 +1,78 @@
+    ∇ PenAssign;SSName;∆
+[1]   ⍝ UPARMWIN.sf#10
+[2]   ⍝ Assign "temporary" Pension variables back into the "permanent" Pension variables
+[3]   
+[4]   ⍝ Adjust variables to required type
+[5]   didind←CheckTranslate didind
+[6]   ponly ←CheckTranslate ponly
+[7]   sponly←CheckTranslate sponly
+[8]   gmpadj←CheckTranslate gmpadj
+[9]   capinclude←CheckTranslate capinclude
+[10]  
+[11]  :if PENput=0 ⋄ :orif PENget≠PENput ⍝ Add/Insert Pension
+[12]      SSName←'fmSV.sPenBasis.pgPensions.fPensions.ssPensions'
+[13]      SSName ⎕wi 'MaxCol' (∆←1+SSName ⎕wi 'MaxCol')
+[14]      SSName ⎕wi 'xSetSelection' 1 1 1 1
+[15]      :if PENput=0 ⋄ PENput←∆
+[16]      :else        ⋄ PENput←⌈PENput
+[17]          ∆←∆⍴1 ⋄ ∆[PENput]←0
+[18]          PenDesc←    ∆⍀PenDesc
+[19]          PENDATA←    ∆⍀PENDATA
+[20]          CSORP←      ∆⍀CSORP
+[21]          SPENDATA←   ∆⍀SPENDATA
+[22]          WARFRAC←    ∆⍀WARFRAC
+[23]          ADJFAC←     ∆⍀ADJFAC
+[24]          lrADJFAC←   ∆⍀lrADJFAC
+[25]          BAGE←       ∆⍀BAGE
+[26]          EAGE←       ∆⍀EAGE
+[27]          DIDIND←     ∆⍀DIDIND
+[28]          DEFINC←     ∆⍀DEFINC
+[29]          lrDEFINC←   ∆⍀lrDEFINC
+[30]          PAYINC←     ∆⍀PAYINC
+[31]          lrPAYINC←   ∆⍀lrPAYINC
+[32]          PONLY←      ∆⍀PONLY
+[33]          SPONLY←     ∆⍀SPONLY
+[34]          GMPADJ←     ∆⍀GMPADJ
+[35]          RETPUP←     ∆⍀RETPUP
+[36]          PreRET←     ∆⍀PreRET
+[37]          PostRET←    ∆⍀PostRET
+[38]          PreVD←      ∆⍀PreVD
+[39]          PostVD←     ∆⍀PostVD
+[40]          m_PPFNRA←   ∆⍀m_PPFNRA
+[41]          f_PPFNRA←   ∆⍀f_PPFNRA
+[42]          PPFPAYINC←  ∆⍀PPFPAYINC
+[43]          PPFDEFINC←  ∆⍀PPFDEFINC
+[44]          lrPPFDEFINC←∆⍀lrPPFDEFINC
+[45]          CapInclude← ∆⍀CapInclude
+[46]      :endif
+[47]  :endif
+[48]  
+[49]  PENDESC     ASSIGN∆Dict 'PenDesc[PENput;]'
+[50]  pendata     ASSIGN∆Dict 'PENDATA[PENput;]'
+[51]  csorp       ASSIGN∆Dict 'CSORP[PENput;]'
+[52]  spendata    ASSIGN∆Dict 'SPENDATA[PENput;]'
+[53]  warfrac     ASSIGN∆Dict 'WARFRAC[PENput;]'
+[54]  adjfac      ASSIGN∆Dict 'ADJFAC[PENput;]'
+[55]  lradjfac    ASSIGN∆Dict 'lrADJFAC[PENput;]'
+[56]  bage        ASSIGN∆Dict 'BAGE[PENput;]'
+[57]  eage        ASSIGN∆Dict 'EAGE[PENput;]'
+[58]  didind      ASSIGN∆Dict 'DIDIND[PENput;]'
+[59]  definc      ASSIGN∆Dict 'DEFINC[PENput;]'
+[60]  lrdefinc    ASSIGN∆Dict 'lrDEFINC[PENput;]'
+[61]  payinc      ASSIGN∆Dict 'PAYINC[PENput;]'
+[62]  lrpayinc    ASSIGN∆Dict 'lrPAYINC[PENput;]'
+[63]  ponly       ASSIGN∆Dict 'PONLY[PENput;]'
+[64]  sponly      ASSIGN∆Dict 'SPONLY[PENput;]'
+[65]  gmpadj      ASSIGN∆Dict 'GMPADJ[PENput;]'
+[66]  retpup      ASSIGN∆Dict 'RETPUP[PENput;]'
+[67]  preret      ASSIGN∆Dict 'PreRET[PENput;]'
+[68]  postret     ASSIGN∆Dict 'PostRET[PENput;]'
+[69]  prevd       ASSIGN∆Dict 'PreVD[PENput;]'
+[70]  postvd      ASSIGN∆Dict 'PostVD[PENput;]'
+[71]  m_ppfnra    ASSIGN∆Dict 'm_PPFNRA[PENput;]'
+[72]  f_ppfnra    ASSIGN∆Dict 'f_PPFNRA[PENput;]'
+[73]  ppfpayinc   ASSIGN∆Dict 'PPFPAYINC[PENput;]'
+[74]  ppfdefinc   ASSIGN∆Dict 'PPFDEFINC[PENput;]'
+[75]  lrppfdefinc ASSIGN∆Dict 'lrPPFDEFINC[PENput;]'
+[76]  capinclude  ASSIGN∆Dict 'CapInclude[PENput;]'
+    ∇

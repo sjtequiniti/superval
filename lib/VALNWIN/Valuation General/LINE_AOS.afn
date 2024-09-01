@@ -1,0 +1,48 @@
+    ∇ LINE∆AOS;SUMMREC;TOTS;col;Z
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝   Summary Listing for AOS
+[3]   ⍝ This is only executed if "aosind" equals 1 ie user asks for a Analysis
+[4]   ⍝ of Surplus listing. Creates a summary record for the member and appends
+[5]   ⍝ to DOS File TEMP$$.AOS.  Updates grand totals also.
+[6]   ⍝ V2.50u RE 1/1/96 Standardised
+[7]   
+[8]   TOTS←(5-2×IsDeferred)/0 ⋄ →(~∨/EXIT[3 4])/L0
+[9]   col←4-2×IsDeferred ⋄ →(aosrow∊ 2 3)/F0 ⍝ Skip to F0: if Unspecified Mode of Exit
+[10]  →(0∊⍴Z←CODE TLU MOE[¯1+⌊aosrow÷2;])/F0 ⋄ col←CODEcol[Z-1]
+[11]  
+[12]  F0:TOTS[col]←Ind∆AOS[24;last]+Ind∆AOS[30;last]-Ind∆AOS[25;last]+Ind∆AOS[31;last] ⍝ Actual Release on Exit plus Interest
+[13]  
+[14]  ⍝ Current Cost Conts (Actives) less Expected Release plus Interest
+[15]  L0:TOTS←TOTS+(5-2×IsDeferred)↑(5↑0,,Ind∆AOS[9+⍳2;last]+Ind∆AOS[22+⍳2;last])-5↑(,Ind∆AOS[2+⍳4;last]+Ind∆AOS[15+⍳4;last])+4↑Ind∆AOS[1;last]+Ind∆AOS[14;last]
+[16]  
+[17]  ⍝ Reserve Release
+[18]  TOTS←TOTS,Ind∆AOS[0;last]+Ind∆AOS[13;last]-Ind∆AOS[24;last]+Ind∆AOS[30;last]
+[19]  
+[20]  ⍝ New Entrant Strain
+[21]  TOTS←((∨/EXIT[2 4])×-Ind∆AOS[0;0]+Ind∆AOS[12;last]),TOTS
+[22]  
+[23]  :if IsDeferred
+[24]      TOTS←NOM,NRAPUP,TOTS
+[25]  :else
+[26]      ⍝ Contributions Profits
+[27]      TOTS←TOTS,,Ind∆AOS[26+⍳4;last]+Ind∆AOS[32+⍳4;last]-Ind∆AOS[7+⍳4;last]+Ind∆AOS[20+⍳4;last]
+[28]  
+[29]      ⍝ Funding Profits
+[30]      TOTS←NOM,SAL0,TOTS,Ind∆AOS[8;last]+Ind∆AOS[21;last]-Ind∆AOS[6;last]+Ind∆AOS[19;last]
+[31]  :endif
+[32]  
+[33]  ⍝ Calculation Error
+[34]  TOTS←TOTS,(+/Ind∆AOS[0;0],,Ind∆AOS[(1+⍳7),12,14+⍳7;last])-Ind∆AOS[13;last]+Ind∆AOS[0;last]
+[35]  
+[36]  TOTS←TOTS,+/2↓TOTS ⍝ Total Profit
+[37]  
+[38]  →summopt/L1
+[39]  :if IsDeferred
+[40]      SUMMREC←(6↑NAME),(¯2↑SEX),,'I3,CI8,7BCM<->I12' ⎕FMT MATRIX X0,1↓TOTS
+[41]  :else
+[42]      SUMMREC←(6↑NAME),(¯2↑SEX),,'I3,CI8,BCM<->I8,6BCM<->I9,4BCM<->I8,BCM<->I9,BCM<->I8,CM<->I10' ⎕FMT MATRIX X0,1↓TOTS
+[43]  :endif
+[44]  (PPAGE SRECN)←H8 OUTPUT tpS,PPAGE,SRECN ⋄ →END
+[45]  L1:3 SUMMARY TOTS ⍝ Summary Totals
+[46]  END:STOTS←STOTS+TOTS ⍝ Group grand totals
+    ∇

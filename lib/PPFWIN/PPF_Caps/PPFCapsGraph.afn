@@ -1,1 +1,39 @@
-    ∇ PageView←PPFCapsGraph;values[1]   ⍝ PPFWIN.sf#7[2]   ⍝ Graph the PPF Caps[3]   [4]   PageView←0⍴''[5]   :if 0∊⍴(parent,'picPretty') ⎕wi 'self' ⋄ :orif 0∊⍴PPFCAPDATE[6]       :return ⍝ Graph Control doesn't exist yet!![7]   :endif[8]   [9]   chSet 'Vmar' 48 48[10]  chSet 'HMargin' 60 36[11]  chSet 'Heading' 'PPF Caps/s143 Cap Increases'[12]  chSet 'HFont' 'tii,12,blue'[13]  chSet 'Style' 'boxed,xyplot'[14]  chSet 'XStyle' 'date'[15]  chSet 'XCaption' 'Date'[16]  chSet 'KFont' 'he,7'[17]  chSet 'Key' 'PPF Caps,s143 Cap Increases'[18]  [19]  values←MatrixZWB PPFCAP[20]  chSet 'YRange' (⌊/0,values),⌈/values[21]  [22]  chSet 'YCaption' 'Cap £'[23]  chSet 'Style' 'lines,markers'[24]  chPlot (MATRIX ¯2415014+JUL 'DD/MM/YYYY' DATEEXP PPFCAPDATE),values[25]  [26]  chYsec[27]  values←MatrixZWB s143capinc[28]  chSet 'YRange' (⌊/0,values),⌈/values[29]  [30]  chSet 'YCaption' 's143 %'[31]  chSet 'Style' 'lines,markers'[32]  chPlot (MATRIX ¯2415014+JUL 'DD/MM/YYYY' DATEEXP PPFCAPDATE),values[33]  [34]  PageView←chClose[35]  [36]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box[37]  ppt←.5+.×(((parent,'picPretty') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point    ∇
+    ∇ PageView←PPFCapsGraph;values
+[1]   ⍝ PPFWIN.sf#7
+[2]   ⍝ Graph the PPF Caps
+[3]   
+[4]   PageView←0⍴''
+[5]   :if 0∊⍴(parent,'picPretty') ⎕wi 'self' ⋄ :orif 0∊⍴PPFCAPDATE
+[6]       :return ⍝ Graph Control doesn't exist yet!!
+[7]   :endif
+[8]   
+[9]   chSet 'Vmar' 48 48
+[10]  chSet 'HMargin' 60 36
+[11]  chSet 'Heading' 'PPF Caps/s143 Cap Increases'
+[12]  chSet 'HFont' 'tii,12,blue'
+[13]  chSet 'Style' 'boxed,xyplot'
+[14]  chSet 'XStyle' 'date'
+[15]  chSet 'XCaption' 'Date'
+[16]  chSet 'KFont' 'he,7'
+[17]  chSet 'Key' 'PPF Caps,s143 Cap Increases'
+[18]  
+[19]  values←MatrixZWB PPFCAP
+[20]  chSet 'YRange' (⌊/0,values),⌈/values
+[21]  
+[22]  chSet 'YCaption' 'Cap £'
+[23]  chSet 'Style' 'lines,markers'
+[24]  chPlot (MATRIX ¯2415014+JUL 'DD/MM/YYYY' DATEEXP PPFCAPDATE),values
+[25]  
+[26]  chYsec
+[27]  values←MatrixZWB s143capinc
+[28]  chSet 'YRange' (⌊/0,values),⌈/values
+[29]  
+[30]  chSet 'YCaption' 's143 %'
+[31]  chSet 'Style' 'lines,markers'
+[32]  chPlot (MATRIX ¯2415014+JUL 'DD/MM/YYYY' DATEEXP PPFCAPDATE),values
+[33]  
+[34]  PageView←chClose
+[35]  
+[36]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box
+[37]  ppt←.5+.×(((parent,'picPretty') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+    ∇

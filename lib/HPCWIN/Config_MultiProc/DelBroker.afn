@@ -1,1 +1,25 @@
-    ∇ DelBroker;httpno;brokers[1]   ⍝ HPCWIN.sf#3[2]   ⍝ Delete a HTTP Broker[3]   [4]   httpno←'fmMultiConfig.fConfig.lvHTTPs' ⎕wi 'value'[5]   brokers←⎕tcnl join ' ' join¨spin (m2n HTTPnames[httpno;]) ((⊂'{}')embrace¨':' join¨spin (m2n HTTPipaddr[httpno;]) (m2n HTTPport[httpno;]))[6]   [7]   :if 'Y'='YN' ASK 'Do you want to delete the following HTTP Request Brokers?',⎕tcnl,brokers[8]       httpno←(⍳↑⍴HTTPnames)~httpno[9]       HTTPnames    ←HTTPnames    [httpno;][10]      HTTPipaddr   ←HTTPipaddr   [httpno;][11]      HTTPport     ←HTTPport     [httpno;][12]      HTTPresplimit←HTTPresplimit[httpno;][13]      HTTPmaxproc  ←HTTPmaxproc  [httpno;][14]      HTTPfolder   ←HTTPfolder    [httpno;][15]      HTTPwssize   ←HTTPwssize   [httpno;][16]      HTTPabandon  ←HTTPabandon  [httpno;][17]      HTTPcheck    ←HTTPcheck    [httpno;][18]      HTTPshutdown ←HTTPshutdown [httpno;][19]      HTTPeditable ←HTTPeditable [httpno;][20]      HTTPactive   ←HTTPactive   [httpno;][21]  :endif[22]  [23]  0 0⍴(⊂'cbMethSubProc') Config_MultiProc 'Change'    ∇
+    ∇ DelBroker;httpno;brokers
+[1]   ⍝ HPCWIN.sf#3
+[2]   ⍝ Delete a HTTP Broker
+[3]   
+[4]   httpno←'fmMultiConfig.fConfig.lvHTTPs' ⎕wi 'value'
+[5]   brokers←⎕tcnl join ' ' join¨spin (m2n HTTPnames[httpno;]) ((⊂'{}')embrace¨':' join¨spin (m2n HTTPipaddr[httpno;]) (m2n HTTPport[httpno;]))
+[6]   
+[7]   :if 'Y'='YN' ASK 'Do you want to delete the following HTTP Request Brokers?',⎕tcnl,brokers
+[8]       httpno←(⍳↑⍴HTTPnames)~httpno
+[9]       HTTPnames    ←HTTPnames    [httpno;]
+[10]      HTTPipaddr   ←HTTPipaddr   [httpno;]
+[11]      HTTPport     ←HTTPport     [httpno;]
+[12]      HTTPresplimit←HTTPresplimit[httpno;]
+[13]      HTTPmaxproc  ←HTTPmaxproc  [httpno;]
+[14]      HTTPfolder   ←HTTPfolder    [httpno;]
+[15]      HTTPwssize   ←HTTPwssize   [httpno;]
+[16]      HTTPabandon  ←HTTPabandon  [httpno;]
+[17]      HTTPcheck    ←HTTPcheck    [httpno;]
+[18]      HTTPshutdown ←HTTPshutdown [httpno;]
+[19]      HTTPeditable ←HTTPeditable [httpno;]
+[20]      HTTPactive   ←HTTPactive   [httpno;]
+[21]  :endif
+[22]  
+[23]  0 0⍴(⊂'cbMethSubProc') Config_MultiProc 'Change'
+    ∇

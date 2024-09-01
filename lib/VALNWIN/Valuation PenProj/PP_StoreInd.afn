@@ -1,0 +1,29 @@
+    ∇ pp∆cash PP∆StoreInd NotPUC;exitprobs
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Store (DOS version compatible) Individual results
+[3]   
+[4]   :if NotPUC ⍝ Non PUC results
+[5]       :if 2=⍴⍴pp∆exitprobs ⋄ exitprobs←pp∆exitprobs[pp∆benyear;pp∆year]
+[6]       :else                ⋄ exitprobs←pp∆exitprobs[pp∆benyear]
+[7]       :endif
+[8]   
+[9]       FV[pp∆year;pp∆bencol]←FV[pp∆year;pp∆bencol]+pp∆FutPV CDIV pp∆exitdisc×exitprobs
+[10]      :if pp∆cash
+[11]          VC[pp∆year;pp∆exitcol]←VC[pp∆year;pp∆exitcol]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[12]      :else
+[13]          :select pp∆exitcol
+[14]          :case 0 ⋄ VRB[pp∆year;pp∆bencol-1]←VRB[pp∆year;pp∆bencol-1]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[15]          :case 1 ⋄ VMB[pp∆year;pp∆bencol-1]←VMB[pp∆year;pp∆bencol-1]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[16]          :case 2 ⋄ VDB[pp∆year;pp∆bencol-1]←VDB[pp∆year;pp∆bencol-1]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[17]          :case 3 ⋄ VWB[pp∆year;pp∆bencol-1]←VWB[pp∆year;pp∆bencol-1]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[18]          :case 4 ⋄ VtB[pp∆year;pp∆bencol-1]←VtB[pp∆year;pp∆bencol-1]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[19]          :case 5 ⋄ V∆B[pp∆year;pp∆bencol-1]←V∆B[pp∆year;pp∆bencol-1]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[20]          :case 6 ⋄ VOB[pp∆year;pp∆bencol-1]←VOB[pp∆year;pp∆bencol-1]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[21]          :case 7 ⋄ VoB[pp∆year;pp∆bencol-1]←VoB[pp∆year;pp∆bencol-1]+pp∆TotPV CDIV pp∆exitdisc×exitprobs
+[22]          :endselect
+[23]      :endif
+[24]  :else ⍝ PUC Results
+[25]      TVVAL[pp∆year;pp∆bencol]←FVVAL[pp∆year;pp∆bencol]←FVVAL[pp∆year;pp∆bencol]++/pp∆normc[⍳pp∆CP⌊pp∆year+1]
+[26]      INDVAB[pp∆year]←INDVAB[pp∆year]+1↑pp∆PBO
+[27]  :endif
+    ∇

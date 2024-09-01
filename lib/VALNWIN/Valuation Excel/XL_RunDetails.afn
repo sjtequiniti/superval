@@ -1,0 +1,57 @@
+    ∇ res←arg XL_RunDetails ID;NoRuns;data
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Insert the Run Details into Excel
+[3]   ⍝ arg is 0 for Deferreds/Pensioners Valuation,
+[4]   ⍝        1 for Actives valuation
+[5]   ⍝        2 for Consolidation
+[6]   ⍝    and 3 for Scenario
+[7]   
+[8]   ⍝⍝⍝ 0 ActResultsID              0
+[9]   ⍝⍝⍝ 1 BasisCategoryID           3
+[10]  ⍝⍝⍝ 2 ValnTimeStamp             1
+[11]  ⍝⍝⍝ 3 ResultsCategoryID         2
+[12]  ⍝⍝⍝ 4 BasisCategory             4
+[13]  ⍝⍝⍝ 5 "ValnTimeStamp" ⍙DBDateFormat 'yyyy/mm/dd hh:mm:ss'
+[14]  ⍝⍝⍝ 6 BasisDescription
+[15]  ⍝⍝⍝ 7 DataFile
+[16]  ⍝⍝⍝ 8 Sex
+[17]  ⍝⍝⍝ 9 DataCategory
+[18]  ⍝⍝⍝ 10 RunVersion
+[19]  ⍝⍝⍝ 11 UserName
+[20]  ⍝⍝⍝ 12 InputFolder
+[21]  ⍝⍝⍝ 13 LibraryFolder
+[22]  ⍝⍝⍝ 14 ALM/LDI Data
+[23]  ⍝⍝⍝ 15 ((×arg)/"ClassName")
+[24]  ⍝⍝⍝ 16 ((arg≥2)/"BasisFile")
+[25]  ⍝⍝⍝ 17 ((arg=3)/",ScenarioID")
+[26]  ⍝⍝⍝ 18 ((arg=3)/"ScenarioDescription")
+[27]  ⍝⍝⍝ 19 ((arg≥2)/"ExactAge")
+[28]  
+[29]  data←DLTB¨1 ⍙DBadoCONCommand "SELECT ActResultsID, BasisCategoryID, ValnTimeStamp, ResultsCategoryID, BasisCategory,",("ValnTimeStamp" ⍙DBDateFormat 'yyyy/mm/dd hh:mm:ss'),", BasisDescription, DataFile, Sex, DataCategory, RunVersion, UserName, InputFolder, LibraryFolder, AltScenario",((×arg)/", ClassName"),((arg≥2)/", BasisFile"),((arg=3)/", ScenarioID, ScenarioDescription"),((arg≥2)/", ExactAge")," FROM ResultsCategory WHERE ResultsCategoryID = ",⍕ID
+[30]  data[;⍳4]←↑¨data[;⍳4] ⍝ Correct Numeric Data Types
+[31]  data[;⎕io+0 1 3]←10000∣data[;⎕io+0 1 3] ⍝ Remove Scheme and Database IDs
+[32]  :if arg>1 ⋄ :orif mt ↑data[⎕io;⎕io+4] ⍝ use BasisCategoryID (rather than BasisCategory if it is blank)
+[33]      data[⎕io;⎕io+4]←⊂⍕↑data[⎕io;⎕io+1]
+[34]  :endif
+[35]  data[⎕io;⎕io+11]←(⊂⎕av[⎕io+131 226]) REPL¨data[⎕io;⎕io+11]
+[36]  data[⎕io;⎕io+14]←CheckTranslate¨⍕¨∣data[⎕io;⎕io+14]
+[37]  :if arg=3 ⋄ data[⎕io;⎕io+17]←,↑data[⎕io;⎕io+17] ⋄ :endif
+[38]  :if arg≥2 ⋄ data[⎕io;⎕io+6]←data[⎕io;⎕io+6],¨data[⎕io;⎕io+17+2×arg=3]sel¨⊂' Interpolated' ⋄ :endif
+[39]  data[⎕io;⎕io+4]←⊂(↑data[⎕io;⎕io+4]),'()' embrace ↑data[⎕io;⎕io+9] ⍝ Add Data Category to Basis ID
+[40]  data←(15+arg+arg=3)↑[⎕io+1]data
+[41]  
+[42]  NoRuns←XL_Data 'NoRuns'
+[43]  ⍝ Check if run has already been loaded into Excel (should only be Excel output from menu)
+[44]  :if 0≠res←NoRuns
+[45]  :andif res←(⎕split ⍕¨data)∊⎕split ⍕¨XL_Data RCtoA1 11 1 (10+NoRuns) (15+arg+arg=3)
+[46]      ('NOTE:  Valuation Run on ',SelSex,' ',basisDesc,' in file ',("\" Win∆Child XLfile),' was already in the Excel Output file') VALN∆LOG 'Add'
+[47]      :return
+[48]  :endif
+[49]  
+[50]  1 XL_ActivateWorksheet 'Contents'
+[51]  (10 ⍬) XL_PasteAll (11+NoRuns) ⍬
+[52]  0 0⍴data XL_Data RCtoA1 (11+NoRuns) 1 (11+NoRuns) (15+arg+arg=3)
+[53]  'XL' ⎕wi 'Range>.Rng' (RCtoA1 4⍴(11+NoRuns) ⍬) ⋄ ('XL.Rng' ⎕wi 'xEntireRow') ⎕wi 'xHidden' 0
+[54]  0 0⍴(1+NoRuns) XL_Data 'NoRuns'
+[55]  'Contents' XL_ProtectSheet 1
+    ∇

@@ -1,0 +1,41 @@
+    ∇ AGG∆CALCS;X0;ages;EXIT;vMP;v
+[1]   ⍝ VALNWIN.sf#4
+[2]   ⍝
+[3]   aggopt←1 1
+[4]   (1 6 'Aggregating Benefits') Win∆ProgressBar2 'FileUpdate' ⍝ One Final Compression
+[5]   Sum∆Ongoing←Sum∆Ongoing[0;]⍪(1↓Sum∆Ongoing[0;]) Compind 1 0↓Sum∆Ongoing
+[6]   Sum∆Accrued Sum∆Accrued[0;]⍪(1↓Sum∆Accrued[0;]) Compind 1 0↓Sum∆Accrued
+[7]   
+[8]   (2 6 'Valuing Aggregated Members') Win∆ProgressBar2 'FileUpdate'  ⍝ Change Key to Age only
+[9]   Sum∆Ongoing[;0]←(⊂'Key'),⌊ 0.00000001×1↓Sum∆Ongoing[;0]
+[10]  Sum∆Accrued[;0]←(⊂'Key'),⌊ 0.00000001×1↓Sum∆Accrued[;0]
+[11]  ages←((⍳120)∊Sum∆Ongoing[;0])/⍳120
+[12]  ⍝ Set up loop(s) to read member data from file, do calculations
+[13]  :for X0 :in ages
+[14]      ((ages⍳X0) (⍴ages) ('Processing Age ',⍕X0)) Win∆ProgressBar2 'MemberUpdate'
+[15]      dbXe←X0
+[16]      EXIT←0 1 0 0 0 0
+[17]      Ind∆Ongoing←Sum∆Ongoing[0,WHERE X0≡¨Sum∆Ongoing[;0];]
+[18]      Ind∆Accrued←Sum∆Accrued[0,WHERE X0≡¨Sum∆Accrued[;0];]
+[19]      Memb∆Output←Memb∆All[0,X0;]
+[20]      Memb∆Output←PREPARE_MembAPP Memb∆Output
+[21]      :if transfers
+[22]          Memb∆Transfers←Memb∆TransAll[0,X0;]
+[23]          Memb∆Transfers←PREPARE_MembAPP Memb∆Transfers
+[24]      :endif
+[25]      :if ~IsDeferred
+[26]          Conts∆Output←Conts∆All[0,X0;]
+[27]      :endif
+[28]      pp∆CP←,(NX←1+0⌈(LRA⌈PHIEndAge⌈NRA∆G⌈SPA×~IsDeferred)-X0)⌊0⌈contper-term
+[29]      vMP←((NX-1)↑VMP),¯1↑v←NX↑V ⍝ At t=0.5, 1.5, 2.5,...N-.5, N
+[30]      NAME←'AGE',⍕X0 ⋄ MembID←-⍬⍴X0
+[31]      :if ~suppressText
+[32]          Ind∆Totals←(⍴TOTALS)⍴0
+[33]      :endif
+[34]      Ind∆CFTOT←STD∆CALCS ⍝ Main calculation program
+[35]      :if ~suppressText
+[36]          CFTOT←CFTOT+(3,120,16)↑Ind∆CFTOT
+[37]          TOTALS←TOTALS+Ind∆Totals
+[38]      :endif
+[39]  :endfor
+    ∇

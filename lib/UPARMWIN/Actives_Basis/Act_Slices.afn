@@ -1,0 +1,220 @@
+    ∇ field Act_Slices parm;page;no;SSName;Sliceget;Sliceput;headings;desc;list;parent;z;∆
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Do Initialisation, Changes and Validation of Slices
+[3]   
+[4]   parent←'fmSV.sActives_Basis.' ⋄ page←'pgSlices.' ⋄ SSName←parent,page,'fSlices.ssSlices'
+[5]   headings←⊃(⊂'Slice '),¨⍕¨⍳no←↑⍴SliceDesc
+[6]   
+[7]   :select parm
+[8]   :case 'Vars'
+[9]       Slices_Vars 'Slices'
+[10]      :if no≠0
+[11]          STDATE   ←STDATE    UpdateGridField lrSTDATE
+[12]          FNDATE   ←FNDATE    UpdateGridField lrFNDATE
+[13]          PENADJ1  ←PENADJ1   UpdateGridField lrPENADJ1
+[14]          PENADJ2  ←PENADJ2   UpdateGridField lrPENADJ2
+[15]          PENADJ3  ←PENADJ3   UpdateGridField lrPENADJ3
+[16]          m_PPFADJ1←m_PPFADJ1 UpdateGridField lrm_PPFADJ1
+[17]          m_PPFADJ2←m_PPFADJ2 UpdateGridField lrm_PPFADJ2
+[18]          m_PPFADJ3←m_PPFADJ3 UpdateGridField lrm_PPFADJ3
+[19]          f_PPFADJ1←f_PPFADJ1 UpdateGridField lrf_PPFADJ1
+[20]          f_PPFADJ2←f_PPFADJ2 UpdateGridField lrf_PPFADJ2
+[21]          f_PPFADJ3←f_PPFADJ3 UpdateGridField lrf_PPFADJ3
+[22]      :endif
+[23]  
+[24]      (parent,page,'fButtons.bnActives_BasisDelete') ⎕wi 'enabled' ((1<no)        ^basAccess[2]≤accesslevel)
+[25]      (parent,page,'fButtons.bnActives_BasisInsert') ⎕wi 'enabled' ((1<no)^(16>no)^basAccess[2]≤accesslevel)
+[26]      (parent,page,'fButtons.bnActives_BasisAdd'   ) ⎕wi 'enabled' (       (16>no)^basAccess[2]≤accesslevel)
+[27]      OffsetSlice←(⍳no)=zwb SLICEUP ⋄ FirstSlice←no↑1
+[28]  
+[29]  :case 'Init'
+[30]      SSName ⎕wi '∆VarsInWS' 1
+[31]      Act_Slices 'Vars'
+[32]      0 0⍴(⊂'ssSlices') Actives_Basis 'Change'
+[33]  
+[34]  :case 'Change'
+[35]      :select field
+[36]      :case 'ssSlices'
+[37]          :for no :in ⍳no
+[38]              SSName ⎕wi 'ColText' no (SliceDesc[no;])
+[39]              SSName Win∆F1SSSetSelection 1 no 9 no
+[40]              z←∨/' '≠SliceDesc[no;]
+[41]              :if (¯1↑SSName ⎕wi 'GetPattern')≠∆←1+z×¯1+SSName ⎕wi 'xBackColor'
+[42]                  SSName ⎕wi 'SetPattern' 1 (1+z×¯1+SSName ⎕wi 'xExtraColor') ∆
+[43]              :endif
+[44]          :endfor
+[45]          SSName Win∆F1SSSetSelection 1 1 1 1
+[46]          ⍙CACHE←UpdateCache
+[47]          0 0⍴(lmt qtrim¨m2n SSName ⎕wi '∆name') Actives_Basis 'Change'
+[48]          OffsetSlice←(⍳no)=zwb SLICEUP ⋄ FirstSlice←no↑1
+[49]      :endselect
+[50]  
+[51]  :case 'Valid'
+[52]  
+[53]  :caselist 'Add' 'Edit' 'Insert' ⍝ Add/Edit a Slice Definition
+[54]  
+[55]      :if 1=SSName ⎕wi 'SelectionCount'
+[56]      :andif =/(∆←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[57]      :andif ~∆≡1 1 1 1
+[58]          Sliceget←∆[2]
+[59]      :else
+[60]          Sliceget←0
+[61]      :endif
+[62]  
+[63]      :if parm≡'Insert'
+[64]          :if Sliceget∊0 1
+[65]              :if 1=↑⍴desc←SliceDesc ⋄ :return
+[66]              :else
+[67]                  list←⊃(⊂'Insert Slice before '),¨m2n 1 0↓ headings
+[68]                  :if mt Sliceput←Win∆SelectionBox (1 0↓desc) list ⋄ :return ⋄ :endif
+[69]                  Sliceput←0.5+↑list ExactTLU ,Sliceput
+[70]              :endif
+[71]          :else
+[72]              Sliceput←Sliceget-0.5
+[73]          :endif
+[74]          Sliceget←0
+[75]      :endif
+[76]  
+[77]      :if Sliceget=0
+[78]          desc←SliceDesc ⋄ list←headings
+[79]          :if   parm≡'Edit'                                   ⋄ list←⊃(⊂'Edit '),¨m2n list
+[80]          :else             ⋄ desc←desc OVER 'Default Values' ⋄ list←⊃(⊂'Use '),¨(m2n list OVER 'Default'),¨⊂' Values'
+[81]          :endif
+[82]          :if 1=↑⍴desc ⋄ Sliceget←list
+[83]          :elseif mt Sliceget←Win∆SelectionBox desc list ⋄ :return
+[84]          :endif
+[85]          Sliceget←↑((-~parm≡'Edit')↓[⎕io]list) ExactTLU ,Sliceget
+[86]      :endif
+[87]      :if ~parm≡'Insert' ⋄ Sliceput←Sliceget×parm≡'Edit' ⋄ :endif
+[88]  
+[89]      Win∆AssignVars ControlName ⍝ Trap current field entries
+[90]      Format←HyphenSwap Format
+[91]  
+[92]      SSName UKSliceRun ''
+[93]  
+[94]      :if parm≡'Insert'
+[95]          'Actives_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Insert' Sliceput
+[96]          :if     Sliceput>∆←zwb SLICEUP
+[97]          :andif  Sliceput<17 ⍝ Inserted Slice after Offset Slices
+[98]              MDISPLAY 'Inserted Slice is beyond Offset Slice'
+[99]          :elseif Sliceput≤∆
+[100]         :andif 'Y'='YN' ASK 'Do you want to increase the Offset Slice by 1 to ',(⍕∆+1),'?'
+[101]             SLICEUP←⍕∆+1
+[102]         :endif
+[103]     :endif
+[104]     Act_Slices 'Vars'
+[105]     openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[106]     0 0⍴(⊂'ssSlices') Actives_Basis 'Change'
+[107] 
+[108] :case 'Delete' ⍝ Delete a Slice Definition
+[109] 
+[110]     :if 1=SSName ⎕wi 'SelectionCount'
+[111]     :andif =/(Sliceget←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[112]     :andif ~Sliceget≡1 1 1 1
+[113]     :andif 1≠Sliceget←Sliceget[2]
+[114]     :else
+[115]         :if mt Sliceget←Win∆SelectionBox (1 0↓SliceDesc) (list←⊃(⊂'Delete '),¨⎕split 1 0↓headings) ⋄ :return ⋄ :endif
+[116]         Sliceget←1+↑list ExactTLU ,Sliceget
+[117]     :endif
+[118] 
+[119]     :if 'Y'='YN' ASK 'Delete' (headings[Sliceget;] ConcatLabel SliceDesc[Sliceget;])
+[120]         Win∆AssignVars ControlName ⍝ Trap current field entries
+[121]         Sliceput←(⍳no)~Sliceget
+[122]         SliceDesc← SliceDesc[Sliceput;]
+[123]         STDATE←    STDATE[Sliceput;]
+[124]         lrSTDATE←  lrSTDATE[Sliceput;]
+[125]         MINSDAT←   MINSDAT[Sliceput;]
+[126]         FNDATE←    FNDATE[Sliceput;]
+[127]         lrFNDATE←  lrFNDATE[Sliceput;]
+[128]         MAXFDAT←   MAXFDAT[Sliceput;]
+[129]         SERVRND←   SERVRND[Sliceput;]
+[130]         ADDYRS←    ADDYRS[Sliceput;]
+[131]         SERVINDM←  SERVINDM[Sliceput;]
+[132]         REVDEFIND← REVDEFIND[Sliceput;]
+[133]         DYNIND←    DYNIND[Sliceput;]
+[134]         IRIND←     IRIND[Sliceput;]
+[135]         UPINSLIND← UPINSLIND[Sliceput;]
+[136]         ACCBASIS←  ACCBASIS[Sliceput;]
+[137]         BARBIND←   BARBIND[Sliceput;]
+[138]         CAREInc←   CAREInc[Sliceput;]
+[139]         WARFRAC2←  WARFRAC2[Sliceput;]
+[140]         Tier2Defined←Tier2Defined[Sliceput;]
+[141]         Tier3Defined←Tier3Defined[Sliceput;]
+[142]         m_PPFNRA←  m_PPFNRA[Sliceput;]
+[143]         f_PPFNRA←  f_PPFNRA[Sliceput;]
+[144]         PPFPAYINCA←PPFPAYINCA[Sliceput;]
+[145] 
+[146]         SALCOD1←   SALCOD1[Sliceput;]
+[147]         ACCMLT1←   ACCMLT1[Sliceput;]
+[148]         ACCDIV1←   ACCDIV1[Sliceput;]
+[149]         ACCDATA1←  ACCDATA1[Sliceput;]
+[150]         ASTAB1←    ASTAB1[Sliceput;]
+[151]         ARTAB1←    ARTAB1[Sliceput;]
+[152]         SRATAB1←   SRATAB1[Sliceput;]
+[153]         FIXPEN1←   FIXPEN1[Sliceput;]
+[154]         MINPEN1←   MINPEN1[Sliceput;]
+[155]         MAXPEN1←   MAXPEN1[Sliceput;]
+[156]         PENADJ1←   PENADJ1[Sliceput;]
+[157]         lrPENADJ1← lrPENADJ1[Sliceput;]
+[158] ⍝⍝⍝        DeductTier11←DeductTier11[Sliceput;]
+[159] ⍝⍝⍝        DeductTier21←DeductTier21[Sliceput;]
+[160]         m_PPFADJ1← m_PPFADJ1[Sliceput;]
+[161]         lrm_PPFADJ1←lrm_PPFADJ1[Sliceput;]
+[162]         f_PPFADJ1← f_PPFADJ1[Sliceput;]
+[163]         lrf_PPFADJ1←lrf_PPFADJ1[Sliceput;]
+[164] 
+[165]         SALCOD2←   SALCOD2[Sliceput;]
+[166]         ACCMLT2←   ACCMLT2[Sliceput;]
+[167]         ACCDIV2←   ACCDIV2[Sliceput;]
+[168]         ACCDATA2←  ACCDATA2[Sliceput;]
+[169]         ASTAB2←    ASTAB2[Sliceput;]
+[170]         ARTAB2←    ARTAB2[Sliceput;]
+[171]         SRATAB2←   SRATAB2[Sliceput;]
+[172]         FIXPEN2←   FIXPEN2[Sliceput;]
+[173]         MINPEN2←   MINPEN2[Sliceput;]
+[174]         MAXPEN2←   MAXPEN2[Sliceput;]
+[175]         PENADJ2←   PENADJ2[Sliceput;]
+[176]         lrPENADJ2← lrPENADJ2[Sliceput;]
+[177]         DeductTier12←DeductTier12[Sliceput;]
+[178] ⍝⍝⍝        DeductTier22←DeductTier22[Sliceput;]
+[179]         m_PPFADJ2← m_PPFADJ2[Sliceput;]
+[180]         lrm_PPFADJ2←lrm_PPFADJ2[Sliceput;]
+[181]         f_PPFADJ2← f_PPFADJ2[Sliceput;]
+[182]         lrf_PPFADJ2←lrf_PPFADJ2[Sliceput;]
+[183] 
+[184]         SALCOD3←   SALCOD3[Sliceput;]
+[185]         ACCMLT3←   ACCMLT3[Sliceput;]
+[186]         ACCDIV3←   ACCDIV3[Sliceput;]
+[187]         ACCDATA3←  ACCDATA3[Sliceput;]
+[188]         ASTAB3←    ASTAB3[Sliceput;]
+[189]         ARTAB3←    ARTAB3[Sliceput;]
+[190]         SRATAB3←   SRATAB3[Sliceput;]
+[191]         FIXPEN3←   FIXPEN3[Sliceput;]
+[192]         MINPEN3←   MINPEN3[Sliceput;]
+[193]         MAXPEN3←   MAXPEN3[Sliceput;]
+[194]         PENADJ3←   PENADJ3[Sliceput;]
+[195]         lrPENADJ3← lrPENADJ3[Sliceput;]
+[196]         DeductTier13←DeductTier13[Sliceput;]
+[197]         DeductTier23←DeductTier23[Sliceput;]
+[198]         m_PPFADJ3← m_PPFADJ3[Sliceput;]
+[199]         lrm_PPFADJ3←lrm_PPFADJ3[Sliceput;]
+[200]         f_PPFADJ3← f_PPFADJ3[Sliceput;]
+[201]         lrf_PPFADJ3←lrf_PPFADJ3[Sliceput;]
+[202] 
+[203]         SSName ⎕wi 'MaxCol' (¯1+SSName ⎕wi 'MaxCol')
+[204]         SSName ⎕wi 'xSetSelection' 1 1 1 1
+[205] 
+[206]         'Actives_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Delete' Sliceget
+[207]         :if     Sliceget≥∆←zwb SLICEUP
+[208]             MDISPLAY 'Deleted Slice is beyond Offset Slice'
+[209]         :elseif Sliceget<∆
+[210]         :andif 'Y'='YN' ASK 'Do you want to reduce the Offset Slice by 1 to ',(⍕∆-1),'?'
+[211]             SLICEUP←⍕∆-1
+[212]         :endif
+[213]         Act_Slices 'Vars'
+[214]         openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[215]         0 0⍴(⊂'ssSlices') Actives_Basis 'Change'
+[216]     :endif
+[217] 
+[218] :endselect
+    ∇

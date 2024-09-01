@@ -1,0 +1,66 @@
+    ∇ res←field Edit_IndPUP parm;parent;dates
+[1]   ⍝ UPARMWIN.sf#8
+[2]   ⍝ Function to allow user control on UK Independent PUPs Details
+[3]   ⍝ Revn: sjt10apr15
+[4]   
+[5]   parent←'fmEditIndPUP.' ⋄ res←0⍴'' ⍝ Default response
+[6]   
+[7]   :select parm
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if PUPget≥1 ⋄ IndPUPValues ⋄ :endif
+[10]      Formattrick←HyphenSwap 'fmSV.sDefBasis.pgMain.fData.cbFormat' ⎕wi 'text' ⍝ Trick to get Format-related variables
+[11]      FormFields←Win∆GetControlList parent                                ⍝ Get list of fields
+[12]      ReviseCacheFor FormFields
+[13]      :if PUPput≠⌊pupput←PUPput ⋄ PUPput←99.5 ⋄ :endif ⍝ Signal failure
+[14]  
+[15]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[16]      :if PUPget=PUPput
+[17]          (parent,'fButtons.bnEdit_IndPUPPrevious') ⎕wi 'enabled' (PUPget≠1)
+[18]          (parent,'fButtons.bnEdit_IndPUPNext') ⎕wi 'enabled' (PUPget≠↑⍴IndPUPDesc)
+[19]          parent ⎕wi 'onModified' "ControlName ⎕wi '∆modified' 0"
+[20]          parent ⎕wi 'modified' 0
+[21]          parent ⎕wi '∆modified' 1
+[22]      :endif
+[23]  
+[24]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[25]  
+[26]      :repeat
+[27]          :select ↑field
+[28]          :case 'cbFormattrick'
+[29]          :case 'cbindrev'
+[30]  ⍝⍝⍝            :if zwb TVRevSame
+[31]  ⍝⍝⍝                (parent,'fPUPPay.cbtvindrev') ⎕wi 'value' ((parent,'fPUPPay.cbindrev') ⎕wi 'value')
+[32]  ⍝⍝⍝            :endif
+[33]          :else
+[34]              (↑field) Win∆FormValidation 'Change'
+[35]          :endselect
+[36]      :until mt field←1↓field
+[37]  
+[38]  :case 'Valid' ⍝ Routine specific validation
+[39]      res←(FormFields at 'variable')Win∆FormValidation 'Valid' ⍝ fields on this form
+[40]  
+[41]      :if ~mt PUPDESC
+[42]      :andif ~mt IndPUPDesc[(⍳1↑⍴IndPUPDesc)~PUPput;] ExactTLU PUPDESC
+[43]           res←'AlreadyDesc' ⋄ Win∆SetFocus parent,'edPUPDESC' ⋄ :return
+[44]      :endif
+[45]  
+[46]      :if ^/DATECHECK¨dates←(⊂'DD/MM/YYYY') DATEEXP¨↑¨⌽¨(⊂'Date') SwapRelFields¨((lrindstart indstart) (lrindfinish indfinish))
+[47]      :andif 0>↑DAYS /dates
+[48]          res←'Finish Date precedes Start Date'
+[49]          Win∆SetFocus parent,'fPUPPay.cbindstart' ⋄ :return
+[50]      :endif
+[51]  
+[52]  :case 'Run'
+[53]      PUPput←pupput
+[54]      IndPUPAssign
+[55]      :if mt res←(PUPget≠PUPput)/'Quit'
+[56]          parent ⎕wi 'modified' 0
+[57]          MDISPLAY 'Independent PUP ',(⍕PUPput),' parameters changed'
+[58]      :endif
+[59]      parent ⎕wi '∆modified' 1
+[60]  
+[61]  :case 'Quit' ⍝ Deleting "other" variables
+[62]      0 0⍴⎕ex 'pupput'
+[63]  
+[64]  :endselect
+    ∇

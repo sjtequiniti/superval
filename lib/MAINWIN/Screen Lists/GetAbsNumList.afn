@@ -1,0 +1,29 @@
+    ∇ res←valid GetAbsNumList level;tab;z;Z;parm;value
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get List of "Standard" Numeric Variables descriptions
+[3]   ⍝ valid indicates which are valid eg Scalar, Int, Formula, etc
+[4]   
+[5]   :select level
+[6]   :case 'Fund'
+[7]       tab←AbsDict for 'Type' 'Number' ⍝ Get Numerics and filter out those not valid
+[8]       tab←tab for (~(tab at 'Module')∊⊂'Data') ⍝ Remove Data Fields
+[9]   
+[10]      :if ~mt z←,(rowsIn tab)/1
+[11]      :andif 0≠⎕nc 'valid'
+[12]          valid←,¨eis valid ⍝ Remove Scalars
+[13]          :if ~^/mt¨valid
+[14]              z←^/¨(⊂valid~⊂'Formula')∊¨tab at 'Valid'
+[15]              z←z^(~(⊂'Formula')∊valid)∨∨/¨(⊂'Formula')∊¨tab at 'Valid'
+[16]          :endif
+[17]      :endif
+[18]  
+[19]      res←'Numeric Constants' OVER ⊃(tab for z) at 'List'
+[20]  
+[21]  :case 'Cat' ⍝ Append Category Variables as well - only relevant within Basis definition!!
+[22]      AbsDict←AbsDict UpdateAbsDict 'Basis'
+[23]      :if 0=⎕nc 'valid' ⋄ res←      GetAbsNumList 'Fund'
+[24]      :else             ⋄ res←valid GetAbsNumList 'Fund'
+[25]      :endif
+[26]  
+[27]  :endselect
+    ∇

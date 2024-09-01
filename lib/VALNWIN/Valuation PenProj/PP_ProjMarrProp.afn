@@ -1,0 +1,47 @@
+    ∇ PP∆ProjMarrProp z
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Projects the Proportion Married for Spouses at Exit or Retirement
+[3]   
+[4]   :select ↑¯1↑pp∆SPMethod,((⊂pp∆exit)∊'DT' 'DO')/1
+[5]   :case 1 ⍝ Spouse at Death
+[6]       :return ⍝ Nothing required
+[7]   :case 0 ⍝ Spouse at Retirement
+[8]       pp∆MarrProp←pp∆HatRet
+[9]       :if isTOut ⍝ Spouse at NRA for Transfers
+[10]          pp∆MarrProp←pp∆MarrProp CDIV pp∆LY[pp∆Xstart-pp∆∆[z]]
+[11]      :elseif (ClassID∊3 4)^(pp∆X0≥pp∆WRetAge) ⍝ "Current" Spouse if Deferred/Pensioner already beyond "Retirement"
+[12]          :if pp∆MS∊'MSW'
+[13]              pp∆MarrProp←pp∆MarrProp CDIV pp∆LY[pp∆X0-pp∆∆[z]] ⍝ Survive from VDate
+[14]          :else
+[15]              :if pp∆WRetAge≠⌊pp∆WRetAge ⋄ pp∆MarrProp←pp∆MarrProp CDIV pp∆ly[⌊pp∆WRetAge-pp∆∆[z]] ⍝ Survive from "Retirement"
+[16]              :else                      ⋄ pp∆MarrProp←pp∆MarrProp CDIV pp∆LY[ pp∆WRetAge-pp∆∆[z]]
+[17]              :endif
+[18]          :endif
+[19]      :else
+[20]          :if pp∆midprestart ⋄ pp∆MarrProp←pp∆MarrProp CDIV pp∆ly[⌊pp∆Xprestart-pp∆∆[z]]
+[21]          :else              ⋄ pp∆MarrProp←pp∆MarrProp CDIV pp∆LY[ pp∆Xprestart-pp∆∆[z]]
+[22]          :endif
+[23]      :endif
+[24]  :case ¯1 ⍝ Spouse at Exit
+[25]      pp∆MarrProp←pp∆HatExit
+[26]      :if ClassID∊3 4 ⋄ :andif pp∆MS∊'MSW' ⋄ :andif pp∆X0≥pp∆Xatprestart ⍝ "Current" Spouse if Deferred or Pensioner as already beyond "Exit"
+[27]          pp∆MarrProp←pp∆MarrProp CDIV pp∆LY[pp∆X0-pp∆∆[z]] ⍝ Survive from VDate
+[28]      :else
+[29]          :if pp∆midprestart ⋄ pp∆MarrProp←pp∆MarrProp CDIV pp∆ly[⌊pp∆Xatprestart-pp∆∆[z]] ⍝ to Retirement
+[30]          :else              ⋄ pp∆MarrProp←pp∆MarrProp CDIV pp∆LY[ pp∆Xatprestart-pp∆∆[z]]
+[31]          :endif
+[32]      :endif
+[33]  :endselect
+[34]  
+[35]  :if pp∆midstart ⋄ pp∆MarrProp←pp∆MarrProp×pp∆ly[pp∆xstart-pp∆∆[z]],(⌈pp∆Xstart-pp∆∆[z])↓pp∆LY
+[36]  :else           ⋄ pp∆MarrProp←pp∆MarrProp×                         ( pp∆Xstart-pp∆∆[z])↓pp∆LY
+[37]  :endif
+[38]  
+[39]  :if uk≠1 ⍝⍝⍝ UK Error
+[40]      pp∆MarrProp←MID pp∆MarrProp,0
+[41]  :endif
+[42]  
+[43]  pp∆MarrProp←pp∆size↑pp∆startpad,pp∆MarrProp
+[44]  
+[45]  ⍝⍀⍝ 'S' PP∆TestUpdate ⊂'pp∆MarrProp←'
+    ∇

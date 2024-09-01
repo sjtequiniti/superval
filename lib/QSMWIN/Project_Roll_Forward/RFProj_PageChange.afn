@@ -1,0 +1,40 @@
+    ∇ RFProj_PageChange;∆;msk;qsmParms
+[1]   ⍝ QSMWIN.sf#6
+[2]   ⍝ Process the Page Change from Parameters to Results
+[3]   
+[4]   :if ~(⍳↑⍴rfDate)≡∆←⍋JUL 'DD/MM/YYYY' DATEEXP rfDate                 ⍝ Sort into Date order
+[5]       rfDate←rfDate[∆;] ⋄ QSMParms←QSMParms[∆;] ⋄ assets←assets[∆;]
+[6]   :endif
+[7]   
+[8]   qsmParms←Parmlist[('[' StripText Parmlist) ExactTLU QSMParms;]
+[9]   
+[10]  0 0⍴(SystemDir,'QSMWIN') ReadFile 'Quick_Scenario'
+[11]  0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation PenProj' '' (⊃'PP∆FreqGeoAdjust' 'PP∆FreqAdjust')
+[12]  
+[13]  ⍝ Calculate liabilities
+[14]  liabilities←0 0⍴''
+[15]  :for ∆ :in spin m2n¨rfDate qsmParms assets
+[16]      :if ×rowsIn results
+[17]      :andif ∨/msk←(⎕split valsIn results select 'Date' 'QSMParms' 'Assets')∊⊂∆
+[18]          liabilities←liabilities OVER ↑msk/results at 'Liabilities'
+[19]      :else
+[20]          liabilities←liabilities OVER 'M<->I20' ⎕fmt RFProj_CallQSM ¯1↓∆
+[21]      :endif
+[22]  :endfor
+[23]  
+[24]  liabilities←⊃m2n liabilities
+[25]  solvency←⊃m2n 'M<->F7.2,<%>' ⎕fmt 100×(MatrixZWB assets) CDIV MatrixZWB liabilities
+[26]  
+[27]  results←(keysIn results) OVER ⊃spin m2n¨rfDate qsmParms assets liabilities
+[28]  
+[29]  resDate←rfDate ⋄ resAssets←assets
+[30]  Assign_Inputs 1
+[31]  
+[32]  ⍝ Generate new Graph
+[33]  SolView←RFProj_Graph
+[34]  
+[35]  0 0⍴Quick_Scenario 'Quit'
+[36]  0 0⍴(SystemDir,'QSMWIN') DeleteModule 'Quick_Scenario'
+[37]  
+[38]  parent ⎕wi 'modified' 1
+    ∇

@@ -1,1 +1,63 @@
-    ∇ wBEN_ADJUST;A;adj;min;max;pen;PHIpen[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Pension Adjustments[3]   [4]   pen←PEN ⋄ :if PHI ⋄ PHIpen←PHIPEN ⋄ :endif[5]   :if ~DEDTIER∆L≡⍬[6]                         PEN←    PEN-   DEDTIER∆L ⋄    PreNRAPEN←   PreNRAPEN-   DEDTIER∆L∆PreNRA[7]                        IPEN←   IPEN-   DEDTIER∆L∆I[8]       :if PHI ⋄      PHIPEN← PHIPEN-PHIDEDTIER∆L ⋄ PHIPreNRAPEN←PHIPreNRAPEN-PHIDEDTIER∆L∆PreNRA ⋄ :endif[9]       :if ~IndFlag ⋄   DPEN←   DPEN-   DEDTIER∆L∆D ⋄ PEN∆NRA   ←  PEN∆NRA   -   DEDTIER∆L∆NRA[10]          :if PHI ⋄ PHIDPEN←PHIDPEN-PHIDEDTIER∆L∆D ⋄ :endif[11]      :endif[12]  :endif[13]  A←PEN[14]  [15]  ⍝⍝⍝ 8.50 compared with both Data Value and Constant minimums/maximums[16]  ⍝⍝⍝ PEN←PEN⌈min←    1↑MINPENDATA∆L,-10*12 ⋄ A←A,[0.5]PEN[17]  ⍝⍝⍝ PEN←PEN⌈min←min⌈1↑MINPEN∆L,-10*12     ⋄ A←A,PEN[18]  ⍝⍝⍝ PEN←PEN⌊max←    1↑MAXPENDATA∆L,10*12  ⋄ A←A,PEN[19]  ⍝⍝⍝ PEN←PEN⌊max←max⌊1↑MAXPEN∆L,10*12      ⋄ A←A,PEN[20]  [21]  PEN←PEN⌈min←MINPEN∆L ⋄ A←A,[0.5]PEN ⋄ A←A,PEN[22]  PEN←PEN⌊max←MAXPEN∆L ⋄ A←A,     PEN ⋄ A←A,PEN[23]  PEN←PEN×adj←PENADJ∆L ⋄ A←A,PEN[24]  [25]  :if ~bGAD ⋄ UNITPEN←UNITPEN×PEN ZDIV pen  ⋄ :endif ⍝⍝⍝ FIXME - Change by ratio of change in PEN - see also [37][26]  PreNRAPEN←PreNRAPEN⌈min ⋄ PreNRAPEN←PreNRAPEN⌊max ⋄ PreNRAPEN←PreNRAPEN×adj[27]       IPEN←     IPEN⌈min ⋄      IPEN←     IPEN⌊max ⋄      IPEN←     IPEN×adj[28]  [29]  :if ~IndFlag[30]       DPEN←     DPEN⌈min ⋄      DPEN←     DPEN⌊max ⋄      DPEN←     DPEN×adj[31]    PEN∆NRA←  PEN∆NRA⌈min ⋄   PEN∆NRA←  PEN∆NRA⌊max ⋄   PEN∆NRA←  PEN∆NRA×adj[32]      :if PHI ⋄ PHIDPEN←PHIDPEN⌈PHISYBen×[1]min ⋄      PHIDPEN←     PHIDPEN⌊PHISYBen×max ⋄      PHIDPEN←     PHIDPEN×adj ⋄ :endif[33]  :endif[34]  [35]  :if PHI[36]            PHIPEN←PHIPEN      ⌈PHISYBen×[1]min ⋄       PHIPEN←      PHIPEN⌊PHISYBen×max ⋄       PHIPEN←      PHIPEN×adj[37]      :if ~bGAD ⋄ PHIUNITPEN  ←PHIUNITPEN  ×PHIPEN ZDIV PHIpen ⋄ :endif ⍝⍝⍝ FIXME - see also [25][38]      PHIPreNRAPEN←PHIPreNRAPEN⌈PHISYBen×[1]min ⋄ PHIPreNRAPEN←PHIPreNRAPEN⌊PHISYBen×max ⋄ PHIPreNRAPEN←PHIPreNRAPEN×adj[39]  :endif[40]  [41]  PPF∆DIDPEN←PEN ⍝ PPF∆DIDPEN is not adjusted for PPFADJ - this only applies to Retirement Benefits[42]  :if ppf[43]      PEN←PEN×adj←1↑PPFADJ∆L,1 ⋄ PreNRAPEN←PreNRAPEN×adj[44]      :if ~IndFlag ⋄ PEN∆NRA←PEN∆NRA×adj ⋄ :endif[45]  :endif[46]  [47]  ⍝⍝⍝ :if test ⋄ AUDIT ' ⍺ß2' ⋄ :endif[48]  ⍝⌿⍝ AUDIT ' ⍺ß2'[49]  [50]  :select ⍬⍴tier[51]  :case 0     ⋄    Tier12←   Tier1←   PEN ⋄    Tier12∆PreNRA←   Tier1∆PreNRA←   PreNRAPEN ⋄ Tier12∆I←Tier1∆I←IPEN[52]      :if PHI ⋄ PHITier12←PHITier1←PHIPEN ⋄ PHITier12∆PreNRA←PHITier1∆PreNRA←PHIPreNRAPEN ⋄  :endif[53]      :if ~IndFlag ⋄   Tier12∆D←   Tier1∆D←   DPEN ⋄ Tier12∆NRA←Tier1∆NRA←PEN∆NRA[54]          :if PHI ⋄ PHITier12∆D←PHITier1∆D←PHIDPEN ⋄ :endif[55]      :endif[56]  :case 1     ⋄    Tier12←   Tier1+   PEN ⋄    Tier12∆PreNRA←   Tier1∆PreNRA+   PreNRAPEN ⋄ Tier12∆I←Tier1∆I+IPEN[57]      :if PHI ⋄ PHITier12←PHITier1+PHIPEN ⋄ PHITier12∆PreNRA←PHITier1∆PreNRA+PHIPreNRAPEN ⋄  :endif[58]      :if ~IndFlag ⋄   Tier12∆D←   Tier1∆D+   DPEN ⋄ Tier12∆NRA←Tier1∆NRA+PEN∆NRA[59]          :if PHI ⋄ PHITier12∆D←PHITier1∆D+PHIDPEN ⋄ :endif[60]      :endif[61]  :endselect    ∇
+    ∇ wBEN_ADJUST;A;adj;min;max;pen;PHIpen
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Pension Adjustments
+[3]   
+[4]   pen←PEN ⋄ :if PHI ⋄ PHIpen←PHIPEN ⋄ :endif
+[5]   :if ~DEDTIER∆L≡⍬
+[6]                         PEN←    PEN-   DEDTIER∆L ⋄    PreNRAPEN←   PreNRAPEN-   DEDTIER∆L∆PreNRA
+[7]                        IPEN←   IPEN-   DEDTIER∆L∆I
+[8]       :if PHI ⋄      PHIPEN← PHIPEN-PHIDEDTIER∆L ⋄ PHIPreNRAPEN←PHIPreNRAPEN-PHIDEDTIER∆L∆PreNRA ⋄ :endif
+[9]       :if ~IndFlag ⋄   DPEN←   DPEN-   DEDTIER∆L∆D ⋄ PEN∆NRA   ←  PEN∆NRA   -   DEDTIER∆L∆NRA
+[10]          :if PHI ⋄ PHIDPEN←PHIDPEN-PHIDEDTIER∆L∆D ⋄ :endif
+[11]      :endif
+[12]  :endif
+[13]  A←PEN
+[14]  
+[15]  ⍝⍝⍝ 8.50 compared with both Data Value and Constant minimums/maximums
+[16]  ⍝⍝⍝ PEN←PEN⌈min←    1↑MINPENDATA∆L,-10*12 ⋄ A←A,[0.5]PEN
+[17]  ⍝⍝⍝ PEN←PEN⌈min←min⌈1↑MINPEN∆L,-10*12     ⋄ A←A,PEN
+[18]  ⍝⍝⍝ PEN←PEN⌊max←    1↑MAXPENDATA∆L,10*12  ⋄ A←A,PEN
+[19]  ⍝⍝⍝ PEN←PEN⌊max←max⌊1↑MAXPEN∆L,10*12      ⋄ A←A,PEN
+[20]  
+[21]  PEN←PEN⌈min←MINPEN∆L ⋄ A←A,[0.5]PEN ⋄ A←A,PEN
+[22]  PEN←PEN⌊max←MAXPEN∆L ⋄ A←A,     PEN ⋄ A←A,PEN
+[23]  PEN←PEN×adj←PENADJ∆L ⋄ A←A,PEN
+[24]  
+[25]  :if ~bGAD ⋄ UNITPEN←UNITPEN×PEN ZDIV pen  ⋄ :endif ⍝⍝⍝ FIXME - Change by ratio of change in PEN - see also [37]
+[26]  PreNRAPEN←PreNRAPEN⌈min ⋄ PreNRAPEN←PreNRAPEN⌊max ⋄ PreNRAPEN←PreNRAPEN×adj
+[27]       IPEN←     IPEN⌈min ⋄      IPEN←     IPEN⌊max ⋄      IPEN←     IPEN×adj
+[28]  
+[29]  :if ~IndFlag
+[30]       DPEN←     DPEN⌈min ⋄      DPEN←     DPEN⌊max ⋄      DPEN←     DPEN×adj
+[31]    PEN∆NRA←  PEN∆NRA⌈min ⋄   PEN∆NRA←  PEN∆NRA⌊max ⋄   PEN∆NRA←  PEN∆NRA×adj
+[32]      :if PHI ⋄ PHIDPEN←PHIDPEN⌈PHISYBen×[1]min ⋄      PHIDPEN←     PHIDPEN⌊PHISYBen×max ⋄      PHIDPEN←     PHIDPEN×adj ⋄ :endif
+[33]  :endif
+[34]  
+[35]  :if PHI
+[36]            PHIPEN←PHIPEN      ⌈PHISYBen×[1]min ⋄       PHIPEN←      PHIPEN⌊PHISYBen×max ⋄       PHIPEN←      PHIPEN×adj
+[37]      :if ~bGAD ⋄ PHIUNITPEN  ←PHIUNITPEN  ×PHIPEN ZDIV PHIpen ⋄ :endif ⍝⍝⍝ FIXME - see also [25]
+[38]      PHIPreNRAPEN←PHIPreNRAPEN⌈PHISYBen×[1]min ⋄ PHIPreNRAPEN←PHIPreNRAPEN⌊PHISYBen×max ⋄ PHIPreNRAPEN←PHIPreNRAPEN×adj
+[39]  :endif
+[40]  
+[41]  PPF∆DIDPEN←PEN ⍝ PPF∆DIDPEN is not adjusted for PPFADJ - this only applies to Retirement Benefits
+[42]  :if ppf
+[43]      PEN←PEN×adj←1↑PPFADJ∆L,1 ⋄ PreNRAPEN←PreNRAPEN×adj
+[44]      :if ~IndFlag ⋄ PEN∆NRA←PEN∆NRA×adj ⋄ :endif
+[45]  :endif
+[46]  
+[47]  ⍝⍝⍝ :if test ⋄ AUDIT ' ⍺ß2' ⋄ :endif
+[48]  ⍝⌿⍝ AUDIT ' ⍺ß2'
+[49]  
+[50]  :select ⍬⍴tier
+[51]  :case 0     ⋄    Tier12←   Tier1←   PEN ⋄    Tier12∆PreNRA←   Tier1∆PreNRA←   PreNRAPEN ⋄ Tier12∆I←Tier1∆I←IPEN
+[52]      :if PHI ⋄ PHITier12←PHITier1←PHIPEN ⋄ PHITier12∆PreNRA←PHITier1∆PreNRA←PHIPreNRAPEN ⋄  :endif
+[53]      :if ~IndFlag ⋄   Tier12∆D←   Tier1∆D←   DPEN ⋄ Tier12∆NRA←Tier1∆NRA←PEN∆NRA
+[54]          :if PHI ⋄ PHITier12∆D←PHITier1∆D←PHIDPEN ⋄ :endif
+[55]      :endif
+[56]  :case 1     ⋄    Tier12←   Tier1+   PEN ⋄    Tier12∆PreNRA←   Tier1∆PreNRA+   PreNRAPEN ⋄ Tier12∆I←Tier1∆I+IPEN
+[57]      :if PHI ⋄ PHITier12←PHITier1+PHIPEN ⋄ PHITier12∆PreNRA←PHITier1∆PreNRA+PHIPreNRAPEN ⋄  :endif
+[58]      :if ~IndFlag ⋄   Tier12∆D←   Tier1∆D+   DPEN ⋄ Tier12∆NRA←Tier1∆NRA+PEN∆NRA
+[59]          :if PHI ⋄ PHITier12∆D←PHITier1∆D+PHIDPEN ⋄ :endif
+[60]      :endif
+[61]  :endselect
+    ∇

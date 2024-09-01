@@ -1,1 +1,35 @@
-    ∇ res←BatchedRuns;i;PickList;NameList;sortorder;n;cn;cols;no;keys[1]   ⍝ OVERWIN.sf#19[2]   ⍝ Create the List of Batched Valuation Runs[3]   [4]   PickList←0 34⍴''[5]   [6]   :if 0=⎕nc 'BatchedNest' ⋄ :orif mt BatchedNest[7]       BatchedNest←MATRIX 'Valn Method' 'Basis File' 'Basis Description' 'Valn Date' 'Test' 'Accrued Bens' 'Control Period' 'Insured Cost' 'Target Benefit' 'New Entrants' 'New Entrant Description' 'AOS' 'Surcharge Description' 'Decrements' 'Benefits' 'Data File' 'Age Summary' 'Member Summary' 'PUC Output' 'Keep Notional File' 'Results Extract' 'Extended Version' 'Store Results' 'ALM/LDI Interface' 'Output Style' 'Aggregate Benefits' 'Cap Accrued Benefits' 'S143 Entry' 'Sex' 'Exact Age Interpolation' 'Individual Cashflow' 'Valuation Factors'[8]   ⍝⍝⍝ 'Extended Version' to 'Extract Description' ⍝⍝⍝[9]   :endif[10]  [11]  BatchedNest←BatchConvert BatchedNest[12]  [13]  :for i :in cn←⍳rowsIn BatchedNest[14]       PickList←PickList⍪i (1 0 ¯2),BatchedNest[i+1;][15]  :endfor[16]  [17]  NameList←0 7⍴'' ⋄ n←0 ⋄ cols←⍳¯2+¯1↑⍴PickList[18]  :select uk ⍝ Select and Reorder columns for display[19]  :case 0 ⋄ no←⍴cols←cols~4 12 22 24 25 26 27 28 29[20]  :case 1[21]      keys←'Valn Method' 'Basis File' 'Basis Description' 'Sex' 'Test' 'Control Period' 'Insured Cost' 'Target Benefit' 'New Entrants' 'New Entrant Description' 'AOS' 'Valn Date' 'Data File' 'Age Summary' 'Member Summary' 'Results Extract' 'Store Results' 'ALM/LDI Interface' 'Aggregate Benefits' 'Valuation Factors' 'Individual Cashflow' 'Exact Age Interpolation' 'Cap Accrued Benefits' 'S143 Entry'[22]      cols←(keysIn BatchedNest)⍳keys[23]      ⍝⍝⍝ BatchedNest select keys[24]  :case 2 ⋄ no←⍴cols←cols~13 15 19 20 24 25 26 27 28 29,(~gmc)/21 22[25]  :endselect[26]  [27]  :for i :in cols[28]      NameList←NameList⍪((⊃BatchedNest[1;i]),'   ') (¯1↑Win∆TextSize ⊃PickList[;i+2]) 'left' i (n←n+1) 0 1[29]  :endfor[30]  [31]  sortorder←(34×6)⍴'⍺Alpha'[32]  [33]  res←PickList NameList sortorder cn    ∇
+    ∇ res←BatchedRuns;i;PickList;NameList;sortorder;n;cn;cols;no;keys
+[1]   ⍝ OVERWIN.sf#19
+[2]   ⍝ Create the List of Batched Valuation Runs
+[3]   
+[4]   PickList←0 34⍴''
+[5]   
+[6]   :if 0=⎕nc 'BatchedNest' ⋄ :orif mt BatchedNest
+[7]       BatchedNest←MATRIX 'Valn Method' 'Basis File' 'Basis Description' 'Valn Date' 'Test' 'Accrued Bens' 'Control Period' 'Insured Cost' 'Target Benefit' 'New Entrants' 'New Entrant Description' 'AOS' 'Surcharge Description' 'Decrements' 'Benefits' 'Data File' 'Age Summary' 'Member Summary' 'PUC Output' 'Keep Notional File' 'Results Extract' 'Extended Version' 'Store Results' 'ALM/LDI Interface' 'Output Style' 'Aggregate Benefits' 'Cap Accrued Benefits' 'S143 Entry' 'Sex' 'Exact Age Interpolation' 'Individual Cashflow' 'Valuation Factors'
+[8]   ⍝⍝⍝ 'Extended Version' to 'Extract Description' ⍝⍝⍝
+[9]   :endif
+[10]  
+[11]  BatchedNest←BatchConvert BatchedNest
+[12]  
+[13]  :for i :in cn←⍳rowsIn BatchedNest
+[14]       PickList←PickList⍪i (1 0 ¯2),BatchedNest[i+1;]
+[15]  :endfor
+[16]  
+[17]  NameList←0 7⍴'' ⋄ n←0 ⋄ cols←⍳¯2+¯1↑⍴PickList
+[18]  :select uk ⍝ Select and Reorder columns for display
+[19]  :case 0 ⋄ no←⍴cols←cols~4 12 22 24 25 26 27 28 29
+[20]  :case 1
+[21]      keys←'Valn Method' 'Basis File' 'Basis Description' 'Sex' 'Test' 'Control Period' 'Insured Cost' 'Target Benefit' 'New Entrants' 'New Entrant Description' 'AOS' 'Valn Date' 'Data File' 'Age Summary' 'Member Summary' 'Results Extract' 'Store Results' 'ALM/LDI Interface' 'Aggregate Benefits' 'Valuation Factors' 'Individual Cashflow' 'Exact Age Interpolation' 'Cap Accrued Benefits' 'S143 Entry'
+[22]      cols←(keysIn BatchedNest)⍳keys
+[23]      ⍝⍝⍝ BatchedNest select keys
+[24]  :case 2 ⋄ no←⍴cols←cols~13 15 19 20 24 25 26 27 28 29,(~gmc)/21 22
+[25]  :endselect
+[26]  
+[27]  :for i :in cols
+[28]      NameList←NameList⍪((⊃BatchedNest[1;i]),'   ') (¯1↑Win∆TextSize ⊃PickList[;i+2]) 'left' i (n←n+1) 0 1
+[29]  :endfor
+[30]  
+[31]  sortorder←(34×6)⍴'⍺Alpha'
+[32]  
+[33]  res←PickList NameList sortorder cn
+    ∇

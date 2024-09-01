@@ -1,1 +1,27 @@
-    ∇ Z←XV_InputDataFile lines;ALPHA;NUMBR;typ;cnt;rws;cmmt;∆;lpr[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag copy of data source in lines, if there. SJT 01feb10[3]   ⍝ Return number of lines read and rws of an HTML PRE element.[4]   ⍝ Reads ext vars: STYLE_TH[5]   [6]   ALPHA←'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ,.'                 ⍝ names[7]   NUMBR←'0123456789 ,./'                                                          ⍝ numbers & dates[8]   [9]   :If ^/(7↑↑lines)∊ALPHA[10]  :AndIf ~∨/∨/¨lines[1] ⎕SS¨'.csv' '.CSV'                                         ⍝ not start of yield-curve table[11]  [12]      cmmt←⊂'<!-- XV_InputDataFile -->'[13]  [14]      typ←⊃^/¨(⊂⊃7↑¨lines)∊¨ALPHA NUMBR                                           ⍝ records start with names[15]  [16]      lpr←--/2↑∆/⍳⍴∆←typ[1;]                                                      ⍝ lines per record[17]      cnt←lpr×⌊(+/^\^⌿typ=1 0∘.=(⍴lines)⍴lpr↑1)÷lpr                               ⍝ number of records[18]  [19]      rws←cmmt,'pre' xtag DLTB¨↑¨,/¨(+\cnt↑typ[1;])⊂cnt↑lines[20]  [21]  :Else[22]      (cnt rws)←0 ''                                                              ⍝ no table found[23]  :EndIf[24]  [25]  Z←cnt rws    ∇
+    ∇ Z←XV_InputDataFile lines;ALPHA;NUMBR;typ;cnt;rws;cmmt;∆;lpr
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag copy of data source in lines, if there. SJT 01feb10
+[3]   ⍝ Return number of lines read and rws of an HTML PRE element.
+[4]   ⍝ Reads ext vars: STYLE_TH
+[5]   
+[6]   ALPHA←'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ,.'                 ⍝ names
+[7]   NUMBR←'0123456789 ,./'                                                          ⍝ numbers & dates
+[8]   
+[9]   :If ^/(7↑↑lines)∊ALPHA
+[10]  :AndIf ~∨/∨/¨lines[1] ⎕SS¨'.csv' '.CSV'                                         ⍝ not start of yield-curve table
+[11]  
+[12]      cmmt←⊂'<!-- XV_InputDataFile -->'
+[13]  
+[14]      typ←⊃^/¨(⊂⊃7↑¨lines)∊¨ALPHA NUMBR                                           ⍝ records start with names
+[15]  
+[16]      lpr←--/2↑∆/⍳⍴∆←typ[1;]                                                      ⍝ lines per record
+[17]      cnt←lpr×⌊(+/^\^⌿typ=1 0∘.=(⍴lines)⍴lpr↑1)÷lpr                               ⍝ number of records
+[18]  
+[19]      rws←cmmt,'pre' xtag DLTB¨↑¨,/¨(+\cnt↑typ[1;])⊂cnt↑lines
+[20]  
+[21]  :Else
+[22]      (cnt rws)←0 ''                                                              ⍝ no table found
+[23]  :EndIf
+[24]  
+[25]  Z←cnt rws
+    ∇

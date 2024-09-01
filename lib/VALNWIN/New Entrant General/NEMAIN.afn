@@ -1,0 +1,47 @@
+    ∇ res←NEMAIN MembGroup;TPX;Minterm;disc;discMP;GMAT;CHECKTOT;Ind∆Totals;PROBS;NORMC;VTB;EXIT;SUMMREC;ValDATE;File;focus∆prog;schemafiles;newrecsize
+[1]   ⍝ VALNWIN.sf#13
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   →(res←PREP∆STAND)/OUT
+[8]   
+[9]   ⍝ Set up loop(s) to read member data from file, do calculations
+[10]  READ:→(NUMRECS<recn←recn+1)/FINISH
+[11]  
+[12]  (recn NUMRECS) Win∆ProgressBar2 'MemberUpdate'
+[13]  
+[14]  REC←,'ASCII' Read∆DataFile netie,filesize,RECL,1,recn-1
+[15]  
+[16]  Ind∆Totals←(⍴TOTALS)⍴0 ⍝ Main calculation program
+[17]  0 0⍴PRELIM ACTIVE ⍝ Set up vectors of service/membership, salaries, AC's
+[18]  CFTOT←CFTOT+(3,(LRA-14),16)↑STD∆CALCS ⋄ TOTALS←TOTALS+Ind∆Totals ⋄ →READ
+[19]  
+[20]  FINISH:→(×term)/END ⍝ Print Sample New Entrant Totals
+[21]  SUMMREC←' ' OVER 2 FORMAT∆OUT TOTALS
+[22]  (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN
+[23]  PRINTANAL ⋄ RECN←pAGE ⍝ Write Averages to File
+[24]  :if ×uk
+[25]      H2[3 4 5+2×uk=1;⍳11]←3 11⍴'Year/ No ofScheme New Total Ents.'
+[26]  :else
+[27]      H2[3 4 5;⍳39]←' '⍪2 39⍴' Year    Fund    No. of        Annual    No.    Total  New Ents.      Salary  '
+[28]  :endif
+[29]  END:→NEXT∆YEAR/READ
+[30]  
+[31]  ESC:('Task:' 'Process:') Win∆ProgressBar2 'SetLabels'
+[32]  
+[33]  :if ⍙dbopt ⋄ newrecsize←⍙DBCompressFiles 0 ⍝ Summarising Temporary Database records
+[34]      :if ~hpcenabled ⋄ schemafiles←⍙DBSchemaFiles InputDir ⋄ :endif
+[35]  :else      ⋄ newrecsize←0
+[36]  :endif
+[37]  
+[38]  VAL∆RESULTS
+[39]  
+[40]  OUT:Win∆ProgressBar2 'Hide'
+[41]  :if 0≠netie ⋄ (OutputDir,'TEMP$$.NES') NERASE netie ⋄ :endif
+[42]  
+[43]  :if FileExist OutputDir,'TEMPNEWE.SF'
+[44]      (OutputDir,'TEMPNEWE.SF') ⎕xferase summtie
+[45]  :endif
+    ∇

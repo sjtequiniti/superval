@@ -1,0 +1,116 @@
+    ∇ MESS←FinancialsCreate;⍙dbname;DBID;found;keys;tab;tbl;∆;flds;group;fld;values;msk;vals;val;csv;parms;stem;exist;z;File;tieno;ResSize;fldval
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Get the Financials from Database and update with adjustments
+[3]   
+[4]   ⍝ Open the Database
+[5]   :if ~2↓(⍙dbname DBID found)←(((~sqlDatabase )/ConsolidDir),currentdbase) ⍙DBOpen ¯2
+[6]       MESS←'Database file not found'
+[7]   :else
+[8]       ⍝ Read Database Financials
+[9]       keys←'ID' 'Type' 'Name' 'Value' 'xxx' 'Cap' 'Collar' 'ConsDesc' 'Group' 'Desc'
+[10]      tab←DLTB¨keys OVER 1 ⍙DBadoCONCommand "SELECT * FROM FinancialsValues",sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[11]  
+[12]      ⍝ Check for conflicts
+[13]      :if  ~^/∆←unique spin tab at 'Type' 'Name'
+[14]      :andif ~∆≡unique spin tab at 'Type' 'Name' 'Value' 'Cap' 'Collar' 'ConsDesc' 'Group'
+[15]          MESS←'Conflicts in the Financials used'
+[16]      :else
+[17]          tab←tab for ∆
+[18]          MESS←''
+[19]      :endif
+[20]  
+[21]  ⍝⍝⍝ Set rates at Roll-forward date using Roll-Forward configuration
+[22]  
+[23]      ResSize←0
+[24]      ⍝ Update Values with adjustments
+[25]      flds←(⊂'rate'),¨m2n 'ZI2' ⎕fmt WHERE ~mt¨groupings
+[26]      values←tab at 'Value'
+[27]      :for ∆ :in spin (lmt groupings) flds ⋄ (group fld)←∆
+[28]          fld←⍎fld
+[29]          msk←(tab at 'Group')∊⊂group ⋄ vals←0⍴⊂''
+[30]          :for val :in msk/values
+[31]              :if finMethod≡0 1 0 0 ⍝ Absolute Value (replace)
+[32]                  vals←vals,⊂(mt fld) means val else fld
+[33]                  :continue
+[34]              :else
+[35]                  :if ∨/'.CSV'⍷UPPERCASE fld ⍝ if csv file involved
+[36]                      fldval←ExecuteRates ⊂fld
+[37]                  :else
+[38]                      :if mt fld ⋄ fld←⍕finMethod×0 0 0 100 ⋄ :endif
+[39]                      fldval←⍎fld
+[40]                  :endif
+[41]  
+[42]                  :select finMethod
+[43]                  :case 1 0 0 0 ⍝ Relative Value (added)
+[44]                      :if ^/  0=fldval ⋄ vals←vals,⊂val ⋄ :continue
+[45]                      :else
+[46]                          :if csv←∨/∆←∨/¨(⊂'.CSV')⍷¨UPPERCASE¨parms←val fld ⍝ if csv file involved
+[47]                              parms←(¯4×∆)↓¨parms ⍝ Drop trailing .csv
+[48]                              :if ∨/∆←~∆ ⋄ (∆/parms)←(⊂'/+-/-') TEXTREPL¨(⊂'/ / +') TEXTREPL¨'+',¨DLTMB¨∆/parms ⋄ :endif
+[49]                              stem←(' (adjusted by ' join parms),')'
+[50]  ⍝⍝⍝                            stem←stem,(×term)/' from ',DatavDATE~'/'
+[51]                          :endif
+[52]                          val←0 MergeRates val fld ⍝⍝⍝ Use rfPeriod for left argument
+[53]                      :endif
+[54]                  :case 0 0 1 0 ⍝ Percentage Change
+[55]                      :if ^/  0=fldval ⋄ vals←vals,⊂val ⋄ :continue
+[56]                      :else
+[57]                          :if csv←∨/'.CSV'⍷UPPERCASE val ⍝ if csv file involved
+[58]                              stem←('/ /%, ' TEXTREPL ⍕100×1+0.01×fldval),'% of,'¯4↓val ⍝ Drop trailing .csv
+[59]  ⍝⍝⍝                            stem←stem,(×term)/' from ',DatavDATE~'/'
+[60]                          :endif
+[61]                          val←0 MergeRates ⊂val ⍝⍝⍝ Use rfPeriod for left argument
+[62]                          val←(1+0.01×(⍴val) OVERTAKE fldval)×val ⍝⍝⍝ Use rfPeriod for left argument
+[63]                      :endif
+[64]                  :case 0 0 0 1 ⍝ Percentage of old
+[65]                      :if ^/100=fldval ⋄ vals←vals,⊂val ⋄ :continue
+[66]                      :else
+[67]                          :if csv←∨/'.CSV'⍷UPPERCASE val ⍝ if csv file involved
+[68]                              stem←('/ /%, ' TEXTREPL ⍕fldval),'% of,'¯4↓val ⍝ Drop trailing .csv
+[69]  ⍝⍝⍝                            stem←stem,(×term)/' from ',DatavDATE~'/'
+[70]                          :endif
+[71]                          val←0 MergeRates ⊂val ⍝⍝⍝ Use rfPeriod for left argument
+[72]                          val←(0.01×(⍴val) OVERTAKE fldval)×val ⍝⍝⍝ Use rfPeriod for left argument
+[73]                      :endif
+[74]                  :endselect
+[75]                  val←DLTMB '¯-' REPL ' ' join DTDot¨'0' DTZ¨DLTB¨(' '=val) ⎕penclose val←4⍕val
+[76]                  :if csv
+[77]                      exist←z←0 ⋄ File←stem,'.csv'
+[78]                      :while FileExist YieldDir,File
+[79]                      :andif ~exist←(EXECUTE val)≡ExecuteRates ⊂File
+[80]                          File←stem,' [',(⍕z←z+1),']','.csv'
+[81]                      :endwhile
+[82]                      :if ~exist
+[83]                          tieno←NCREATE YieldDir,File
+[84]                          (' ,' REPL val) APPEND tieno
+[85]                          ⎕nuntie tieno
+[86]                      :endif
+[87]                      val←File
+[88]                  :endif
+[89]                  vals←vals,⊂⍕val
+[90]              :endif
+[91]          :endfor
+[92]          (msk/values)←vals
+[93]      :endfor
+[94]      tab←tab amend 'Value' values
+[95]  
+[96]      tbl←tab for (⊂'Interest')≡¨tab at 'Type'
+[97]      intName←tbl FinSelect 'Name' ⋄ intValue←tbl FinSelect 'Value' ⋄ intCap←tbl FinSelect 'Cap'
+[98]      intCollar←tbl FinSelect 'Collar' ⋄ intGroup←tbl FinSelect 'Group' ⋄intDesc←tbl FinSelect 'Desc'
+[99]      tbl←tab for (⊂'Inflation')≡¨tab at 'Type'
+[100]     infName←tbl FinSelect 'Name' ⋄ infValue←tbl FinSelect 'Value' ⋄ infCap←tbl FinSelect 'Cap'
+[101]     infCollar←tbl FinSelect 'Collar' ⋄ infGroup←tbl FinSelect 'Group' ⋄ infDesc←tbl FinSelect 'Desc'
+[102]     tbl←tab for (⊂'Revaluation')≡¨tab at 'Type'
+[103]     revName←tbl FinSelect 'Name' ⋄ revValue←tbl FinSelect 'Value' ⋄ revCap←tbl FinSelect 'Cap'
+[104]     revCollar←tbl FinSelect 'Collar' ⋄ revGroup←tbl FinSelect 'Group' ⋄ revDesc←tbl FinSelect 'Desc'
+[105]     tbl←tab for (⊂'Increase')≡¨tab at 'Type'
+[106]     incName←tbl FinSelect 'Name' ⋄ incValue←tbl FinSelect 'Value' ⋄ incCap←tbl FinSelect 'Cap'
+[107]     incCollar←tbl FinSelect 'Collar' ⋄ incGroup←tbl FinSelect 'Group' ⋄ incDesc←tbl FinSelect 'Desc' ⋄ incConsDyn←tbl FinSelect 'ConsDesc'
+[108]     tbl←tab for (⊂'Constants')≡¨tab at 'Type'
+[109]     FinNumName←tbl FinSelect 'Name' ⋄ FinNumValue←tbl FinSelect 'Value' ⋄ FinNumDesc←tbl FinSelect 'Desc'
+[110] 
+[111]     groupName←⊃lmt nub tab at 'Group'
+[112]     groupDesc←(1 0×⍴groupName)⍴' '
+[113]     Comment_Financials←MATRIX 'variable' 'row' 'desc' 'comment' 'user' 'timestamp'
+[114] :endif
+    ∇

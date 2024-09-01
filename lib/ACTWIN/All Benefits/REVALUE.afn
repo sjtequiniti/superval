@@ -1,1 +1,119 @@
-    ∇ REVALUE;DYNFRAC;FDYNFRAC;FNOGMP;FREVAL;NOGMP;REVAL;REVALFNOGMP;REVALNOGMP;REVFRAC;REVMULT;REVMULT3;REVPERIOD;REVN;AUXREVMULT;AREVN;APENREV;SPENREV;NOWGMP;REVALNOWGMP;REVALWGMP;SREVAL;TOTREV;GMP2;ANOGMP;AREVALNOGMP;AREVALGMP;AREVAL;STOTREV;WGMP2;ASPENREV;ANOWGMP;AREVALNOWGMP;AREVALWGMP;ASREVAL;idx;GMPSPLIT;WGMPSPLIT;PENREV3;SPENREV3;REVN3;N_NS;ratio[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Initialise REVPEN - Revalued pension[3]   [4]   ⍝ Need starting figure for Varprint and DID calculations[5]   :if ApplyN_NS[6]       N_NS←1⌊(N_NSMaxServ⌊'DN' DURN DOEQS TO LDATE) CDIV N_NSMaxServ⌊'DN' DURN DOEQS TO LDATE[ENX_1;][7]                         TPEN∆DID← REVPEN← TPEN×[6]ratio←1⌈(+⌿+⌿+⌿+⌿+⌿+⌿TPEN∆NRA×[6]N_NS) CDIV +⌿+⌿+⌿+⌿+⌿+⌿TPEN[8]       :if ClntCode=3 ⋄ STPEN∆DID←SREVPEN←STPEN×[6]ratio ⋄ :endif[9]   :else[10]                        TPEN∆DID← REVPEN← TPEN[11]      :if ClntCode=3 ⋄ STPEN∆DID←SREVPEN←STPEN ⋄ :endif[12]  :endif[13]  [14]  :if isNPCR ⋄ CAP∆ACTIVE ⋄ :endif[15]  ⍝[16]  :if RevPeriod ⋄ REVPERIOD←0⌈'YD' DURN LDATE TO NRD∆G[17]  :else         ⋄ REVPERIOD←0⌈NRA∆G-XMP[18]  :endif[19]  REVMULT   ←(1⌈REVRAT   [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV REVRAT   [⎕io+2×term+0⌈XMP-↑X])-1[20]  AUXREVMULT←(1⌈AUXREVRAT[⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV AUXREVRAT[⎕io+2×term+0⌈XMP-↑X])-1[21]  REVMULT3  ←(1⌈REVRAT3  [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV REVRAT3  [⎕io+2×term+0⌈XMP-↑X])-1[22]  GMPREV    ←(1⌈grev     [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV grev     [⎕io+2×term+0⌈XMP-↑X])-1[23]  ⍝ Revalue Pension[24]  ⍝ GMP only in earliest tranche[25]  ⍝ NB GMP revaluation here is 'pseudo' rate[26]  idx←((~^/1=REVRAT),(~^/1=AUXREVRAT),~^/1=REVRAT3)/⍳3[27]  :if 0=⍴idx ⍝ Force to first if all are zero[28]      idx←⎕io[29]  :endif[30]  TOTREV←0×(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]REVPEN)[;;] ⍝ Pension subject to revaluation - all tranches[31]  TOTREV[;idx;]←TOTREV[;idx;]+(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]REVPEN)[;idx;][32]  GMPSPLIT←TOTREV[⎕io;;]×[1]GMP CDIV +/[⎕io]TOTREV[⎕io;;] ⍝ This gives zero if the corresponding element of TOTREV is zero[33]  NOGMP←0⌈TOTREV[⎕io;;]-GMPSPLIT[34]  REVALNOGMP←NOGMP×REVMULT⍪ AUXREVMULT⍪MATRIX REVMULT3[35]  REVALGMP←GMPSPLIT×[1]GMPREV[36]  REVAL←REVALNOGMP+REVALGMP[37]  :if ClntCode=3[38]      STOTREV←0×(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SREVPEN)[;;] ⍝ Pension subject to revaluation - all tranches[39]      STOTREV[;idx;]←STOTREV[;idx;]+(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SREVPEN)[;idx;][40]      WGMPSPLIT←STOTREV[⎕io;;]×[1]WGMP CDIV +/[⎕io]STOTREV[⎕io;;] ⍝ This gives zero if the corresponding element of TOTREV is zero[41]      NOWGMP←0⌈STOTREV[⎕io;;]-WGMPSPLIT[42]      REVALNOWGMP←NOWGMP×REVMULT⍪ AUXREVMULT⍪MATRIX REVMULT3[43]      REVALWGMP←WGMPSPLIT×[1]GMPREV[44]      SREVAL←REVALNOWGMP+REVALWGMP[45]  :endif[46]  ⍝ First tranche[47]      :if 0≠+/TOTREV[⎕io;⎕io;]    ⍝ If non-zero split the pension revaluation pro rata to revaluable pension[48]          REVPEN[;⎕io;⎕io;;;;]←REVPEN[;⎕io;⎕io;;;;]×[⎕io+4](TOTREV[⎕io;⎕io;]+REVAL[⎕io;]) CDIV TOTREV[⎕io;⎕io;][49]          :if ClntCode=3[50]              SREVPEN[;⎕io;⎕io;;;;]←SREVPEN[;⎕io;⎕io;;;;]×[⎕io+4](STOTREV[⎕io;⎕io;]+SREVAL[⎕io;]) CDIV STOTREV[⎕io;⎕io;][51]          :endif[52]      :else[53]          REVPEN[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]←REVPEN[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]+REVALGMP[⎕io;] ⍝ Special, First tranche, Revaluable, Not in Underpin or IRmax, ERF1[54]          :if ClntCode=3[55]              SREVPEN[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]←SREVPEN[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]+WARFRAC∆l×REVALWGMP[⎕io;]×2 ⍝ Apply global fraction[56]          :endif[57]      :endif[58]      :if 0≠+/TOTREV[⎕io;⎕io+1;]    ⍝ If non-zero split the pension revaluation pro rata to revaluable pension[59]          REVPEN[;⎕io;⎕io+1;;;;]←REVPEN[;⎕io;⎕io+1;;;;]×[⎕io+4](TOTREV[⎕io;⎕io+1;]+REVAL[⎕io+1;]) CDIV TOTREV[⎕io;⎕io+1;][60]          :if ClntCode=3[61]              SREVPEN[;⎕io;⎕io+1;;;;]←SREVPEN[;⎕io;⎕io+1;;;;]×[⎕io+4](STOTREV[⎕io;⎕io+1;]+SREVAL[⎕io+1;]) CDIV STOTREV[⎕io;⎕io+1;][62]          :endif[63]      :else[64]          REVPEN[⎕io;⎕io;⎕io+1;⎕io+1;⎕io+1;⎕io;]←REVPEN[⎕io;⎕io;⎕io+1;⎕io+1;⎕io+1;⎕io;]+REVALGMP[⎕io+1;] ⍝ Special, First tranche, Revaluable, Not in Underpin or IRmax, ERF1[65]          :if ClntCode=3[66]              SREVPEN[⎕io;⎕io;⎕io+1;⎕io+1;⎕io+1;⎕io;]←SREVPEN[⎕io;⎕io;⎕io+1;⎕io+1;⎕io+1;⎕io;]+WARFRAC∆l×REVALWGMP[⎕io+1;]×2 ⍝ Apply global fraction[67]          :endif[68]      :endif[69]      :if 0≠+/TOTREV[⎕io;⎕io+2;]    ⍝ If non-zero split the pension revaluation pro rata to revaluable pension[70]          REVPEN[;⎕io;⎕io+2;;;;]←REVPEN[;⎕io;⎕io+2;;;;]×[⎕io+4](TOTREV[⎕io;⎕io+2;]+REVAL[⎕io+2;]) CDIV TOTREV[⎕io;⎕io+2;][71]          :if ClntCode=3[72]              SREVPEN[;⎕io;⎕io+2;;;;]←SREVPEN[;⎕io;⎕io+2;;;;]×[⎕io+4](STOTREV[⎕io;⎕io+2;]+SREVAL[⎕io+2;]) CDIV STOTREV[⎕io;⎕io+2;][73]          :endif[74]      :else[75]          REVPEN[⎕io;⎕io;⎕io+2;⎕io+1;⎕io+1;⎕io;]←REVPEN[⎕io;⎕io;⎕io+2;⎕io+1;⎕io+1;⎕io;]+REVALGMP[⎕io+2;] ⍝ Special, First tranche, Revaluable, Not in Underpin or IRmax, ERF1[76]          :if ClntCode=3[77]              SREVPEN[⎕io;⎕io;⎕io+2;⎕io+1;⎕io+1;⎕io;]←SREVPEN[⎕io;⎕io;⎕io+2;⎕io+1;⎕io+1;⎕io;]+WARFRAC∆l×REVALWGMP[⎕io+2;]×2 ⍝ Apply global fraction[78]          :endif[79]      :endif[80]  ⍝ Now do other two tranches[81]  REVPEN[;⎕io+1;⎕io  ;;;;]←REVPEN[;⎕io+1;⎕io  ;;;;]×[⎕io+4]1+REVMULT[82]  REVPEN[;⎕io+2;⎕io  ;;;;]←REVPEN[;⎕io+2;⎕io  ;;;;]×[⎕io+4]1+REVMULT[83]  REVPEN[;⎕io+1;⎕io+1;;;;]←REVPEN[;⎕io+1;⎕io+1;;;;]×[⎕io+4]1+AUXREVMULT[84]  REVPEN[;⎕io+2;⎕io+1;;;;]←REVPEN[;⎕io+2;⎕io+1;;;;]×[⎕io+4]1+AUXREVMULT[85]  REVPEN[;⎕io+1;⎕io+2;;;;]←REVPEN[;⎕io+1;⎕io+2;;;;]×[⎕io+4]1+REVMULT3[86]  REVPEN[;⎕io+2;⎕io+2;;;;]←REVPEN[;⎕io+2;⎕io+2;;;;]×[⎕io+4]1+REVMULT3[87]  :if ClntCode=3[88]      SREVPEN[;⎕io+1;⎕io  ;;;;]←SREVPEN[;⎕io+1;⎕io  ;;;;]×[⎕io+4]1+REVMULT[89]      SREVPEN[;⎕io+2;⎕io  ;;;;]←SREVPEN[;⎕io+2;⎕io  ;;;;]×[⎕io+4]1+REVMULT[90]      SREVPEN[;⎕io+1;⎕io+1;;;;]←SREVPEN[;⎕io+1;⎕io+1;;;;]×[⎕io+4]1+AUXREVMULT[91]      SREVPEN[;⎕io+2;⎕io+1;;;;]←SREVPEN[;⎕io+2;⎕io+1;;;;]×[⎕io+4]1+AUXREVMULT[92]      SREVPEN[;⎕io+1;⎕io+2;;;;]←SREVPEN[;⎕io+1;⎕io+2;;;;]×[⎕io+4]1+REVMULT3[93]      SREVPEN[;⎕io+2;⎕io+2;;;;]←SREVPEN[;⎕io+2;⎕io+2;;;;]×[⎕io+4]1+REVMULT3[94]  :endif[95]  ⍝[96]  ⍝⍝⍝ :if test ⍝ NEEDS UPDATING[97]  ⍝⌿⍝    PENREV ←TOTREV[;⎕io  ;][98]  ⍝⌿⍝    APENREV←TOTREV[;⎕io+1;][99]  ⍝⌿⍝    PENREV3←TOTREV[;⎕io+2;][100] ⍝⌿⍝    :if ClntCode=3[101] ⍝⌿⍝        SPENREV ←STOTREV[;⎕io  ;][102] ⍝⌿⍝        ASPENREV←STOTREV[;⎕io+1;][103] ⍝⌿⍝        SPENREV ←STOTREV[;⎕io+2;][104] ⍝⌿⍝    :endif[105] ⍝⌿⍝    REVN←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]REVPEN[;;⎕io;;;;]-TPEN∆DID[;;⎕io;;;;] ⍝ Sum std rev over all but time and dyn[106] ⍝⌿⍝    AUDIT '2400b' ⋄ AUDIT '2410' ⋄ AUDIT '2415' ⋄ AUDIT '2420' ⋄ AUDIT '2430'[107] ⍝⌿⍝    :if ~^/1=AUXREVRAT[108] ⍝⌿⍝        AREVN←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]REVPEN[;;⎕io+1;;;;]-TPEN∆DID[;;⎕io+1;;;;] ⍝ Sum aux rev over all but time and dyn[109] ⍝⌿⍝        APENREV←(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN∆DID)[;⎕io+1;] ⍝ Pension subject to aux revaluation - all tranches[110] ⍝⌿⍝        AUDIT '2440' ⋄  AUDIT '2441' ⋄  AUDIT '2442' ⋄ AUDIT '2443' ⋄ AUDIT '2444'[111] ⍝⌿⍝    :endif[112] ⍝⌿⍝    :if ~^/1=REVRAT3[113] ⍝⌿⍝        REVN3←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]REVPEN[;;⎕io+2;;;;]-TPEN∆DID[;;⎕io+2;;;;] ⍝ Sum aux rev over all but time and dyn[114] ⍝⌿⍝        PENREV3←(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN∆DID)[;⎕io+2;] ⍝ Pension subject to aux revaluation - all tranches[115] ⍝⌿⍝        AUDIT '2445' ⋄  AUDIT '2446' ⋄  AUDIT '2447' ⋄ AUDIT '2448' ⋄ AUDIT '2449'[116] ⍝⌿⍝    :endif[117] ⍝⍝⍝ :endif    ∇
+    ∇ REVALUE;DYNFRAC;FDYNFRAC;FNOGMP;FREVAL;NOGMP;REVAL;REVALFNOGMP;REVALNOGMP;REVFRAC;REVMULT;REVMULT3;REVPERIOD;REVN;AUXREVMULT;AREVN;APENREV;SPENREV;NOWGMP;REVALNOWGMP;REVALWGMP;SREVAL;TOTREV;GMP2;ANOGMP;AREVALNOGMP;AREVALGMP;AREVAL;STOTREV;WGMP2;ASPENREV;ANOWGMP;AREVALNOWGMP;AREVALWGMP;ASREVAL;idx;GMPSPLIT;WGMPSPLIT;PENREV3;SPENREV3;REVN3;N_NS;ratio
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Initialise REVPEN - Revalued pension
+[3]   
+[4]   ⍝ Need starting figure for Varprint and DID calculations
+[5]   :if ApplyN_NS
+[6]       N_NS←1⌊(N_NSMaxServ⌊'DN' DURN DOEQS TO LDATE) CDIV N_NSMaxServ⌊'DN' DURN DOEQS TO LDATE[ENX_1;]
+[7]                         TPEN∆DID← REVPEN← TPEN×[6]ratio←1⌈(+⌿+⌿+⌿+⌿+⌿+⌿TPEN∆NRA×[6]N_NS) CDIV +⌿+⌿+⌿+⌿+⌿+⌿TPEN
+[8]       :if ClntCode=3 ⋄ STPEN∆DID←SREVPEN←STPEN×[6]ratio ⋄ :endif
+[9]   :else
+[10]                        TPEN∆DID← REVPEN← TPEN
+[11]      :if ClntCode=3 ⋄ STPEN∆DID←SREVPEN←STPEN ⋄ :endif
+[12]  :endif
+[13]  
+[14]  :if isNPCR ⋄ CAP∆ACTIVE ⋄ :endif
+[15]  ⍝
+[16]  :if RevPeriod ⋄ REVPERIOD←0⌈'YD' DURN LDATE TO NRD∆G
+[17]  :else         ⋄ REVPERIOD←0⌈NRA∆G-XMP
+[18]  :endif
+[19]  REVMULT   ←(1⌈REVRAT   [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV REVRAT   [⎕io+2×term+0⌈XMP-↑X])-1
+[20]  AUXREVMULT←(1⌈AUXREVRAT[⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV AUXREVRAT[⎕io+2×term+0⌈XMP-↑X])-1
+[21]  REVMULT3  ←(1⌈REVRAT3  [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV REVRAT3  [⎕io+2×term+0⌈XMP-↑X])-1
+[22]  GMPREV    ←(1⌈grev     [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV grev     [⎕io+2×term+0⌈XMP-↑X])-1
+[23]  ⍝ Revalue Pension
+[24]  ⍝ GMP only in earliest tranche
+[25]  ⍝ NB GMP revaluation here is 'pseudo' rate
+[26]  idx←((~^/1=REVRAT),(~^/1=AUXREVRAT),~^/1=REVRAT3)/⍳3
+[27]  :if 0=⍴idx ⍝ Force to first if all are zero
+[28]      idx←⎕io
+[29]  :endif
+[30]  TOTREV←0×(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]REVPEN)[;;] ⍝ Pension subject to revaluation - all tranches
+[31]  TOTREV[;idx;]←TOTREV[;idx;]+(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]REVPEN)[;idx;]
+[32]  GMPSPLIT←TOTREV[⎕io;;]×[1]GMP CDIV +/[⎕io]TOTREV[⎕io;;] ⍝ This gives zero if the corresponding element of TOTREV is zero
+[33]  NOGMP←0⌈TOTREV[⎕io;;]-GMPSPLIT
+[34]  REVALNOGMP←NOGMP×REVMULT⍪ AUXREVMULT⍪MATRIX REVMULT3
+[35]  REVALGMP←GMPSPLIT×[1]GMPREV
+[36]  REVAL←REVALNOGMP+REVALGMP
+[37]  :if ClntCode=3
+[38]      STOTREV←0×(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SREVPEN)[;;] ⍝ Pension subject to revaluation - all tranches
+[39]      STOTREV[;idx;]←STOTREV[;idx;]+(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SREVPEN)[;idx;]
+[40]      WGMPSPLIT←STOTREV[⎕io;;]×[1]WGMP CDIV +/[⎕io]STOTREV[⎕io;;] ⍝ This gives zero if the corresponding element of TOTREV is zero
+[41]      NOWGMP←0⌈STOTREV[⎕io;;]-WGMPSPLIT
+[42]      REVALNOWGMP←NOWGMP×REVMULT⍪ AUXREVMULT⍪MATRIX REVMULT3
+[43]      REVALWGMP←WGMPSPLIT×[1]GMPREV
+[44]      SREVAL←REVALNOWGMP+REVALWGMP
+[45]  :endif
+[46]  ⍝ First tranche
+[47]      :if 0≠+/TOTREV[⎕io;⎕io;]    ⍝ If non-zero split the pension revaluation pro rata to revaluable pension
+[48]          REVPEN[;⎕io;⎕io;;;;]←REVPEN[;⎕io;⎕io;;;;]×[⎕io+4](TOTREV[⎕io;⎕io;]+REVAL[⎕io;]) CDIV TOTREV[⎕io;⎕io;]
+[49]          :if ClntCode=3
+[50]              SREVPEN[;⎕io;⎕io;;;;]←SREVPEN[;⎕io;⎕io;;;;]×[⎕io+4](STOTREV[⎕io;⎕io;]+SREVAL[⎕io;]) CDIV STOTREV[⎕io;⎕io;]
+[51]          :endif
+[52]      :else
+[53]          REVPEN[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]←REVPEN[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]+REVALGMP[⎕io;] ⍝ Special, First tranche, Revaluable, Not in Underpin or IRmax, ERF1
+[54]          :if ClntCode=3
+[55]              SREVPEN[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]←SREVPEN[⎕io;⎕io;⎕io;⎕io+1;⎕io+1;⎕io;]+WARFRAC∆l×REVALWGMP[⎕io;]×2 ⍝ Apply global fraction
+[56]          :endif
+[57]      :endif
+[58]      :if 0≠+/TOTREV[⎕io;⎕io+1;]    ⍝ If non-zero split the pension revaluation pro rata to revaluable pension
+[59]          REVPEN[;⎕io;⎕io+1;;;;]←REVPEN[;⎕io;⎕io+1;;;;]×[⎕io+4](TOTREV[⎕io;⎕io+1;]+REVAL[⎕io+1;]) CDIV TOTREV[⎕io;⎕io+1;]
+[60]          :if ClntCode=3
+[61]              SREVPEN[;⎕io;⎕io+1;;;;]←SREVPEN[;⎕io;⎕io+1;;;;]×[⎕io+4](STOTREV[⎕io;⎕io+1;]+SREVAL[⎕io+1;]) CDIV STOTREV[⎕io;⎕io+1;]
+[62]          :endif
+[63]      :else
+[64]          REVPEN[⎕io;⎕io;⎕io+1;⎕io+1;⎕io+1;⎕io;]←REVPEN[⎕io;⎕io;⎕io+1;⎕io+1;⎕io+1;⎕io;]+REVALGMP[⎕io+1;] ⍝ Special, First tranche, Revaluable, Not in Underpin or IRmax, ERF1
+[65]          :if ClntCode=3
+[66]              SREVPEN[⎕io;⎕io;⎕io+1;⎕io+1;⎕io+1;⎕io;]←SREVPEN[⎕io;⎕io;⎕io+1;⎕io+1;⎕io+1;⎕io;]+WARFRAC∆l×REVALWGMP[⎕io+1;]×2 ⍝ Apply global fraction
+[67]          :endif
+[68]      :endif
+[69]      :if 0≠+/TOTREV[⎕io;⎕io+2;]    ⍝ If non-zero split the pension revaluation pro rata to revaluable pension
+[70]          REVPEN[;⎕io;⎕io+2;;;;]←REVPEN[;⎕io;⎕io+2;;;;]×[⎕io+4](TOTREV[⎕io;⎕io+2;]+REVAL[⎕io+2;]) CDIV TOTREV[⎕io;⎕io+2;]
+[71]          :if ClntCode=3
+[72]              SREVPEN[;⎕io;⎕io+2;;;;]←SREVPEN[;⎕io;⎕io+2;;;;]×[⎕io+4](STOTREV[⎕io;⎕io+2;]+SREVAL[⎕io+2;]) CDIV STOTREV[⎕io;⎕io+2;]
+[73]          :endif
+[74]      :else
+[75]          REVPEN[⎕io;⎕io;⎕io+2;⎕io+1;⎕io+1;⎕io;]←REVPEN[⎕io;⎕io;⎕io+2;⎕io+1;⎕io+1;⎕io;]+REVALGMP[⎕io+2;] ⍝ Special, First tranche, Revaluable, Not in Underpin or IRmax, ERF1
+[76]          :if ClntCode=3
+[77]              SREVPEN[⎕io;⎕io;⎕io+2;⎕io+1;⎕io+1;⎕io;]←SREVPEN[⎕io;⎕io;⎕io+2;⎕io+1;⎕io+1;⎕io;]+WARFRAC∆l×REVALWGMP[⎕io+2;]×2 ⍝ Apply global fraction
+[78]          :endif
+[79]      :endif
+[80]  ⍝ Now do other two tranches
+[81]  REVPEN[;⎕io+1;⎕io  ;;;;]←REVPEN[;⎕io+1;⎕io  ;;;;]×[⎕io+4]1+REVMULT
+[82]  REVPEN[;⎕io+2;⎕io  ;;;;]←REVPEN[;⎕io+2;⎕io  ;;;;]×[⎕io+4]1+REVMULT
+[83]  REVPEN[;⎕io+1;⎕io+1;;;;]←REVPEN[;⎕io+1;⎕io+1;;;;]×[⎕io+4]1+AUXREVMULT
+[84]  REVPEN[;⎕io+2;⎕io+1;;;;]←REVPEN[;⎕io+2;⎕io+1;;;;]×[⎕io+4]1+AUXREVMULT
+[85]  REVPEN[;⎕io+1;⎕io+2;;;;]←REVPEN[;⎕io+1;⎕io+2;;;;]×[⎕io+4]1+REVMULT3
+[86]  REVPEN[;⎕io+2;⎕io+2;;;;]←REVPEN[;⎕io+2;⎕io+2;;;;]×[⎕io+4]1+REVMULT3
+[87]  :if ClntCode=3
+[88]      SREVPEN[;⎕io+1;⎕io  ;;;;]←SREVPEN[;⎕io+1;⎕io  ;;;;]×[⎕io+4]1+REVMULT
+[89]      SREVPEN[;⎕io+2;⎕io  ;;;;]←SREVPEN[;⎕io+2;⎕io  ;;;;]×[⎕io+4]1+REVMULT
+[90]      SREVPEN[;⎕io+1;⎕io+1;;;;]←SREVPEN[;⎕io+1;⎕io+1;;;;]×[⎕io+4]1+AUXREVMULT
+[91]      SREVPEN[;⎕io+2;⎕io+1;;;;]←SREVPEN[;⎕io+2;⎕io+1;;;;]×[⎕io+4]1+AUXREVMULT
+[92]      SREVPEN[;⎕io+1;⎕io+2;;;;]←SREVPEN[;⎕io+1;⎕io+2;;;;]×[⎕io+4]1+REVMULT3
+[93]      SREVPEN[;⎕io+2;⎕io+2;;;;]←SREVPEN[;⎕io+2;⎕io+2;;;;]×[⎕io+4]1+REVMULT3
+[94]  :endif
+[95]  ⍝
+[96]  ⍝⍝⍝ :if test ⍝ NEEDS UPDATING
+[97]  ⍝⌿⍝    PENREV ←TOTREV[;⎕io  ;]
+[98]  ⍝⌿⍝    APENREV←TOTREV[;⎕io+1;]
+[99]  ⍝⌿⍝    PENREV3←TOTREV[;⎕io+2;]
+[100] ⍝⌿⍝    :if ClntCode=3
+[101] ⍝⌿⍝        SPENREV ←STOTREV[;⎕io  ;]
+[102] ⍝⌿⍝        ASPENREV←STOTREV[;⎕io+1;]
+[103] ⍝⌿⍝        SPENREV ←STOTREV[;⎕io+2;]
+[104] ⍝⌿⍝    :endif
+[105] ⍝⌿⍝    REVN←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]REVPEN[;;⎕io;;;;]-TPEN∆DID[;;⎕io;;;;] ⍝ Sum std rev over all but time and dyn
+[106] ⍝⌿⍝    AUDIT '2400b' ⋄ AUDIT '2410' ⋄ AUDIT '2415' ⋄ AUDIT '2420' ⋄ AUDIT '2430'
+[107] ⍝⌿⍝    :if ~^/1=AUXREVRAT
+[108] ⍝⌿⍝        AREVN←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]REVPEN[;;⎕io+1;;;;]-TPEN∆DID[;;⎕io+1;;;;] ⍝ Sum aux rev over all but time and dyn
+[109] ⍝⌿⍝        APENREV←(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN∆DID)[;⎕io+1;] ⍝ Pension subject to aux revaluation - all tranches
+[110] ⍝⌿⍝        AUDIT '2440' ⋄  AUDIT '2441' ⋄  AUDIT '2442' ⋄ AUDIT '2443' ⋄ AUDIT '2444'
+[111] ⍝⌿⍝    :endif
+[112] ⍝⌿⍝    :if ~^/1=REVRAT3
+[113] ⍝⌿⍝        REVN3←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]REVPEN[;;⎕io+2;;;;]-TPEN∆DID[;;⎕io+2;;;;] ⍝ Sum aux rev over all but time and dyn
+[114] ⍝⌿⍝        PENREV3←(+/[⎕io]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]TPEN∆DID)[;⎕io+2;] ⍝ Pension subject to aux revaluation - all tranches
+[115] ⍝⌿⍝        AUDIT '2445' ⋄  AUDIT '2446' ⋄  AUDIT '2447' ⋄ AUDIT '2448' ⋄ AUDIT '2449'
+[116] ⍝⌿⍝    :endif
+[117] ⍝⍝⍝ :endif
+    ∇

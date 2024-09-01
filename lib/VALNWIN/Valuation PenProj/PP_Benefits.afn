@@ -1,0 +1,114 @@
+    ∇ larg PP∆Benefits Ind∆Output;pp∆accrued;pp∆exit;pp∆exitcol;pp∆row;pp∆lxexit;pp∆LXexit;pp∆ly;pp∆LY;n;pp∆ppfRatio;pp∆Underpinned;pp∆CashFlow;pp∆PresValue;pp∆NormC;pp∆Reserve;pp∆bencol;TVVAL;FVVAL;PVTV;PVFV;FV;INDVAB;BenefitTypeID;pp∆SpouseProbs;pp∆bentype;pp∆inctype;pp∆PRateAll;pp∆rows;⍙dbCFres;⍙dbPSLres;⍙dbRESres;⍙dbPVres;⍙dbABres;pp∆exitno;pp∆AltABno;pp∆UFUND;pp∆DD;rFV;rPVFV;rPVTV;rFVVAL;rTVVAL;rINDVAB;mFV;mPVFV;mPVTV;mFVVAL;mTVVAL;mINDVAB;dFV;dPVFV;dPVTV;dFVVAL;dTVVAL;dINDVAB;wFV;wPVFV;wPVTV;wFVVAL;wTVVAL;wINDVAB;VARIABLE_ALIASES;∆;⍙dbPVtot;VFtab;pp∆ExitCodes;pp∆ExitContID;isTOut;pp∆SpouseContID;spouseContID;memberContID;pp∆ExitCol
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝⍝⍝ ;pp∆CashFlow;pp∆PresValue;pp∆NormC;pp∆Reserve;pp∆bencol;TVVAL;FVVAL;PVTV;PVFV;FV;INDVAB;pp∆PRateAll;pp∆VAB;⍙dbPSLres;⍙dbRESres;⍙dbPVres
+[3]   ⍝ Project a series of Pensions
+[4]   ⍝ Calculate the pension cash flows and the present values of the pensions
+[5]   ⍝ The data on emerging pensions is in global Ind∆Output
+[6]   
+[7]   (isTOut pp∆ExitCodes pp∆ExitContID pp∆SpouseContID pp∆ExitCol)←larg
+[8]   ⍝ write interface contents out as XHTML
+[9]   :if test ⋄ :andif ~comflag ⋄ (isTOut⊃'Ongoing' 'Transfers') DumpInterface Ind∆Output ⋄ :endif
+[10]  
+[11]  pp∆VAB←pp∆accrued←pp∆DD←0 ⍝ Not Accrued Benefits
+[12]  pp∆CP←,(pp∆NX-pp∆SNX)⌊0⌈contper-term
+[13]  pp∆vMP ←term↓((term+pp∆NX-1)↑pp∆vMPPre),¯1↑pp∆v←term↓(term+pp∆NX)↑pp∆vPre
+[14]  ⍝⍝⍝ pp∆vRet←term↓((term+pp∆ENX-1)↑pp∆vMPPre),(pp∆ENX-1)↓pp∆v
+[15]  :if 0=⎕nc 'pp∆AccumPV' ⋄ pp∆AccumPV←(2,pp∆NX,(No∆Bens+2),8)⍴pp∆AccumNormC←(pp∆NX,(No∆Bens+2),8)⍴0 ⋄ :endif
+[16]  
+[17]  0 PP∆Process∆Output Ind∆Output ⍝ Create the variables from the "file"
+[18]  
+[19]  pp∆RetAge←pp∆Age⌈pp∆RetAge+(0=pp∆RetAge)×pp∆Age ⋄ pp∆SpAge←↑pp∆SpAge
+[20]  pp∆ppfRatio←140⍴1 ⍝ Assumes PPF only applies to Accrued Benefits
+[21]  VFtab←MATRIX 'X0' 'BenID' 'ContID' 'DataID' 'Age' 'Year' 'Ident' 'Indiv' 'LiabID' 'Value' 'ValueNoRev'
+[22]  
+[23]  :if test ⋄ :andif ClassID≠4 ⋄ :andif ~comflag ⋄ PP∆IndVars ⋄ :endif
+[24]  
+[25]  :for pp∆exit :in ↑,/pp∆ExitCodes ⍝ DD for Actives Death in Defer yet to be used
+[26]      :if (⊂pp∆exit)∊↑,/1↑¨pp∆ExitCodes ⍝⍝⍝ Assume there are no Pension 5 benefits
+[27]          pp∆UFUND←pp∆Underpinned←(pp∆NX,2)⍴0 ⍝ Stores Total and Future Underpinned figures
+[28]          :if test∨prevind ⋄ :andif ~comflag
+[29]              TVVAL←FVVAL←PVTV←PVFV←FV←(pp∆NX,8)⍴INDVAB←pp∆NX⍴0
+[30]          :endif
+[31]      :endif
+[32]  
+[33]      :if mt ,pp∆rows←¯1+(' ',pp∆Dec,' ') TLU ' ',pp∆exit ⋄ :andif ~test ⋄ :continue ⋄ :endif
+[34]  ⍝⍝⍝    pp∆exitcol←(4×isTOut)+↑WHERE (⊂⊂pp∆exit)∊¨pp∆ExitCodes
+[35]      memberContID←↑∊((⊂⊂pp∆exit) ≡¨¨pp∆ExitCodes)sel¨pp∆ExitContID
+[36]      spouseContID←↑∊(memberContID≡¨¨pp∆ExitContID)sel¨pp∆SpouseContID
+[37]      pp∆exitcol←  ↑∊(memberContID≡¨¨pp∆ExitContID)sel¨pp∆ExitCol
+[38]  ⍝⍝⍝    pp∆exitno←('L2' 'LR' 'N2' 'NR' 'E2' 'ER' 'D ' 'DL' 'I2' 'I ' 'P ' 'PD' 'P2' 'PR' 'W2' 'W ' 'DD')⍳⊂pp∆exit
+[39]  ⍝⍝⍝    memberContID←(21 21 2 2 1 1,(3+3×ClassID∊3 4),23 4 4 24 25 26 26 5 5 6)[pp∆exitno] ⍝ DIS is DID for Deferreds/Pensioners
+[40]  
+[41]      ⍝ Stores Reserves, Cash and Pension Cash Flows and Present Value by type of benefit
+[42]      pp∆PresValue←(2,pp∆NX,No∆Bens+2)⍴pp∆NormC←(pp∆NX,No∆Bens+2)⍴pp∆CashFlow←(125,3)⍴pp∆Reserve←0
+[43]  
+[44]      PP∆MortSelect pp∆exit
+[45]  
+[46]      :for pp∆row :in pp∆rows
+[47]          :if 3=⍴⍴pp∆PRateAll←⊃pp∆ProRate[pp∆row;]
+[48]              pp∆PRateAll←pp∆PRateAll[0;;]
+[49]          :endif
+[50]          pp∆bentype←2↑DLTMB pp∆BenType[pp∆row;] ⋄ pp∆inctype←2↑DLTMB pp∆IncType[pp∆row;]
+[51]  ⍝⍀⍝         (pp∆BenName pp∆BenPart)←DLTB¨2↑' ' partition pp∆Identifier[pp∆row;  ]
+[52]  ⍝⍀⍝         VARIABLE_ALIASES←pp∆row⊃FOURDIT_aliases
+[53]          :if ↑⎕vi pp∆inctype ⍝ Pensioners (GMP is 1, rest are 1 + Pension No)
+[54]              pp∆bencol←1+zwb pp∆inctype
+[55]          :else
+[56]              pp∆bencol←↑(('L ' 'LC' 'LT' 'DD' 'G1' 'G2' 'M ' 'S ' 'P3' 'P4' 'U ' 'UF' 'P5' 'P ' 'C ' 'F ')∊⊂pp∆inctype)/0 0 0 0 1 1 2 3 4 5 6 6 7 8 8 7
+[57]          :endif
+[58]  
+[59]          BenefitTypeID←PP∆BenefitType pp∆inctype
+[60]          ⍙dbCFres←125 4⍴⍙dbABres←120 2⍴⍙dbPSLres←⍙dbRESres←120⍴⍙dbPVres←⍙dbPVtot←4⍴0 ⍝ Cashflows, Reserves and PVs per benefit
+[61]  
+[62]          :select pp∆bentype
+[63]          :case 'P ' ⍝ "Pension" Benefits
+[64]  ⍝⍀⍝            :if mt pp∆BenPart ⋄ pp∆BenPart←'Pension' ⋄ :endif
+[65]              memberContID PP∆Pension pp∆row
+[66]          :caselist 'L ' 'LC' 'LM' 'LS' 'L3' 'L4' 'LT' 'Lm' 'Ls' 'Lt' 'Lf' 'UF' ⍝ Cash (split into Commutation and onTop) (and Underpin Fudge) Benefits
+[67]  ⍝⍀⍝            :if mt pp∆BenPart ⋄ pp∆BenPart←'Cash' ⋄ :endif
+[68]              memberContID PP∆Cash pp∆row
+[69]          :case 'I ' ⍝ Insured Benefits
+[70]  ⍝⍀⍝            :if mt pp∆BenPart ⋄ pp∆BenPart←'Insured' ⋄ :endif
+[71]              memberContID PP∆Insured pp∆row
+[72]          :case 'U ' ⍝ Underpin Benefits
+[73]  ⍝⍀⍝            :if mt pp∆BenPart ⋄ pp∆BenPart←'Underpin' ⋄ :endif
+[74]              memberContID PP∆Underpin pp∆row
+[75]          :case 'DD' ⍝⍝⍝ Death in Deferment Benefits (while fudge is used)
+[76]  ⍝⍀⍝            :if mt pp∆BenPart ⋄ pp∆BenPart←'DiD' ⋄ :endif
+[77]              memberContID PP∆DIDFudge pp∆row
+[78]          :case 'F ' ⍝ Funeral Benefits
+[79]  ⍝⍀⍝            :if mt pp∆BenPart ⋄ pp∆BenPart←'Funeral Benefit' ⋄ :endif
+[80]              memberContID PP∆PostRetLS pp∆row
+[81]          :else      ⍝ "Unknown" Benefits
+[82]              crash
+[83]          :endselect
+[84]  
+[85]          :if ⍙dbresults ⋄ ⍙DBAddRecords ⋄ :endif
+[86]      :endfor
+[87]      :if ClassID≠4 ⋄ :andif ~comflag
+[88]          PP∆UpdateRes
+[89]          :if test ⋄ PP∆Ind_Memb ⋄ :endif
+[90]      :endif
+[91]  :endfor
+[92]  
+[93]  PP∆StoreValnFactors VFtab
+[94]  
+[95]  :if ClassID=4 ⋄ :orif comflag ⋄ :return ⋄ :endif
+[96]  
+[97]  :if ~suppressText
+[98]      :if test ⋄ Output∆Varprint 2×(⊂'ET')∊↑,/pp∆ExitCodes ⋄ :endif ⍝ 2 for Transfers else 0
+[99]  ⍝⍝⍝    :if ecflag
+[100] ⍝⍝⍝        :if ~MAT≡+⌿pp∆AccumPV[1;;;]
+[101] ⍝⍝⍝        :orif dab          ^~TOTSPLIT≡(+⌿pp∆AccumPV[0;⍳pp∆CP;;]-pp∆AccumPV[1;⍳pp∆CP;;])++⌿pp∆AccumPV[1;;;]
+[102] ⍝⍝⍝        :orif (NotPUC^~dab)^~TOTSPLIT≡ +⌿pp∆AccumPV[0;;;]
+[103] ⍝⍝⍝        :orif (~NotPUC)    ^~TOTSPLIT≡ +⌿pp∆AccumNormC
+[104] ⍝⍝⍝             crash
+[105] ⍝⍝⍝        :endif
+[106] ⍝⍝⍝    :endif
+[107]     MAT←MAT++⌿pp∆AccumPV[1;;;]
+[108]     :if dab        ⋄ TOTSPLIT←TOTSPLIT+(+⌿pp∆AccumPV[0;⍳pp∆CP;;]-pp∆AccumPV[1;⍳pp∆CP;;])++⌿pp∆AccumPV[1;;;]
+[109]     :elseif NotPUC ⋄ TOTSPLIT←TOTSPLIT+ +⌿pp∆AccumPV[0;;;]
+[110]     :else          ⋄ TOTSPLIT←TOTSPLIT+ +⌿pp∆AccumNormC
+[111]     :endif
+[112] :endif
+    ∇

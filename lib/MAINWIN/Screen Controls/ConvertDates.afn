@@ -1,0 +1,27 @@
+    ∇ res←ConvertDates dates;list;LIST;n
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Convert Date Description to Variable (and vice-versa)
+[3]   ⍝ Assumed to be homogeneous!!
+[4]   
+[5]   res←dates←StripText MATRIX dates
+[6]   
+[7]   list←SStoMAT '⍺VDATE⍺LDATE⍺NRD⍺DOE⍺LD⍺DOB⍺DJF⍺DJS⍺DOE'
+[8]   LIST←'⍺Valuation Date⍺Leaving Date⍺Normal Retirement Date⍺Date of Exit⍺Leaving Service Date'
+[9]   :if     uk=0 ⋄ LIST←SStoMAT LIST,'⍺Date of Birth⍺Date Joined Fund⍺Date Joined Service⍺Date of Exit'
+[10]  :elseif uk=1 ⋄ LIST←SStoMAT LIST,'⍺Date Of Birth⍺DoJ Scheme⍺DoJ Company⍺Date Ceased Deferral'
+[11]  :elseif uk=2 ⋄ LIST←SStoMAT LIST,'⍺Date of Birth⍺Date Joined Scheme⍺Date Joined Company⍺Date of Exit'
+[12]  :endif
+[13]  
+[14]  :if ∨/×n←,⊃1↑¨(⊂LIST) ExactTLU ¨⎕split MATRIX dates
+[15]      res←(×n)⍀list[(n~0)-~⎕io;]
+[16]  :elseif ∨/×n←,⊃1↑¨(⊂list) ExactTLU ¨⎕split MATRIX dates
+[17]      res←(×n)⍀LIST[(n~0)-~⎕io;]
+[18]  :else
+[19]      :return
+[20]  :endif
+[21]  
+[22]  :if 0∊n ⍝ Return Original if not in list(s)
+[23]      res←((⍴res)⌈0 1×⍴dates)↑res ⋄ dates←(⍴res)↑dates
+[24]      n←(~×n)/⍳1↑⍴res ⋄ res[n;]←dates[n;]
+[25]  :endif
+    ∇

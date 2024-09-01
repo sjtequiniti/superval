@@ -1,0 +1,14 @@
+    ∇ data←default ⍙DBRemoveNulls data;∆;size
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Remove Null (or empty or missing) Values from Database data
+[3]   
+[4]   :if ∨/∆←,data∊'#' ⎕wi ¨'empty' 'null' 'missing'
+[5]       :if 2=⍴⍴data
+[6]           size←⍴data ⋄ data←,data ⋄ (∆/data)←⊂default ⋄ data←size⍴data
+[7]       :elseif 1=⍴,data
+[8]           data←default
+[9]       :else
+[10]          (∆/data)←⊂default
+[11]      :endif
+[12]  :endif
+    ∇

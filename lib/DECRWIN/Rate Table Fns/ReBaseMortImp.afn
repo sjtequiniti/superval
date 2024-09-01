@@ -1,1 +1,24 @@
-    ∇ Z←larg ReBaseMortImp rarg;MortORIG;IMPORIG;IMPTBL;IMPTBLcsv;IMPTBLrt;rec;∆;desc;ts;flg;lrIMPTBL1[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Rebase a Mortality Improvement table by Base Year of Mortality Table[3]   ⍝  MortORIG - Mortality Table Base Year[4]   ⍝  IMPORIG - Mortality Improvement Table Base Year[5]   ⍝  IMPTBL - Mortality Improvement Table[6]   ⍝  IMPTBLcsv - Mortality Improvement csv File[7]   ⍝  IMPTBLrt - Mortality Improvement Rate Table[8]   ⍝  lrIMPTBLrt1 - Description label of Mortality Improvement Rate Table[9]   [10]  (flg MortORIG IMPORIG)←larg ⋄ (IMPTBL IMPTBLcsv IMPTBLrt lrIMPTBL1)←rarg[11]  rec←0 3⍴'' '' 0 ⍝ Default response (no Rebasing necessary or Annuity Calculators)[12]  [13]  :if ~mt MortORIG ⋄ :andif 0<∆←(zwb MortORIG)-IMPORIG ⋄ :andif ∨/0≠,IMPTBL[14]      IMPTBL←IMPTBL CDIV (¯1↑⍴IMPTBL)/IMPTBL[;,∆][15]      :if flg[16]          :if ^/' '=∆←IMPTBLrt[⎕io;] ⋄ desc←'\' Win∆Child IMPTBLcsv  ⋄ ts←1 0 WGetFileTime IMPTBLcsv[17]          :else                      ⋄ desc←(DLTB ∆),' - ',lrIMPTBL1 ⋄ ts←,DECRFile ReadFile ∆ '' 'TSTAMP' ⍝⍝⍝ DecrDescription[18]          :endif[19]          rec←(desc,' [#@ts@#] - rebased to ',⍕MortORIG) ts IMPTBL[20]      :endif[21]  :endif[22]  Z←IMPTBL rec    ∇
+    ∇ Z←larg ReBaseMortImp rarg;MortORIG;IMPORIG;IMPTBL;IMPTBLcsv;IMPTBLrt;rec;∆;desc;ts;flg;lrIMPTBL1
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Rebase a Mortality Improvement table by Base Year of Mortality Table
+[3]   ⍝  MortORIG - Mortality Table Base Year
+[4]   ⍝  IMPORIG - Mortality Improvement Table Base Year
+[5]   ⍝  IMPTBL - Mortality Improvement Table
+[6]   ⍝  IMPTBLcsv - Mortality Improvement csv File
+[7]   ⍝  IMPTBLrt - Mortality Improvement Rate Table
+[8]   ⍝  lrIMPTBLrt1 - Description label of Mortality Improvement Rate Table
+[9]   
+[10]  (flg MortORIG IMPORIG)←larg ⋄ (IMPTBL IMPTBLcsv IMPTBLrt lrIMPTBL1)←rarg
+[11]  rec←0 3⍴'' '' 0 ⍝ Default response (no Rebasing necessary or Annuity Calculators)
+[12]  
+[13]  :if ~mt MortORIG ⋄ :andif 0<∆←(zwb MortORIG)-IMPORIG ⋄ :andif ∨/0≠,IMPTBL
+[14]      IMPTBL←IMPTBL CDIV (¯1↑⍴IMPTBL)/IMPTBL[;,∆]
+[15]      :if flg
+[16]          :if ^/' '=∆←IMPTBLrt[⎕io;] ⋄ desc←'\' Win∆Child IMPTBLcsv  ⋄ ts←1 0 WGetFileTime IMPTBLcsv
+[17]          :else                      ⋄ desc←(DLTB ∆),' - ',lrIMPTBL1 ⋄ ts←,DECRFile ReadFile ∆ '' 'TSTAMP' ⍝⍝⍝ DecrDescription
+[18]          :endif
+[19]          rec←(desc,' [#@ts@#] - rebased to ',⍕MortORIG) ts IMPTBL
+[20]      :endif
+[21]  :endif
+[22]  Z←IMPTBL rec
+    ∇

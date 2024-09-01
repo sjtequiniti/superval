@@ -1,1 +1,36 @@
-    ∇ parm RunModule Module;Exit[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Run the Module called "Module"[3]   [4]   :select parm[5]   :case 'Quit' ⍝ Used on Routines with "global variables[6]       :if ~0∊⍴DLTMB ControlName ⎕wi '∆inputstype'[7]           0 0⍴(⍎ControlName ⎕wi '∆inputstype') ReadFile ControlName ⎕wi '∆savecn' ⍝ Return to "saved" variables[8]       :endif[9]       Exit←⍎Module,' "Run"'         ⍝ Run Module[10]      Exit EndModule Module           ⍝ Quit the Module[11]      :return[12]  [13]  :caselist 'Save' 'SaveAs'[14]      :if ControlName ValidateParms Module ⋄ :return ⋄ :endif[15]      :if parm SaveRunParms Module ControlName ⋄ :return ⋄ :endif ⍝ Save Module Parameters[16]  [17]  :caselist 'SaveNoValid' 'SaveAsNoValid'[18]      :if parm SaveRunParms Module ControlName ⋄ :return ⋄ :endif ⍝ Save Module Parameters[19]  [20]  :case 'Run'[21]      :if ControlName ValidateParms Module ⋄ :return ⋄ :endif[22]      :if 'Save' SaveRunParms Module ControlName ⋄ :return ⋄ :endif ⍝ Save Parameters & Run Module[23]      Exit←⍎Module,' "Run"'         ⍝ Run Module[24]      Exit EndModule Module           ⍝ Quit the Module[25]  [26]  :case 'CreateVars' ⍝ Used on Routines with "global variables[27]      Exit←⍎Module,' "Run"'         ⍝ Run Module[28]  [29]  :endselect[30]  [31]  :if ~0∊⎕nc 'listviewDict ListviewDict' ⋄ :andif 0≠rowsIn listviewDict[32]      ListviewDict←(ListviewDict for (~(spin ListviewDict at 'Control' 'Parameters')∊spin listviewDict at 'Control' 'Parameters')) append listviewDict[33]      listviewDict←MATRIX keysIn listviewDict[34]  :endif    ∇
+    ∇ parm RunModule Module;Exit
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Run the Module called "Module"
+[3]   
+[4]   :select parm
+[5]   :case 'Quit' ⍝ Used on Routines with "global variables
+[6]       :if ~0∊⍴DLTMB ControlName ⎕wi '∆inputstype'
+[7]           0 0⍴(⍎ControlName ⎕wi '∆inputstype') ReadFile ControlName ⎕wi '∆savecn' ⍝ Return to "saved" variables
+[8]       :endif
+[9]       Exit←⍎Module,' "Run"'         ⍝ Run Module
+[10]      Exit EndModule Module           ⍝ Quit the Module
+[11]      :return
+[12]  
+[13]  :caselist 'Save' 'SaveAs'
+[14]      :if ControlName ValidateParms Module ⋄ :return ⋄ :endif
+[15]      :if parm SaveRunParms Module ControlName ⋄ :return ⋄ :endif ⍝ Save Module Parameters
+[16]  
+[17]  :caselist 'SaveNoValid' 'SaveAsNoValid'
+[18]      :if parm SaveRunParms Module ControlName ⋄ :return ⋄ :endif ⍝ Save Module Parameters
+[19]  
+[20]  :case 'Run'
+[21]      :if ControlName ValidateParms Module ⋄ :return ⋄ :endif
+[22]      :if 'Save' SaveRunParms Module ControlName ⋄ :return ⋄ :endif ⍝ Save Parameters & Run Module
+[23]      Exit←⍎Module,' "Run"'         ⍝ Run Module
+[24]      Exit EndModule Module           ⍝ Quit the Module
+[25]  
+[26]  :case 'CreateVars' ⍝ Used on Routines with "global variables
+[27]      Exit←⍎Module,' "Run"'         ⍝ Run Module
+[28]  
+[29]  :endselect
+[30]  
+[31]  :if ~0∊⎕nc 'listviewDict ListviewDict' ⋄ :andif 0≠rowsIn listviewDict
+[32]      ListviewDict←(ListviewDict for (~(spin ListviewDict at 'Control' 'Parameters')∊spin listviewDict at 'Control' 'Parameters')) append listviewDict
+[33]      listviewDict←MATRIX keysIn listviewDict
+[34]  :endif
+    ∇

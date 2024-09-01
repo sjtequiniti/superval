@@ -1,1 +1,21 @@
-    ∇ res←GetFinancials;sortorder;cn;PickList;ts;i;NameList[1]   ⍝ PARMWIN.sf#36[2]   ⍝ Get the Parameters Descriptions[3]   [4]   res←⊃spin ((ClientFile ReadFile 'Index') for '∆_Name' 'Financials') at '∆_Description' '∆_UserModified' '∆_TSModified' '∆_TimeModified' '∆_CompNo'[5]   res←(~res[;1]≡¨⊂Exp_FinDesc)⌿res ⍝ Exclude Financial Set being exported from[6]   [7]   ⍝⍝⍝ ,(accesslevel=9)/⊂GlobalsFile[8]   [9]   sortorder←'⍺Alpha⍺Alpha⍺SortList'[10]  PickList←0 5⍴'' ⋄ cn←,¯1↑[2]res ⋄ res←0 ¯1↓res ⋄ ts←⍒,¯1↑[2]res ⋄ res←0 ¯1↓res[11]  →(mt res)/end[12]  [13]  PickList←ts[ts],(⊂1 0 ¯2),res[ts;][14]  [15]  end:NameList←     MATRIX 'Parameters Description' (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  1 1 0 1[16]  NameList←NameList⍪MATRIX 'User Name'              (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  2 2 0 1[17]  NameList←NameList⍪MATRIX 'Date/Time Saved'        (¯1↑Win∆TextSize ⊃PickList[;4]) 'right' 3 3 0 1[18]  [19]  res←PickList NameList sortorder ts    ∇
+    ∇ res←GetFinancials;sortorder;cn;PickList;ts;i;NameList
+[1]   ⍝ PARMWIN.sf#36
+[2]   ⍝ Get the Parameters Descriptions
+[3]   
+[4]   res←⊃spin ((ClientFile ReadFile 'Index') for '∆_Name' 'Financials') at '∆_Description' '∆_UserModified' '∆_TSModified' '∆_TimeModified' '∆_CompNo'
+[5]   res←(~res[;1]≡¨⊂Exp_FinDesc)⌿res ⍝ Exclude Financial Set being exported from
+[6]   
+[7]   ⍝⍝⍝ ,(accesslevel=9)/⊂GlobalsFile
+[8]   
+[9]   sortorder←'⍺Alpha⍺Alpha⍺SortList'
+[10]  PickList←0 5⍴'' ⋄ cn←,¯1↑[2]res ⋄ res←0 ¯1↓res ⋄ ts←⍒,¯1↑[2]res ⋄ res←0 ¯1↓res
+[11]  →(mt res)/end
+[12]  
+[13]  PickList←ts[ts],(⊂1 0 ¯2),res[ts;]
+[14]  
+[15]  end:NameList←     MATRIX 'Parameters Description' (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  1 1 0 1
+[16]  NameList←NameList⍪MATRIX 'User Name'              (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  2 2 0 1
+[17]  NameList←NameList⍪MATRIX 'Date/Time Saved'        (¯1↑Win∆TextSize ⊃PickList[;4]) 'right' 3 3 0 1
+[18]  
+[19]  res←PickList NameList sortorder ts
+    ∇

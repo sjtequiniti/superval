@@ -1,1 +1,33 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Excel_Comparison" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Excel_Comparison" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmExcelComp.cbxlFILE1" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB xlFILE1[11]  :if mt selection[12]      :if ~mt DLTB xlFILE1[13]          warnings←warnings OVER "Previous Selection for 'Excel Output File' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmExcelComp.cbxlFILE1" ⎕wi "value" (¯1↑1,selection)[18]  "fmExcelComp.edxlFILE2" ⎕wi "text" (DLTB xlFILE2)[19]  "fmExcelComp.edMAX" ⎕wi "text" (DLTB MAX)[20]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Excel_Comparison[21]      :for var :in spin Comment_Excel_Comparison at "variable" "row" ⋄ (var row)←var[22]          "Excel_Comparison" ParmColor ((FormFields for "variable" var) at "control"),var row 1[23]      :endfor[24]  :endif[25]  :if ~0∊⍴,warnings[26]      MDISPLAY DLTMB warnings,⎕tcnl[27]      Win∆AssignVars "fmExcelComp"[28]  :endif[29]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Excel_Comparison" "" "Names"[30]      "fmExcelComp" ⎕wi "modified" 0[31]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Excel_Comparison" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Excel_Comparison" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmExcelComp.cbxlFILE1" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB xlFILE1
+[11]  :if mt selection
+[12]      :if ~mt DLTB xlFILE1
+[13]          warnings←warnings OVER "Previous Selection for 'Excel Output File' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmExcelComp.cbxlFILE1" ⎕wi "value" (¯1↑1,selection)
+[18]  "fmExcelComp.edxlFILE2" ⎕wi "text" (DLTB xlFILE2)
+[19]  "fmExcelComp.edMAX" ⎕wi "text" (DLTB MAX)
+[20]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Excel_Comparison
+[21]      :for var :in spin Comment_Excel_Comparison at "variable" "row" ⋄ (var row)←var
+[22]          "Excel_Comparison" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[23]      :endfor
+[24]  :endif
+[25]  :if ~0∊⍴,warnings
+[26]      MDISPLAY DLTMB warnings,⎕tcnl
+[27]      Win∆AssignVars "fmExcelComp"
+[28]  :endif
+[29]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Excel_Comparison" "" "Names"
+[30]      "fmExcelComp" ⎕wi "modified" 0
+[31]  :endif
+    ∇

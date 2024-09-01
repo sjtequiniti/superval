@@ -1,0 +1,50 @@
+    ∇ LocalLicence;LicenceString;key;NoLicence;ClientTab;MESS
+[1]   ⍝ REGISTER.sf#4
+[2]   ⍝ Obtain the "local" Licence for the Folder
+[3]   
+[4]   :if mt ClientFile ⍝ Ignore until ClientFile is available
+[5]       0 0⍴(SystemDir,'REGISTER') ReadFile ('DefaultLicence',4↑version)
+[6]   :else
+[7]   top:
+[8]       ClientTab←MATRIX 'Version' 'Client'
+[9]       :if ~mt ClientFile ReadFile 'Licence 9.0'
+[10]          ClientTab←ClientTab OVER ' 9.0' (key decrypt 2⊃LicenceString)
+[11]      :endif
+[12]      :if ~mt ClientFile ReadFile 'Licence 9.1'
+[13]          ClientTab←ClientTab OVER ' 9.1' (key decrypt 2⊃LicenceString)
+[14]      :endif
+[15]      :if ~mt ClientFile ReadFile 'Licence 9.2'
+[16]          ClientTab←ClientTab OVER ' 9.2' (key decrypt 2⊃LicenceString)
+[17]      :endif
+[18]      :if 9.3<zwb 4↑version ⋄ crash ⋄ :endif ⍝ Update the Licence code!!
+[19]      :if ~NoLicence←mt ClientFile ReadFile 'Licence',4↑version
+[20]          ClientTab←ClientTab OVER (4↑version) (key decrypt 2⊃LicenceString)
+[21]      :endif
+[22]      :if NoLicence
+[23]          :if ×rowsIn ClientTab ⋄ :andif ~mt ,LicenceString ⍝ Use previous version licence
+[24]              LicenceString[3]←⊂key encrypt 5↑version
+[25]              0 0⍴ClientFile SaveToFile ('Licence',4↑version) '' (pack 'LicenceString key')
+[26]          :else
+[27]              RunRegistration 0
+[28]              →top
+[29]          :endif
+[30]      :endif
+[31]      :if 1<⍴,nub ClientTab at 'Client'
+[32]          MESS←'Conflicting Clients used in this Folder:'
+[33]          MESS←MESS,,⎕tcnl,⊃(⊂' used in Version ') join¨spin ClientTab at 'Client' 'Version'
+[34]          MDISPLAY MESS
+[35]      :endif
+[36]  :endif
+[37]  
+[38]  cOMPANY←(key decrypt 2⊃LicenceString),' (Claybrook)'
+[39]  bAON←'Aon'≡3↑cOMPANY
+[40]  bPwC←'PwC'≡3↑cOMPANY
+[41]  bBuck←'Buck'≡4↑cOMPANY
+[42]  key SetVersion LicenceString
+[43]  SetAccess
+[44]  
+[45]  0 0⍴(SystemDir,'GLOBVARS') ReadFile (⎕io+uk)⊃'Australia' 'United Kingdom' 'South Africa'
+[46]  DecrRestriction
+[47]  
+[48]  :if accesslevel=9 ⋄ ExportUserLog ¯1 monthAdd 2↑⎕ts ⋄ :endif
+    ∇

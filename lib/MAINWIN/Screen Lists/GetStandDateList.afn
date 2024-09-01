@@ -1,0 +1,14 @@
+    ∇ res←GetStandDateList arg;DateStandNames
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get List of Standard ("Fund" and "Member" Standard) Date Variables descriptions
+[3]   
+[4]   res←1 0↓1 GetAbsDateList 'Fund' ⍝ Fund Constants (drop header and blank)
+[5]   
+[6]   0 0⍴⍙VALUESdict ReadDictFile 'ActFormat' '' 'DateStandNames' ⍝ Standard Format Variables (have to assume all are available?)
+[7]   res←(SStoMAT DateStandNames) OVER res
+[8]   
+[9]   ⍝ arg is either 0 1 2 or 3 geting the various combinations of the two dates
+[10]  res←(SStoMAT '⍺Valuation Date',((arg∊1 3)/'⍺Leaving Date'),((arg∊0 1)/'⍺Normal Retirement Date')) OVER res
+[11]  
+[12]  res←'Standard Date Vars' OVER res
+    ∇

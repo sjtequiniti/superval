@@ -1,0 +1,38 @@
+    ∇ retries←test_wcalls folder;⎕ELX;xxx;tno;file;BLOCK;vld;h;∆;gft;EXCLUSIVE
+[1]   ⍝ UTILSWIN.sf#7
+[2]   ⍝ Exercise Windows calls on file subsystem
+[3]   ⍝ folder: (str) filepath ending in '\'
+[4]   ⍝ retries: (ints) number of retry attempts (⍴tally ⎕CR 'test_nfiles')
+[5]   ⍝ Vern: sjt14jan16
+[6]   EXCLUSIVE←2 ⍝ constant
+[7]   file←folder,'nativetest.dat'
+[8]   BLOCK←82000⍴(∊¯10↑¨⍕¨10×⍳8),⎕TCNL ⎕TCLF ⍝ 1000 82-char records
+[9]   tno←(⌊/0,⎕XNNUMS)-1
+[10]  retries←erase⍴0
+[11]  
+[12]  ⎕ELX←"⎕WGIVE 0×L←↑⎕LC,⎕DL .5 ⋄ retries[L]←∆+go←10>∆←retries[L] ⋄ →go↑L ⋄ ⎕ERROR,⎕DM"
+[13]  
+[14]  random:         random_error 5
+[15]  
+[16]  create:         file ⎕XNCREATE tno
+[17]  append:         BLOCK ⎕NAPPEND tno
+[18]  untie:          ⎕NUNTIE tno
+[19]  
+[20]  findhandle:     h←↑⎕WCALL 'FindFirstFile' file ''               ⍝ get handle (ignore structure)
+[21]  testvalid:      vld←h≠⎕WCALL 'W_Const' 'INVALID_HANDLE_VALUE'   ⍝ is it a valid handle
+[22]  :if vld
+[23]  findclose:      xxx←⎕WCALL 'FindClose' h                        ⍝ free the handle if it's valid
+[24]  :endif
+[25]  
+[26]  createfile:     h←⎕WCALL 'CreateFile' file 'GENERIC_READ' 'FILE_SHARE_READ' 0 'OPEN_EXISTING' 'FILE_ATTRIBUTE_NORMAL' 0
+[27]  getfiletime:    gft←4⊃⎕WCALL 'GetFileTime' h '' '' '' ⍝ Modified time
+[28]  closehandle:    xxx←⎕WCALL 'CloseHandle' h
+[29]  
+[30]  :if gft∨.≠⎕TCNUL
+[31]  tolocal:        ∆←2⊃⎕WCALL 'FileTimeToLocalFileTime' gft ''     ⍝ Convert GMT to local
+[32]  tosystem:       xxx←2⊃⎕WCALL 'FileTimeToSystemTime' ∆ ''        ⍝ Convert to local date format
+[33]  :endif
+[34]  
+[35]  tie:            file ⎕XNTIE tno EXCLUSIVE
+[36]  erase:          file ⎕XNERASE tno
+    ∇

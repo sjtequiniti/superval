@@ -1,1 +1,49 @@
-    ∇ res←field Rate_Table_Editor parm;parent;z[1]   ⍝ DECRWIN.sf#18[2]   ⍝ Function to allow user control on Rate Table Editor[3]   [4]   parent←'fmEditRates.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]      0 0⍴⎕ex 'SSName'[11]      TableDesc←OldDesc[12]      ColEdit←⍕colEdit←INIString uSER 'RT1DEdit%' '0' PrefINI[13]  [14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[15]  [16]      SSName←Init_RTEditor ⍝ Use SSName "globally"[17]  [18]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[19]  [20]      :if 0∊⍴,field ⋄ :return ⋄ :endif[21]      :repeat[22]          :select ↑field[23]          :case 'cbTableNo' ⍝ Check Box only enabled when New Table Code selected[24]              (parent,'ckReplaceTab') ⎕wi 'enabled' (1≠(parent,'cbTableNo') ⎕wi 'value')[25]          :case 'ckColEdit'[26]              :if 0≠⎕nc 'SSName'[27]                  RTvalues←OldTable GetRates SSName   ⍝ Read the current SS[28]                  (Win∆Parent SSName) ⎕wi 'visible' 0 ⍝  and hide[29]                  colEdit←(parent,'ckColEdit') ⎕wi 'value'[30]                  SSName←Init_RTEditor                ⍝ Change SS and load with Read[31]                  colEdit INIString uSER 'RT1DEdit' PrefINI[32]              :endif[33]          :endselect[34]      :until mt field←1↓field[35]  [36]  :case 'Valid' ⍝ Routine specific validation[37]  [38]  :case 'Run'[39]      SaveRates[40]      parent ⎕wi 'modified' 0[41]      res←'Quit'[42]  [43]  :case 'Quit' ⍝ Deleting "other" variables[44]      colEdit←0[45]      0 0⍴⎕ex 'SSName'[46]  [47]  :endselect    ∇
+    ∇ res←field Rate_Table_Editor parm;parent;z
+[1]   ⍝ DECRWIN.sf#18
+[2]   ⍝ Function to allow user control on Rate Table Editor
+[3]   
+[4]   parent←'fmEditRates.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]      0 0⍴⎕ex 'SSName'
+[11]      TableDesc←OldDesc
+[12]      ColEdit←⍕colEdit←INIString uSER 'RT1DEdit%' '0' PrefINI
+[13]  
+[14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[15]  
+[16]      SSName←Init_RTEditor ⍝ Use SSName "globally"
+[17]  
+[18]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[19]  
+[20]      :if 0∊⍴,field ⋄ :return ⋄ :endif
+[21]      :repeat
+[22]          :select ↑field
+[23]          :case 'cbTableNo' ⍝ Check Box only enabled when New Table Code selected
+[24]              (parent,'ckReplaceTab') ⎕wi 'enabled' (1≠(parent,'cbTableNo') ⎕wi 'value')
+[25]          :case 'ckColEdit'
+[26]              :if 0≠⎕nc 'SSName'
+[27]                  RTvalues←OldTable GetRates SSName   ⍝ Read the current SS
+[28]                  (Win∆Parent SSName) ⎕wi 'visible' 0 ⍝  and hide
+[29]                  colEdit←(parent,'ckColEdit') ⎕wi 'value'
+[30]                  SSName←Init_RTEditor                ⍝ Change SS and load with Read
+[31]                  colEdit INIString uSER 'RT1DEdit' PrefINI
+[32]              :endif
+[33]          :endselect
+[34]      :until mt field←1↓field
+[35]  
+[36]  :case 'Valid' ⍝ Routine specific validation
+[37]  
+[38]  :case 'Run'
+[39]      SaveRates
+[40]      parent ⎕wi 'modified' 0
+[41]      res←'Quit'
+[42]  
+[43]  :case 'Quit' ⍝ Deleting "other" variables
+[44]      colEdit←0
+[45]      0 0⍴⎕ex 'SSName'
+[46]  
+[47]  :endselect
+    ∇

@@ -1,1 +1,46 @@
-    ∇ tab←cont ⍙WebRecalculate tab;∆;cfs;disc;d;rfcfs;inf;memcfs;spcfs;VBadj;cashadj[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Recalculate the new Cashflows and Liabilities based on changes[3]   [4]   :if ×rowsIn tab[5]       cashadj←(↑×/tab at 'CashAmtAdjust' 'CashFactAdjust')-tab at 'CashZeroPension'[6]       memcfs←cashadj×(inf←tab at 'NewInflator')×↑×/tab at 'RawMemberCF' 'DISPMAdjust'                      'NewMemberMortAdjust'[7]       ((~tab at 'MemberOnly')/cashadj)←1[8]       spcfs ←cashadj× inf                      ×↑×/tab at 'RawSpouseCF' 'PropMarrAdjust' 'SpouseRevAdjust' 'NewSpouseMortAdjust'[9]       cfs←memcfs+spcfs[10]      disc←tab at 'NewDiscount'[11]  [12]      :if ∨/×VBadj←tab at 'VBFactAdjType' ⍝ Pension Adjustments for changes in VB Commutation Factors[13]          tab←tab ⍙WebVBFactAdjust VBadj[14]      :endif[15]      cashadj←↑-/tab at 'VBFactAdjust' 'CashZeroPension'[16]      rfcfs←cfs←cfs×cashadj×↑×/tab at 'AccrualLimit' 'AccrualAdjust' 'TVAmtAdjust' 'TVPropAdjust'[17]  [18]      :if ∨/∆←¯1=tab at 'CashBenefit' ⍝ Cash Benefit related to Valuation Basis or Future CARE[19]          d←(0,(+/∆)⍴¨0 0 0) ⍙WebDeflator tab for ∆[20]          (∆/cfs)←(⊂penfymsk)×[1]¨(+/¨(∆/disc)×∆/cfs)÷[1]¨maxpay↑¨,¨d[21]          (∆/disc)←maxpay⌿¨d[22]      :endif[23]  [24]      ⍝ Capitalise non-Transfer Value benefits[25]      :if 0=rfperiod ⋄ :andif Capind ⋄ :andif ∨/∆←0=tab at 'CashBenefit' ⋄ :andif ∨/∆←∆^~(∊restab at 'ContingencyID')∊31 32 33 34 35 36 37 38 39 40 41 42[26]          (∆/cfs)←Profit×(+/¨d×∆/cfs)×[1]¨(⊂penfymsk)×¨÷d←∆/disc[27]      :endif[28]      tab←tab amend 'NewCashFlow' cfs[29]  [30]      tab←tab amend 'RollForwardAdjust' (∆←rfperiod ⍙WebRollForward tab) ⍝ Cash flows adjustments for Roll-Forward[31]      :if rfperiod=0[32]          tab←tab amend 'RFCashFlow' (rfcfs←cfs)[33]      :else[34]          rfcfs←rfcfs×∆[35]          disc←tab at 'RFDiscount'[36]          :if ∨/∆←¯1=tab at 'CashBenefit' ⍝ Cash Benefit related to Valuation Basis or Future CARE[37]              d←(rfperiod,(+/∆)⍴¨0 0 0) ⍙WebDeflator tab for ∆[38]              (∆/rfcfs)←(⊂penfymsk)×[1]¨(+/¨(∆/disc)×∆/rfcfs)÷[1]¨maxpay↑¨,¨d[39]              (∆/disc)←maxpay⌿¨d[40]          :endif[41]          tab←tab amend 'RFCashFlow' rfcfs[42]      :endif[43]      tab←tab amend 'NewLiabilityValue' ((+/¨,¨rfcfs×disc)×tab at 'LiabilityAdjust')[44]  :endif    ∇
+    ∇ tab←cont ⍙WebRecalculate tab;∆;cfs;disc;d;rfcfs;inf;memcfs;spcfs;VBadj;cashadj
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Recalculate the new Cashflows and Liabilities based on changes
+[3]   
+[4]   :if ×rowsIn tab
+[5]       cashadj←(↑×/tab at 'CashAmtAdjust' 'CashFactAdjust')-tab at 'CashZeroPension'
+[6]       memcfs←cashadj×(inf←tab at 'NewInflator')×↑×/tab at 'RawMemberCF' 'DISPMAdjust'                      'NewMemberMortAdjust'
+[7]       ((~tab at 'MemberOnly')/cashadj)←1
+[8]       spcfs ←cashadj× inf                      ×↑×/tab at 'RawSpouseCF' 'PropMarrAdjust' 'SpouseRevAdjust' 'NewSpouseMortAdjust'
+[9]       cfs←memcfs+spcfs
+[10]      disc←tab at 'NewDiscount'
+[11]  
+[12]      :if ∨/×VBadj←tab at 'VBFactAdjType' ⍝ Pension Adjustments for changes in VB Commutation Factors
+[13]          tab←tab ⍙WebVBFactAdjust VBadj
+[14]      :endif
+[15]      cashadj←↑-/tab at 'VBFactAdjust' 'CashZeroPension'
+[16]      rfcfs←cfs←cfs×cashadj×↑×/tab at 'AccrualLimit' 'AccrualAdjust' 'TVAmtAdjust' 'TVPropAdjust'
+[17]  
+[18]      :if ∨/∆←¯1=tab at 'CashBenefit' ⍝ Cash Benefit related to Valuation Basis or Future CARE
+[19]          d←(0,(+/∆)⍴¨0 0 0) ⍙WebDeflator tab for ∆
+[20]          (∆/cfs)←(⊂penfymsk)×[1]¨(+/¨(∆/disc)×∆/cfs)÷[1]¨maxpay↑¨,¨d
+[21]          (∆/disc)←maxpay⌿¨d
+[22]      :endif
+[23]  
+[24]      ⍝ Capitalise non-Transfer Value benefits
+[25]      :if 0=rfperiod ⋄ :andif Capind ⋄ :andif ∨/∆←0=tab at 'CashBenefit' ⋄ :andif ∨/∆←∆^~(∊restab at 'ContingencyID')∊31 32 33 34 35 36 37 38 39 40 41 42
+[26]          (∆/cfs)←Profit×(+/¨d×∆/cfs)×[1]¨(⊂penfymsk)×¨÷d←∆/disc
+[27]      :endif
+[28]      tab←tab amend 'NewCashFlow' cfs
+[29]  
+[30]      tab←tab amend 'RollForwardAdjust' (∆←rfperiod ⍙WebRollForward tab) ⍝ Cash flows adjustments for Roll-Forward
+[31]      :if rfperiod=0
+[32]          tab←tab amend 'RFCashFlow' (rfcfs←cfs)
+[33]      :else
+[34]          rfcfs←rfcfs×∆
+[35]          disc←tab at 'RFDiscount'
+[36]          :if ∨/∆←¯1=tab at 'CashBenefit' ⍝ Cash Benefit related to Valuation Basis or Future CARE
+[37]              d←(rfperiod,(+/∆)⍴¨0 0 0) ⍙WebDeflator tab for ∆
+[38]              (∆/rfcfs)←(⊂penfymsk)×[1]¨(+/¨(∆/disc)×∆/rfcfs)÷[1]¨maxpay↑¨,¨d
+[39]              (∆/disc)←maxpay⌿¨d
+[40]          :endif
+[41]          tab←tab amend 'RFCashFlow' rfcfs
+[42]      :endif
+[43]      tab←tab amend 'NewLiabilityValue' ((+/¨,¨rfcfs×disc)×tab at 'LiabilityAdjust')
+[44]  :endif
+    ∇

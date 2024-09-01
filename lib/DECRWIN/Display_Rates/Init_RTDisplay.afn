@@ -1,1 +1,82 @@
-    ∇ Init_RTDisplay;SSName;z[1]   ⍝ DECRWIN.sf#11[2]   ⍝ Initialise the Rate Table Display Form[3]   [4]   (parent,'lNew') ⎕wi '∆where' (2 2⍴1 ¯31 0.1 0) ⍝ Fix the position of the Labels[5]   (parent,'lMoved') ⎕wi '∆where' (2 2⍴1 ¯31 0.5 0)[6]   [7]   z←1↑(parent,'fAgeRates.ssAgeRates') ⎕wi 'scale'[8]   z←÷⌿('#' ⎕wi 'units')[z,5;] ⍝ Relative scaling of F1SS and Form[9]   :if TwoDTable code ⍝ 2D Tables[10]      SSName←parent,'fTwoDRates.ssTwoDRates'[11]      parent ⎕wi 'where' (Win∆CentrePos (100+z×120×255,SSName ⎕wi 'xColWidth' 1)×1⌈CharSize÷13 6)[12]      SSName DecrSS∆Adjust 'TwoD'[13]      (parent,'fTwoDRates') ⎕wi 'visible' 1[14]      SSName DecrSS∆Insert (code values)[15]  :elseif (1↑1↓code)∊'Tt'[16]      values←60 OVERTAKE values[17]      SSName←parent,'fDurnRates.ssDurnRates'[18]      parent ⎕wi 'where' (Win∆CentrePos (100 15+z×12×255,(1020+SSName ⎕wi 'xColWidth' 2)÷2.4)×1⌈CharSize÷13 6)[19]      SSName DecrSS∆Adjust 'Duration'[20]      (parent,'fDurnRates') ⎕wi 'visible' 1[21]      SSName DecrSS∆Insert (code values)[22]  :else[23]      SSName←parent,'fAgeRates.ssAgeRates'[24]      parent ⎕wi 'where' (Win∆CentrePos (100 15+z×12×255,(1020+SSName ⎕wi 'xColWidth' 2)÷2.4)×1⌈CharSize÷13 6)[25]      SSName DecrSS∆Adjust 'Age'[26]      (parent,'fAgeRates') ⎕wi 'visible' 1[27]      SSName DecrSS∆Insert (code values)[28]  :endif[29]  [30]  :if 0=⎕nc 'accepted'[31]      (parent,'bnDisplay_RatesSave') ⎕wi 'style' 0[32]      (parent,'bnDisplay_RatesSave') ⎕wi 'visible' ¯1[33]      (parent,'bnDisplay_RatesQuit') ⎕wi 'style' 3[34]      0 Win∆SetFocus parent,'bnDisplay_RatesQuit'[35]  :else[36]      0 Win∆SetFocus parent,'bnDisplay_RatesSave'[37]  :endif[38]  [39]  :if 0=⎕nc 'new' ⋄ :orif 0∊⍴new[40]      (parent,'lNew') ⎕wi 'visible' 0[41]  :else[42]      (parent,'lNew') ⎕wi 'color' ¯1 (256⊥0 0 255)[43]      :if TwoDTable code ⍝ 2D Tables[44]          SSName Win∆F1SSSetSelection 1 1 120 120[45]          SSName ⎕wi 'XFontColor' (256⊥0 0 255)[46]      :else[47]          :for z :in new ⍝ Color "new" in red[48]              SSName Win∆F1SSSetSelection 4⍴(1+10∣z),(2×⌈0.1×z+1)[49]              SSName ⎕wi 'XFontColor' (256⊥0 0 255)[50]          :endfor[51]      :endif[52]  :endif[53]  [54]  :if 0=⎕nc 'moved' ⋄ :orif 0∊⍴moved[55]      (parent,'lMoved') ⎕wi 'visible' 0[56]  :else[57]      (parent,'lMoved') ⎕wi 'color' ¯1 (256⊥255 0 0)[58]      :for z :in moved ⍝ Color "moved" in blue[59]          SSName Win∆F1SSSetSelection 4⍴(1+10∣z),(2×⌈0.1×z+1)[60]          SSName ⎕wi 'XFontColor' (256⊥255 0 0)[61]      :endfor[62]  :endif[63]  [64]  :if 0=⎕nc 'diff' ⋄ :orif 0∊⍴diff[65]      (parent,'lDiff') ⎕wi 'visible' 0[66]  :else[67]      (parent,'lDiff') ⎕wi 'color' ¯1 (256⊥0 0 255)[68]      :if TwoDTable code ⍝ 2D Tables[69]          :for z :in diff ⍝ Color "changed" in red[70]              SSName Win∆F1SSSetSelection 4⍴⊃z[71]              SSName ⎕wi 'XFontColor' (256⊥0 0 255)[72]          :endfor[73]      :else[74]          :for z :in diff ⍝ Color "changed" in red[75]              SSName Win∆F1SSSetSelection 4⍴(1+10∣z),(2×⌈0.1×z+1)[76]              SSName ⎕wi 'XFontColor' (256⊥0 0 255)[77]          :endfor[78]      :endif[79]  :endif[80]  SSName Win∆F1SSSetSelection 1 1 1 1    ∇
+    ∇ Init_RTDisplay;SSName;z
+[1]   ⍝ DECRWIN.sf#11
+[2]   ⍝ Initialise the Rate Table Display Form
+[3]   
+[4]   (parent,'lNew') ⎕wi '∆where' (2 2⍴1 ¯31 0.1 0) ⍝ Fix the position of the Labels
+[5]   (parent,'lMoved') ⎕wi '∆where' (2 2⍴1 ¯31 0.5 0)
+[6]   
+[7]   z←1↑(parent,'fAgeRates.ssAgeRates') ⎕wi 'scale'
+[8]   z←÷⌿('#' ⎕wi 'units')[z,5;] ⍝ Relative scaling of F1SS and Form
+[9]   :if TwoDTable code ⍝ 2D Tables
+[10]      SSName←parent,'fTwoDRates.ssTwoDRates'
+[11]      parent ⎕wi 'where' (Win∆CentrePos (100+z×120×255,SSName ⎕wi 'xColWidth' 1)×1⌈CharSize÷13 6)
+[12]      SSName DecrSS∆Adjust 'TwoD'
+[13]      (parent,'fTwoDRates') ⎕wi 'visible' 1
+[14]      SSName DecrSS∆Insert (code values)
+[15]  :elseif (1↑1↓code)∊'Tt'
+[16]      values←60 OVERTAKE values
+[17]      SSName←parent,'fDurnRates.ssDurnRates'
+[18]      parent ⎕wi 'where' (Win∆CentrePos (100 15+z×12×255,(1020+SSName ⎕wi 'xColWidth' 2)÷2.4)×1⌈CharSize÷13 6)
+[19]      SSName DecrSS∆Adjust 'Duration'
+[20]      (parent,'fDurnRates') ⎕wi 'visible' 1
+[21]      SSName DecrSS∆Insert (code values)
+[22]  :else
+[23]      SSName←parent,'fAgeRates.ssAgeRates'
+[24]      parent ⎕wi 'where' (Win∆CentrePos (100 15+z×12×255,(1020+SSName ⎕wi 'xColWidth' 2)÷2.4)×1⌈CharSize÷13 6)
+[25]      SSName DecrSS∆Adjust 'Age'
+[26]      (parent,'fAgeRates') ⎕wi 'visible' 1
+[27]      SSName DecrSS∆Insert (code values)
+[28]  :endif
+[29]  
+[30]  :if 0=⎕nc 'accepted'
+[31]      (parent,'bnDisplay_RatesSave') ⎕wi 'style' 0
+[32]      (parent,'bnDisplay_RatesSave') ⎕wi 'visible' ¯1
+[33]      (parent,'bnDisplay_RatesQuit') ⎕wi 'style' 3
+[34]      0 Win∆SetFocus parent,'bnDisplay_RatesQuit'
+[35]  :else
+[36]      0 Win∆SetFocus parent,'bnDisplay_RatesSave'
+[37]  :endif
+[38]  
+[39]  :if 0=⎕nc 'new' ⋄ :orif 0∊⍴new
+[40]      (parent,'lNew') ⎕wi 'visible' 0
+[41]  :else
+[42]      (parent,'lNew') ⎕wi 'color' ¯1 (256⊥0 0 255)
+[43]      :if TwoDTable code ⍝ 2D Tables
+[44]          SSName Win∆F1SSSetSelection 1 1 120 120
+[45]          SSName ⎕wi 'XFontColor' (256⊥0 0 255)
+[46]      :else
+[47]          :for z :in new ⍝ Color "new" in red
+[48]              SSName Win∆F1SSSetSelection 4⍴(1+10∣z),(2×⌈0.1×z+1)
+[49]              SSName ⎕wi 'XFontColor' (256⊥0 0 255)
+[50]          :endfor
+[51]      :endif
+[52]  :endif
+[53]  
+[54]  :if 0=⎕nc 'moved' ⋄ :orif 0∊⍴moved
+[55]      (parent,'lMoved') ⎕wi 'visible' 0
+[56]  :else
+[57]      (parent,'lMoved') ⎕wi 'color' ¯1 (256⊥255 0 0)
+[58]      :for z :in moved ⍝ Color "moved" in blue
+[59]          SSName Win∆F1SSSetSelection 4⍴(1+10∣z),(2×⌈0.1×z+1)
+[60]          SSName ⎕wi 'XFontColor' (256⊥255 0 0)
+[61]      :endfor
+[62]  :endif
+[63]  
+[64]  :if 0=⎕nc 'diff' ⋄ :orif 0∊⍴diff
+[65]      (parent,'lDiff') ⎕wi 'visible' 0
+[66]  :else
+[67]      (parent,'lDiff') ⎕wi 'color' ¯1 (256⊥0 0 255)
+[68]      :if TwoDTable code ⍝ 2D Tables
+[69]          :for z :in diff ⍝ Color "changed" in red
+[70]              SSName Win∆F1SSSetSelection 4⍴⊃z
+[71]              SSName ⎕wi 'XFontColor' (256⊥0 0 255)
+[72]          :endfor
+[73]      :else
+[74]          :for z :in diff ⍝ Color "changed" in red
+[75]              SSName Win∆F1SSSetSelection 4⍴(1+10∣z),(2×⌈0.1×z+1)
+[76]              SSName ⎕wi 'XFontColor' (256⊥0 0 255)
+[77]          :endfor
+[78]      :endif
+[79]  :endif
+[80]  SSName Win∆F1SSSetSelection 1 1 1 1
+    ∇

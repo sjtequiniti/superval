@@ -1,0 +1,30 @@
+    ∇ Module ParmColor arg;control;variable;class;locked;on;row;var;r1;c1;r2;c2
+[1]   ⍝ UTILSWIN.sf#9
+[2]   ⍝ Turn on or off the Comment coloring
+[3]   
+[4]   (control variable row on)←arg
+[5]   class←(⎕io+class≡'ActiveControl ',⍙⍙classID,⍙⍙licenceKey)⊃(class←(control ⎕wi 'class')) 'F1SS'
+[6]   
+[7]   :if on
+[8]       :if class≡'F1SS'
+[9]           var←(qtrim¨m2n control ⎕wi '∆name')⍳⊂variable
+[10]          (r1 c1 r2 c2)←4⍴('Col'≡control ⎕wi '∆roworcol')⌽var row
+[11]          control ⎕wi 'xSetSelection' r1 c1 r2 c2
+[12]          control ⎕wi 'SetPattern' 18 0 (256⊥0 255 255)
+[13]          control ⎕wi 'xSetSelection' 1 1 1 1
+[14]      :else
+[15]          control ⎕wi "color" (255 255 0) ¯1
+[16]      :endif
+[17]  :else
+[18]      :if class≡'F1SS'
+[19]          control ⎕wi 'xSetSelection' ¯1 ¯1 ¯1 ¯1 ⍝ Initialise everything
+[20]          control ⎕wi 'SetPattern' 0 0 0
+[21]          0 0⍴⍎'(⊂"',control,'") ',Module,' "Lock"'
+[22]          control ⎕wi 'xSetSelection' 1 1 1 1
+[23]      :else
+[24]          control ⎕wi "color" ¯1 ¯1
+[25]      :endif
+[26]  :endif
+[27]  
+[28]  
+    ∇

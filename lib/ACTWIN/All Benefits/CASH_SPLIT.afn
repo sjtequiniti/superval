@@ -1,1 +1,85 @@
-    ∇ L CASH∆SPLIT R;CASHP∆L;XS[1]   ⍝ ACTWIN.sf#4[2]   ⍝[3]   :if R≡'ILL' ⋄ CASHP∆L←Icashp[4]   :else       ⋄ CASHP∆L← cashp[5]   :endif[6]   :select CASHP∆L  ⍝ User defined priority: B(efore split), A(fter split + future), P(R)iority or P(ro-Rata)[7]   :case 'B'[8]       CASH1S← CASHIR                      ⌊CASHT[⎕io  ;⎕io;][9]       CASH1M←(CASHIR-CASH1S)              ⌊CASHT[⎕io+1;⎕io;][10]      CASH1L←(CASHIR-CASH1S+CASH1M)       ⌊CASHT[⎕io+2;⎕io;][11]      CASH14←(CASHIR-CASH1S+CASH1M+CASH1L)⌊CASHT[⎕io+3;⎕io;][12]      XS←((CASHIR-CASH1S+CASH1M+CASH1L+CASH14)⌊CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;]) CDIV CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;][13]      CASH2S←CASHT[⎕io  ;⎕io+1;]×XS[14]      CASH3S←CASHT[⎕io  ;⎕io+2;]×XS[15]      XS←((CASHIR-CASH1S+CASH1M+CASH1L+CASH14+CASH2S+CASH3S)⌊CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;]) CDIV CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;][16]      CASH2M←CASHT[⎕io+1;⎕io+1;]×XS[17]      CASH3M←CASHT[⎕io+1;⎕io+2;]×XS[18]      XS←((CASHIR-CASH1S+CASH1M+CASH1L+CASH14+CASH2S+CASH3S+CASH2M+CASH3M)⌊CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;]) CDIV CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;][19]      CASH2L←CASHT[⎕io+2;⎕io+1;]×XS[20]      CASH3L←CASHT[⎕io+2;⎕io+2;]×XS[21]      XS←((CASHIR-CASH1S+CASH1M+CASH1L+CASH14+CASH2S+CASH3S+CASH2M+CASH3M+CASH2L+CASH3L)⌊CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;]) CDIV CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;][22]      CASH24←CASHT[⎕io+3;⎕io+1;]×XS[23]      CASH34←CASHT[⎕io+3;⎕io+2;]×XS[24]  :case 'A'[25]      XS←(CASHIR⌊CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;]) CDIV CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;][26]      CASH2S←CASHT[⎕io  ;⎕io+1;]×XS[27]      CASH3S←CASHT[⎕io  ;⎕io+2;]×XS[28]      XS←((CASHIR-CASH2S+CASH3S)⌊CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;]) CDIV CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;][29]      CASH2M←CASHT[⎕io+1;⎕io+1;]×XS[30]      CASH3M←CASHT[⎕io+1;⎕io+2;]×XS[31]      XS←((CASHIR-CASH2S+CASH3S+CASH2M+CASH3M)⌊CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;]) CDIV CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;][32]      CASH2L←CASHT[⎕io+2;⎕io+1;]×XS[33]      CASH3L←CASHT[⎕io+2;⎕io+2;]×XS[34]      XS←((CASHIR-CASH2S+CASH3S+CASH2M+CASH3M+CASH2L+CASH3L)⌊CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;]) CDIV CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;][35]      CASH24←CASHT[⎕io+2;⎕io+1;]×XS[36]      CASH34←CASHT[⎕io+2;⎕io+2;]×XS[37]      XS←(CASHIR-CASH2S+CASH3S+CASH2M+CASH3M+CASH2L+CASH3L+CASH24+CASH34)⍝⌊CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;][38]      CASH1S← XS                      ⌊CASHT[⎕io  ;⎕io;][39]      CASH1M←(XS-CASH1S)              ⌊CASHT[⎕io+1;⎕io;][40]      CASH1L←(XS-CASH1S+CASH1M)       ⌊CASHT[⎕io+2;⎕io;][41]      CASH14←(XS-CASH1S+CASH1M+CASH1L)⌊CASHT[⎕io+3;⎕io;][42]  :case 'R'[43]      XS←1⌊CASHIR CDIV CASHT[⎕io;⎕io;]+CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;][44]      CASH1S←CASHT[⎕io;⎕io  ;]×XS[45]      CASH2S←CASHT[⎕io;⎕io+1;]×XS[46]      CASH3S←CASHT[⎕io;⎕io+2;]×XS[47]      XS←1⌊(CASHIR-CASH1S+CASH2S+CASH3S) CDIV CASHT[⎕io+1;⎕io;]+CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;][48]      CASH1M←CASHT[⎕io+1;⎕io  ;]×XS[49]      CASH2M←CASHT[⎕io+1;⎕io+1;]×XS[50]      CASH3M←CASHT[⎕io+1;⎕io+2;]×XS[51]      XS←1⌊(CASHIR-CASH1S+CASH2S+CASH3S+CASH1M+CASH2M+CASH3M) CDIV CASHT[⎕io+2;⎕io;]+CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;][52]      CASH1L←CASHT[⎕io+2;⎕io  ;]×XS[53]      CASH2L←CASHT[⎕io+2;⎕io+1;]×XS[54]      CASH3L←CASHT[⎕io+2;⎕io+2;]×XS[55]      XS←1⌊(CASHIR-CASH1S+CASH2S+CASH3S+CASH1M+CASH2M+CASH3M+CASH1L+CASH2L+CASH3L) CDIV CASHT[⎕io+3;⎕io;]+CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;][56]      CASH14←CASHT[⎕io+3;⎕io  ;]×XS[57]      CASH24←CASHT[⎕io+3;⎕io+1;]×XS[58]      CASH34←CASHT[⎕io+3;⎕io+2;]×XS[59]  :else[60]      XS←1⌊CASHIR CDIV +/[⎕io]+/[⎕io+1]CASHT[61]      CASH1S←CASHT[⎕io  ;⎕io  ;]×XS[62]      CASH2S←CASHT[⎕io  ;⎕io+1;]×XS[63]      CASH3S←CASHT[⎕io  ;⎕io+2;]×XS[64]      CASH1M←CASHT[⎕io+1;⎕io  ;]×XS[65]      CASH2M←CASHT[⎕io+1;⎕io+1;]×XS[66]      CASH3M←CASHT[⎕io+1;⎕io+2;]×XS[67]      CASH1L←CASHT[⎕io+2;⎕io  ;]×XS[68]      CASH2L←CASHT[⎕io+2;⎕io+1;]×XS[69]      CASH3L←CASHT[⎕io+2;⎕io+2;]×XS[70]      CASH14←CASHT[⎕io+3;⎕io  ;]×XS[71]      CASH24←CASHT[⎕io+3;⎕io+1;]×XS[72]      CASH34←CASHT[⎕io+3;⎕io+2;]×XS[73]  :endselect[74]  ⍝⍝⍝ :if test ⋄ :andif L<3[75]  ⍝⌿⍝ :if L<3[76]  ⍝⌿⍝    :if R≡'ILL'[77]  ⍝⌿⍝        AUDIT '1460','abcdefgh'[ICTYPE∆L-2][78]  ⍝⌿⍝    :elseif L=2 ⍝ Called from CASH∆PUP∆ACT[79]  ⍝⌿⍝        AUDIT '2510',¯1↑'b',(NRA<SPA)/'a' ⋄ AUDIT '2520','Xabbcefgh'[CTYPE∆L-~⎕IO][80]  ⍝⌿⍝    :else[81]  ⍝⌿⍝        AUDIT '1410','abcdefgh'[CTYPE∆L-2][82]  ⍝⌿⍝    :endif[83]  ⍝⌿⍝ :endif    ∇
+    ∇ L CASH∆SPLIT R;CASHP∆L;XS
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝
+[3]   :if R≡'ILL' ⋄ CASHP∆L←Icashp
+[4]   :else       ⋄ CASHP∆L← cashp
+[5]   :endif
+[6]   :select CASHP∆L  ⍝ User defined priority: B(efore split), A(fter split + future), P(R)iority or P(ro-Rata)
+[7]   :case 'B'
+[8]       CASH1S← CASHIR                      ⌊CASHT[⎕io  ;⎕io;]
+[9]       CASH1M←(CASHIR-CASH1S)              ⌊CASHT[⎕io+1;⎕io;]
+[10]      CASH1L←(CASHIR-CASH1S+CASH1M)       ⌊CASHT[⎕io+2;⎕io;]
+[11]      CASH14←(CASHIR-CASH1S+CASH1M+CASH1L)⌊CASHT[⎕io+3;⎕io;]
+[12]      XS←((CASHIR-CASH1S+CASH1M+CASH1L+CASH14)⌊CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;]) CDIV CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;]
+[13]      CASH2S←CASHT[⎕io  ;⎕io+1;]×XS
+[14]      CASH3S←CASHT[⎕io  ;⎕io+2;]×XS
+[15]      XS←((CASHIR-CASH1S+CASH1M+CASH1L+CASH14+CASH2S+CASH3S)⌊CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;]) CDIV CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;]
+[16]      CASH2M←CASHT[⎕io+1;⎕io+1;]×XS
+[17]      CASH3M←CASHT[⎕io+1;⎕io+2;]×XS
+[18]      XS←((CASHIR-CASH1S+CASH1M+CASH1L+CASH14+CASH2S+CASH3S+CASH2M+CASH3M)⌊CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;]) CDIV CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;]
+[19]      CASH2L←CASHT[⎕io+2;⎕io+1;]×XS
+[20]      CASH3L←CASHT[⎕io+2;⎕io+2;]×XS
+[21]      XS←((CASHIR-CASH1S+CASH1M+CASH1L+CASH14+CASH2S+CASH3S+CASH2M+CASH3M+CASH2L+CASH3L)⌊CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;]) CDIV CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;]
+[22]      CASH24←CASHT[⎕io+3;⎕io+1;]×XS
+[23]      CASH34←CASHT[⎕io+3;⎕io+2;]×XS
+[24]  :case 'A'
+[25]      XS←(CASHIR⌊CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;]) CDIV CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;]
+[26]      CASH2S←CASHT[⎕io  ;⎕io+1;]×XS
+[27]      CASH3S←CASHT[⎕io  ;⎕io+2;]×XS
+[28]      XS←((CASHIR-CASH2S+CASH3S)⌊CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;]) CDIV CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;]
+[29]      CASH2M←CASHT[⎕io+1;⎕io+1;]×XS
+[30]      CASH3M←CASHT[⎕io+1;⎕io+2;]×XS
+[31]      XS←((CASHIR-CASH2S+CASH3S+CASH2M+CASH3M)⌊CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;]) CDIV CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;]
+[32]      CASH2L←CASHT[⎕io+2;⎕io+1;]×XS
+[33]      CASH3L←CASHT[⎕io+2;⎕io+2;]×XS
+[34]      XS←((CASHIR-CASH2S+CASH3S+CASH2M+CASH3M+CASH2L+CASH3L)⌊CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;]) CDIV CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;]
+[35]      CASH24←CASHT[⎕io+2;⎕io+1;]×XS
+[36]      CASH34←CASHT[⎕io+2;⎕io+2;]×XS
+[37]      XS←(CASHIR-CASH2S+CASH3S+CASH2M+CASH3M+CASH2L+CASH3L+CASH24+CASH34)⍝⌊CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;]
+[38]      CASH1S← XS                      ⌊CASHT[⎕io  ;⎕io;]
+[39]      CASH1M←(XS-CASH1S)              ⌊CASHT[⎕io+1;⎕io;]
+[40]      CASH1L←(XS-CASH1S+CASH1M)       ⌊CASHT[⎕io+2;⎕io;]
+[41]      CASH14←(XS-CASH1S+CASH1M+CASH1L)⌊CASHT[⎕io+3;⎕io;]
+[42]  :case 'R'
+[43]      XS←1⌊CASHIR CDIV CASHT[⎕io;⎕io;]+CASHT[⎕io;⎕io+1;]+CASHT[⎕io;⎕io+2;]
+[44]      CASH1S←CASHT[⎕io;⎕io  ;]×XS
+[45]      CASH2S←CASHT[⎕io;⎕io+1;]×XS
+[46]      CASH3S←CASHT[⎕io;⎕io+2;]×XS
+[47]      XS←1⌊(CASHIR-CASH1S+CASH2S+CASH3S) CDIV CASHT[⎕io+1;⎕io;]+CASHT[⎕io+1;⎕io+1;]+CASHT[⎕io+1;⎕io+2;]
+[48]      CASH1M←CASHT[⎕io+1;⎕io  ;]×XS
+[49]      CASH2M←CASHT[⎕io+1;⎕io+1;]×XS
+[50]      CASH3M←CASHT[⎕io+1;⎕io+2;]×XS
+[51]      XS←1⌊(CASHIR-CASH1S+CASH2S+CASH3S+CASH1M+CASH2M+CASH3M) CDIV CASHT[⎕io+2;⎕io;]+CASHT[⎕io+2;⎕io+1;]+CASHT[⎕io+2;⎕io+2;]
+[52]      CASH1L←CASHT[⎕io+2;⎕io  ;]×XS
+[53]      CASH2L←CASHT[⎕io+2;⎕io+1;]×XS
+[54]      CASH3L←CASHT[⎕io+2;⎕io+2;]×XS
+[55]      XS←1⌊(CASHIR-CASH1S+CASH2S+CASH3S+CASH1M+CASH2M+CASH3M+CASH1L+CASH2L+CASH3L) CDIV CASHT[⎕io+3;⎕io;]+CASHT[⎕io+3;⎕io+1;]+CASHT[⎕io+3;⎕io+2;]
+[56]      CASH14←CASHT[⎕io+3;⎕io  ;]×XS
+[57]      CASH24←CASHT[⎕io+3;⎕io+1;]×XS
+[58]      CASH34←CASHT[⎕io+3;⎕io+2;]×XS
+[59]  :else
+[60]      XS←1⌊CASHIR CDIV +/[⎕io]+/[⎕io+1]CASHT
+[61]      CASH1S←CASHT[⎕io  ;⎕io  ;]×XS
+[62]      CASH2S←CASHT[⎕io  ;⎕io+1;]×XS
+[63]      CASH3S←CASHT[⎕io  ;⎕io+2;]×XS
+[64]      CASH1M←CASHT[⎕io+1;⎕io  ;]×XS
+[65]      CASH2M←CASHT[⎕io+1;⎕io+1;]×XS
+[66]      CASH3M←CASHT[⎕io+1;⎕io+2;]×XS
+[67]      CASH1L←CASHT[⎕io+2;⎕io  ;]×XS
+[68]      CASH2L←CASHT[⎕io+2;⎕io+1;]×XS
+[69]      CASH3L←CASHT[⎕io+2;⎕io+2;]×XS
+[70]      CASH14←CASHT[⎕io+3;⎕io  ;]×XS
+[71]      CASH24←CASHT[⎕io+3;⎕io+1;]×XS
+[72]      CASH34←CASHT[⎕io+3;⎕io+2;]×XS
+[73]  :endselect
+[74]  ⍝⍝⍝ :if test ⋄ :andif L<3
+[75]  ⍝⌿⍝ :if L<3
+[76]  ⍝⌿⍝    :if R≡'ILL'
+[77]  ⍝⌿⍝        AUDIT '1460','abcdefgh'[ICTYPE∆L-2]
+[78]  ⍝⌿⍝    :elseif L=2 ⍝ Called from CASH∆PUP∆ACT
+[79]  ⍝⌿⍝        AUDIT '2510',¯1↑'b',(NRA<SPA)/'a' ⋄ AUDIT '2520','Xabbcefgh'[CTYPE∆L-~⎕IO]
+[80]  ⍝⌿⍝    :else
+[81]  ⍝⌿⍝        AUDIT '1410','abcdefgh'[CTYPE∆L-2]
+[82]  ⍝⌿⍝    :endif
+[83]  ⍝⌿⍝ :endif
+    ∇

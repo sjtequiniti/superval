@@ -1,1 +1,62 @@
-    ∇ file1 ExcelCompare file2;wb1;wb2;sheets1;sheets2;tpr1;∆[1]   ⍝ RSEWIN.sf#2[2]   ⍝ "files" are full file and pathnames[3]   ⍝ For example:[4]   ⍝ 'D:\Superval21_7.10\VBA Code\NPNnorm.xls' SVCompare 'D:\Superval21_7.10\VBA Code\NPNMFR.xls'[5]   ⍝ Trap for the unwary: be careful to get the case right for the filename part! Use ZTree.[6]   [7]   ('Task:' 'Progress:') Win∆ProgressBar 'SetLabels'[8]   'Comparing Excel Outputs' Win∆ProgressBar 'Open'[9]   [10]  ExcelComp_Init 0   ⍝ Initialise XL and make it visible[11]  [12]  tpr1←OPEN∆TPR∆FILE 'Excel Comparison' ⍝ Open the print file[13]  [14]  (2 4 ('Loading ',file1)) Win∆ProgressBar 'FileUpdate'[15]  sheets1←'XLfile1' ExcelCompOpenWB file1 ⍝ This will create an APL object 'xl.XLfile1'[16]  (3 4 ('Loading ',file2)) Win∆ProgressBar 'FileUpdate'[17]  sheets2←'XLfile2' ExcelCompOpenWB file2[18]  [19]  wb1←'xl.XLfile1' ⋄ wb2←'xl.XLfile2' ⍝ These are the APL objects, left Global for convenience.[20]  [21]  :if uSERisRSE ⋄ :andif ∨/∆←∨/~(wb1 ⎕wi '∆hidden')≡¨wb2 ⎕wi '∆hidden'[22]      'Hidden Rows/Cols' APPEND tpr1[23]      (⍙⍙DISPLAY ∆⌿'xl.XLfile1' ⎕wi '∆hidden') APPEND tpr1[24]      (⍙⍙DISPLAY ∆⌿'xl.XLfile2' ⎕wi '∆hidden') APPEND tpr1[25]  :endif[26]  [27]  ⍝ Now compare the sheets.[28]  ⍝⍝⍝'**** By default displays the 1st 50 differences only ******'[29]  ⍝⍝⍝'This can be reset in CompareSheets, the variable MAX'[30]  (4 4 ('Comparing Sheets')) Win∆ProgressBar 'FileUpdate'[31]  sheets1 CompareSheetsAll sheets2[32]  [33]  ⍝ These APL objects will store the details about the workbook in ∆detail[34]  ⍝ and the hidden rows and columns in ∆hidden.[35]  ⍝ Both workbooks will be opened with all sheets visible, Tabs displayed and gridlines on.[36]  ⍝ Row/Col headings will also be displayed, and each sheet unprotected.[37]  [38]  Win∆ProgressBar 'Close'[39]  [40]  BROWSE tpr1[41]  ⎕nuntie tpr1[42]  [43]  :if 'Y'='YN' ASK 'Do you want to see the Compared Excel Files?'[44]      'xl' ⎕wi 'visible' 1[45]  :else[46]      XLComp_Quit[47]  :endif[48]  →0[49]  [50]  ''[51]  '====================================================================='[52]  'However to get at the code we need to use the password in the VB IDE.'[53]  'Therefore this will crash when we try to dump the code.'[54]  'So switch to the VB IDE and unprotect the workbooks ("sv2xl")'[55]  'and then back in APL →⎕lc'[56]  '====================================================================='[57]  ''[58]  ⍝⍝⍝ ListCode 1 ⋄ ListCode 2 ⍝ Creates the text files with the code[59]  ⍝⍝⍝ CompareCode ⍝ Will do a very rough comparison.  Use TFC for serious differences.[60]  ⍝⍝⍝ XLComp_Quit    ∇
+    ∇ file1 ExcelCompare file2;wb1;wb2;sheets1;sheets2;tpr1;∆
+[1]   ⍝ RSEWIN.sf#2
+[2]   ⍝ "files" are full file and pathnames
+[3]   ⍝ For example:
+[4]   ⍝ 'D:\Superval21_7.10\VBA Code\NPNnorm.xls' SVCompare 'D:\Superval21_7.10\VBA Code\NPNMFR.xls'
+[5]   ⍝ Trap for the unwary: be careful to get the case right for the filename part! Use ZTree.
+[6]   
+[7]   ('Task:' 'Progress:') Win∆ProgressBar 'SetLabels'
+[8]   'Comparing Excel Outputs' Win∆ProgressBar 'Open'
+[9]   
+[10]  ExcelComp_Init 0   ⍝ Initialise XL and make it visible
+[11]  
+[12]  tpr1←OPEN∆TPR∆FILE 'Excel Comparison' ⍝ Open the print file
+[13]  
+[14]  (2 4 ('Loading ',file1)) Win∆ProgressBar 'FileUpdate'
+[15]  sheets1←'XLfile1' ExcelCompOpenWB file1 ⍝ This will create an APL object 'xl.XLfile1'
+[16]  (3 4 ('Loading ',file2)) Win∆ProgressBar 'FileUpdate'
+[17]  sheets2←'XLfile2' ExcelCompOpenWB file2
+[18]  
+[19]  wb1←'xl.XLfile1' ⋄ wb2←'xl.XLfile2' ⍝ These are the APL objects, left Global for convenience.
+[20]  
+[21]  :if uSERisRSE ⋄ :andif ∨/∆←∨/~(wb1 ⎕wi '∆hidden')≡¨wb2 ⎕wi '∆hidden'
+[22]      'Hidden Rows/Cols' APPEND tpr1
+[23]      (⍙⍙DISPLAY ∆⌿'xl.XLfile1' ⎕wi '∆hidden') APPEND tpr1
+[24]      (⍙⍙DISPLAY ∆⌿'xl.XLfile2' ⎕wi '∆hidden') APPEND tpr1
+[25]  :endif
+[26]  
+[27]  ⍝ Now compare the sheets.
+[28]  ⍝⍝⍝'**** By default displays the 1st 50 differences only ******'
+[29]  ⍝⍝⍝'This can be reset in CompareSheets, the variable MAX'
+[30]  (4 4 ('Comparing Sheets')) Win∆ProgressBar 'FileUpdate'
+[31]  sheets1 CompareSheetsAll sheets2
+[32]  
+[33]  ⍝ These APL objects will store the details about the workbook in ∆detail
+[34]  ⍝ and the hidden rows and columns in ∆hidden.
+[35]  ⍝ Both workbooks will be opened with all sheets visible, Tabs displayed and gridlines on.
+[36]  ⍝ Row/Col headings will also be displayed, and each sheet unprotected.
+[37]  
+[38]  Win∆ProgressBar 'Close'
+[39]  
+[40]  BROWSE tpr1
+[41]  ⎕nuntie tpr1
+[42]  
+[43]  :if 'Y'='YN' ASK 'Do you want to see the Compared Excel Files?'
+[44]      'xl' ⎕wi 'visible' 1
+[45]  :else
+[46]      XLComp_Quit
+[47]  :endif
+[48]  →0
+[49]  
+[50]  ''
+[51]  '====================================================================='
+[52]  'However to get at the code we need to use the password in the VB IDE.'
+[53]  'Therefore this will crash when we try to dump the code.'
+[54]  'So switch to the VB IDE and unprotect the workbooks ("sv2xl")'
+[55]  'and then back in APL →⎕lc'
+[56]  '====================================================================='
+[57]  ''
+[58]  ⍝⍝⍝ ListCode 1 ⋄ ListCode 2 ⍝ Creates the text files with the code
+[59]  ⍝⍝⍝ CompareCode ⍝ Will do a very rough comparison.  Use TFC for serious differences.
+[60]  ⍝⍝⍝ XLComp_Quit
+    ∇

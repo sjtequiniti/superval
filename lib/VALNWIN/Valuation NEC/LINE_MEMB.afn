@@ -1,0 +1,24 @@
+    ∇ LINE∆MEMB;SUMMREC;GTOTS
+[1]   ⍝ VALNWIN.sf#11
+[2]   ⍝ Summary line to be printed for the new entrant
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   EXPPM←+/PMEXP×EXPPM ⍝ Per member expenses
+[8]   MCEXP←EXPMC×CONTS ⋄ SALEXP←EXPSAL×PVCONTS1pc ⍝ Memb conts + % Sal
+[9]   GTOTS←TOTSPLIT[2+No∆Bens;]
+[10]  
+[11]  ⍝ Co Cont Rate before Expenses and Tax
+[12]  NCR←((¯1↑GTOTS)-CONTS)CDIV PVCONTS1pc
+[13]  
+[14]  ⍝ Co Cont Rate after expenses
+[15]  COCR←(((¯1↑GTOTS)+PMEXP+MCEXP+SALEXP-CONTS)×1+EXPCC)CDIV PVCONTS1pc
+[16]  
+[17]  ⍝ Total Present Value of Expenses and Tax
+[18]  EXP←(PVCONTS1pc×COCR-NCR)++/PVC×NCR×¯1+1 CDIV 1-NX OVERTAKE COCTax
+[19]  cocr←COCR+NCR×¯1+1 CDIV 1-(NX-1)OVERTAKE COCTax
+[20]  
+[21]  SUMMREC←'<Entry Age >,LI4,2CI8,CM<->I10,2CM<->I8,CM<->I7,M<->I5,CM<->I10,CM<->I9,CM<->I8,CM<->I10,CM<->I7,M<->F9.2,<%>,2M<->I5' ⎕FMT MATRIX X0,SAL0,AC0,GTOTS,CONTS,EXP,((¯1↑GTOTS)+EXP-CONTS),PVCONTS1pc,(1↑cocr),2↑INS
+[22]  (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN
+    ∇

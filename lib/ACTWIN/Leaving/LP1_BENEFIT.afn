@@ -1,1 +1,99 @@
-    ∇ LP1∆BENEFIT;A;B;C;D;DOVERD;F;RetAge∆pp;ABno∆pp;Start∆pp;GP∆pp;Inc∆pp;BenType∆pp;IncType∆pp;Upin∆pp;SL∆pp;Con∆pp;ProRate∆pp[1]   ⍝ ACTWIN.sf#9[2]   ⍝ CLAYBROOK VALUATION SYSTEM - LEAVING PENSION 1[3]   ⍝ The value of a members GMP.[4]   [5]   LP1←LF1←0 ⍝⍝⍝[6]   LP1∆BENEFIT∆SWITCH2[7]   [8]   →(SPA<LRA)/L1 ⍝ Annuity Costing Factors[9]   F←LA3XX[XL]×Male[10]  A←RA3XX[XL]+0.5×F[11]  B←RA4XX[XL]+0.5×LA4XX[XL][12]  DOVERD←DNRADX×DX1XX[XL]CDIV DX1XX[NRA][13]  :if DeferNRA[14]      DOVERD←DNRADX×((0⌈NRA∆G-LatestRA+1-NX)⍴DX1XX[SPA] CDIV DX1XXA[NRA∆G]),DX1XX[SPA] CDIV ((-NX)⌈NRA∆G-LatestRA+1)↑DX1XX[X]+IsAccrued×DX1XXA[X]-DX1XX[X] ⋄ →L5[15]  L1: →IsAccrued/L3 ⋄ →(NRA∆G<SPA)/L2[16]      A←(-NX)↑((NRA∆G⍴RA3XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA3XX[X])+0.5×F←Male×(NRA∆G⍴LA3XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA3XX[X][17]      B←(-NX)↑((NRA∆G⍴RA4XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA4XX[X])+0.5×(NRA∆G⍴LA4XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA4XX[X][18]      DOVERD←DNRADX ⋄ →L5[19]  L2: A←(-NX)↑((SPA⍴RA3XXA[SPA]),(SPA-LatestRA)↑RA3XX[X])+0.5×F←Male×(SPA⍴LA3XXA[SPA]),(SPA-LatestRA)↑LA3XX[X][20]      B←(-NX)↑((SPA⍴RA4XXA[SPA]),(SPA-LatestRA)↑RA4XX[X])+0.5×(SPA⍴LA4XXA[SPA]),(SPA-LatestRA)↑LA4XX[X][21]      DOVERD←DNRADX×((0⌈NRA∆G-LatestRA+1-NX)⍴DX1XXA[SPA] CDIV DX1XXA[NRA∆G]),1⌊DX1XXA[SPA] CDIV ((-NX)⌈NRA∆G-LatestRA+1)↑DX1XX[X][22]  L3: →(NRA∆G<SPA)/L4[23]      A←(-NX)↑((NRA∆G⍴RA3XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA3XXA[X])+0.5×F←Male×(NRA∆G⍴LA3XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA3XXA[X][24]      B←(-NX)↑((NRA∆G⍴RA4XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA4XXA[X])+0.5×(NRA∆G⍴LA4XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA4XXA[X][25]      DOVERD←DNRADX ⋄ →L5[26]  L4: A←(-NX)↑((SPA⍴RA3XXA[SPA]),(SPA-LatestRA)↑RA3XX[X])+0.5×F←Male×(SPA⍴LA3XXA[SPA]),(SPA-LatestRA)↑LA3XXA[X][27]      B←(-NX)↑((SPA⍴RA4XXA[SPA]),(SPA-LatestRA)↑RA4XX[X])+0.5×(SPA⍴LA4XXA[SPA]),(SPA-LatestRA)↑LA4XXA[X][28]      DOVERD←DNRADX×((0⌈NRA∆G-LatestRA+1-NX)⍴DX1XXA[SPA] CDIV DX1XXA[NRA∆G]),1⌊DX1XXA[SPA] CDIV ((-NX)⌈NRA∆G-LatestRA+1)↑DX1XXA[X][29]  :endif[30]  L5:[31]  RPreGMPR←PreGMPR×escfact5 ⍝ GMPs[32]  RPostGMPR←PostGMPR×escfact51[33]  C←RPreGMPR×A×NX OVERTAKE DOVERD,1 ⋄ D←RPostGMPR×B×NX OVERTAKE DOVERD,1 ⋄ LP1←C+D[34]  GMP∆Pre←C ⋄ GMP∆Post←D[35]  FUFUNDCOMP←LF1←0[36]  UFUNDCOMP←(UPre←C×GFRAC1)+(UPost←D×GFRAC2) ⍝⍝⍝ ⋄ UONTOP←UCASH∆M←UCASH∆S←UCASH∆L←UCASH∆4←UDTC←0[37]  ⍝[38]  ⍝ Pension Projector Variables[39]  RetAge∆pp←Age∆pp⌈NRA∆G[40]  :if IsAccrued ⋄ ABno∆pp←'1' ⋄ :endif[41]  BenType∆pp←'P' ⋄ ProRate∆pp←⍬[42]  [43]  :if PubSect[44]      Start∆pp←SPA⌈Age∆pp ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-RetAge∆pp[45]  [46]      Inc∆pp←B88GMPINC ⋄ IncType∆pp←'G1'[47]  [48]      Upin∆pp←0 ⍝ Not "underpinned"[49]      Con∆pp←(SL∆pp←,(1-GFRAC1)×PreGMPR)×0.5×Male[50]  [51]      PP∆CreateInterface[52]  [53]      Upin∆pp←1 ⍝ "underpinned"[54]      Con∆pp←(SL∆pp←,   GFRAC1 ×PreGMPR)×0.5×Male[55]  [56]      PP∆CreateInterface[57]  [58]      Inc∆pp←A88GMPINC ⋄ IncType∆pp←'G2'[59]  [60]      Upin∆pp←0 ⍝ Not "underpinned"[61]      Con∆pp←(SL∆pp←,(1-GFRAC2)×PostGMPR)×0.5[62]  [63]      PP∆CreateInterface[64]  [65]      Upin∆pp←1 ⍝ "underpinned"[66]      Con∆pp←(SL∆pp←,   GFRAC2 ×PostGMPR)×0.5[67]  [68]      PP∆CreateInterface[69]  :else[70]      Start∆pp←NX⍴X0⌈XL⌈RetAge∆pp ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-RetAge∆pp ⍝⍝⍝ XL should be NRA∆G ???[71]  [72]      Inc∆pp←B88GMPINC ⋄ IncType∆pp←'G1'[73]  [74]      Upin∆pp←0 ⍝ Not "underpinned"[75]      Con∆pp←(SL∆pp←,(1-GFRAC1)×RPreGMPR)×0.5×Male[76]  [77]      PP∆CreateInterface[78]  [79]      Upin∆pp←1 ⍝ "underpinned"[80]      Con∆pp←(SL∆pp←,   GFRAC1 ×RPreGMPR)×0.5×Male[81]  [82]      PP∆CreateInterface[83]  [84]      Inc∆pp←A88GMPINC ⋄ IncType∆pp←'G2'[85]  [86]      Upin∆pp←0 ⍝ Not "underpinned"[87]      Con∆pp←(SL∆pp←,(1-GFRAC2)×RPostGMPR)×0.5[88]  [89]      PP∆CreateInterface[90]  [91]      Upin∆pp←1 ⍝ "underpinned"[92]      Con∆pp←(SL∆pp←,   GFRAC2 ×RPostGMPR)×0.5[93]  [94]      PP∆CreateInterface[95]  :endif[96]  [97]  ⍝⍝⍝ LP1∆DBspa    ∇
+    ∇ LP1∆BENEFIT;A;B;C;D;DOVERD;F;RetAge∆pp;ABno∆pp;Start∆pp;GP∆pp;Inc∆pp;BenType∆pp;IncType∆pp;Upin∆pp;SL∆pp;Con∆pp;ProRate∆pp
+[1]   ⍝ ACTWIN.sf#9
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - LEAVING PENSION 1
+[3]   ⍝ The value of a members GMP.
+[4]   
+[5]   LP1←LF1←0 ⍝⍝⍝
+[6]   LP1∆BENEFIT∆SWITCH2
+[7]   
+[8]   →(SPA<LRA)/L1 ⍝ Annuity Costing Factors
+[9]   F←LA3XX[XL]×Male
+[10]  A←RA3XX[XL]+0.5×F
+[11]  B←RA4XX[XL]+0.5×LA4XX[XL]
+[12]  DOVERD←DNRADX×DX1XX[XL]CDIV DX1XX[NRA]
+[13]  :if DeferNRA
+[14]      DOVERD←DNRADX×((0⌈NRA∆G-LatestRA+1-NX)⍴DX1XX[SPA] CDIV DX1XXA[NRA∆G]),DX1XX[SPA] CDIV ((-NX)⌈NRA∆G-LatestRA+1)↑DX1XX[X]+IsAccrued×DX1XXA[X]-DX1XX[X] ⋄ →L5
+[15]  L1: →IsAccrued/L3 ⋄ →(NRA∆G<SPA)/L2
+[16]      A←(-NX)↑((NRA∆G⍴RA3XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA3XX[X])+0.5×F←Male×(NRA∆G⍴LA3XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA3XX[X]
+[17]      B←(-NX)↑((NRA∆G⍴RA4XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA4XX[X])+0.5×(NRA∆G⍴LA4XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA4XX[X]
+[18]      DOVERD←DNRADX ⋄ →L5
+[19]  L2: A←(-NX)↑((SPA⍴RA3XXA[SPA]),(SPA-LatestRA)↑RA3XX[X])+0.5×F←Male×(SPA⍴LA3XXA[SPA]),(SPA-LatestRA)↑LA3XX[X]
+[20]      B←(-NX)↑((SPA⍴RA4XXA[SPA]),(SPA-LatestRA)↑RA4XX[X])+0.5×(SPA⍴LA4XXA[SPA]),(SPA-LatestRA)↑LA4XX[X]
+[21]      DOVERD←DNRADX×((0⌈NRA∆G-LatestRA+1-NX)⍴DX1XXA[SPA] CDIV DX1XXA[NRA∆G]),1⌊DX1XXA[SPA] CDIV ((-NX)⌈NRA∆G-LatestRA+1)↑DX1XX[X]
+[22]  L3: →(NRA∆G<SPA)/L4
+[23]      A←(-NX)↑((NRA∆G⍴RA3XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA3XXA[X])+0.5×F←Male×(NRA∆G⍴LA3XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA3XXA[X]
+[24]      B←(-NX)↑((NRA∆G⍴RA4XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑RA4XXA[X])+0.5×(NRA∆G⍴LA4XXA[NRA∆G]),(NRA∆G-LatestRA+1)↑LA4XXA[X]
+[25]      DOVERD←DNRADX ⋄ →L5
+[26]  L4: A←(-NX)↑((SPA⍴RA3XXA[SPA]),(SPA-LatestRA)↑RA3XX[X])+0.5×F←Male×(SPA⍴LA3XXA[SPA]),(SPA-LatestRA)↑LA3XXA[X]
+[27]      B←(-NX)↑((SPA⍴RA4XXA[SPA]),(SPA-LatestRA)↑RA4XX[X])+0.5×(SPA⍴LA4XXA[SPA]),(SPA-LatestRA)↑LA4XXA[X]
+[28]      DOVERD←DNRADX×((0⌈NRA∆G-LatestRA+1-NX)⍴DX1XXA[SPA] CDIV DX1XXA[NRA∆G]),1⌊DX1XXA[SPA] CDIV ((-NX)⌈NRA∆G-LatestRA+1)↑DX1XXA[X]
+[29]  :endif
+[30]  L5:
+[31]  RPreGMPR←PreGMPR×escfact5 ⍝ GMPs
+[32]  RPostGMPR←PostGMPR×escfact51
+[33]  C←RPreGMPR×A×NX OVERTAKE DOVERD,1 ⋄ D←RPostGMPR×B×NX OVERTAKE DOVERD,1 ⋄ LP1←C+D
+[34]  GMP∆Pre←C ⋄ GMP∆Post←D
+[35]  FUFUNDCOMP←LF1←0
+[36]  UFUNDCOMP←(UPre←C×GFRAC1)+(UPost←D×GFRAC2) ⍝⍝⍝ ⋄ UONTOP←UCASH∆M←UCASH∆S←UCASH∆L←UCASH∆4←UDTC←0
+[37]  ⍝
+[38]  ⍝ Pension Projector Variables
+[39]  RetAge∆pp←Age∆pp⌈NRA∆G
+[40]  :if IsAccrued ⋄ ABno∆pp←'1' ⋄ :endif
+[41]  BenType∆pp←'P' ⋄ ProRate∆pp←⍬
+[42]  
+[43]  :if PubSect
+[44]      Start∆pp←SPA⌈Age∆pp ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-RetAge∆pp
+[45]  
+[46]      Inc∆pp←B88GMPINC ⋄ IncType∆pp←'G1'
+[47]  
+[48]      Upin∆pp←0 ⍝ Not "underpinned"
+[49]      Con∆pp←(SL∆pp←,(1-GFRAC1)×PreGMPR)×0.5×Male
+[50]  
+[51]      PP∆CreateInterface
+[52]  
+[53]      Upin∆pp←1 ⍝ "underpinned"
+[54]      Con∆pp←(SL∆pp←,   GFRAC1 ×PreGMPR)×0.5×Male
+[55]  
+[56]      PP∆CreateInterface
+[57]  
+[58]      Inc∆pp←A88GMPINC ⋄ IncType∆pp←'G2'
+[59]  
+[60]      Upin∆pp←0 ⍝ Not "underpinned"
+[61]      Con∆pp←(SL∆pp←,(1-GFRAC2)×PostGMPR)×0.5
+[62]  
+[63]      PP∆CreateInterface
+[64]  
+[65]      Upin∆pp←1 ⍝ "underpinned"
+[66]      Con∆pp←(SL∆pp←,   GFRAC2 ×PostGMPR)×0.5
+[67]  
+[68]      PP∆CreateInterface
+[69]  :else
+[70]      Start∆pp←NX⍴X0⌈XL⌈RetAge∆pp ⋄ GP∆pp←0⌈GPeriod-0⌈Start∆pp-RetAge∆pp ⍝⍝⍝ XL should be NRA∆G ???
+[71]  
+[72]      Inc∆pp←B88GMPINC ⋄ IncType∆pp←'G1'
+[73]  
+[74]      Upin∆pp←0 ⍝ Not "underpinned"
+[75]      Con∆pp←(SL∆pp←,(1-GFRAC1)×RPreGMPR)×0.5×Male
+[76]  
+[77]      PP∆CreateInterface
+[78]  
+[79]      Upin∆pp←1 ⍝ "underpinned"
+[80]      Con∆pp←(SL∆pp←,   GFRAC1 ×RPreGMPR)×0.5×Male
+[81]  
+[82]      PP∆CreateInterface
+[83]  
+[84]      Inc∆pp←A88GMPINC ⋄ IncType∆pp←'G2'
+[85]  
+[86]      Upin∆pp←0 ⍝ Not "underpinned"
+[87]      Con∆pp←(SL∆pp←,(1-GFRAC2)×RPostGMPR)×0.5
+[88]  
+[89]      PP∆CreateInterface
+[90]  
+[91]      Upin∆pp←1 ⍝ "underpinned"
+[92]      Con∆pp←(SL∆pp←,   GFRAC2 ×RPostGMPR)×0.5
+[93]  
+[94]      PP∆CreateInterface
+[95]  :endif
+[96]  
+[97]  ⍝⍝⍝ LP1∆DBspa
+    ∇

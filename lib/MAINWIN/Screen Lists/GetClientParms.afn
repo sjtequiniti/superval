@@ -1,0 +1,28 @@
+    ∇ res←larg GetClientParms Module;index;globals;z;FinDefault;FinCollapse
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Create a list of Saved "Module" Descriptions
+[3]   ⍝  with optional "default" value at the top of the list
+[4]   ⍝ Module can be nested with "globals" flag - default 1
+[5]   res←0 0⍴''
+[6]   
+[7]   :if ~globals←1=≡Module ⋄ (Module globals)←Module ⋄ :endif
+[8]   globals←0 ⍝⍝⍝
+[9]   
+[10]  :if ~mt index←ClientFile ReadFile 'Index'
+[11]      res←⊃(index for '∆_Name' Module) at '∆_Description'
+[12]  :endif
+[13]  
+[14]  :if globals ⋄ :andif ~mt index←GlobalsFile ReadFile 'Index'
+[15]      res←res OVER ⊃(⊂'{Library} '),¨(index for '∆_Name' Module) at '∆_Description'
+[16]  :endif
+[17]  
+[18]  res←res[⎕av⍋res;]
+[19]  :if 0≠⎕nc 'larg' ⋄ res←(SStoMAT ,'⍺',larg) OVER res ⋄ :endif
+[20]  
+[21]  :if Module≡'Financials'
+[22]  :andif ~mt ClientFile ReadFile 'Financials_Display'
+[23]      z←res ExactTLU FinDefault
+[24]      res←res[z,(⍳↑⍴res)~z;] ⍝ Put current selected Financials at the top
+[25]  :endif
+[26]  res←'Saved Parameters' OVER res
+    ∇

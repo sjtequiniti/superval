@@ -1,1 +1,108 @@
-    ∇ PRINT∆AOS;⎕IO;SUMMREC;SUMM;Ind∆AOS;MAT;TOTS;row;N;I;NO;NN;code;rows;planes;Z;X;TOT;LAB;TOP;NOS[1]   ⍝ PENWIN.sf#3[2]   ⍝ Output Analysis of Surplus Results for a Valuation[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   ⎕IO←1 ⋄ planes←⍳NO←0 ⍝ Types of Pension[8]   LAB←(TOP← 5 11 ⍴'RetirementsDeaths     Ill-HealthsLeavers    Unspecified')[2 5;][9]   [10]  LP:NN←0 ⋄ →(5 6 =NO←NO+1)/F0,END ⋄ code←(TopCODEcol=NO-1)⌿TopCODE[11]  planes←planes,NOS←,(^/aostype∊code)/⍳1↑⍴aostype ⋄ →F1[12]  F0:NOS←,(⍳1↑⍴aostype)~planes[13]  [14]  F1:→(0=⍴NOS)/LP ⋄ →((⍴NOS)<NN←NN+1)/F2[15]  H6[3;12+⍳120]←¯120↑100↑DLTMB 'Types of Pensions - ',TOP[NO;],' ','"',aostype[NOS[NN];],'"'[16]  Ind∆AOS←aos∆TOTS[NOS[NN];;;] ⋄ →F10[17]  [18]  F2:→((NN=2+⍴NOS)∨1=⍴NOS)/LP ⍝ Results for all Codes of One Type Combined[19]  H6[3;12+⍳120]←¯120↑100↑DLTMB 'Types of Pensions - ',TOP[NO;],¯1↓,' ','"',(aostype[NOS;],'"'),','[20]  Ind∆AOS←+⌿aos∆TOTS[NOS;;;][21]  [22]  F10:→(^/0=,Ind∆AOS)/F1 ⋄ rows←⍳N←0[23]  ⍝ Sum the Old and New Exits[24]  MAT←(Ind∆AOS[1 2 ;;]⍪+⌿Ind∆AOS[1+X;;])⍪+⌿Ind∆AOS[2+X←2×⍳1↑⍴MOE;;][25]  [26]  ⍝ New Entrant Strain[27]  SUMMREC← 2 132 ↑(MATRIX 'New Entrant Profit - Reserve at Entry')⍪'='[28]  SUMMREC←SUMMREC⍪(52↑'     Estimated Expected Reserve at Entry'),,'2CM<->I32,CM<->I16' ⎕FMT MATRIX TOT←TOT,+/TOT←,MAT[2 4;1;1][29]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'2CM<->I32,CM<->I16' ⎕FMT MATRIX X←X,+/X←,MAT[2 4;7;ResSize] ⋄ TOT←-TOT+X[30]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'New Entrant Profit (inc Expected Interest)'),,X←'2CM<->I32,CM<->I16' ⎕FMT MATRIX TOT[31]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←((1 52 ↑SUMMREC),X)⍪' '[32]  [33]  TOTS←0 1 0 1 1\TOT ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,pAGE[34]  [35]  rows←⍳N←0 ⍝ Exit Profits/Losses[36]  [37]  LOOP:→(2 3 =N←N+1)/L0,L3 ⋄ code←(CODEcol=N-1)⌿CODE ⋄ →L1[38]  L0:rows←rows,1↓MOE TLU MOE[1;] ⋄ code←MOE[(⍳1↑⍴MOE)~rows;][39]  L1:TOT←3/I←0 ⋄ SUMMREC← 2 132 ↑(MATRIX 'Exit Profits - ',DLTMB LAB[N;])⍪'='[40]  [41]  loop:→((1↑⍴code)<I←I+1)/L2[42]  →(0∊⍴row←MOE TLU code[I;])/loop ⋄ rows←rows,row[43]  →(^/0=,Ind∆AOS[1 2 +2×row;;])/loop[44]  SUMMREC←SUMMREC⍪(84↑'     Actual Reserve at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,Ind∆AOS[1 2 +2×row;14;ResSize][45]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,Ind∆AOS[1 2 +2×row;17;ResSize] ⋄ Z←Z+X[46]  SUMMREC←(SUMMREC⍪' ')⍪(84↑'less Cash Benefit Paid at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT X←X,+/X←,Ind∆AOS[1 2 +2×row;15;ResSize] ⋄ Z←Z-X[47]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,Ind∆AOS[1 2 +2×row;18;ResSize] ⋄ Z←Z-X[48]  SUMMREC←((SUMMREC⍪' ')⍪(84↑'Actual Release at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT Z)⍪' ' ⋄ TOT←TOT+Z[49]  →loop[50]  [51]  L2:SUMMREC←(SUMMREC⍪' ')⍪(60↑'     ',DLTMB 'Actual ',LAB[N;],' Release (inc Expected Interest)'),,'CM<->I8,4CM<->I16' ⎕FMT MATRIX TOT←¯5↑TOT[52]  SUMMREC←(SUMMREC⍪' ')⍪(52↑DLTMB 'less Expected ',LAB[N;],' Release'),,'CM<->I16' ⎕FMT Z←Z,+/Z←(N≠2)×,+/[2]MAT[;2+⍳3;ResSize][53]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←(N≠2)×,+/[2]MAT[;9+⍳3;ResSize] ⋄ Z←Z+X[54]  SUMMREC←(SUMMREC⍪' ')⍪(52↑DLTMB 'Total ',LAB[N;],' Profit (inc Expected Interest)'),,X←'CM<->I16' ⎕FMT MATRIX TOT←TOT-Z[55]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '[56]  TOTS←TOTS+TOT ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN ⋄ →LOOP[57]  [58]  ⍝ Pension Increases Profits/Losses[59]  L3:SUMMREC← 2 132 ↑(MATRIX 'Pension Increase Profits - Reserve Release')⍪'='[60]  SUMMREC←SUMMREC⍪(52↑'     Expected Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;1;ResSize][61]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←2↓,MAT[;8;ResSize] ⋄ Z←Z+¯5↑X[62]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;14;ResSize] ⋄ Z←Z-X[63]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←2↓,MAT[;17;ResSize] ⋄ Z←Z-¯5↑X[64]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'Reserve Release at Valuation Date/Exit'),,X←'CM<->I16' ⎕FMT MATRIX Z[65]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '[66]  TOTS←TOTS+Z ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN[67]  [68]  ⍝ Pension Payments Profits[69]  SUMMREC← 2 132 ↑(MATRIX 'Pension Increase Profits - Pension Payments')⍪'='[70]  SUMMREC←SUMMREC⍪(52↑'     Expected Pension Payments'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;6;ResSize][71]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;13;ResSize] ⋄ Z←Z+X[72]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Pension Payments'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;16;ResSize] ⋄ Z←Z-X[73]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;19;ResSize] ⋄ Z←Z-X[74]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'Pension Payments Profit'),,X←'CM<->I16' ⎕FMT MATRIX Z[75]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '[76]  TOTS←TOTS+Z ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN[77]  [78]  SUMMREC←2 132 ↑(MATRIX 'Calculation Error')⍪'='[79]  SUMMREC←SUMMREC⍪(52↑'     Calculated Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;1;,1]+(+/[2]MAT[;(1+⍳4),7,8+⍳4;ResSize])-(+/[2]MAT[;6 13;ResSize])+0⍪0⍪MAT[3 4;8;ResSize][80]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Expected Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;1;ResSize][81]  TOTS←TOTS+TOT←X-Z[82]  SUMMREC←(SUMMREC⍪' ')⍪X←(52↑'Error in Reserve Build-Up'),,'CM<->I16' ⎕FMT TOT[83]  SUMMREC←(SUMMREC⍪(52↑'Percentage Error in Reserve Build-Up'),,'M<->N<%>Q<%>F16.5' ⎕FMT 100×TOT CDIV Z)⍪'_'[84]  SUMM←(SUMM⍪X)⍪' '[85]  [86]  SUMMREC←SUMMREC⍪ ¯2 132 ↑MATRIX(52↑'Total Profit'),,'CM<->I16' ⎕FMT TOTS[87]  SUMM←(SUMM⍪ ¯3 132 ↑SUMMREC)⍪' ' ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN[88]  [89]  SUMMREC←(2 132 ↑(MATRIX 'Summary')⍪'=')⍪SUMM[90]  [91]  SUMMREC←(SUMMREC⍪' ')⍪ 2 132 ↑(MATRIX 'Cross-Check of Surplus')⍪'='[92]  SUMMREC←SUMMREC⍪(52↑'     Reserves at Previous Valuation Date'),,'CM<->I16' ⎕FMT TOT←TOT,+/TOT←1 0 1 0×,MAT[;1;1][93]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←1 0 1 0×,MAT[;7;ResSize] ⋄ TOT←TOT+X[94]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Reserves at Current Valuation Date'),,'CM<->I16' ⎕FMT X←X,+/X←4↑,MAT[1 2;14;ResSize] ⋄ TOT←TOT-X[95]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Pension Payments'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;16;ResSize] ⋄ TOT←TOT-X[96]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;19;ResSize] ⋄ TOT←TOT-X[97]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Cash Benefits Paid'),,'CM<->I16' ⎕FMT X←X,+/X←¯4↑,MAT[3 4;15;ResSize] ⋄ TOT←TOT-X[98]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←¯4↑,MAT[3 4;18;ResSize] ⋄ TOT←TOT-X[99]  SUMMREC←SUMMREC⍪'_'[100] SUMMREC←((SUMMREC⍪' ')⍪(52↑'Total Profit'),,'CM<->I16' ⎕FMT MATRIX TOT)⍪' '[101] SUMMREC←' '⍪SUMMREC⍪(52↑'Unexplained Error'),,'CM<->I16' ⎕FMT MATRIX TOTS-TOT[102] (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN[103] [104] →F1[105] [106] END:MOEcol←1,CODEcol[(CODE TLU MOE)-~⎕io]    ∇
+    ∇ PRINT∆AOS;⎕IO;SUMMREC;SUMM;Ind∆AOS;MAT;TOTS;row;N;I;NO;NN;code;rows;planes;Z;X;TOT;LAB;TOP;NOS
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ Output Analysis of Surplus Results for a Valuation
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕IO←1 ⋄ planes←⍳NO←0 ⍝ Types of Pension
+[8]   LAB←(TOP← 5 11 ⍴'RetirementsDeaths     Ill-HealthsLeavers    Unspecified')[2 5;]
+[9]   
+[10]  LP:NN←0 ⋄ →(5 6 =NO←NO+1)/F0,END ⋄ code←(TopCODEcol=NO-1)⌿TopCODE
+[11]  planes←planes,NOS←,(^/aostype∊code)/⍳1↑⍴aostype ⋄ →F1
+[12]  F0:NOS←,(⍳1↑⍴aostype)~planes
+[13]  
+[14]  F1:→(0=⍴NOS)/LP ⋄ →((⍴NOS)<NN←NN+1)/F2
+[15]  H6[3;12+⍳120]←¯120↑100↑DLTMB 'Types of Pensions - ',TOP[NO;],' ','"',aostype[NOS[NN];],'"'
+[16]  Ind∆AOS←aos∆TOTS[NOS[NN];;;] ⋄ →F10
+[17]  
+[18]  F2:→((NN=2+⍴NOS)∨1=⍴NOS)/LP ⍝ Results for all Codes of One Type Combined
+[19]  H6[3;12+⍳120]←¯120↑100↑DLTMB 'Types of Pensions - ',TOP[NO;],¯1↓,' ','"',(aostype[NOS;],'"'),','
+[20]  Ind∆AOS←+⌿aos∆TOTS[NOS;;;]
+[21]  
+[22]  F10:→(^/0=,Ind∆AOS)/F1 ⋄ rows←⍳N←0
+[23]  ⍝ Sum the Old and New Exits
+[24]  MAT←(Ind∆AOS[1 2 ;;]⍪+⌿Ind∆AOS[1+X;;])⍪+⌿Ind∆AOS[2+X←2×⍳1↑⍴MOE;;]
+[25]  
+[26]  ⍝ New Entrant Strain
+[27]  SUMMREC← 2 132 ↑(MATRIX 'New Entrant Profit - Reserve at Entry')⍪'='
+[28]  SUMMREC←SUMMREC⍪(52↑'     Estimated Expected Reserve at Entry'),,'2CM<->I32,CM<->I16' ⎕FMT MATRIX TOT←TOT,+/TOT←,MAT[2 4;1;1]
+[29]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'2CM<->I32,CM<->I16' ⎕FMT MATRIX X←X,+/X←,MAT[2 4;7;ResSize] ⋄ TOT←-TOT+X
+[30]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'New Entrant Profit (inc Expected Interest)'),,X←'2CM<->I32,CM<->I16' ⎕FMT MATRIX TOT
+[31]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←((1 52 ↑SUMMREC),X)⍪' '
+[32]  
+[33]  TOTS←0 1 0 1 1\TOT ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,pAGE
+[34]  
+[35]  rows←⍳N←0 ⍝ Exit Profits/Losses
+[36]  
+[37]  LOOP:→(2 3 =N←N+1)/L0,L3 ⋄ code←(CODEcol=N-1)⌿CODE ⋄ →L1
+[38]  L0:rows←rows,1↓MOE TLU MOE[1;] ⋄ code←MOE[(⍳1↑⍴MOE)~rows;]
+[39]  L1:TOT←3/I←0 ⋄ SUMMREC← 2 132 ↑(MATRIX 'Exit Profits - ',DLTMB LAB[N;])⍪'='
+[40]  
+[41]  loop:→((1↑⍴code)<I←I+1)/L2
+[42]  →(0∊⍴row←MOE TLU code[I;])/loop ⋄ rows←rows,row
+[43]  →(^/0=,Ind∆AOS[1 2 +2×row;;])/loop
+[44]  SUMMREC←SUMMREC⍪(84↑'     Actual Reserve at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,Ind∆AOS[1 2 +2×row;14;ResSize]
+[45]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,Ind∆AOS[1 2 +2×row;17;ResSize] ⋄ Z←Z+X
+[46]  SUMMREC←(SUMMREC⍪' ')⍪(84↑'less Cash Benefit Paid at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT X←X,+/X←,Ind∆AOS[1 2 +2×row;15;ResSize] ⋄ Z←Z-X
+[47]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,Ind∆AOS[1 2 +2×row;18;ResSize] ⋄ Z←Z-X
+[48]  SUMMREC←((SUMMREC⍪' ')⍪(84↑'Actual Release at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT Z)⍪' ' ⋄ TOT←TOT+Z
+[49]  →loop
+[50]  
+[51]  L2:SUMMREC←(SUMMREC⍪' ')⍪(60↑'     ',DLTMB 'Actual ',LAB[N;],' Release (inc Expected Interest)'),,'CM<->I8,4CM<->I16' ⎕FMT MATRIX TOT←¯5↑TOT
+[52]  SUMMREC←(SUMMREC⍪' ')⍪(52↑DLTMB 'less Expected ',LAB[N;],' Release'),,'CM<->I16' ⎕FMT Z←Z,+/Z←(N≠2)×,+/[2]MAT[;2+⍳3;ResSize]
+[53]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←(N≠2)×,+/[2]MAT[;9+⍳3;ResSize] ⋄ Z←Z+X
+[54]  SUMMREC←(SUMMREC⍪' ')⍪(52↑DLTMB 'Total ',LAB[N;],' Profit (inc Expected Interest)'),,X←'CM<->I16' ⎕FMT MATRIX TOT←TOT-Z
+[55]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '
+[56]  TOTS←TOTS+TOT ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN ⋄ →LOOP
+[57]  
+[58]  ⍝ Pension Increases Profits/Losses
+[59]  L3:SUMMREC← 2 132 ↑(MATRIX 'Pension Increase Profits - Reserve Release')⍪'='
+[60]  SUMMREC←SUMMREC⍪(52↑'     Expected Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;1;ResSize]
+[61]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←2↓,MAT[;8;ResSize] ⋄ Z←Z+¯5↑X
+[62]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;14;ResSize] ⋄ Z←Z-X
+[63]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←2↓,MAT[;17;ResSize] ⋄ Z←Z-¯5↑X
+[64]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'Reserve Release at Valuation Date/Exit'),,X←'CM<->I16' ⎕FMT MATRIX Z
+[65]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '
+[66]  TOTS←TOTS+Z ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN
+[67]  
+[68]  ⍝ Pension Payments Profits
+[69]  SUMMREC← 2 132 ↑(MATRIX 'Pension Increase Profits - Pension Payments')⍪'='
+[70]  SUMMREC←SUMMREC⍪(52↑'     Expected Pension Payments'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;6;ResSize]
+[71]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;13;ResSize] ⋄ Z←Z+X
+[72]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Pension Payments'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;16;ResSize] ⋄ Z←Z-X
+[73]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;19;ResSize] ⋄ Z←Z-X
+[74]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'Pension Payments Profit'),,X←'CM<->I16' ⎕FMT MATRIX Z
+[75]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '
+[76]  TOTS←TOTS+Z ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN
+[77]  
+[78]  SUMMREC←2 132 ↑(MATRIX 'Calculation Error')⍪'='
+[79]  SUMMREC←SUMMREC⍪(52↑'     Calculated Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;1;,1]+(+/[2]MAT[;(1+⍳4),7,8+⍳4;ResSize])-(+/[2]MAT[;6 13;ResSize])+0⍪0⍪MAT[3 4;8;ResSize]
+[80]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Expected Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;1;ResSize]
+[81]  TOTS←TOTS+TOT←X-Z
+[82]  SUMMREC←(SUMMREC⍪' ')⍪X←(52↑'Error in Reserve Build-Up'),,'CM<->I16' ⎕FMT TOT
+[83]  SUMMREC←(SUMMREC⍪(52↑'Percentage Error in Reserve Build-Up'),,'M<->N<%>Q<%>F16.5' ⎕FMT 100×TOT CDIV Z)⍪'_'
+[84]  SUMM←(SUMM⍪X)⍪' '
+[85]  
+[86]  SUMMREC←SUMMREC⍪ ¯2 132 ↑MATRIX(52↑'Total Profit'),,'CM<->I16' ⎕FMT TOTS
+[87]  SUMM←(SUMM⍪ ¯3 132 ↑SUMMREC)⍪' ' ⋄ (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN
+[88]  
+[89]  SUMMREC←(2 132 ↑(MATRIX 'Summary')⍪'=')⍪SUMM
+[90]  
+[91]  SUMMREC←(SUMMREC⍪' ')⍪ 2 132 ↑(MATRIX 'Cross-Check of Surplus')⍪'='
+[92]  SUMMREC←SUMMREC⍪(52↑'     Reserves at Previous Valuation Date'),,'CM<->I16' ⎕FMT TOT←TOT,+/TOT←1 0 1 0×,MAT[;1;1]
+[93]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←1 0 1 0×,MAT[;7;ResSize] ⋄ TOT←TOT+X
+[94]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Reserves at Current Valuation Date'),,'CM<->I16' ⎕FMT X←X,+/X←4↑,MAT[1 2;14;ResSize] ⋄ TOT←TOT-X
+[95]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Pension Payments'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;16;ResSize] ⋄ TOT←TOT-X
+[96]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;19;ResSize] ⋄ TOT←TOT-X
+[97]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Cash Benefits Paid'),,'CM<->I16' ⎕FMT X←X,+/X←¯4↑,MAT[3 4;15;ResSize] ⋄ TOT←TOT-X
+[98]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←¯4↑,MAT[3 4;18;ResSize] ⋄ TOT←TOT-X
+[99]  SUMMREC←SUMMREC⍪'_'
+[100] SUMMREC←((SUMMREC⍪' ')⍪(52↑'Total Profit'),,'CM<->I16' ⎕FMT MATRIX TOT)⍪' '
+[101] SUMMREC←' '⍪SUMMREC⍪(52↑'Unexplained Error'),,'CM<->I16' ⎕FMT MATRIX TOTS-TOT
+[102] (SPAGE RECN)←H6 OUTPUT tpr1,SPAGE,RECN
+[103] 
+[104] →F1
+[105] 
+[106] END:MOEcol←1,CODEcol[(CODE TLU MOE)-~⎕io]
+    ∇

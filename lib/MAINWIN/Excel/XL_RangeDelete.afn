@@ -1,0 +1,19 @@
+    ∇ shift XL_RangeDelete range;snk
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Delete the range and shift up or left
+[3]   ⍝ shift is from the enum "XlDeleteShiftDirection":
+[4]   ⍝     xlShiftToLeft = ¯4159
+[5]   ⍝     xlShiftUp     = ¯4162
+[6]   ⍝ If shift is omitted, Excel will decide based on shape of range.  This is NOT recommended.
+[7]   ⍝ We will use shortcuts L (left) and U (up) for shift
+[8]   ⍝ Return 0 for success.
+[9]   
+[10]  :if 0=⎕nc 'shift' ⋄ shift←'' ⋄ :endif
+[11]  'XL' ⎕wi 'Range>.Rng' (RCtoA1 range)
+[12]  
+[13]  :select shift
+[14]  :case 'L' ⋄ snk←'XL.Rng' ⎕wi 'XDelete' (↑⍙XL at '=xlShiftToLeft')
+[15]  :case 'U' ⋄ snk←'XL.Rng' ⎕wi 'XDelete' (↑⍙XL at '=xlShiftUp')
+[16]  :else     ⋄ snk←'XL.Rng' ⎕wi 'XDelete'
+[17]  :endselect
+    ∇

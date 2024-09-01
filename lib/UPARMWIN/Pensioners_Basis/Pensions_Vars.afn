@@ -1,0 +1,16 @@
+    ∇ Pensions_Vars;i;n;warnings
+[1]   ⍝ UPARMWIN.sf#9
+[2]   ⍝ Do Initialisation of Pensions
+[3]   
+[4]   warnings←0 0⍴''
+[5]   :for i :in ⍳↑⍴MATRIX PenDesc
+[6]       warnings←warnings OVER ("Pension Adjustment Factor ",⍕i)     Win∆NumRelative "ADJFAC[i;]"    "lrADJFAC[i;]" "Scalar"
+[7]       warnings←warnings OVER ("Benefit Increase in Deferment ",⍕i) Win∆FinRelative "DEFINC[i;]"    "lrDEFINC[i;]"
+[8]       warnings←warnings OVER ("Pension Increase in Payment ",⍕i)   Win∆FinRelative "PAYINC[i;]"    "lrPAYINC[i;]"
+[9]       warnings←warnings OVER ("PPF Increase in Deferment ",⍕i)     Win∆FinRelative "PPFDEFINC[i;]" "lrPPFDEFINC[i;]"
+[10]  :endfor
+[11]  
+[12]  :if ~0∊⍴,warnings
+[13]      MDISPLAY DLTMB warnings,⎕tcnl
+[14]  :endif
+    ∇

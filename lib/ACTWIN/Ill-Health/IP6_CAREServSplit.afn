@@ -1,1 +1,29 @@
-    ∇ IP6∆CAREServSplit;End∆pp;Start∆pp;GP∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;ProRate∆pp;Dec∆pp;WILLPROSPRESPAL[1]   ⍝ ACTWIN.sf#7[2]   ⍝ Service Pro-Rated CARE Prospective Benefits[3]   [4]   ILLPROSPENL←(+/[⎕io+1]TILLPROSPEN[;⎕io+2;;])[⎕io+2;][5]   ILLPROSSPAL←(+/[⎕io+1]TILLPROSSPA[;⎕io+2;;])[⎕io+2;][6]   :if PreSPASplit[7]       (WILLPROSSPAL WILLPROSPRESPAL)←0 SpouseBens (+/[⎕io+1]TWILLPROSSPA[;⎕io+2;;])[⎕io+2;;][8]   :else[9]        WILLPROSSPAL                              ←(+/[⎕io+1]TWILLPROSSPA[;⎕io+2;;])[⎕io+2; ][10]       WILLPROSPENL                              ←(+/[⎕io+1]TWILLPROSPEN[;⎕io+2;;])[⎕io+2; ][11]  :endif[12]  [13]  ⍝ Pension Projector Variables[14]  ProRate∆pp←ProRate∆IServ[15]  [16]  End∆pp←,SPA⌈Start∆pp←Age∆pp ⋄ GP∆pp←,NX⍴GPeriod[17]  SL∆pp←FSL∆pp←,ILLPROSPENL[18]  :if PreSPASplit ⋄ Dec∆pp←'I2' ⋄ Con∆pp←FCon∆pp← WILLPROSPRESPAL[19]  :else           ⋄ Dec∆pp←'I'  ⋄ Con∆pp←FCon∆pp←,WILLPROSPENL[20]  :endif[21]  [22]  PP∆CreateInterface[23]  [24]  Dec∆pp←'I' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←,0⌈GPeriod-0⌈Start∆pp-Age∆pp[25]  SL∆pp←FSL∆pp←,ILLPROSSPAL ⋄ Con∆pp←FCon∆pp←,WILLPROSSPAL[26]  [27]  PP∆CreateInterface    ∇
+    ∇ IP6∆CAREServSplit;End∆pp;Start∆pp;GP∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;ProRate∆pp;Dec∆pp;WILLPROSPRESPAL
+[1]   ⍝ ACTWIN.sf#7
+[2]   ⍝ Service Pro-Rated CARE Prospective Benefits
+[3]   
+[4]   ILLPROSPENL←(+/[⎕io+1]TILLPROSPEN[;⎕io+2;;])[⎕io+2;]
+[5]   ILLPROSSPAL←(+/[⎕io+1]TILLPROSSPA[;⎕io+2;;])[⎕io+2;]
+[6]   :if PreSPASplit
+[7]       (WILLPROSSPAL WILLPROSPRESPAL)←0 SpouseBens (+/[⎕io+1]TWILLPROSSPA[;⎕io+2;;])[⎕io+2;;]
+[8]   :else
+[9]        WILLPROSSPAL                              ←(+/[⎕io+1]TWILLPROSSPA[;⎕io+2;;])[⎕io+2; ]
+[10]       WILLPROSPENL                              ←(+/[⎕io+1]TWILLPROSPEN[;⎕io+2;;])[⎕io+2; ]
+[11]  :endif
+[12]  
+[13]  ⍝ Pension Projector Variables
+[14]  ProRate∆pp←ProRate∆IServ
+[15]  
+[16]  End∆pp←,SPA⌈Start∆pp←Age∆pp ⋄ GP∆pp←,NX⍴GPeriod
+[17]  SL∆pp←FSL∆pp←,ILLPROSPENL
+[18]  :if PreSPASplit ⋄ Dec∆pp←'I2' ⋄ Con∆pp←FCon∆pp← WILLPROSPRESPAL
+[19]  :else           ⋄ Dec∆pp←'I'  ⋄ Con∆pp←FCon∆pp←,WILLPROSPENL
+[20]  :endif
+[21]  
+[22]  PP∆CreateInterface
+[23]  
+[24]  Dec∆pp←'I' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←,0⌈GPeriod-0⌈Start∆pp-Age∆pp
+[25]  SL∆pp←FSL∆pp←,ILLPROSSPAL ⋄ Con∆pp←FCon∆pp←,WILLPROSSPAL
+[26]  
+[27]  PP∆CreateInterface
+    ∇

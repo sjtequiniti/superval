@@ -1,0 +1,24 @@
+    ∇ ACCRES SUMM;SUMMREC
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ This is only executed if PROPT equals 1 ie user asks for a Accrued
+[3]   ⍝ Benefits listing.  Creates a summary record for the member and appends
+[4]   ⍝ to DOS File TEMP$$.ACC.  Updates grand totals also.
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   →aggopt[0]/0
+[7]   →summopt/L1
+[8]   :if IsDeferred
+[9]       H3[5 6;12+⍳26]←' ' ⋄ SUMMREC←39↑(6↑NAME),(¯2↑SEX),,('I3' ⎕FMT X0)
+[10]  :else
+[11]      SUMMREC←(6↑NAME),(¯2↑SEX),(,'I3,2BCI8' ⎕FMT(X0;SAL0;AC0)),DECTOYYMM(1↑PS),1↑PM
+[12]  :endif
+[13]  →(ValMeth≡'UCM')/L3
+[14]  SUMMREC←SUMMREC,,'7CM<->I11,CM<->I16' ⎕FMT SUMM ⋄ →L2
+[15]  L3:SUMMREC←SUMMREC,,'7CM<->I11,2CM<->I8' ⎕FMT SUMM
+[16]  L2:
+[17]  :if csvind
+[18]      EXTRACT∆CSV 3
+[19]  :endif
+[20]  (APAGE ARECN)←H3 OUTPUT tpA,APAGE,ARECN ⋄ →END
+[21]  L1:2 SUMMARY SUMM ⍝ Summary Totals
+[22]  END:ATOTS←ATOTS+SUMM ⍝ Group grand totals
+    ∇

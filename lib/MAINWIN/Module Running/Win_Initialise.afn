@@ -1,1 +1,41 @@
-    ∇ Error←Win∆Initialise module;field[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Do the Initialising routines[3]   [4]   :if 0≠⎕nc 'CancelledEntry' ⋄ :andif CancelledEntry ⋄ Error←'CancelledEntry' ⋄ :return ⋄ :endif ⍝ Cancel pressed on Initial Open[5]   [6]   ⍝ Run the Module Specific Form Initialising Routine[7]   :if ~mt ,Error←⍎module,' "Init"' ⋄ →end ⋄ :endif[8]   [9]   :if ~(⊂module)∊'Main' 'Client' ⍝ Check Data Formats available[10]  :andif ~(0≡field)∨mt ,field←ControlName ⎕wi '∆format'[11]  :andif mt field ⎕wi 'list'[12]       Error←'NoDataFormat' ⋄ →end[13]  :endif[14]  [15]  :if ~(⊂module)∊'Main' 'Client' ⍝ Check Financials available[16]  :andif ControlName ⎕wi '∆financial'[17]  :andif ~×rowsIn ⍙FinAssdict[18]       Error←'NoFinancials' ⋄ →end[19]  :endif[20]  [21]  :if ~module≡'Main' ⍝ Check DECR File exists[22]  :andif ~(0≡field)∨mt ,field←ControlName ⎕wi '∆decr'[23]  :andif ~FileExist (DLTB DECRFile),'.SF'[24]       Error←'NoDecrFile' ⋄ →end[25]  :endif[26]  [27]  :if (⊂module)∊'Decrements_Review' 'Snapshot_Review' 'Cohort_Review' 'NE_Age_Review' 'NE_Salary_Review'[28]  :andif mt 1⊃InvResults module[29]       Error←'NoResults' ⋄ →end[30]  :endif[31]  [32]  end:[33]  :if ~mt ,Error ⋄ :andif ~'Abort'≡Error[34]      :if ~''≡ControlName[35]          ControlName ⎕wi 'Show'[36]          ControlName ⎕wi '∆modified' 1[37]      :endif[38]      MDISPLAY Error[39]  :endif    ∇
+    ∇ Error←Win∆Initialise module;field
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Do the Initialising routines
+[3]   
+[4]   :if 0≠⎕nc 'CancelledEntry' ⋄ :andif CancelledEntry ⋄ Error←'CancelledEntry' ⋄ :return ⋄ :endif ⍝ Cancel pressed on Initial Open
+[5]   
+[6]   ⍝ Run the Module Specific Form Initialising Routine
+[7]   :if ~mt ,Error←⍎module,' "Init"' ⋄ →end ⋄ :endif
+[8]   
+[9]   :if ~(⊂module)∊'Main' 'Client' ⍝ Check Data Formats available
+[10]  :andif ~(0≡field)∨mt ,field←ControlName ⎕wi '∆format'
+[11]  :andif mt field ⎕wi 'list'
+[12]       Error←'NoDataFormat' ⋄ →end
+[13]  :endif
+[14]  
+[15]  :if ~(⊂module)∊'Main' 'Client' ⍝ Check Financials available
+[16]  :andif ControlName ⎕wi '∆financial'
+[17]  :andif ~×rowsIn ⍙FinAssdict
+[18]       Error←'NoFinancials' ⋄ →end
+[19]  :endif
+[20]  
+[21]  :if ~module≡'Main' ⍝ Check DECR File exists
+[22]  :andif ~(0≡field)∨mt ,field←ControlName ⎕wi '∆decr'
+[23]  :andif ~FileExist (DLTB DECRFile),'.SF'
+[24]       Error←'NoDecrFile' ⋄ →end
+[25]  :endif
+[26]  
+[27]  :if (⊂module)∊'Decrements_Review' 'Snapshot_Review' 'Cohort_Review' 'NE_Age_Review' 'NE_Salary_Review'
+[28]  :andif mt 1⊃InvResults module
+[29]       Error←'NoResults' ⋄ →end
+[30]  :endif
+[31]  
+[32]  end:
+[33]  :if ~mt ,Error ⋄ :andif ~'Abort'≡Error
+[34]      :if ~''≡ControlName
+[35]          ControlName ⎕wi 'Show'
+[36]          ControlName ⎕wi '∆modified' 1
+[37]      :endif
+[38]      MDISPLAY Error
+[39]  :endif
+    ∇

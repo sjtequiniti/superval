@@ -1,0 +1,84 @@
+    ∇ res←field Basis_Display parm;parent;list;value;tab;htmpath;xslpath;to;clientpkg;∆;names
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ Function to allow user control on running Bases Comparison/Display
+[3]   
+[4]   parent←'fmDispBases.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Prepare'
+[9]       folderlist←0 0⍴'' ⋄ otherfolder←0
+[10]      foldertab←folderhead←MATRIX 'InUse' 'Folder' 'PickList' 'NameList' 'sortorder' 'SortList'
+[11]      folderrow←'Folder' (¯1↑Win∆TextSize 'Folder') 'left' 1 1 0 1
+[12]  
+[13]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[14]  
+[15]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[16]  
+[17]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[18]  
+[19]      :repeat
+[20]          :select ↑field
+[21]          :case 'ckFolderCompare'
+[22]              otherfolder←(parent,'ckFolderCompare') ⎕wi 'value'
+[23]              (parent,'fButtons.bnBasis_DisplayOtherFolder') ⎕wi 'enabled' otherfolder
+[24]              forldertab←foldertab amend 'InUse' (otherfolder=×⍴¨foldertab at 'Folder')
+[25]              ((parent,'lvSavedParms') 'Basis_Display') Win∆UpdateListview GetBases
+[26]          :endselect
+[27]      :until mt field←1↓field
+[28]  
+[29]  :case 'Valid'
+[30]  
+[31]  :case 'Run'
+[32]  
+[33]      UpdateListviewDict 1
+[34]      value←((parent,'lvSavedParms') ⎕wi 'value')
+[35]      list←((parent,'lvSavedParms') ⎕wi 'list')
+[36]  
+[37]      :if otherfolder
+[38]          tab←'cn' 'folder' '∆_Name' 'file' '∆_Description' 'user' 'ts' OVER 1 0 1 1 1 1 1 1/(list[;1]∊value)⌿list
+[39]      :else
+[40]          tab←'cn'          '∆_Name' 'file' '∆_Description' 'user' 'ts' OVER 1 0 1 1 1 1 1  /(list[;1]∊value)⌿list
+[41]          tab←tab amend 'folder' ((rowsIn tab)⍴⊂InputDir)
+[42]      :endif
+[43]      tab←tab amend 'file' ((tab at 'file'),¨⊂'.sf')
+[44]      tab←tab amend 'cn' (1000000∣tab at 'cn')
+[45]      tab←tab amend '∆_Name' ((tab at '∆_Name'),¨⊂'_Basis')
+[46]      tab←tab amend 'file' ((tab at 'folder'),¨tab at 'file')
+[47]  
+[48]      htmpath←InputDir,'bcdtest.',((-1 2 3 4 5 6) tsIM ⎕TS),'.htm'
+[49]      xslpath←StyleDir,'basis-display.xsl'
+[50]  
+[51]  ⍝⍝⍝    names←                 ⊃'BasisFile' 'ConsolidDir' 'InputDir' 'MIcsvDir' 'OutputDir' 'QSMFile' 'YieldDir' 'AbsDict' '⍙FinAssdict' '⍙MortAssdict' 'cLIENT' 'aosenabled' 'HLDII' 'SpouseCF' 'CPbreakdown' 'sqlDatabase' 'ValnResultsDB' 'FactorFile',(uk=1)/'SVPPFFile' 'ppfenabled' 'capenabled' 'useBasisCat' 'sepComCot' 'splitCombyPI' 'valuePre88MS'
+[52]      names←(0≠⎕nc names)⌿names←⊃'BasisFile' 'ConsolidDir' 'InputDir' 'MIcsvDir' 'OutputDir' 'QSMFile' 'YieldDir' 'AbsDict' '⍙FinAssdict' '⍙MortAssdict' 'cLIENT' 'aosenabled' 'HLDII' 'SpouseCF' 'CPbreakdown' 'sqlDatabase' 'ValnResultsDB' 'FactorFile',(uk=1)/'SVPPFFile' 'ppfenabled' 'capenabled' 'useBasisCat' 'sepComCot' 'splitCombyPI' 'valuePre88MS'
+[53]      clientpkg←pack (⍙VALUESdict ReadDictFile 'Client' '' 'Names') OVER names
+[54]  
+[55]      (htmpath xslpath) writeHtmReport (InputDir YieldDir MIcsvDir ClientFile ⍙FinAssdict ⍙MortAssdict AbsDict) SchemeBasesAsXml tab
+[56]  
+[57]      :if ~mt htmpath
+[58]          :if 1<⍴,nub tab at '∆_Name'
+[59]              MDISPLAY 'Comparisons between different Membership Classes will only be valid for shared Parameter Fields.  It may include some misleading comparisons.'
+[60]          :endif
+[61]  
+[62]          to←timeout
+[63]          (timeout unattended)←2 1 ⋄ MDISPLAY 'Loading Report in your Browser' ⋄ (timeout unattended)←to 0
+[64]          0 Win∆EditFile htmpath
+[65]      :endif
+[66]  
+[67]      0 0⍴(SystemDir,'OVERWIN') ReadFile 'Client'
+[68]      'CreateVars' RunModule 'Client' ⍝ Create Client Vars
+[69]      0 0⍴(SystemDir,'OVERWIN') DeleteModule 'Client'
+[70]      (InputDir YieldDir MIcsvDir)←inputDir yieldDir micsvDir
+[71]  
+[72]      :if ∨/∆←~clientpkg≡¨pack pnames clientpkg
+[73]          MDISPLAY 'The following Scheme Variables were corrupted:',⎕tcnl,(,(5↓∆)⌿(3⊃clientpkg),⎕tcnl),'Please notify Equiniti Claybrook'
+[74]          crash
+[75]      :endif
+[76]  
+[77]      res←'Quit'
+[78]  
+[79]  :case 'Quit' ⍝ Deleting "other" variables
+[80]      0 0⍴⎕ex 'otherfolder folderlist foldertab folderhead folderrow'
+[81]  
+[82]  :endselect
+    ∇

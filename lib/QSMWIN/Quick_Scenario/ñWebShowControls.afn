@@ -1,1 +1,132 @@
-    ∇ savedresults ⍙WebShowControls arg;groupings;mortadj;∆;no;group;tab;control;prop;value;list;decadj;bothtab;page;caption[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Re-activate the adjustment controls[3]   [4]   (groupings mortadj decadj)←arg ⋄ bothtab←tab←MATRIX 'Control' 'property' 'value'[5]   [6]   active←(⊂'Active')∊restab at 'ClassName' ⋄ deferred←(⊂'Deferred')∊restab at 'ClassName'[7]   [8]   ⍝ Controls on every page - File, Graph and Filter Controls[9]   (↑,/(⊂(⊂parent),¨dummypages),¨¨⊂¨'cbdummyGraph' 'lldummyGraph' 'eddummygraphterm' 'lldummygraphterm' 'lrdummygraphterm') MultiWI 'visible' 1[10]  (((⊂parent),¨dummypages,⊂controlpage),¨⊂'picGraph') MultiWI 'visible' 1[11]  :for page :in dummypages[12]      tab←tab OVER (parent,page,'cbdummyGraph') 'list' (1 0↓GetGraphs)[13]      tab←tab OVER (parent,page,'cbdummyGraph') 'text' Graph[14]      tab←tab OVER (parent,page,'eddummygraphterm') 'text' (⍕maxyr)[15]      (parent,page,'fFilter') ⎕wi 'visible' 1[16]      ((⊂parent,page,'fFilter.'),¨'cbdummyclasses' 'lldummyclasses') MultiWI 'visible' 1[17]      ∆←(∨/0≠zwb¨amortamount1 amortamount2)∨((⊂'Contributions')∊restab at 'ClassName')∨×rowsIn conttab[18]      tab←tab OVER   MATRIX (parent,page,'fFilter.ckdummyincconts') 'value' ∆[19]      (parent,page,'fFilter.ckdummyincexpense') ⎕wi 'enabled' (∆←(⊂'Expenses')∊restab at 'ClassName')[20]      tab←tab OVER ∆⌿MATRIX (parent,page,'fFilter.ckdummyincexpense') 'value' 1[21]      tab←tab OVER ∆⌿MATRIX (parent,page,'fFilter.ckdummyincadditliab') 'value' 1[22]      tab←tab OVER ∆⌿MATRIX (parent,page,'fFilter.ckdummyincadditliab') 'enabled' (↑∨/0≠↑¨(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue' 'NewLiabilityValue')[23]  :endfor[24]  ((⊂parent,controlpage),¨'cbGraph' 'llGraph' 'edgraphterm' 'llgraphterm' 'lrgraphterm') MultiWI 'visible' 1[25]  tab←tab OVER (parent,controlpage,'cbGraph') 'list' (1 0↓GetGraphs)[26]  tab←tab OVER (parent,controlpage,'cbGraph') 'text' Graph[27]  tab←tab OVER (parent,controlpage,'edgraphterm') 'text' (⍕maxyr)[28]  (parent,controlpage,'fFilter') ⎕wi 'visible' 1[29]  ((⊂parent,controlpage,'fFilter.'),¨'cbclasses' 'llclasses') MultiWI 'visible' 1[30]  ∆←(∨/0≠zwb¨amortamount1 amortamount2)∨((⊂'Contributions')∊restab at 'ClassName')∨×rowsIn conttab[31]  tab←tab OVER   MATRIX (parent,controlpage,'fFilter.ckincconts') 'value' ∆[32]  (parent,controlpage,'fFilter.ckincexpense') ⎕wi 'enabled' (∆←(⊂'Expenses')∊restab at 'ClassName')[33]  tab←tab OVER ∆⌿MATRIX (parent,controlpage,'fFilter.ckincexpense') 'value' 1[34]  ⍝⍝⍝ (parent,controlpage,'fFilter.ckincadditliab') ⎕wi 'enabled' (∆←(⊂'Additional Liability')∊restab at 'ClassName')[35]  tab←tab OVER ∆⌿MATRIX (parent,controlpage,'fFilter.ckincadditliab') 'value' 1[36]  tab←tab OVER ∆⌿MATRIX (parent,controlpage,'fFilter.ckincadditliab') 'enabled' (↑∨/0≠↑¨(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue' 'NewLiabilityValue')[37]  [38]  ⍝ Financials Page[39]  (parent,'pgFinancial.fFinAss') ⎕wi 'visible' 1[40]  caption←(1+zwb finAbsolute)⊃'Adjustment to ' 'New Value for '[41]  :for ∆ :in spin (⍳15) groupings ⋄ (no group)←∆[42]      ∆←,'<rate>,ZI2' ⎕fmt no[43]      (parent,'pgFinancial.fFinAss.ll',∆) ⎕wi 'caption' (caption,group)[44]      tab←tab OVER (parent,'pgFinancial.fFinAss.cb',∆) 'text' '0'[45]      ((⊂parent,'pgFinancial.fFinAss.'),¨'cb' 'll' 'lr',¨⊂∆) MultiWI 'visible' (~mt group)[46]  :endfor[47]  :if ~×rfperiod[48]      bothtab←bothtab OVER (parent,'pgFinancial.fFinAss.lfinRFDisc') 'caption' ''[49]      bothtab←bothtab OVER (parent,'pgFinancial.fFinAss.lfinRFEsc' ) 'caption' ''[50]  :endif[51]  [52]  ⍝ Demographics Page[53]  (parent,'pgDemographic.fPostRetAss') ⎕wi 'visible' 1[54]  ((⊂parent,'pgDemographic.fPostRetAss.'),¨'edmortality' 'llmortality' 'lrmortality' 'ckperannum' 'edpropmarried' 'llpropmarried' 'lrpropmarried') MultiWI 'enabled' mortadj[55]  ((⊂parent,'pgDemographic.fPostRetAss.'),¨'edmortality' 'llmortality' 'lrmortality' 'ckperannum' 'edpropmarried' 'llpropmarried' 'lrpropmarried') MultiWI 'visible' 1[56]  tab←tab OVER (parent,'pgDemographic.fPostRetAss.edmortality') 'text' '0'[57]  tab←tab OVER (parent,'pgDemographic.fPostRetAss.edpropmarried') 'text' '0'[58]  ⍝⍝⍝ decadj[59]  [60]  ⍝ Funding Page[61]  ((⊂parent,'pgFunding.'),¨'fFunding' 'fAmort1' 'fAmort2') MultiWI 'visible' 1[62]  (parent,'pgFunding.fAmort1.cbameth1') ⎕wi 'list' (((3-2×active),0)↓⍙POPUPSdict ReadDictFile "AmortMeth")[63]  (parent,'pgFunding.fAmort2.cbameth2') ⎕wi 'list' (((3-2×active),0)↓⍙POPUPSdict ReadDictFile "AmortMeth")[64]  ⍝⍝⍝ (parent,'pgFunding.fFunding.ckfunding') ⎕wi 'enabled' ∆[65]  ⍝⍝⍝ (parent,'pgFunding.fFunding.edcontper') ⎕wi 'enabled' ∆[66]  tab←tab OVER (parent,'pgFunding.fFunding.edcontper') 'text' contper[67]  tab←tab OVER (parent,'pgFunding.fAmort1.edRatepc1') 'text' Ratepc1[68]  tab←tab OVER (parent,'pgFunding.fAmort2.edRatepc2') 'text' Ratepc2[69]  tab←tab OVER (parent,'pgFunding.fAmort1.edCont1') 'text' Cont1[70]  tab←tab OVER (parent,'pgFunding.fAmort2.edCont2') 'text' Cont2[71]  tab←tab OVER (parent,'pgFunding.fAmort1.edTERMAM1') 'text' TERMAM1[72]  tab←tab OVER (parent,'pgFunding.fAmort2.edTERMAM2') 'text' TERMAM2[73]  tab←tab OVER (parent,'pgFunding.fAmort1.edamortamount1') 'text' amortamount1[74]  tab←tab OVER (parent,'pgFunding.fAmort2.edamortamount2') 'text' amortamount2[75]  bothtab←bothtab OVER (parent,'pgFunding.fAmort1.cbameth1') 'text' ameth1[76]  bothtab←bothtab OVER (parent,'pgFunding.fAmort2.cbameth2') 'text' ameth2[77]  [78]  ⍝ Benefits Page[79]  (parent,'pgBenefits.fBenefits') ⎕wi 'visible' 1[80]  ((⊂parent,'pgBenefits.fBenefits.'),¨'ed' 'll' 'lr',¨⊂'accrual') MultiWI 'enabled' active[81]  ((⊂parent,'pgBenefits.fBenefits.'),¨'ed' 'll' 'lr',¨⊂'futaccrual') MultiWI 'enabled' active[82]  tab←tab OVER (parent,'pgBenefits.fBenefits.edaccrual') 'text' '99'[83]  tab←tab OVER (parent,'pgBenefits.fBenefits.edfutaccrual') 'text' '0'[84]  ((⊂parent,'pgBenefits.fBenefits.'),¨'edspouserev' 'llspouserev' 'lrspouserev') MultiWI 'enabled' mortadj[85]  ((⊂parent,'pgBenefits.fBenefits.'),¨'edspouserev' 'llspouserev' 'lrspouserev') MultiWI 'visible' 1[86]  tab←tab OVER (parent,'pgBenefits.fBenefits.edspouserev') 'text' '0'[87]  (parent,'pgBenefits.fCash') ⎕wi 'visible' 1[88]  ((⊂parent,'pgBenefits.fCash.'),¨'ed' 'll' 'lr',¨⊂'commfact') MultiWI 'enabled' ((8∊restab at 'CashOnTop')∨∆←↑∨/∣×restab at 'Commutation')[89]  ((⊂parent,'pgBenefits.fCash.'),¨'ed' 'll' 'lr',¨⊂'commpc') MultiWI 'enabled' ∆[90]  ((⊂parent,'pgBenefits.fCash.'),¨'ed' 'll' 'lr',¨⊂'cotpc') MultiWI 'enabled' (↑∨/×restab at 'CashOnTop')[91]  tab←tab OVER (parent,'pgBenefits.fCash.edcommfact') 'text' '0'[92]  tab←tab OVER (parent,'pgBenefits.fCash.edcommpc') 'text' '0'[93]  tab←tab OVER (parent,'pgBenefits.fCash.edcotpc') 'text' '0'[94]  (parent,'pgBenefits.fTransValue') ⎕wi 'visible' 1[95]  ∆←(∊restab at 'ContingencyID')∊31 32 33 34 35 36 37 38 39 40 41 42[96]  (parent,'pgBenefits.fTransValue.ckTVcapind') ⎕wi 'enabled' (↑∨/∆^0=restab at 'CashBenefit')[97]  ((⊂parent,'pgBenefits.fTransValue.'),¨'ed' 'll' 'lr',¨⊂'TVpc') MultiWI 'enabled' (↑∨/∆)[98]  ((⊂parent,'pgBenefits.fTransValue.'),¨'ed' 'll' 'lr',¨⊂'TVprop') MultiWI 'enabled' (↑∨/(∊restab at 'ContingencyID')∊31 32 33 34 35 36)[99]  tab←tab OVER (parent,'pgBenefits.fTransValue.ckTVcapind') 'value' (~↑∨/∆^0=restab at 'CashBenefit')[100] tab←tab OVER (parent,'pgBenefits.fTransValue.edTVpc') 'text' '0'[101] tab←tab OVER (parent,'pgBenefits.fTransValue.edTVprop') 'text' '0'[102] (parent,'pgBenefits.fCashFlow') ⎕wi 'visible' 1[103] (parent,'pgBenefits.fCashFlow.ckcapind') ⎕wi 'enabled' (∆←(rfperiod=0)^∨/0=∊restab at 'CashBenefit')[104] ((⊂parent,'pgBenefits.fCashFlow.'),¨'ed' 'll' 'lr',¨⊂'profit') MultiWI 'enabled' ∆[105] tab←tab OVER (parent,'pgBenefits.fCashFlow.ckcapind') 'value' 0[106] tab←tab OVER (parent,'pgBenefits.fCashFlow.edprofit') 'text' '0'[107] [108] ⍝ Roll Forward Page[109] ((⊂parent,'pgRollForward.'),¨'fRollForward' 'fAssets' 'fOtherLiab') MultiWI 'visible' 1[110] tab←tab OVER (parent,'pgRollForward.fRollForward.cbRFDate') 'text' RFDate[111] tab←tab OVER (parent,'pgRollForward.fAssets.edRFASSETS') 'text' '0'[112] tab←tab OVER (parent,'pgRollForward.fOtherLiab.edRFLTOT') 'text' '0'[113] tab←tab OVER (parent,'pgRollForward.fOtherLiab.edRFNetCFOL') 'text' '0'[114] bothtab←bothtab OVER ('fmQuickSM.bnQuick_ScenarioConfigRF') 'enabled' (×rfperiod)[115] bothtab←bothtab OVER ('fmQuickSM.bnQuick_ScenarioCreateFin') 'enabled' (~savedresults)[116] [117] :if ~savedresults[118]     :for page :in dummypages[119]         tab←tab OVER (parent,page,'fFilter.cbdummyclasses') 'list' (1 0↓GetClasses)[120]         tab←tab OVER (parent,page,'fFilter.cbdummyclasses') 'value' 1[121]     :endfor[122]     tab←tab OVER (parent,controlpage,'fFilter.cbclasses') 'list' (1 0↓GetClasses)[123]     tab←tab OVER (parent,controlpage,'fFilter.cbclasses') 'value' 1[124]     tab←tab OVER (parent,'pgRollForward.fRollForward.edRFPeriod') 'text' '0'[125]     1 ⍙WebUpdateControls valsIn tab append bothtab[126]     QS_Change¨'cbclasses' 'cbameth1' 'cbameth2' 'opamortconstant_3' 'cbRFDate'[127] :else[128]     1 ⍙WebUpdateControls valsIn bothtab[129] :endif[130] (((⊂'Button')≡¨list ⎕wi¨⊂'class')/list←'fmQuickSM' ⎕wi 'children') MultiWI 'visible' 1    ∇
+    ∇ savedresults ⍙WebShowControls arg;groupings;mortadj;∆;no;group;tab;control;prop;value;list;decadj;bothtab;page;caption
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Re-activate the adjustment controls
+[3]   
+[4]   (groupings mortadj decadj)←arg ⋄ bothtab←tab←MATRIX 'Control' 'property' 'value'
+[5]   
+[6]   active←(⊂'Active')∊restab at 'ClassName' ⋄ deferred←(⊂'Deferred')∊restab at 'ClassName'
+[7]   
+[8]   ⍝ Controls on every page - File, Graph and Filter Controls
+[9]   (↑,/(⊂(⊂parent),¨dummypages),¨¨⊂¨'cbdummyGraph' 'lldummyGraph' 'eddummygraphterm' 'lldummygraphterm' 'lrdummygraphterm') MultiWI 'visible' 1
+[10]  (((⊂parent),¨dummypages,⊂controlpage),¨⊂'picGraph') MultiWI 'visible' 1
+[11]  :for page :in dummypages
+[12]      tab←tab OVER (parent,page,'cbdummyGraph') 'list' (1 0↓GetGraphs)
+[13]      tab←tab OVER (parent,page,'cbdummyGraph') 'text' Graph
+[14]      tab←tab OVER (parent,page,'eddummygraphterm') 'text' (⍕maxyr)
+[15]      (parent,page,'fFilter') ⎕wi 'visible' 1
+[16]      ((⊂parent,page,'fFilter.'),¨'cbdummyclasses' 'lldummyclasses') MultiWI 'visible' 1
+[17]      ∆←(∨/0≠zwb¨amortamount1 amortamount2)∨((⊂'Contributions')∊restab at 'ClassName')∨×rowsIn conttab
+[18]      tab←tab OVER   MATRIX (parent,page,'fFilter.ckdummyincconts') 'value' ∆
+[19]      (parent,page,'fFilter.ckdummyincexpense') ⎕wi 'enabled' (∆←(⊂'Expenses')∊restab at 'ClassName')
+[20]      tab←tab OVER ∆⌿MATRIX (parent,page,'fFilter.ckdummyincexpense') 'value' 1
+[21]      tab←tab OVER ∆⌿MATRIX (parent,page,'fFilter.ckdummyincadditliab') 'value' 1
+[22]      tab←tab OVER ∆⌿MATRIX (parent,page,'fFilter.ckdummyincadditliab') 'enabled' (↑∨/0≠↑¨(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue' 'NewLiabilityValue')
+[23]  :endfor
+[24]  ((⊂parent,controlpage),¨'cbGraph' 'llGraph' 'edgraphterm' 'llgraphterm' 'lrgraphterm') MultiWI 'visible' 1
+[25]  tab←tab OVER (parent,controlpage,'cbGraph') 'list' (1 0↓GetGraphs)
+[26]  tab←tab OVER (parent,controlpage,'cbGraph') 'text' Graph
+[27]  tab←tab OVER (parent,controlpage,'edgraphterm') 'text' (⍕maxyr)
+[28]  (parent,controlpage,'fFilter') ⎕wi 'visible' 1
+[29]  ((⊂parent,controlpage,'fFilter.'),¨'cbclasses' 'llclasses') MultiWI 'visible' 1
+[30]  ∆←(∨/0≠zwb¨amortamount1 amortamount2)∨((⊂'Contributions')∊restab at 'ClassName')∨×rowsIn conttab
+[31]  tab←tab OVER   MATRIX (parent,controlpage,'fFilter.ckincconts') 'value' ∆
+[32]  (parent,controlpage,'fFilter.ckincexpense') ⎕wi 'enabled' (∆←(⊂'Expenses')∊restab at 'ClassName')
+[33]  tab←tab OVER ∆⌿MATRIX (parent,controlpage,'fFilter.ckincexpense') 'value' 1
+[34]  ⍝⍝⍝ (parent,controlpage,'fFilter.ckincadditliab') ⎕wi 'enabled' (∆←(⊂'Additional Liability')∊restab at 'ClassName')
+[35]  tab←tab OVER ∆⌿MATRIX (parent,controlpage,'fFilter.ckincadditliab') 'value' 1
+[36]  tab←tab OVER ∆⌿MATRIX (parent,controlpage,'fFilter.ckincadditliab') 'enabled' (↑∨/0≠↑¨(restab for 'ClassName' 'Additional Liability') at 'LiabilityValue' 'NewLiabilityValue')
+[37]  
+[38]  ⍝ Financials Page
+[39]  (parent,'pgFinancial.fFinAss') ⎕wi 'visible' 1
+[40]  caption←(1+zwb finAbsolute)⊃'Adjustment to ' 'New Value for '
+[41]  :for ∆ :in spin (⍳15) groupings ⋄ (no group)←∆
+[42]      ∆←,'<rate>,ZI2' ⎕fmt no
+[43]      (parent,'pgFinancial.fFinAss.ll',∆) ⎕wi 'caption' (caption,group)
+[44]      tab←tab OVER (parent,'pgFinancial.fFinAss.cb',∆) 'text' '0'
+[45]      ((⊂parent,'pgFinancial.fFinAss.'),¨'cb' 'll' 'lr',¨⊂∆) MultiWI 'visible' (~mt group)
+[46]  :endfor
+[47]  :if ~×rfperiod
+[48]      bothtab←bothtab OVER (parent,'pgFinancial.fFinAss.lfinRFDisc') 'caption' ''
+[49]      bothtab←bothtab OVER (parent,'pgFinancial.fFinAss.lfinRFEsc' ) 'caption' ''
+[50]  :endif
+[51]  
+[52]  ⍝ Demographics Page
+[53]  (parent,'pgDemographic.fPostRetAss') ⎕wi 'visible' 1
+[54]  ((⊂parent,'pgDemographic.fPostRetAss.'),¨'edmortality' 'llmortality' 'lrmortality' 'ckperannum' 'edpropmarried' 'llpropmarried' 'lrpropmarried') MultiWI 'enabled' mortadj
+[55]  ((⊂parent,'pgDemographic.fPostRetAss.'),¨'edmortality' 'llmortality' 'lrmortality' 'ckperannum' 'edpropmarried' 'llpropmarried' 'lrpropmarried') MultiWI 'visible' 1
+[56]  tab←tab OVER (parent,'pgDemographic.fPostRetAss.edmortality') 'text' '0'
+[57]  tab←tab OVER (parent,'pgDemographic.fPostRetAss.edpropmarried') 'text' '0'
+[58]  ⍝⍝⍝ decadj
+[59]  
+[60]  ⍝ Funding Page
+[61]  ((⊂parent,'pgFunding.'),¨'fFunding' 'fAmort1' 'fAmort2') MultiWI 'visible' 1
+[62]  (parent,'pgFunding.fAmort1.cbameth1') ⎕wi 'list' (((3-2×active),0)↓⍙POPUPSdict ReadDictFile "AmortMeth")
+[63]  (parent,'pgFunding.fAmort2.cbameth2') ⎕wi 'list' (((3-2×active),0)↓⍙POPUPSdict ReadDictFile "AmortMeth")
+[64]  ⍝⍝⍝ (parent,'pgFunding.fFunding.ckfunding') ⎕wi 'enabled' ∆
+[65]  ⍝⍝⍝ (parent,'pgFunding.fFunding.edcontper') ⎕wi 'enabled' ∆
+[66]  tab←tab OVER (parent,'pgFunding.fFunding.edcontper') 'text' contper
+[67]  tab←tab OVER (parent,'pgFunding.fAmort1.edRatepc1') 'text' Ratepc1
+[68]  tab←tab OVER (parent,'pgFunding.fAmort2.edRatepc2') 'text' Ratepc2
+[69]  tab←tab OVER (parent,'pgFunding.fAmort1.edCont1') 'text' Cont1
+[70]  tab←tab OVER (parent,'pgFunding.fAmort2.edCont2') 'text' Cont2
+[71]  tab←tab OVER (parent,'pgFunding.fAmort1.edTERMAM1') 'text' TERMAM1
+[72]  tab←tab OVER (parent,'pgFunding.fAmort2.edTERMAM2') 'text' TERMAM2
+[73]  tab←tab OVER (parent,'pgFunding.fAmort1.edamortamount1') 'text' amortamount1
+[74]  tab←tab OVER (parent,'pgFunding.fAmort2.edamortamount2') 'text' amortamount2
+[75]  bothtab←bothtab OVER (parent,'pgFunding.fAmort1.cbameth1') 'text' ameth1
+[76]  bothtab←bothtab OVER (parent,'pgFunding.fAmort2.cbameth2') 'text' ameth2
+[77]  
+[78]  ⍝ Benefits Page
+[79]  (parent,'pgBenefits.fBenefits') ⎕wi 'visible' 1
+[80]  ((⊂parent,'pgBenefits.fBenefits.'),¨'ed' 'll' 'lr',¨⊂'accrual') MultiWI 'enabled' active
+[81]  ((⊂parent,'pgBenefits.fBenefits.'),¨'ed' 'll' 'lr',¨⊂'futaccrual') MultiWI 'enabled' active
+[82]  tab←tab OVER (parent,'pgBenefits.fBenefits.edaccrual') 'text' '99'
+[83]  tab←tab OVER (parent,'pgBenefits.fBenefits.edfutaccrual') 'text' '0'
+[84]  ((⊂parent,'pgBenefits.fBenefits.'),¨'edspouserev' 'llspouserev' 'lrspouserev') MultiWI 'enabled' mortadj
+[85]  ((⊂parent,'pgBenefits.fBenefits.'),¨'edspouserev' 'llspouserev' 'lrspouserev') MultiWI 'visible' 1
+[86]  tab←tab OVER (parent,'pgBenefits.fBenefits.edspouserev') 'text' '0'
+[87]  (parent,'pgBenefits.fCash') ⎕wi 'visible' 1
+[88]  ((⊂parent,'pgBenefits.fCash.'),¨'ed' 'll' 'lr',¨⊂'commfact') MultiWI 'enabled' ((8∊restab at 'CashOnTop')∨∆←↑∨/∣×restab at 'Commutation')
+[89]  ((⊂parent,'pgBenefits.fCash.'),¨'ed' 'll' 'lr',¨⊂'commpc') MultiWI 'enabled' ∆
+[90]  ((⊂parent,'pgBenefits.fCash.'),¨'ed' 'll' 'lr',¨⊂'cotpc') MultiWI 'enabled' (↑∨/×restab at 'CashOnTop')
+[91]  tab←tab OVER (parent,'pgBenefits.fCash.edcommfact') 'text' '0'
+[92]  tab←tab OVER (parent,'pgBenefits.fCash.edcommpc') 'text' '0'
+[93]  tab←tab OVER (parent,'pgBenefits.fCash.edcotpc') 'text' '0'
+[94]  (parent,'pgBenefits.fTransValue') ⎕wi 'visible' 1
+[95]  ∆←(∊restab at 'ContingencyID')∊31 32 33 34 35 36 37 38 39 40 41 42
+[96]  (parent,'pgBenefits.fTransValue.ckTVcapind') ⎕wi 'enabled' (↑∨/∆^0=restab at 'CashBenefit')
+[97]  ((⊂parent,'pgBenefits.fTransValue.'),¨'ed' 'll' 'lr',¨⊂'TVpc') MultiWI 'enabled' (↑∨/∆)
+[98]  ((⊂parent,'pgBenefits.fTransValue.'),¨'ed' 'll' 'lr',¨⊂'TVprop') MultiWI 'enabled' (↑∨/(∊restab at 'ContingencyID')∊31 32 33 34 35 36)
+[99]  tab←tab OVER (parent,'pgBenefits.fTransValue.ckTVcapind') 'value' (~↑∨/∆^0=restab at 'CashBenefit')
+[100] tab←tab OVER (parent,'pgBenefits.fTransValue.edTVpc') 'text' '0'
+[101] tab←tab OVER (parent,'pgBenefits.fTransValue.edTVprop') 'text' '0'
+[102] (parent,'pgBenefits.fCashFlow') ⎕wi 'visible' 1
+[103] (parent,'pgBenefits.fCashFlow.ckcapind') ⎕wi 'enabled' (∆←(rfperiod=0)^∨/0=∊restab at 'CashBenefit')
+[104] ((⊂parent,'pgBenefits.fCashFlow.'),¨'ed' 'll' 'lr',¨⊂'profit') MultiWI 'enabled' ∆
+[105] tab←tab OVER (parent,'pgBenefits.fCashFlow.ckcapind') 'value' 0
+[106] tab←tab OVER (parent,'pgBenefits.fCashFlow.edprofit') 'text' '0'
+[107] 
+[108] ⍝ Roll Forward Page
+[109] ((⊂parent,'pgRollForward.'),¨'fRollForward' 'fAssets' 'fOtherLiab') MultiWI 'visible' 1
+[110] tab←tab OVER (parent,'pgRollForward.fRollForward.cbRFDate') 'text' RFDate
+[111] tab←tab OVER (parent,'pgRollForward.fAssets.edRFASSETS') 'text' '0'
+[112] tab←tab OVER (parent,'pgRollForward.fOtherLiab.edRFLTOT') 'text' '0'
+[113] tab←tab OVER (parent,'pgRollForward.fOtherLiab.edRFNetCFOL') 'text' '0'
+[114] bothtab←bothtab OVER ('fmQuickSM.bnQuick_ScenarioConfigRF') 'enabled' (×rfperiod)
+[115] bothtab←bothtab OVER ('fmQuickSM.bnQuick_ScenarioCreateFin') 'enabled' (~savedresults)
+[116] 
+[117] :if ~savedresults
+[118]     :for page :in dummypages
+[119]         tab←tab OVER (parent,page,'fFilter.cbdummyclasses') 'list' (1 0↓GetClasses)
+[120]         tab←tab OVER (parent,page,'fFilter.cbdummyclasses') 'value' 1
+[121]     :endfor
+[122]     tab←tab OVER (parent,controlpage,'fFilter.cbclasses') 'list' (1 0↓GetClasses)
+[123]     tab←tab OVER (parent,controlpage,'fFilter.cbclasses') 'value' 1
+[124]     tab←tab OVER (parent,'pgRollForward.fRollForward.edRFPeriod') 'text' '0'
+[125]     1 ⍙WebUpdateControls valsIn tab append bothtab
+[126]     QS_Change¨'cbclasses' 'cbameth1' 'cbameth2' 'opamortconstant_3' 'cbRFDate'
+[127] :else
+[128]     1 ⍙WebUpdateControls valsIn bothtab
+[129] :endif
+[130] (((⊂'Button')≡¨list ⎕wi¨⊂'class')/list←'fmQuickSM' ⎕wi 'children') MultiWI 'visible' 1
+    ∇

@@ -1,0 +1,17 @@
+    ∇ XL_AddWorkbook n;ns
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Create a new Excel workbook with "n" sheets
+[3]   ⍝ if "n" is null use default number of sheets
+[4]   ⍝ r←0 if success 1 otherwise
+[5]   ⍝ Copyright APL2000 2003
+[6]   
+[7]   :if 0=⍴,n
+[8]       ('XL' ⎕wi 'Workbooks') ⎕wi 'XAdd >XL.wb'
+[9]   :else
+[10]      ⍝ Temporarily change the default number of sheets in a new wb
+[11]      ns←'XL' ⎕wi 'SheetsInNewWorkbook'
+[12]      'XL' ⎕wi 'SheetsInNewWorkbook' n
+[13]      ('XL' ⎕wi 'Workbooks') ⎕wi 'XAdd >XL.wb'
+[14]      'XL' ⎕wi 'SheetsInNewWorkbook' ns
+[15]  :endif
+    ∇

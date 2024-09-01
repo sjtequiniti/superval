@@ -1,0 +1,40 @@
+    ∇ ⍙DBStoredProc;sql;pivotflds
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Load some Stored procedures (Queries) into the Database
+[3]   ⍝ Revn: sjt27oct15 * SQL Server
+[4]   
+[5]   :if bALMLDI ⋄ :andif ~HLDII ⍝ Procedure for the Pivot of Fast Scenario data by Sex/Category and Benefit Type
+[6]       :if sqlDatabase
+[7]           →0 ⍝⍝⍝ FIXME
+[8]           pivotflds←1 ⍙DBNumList (⍳49)+~⎕IO
+[9]           sql←ScriptFollowing
+[10]          ⍝ CREATE PROCEDURE CashFlowBYYearANDPaymentYear (
+[11]          ⍝     ResultsCategory Number,
+[12]          ⍝     BenefitType Number,
+[13]          ⍝     FutServAccrual Number
+[14]          ⍝   ) AS
+[15]          ⍝   SELECT SVYear, {pivotflds}
+[16]          ⍝   FROM (
+[17]          ⍝	  SELECT SVYear, SVValue, YearIntoPayment
+[18]          ⍝	  FROM AltScenData
+[19]          ⍝     WHERE (ResultsCategoryID=ResultsCategory)
+[20]          ⍝     AND (BenefitTypeID=BenefitType)
+[21]          ⍝     AND (FSAccrual=FutServAccrual)
+[22]          ⍝   ) as src
+[23]          ⍝   PIVOT (
+[24]          ⍝ 	  SUM(SVValue)
+[25]          ⍝ 	  FOR YearIntoPayment IN ({pivotflds})
+[26]          ⍝     ORDER BY YearIntoPayment
+[27]          ⍝   ) AS pvt;
+[28]      :else
+[29]          sql←    "CREATE PROCEDURE CashFlowBYYearANDPaymentYear (ResultsCategory Number, BenefitType Number, FutServAccrual Number) AS "
+[30]          sql←sql,"TRANSFORM SUM(SVValue) "
+[31]          sql←sql,"SELECT SVYear FROM AltScenData "
+[32]          sql←sql,"WHERE (ResultsCategoryID=ResultsCategory) "
+[33]          sql←sql,"AND (BenefitTypeID IN (BenefitType,-BenefitType)) "
+[34]          sql←sql,"AND (FSAccrual=FutServAccrual) "
+[35]          sql←sql,"GROUP BY SVYear ORDER BY YearIntoPayment PIVOT YearIntoPayment IN (",(0 ⍙DBNumList (~⎕io)+⍳49),")"
+[36]      :endif
+[37]      0 0⍴0 ⍙DBadoCONCommand sql
+[38]  :endif
+    ∇

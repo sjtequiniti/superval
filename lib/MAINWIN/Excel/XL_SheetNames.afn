@@ -1,0 +1,16 @@
+    ∇ res←XL_SheetNames prefix;tabs;sheet;name;size
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Return a list of Sheet Names
+[3]   ⍝  non-empty prefix means only get sheets from end of workbook that start with "prefix"
+[4]   
+[5]   res←0 0⍴' '
+[6]   
+[7]   tabs←(~⎕io)+⍳('XL' ⎕wi 'xWorksheets') ⎕wi 'xCount'
+[8]   :if ~mt prefix ⋄ tabs←⌽tabs ⋄ size←↑⍴prefix ⋄ :endif
+[9]   
+[10]  :for sheet :in tabs
+[11]      name←(('XL' ⎕wi 'xSheets') ⎕wi 'xItem' sheet) ⎕wi 'xName'
+[12]      :if ~mt prefix ⋄ :andif ~prefix≡size↑name ⋄ :leave ⋄ :endif
+[13]      res←res OVER name
+[14]  :endfor
+    ∇

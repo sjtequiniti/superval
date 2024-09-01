@@ -1,0 +1,17 @@
+    ∇ res←Fin_RunDesc arg;Name;Value;Cap;Collar;Group;Desc;ConsDyn;z;desc;label;group
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Display Financial Assumptions in Text Output
+[3]   
+[4]   (Name Value Cap Collar Group Desc ConsDyn)←arg
+[5]   
+[6]   :if mt ConsDyn ⋄ ConsDyn←' '
+[7]   :else          ⋄ z←∨/' '≠ConsDyn ⋄ ConsDyn←(z\z/⊂' {'),¨(⎕split ConsDyn),¨z\z/⊂'}'
+[8]   :endif
+[9]   z←∨/' '≠Group   ⋄ group←(z\z/⊂' ['),¨(⎕split Group),¨z\z/⊂']'
+[10]  z←∨/' '≠Desc    ⋄ desc ←(z\z/⊂' - ')  ,¨⎕split Desc
+[11]  z←∨/' '≠Cap     ⋄ label←(z\z/⊂' Cap: '),¨⎕split Cap
+[12]  z←∨/' '≠Collar  ⋄ label←label,¨(z\z/⊂' Collar: '),¨⎕split Collar
+[13]  z←∨/' '≠Name
+[14]  res←(z/(⎕split Name),¨group),[⎕io+0.5](z⌿(⊂" <"),¨(⎕split Value),¨label,¨ConsDyn,¨">",¨desc)
+[15]  res←res OVER "" ""
+    ∇

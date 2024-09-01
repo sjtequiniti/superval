@@ -1,0 +1,146 @@
+    ∇ field Def_PUPs parm;page;no;SSName;PUPget;PUPput;headings;desc;list;parent;z;∆
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of PUPs
+[3]   
+[4]   parent←'fmSV.sDefBasis.' ⋄ page←'pgPUPs.' ⋄ SSName←parent,page,'fPUPs.ssPUPs'
+[5]   headings←⊃(⊂'PUP '),¨⍕¨⍳no←↑⍴PUPDesc
+[6]   
+[7]   :select parm
+[8]   :case 'Vars'
+[9]       lrPUPADJ  ←((⍴lrPUPADJ)  ⌈1 0×no)↑lrPUPADJ  ←MATRIX lrPUPADJ
+[10]      lrINDREV  ←((⍴lrINDREV)  ⌈1 0×no)↑lrINDREV  ←MATRIX lrINDREV
+[11]  ⍝⍝⍝    lrTVINDREV←((⍴lrTVINDREV)⌈1 0×no)↑lrTVINDREV←MATRIX lrTVINDREV
+[12]      PUPs_Vars 'PUPs'
+[13]      :if no≠0
+[14]          PUPADJ   ←PUPADJ    UpdateGridField lrPUPADJ
+[15]          INDSTART ←INDSTART  UpdateGridField lrINDSTART
+[16]          INDFINISH←INDFINISH UpdateGridField lrINDFINISH
+[17]          INDREV   ←INDREV    UpdateGridField lrINDREV
+[18]  ⍝⍝⍝        TVINDREV ←TVINDREV  UpdateGridField lrTVINDREV
+[19]      :endif
+[20]  
+[21]      (parent,page,'fButtons.bnDeferreds_BasisDelete') ⎕wi 'enabled' (( 1<no)^basAccess[2]≤accesslevel)
+[22]      (parent,page,'fButtons.bnDeferreds_BasisInsert') ⎕wi 'enabled' ((20>no)^basAccess[2]≤accesslevel)
+[23]      (parent,page,'fButtons.bnDeferreds_BasisAdd')    ⎕wi 'enabled' ((20>no)^basAccess[2]≤accesslevel)
+[24]  
+[25]  :case 'Init'
+[26]      SSName ⎕wi '∆VarsInWS' 1
+[27]      Def_PUPs 'Vars'
+[28]      0 0⍴(⊂'ssPUPs') Deferreds_Basis 'Change'
+[29]  
+[30]  :case 'Change'
+[31]      :select field
+[32]      :case 'ssPUPs'
+[33]          :for no :in ⍳no
+[34]              SSName ⎕wi 'ColText' no (PUPDesc[no;])
+[35]              SSName Win∆F1SSSetSelection 1 no 3 no
+[36]              z←∨/' '≠PUPDesc[no;]
+[37]              :if (¯1↑SSName ⎕wi 'GetPattern')≠∆←1+z×¯1+SSName ⎕wi 'xBackColor'
+[38]                  SSName ⎕wi 'SetPattern' 1 (1+z×¯1+SSName ⎕wi 'xExtraColor') ∆
+[39]              :endif
+[40]          :endfor
+[41]          SSName Win∆F1SSSetSelection 1 1 1 1
+[42]          ⍙CACHE←UpdateCache
+[43]          0 0⍴(lmt qtrim¨m2n SSName ⎕wi '∆name') Deferreds_Basis 'Change'
+[44]      :endselect
+[45]  
+[46]  :case 'Valid'
+[47]  
+[48]  :caselist 'Add' 'Edit' 'Insert' ⍝ Add/Edit/Insert a PUP Definition
+[49]  
+[50]      :if 1=SSName ⎕wi 'SelectionCount'
+[51]      :andif =/(∆←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[52]      :andif ~∆≡1 1 1 1
+[53]          PUPget←∆[2]
+[54]      :else
+[55]          PUPget←0
+[56]      :endif
+[57]  
+[58]      :if parm≡'Insert'
+[59]          :if PUPget=0
+[60]              :if 1=↑⍴desc←PUPDesc  ⋄ PUPput←0.5
+[61]              :else
+[62]                  list←⊃(⊂'Insert PUP before '),¨m2n headings
+[63]                  :if mt PUPput←Win∆SelectionBox desc list ⋄ :return ⋄ :endif
+[64]                  PUPput←¯0.5+↑list ExactTLU ,PUPput
+[65]              :endif
+[66]          :else
+[67]              PUPput←PUPget-0.5
+[68]          :endif
+[69]          PUPget←0
+[70]      :endif
+[71]  
+[72]      :if PUPget=0
+[73]          desc←PUPDesc ⋄ list←headings
+[74]          :if   parm≡'Edit'                                   ⋄ list←⊃(⊂'Edit '),¨m2n list
+[75]          :else             ⋄ desc←desc OVER 'Default Values' ⋄ list←⊃(⊂'Use '),¨(m2n list OVER 'Default'),¨⊂' Values'
+[76]          :endif
+[77]          :if 1=↑⍴desc ⋄ PUPget←list
+[78]          :elseif mt PUPget←Win∆SelectionBox desc list ⋄ :return
+[79]          :endif
+[80]          PUPget←↑((-~parm≡'Edit')↓[⎕io]list) ExactTLU ,PUPget
+[81]      :endif
+[82]      :if ~parm≡'Insert' ⋄ PUPput←PUPget×parm≡'Edit' ⋄ :endif
+[83]      Win∆AssignVars ControlName ⍝ Trap current field entries
+[84]      Format←HyphenSwap Format
+[85]  
+[86]      UKPUPRun ''
+[87]  
+[88]      :if parm≡'Insert'
+[89]          'Deferreds_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Insert' PUPput
+[90]      :endif
+[91]      Def_PUPs 'Vars'
+[92]      openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[93]      0 0⍴(⊂'ssPUPs') Deferreds_Basis 'Change'
+[94]  
+[95]  :case 'Delete' ⍝ Delete a PUP Definition
+[96]  
+[97]      :if 1=SSName ⎕wi 'SelectionCount'
+[98]      :andif =/(PUPget←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[99]      :andif ~PUPget≡1 1 1 1
+[100]         PUPget←PUPget[2]
+[101]     :else
+[102]         :if mt PUPget←Win∆SelectionBox PUPDesc (list←⊃(⊂'Delete '),¨m2n headings) ⋄ :return ⋄ :endif
+[103]         PUPget←list ExactTLU ,PUPget
+[104]     :endif
+[105] 
+[106]     :if 'Y'='YN' ASK 'Delete' (headings[PUPget;] ConcatLabel PUPDesc[PUPget;])
+[107]         Win∆AssignVars ControlName ⍝ Trap current field entries
+[108]         PUPput←(⍳no)~PUPget
+[109]         PUPDesc←    PUPDesc[PUPput;]
+[110]         PUP←        PUP[PUPput;]
+[111] ⍝⍝        PUPORCOT←   PUPORCOT[PUPput;]
+[112]         INDREV←     INDREV[PUPput;]
+[113]         lrINDREV←   lrINDREV[PUPput;]
+[114] ⍝⍝⍝        TVINDREV←   TVINDREV[PUPput;]
+[115] ⍝⍝⍝        lrTVINDREV← lrTVINDREV[PUPput;]
+[116]         INDWARFRAC← INDWARFRAC[PUPput;]
+[117]         INDDBRFRAC← INDDBRFRAC[PUPput;]
+[118]         INDREVYRS←  INDREVYRS[PUPput;]
+[119]         INDNRARND←  INDNRARND[PUPput;]
+[120]         INDSTART←   INDSTART[PUPput;]
+[121]         lrINDSTART← lrINDSTART[PUPput;]
+[122]         INDFINISH←  INDFINISH[PUPput;]
+[123]         lrINDFINISH←lrINDFINISH[PUPput;]
+[124]         PUPADJ←     PUPADJ[PUPput;]
+[125]         lrPUPADJ←   lrPUPADJ[PUPput;]
+[126]         COO←        COO[PUPput;]
+[127]         MOO←        MOO[PUPput;]
+[128]         BARBIND←    BARBIND[PUPput;]
+[129]         DYNIND←     DYNIND[PUPput;]
+[130]         UNDIND←     UNDIND[PUPput;]
+[131]         m_PPFNRA←   m_PPFNRA[PUPput;]
+[132]         f_PPFNRA←   f_PPFNRA[PUPput;]
+[133]         PPFPAYINC←  PPFPAYINC[PUPput;]
+[134] 
+[135]         SSName ⎕wi 'MaxCol' (¯1+SSName ⎕wi 'MaxCol')
+[136]         SSName ⎕wi 'xSetSelection' 1 1 1 1
+[137] 
+[138]         'Deferreds_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Delete' PUPget
+[139]         Def_PUPs 'Vars'
+[140]         openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[141]         0 0⍴(⊂'ssPUPs') Deferreds_Basis 'Change'
+[142]     :endif
+[143] 
+[144] :endselect
+    ∇

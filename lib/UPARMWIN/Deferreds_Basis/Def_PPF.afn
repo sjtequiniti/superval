@@ -1,0 +1,28 @@
+    ∇ field Def_PPF parm;page
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of PPF Page
+[3]   
+[4]   page←'pgPPFCAP.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]       (parent,page,'fNRA.edm_PPFNRAtab4') ⎕wi "text" m_PPFNRAtab
+[9]       (parent,page,'fNRA.edf_PPFNRAtab4') ⎕wi "text" f_PPFNRAtab
+[10]      0 0⍴(⊂'edm_PPFNRAtab4') Deferreds_Basis 'Change' ⍝ Update PPF NRA fields
+[11]  
+[12]  :case 'Init'
+[13]  
+[14]  :case 'Change'
+[15]      :select field
+[16]      :case 'edm_PPFNRAtab4'
+[17]          m_PPFNRAtab←(parent,page,'fNRA.edm_PPFNRAtab4') ⎕wi 'text'
+[18]          UpdatePPFNRAs 'Def'
+[19]      :case 'edf_PPFNRAtab4'
+[20]          f_PPFNRAtab←(parent,page,'fNRA.edf_PPFNRAtab4') ⎕wi 'text'
+[21]          UpdatePPFNRAs 'Def'
+[22]      :endselect
+[23]  
+[24]  :case 'Valid'
+[25]  
+[26]  :endselect
+    ∇

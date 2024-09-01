@@ -1,0 +1,37 @@
+    ∇ res←XL_filename
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Name EXCEL Output workbook
+[3]   
+[4]   res←'\' Win∆Child basisFile
+[5]   
+[6]   :if ShortFilenames ⍝ Variations according to Short Filenames setting
+[7]       ⍝⍝ GAD suggestion: PUC_CP1_NHSACTIVESRG_31-03-2014
+[8]       ValMethdesc←bencap/'_Cap' ⍝ Variations according to run parameters
+[9]       :select ValMeth
+[10]      :case 'PUC'           ⋄ ValMethdesc←'_CP',(⍕contper),'_',((¯2↑'ex',insind/'in'),'cIC'),ValMethdesc
+[11]      :case 'DAB'           ⋄ ValMethdesc←'_CP',(⍕contper),'_',(DLTMB (SStoMAT '/PSL/DB')[×abNO;]),ValMethdesc
+[12]      :case 'PPP'           ⋄ ValMethdesc←'_PPF'
+[13]      :caselist 'PPA' 'PPD' ⋄ ValMethdesc←'_s1',¯2↑'79',s143/'43'
+[14]      :endselect
+[15]  
+[16]      :if 0<⍴,ValMethdesc ⋄ ValMethdesc←ValMethdesc,'_' ⋄ :endif
+[17]      ValMethdesc←ValMethdesc,(scenario/'{}' embrace ScenarioDesc),AgeInterp/'_EAI'
+[18]  
+[19]      res←'_',res,'_',(,'ZI2,<->,ZI2,<->,ZI2' ⎕fmt MATRIX 100∣¯3↑pvDATE,vDATEind/vDATE),aosind/,'<&>,ZI2,<->,ZI2,<->,ZI2' ⎕fmt MATRIX 100∣pvDATE
+[20]  :else
+[21]      ValMethdesc←bencap/'Capped' ⍝ Variations according to run parameters
+[22]      :select ValMeth
+[23]      :case 'PUC'           ⋄ ValMethdesc←('Control Period ',(⍕contper),' year',((1≠contper)/'s'),' ',(¯2↑'ex',insind/'in'),'c Insured Cost'),bencap/' - ',ValMethdesc
+[24]      :case 'DAB'           ⋄ ValMethdesc←('Control Period ',(⍕contper),' year',((1≠contper)/'s'),' targeting ',(DLTMB (SStoMAT '/Past Service Liability/Discontinuance Benefit')[×abNO;])),bencap/' - ',ValMethdesc
+[25]      :case 'PPP'           ⋄ ValMethdesc←'PPF'
+[26]      :caselist 'PPA' 'PPD' ⋄ ValMethdesc←'s1',¯2↑'79',s143/'43'
+[27]      :endselect
+[28]  
+[29]      :if 0<⍴,ValMethdesc ⋄ ValMethdesc←' ','()' embrace ValMethdesc ⋄ :endif
+[30]      ValMethdesc←ValMethdesc,(scenario/'{}' embrace ScenarioDesc),AgeInterp/' Interpolated'
+[31]  
+[32]      res←' using ',res,' at ',(,'ZI2,<->,ZI2,<->,ZI4' ⎕fmt MATRIX ¯3↑pvDATE,vDATEind/vDATE),aosind/,'< and >,ZI2,<->,ZI2,<->,ZI4' ⎕fmt MATRIX pvDATE
+[33]  :endif
+[34]  
+[35]  res←OutputDir,ValMeth,ValMethdesc,res,'.xls',(12≤ExcelVersion)/XLtype
+    ∇

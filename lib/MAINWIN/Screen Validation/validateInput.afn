@@ -1,1 +1,589 @@
-    ∇ res←flags validateInput MembGroup;⎕io;type;tab;flds;status;fld;stat;∆;desc;descs;i;relRules;∆decrdesc;∆decrlist;masks;errs;MESS;z;OffsetSlice;FirstSlice;AltFirstSlice;IndFirstSlice;name;PIsenabled;expungelist;warnings;isActive;isDeferred;isPensioner;rows;exlist;col;pb;success;fldrow;valids;valid;ppferror;errflag;pbflag;sex;comment_var;defined;relflag[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Validate Parameter entries by Type[3]   ⍝ Revn: sjt17apr15[4]   ⎕io←1[5]   (errflag pbflag relflag)←3↑flags ⋄ warnings←MATRIX 'variable' 'row' 'message' ⋄ expungelist←0 0⍴''[6]   comment_var←'Comment_',MembGroup,'_Basis'[7]   [8]   :if pbflag ⋄ (1 7 'Reading Global Parameter Values') Win∆ProgressBar2 'FileUpdate' ⋄ :endif[9]   [10]  (isActive isDeferred isPensioner)←('Actives' 'Deferreds' 'Pensioners')∊⊂MembGroup[11]  PIsenabled←0                                                            ⍝ Basis editing relaxation of Relevance Rules[12]  :if MembGroup≡'Actives'[13]      OffsetSlice←(⍳↑⍴SliceDesc)=zwb SLICEUP[14]      FirstSlice←(↑⍴SliceDesc)↑1 ⋄ AltFirstSlice←(↑⍴AltSliceDesc)↑1 ⋄ IndFirstSlice←(↑⍴IndSliceDesc)↑1[15]  :endif[16]  [17]  relRules←⍙RULESdict ReadDictFile 'Valuation_Batch'[18]  relRules←relRules for 'Page' 'Scheme Parameters'[19]  relRules←relRules for ⍎¨relRules at 'Relevant'                          ⍝ Restrict Global Parm sets to those relevant[20]  relRules←relRules amend 'Row' (0.01×relRules at 'Row')                  ⍝ Reset Row Numbers[21]  relRules←relRules append ⍙RULESdict ReadDictFile MembGroup,'_Basis'     ⍝ Read Relevance Rules[22]  rows←⌈/relRules at 'Row'[23]  [24]  FixFinFields MembGroup,'_Basis'                                         ⍝ Fix for hyphens in Financials[25]  FixRelFields MembGroup                                                  ⍝ Swap label and value, if required[26]  S21Migration MembGroup                                                  ⍝ S21 "legacy" fixes[27]  CashMigration MembGroup                                                 ⍝ Buck Cash Upgrade[28]  MembGroup TVBasisUpdate 'All'                                           ⍝ TV Basis updated to Valuation Basis (where required)[29]  :if isActive ⋄ warnings←warnings OVER FixCOMPERFields ⋄ :endif          ⍝ Convert Cash Proportion to Cash Percentage[30]  [31]  pb←0 ⍝ Completed in Progress Bar[32]  [33]  ⍝ Must read Mortality etc parameters first to get variables in WS[34]  :for type :in 'ParmsP' 'ParmsY' 'ParmsK' 'ParmsO' 'ParmsA' 'ParmsE' 'ParmsB' 'ParmsN' 'ParmsD' 'ParmsW' 'ParmsX' 'ParmsR' 'ParmsT' 'ParmsL' 'ParmsS' 'ParmsM' 'ParmsMS' 'ParmsI' 'ParmsC' ⍝ Note: Order is important[35]      pb←pb+1[36]      :if 1≥↑⍴tab←relRules for 'Type' type ⋄ :continue ⋄ :endif[37]  [38]      :if scenario[39]          :if ScenarioDesc≡'Primary Basis' ⋄ type Scenario_GlobList tab[40]          :else                            ⋄ type Scenario_Globals tab[41]          :endif[42]      :endif[43]  [44]      flds←tab at 'Field' ⋄ descs←tab at 'Desc'[45]      :select type[46]      :case 'ParmsP' ⍝ Scheme PPF Details (can only be one)[47]          :if pbflag ⋄ (pb 31 'PPF Scheme Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[48]          ppferror←~↑(success MESS)←2↑ClientFile ReadModule 'PPF_Details' '' 'PPF Scheme' '' errflag 'PPF Scheme Parameters'[49]          :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[50]          :if success[51]              tab←⍙RULESdict ReadDictFile 'PPF_Details'[52]              tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows[53]              relRules←relRules append tab[54]              ⍎comment_var,'←',comment_var,' append Comment_PPF_Details'[55]              expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'[56]              FixFinFields 'PPF_Details'[57]          :endif[58]  [59]      :case 'ParmsY' ⍝ PPF Yields (can only be one)[60]          :if pbflag ⋄ (pb 31 'PPF Yields') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[61]          :if mt SVPPFFile ReadFile 'Index'[62]              ppferror←1[63]              warnings←warnings OVER 'PPF Yield Parameters' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'FileNotFound' SVPPFFile)[64]          :else[65]              ppferror←ppferror∨~↑(success MESS)←2↑SVPPFFile ReadModule 'PPF_Yields' '' 'PPF Yield' '' errflag 'PPF Yield Parameters'[66]              :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[67]              :if success[68]                  tab←⍙RULESdict ReadDictFile 'PPF_Yields'[69]                  tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows[70]                  relRules←relRules append tab[71]                  expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'[72]                  :if 1≠+/z←(⊂fld←DLTB ⍎↑flds)≡¨m2n YIELDDATE,' ',YIELDKey[73]                      ppferror←1[74]                      warnings←warnings OVER 'PPFDate' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'FileNotFound' ('Unique PPF Yields at ',fld))[75]                  :else[76]                      (YIELDDATE YIELDKey PPF55 PPF50 PPF5_155 PPF5_150 PPF155 PPF150 PPF10 PPF15 PPF20 adjPPFi adjPPFi20 adjPPFPENpiI adjPPFPENpiF adjPPFpiI adjPPFpiF PPFi PPFi20 PPFPENpiI PPFPENpiF PPFpiI PPFpiF)←,¨z⌿¨YIELDDATE YIELDKey PPF55 PPF50 PPF5_155 PPF5_150 PPF155 PPF150 PPF10 PPF15 PPF20 adjPPFi adjPPFi20 adjPPFPENpiI adjPPFPENpiF adjPPFpiI adjPPFpiF PPFi PPFi20 PPFPENpiI PPFPENpiF PPFpiI PPFpiF[77]                      :if ×rowsIn Comment_PPF_Yields ⋄ :andif ×z←rowsIn Comment_PPF_Yields←Comment_PPF_Yields for (Comment_PPF_Yields at 'row')=WHERE z[78]                          Comment_PPF_Yields←Comment_PPF_Yields amend 'row' (z/⊂⍬)[79]                          ⍎comment_var,'←',comment_var,' append Comment_PPF_Yields'[80]                      :endif[81]                      ⍎comment_var,'←',comment_var,' append Comment_PPF_Yields'[82]                      :if ~(,¨EXECUTE¨PPFi PPFi20 PPFPENpiI PPFPENpiF PPFpiI PPFpiF)≡,¨EXECUTE¨PPFDate ProcPPFYields PPF55 PPF50 PPF5_155 PPF5_150 PPF155 PPF150 PPF10 PPF15 PPF20 adjPPFi adjPPFi20 adjPPFPENpiI adjPPFPENpiF adjPPFpiI adjPPFpiF[83]                          ppferror←1[84]                          warnings←warnings OVER 'PPFDate' ⍬ ((errflag/'ERROR:  '),'Calculated Yields at ',fld,' have changed due to updated Valuations Assumptions Guidance.  Re-save PPF Yields Table before proceeding.')[85]                      :endif[86]                  :endif[87]              :endif[88]          :endif[89]  [90]      :case 'ParmsK' ⍝ PPF Caps (can only be one)[91]          :if pbflag ⋄ (pb 31 'PPF Cap Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[92]          :if mt SVPPFFile ReadFile 'Index'[93]              ppferror←1[94]              warnings←warnings OVER 'PPF Cap Parameters' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'FileNotFound' SVPPFFile)[95]          :else[96]              ppferror←ppferror∨~↑(success MESS)←2↑SVPPFFile ReadModule 'PPF_Caps' '' 'PPF Cap' '' errflag 'PPF Cap Parameters'[97]              :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[98]              :if success[99]                  tab←⍙RULESdict ReadDictFile 'PPF_Caps'[100]                 tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows[101]                 relRules←relRules append tab[102]                 expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'[103]                 :if 1≠+/z←(⊂fld←DLTB ⍎↑flds)≡¨m2n PPFCAPDATE[104]                     warnings←warnings OVER 'PPFCapDate' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'FileNotFound' ('Unique PPF Caps at ',fld))[105]                 :else[106]                     (PPFCAPDATE PPFCAP PPFCAPADJ s143capinc PPFCASHFAC2 PPFCASHFAC)←,¨z⌿¨PPFCAPDATE PPFCAP PPFCAPADJ s143capinc PPFCASHFAC2 PPFCASHFAC[107]                     :if ×rowsIn Comment_PPF_Caps ⋄ :andif ×z←rowsIn Comment_PPF_Caps←Comment_PPF_Caps for (Comment_PPF_Caps at 'row')=WHERE z[108]                         Comment_PPF_Caps←Comment_PPF_Caps amend 'row' (z/⊂⍬)[109]                         ⍎comment_var,'←',comment_var,' append Comment_PPF_Caps'[110]                     :endif[111]                 :endif[112]                 lrPPFCAPADJ  ←DropText PPFCAPADJ   ⋄ PPFCAPADJ  ←StripText PPFCAPADJ[113]                 lrPPFCASHFAC ←DropText PPFCASHFAC  ⋄ PPFCASHFAC ←StripText PPFCASHFAC[114]                 lrPPFCASHFAC2←DropText PPFCASHFAC2 ⋄ PPFCASHFAC2←StripText PPFCASHFAC2[115]             :endif[116]         :endif[117] [118]     :case 'ParmsO' ⍝ PPF Overrides (can only be one)[119]         :if pbflag ⋄ (pb 31 'PPF Mortality Override Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[120]         fld←⍎flds←↑flds[121]         ppferror←ppferror∨~↑(success MESS)←2↑SVPPFFile ReadModule 'PPF_Overrides' fld 'PPF Mortality Override' '' errflag flds[122]         :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[123]         :if success[124]             UpdatePPF_Overrides[125]             tab←⍙RULESdict ReadDictFile 'PPF_Overrides'[126]             tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows[127]             relRules←relRules append tab[128]             ⍎comment_var,'←',comment_var,' append Comment_PPF_Overrides'[129]             expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'[130]         :endif[131] [132]     :case 'ParmsA' ⍝ AOS parameters (can only be one)[133]         :if pbflag ⋄ (pb 31 'Analysis of Surplus Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[134]         :if ~mt ↑(MESS rows)←ReadAOSParms rows ⋄ warnings←warnings OVER MESS ⋄ :endif[135] [136]     :case 'ParmsE' ⍝ Expense paramaters (can only be one)[137]         :if pbflag ⋄ (pb 31 'Expense Rates') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[138]         (success MESS)←2↑ClientFile ReadModule 'Expense_Rates' '' 'Expense Rates' '' errflag 'Expense Rate Parameters'[139]         :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[140]         :if success[141]             tab←⍙RULESdict ReadDictFile 'Expense_Rates'[142]             tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows[143]             relRules←relRules append tab[144]             ⍎comment_var,'←',comment_var,' append Comment_Expense_Rates'[145]             expungelist←expungelist OVER 'Comment_Expense_Rates' OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'[146]             FixFinFields 'Expense_Rates'[147]         :endif[148] [149]     :case 'ParmsB' ⍝ SA Minimum Benefits (can only be one)[150]         :if pbflag ⋄ (pb 31 'Minimum Benefit Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[151]         (success MESS)←2↑ClientFile ReadModule 'Minimum_Benefit' '' 'Minimum Benefit' '' errflag 'Minimum Benefit Parameters'[152]         :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[153]         :if success[154]             tab←⍙RULESdict ReadDictFile 'Minimum_Benefit'[155]             tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows[156]             relRules←relRules append tab[157]             expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'[158]         :endif[159] [160]     Question ????[161] ⍝⍝⍝     :if 1≠⍴,ClientFile ReadFile 'Minimum_Benefit'[162] ⍝⍝⍝ ⍝⍝⍝        :elseif res←'N'='YN' ASK (MESS∆TRANS 'ParmsNotFound' 'Minimum Benefit' ''),⎕tcnl,'Do you wish to continue?'[163] ⍝⍝⍝         :elseif 'N'='YN' ASK '"Minimum Benefit" Parameters not found',⎕tcnl,'Do you wish to continue?'[164] ⍝⍝⍝             res←1[165] ⍝⍝⍝         :endif[166] ⍝⍝⍝     :endif[167] [168]     :case 'ParmsN' ⍝ New Entrant Parameters (can only be one)[169]         :if pbflag ⋄ (pb 31 'New Entrant Model Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[170]         fld←⍎flds←↑flds[171]         (success MESS)←2↑ClientFile ReadModule 'NE_Model' fld 'New Entrant Model' '' errflag flds[172]         :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[173]         :if success[174]             tab←⍙RULESdict ReadDictFile 'NE_Model'[175]             tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows[176]             relRules←relRules append tab[177]             ⍎comment_var,'←',comment_var,' append Comment_NE_Model'[178]             expungelist←expungelist OVER 'Comment_NE_Model' OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'[179]         :endif[180] [181]     :case 'ParmsD' ⍝ Decrement Rates Parameters[182]         :if pbflag ⋄ (pb 31 'Decrement Rates Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[183]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[184]             :if ~mt DLTB ⍎fld[185]                 (success MESS)←(desc errflag) GET∆DecRateGlobals fld[186]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[187]             :endif[188]         :endfor[189] [190]     :case 'ParmsW' ⍝ Spouse Parameters[191]         :if pbflag ⋄ (pb 31 'Spouse Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[192]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[193]             :if ~mt DLTB ⍎fld[194]                 (success MESS)←(desc errflag) GET∆SpouseGlobals fld[195]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[196]             :endif[197]         :endfor[198] [199]     :case 'ParmsX' ⍝ Retirement Age Parameters[200]         :if pbflag ⋄ (pb 31 'Retirement Age Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[201]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[202]             :if ~mt DLTB ⍎fld[203]                 (success MESS)←(desc errflag) GET∆RetAgeGlobals fld[204]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[205]             :endif[206]         :endfor[207] [208]     :case 'ParmsR' ⍝ Retirement Factors Parameters[209]         :if pbflag ⋄ (pb 31 'Retirement Factors Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[210]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[211]             :if ~mt DLTB ⍎fld[212]                 (success MESS)←(desc errflag) GET∆RetFactGlobals fld[213]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[214]             :endif[215]         :endfor[216] [217]     :case 'ParmsT' ⍝ Commutation Tables Parameters[218]         :if pbflag ⋄ (pb 31 'Commutation Tables Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[219]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[220]             :if ~mt DLTB ⍎fld[221]                 (success MESS)←(desc errflag) GET∆CommTabGlobals fld[222]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[223]             :endif[224]         :endfor[225] [226]     :case 'ParmsL' ⍝ Retirement Lump Sum Parameters[227]         :if pbflag ⋄ (pb 31 'Retirement Cash Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[228]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[229]             :if ~mt DLTB ⍎fld[230]                 (success MESS)←(desc errflag) GET∆RetCashGlobals fld[231]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[232]             :endif[233]         :endfor[234] [235]     :case 'ParmsS' ⍝ Spreading Basis Parameters[236]         :if pbflag ⋄ (pb 31 'Spreading Basis Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[237]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[238]             :if ~mt DLTB ⍎fld[239]                 (success MESS)←(desc errflag) GET∆SpDateGlobals fld[240]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[241]             :endif[242]         :endfor[243] [244]     :caselist 'ParmsM' 'ParmsMS' ⍝ Mortality Rate Parameters[245]         :if pbflag ⋄ (pb 31 'Mortality Rates') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[246]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[247]             :if isValn ⋄ :andif ppf ⋄ ⍎fld,'←"None"' ⋄ ⍎"lr",fld,'←"No Mortality"' ⋄ :endif[248]             :if ~mt MESS←desc Win∆MortRelative fld ("lr",fld) errflag[249]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[250]             :endif[251]             (success MESS tab exlist)←(desc errflag) GET∆MortGlobals fld[252]             :if ~mt MESS[253]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[254]             :endif[255]             :if success[256]                 :if type≡'ParmsM' ⋄ :andif 'DS'≡2↑,⍎fld,'TABXX'[257]                     warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' cannot be a Select Mortality Rate Table')[258]                 :else[259]                     tab←tab amend 'Page'  ((rowsIn tab)/(relRules for 'Field' fld) at 'Page' )[260]                     tab←tab amend 'Frame' ((rowsIn tab)/(relRules for 'Field' fld) at 'Frame')[261]                     :for col :in 'Editable' 'Relevant'[262]                         tab←tab amend col (('(',¨((relRules for 'Field' fld) at col),¨⊂') and '),¨tab at col)[263]                     :endfor[264]                     :for col :in 'Editable Refs' 'Editable EPs' 'Relevant Refs' 'Relevant EPs'[265]                         tab←tab amend col ((unique¨z) sel¨¨z←((relRules for 'Field' fld) at col),¨tab at col)[266]                     :endfor[267]                     tab←tab amend 'Row' ((↑(relRules for 'Field' fld) at 'Row')+0.01×⍳rowsIn tab)[268]                     relRules←relRules append tab[269]                 :endif[270]                 expungelist←expungelist OVER exlist[271]             :endif[272]         :endfor[273] [274]     :case 'ParmsI' ⍝ Mortality Improvement Parameters[275]         :if pbflag ⋄ (pb 31 'Mortality Improvement Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[276]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[277]             :if isValn ⋄ :andif ppf ⋄ ⍎fld,'←"None"' ⋄ ⍎"lr",fld,'←"No Mortality Improvement"' ⋄ :endif[278]             :if ~mt MESS←desc Win∆MortImpRelative fld ("lr",fld) errflag[279]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[280]             :endif[281]             (success MESS tab exlist)←(desc (isActive isDeferred isPensioner)) GET∆ImpGlobals fld[282]             :if ~mt MESS[283]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[284]             :endif[285]             :if success[286]                 tab←tab amend 'Page'  ((rowsIn tab)/(relRules for 'Field' fld) at 'Page' )[287]                 :for col :in 'Editable' 'Relevant'[288]                     tab←tab amend col (('(',¨((relRules for 'Field' fld) at col),¨⊂') and '),¨tab at col)[289]                 :endfor[290]                 :for col :in 'Editable Refs' 'Editable EPs' 'Relevant Refs' 'Relevant EPs'[291]                     tab←tab amend col ((unique¨z) sel¨¨z←((relRules for 'Field' fld) at col),¨tab at col)[292]                 :endfor[293]                 tab←tab amend 'Row' ((↑(relRules for 'Field' fld) at 'Row')+0.01×⍳rowsIn tab)[294]                 relRules←relRules append tab[295]                 expungelist←expungelist OVER exlist[296]             :endif[297]         :endfor[298] [299]     :case 'ParmsC' ⍝ Contributions Parameters[300]         :if pbflag ⋄ (pb 31 'Contributions Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[301]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[302]             (success MESS tab exlist)←(desc errflag) GET∆Contributions fld[303]             :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[304]             :if success[305]                 :for col :in 'Editable' 'Relevant'[306]                     tab←tab amend col (('(',¨((relRules for 'Field' fld) at col),¨⊂') and '),¨tab at col)[307]                 :endfor[308]                 :for col :in 'Editable Refs' 'Editable EPs' 'Relevant Refs' 'Relevant EPs'[309]                     tab←tab amend col ((unique¨z) sel¨¨z←((relRules for 'Field' fld) at col),¨tab at col)[310]                 :endfor[311]                 tab←tab amend 'Row' ((↑(relRules for 'Field' fld) at 'Row')+0.01×⍳rowsIn tab)[312]                 relRules←relRules append tab[313]                 expungelist←expungelist OVER exlist[314]             :endif[315]         :endfor[316] [317]     :endselect[318] [319] ⍝⍝⍝ Surcharge Parameters[320] ⍝⍝⍝ :if (⊂ValMeth)∊'SUR' 'NOT'[321] ⍝⍝⍝     res←res∨↑(success MESS)←2↑ClientFile ReadModule 'Surcharge_Parameter' Surcparms 'Surcharge' '' errflag fld[322] ⍝⍝⍝ :endif[323] :endfor[324] [325] :if pbflag ⋄ (2 7 'Checking all Relevant Basis Parameter Values specified') Win∆ProgressBar2 'FileUpdate' ⋄ :endif[326] [327] relRules←relRules sortedBy 'Row'[328] 1 FlattenPropertyRules relRules ⍝ sets globals[329] ⍙CACHE←flds push ⍎¨flds←(defined←2=⎕NC⊃qtrimo¨∆)/∆←relRules at 'Field' ⍝ ignore Alternatives[330] [331] status←∣valsIn 1 applyRulesFor flds ⍝ relRules at 'Field' ⋄ flds←↑∆ ⋄ status←∣1↓∆[332] relRules←relRules amend 'status' (defined\,¨1↑[2]¨MATRIX¨status)[333] [334] :if isValn ⋄ :andif bLANKING ⋄ flds blankIrrelevant∆¨ status ⋄ :endif[335] [336] masks←^/¨status ⍝ PROPERTIES: Relevant and Required (Editable is only relevant when editing Bases)[337] errs← masks expand¨ (masks sel1¨ ⍎¨flds) ^.=¨ ' '[338] :if ∨/∨/¨errs[339]     z←∊1≠⍴¨errs[340]     errs←⊃spin (∨/¨errs)/¨((relRules at 'Field' 'Field') map flds) ((relRules at 'Field' 'Desc') map flds) (z×WHERE¨errs)[341] [342]     MESS←1 0 1\(∊⍴¨errs[;3])⌿errs[;⍳2][343]     z←(×∊errs[;3])sel¨∊errs[;3] ⋄ ((∊⍴¨z)/z)←↑¨(∊⍴¨z)/z ⍝ Must be scalars[344]     MESS[;2]←z[345]     MESS[;3]←(⊂(errflag/'ERROR:  '),'Missing parameter - '),¨MESS[;3],¨(∊⍴¨,¨z) sel¨(⊂' - '),¨⍕¨z[346] [347]     warnings←warnings OVER MESS[348] :endif[349] [350] :if pbflag ⋄ (3 7 'Validating Basis Parameter Values') Win∆ProgressBar2 'FileUpdate' ⋄ :endif[351] [352] :for type :in 'FileI' 'ParmsF' 'Fin' 'Decr' 'FileL' 'RelNum' 'RelDate' 'EditBY' 'ComboN' 'ComboD' 'ComboPPFNRA' ⍝ Order of these is important!![353]     pb←pb+1[354]     :if 0=rowsIn tab←relRules for 'Type' type ⋄ :continue ⋄ :endif[355] [356]     ∆←1 applyRulesFor tab at 'Field' ⋄ (descs valids)←tab at 'Desc' 'Valid'[357]     flds←(z←∨/¨,¨relflag⌈¨1↑[2]¨MATRIX¨status←1↓∆)/↑∆ ⋄ descs←z/descs ⋄ valids←z/valids ⋄ status←z/status[358] [359]     :select type[360]     :case 'FileI' ⍝ Update Relative Value from Scheme Details[361]         :if pbflag ⋄ (pb 31 'Data File') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[362]         GetAbsFileList "Fund"[363]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[364]             :if ~mt MESS←desc Win∆FileRelative fld ("lr",fld) errflag[365]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[366]             :endif[367]         :endfor[368] [369]     :case 'ParmsF' ⍝ Format parameters (should only be one!) and create Data sub-file[370]         :if pbflag ⋄ (pb 31 'Data Format') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[371]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[372]             :if ~mt MESS←desc Win∆FormatRelative fld ("lr",fld) errflag[373]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[374]             :endif[375]             (success MESS)←2↑ClientFile ReadModule ((3↑MembGroup),'Format') (6↓1 HyphenSwap ⍎fld) (MembGroup,' Data Format') '' errflag fld[376]             :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif[377]         :endfor[378]         :if success[379]             (2⌊aosind+2×~vDATEind) CREATEDATADESC ⍎fld[380]             expungelist←expungelist OVER ⍙VALUESdict ReadDictFile ((3↑MembGroup),'Format') '' 'NAMES'[381]             UseSex←↑¯1↑UseSex,(uk=1)/'1' ⋄ Cat←1↓CatSels[382]             :if pbflag ⋄ (pb 31 'Create Data File') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[383]             :if isValn ⋄ CatSels←⊂'⍺',SelSex,Cat ⍝ Adjust for UK Bases[384]             :else      ⋄ CatSels←('⍺M' '⍺F'),¨⊂Cat[385]             :endif[386]             :for CatSels :in CatSels[387]                 (dattie MESS)←errflag CREATE∆FILES zwb FileSelections ⍝ Create Input/Output Files[388]                 :if ~mt MESS[389]                     sex←↑(CatSels[2]='MF')/'Male ' 'Female '[390]                     MESS←(⊂'/ERROR:  No matching /WARNING:  No matching ',sex) TEXTREPL¨,m2n MESS[391]                     warnings←warnings OVER ⊃spin ((↑⍴MESS)/¨(('FILES' 'fILENAME')[1+zwb FileSelections]) (⊂⍬)),⊂MESS[392]                 :elseif ~isValn[393]                     :if zwb FileSelections ⋄ NERASE dattie ⍝ Ersae sub-file[394]                     :else                  ⋄ ⎕nuntie dattie[395]                     :endif[396]                 :endif[397]             :endfor[398]             :if ~isValn ⋄ UseSex←'0' ⋄ CatSels←'⍺',Cat ⋄ FILES←'' ⋄ :endif[399]             expungelist←expungelist OVER 'dattie'[400]         :endif[401] [402]     :case 'Fin' ⍝ Financial Assumptions[403]         :if pbflag ⋄ (pb 31 'Financial Assumptions') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[404]         :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆[405]             :if 2=⍴⍴⍎fld[406]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/(↑⍴⍎fld),(↑⍴MATRIX ⍎"lr",fld)[407]                     fldrow←fld,"[",(⍕i),";]"[408]                     :if ~mt MESS←desc Win∆FinRelative fldrow ("lr",fldrow) 0 errflag[409]                         warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂i)),⊂(,m2n MESS)[410]                     :endif[411]                 :endfor[412]             :else[413]                 :if ~mt MESS←desc Win∆FinRelative fld ("lr",fld~'[;]') 0 errflag[414]                     warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[415]                 :endif[416]             :endif[417]         :endfor[418] [419]         :if scenario[420]             :if ScenarioDesc≡'Primary Basis' ⋄ type Scenario_GlobList tab[421]             :elseif ∨/ScenRel,ScenAbs        ⋄ type Scenario_Globals tab[422]             :endif[423]         :endif[424] [425]     :case 'Decr' ⍝ Rate Tables[426]         :if pbflag ⋄ (pb 31 'Rate Tables') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[427]         0 0⍴GetDecrList 'List'[428]         ∆decrdesc←FormName ⎕wi '∆decrdesc' ⋄ ∆decrlist←FormName ⎕wi '∆decrlist'[429] [430]         :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆[431] ⍝⍝⍝            :if ~(2↑fld)≡'mf_'~caseDn SelSex  ⍝⍝⍝ Restrict Checking to required Fields[432]             :if 2=⍴⍴⍎fld[433]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/(↑⍴⍎fld),(↑⍴MATRIX ⍎"lr",fld)[434]                     fldrow←fld,"[",(⍕i),";]"[435]                     :if ~mt MESS←desc Win∆DecrCheck (⍎fldrow) (⍎"lr",fldrow) errflag[436]                         warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂i)),⊂(,m2n MESS)[437]                     :endif[438]                 :endfor[439]             :else[440]                 :if ~mt MESS←desc Win∆DecrCheck (⍎fld) (⍎"lr",fld~'[;]') errflag[441]                     warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[442]                 :endif[443]             :endif[444]         :endfor[445] [446]     :case 'FileL' ⍝ 2D Mortality Improvement Tables[447]         :if pbflag ⋄ (pb 31 'Mortality Improvement 2D Tables') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[448]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[449] ⍝⍝⍝            :if ~(2↑fld)≡'mf_'~caseDn SelSex ⍝⍝⍝ Restrict Checking to required Fields[450]             :if ~mt MESS←(desc errflag) CSVFILE∆CHECK MIcsvDir,⍎fld[451]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[452]             :endif[453]         :endfor[454] [455]     :case 'RelNum' ⍝ Numeric Constants[456]         :if pbflag ⋄ (pb 31 'Numeric Constants') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[457]         :for ∆ :in spin flds status descs valids ⋄ (fld stat desc valid)←∆[458]             :if 2=⍴⍴⍎fld[459]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/(↑⍴⍎fld),(↑⍴MATRIX ⍎"lr",fld)[460]                     fldrow←fld,"[",(⍕i),";]"[461]                     :if ~mt MESS←desc Win∆NumRelative fldrow ("lr",fldrow) valid errflag[462]                         warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂i)),⊂(,m2n MESS)[463]                     :endif[464]                 :endfor[465]             :else[466]                 :if ~mt MESS←desc Win∆NumRelative fld ("lr",fld~'[;]') valid errflag[467]                     warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[468]                 :endif[469]             :endif[470]         :endfor[471] [472]         :if scenario[473]             :if ScenarioDesc≡'Primary Basis' ⋄ type Scenario_GlobList tab[474]             :elseif ∨/ScenRel,ScenAbs        ⋄ type Scenario_Globals tab[475]             :endif[476]         :endif[477] [478]     :case 'RelDate' ⍝ Date Constants[479]         :if pbflag ⋄ (pb 31 'Date Constants') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[480]         :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆[481]             :if 2=⍴⍴⍎fld[482]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/(↑⍴⍎fld),(↑⍴MATRIX ⍎"lr",fld)[483]                     fldrow←fld,"[",(⍕i),";]"[484]                     :if ~mt MESS←desc Win∆DateRelative fldrow ("lr",fldrow) errflag[485]                         warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂i)),⊂(,m2n MESS)[486]                     :endif[487]                 :endfor[488]             :else[489]                 :if ~mt MESS←desc Win∆DateRelative fld ("lr",fld~'[;]') errflag[490]                     warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)[491]                 :endif[492]             :endif[493]         :endfor[494] [495]     :case 'EditBY' ⍝ Improvement Base Years[496]         :if pbflag ⋄ (pb 31 'Improvement Base Years') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[497]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆[498]             :if ∨/z←(↑⎕fi ⍎fld)>vDATE[3],aosenabled/pvDATE[3][499]                 warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' is after Valuation Date',aosenabled/' or Previous Valuation Date')[500]             :endif[501]         :endfor[502] [503]     :case 'ComboN' ⍝ Numeric Data Fields[504]         :if pbflag ⋄ (pb 31 'Numeric Data Fields') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[505] ⍝⍝⍝ FIXME - Reset variable for change in comment (TotNumDesc) if part of TotNumVars[506]         :if 0≠⎕nc 'FixNumStandNames'[507]             :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆[508]                 :if 2=⍴⍴⍎fld[509]                     :for i :in (stat[;1]∨~isValn)/⍳⌊/↑⍴⍎fld[510]                         :if    ~mt name←DLTB ⍎fld,"[",(⍕i),";]"[511]                         :andif ~(,1)≡⎕vi name[512]                         :andif mt (TotNumVars OVER SStoMAT VarNumStandNames,FixNumStandNames) ExactTLU StripText name[513]                             warnings←warnings OVER fld i ((errflag/'ERROR:  '),desc,' ',(⍕i),' parameter (',name,') is no longer defined in the Data Format')[514]                         :endif[515]                     :endfor[516]                 :else[517]                     :if    ~mt name←DLTB ⍎fld[518]                     :andif ~(,1)≡⎕vi name[519]                     :andif mt (TotNumVars OVER SStoMAT VarNumStandNames,FixNumStandNames) ExactTLU StripText name[520]                         warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' parameter (',name,') is no longer defined in the Data Format')[521]                     :endif[522]                 :endif[523]             :endfor[524]         :endif[525] [526]     :case 'ComboD' ⍝ Date Data Fields[527]         :if pbflag ⋄ (pb 31 'Date Data Fields') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[528] ⍝⍝⍝ FIXME - Reset variable for change in comment (DateDesc) if part of DateVars[529]         :if 0≠⎕nc 'DateStandNames'[530]             :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆[531]                 :if 2=⍴⍴⍎fld[532]                     :for i :in (stat[;1]∨~isValn)/⍳⌊/↑⍴⍎fld[533]                         :if    ~mt name←DLTB ⍎fld,"[",(⍕i),";]"[534]                         :andif ~(,1)≡⎕vi name[535]                         :andif mt (DateVars OVER SStoMAT DateStandNames,'⍺Valuation Date⍺Leaving Date⍺Normal Retirement Date') ExactTLU StripText name[536]                             warnings←warnings OVER fld i ((errflag/'ERROR:  '),desc,' ',(⍕i),' parameter (',name,') is no longer defined in the Data Format')[537]                         :endif[538]                     :endfor[539]                 :else[540]                     :if    ~mt name←DLTB ⍎fld[541]                     :andif ~(,1)≡⎕vi name[542]                     :andif mt (DateVars OVER SStoMAT DateStandNames,'⍺Valuation Date⍺Leaving Date⍺Normal Retirement Date') ExactTLU StripText name[543]                         warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' parameter (',name,') is no longer defined in the Data Format')[544]                     :endif[545]                 :endif[546]             :endfor[547]         :endif[548] [549]     :case 'ComboPPFNRA' ⍝ PPF NRAs[550]         :if pbflag ⋄ (pb 31 'PPF NRAs') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[551]         :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆[552]             :if 2=⍴⍴⍎fld[553]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/↑⍴⍎fld[554]                     :if    ~mt name←DLTB ⍎fld,"[",(⍕i),";]"[555]                     :andif mt (SStoMAT ⎕tcnl,⍎(2↑fld),'PPFNRAtab') ExactTLU name[556]                         warnings←warnings OVER fld i ((errflag/'ERROR:  '),desc,' ',(⍕i),' parameter (',name,') is no longer included in PPF NRAs')[557]                     :endif[558]                 :endfor[559]             :else[560]                 :if    ~mt name←DLTB ⍎fld[561]                 :andif mt (SStoMAT ⎕tcnl,⍎(2↑fld),'PPFNRAtab') ExactTLU name[562]                     warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' parameter (',name,') is no longer included in PPF NRAs')[563]                 :endif[564]             :endif[565]         :endfor[566] [567]     :endselect[568] :endfor[569] [570] :if isValn ⋄ :andif ppf ⋄ :andif ~ppferror[571]     :if pbflag ⋄ ((pb←pb+1) 31 'PPF Overrides') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[572]     GET∆PPFValues MembGroup[573] :endif[574] [575] :if pbflag ⋄ ((pb←pb+1) 31 'Cross Field Validations') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif[576] warnings←warnings append MembGroup VALIDATE∆Basis isValn errflag[577] [578] 0 0⍴⎕EX 'ALLDEPENS ALLEPREFS ALLPROPS ALLREFS ALLRULES FIELDS PROPERTIES ⍙CACHE'    ⍝ expunge effects of FlattenPropertyRules[579] [580] :if pbflag ⋄ :andif ∨/'WARNING:'⍷∊warnings at 'message'[581]     AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'No matching Members found'[582] :endif[583] :if pbflag ⋄ :andif ∨/∊('ERROR:' 'NOTE:')⍷¨⊂∊warnings at 'message'[584]     AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Failed Basis Validation'[585] :endif[586] [587] res←warnings relRules expungelist (⍎comment_var)    ∇
+    ∇ res←flags validateInput MembGroup;⎕io;type;tab;flds;status;fld;stat;∆;desc;descs;i;relRules;∆decrdesc;∆decrlist;masks;errs;MESS;z;OffsetSlice;FirstSlice;AltFirstSlice;IndFirstSlice;name;PIsenabled;expungelist;warnings;isActive;isDeferred;isPensioner;rows;exlist;col;pb;success;fldrow;valids;valid;ppferror;errflag;pbflag;sex;comment_var;defined;relflag
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Validate Parameter entries by Type
+[3]   ⍝ Revn: sjt17apr15
+[4]   ⎕io←1
+[5]   (errflag pbflag relflag)←3↑flags ⋄ warnings←MATRIX 'variable' 'row' 'message' ⋄ expungelist←0 0⍴''
+[6]   comment_var←'Comment_',MembGroup,'_Basis'
+[7]   
+[8]   :if pbflag ⋄ (1 7 'Reading Global Parameter Values') Win∆ProgressBar2 'FileUpdate' ⋄ :endif
+[9]   
+[10]  (isActive isDeferred isPensioner)←('Actives' 'Deferreds' 'Pensioners')∊⊂MembGroup
+[11]  PIsenabled←0                                                            ⍝ Basis editing relaxation of Relevance Rules
+[12]  :if MembGroup≡'Actives'
+[13]      OffsetSlice←(⍳↑⍴SliceDesc)=zwb SLICEUP
+[14]      FirstSlice←(↑⍴SliceDesc)↑1 ⋄ AltFirstSlice←(↑⍴AltSliceDesc)↑1 ⋄ IndFirstSlice←(↑⍴IndSliceDesc)↑1
+[15]  :endif
+[16]  
+[17]  relRules←⍙RULESdict ReadDictFile 'Valuation_Batch'
+[18]  relRules←relRules for 'Page' 'Scheme Parameters'
+[19]  relRules←relRules for ⍎¨relRules at 'Relevant'                          ⍝ Restrict Global Parm sets to those relevant
+[20]  relRules←relRules amend 'Row' (0.01×relRules at 'Row')                  ⍝ Reset Row Numbers
+[21]  relRules←relRules append ⍙RULESdict ReadDictFile MembGroup,'_Basis'     ⍝ Read Relevance Rules
+[22]  rows←⌈/relRules at 'Row'
+[23]  
+[24]  FixFinFields MembGroup,'_Basis'                                         ⍝ Fix for hyphens in Financials
+[25]  FixRelFields MembGroup                                                  ⍝ Swap label and value, if required
+[26]  S21Migration MembGroup                                                  ⍝ S21 "legacy" fixes
+[27]  CashMigration MembGroup                                                 ⍝ Buck Cash Upgrade
+[28]  MembGroup TVBasisUpdate 'All'                                           ⍝ TV Basis updated to Valuation Basis (where required)
+[29]  :if isActive ⋄ warnings←warnings OVER FixCOMPERFields ⋄ :endif          ⍝ Convert Cash Proportion to Cash Percentage
+[30]  
+[31]  pb←0 ⍝ Completed in Progress Bar
+[32]  
+[33]  ⍝ Must read Mortality etc parameters first to get variables in WS
+[34]  :for type :in 'ParmsP' 'ParmsY' 'ParmsK' 'ParmsO' 'ParmsA' 'ParmsE' 'ParmsB' 'ParmsN' 'ParmsD' 'ParmsW' 'ParmsX' 'ParmsR' 'ParmsT' 'ParmsL' 'ParmsS' 'ParmsM' 'ParmsMS' 'ParmsI' 'ParmsC' ⍝ Note: Order is important
+[35]      pb←pb+1
+[36]      :if 1≥↑⍴tab←relRules for 'Type' type ⋄ :continue ⋄ :endif
+[37]  
+[38]      :if scenario
+[39]          :if ScenarioDesc≡'Primary Basis' ⋄ type Scenario_GlobList tab
+[40]          :else                            ⋄ type Scenario_Globals tab
+[41]          :endif
+[42]      :endif
+[43]  
+[44]      flds←tab at 'Field' ⋄ descs←tab at 'Desc'
+[45]      :select type
+[46]      :case 'ParmsP' ⍝ Scheme PPF Details (can only be one)
+[47]          :if pbflag ⋄ (pb 31 'PPF Scheme Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[48]          ppferror←~↑(success MESS)←2↑ClientFile ReadModule 'PPF_Details' '' 'PPF Scheme' '' errflag 'PPF Scheme Parameters'
+[49]          :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[50]          :if success
+[51]              tab←⍙RULESdict ReadDictFile 'PPF_Details'
+[52]              tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows
+[53]              relRules←relRules append tab
+[54]              ⍎comment_var,'←',comment_var,' append Comment_PPF_Details'
+[55]              expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'
+[56]              FixFinFields 'PPF_Details'
+[57]          :endif
+[58]  
+[59]      :case 'ParmsY' ⍝ PPF Yields (can only be one)
+[60]          :if pbflag ⋄ (pb 31 'PPF Yields') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[61]          :if mt SVPPFFile ReadFile 'Index'
+[62]              ppferror←1
+[63]              warnings←warnings OVER 'PPF Yield Parameters' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'FileNotFound' SVPPFFile)
+[64]          :else
+[65]              ppferror←ppferror∨~↑(success MESS)←2↑SVPPFFile ReadModule 'PPF_Yields' '' 'PPF Yield' '' errflag 'PPF Yield Parameters'
+[66]              :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[67]              :if success
+[68]                  tab←⍙RULESdict ReadDictFile 'PPF_Yields'
+[69]                  tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows
+[70]                  relRules←relRules append tab
+[71]                  expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'
+[72]                  :if 1≠+/z←(⊂fld←DLTB ⍎↑flds)≡¨m2n YIELDDATE,' ',YIELDKey
+[73]                      ppferror←1
+[74]                      warnings←warnings OVER 'PPFDate' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'FileNotFound' ('Unique PPF Yields at ',fld))
+[75]                  :else
+[76]                      (YIELDDATE YIELDKey PPF55 PPF50 PPF5_155 PPF5_150 PPF155 PPF150 PPF10 PPF15 PPF20 adjPPFi adjPPFi20 adjPPFPENpiI adjPPFPENpiF adjPPFpiI adjPPFpiF PPFi PPFi20 PPFPENpiI PPFPENpiF PPFpiI PPFpiF)←,¨z⌿¨YIELDDATE YIELDKey PPF55 PPF50 PPF5_155 PPF5_150 PPF155 PPF150 PPF10 PPF15 PPF20 adjPPFi adjPPFi20 adjPPFPENpiI adjPPFPENpiF adjPPFpiI adjPPFpiF PPFi PPFi20 PPFPENpiI PPFPENpiF PPFpiI PPFpiF
+[77]                      :if ×rowsIn Comment_PPF_Yields ⋄ :andif ×z←rowsIn Comment_PPF_Yields←Comment_PPF_Yields for (Comment_PPF_Yields at 'row')=WHERE z
+[78]                          Comment_PPF_Yields←Comment_PPF_Yields amend 'row' (z/⊂⍬)
+[79]                          ⍎comment_var,'←',comment_var,' append Comment_PPF_Yields'
+[80]                      :endif
+[81]                      ⍎comment_var,'←',comment_var,' append Comment_PPF_Yields'
+[82]                      :if ~(,¨EXECUTE¨PPFi PPFi20 PPFPENpiI PPFPENpiF PPFpiI PPFpiF)≡,¨EXECUTE¨PPFDate ProcPPFYields PPF55 PPF50 PPF5_155 PPF5_150 PPF155 PPF150 PPF10 PPF15 PPF20 adjPPFi adjPPFi20 adjPPFPENpiI adjPPFPENpiF adjPPFpiI adjPPFpiF
+[83]                          ppferror←1
+[84]                          warnings←warnings OVER 'PPFDate' ⍬ ((errflag/'ERROR:  '),'Calculated Yields at ',fld,' have changed due to updated Valuations Assumptions Guidance.  Re-save PPF Yields Table before proceeding.')
+[85]                      :endif
+[86]                  :endif
+[87]              :endif
+[88]          :endif
+[89]  
+[90]      :case 'ParmsK' ⍝ PPF Caps (can only be one)
+[91]          :if pbflag ⋄ (pb 31 'PPF Cap Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[92]          :if mt SVPPFFile ReadFile 'Index'
+[93]              ppferror←1
+[94]              warnings←warnings OVER 'PPF Cap Parameters' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'FileNotFound' SVPPFFile)
+[95]          :else
+[96]              ppferror←ppferror∨~↑(success MESS)←2↑SVPPFFile ReadModule 'PPF_Caps' '' 'PPF Cap' '' errflag 'PPF Cap Parameters'
+[97]              :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[98]              :if success
+[99]                  tab←⍙RULESdict ReadDictFile 'PPF_Caps'
+[100]                 tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows
+[101]                 relRules←relRules append tab
+[102]                 expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'
+[103]                 :if 1≠+/z←(⊂fld←DLTB ⍎↑flds)≡¨m2n PPFCAPDATE
+[104]                     warnings←warnings OVER 'PPFCapDate' ⍬ ((errflag/'ERROR:  '),MESS∆TRANS 'FileNotFound' ('Unique PPF Caps at ',fld))
+[105]                 :else
+[106]                     (PPFCAPDATE PPFCAP PPFCAPADJ s143capinc PPFCASHFAC2 PPFCASHFAC)←,¨z⌿¨PPFCAPDATE PPFCAP PPFCAPADJ s143capinc PPFCASHFAC2 PPFCASHFAC
+[107]                     :if ×rowsIn Comment_PPF_Caps ⋄ :andif ×z←rowsIn Comment_PPF_Caps←Comment_PPF_Caps for (Comment_PPF_Caps at 'row')=WHERE z
+[108]                         Comment_PPF_Caps←Comment_PPF_Caps amend 'row' (z/⊂⍬)
+[109]                         ⍎comment_var,'←',comment_var,' append Comment_PPF_Caps'
+[110]                     :endif
+[111]                 :endif
+[112]                 lrPPFCAPADJ  ←DropText PPFCAPADJ   ⋄ PPFCAPADJ  ←StripText PPFCAPADJ
+[113]                 lrPPFCASHFAC ←DropText PPFCASHFAC  ⋄ PPFCASHFAC ←StripText PPFCASHFAC
+[114]                 lrPPFCASHFAC2←DropText PPFCASHFAC2 ⋄ PPFCASHFAC2←StripText PPFCASHFAC2
+[115]             :endif
+[116]         :endif
+[117] 
+[118]     :case 'ParmsO' ⍝ PPF Overrides (can only be one)
+[119]         :if pbflag ⋄ (pb 31 'PPF Mortality Override Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[120]         fld←⍎flds←↑flds
+[121]         ppferror←ppferror∨~↑(success MESS)←2↑SVPPFFile ReadModule 'PPF_Overrides' fld 'PPF Mortality Override' '' errflag flds
+[122]         :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[123]         :if success
+[124]             UpdatePPF_Overrides
+[125]             tab←⍙RULESdict ReadDictFile 'PPF_Overrides'
+[126]             tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows
+[127]             relRules←relRules append tab
+[128]             ⍎comment_var,'←',comment_var,' append Comment_PPF_Overrides'
+[129]             expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'
+[130]         :endif
+[131] 
+[132]     :case 'ParmsA' ⍝ AOS parameters (can only be one)
+[133]         :if pbflag ⋄ (pb 31 'Analysis of Surplus Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[134]         :if ~mt ↑(MESS rows)←ReadAOSParms rows ⋄ warnings←warnings OVER MESS ⋄ :endif
+[135] 
+[136]     :case 'ParmsE' ⍝ Expense paramaters (can only be one)
+[137]         :if pbflag ⋄ (pb 31 'Expense Rates') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[138]         (success MESS)←2↑ClientFile ReadModule 'Expense_Rates' '' 'Expense Rates' '' errflag 'Expense Rate Parameters'
+[139]         :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[140]         :if success
+[141]             tab←⍙RULESdict ReadDictFile 'Expense_Rates'
+[142]             tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows
+[143]             relRules←relRules append tab
+[144]             ⍎comment_var,'←',comment_var,' append Comment_Expense_Rates'
+[145]             expungelist←expungelist OVER 'Comment_Expense_Rates' OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'
+[146]             FixFinFields 'Expense_Rates'
+[147]         :endif
+[148] 
+[149]     :case 'ParmsB' ⍝ SA Minimum Benefits (can only be one)
+[150]         :if pbflag ⋄ (pb 31 'Minimum Benefit Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[151]         (success MESS)←2↑ClientFile ReadModule 'Minimum_Benefit' '' 'Minimum Benefit' '' errflag 'Minimum Benefit Parameters'
+[152]         :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[153]         :if success
+[154]             tab←⍙RULESdict ReadDictFile 'Minimum_Benefit'
+[155]             tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows
+[156]             relRules←relRules append tab
+[157]             expungelist←expungelist OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'
+[158]         :endif
+[159] 
+[160]     Question ????
+[161] ⍝⍝⍝     :if 1≠⍴,ClientFile ReadFile 'Minimum_Benefit'
+[162] ⍝⍝⍝ ⍝⍝⍝        :elseif res←'N'='YN' ASK (MESS∆TRANS 'ParmsNotFound' 'Minimum Benefit' ''),⎕tcnl,'Do you wish to continue?'
+[163] ⍝⍝⍝         :elseif 'N'='YN' ASK '"Minimum Benefit" Parameters not found',⎕tcnl,'Do you wish to continue?'
+[164] ⍝⍝⍝             res←1
+[165] ⍝⍝⍝         :endif
+[166] ⍝⍝⍝     :endif
+[167] 
+[168]     :case 'ParmsN' ⍝ New Entrant Parameters (can only be one)
+[169]         :if pbflag ⋄ (pb 31 'New Entrant Model Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[170]         fld←⍎flds←↑flds
+[171]         (success MESS)←2↑ClientFile ReadModule 'NE_Model' fld 'New Entrant Model' '' errflag flds
+[172]         :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[173]         :if success
+[174]             tab←⍙RULESdict ReadDictFile 'NE_Model'
+[175]             tab←tab amend 'Row' (rows←rows+tab at 'Row') ⋄ rows←⌈/rows
+[176]             relRules←relRules append tab
+[177]             ⍎comment_var,'←',comment_var,' append Comment_NE_Model'
+[178]             expungelist←expungelist OVER 'Comment_NE_Model' OVER 1 Uniquelist ⊃qtrim¨tab at 'Field'
+[179]         :endif
+[180] 
+[181]     :case 'ParmsD' ⍝ Decrement Rates Parameters
+[182]         :if pbflag ⋄ (pb 31 'Decrement Rates Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[183]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[184]             :if ~mt DLTB ⍎fld
+[185]                 (success MESS)←(desc errflag) GET∆DecRateGlobals fld
+[186]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[187]             :endif
+[188]         :endfor
+[189] 
+[190]     :case 'ParmsW' ⍝ Spouse Parameters
+[191]         :if pbflag ⋄ (pb 31 'Spouse Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[192]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[193]             :if ~mt DLTB ⍎fld
+[194]                 (success MESS)←(desc errflag) GET∆SpouseGlobals fld
+[195]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[196]             :endif
+[197]         :endfor
+[198] 
+[199]     :case 'ParmsX' ⍝ Retirement Age Parameters
+[200]         :if pbflag ⋄ (pb 31 'Retirement Age Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[201]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[202]             :if ~mt DLTB ⍎fld
+[203]                 (success MESS)←(desc errflag) GET∆RetAgeGlobals fld
+[204]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[205]             :endif
+[206]         :endfor
+[207] 
+[208]     :case 'ParmsR' ⍝ Retirement Factors Parameters
+[209]         :if pbflag ⋄ (pb 31 'Retirement Factors Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[210]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[211]             :if ~mt DLTB ⍎fld
+[212]                 (success MESS)←(desc errflag) GET∆RetFactGlobals fld
+[213]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[214]             :endif
+[215]         :endfor
+[216] 
+[217]     :case 'ParmsT' ⍝ Commutation Tables Parameters
+[218]         :if pbflag ⋄ (pb 31 'Commutation Tables Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[219]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[220]             :if ~mt DLTB ⍎fld
+[221]                 (success MESS)←(desc errflag) GET∆CommTabGlobals fld
+[222]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[223]             :endif
+[224]         :endfor
+[225] 
+[226]     :case 'ParmsL' ⍝ Retirement Lump Sum Parameters
+[227]         :if pbflag ⋄ (pb 31 'Retirement Cash Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[228]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[229]             :if ~mt DLTB ⍎fld
+[230]                 (success MESS)←(desc errflag) GET∆RetCashGlobals fld
+[231]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[232]             :endif
+[233]         :endfor
+[234] 
+[235]     :case 'ParmsS' ⍝ Spreading Basis Parameters
+[236]         :if pbflag ⋄ (pb 31 'Spreading Basis Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[237]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[238]             :if ~mt DLTB ⍎fld
+[239]                 (success MESS)←(desc errflag) GET∆SpDateGlobals fld
+[240]                 :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[241]             :endif
+[242]         :endfor
+[243] 
+[244]     :caselist 'ParmsM' 'ParmsMS' ⍝ Mortality Rate Parameters
+[245]         :if pbflag ⋄ (pb 31 'Mortality Rates') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[246]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[247]             :if isValn ⋄ :andif ppf ⋄ ⍎fld,'←"None"' ⋄ ⍎"lr",fld,'←"No Mortality"' ⋄ :endif
+[248]             :if ~mt MESS←desc Win∆MortRelative fld ("lr",fld) errflag
+[249]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[250]             :endif
+[251]             (success MESS tab exlist)←(desc errflag) GET∆MortGlobals fld
+[252]             :if ~mt MESS
+[253]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[254]             :endif
+[255]             :if success
+[256]                 :if type≡'ParmsM' ⋄ :andif 'DS'≡2↑,⍎fld,'TABXX'
+[257]                     warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' cannot be a Select Mortality Rate Table')
+[258]                 :else
+[259]                     tab←tab amend 'Page'  ((rowsIn tab)/(relRules for 'Field' fld) at 'Page' )
+[260]                     tab←tab amend 'Frame' ((rowsIn tab)/(relRules for 'Field' fld) at 'Frame')
+[261]                     :for col :in 'Editable' 'Relevant'
+[262]                         tab←tab amend col (('(',¨((relRules for 'Field' fld) at col),¨⊂') and '),¨tab at col)
+[263]                     :endfor
+[264]                     :for col :in 'Editable Refs' 'Editable EPs' 'Relevant Refs' 'Relevant EPs'
+[265]                         tab←tab amend col ((unique¨z) sel¨¨z←((relRules for 'Field' fld) at col),¨tab at col)
+[266]                     :endfor
+[267]                     tab←tab amend 'Row' ((↑(relRules for 'Field' fld) at 'Row')+0.01×⍳rowsIn tab)
+[268]                     relRules←relRules append tab
+[269]                 :endif
+[270]                 expungelist←expungelist OVER exlist
+[271]             :endif
+[272]         :endfor
+[273] 
+[274]     :case 'ParmsI' ⍝ Mortality Improvement Parameters
+[275]         :if pbflag ⋄ (pb 31 'Mortality Improvement Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[276]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[277]             :if isValn ⋄ :andif ppf ⋄ ⍎fld,'←"None"' ⋄ ⍎"lr",fld,'←"No Mortality Improvement"' ⋄ :endif
+[278]             :if ~mt MESS←desc Win∆MortImpRelative fld ("lr",fld) errflag
+[279]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[280]             :endif
+[281]             (success MESS tab exlist)←(desc (isActive isDeferred isPensioner)) GET∆ImpGlobals fld
+[282]             :if ~mt MESS
+[283]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[284]             :endif
+[285]             :if success
+[286]                 tab←tab amend 'Page'  ((rowsIn tab)/(relRules for 'Field' fld) at 'Page' )
+[287]                 :for col :in 'Editable' 'Relevant'
+[288]                     tab←tab amend col (('(',¨((relRules for 'Field' fld) at col),¨⊂') and '),¨tab at col)
+[289]                 :endfor
+[290]                 :for col :in 'Editable Refs' 'Editable EPs' 'Relevant Refs' 'Relevant EPs'
+[291]                     tab←tab amend col ((unique¨z) sel¨¨z←((relRules for 'Field' fld) at col),¨tab at col)
+[292]                 :endfor
+[293]                 tab←tab amend 'Row' ((↑(relRules for 'Field' fld) at 'Row')+0.01×⍳rowsIn tab)
+[294]                 relRules←relRules append tab
+[295]                 expungelist←expungelist OVER exlist
+[296]             :endif
+[297]         :endfor
+[298] 
+[299]     :case 'ParmsC' ⍝ Contributions Parameters
+[300]         :if pbflag ⋄ (pb 31 'Contributions Parameters') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[301]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[302]             (success MESS tab exlist)←(desc errflag) GET∆Contributions fld
+[303]             :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[304]             :if success
+[305]                 :for col :in 'Editable' 'Relevant'
+[306]                     tab←tab amend col (('(',¨((relRules for 'Field' fld) at col),¨⊂') and '),¨tab at col)
+[307]                 :endfor
+[308]                 :for col :in 'Editable Refs' 'Editable EPs' 'Relevant Refs' 'Relevant EPs'
+[309]                     tab←tab amend col ((unique¨z) sel¨¨z←((relRules for 'Field' fld) at col),¨tab at col)
+[310]                 :endfor
+[311]                 tab←tab amend 'Row' ((↑(relRules for 'Field' fld) at 'Row')+0.01×⍳rowsIn tab)
+[312]                 relRules←relRules append tab
+[313]                 expungelist←expungelist OVER exlist
+[314]             :endif
+[315]         :endfor
+[316] 
+[317]     :endselect
+[318] 
+[319] ⍝⍝⍝ Surcharge Parameters
+[320] ⍝⍝⍝ :if (⊂ValMeth)∊'SUR' 'NOT'
+[321] ⍝⍝⍝     res←res∨↑(success MESS)←2↑ClientFile ReadModule 'Surcharge_Parameter' Surcparms 'Surcharge' '' errflag fld
+[322] ⍝⍝⍝ :endif
+[323] :endfor
+[324] 
+[325] :if pbflag ⋄ (2 7 'Checking all Relevant Basis Parameter Values specified') Win∆ProgressBar2 'FileUpdate' ⋄ :endif
+[326] 
+[327] relRules←relRules sortedBy 'Row'
+[328] 1 FlattenPropertyRules relRules ⍝ sets globals
+[329] ⍙CACHE←flds push ⍎¨flds←(defined←2=⎕NC⊃qtrimo¨∆)/∆←relRules at 'Field' ⍝ ignore Alternatives
+[330] 
+[331] status←∣valsIn 1 applyRulesFor flds ⍝ relRules at 'Field' ⋄ flds←↑∆ ⋄ status←∣1↓∆
+[332] relRules←relRules amend 'status' (defined\,¨1↑[2]¨MATRIX¨status)
+[333] 
+[334] :if isValn ⋄ :andif bLANKING ⋄ flds blankIrrelevant∆¨ status ⋄ :endif
+[335] 
+[336] masks←^/¨status ⍝ PROPERTIES: Relevant and Required (Editable is only relevant when editing Bases)
+[337] errs← masks expand¨ (masks sel1¨ ⍎¨flds) ^.=¨ ' '
+[338] :if ∨/∨/¨errs
+[339]     z←∊1≠⍴¨errs
+[340]     errs←⊃spin (∨/¨errs)/¨((relRules at 'Field' 'Field') map flds) ((relRules at 'Field' 'Desc') map flds) (z×WHERE¨errs)
+[341] 
+[342]     MESS←1 0 1\(∊⍴¨errs[;3])⌿errs[;⍳2]
+[343]     z←(×∊errs[;3])sel¨∊errs[;3] ⋄ ((∊⍴¨z)/z)←↑¨(∊⍴¨z)/z ⍝ Must be scalars
+[344]     MESS[;2]←z
+[345]     MESS[;3]←(⊂(errflag/'ERROR:  '),'Missing parameter - '),¨MESS[;3],¨(∊⍴¨,¨z) sel¨(⊂' - '),¨⍕¨z
+[346] 
+[347]     warnings←warnings OVER MESS
+[348] :endif
+[349] 
+[350] :if pbflag ⋄ (3 7 'Validating Basis Parameter Values') Win∆ProgressBar2 'FileUpdate' ⋄ :endif
+[351] 
+[352] :for type :in 'FileI' 'ParmsF' 'Fin' 'Decr' 'FileL' 'RelNum' 'RelDate' 'EditBY' 'ComboN' 'ComboD' 'ComboPPFNRA' ⍝ Order of these is important!!
+[353]     pb←pb+1
+[354]     :if 0=rowsIn tab←relRules for 'Type' type ⋄ :continue ⋄ :endif
+[355] 
+[356]     ∆←1 applyRulesFor tab at 'Field' ⋄ (descs valids)←tab at 'Desc' 'Valid'
+[357]     flds←(z←∨/¨,¨relflag⌈¨1↑[2]¨MATRIX¨status←1↓∆)/↑∆ ⋄ descs←z/descs ⋄ valids←z/valids ⋄ status←z/status
+[358] 
+[359]     :select type
+[360]     :case 'FileI' ⍝ Update Relative Value from Scheme Details
+[361]         :if pbflag ⋄ (pb 31 'Data File') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[362]         GetAbsFileList "Fund"
+[363]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[364]             :if ~mt MESS←desc Win∆FileRelative fld ("lr",fld) errflag
+[365]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[366]             :endif
+[367]         :endfor
+[368] 
+[369]     :case 'ParmsF' ⍝ Format parameters (should only be one!) and create Data sub-file
+[370]         :if pbflag ⋄ (pb 31 'Data Format') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[371]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[372]             :if ~mt MESS←desc Win∆FormatRelative fld ("lr",fld) errflag
+[373]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[374]             :endif
+[375]             (success MESS)←2↑ClientFile ReadModule ((3↑MembGroup),'Format') (6↓1 HyphenSwap ⍎fld) (MembGroup,' Data Format') '' errflag fld
+[376]             :if ~mt MESS ⋄ warnings←warnings OVER MESS ⋄ :endif
+[377]         :endfor
+[378]         :if success
+[379]             (2⌊aosind+2×~vDATEind) CREATEDATADESC ⍎fld
+[380]             expungelist←expungelist OVER ⍙VALUESdict ReadDictFile ((3↑MembGroup),'Format') '' 'NAMES'
+[381]             UseSex←↑¯1↑UseSex,(uk=1)/'1' ⋄ Cat←1↓CatSels
+[382]             :if pbflag ⋄ (pb 31 'Create Data File') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[383]             :if isValn ⋄ CatSels←⊂'⍺',SelSex,Cat ⍝ Adjust for UK Bases
+[384]             :else      ⋄ CatSels←('⍺M' '⍺F'),¨⊂Cat
+[385]             :endif
+[386]             :for CatSels :in CatSels
+[387]                 (dattie MESS)←errflag CREATE∆FILES zwb FileSelections ⍝ Create Input/Output Files
+[388]                 :if ~mt MESS
+[389]                     sex←↑(CatSels[2]='MF')/'Male ' 'Female '
+[390]                     MESS←(⊂'/ERROR:  No matching /WARNING:  No matching ',sex) TEXTREPL¨,m2n MESS
+[391]                     warnings←warnings OVER ⊃spin ((↑⍴MESS)/¨(('FILES' 'fILENAME')[1+zwb FileSelections]) (⊂⍬)),⊂MESS
+[392]                 :elseif ~isValn
+[393]                     :if zwb FileSelections ⋄ NERASE dattie ⍝ Ersae sub-file
+[394]                     :else                  ⋄ ⎕nuntie dattie
+[395]                     :endif
+[396]                 :endif
+[397]             :endfor
+[398]             :if ~isValn ⋄ UseSex←'0' ⋄ CatSels←'⍺',Cat ⋄ FILES←'' ⋄ :endif
+[399]             expungelist←expungelist OVER 'dattie'
+[400]         :endif
+[401] 
+[402]     :case 'Fin' ⍝ Financial Assumptions
+[403]         :if pbflag ⋄ (pb 31 'Financial Assumptions') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[404]         :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆
+[405]             :if 2=⍴⍴⍎fld
+[406]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/(↑⍴⍎fld),(↑⍴MATRIX ⍎"lr",fld)
+[407]                     fldrow←fld,"[",(⍕i),";]"
+[408]                     :if ~mt MESS←desc Win∆FinRelative fldrow ("lr",fldrow) 0 errflag
+[409]                         warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂i)),⊂(,m2n MESS)
+[410]                     :endif
+[411]                 :endfor
+[412]             :else
+[413]                 :if ~mt MESS←desc Win∆FinRelative fld ("lr",fld~'[;]') 0 errflag
+[414]                     warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[415]                 :endif
+[416]             :endif
+[417]         :endfor
+[418] 
+[419]         :if scenario
+[420]             :if ScenarioDesc≡'Primary Basis' ⋄ type Scenario_GlobList tab
+[421]             :elseif ∨/ScenRel,ScenAbs        ⋄ type Scenario_Globals tab
+[422]             :endif
+[423]         :endif
+[424] 
+[425]     :case 'Decr' ⍝ Rate Tables
+[426]         :if pbflag ⋄ (pb 31 'Rate Tables') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[427]         0 0⍴GetDecrList 'List'
+[428]         ∆decrdesc←FormName ⎕wi '∆decrdesc' ⋄ ∆decrlist←FormName ⎕wi '∆decrlist'
+[429] 
+[430]         :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆
+[431] ⍝⍝⍝            :if ~(2↑fld)≡'mf_'~caseDn SelSex  ⍝⍝⍝ Restrict Checking to required Fields
+[432]             :if 2=⍴⍴⍎fld
+[433]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/(↑⍴⍎fld),(↑⍴MATRIX ⍎"lr",fld)
+[434]                     fldrow←fld,"[",(⍕i),";]"
+[435]                     :if ~mt MESS←desc Win∆DecrCheck (⍎fldrow) (⍎"lr",fldrow) errflag
+[436]                         warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂i)),⊂(,m2n MESS)
+[437]                     :endif
+[438]                 :endfor
+[439]             :else
+[440]                 :if ~mt MESS←desc Win∆DecrCheck (⍎fld) (⍎"lr",fld~'[;]') errflag
+[441]                     warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[442]                 :endif
+[443]             :endif
+[444]         :endfor
+[445] 
+[446]     :case 'FileL' ⍝ 2D Mortality Improvement Tables
+[447]         :if pbflag ⋄ (pb 31 'Mortality Improvement 2D Tables') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[448]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[449] ⍝⍝⍝            :if ~(2↑fld)≡'mf_'~caseDn SelSex ⍝⍝⍝ Restrict Checking to required Fields
+[450]             :if ~mt MESS←(desc errflag) CSVFILE∆CHECK MIcsvDir,⍎fld
+[451]                 warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[452]             :endif
+[453]         :endfor
+[454] 
+[455]     :case 'RelNum' ⍝ Numeric Constants
+[456]         :if pbflag ⋄ (pb 31 'Numeric Constants') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[457]         :for ∆ :in spin flds status descs valids ⋄ (fld stat desc valid)←∆
+[458]             :if 2=⍴⍴⍎fld
+[459]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/(↑⍴⍎fld),(↑⍴MATRIX ⍎"lr",fld)
+[460]                     fldrow←fld,"[",(⍕i),";]"
+[461]                     :if ~mt MESS←desc Win∆NumRelative fldrow ("lr",fldrow) valid errflag
+[462]                         warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂i)),⊂(,m2n MESS)
+[463]                     :endif
+[464]                 :endfor
+[465]             :else
+[466]                 :if ~mt MESS←desc Win∆NumRelative fld ("lr",fld~'[;]') valid errflag
+[467]                     warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[468]                 :endif
+[469]             :endif
+[470]         :endfor
+[471] 
+[472]         :if scenario
+[473]             :if ScenarioDesc≡'Primary Basis' ⋄ type Scenario_GlobList tab
+[474]             :elseif ∨/ScenRel,ScenAbs        ⋄ type Scenario_Globals tab
+[475]             :endif
+[476]         :endif
+[477] 
+[478]     :case 'RelDate' ⍝ Date Constants
+[479]         :if pbflag ⋄ (pb 31 'Date Constants') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[480]         :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆
+[481]             :if 2=⍴⍴⍎fld
+[482]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/(↑⍴⍎fld),(↑⍴MATRIX ⍎"lr",fld)
+[483]                     fldrow←fld,"[",(⍕i),";]"
+[484]                     :if ~mt MESS←desc Win∆DateRelative fldrow ("lr",fldrow) errflag
+[485]                         warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂i)),⊂(,m2n MESS)
+[486]                     :endif
+[487]                 :endfor
+[488]             :else
+[489]                 :if ~mt MESS←desc Win∆DateRelative fld ("lr",fld~'[;]') errflag
+[490]                     warnings←warnings OVER ⊃spin ((↑⍴MATRIX MESS)/¨(⊂fld) (⊂⍬)),⊂(,m2n MESS)
+[491]                 :endif
+[492]             :endif
+[493]         :endfor
+[494] 
+[495]     :case 'EditBY' ⍝ Improvement Base Years
+[496]         :if pbflag ⋄ (pb 31 'Improvement Base Years') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[497]         :for ∆ :in spin flds descs ⋄ (fld desc)←∆
+[498]             :if ∨/z←(↑⎕fi ⍎fld)>vDATE[3],aosenabled/pvDATE[3]
+[499]                 warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' is after Valuation Date',aosenabled/' or Previous Valuation Date')
+[500]             :endif
+[501]         :endfor
+[502] 
+[503]     :case 'ComboN' ⍝ Numeric Data Fields
+[504]         :if pbflag ⋄ (pb 31 'Numeric Data Fields') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[505] ⍝⍝⍝ FIXME - Reset variable for change in comment (TotNumDesc) if part of TotNumVars
+[506]         :if 0≠⎕nc 'FixNumStandNames'
+[507]             :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆
+[508]                 :if 2=⍴⍴⍎fld
+[509]                     :for i :in (stat[;1]∨~isValn)/⍳⌊/↑⍴⍎fld
+[510]                         :if    ~mt name←DLTB ⍎fld,"[",(⍕i),";]"
+[511]                         :andif ~(,1)≡⎕vi name
+[512]                         :andif mt (TotNumVars OVER SStoMAT VarNumStandNames,FixNumStandNames) ExactTLU StripText name
+[513]                             warnings←warnings OVER fld i ((errflag/'ERROR:  '),desc,' ',(⍕i),' parameter (',name,') is no longer defined in the Data Format')
+[514]                         :endif
+[515]                     :endfor
+[516]                 :else
+[517]                     :if    ~mt name←DLTB ⍎fld
+[518]                     :andif ~(,1)≡⎕vi name
+[519]                     :andif mt (TotNumVars OVER SStoMAT VarNumStandNames,FixNumStandNames) ExactTLU StripText name
+[520]                         warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' parameter (',name,') is no longer defined in the Data Format')
+[521]                     :endif
+[522]                 :endif
+[523]             :endfor
+[524]         :endif
+[525] 
+[526]     :case 'ComboD' ⍝ Date Data Fields
+[527]         :if pbflag ⋄ (pb 31 'Date Data Fields') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[528] ⍝⍝⍝ FIXME - Reset variable for change in comment (DateDesc) if part of DateVars
+[529]         :if 0≠⎕nc 'DateStandNames'
+[530]             :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆
+[531]                 :if 2=⍴⍴⍎fld
+[532]                     :for i :in (stat[;1]∨~isValn)/⍳⌊/↑⍴⍎fld
+[533]                         :if    ~mt name←DLTB ⍎fld,"[",(⍕i),";]"
+[534]                         :andif ~(,1)≡⎕vi name
+[535]                         :andif mt (DateVars OVER SStoMAT DateStandNames,'⍺Valuation Date⍺Leaving Date⍺Normal Retirement Date') ExactTLU StripText name
+[536]                             warnings←warnings OVER fld i ((errflag/'ERROR:  '),desc,' ',(⍕i),' parameter (',name,') is no longer defined in the Data Format')
+[537]                         :endif
+[538]                     :endfor
+[539]                 :else
+[540]                     :if    ~mt name←DLTB ⍎fld
+[541]                     :andif ~(,1)≡⎕vi name
+[542]                     :andif mt (DateVars OVER SStoMAT DateStandNames,'⍺Valuation Date⍺Leaving Date⍺Normal Retirement Date') ExactTLU StripText name
+[543]                         warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' parameter (',name,') is no longer defined in the Data Format')
+[544]                     :endif
+[545]                 :endif
+[546]             :endfor
+[547]         :endif
+[548] 
+[549]     :case 'ComboPPFNRA' ⍝ PPF NRAs
+[550]         :if pbflag ⋄ (pb 31 'PPF NRAs') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[551]         :for ∆ :in spin flds status descs ⋄ (fld stat desc)←∆
+[552]             :if 2=⍴⍴⍎fld
+[553]                 :for i :in (stat[;1]∨~isValn)/⍳⌊/↑⍴⍎fld
+[554]                     :if    ~mt name←DLTB ⍎fld,"[",(⍕i),";]"
+[555]                     :andif mt (SStoMAT ⎕tcnl,⍎(2↑fld),'PPFNRAtab') ExactTLU name
+[556]                         warnings←warnings OVER fld i ((errflag/'ERROR:  '),desc,' ',(⍕i),' parameter (',name,') is no longer included in PPF NRAs')
+[557]                     :endif
+[558]                 :endfor
+[559]             :else
+[560]                 :if    ~mt name←DLTB ⍎fld
+[561]                 :andif mt (SStoMAT ⎕tcnl,⍎(2↑fld),'PPFNRAtab') ExactTLU name
+[562]                     warnings←warnings OVER fld ⍬ ((errflag/'ERROR:  '),desc,' parameter (',name,') is no longer included in PPF NRAs')
+[563]                 :endif
+[564]             :endif
+[565]         :endfor
+[566] 
+[567]     :endselect
+[568] :endfor
+[569] 
+[570] :if isValn ⋄ :andif ppf ⋄ :andif ~ppferror
+[571]     :if pbflag ⋄ ((pb←pb+1) 31 'PPF Overrides') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[572]     GET∆PPFValues MembGroup
+[573] :endif
+[574] 
+[575] :if pbflag ⋄ ((pb←pb+1) 31 'Cross Field Validations') Win∆ProgressBar2 'MemberUpdate' ⋄ :endif
+[576] warnings←warnings append MembGroup VALIDATE∆Basis isValn errflag
+[577] 
+[578] 0 0⍴⎕EX 'ALLDEPENS ALLEPREFS ALLPROPS ALLREFS ALLRULES FIELDS PROPERTIES ⍙CACHE'    ⍝ expunge effects of FlattenPropertyRules
+[579] 
+[580] :if pbflag ⋄ :andif ∨/'WARNING:'⍷∊warnings at 'message'
+[581]     AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'No matching Members found'
+[582] :endif
+[583] :if pbflag ⋄ :andif ∨/∊('ERROR:' 'NOTE:')⍷¨⊂∊warnings at 'message'
+[584]     AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Failed Basis Validation'
+[585] :endif
+[586] 
+[587] res←warnings relRules expungelist (⍎comment_var)
+    ∇

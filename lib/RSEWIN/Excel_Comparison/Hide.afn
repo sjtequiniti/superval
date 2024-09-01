@@ -1,1 +1,24 @@
-    ∇ obj Hide arg;i;rows;cols;hidden;N[1]   ⍝ RSEWIN.sf#2[2]   ⍝ Use this to hide (arg=1) or unhide (arg=0) rows and columns in each worksheet.[3]   ⍝ Uses the Active Workbook.[4]   ⍝ The ∆udp variable is called ∆hidden[5]   [6]   ⍝ Columns:   [1] Sheet #[7]   ⍝            [2] AAN Hidden Rows[8]   ⍝            [3] Hidden Cols[9]   [10]  N←↑⍴hidden←obj ⎕wi '∆hidden' ⍝ N is the number of sheets[11]  [12]  'xl' ⎕wi 'ScreenUpdating' 0 ⍝ Turn off[13]  [14]  :for i :in ⍳N[15]      'xl' ⎕wi '.Worksheets().Activate' i[16]      (rows cols)←0≠⍴¨hidden[i;2 3] ⍝ These are currently booleans.[17]      :if rows ⋄ arg XL_HideRows ⍎⊃hidden[i;2] ⋄ :endif[18]      :if cols ⋄ arg XL_HideCols ⍎⊃hidden[i;3] ⋄ :endif[19]  :endfor[20]  [21]  'xl' ⎕wi '.Worksheets().Activate' 1 ⍝ Put on first sheet[22]  'xl' ⎕wi 'ScreenUpdating' 1 ⍝ Restore    ∇
+    ∇ obj Hide arg;i;rows;cols;hidden;N
+[1]   ⍝ RSEWIN.sf#2
+[2]   ⍝ Use this to hide (arg=1) or unhide (arg=0) rows and columns in each worksheet.
+[3]   ⍝ Uses the Active Workbook.
+[4]   ⍝ The ∆udp variable is called ∆hidden
+[5]   
+[6]   ⍝ Columns:   [1] Sheet #
+[7]   ⍝            [2] AAN Hidden Rows
+[8]   ⍝            [3] Hidden Cols
+[9]   
+[10]  N←↑⍴hidden←obj ⎕wi '∆hidden' ⍝ N is the number of sheets
+[11]  
+[12]  'xl' ⎕wi 'ScreenUpdating' 0 ⍝ Turn off
+[13]  
+[14]  :for i :in ⍳N
+[15]      'xl' ⎕wi '.Worksheets().Activate' i
+[16]      (rows cols)←0≠⍴¨hidden[i;2 3] ⍝ These are currently booleans.
+[17]      :if rows ⋄ arg XL_HideRows ⍎⊃hidden[i;2] ⋄ :endif
+[18]      :if cols ⋄ arg XL_HideCols ⍎⊃hidden[i;3] ⋄ :endif
+[19]  :endfor
+[20]  
+[21]  'xl' ⎕wi '.Worksheets().Activate' 1 ⍝ Put on first sheet
+[22]  'xl' ⎕wi 'ScreenUpdating' 1 ⍝ Restore
+    ∇

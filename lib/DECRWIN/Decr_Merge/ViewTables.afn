@@ -1,1 +1,28 @@
-    ∇ ViewTables;ChangeType;OldDesc;NewDesc;OldValues;NewValues;TimeStamp;parent;value;list;code[1]   ⍝ DECRWIN.sf#23[2]   ⍝ Run the Rate Tables Display Module[3]   [4]   :if 0≠⍴⎕warg ⍝ Not View Button[5]       :if 1≠⍴⎕wi 'value'                 ⍝ Only 1 Selected[6]       :orif 0=⎕warg[1]                   ⍝ Nothing Selected[7]       :orif (⎕wevent≡'Click')^2≠⎕warg[7] ⍝ Must be Right Click or Double Click[8]           :return[9]       :endif[10]  :endif[11]  [12]  parent←'fmDecrMerge.fNotOK.'[13]  [14]  :if ~0∊⍴value←(parent,'lvFile2') ⎕wi 'value'[15]      code←↑list[↑(list←(parent,'lvFile2') ⎕wi 'list')[;1]⍳value;4][16]  :else[17]      :return ⍝ Nothing Selected[18]  :endif[19]  [20]  ⍝ code has only a single match in each table[21]  (OldDesc OldValues)←↑¨((1⊃unmatched) for '∆_Name' code) at '∆_Description' 'value'[22]  (NewDesc NewValues)←↑¨((2⊃unmatched) for '∆_Name' code) at '∆_Description' 'value'[23]  ChangeType←'Compare'[24]  ⍝⍝ TimeStamp←??? ⍝⍝⍝ Used for Printing in View[25]  [26]  'DECRWIN' CallModule 'Display_Audit'    ∇
+    ∇ ViewTables;ChangeType;OldDesc;NewDesc;OldValues;NewValues;TimeStamp;parent;value;list;code
+[1]   ⍝ DECRWIN.sf#23
+[2]   ⍝ Run the Rate Tables Display Module
+[3]   
+[4]   :if 0≠⍴⎕warg ⍝ Not View Button
+[5]       :if 1≠⍴⎕wi 'value'                 ⍝ Only 1 Selected
+[6]       :orif 0=⎕warg[1]                   ⍝ Nothing Selected
+[7]       :orif (⎕wevent≡'Click')^2≠⎕warg[7] ⍝ Must be Right Click or Double Click
+[8]           :return
+[9]       :endif
+[10]  :endif
+[11]  
+[12]  parent←'fmDecrMerge.fNotOK.'
+[13]  
+[14]  :if ~0∊⍴value←(parent,'lvFile2') ⎕wi 'value'
+[15]      code←↑list[↑(list←(parent,'lvFile2') ⎕wi 'list')[;1]⍳value;4]
+[16]  :else
+[17]      :return ⍝ Nothing Selected
+[18]  :endif
+[19]  
+[20]  ⍝ code has only a single match in each table
+[21]  (OldDesc OldValues)←↑¨((1⊃unmatched) for '∆_Name' code) at '∆_Description' 'value'
+[22]  (NewDesc NewValues)←↑¨((2⊃unmatched) for '∆_Name' code) at '∆_Description' 'value'
+[23]  ChangeType←'Compare'
+[24]  ⍝⍝ TimeStamp←??? ⍝⍝⍝ Used for Printing in View
+[25]  
+[26]  'DECRWIN' CallModule 'Display_Audit'
+    ∇

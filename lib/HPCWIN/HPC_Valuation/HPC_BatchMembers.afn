@@ -1,1 +1,28 @@
-    ∇ MembTable←HPC_BatchMembers arg;maxsubproc;minmem;maxmem;∆;MembGroup;fILENAME;CatSels;row;meth;file;desc;sex;members;cat;File;splits[1]   ⍝ HPCWIN.sf#5[2]   ⍝ Create a table of Member numbers in each run to enable optimisation[3]   [4]   (maxsubproc minmem maxmem)←arg[5]   [6]   MembTable←MATRIX 'row' 'membgroup' 'members'[7]   [8]   :for ∆ :in spin (⊂1+⍳rowsIn BatchedNest),BatchedNest at 'Valn Method' 'Basis File' 'Basis Description' 'Sex' ⋄ (row meth file desc sex)←∆[9]       MembGroup←(('PEN' 'PPP' 'DEF' 'PPD')⍳⊂meth)⊃2 2 1/'Pensioners' 'Deferreds' 'Actives'[10]      :if members←~mt (InputDir,file) ReadFile (MembGroup,'_Basis') desc (⊃'CatSels' 'fILENAME')[11]          cat←CreateCat 1↓CatSels ⍝ Fix Lower Case Category[12]          File←UPPERCASE DLTB (↑sex),cat,fILENAME[13]          members←INIString 'Members' ('%',File) 0 (InputDir,'svscheme.ini')[14]      :endif[15]      MembTable←MembTable OVER row MembGroup members[16]  :endfor[17]  members←MembTable at 'members'[18]  [19]  :if hpcHTTP ⍝ Number of Members Weights of 1 (actives), 1.5 (deferreds) and 2 (pensioners)[20]      minmem←minmem×(1 1.5 2)[∆←'ADP'⍳↑¨MembTable at 'membgroup'][21]      maxmem←maxmem×(1 1.5 2)[∆][22]      splits←(⌈members÷maxmem)⌈maxsubproc⌊1⌈⌈members÷minmem[23]  :else[24]      splits←(rowsIn MembTable)⍴1[25]  :endif[26]  MembTable←MembTable amend 'splits' splits    ∇
+    ∇ MembTable←HPC_BatchMembers arg;maxsubproc;minmem;maxmem;∆;MembGroup;fILENAME;CatSels;row;meth;file;desc;sex;members;cat;File;splits
+[1]   ⍝ HPCWIN.sf#5
+[2]   ⍝ Create a table of Member numbers in each run to enable optimisation
+[3]   
+[4]   (maxsubproc minmem maxmem)←arg
+[5]   
+[6]   MembTable←MATRIX 'row' 'membgroup' 'members'
+[7]   
+[8]   :for ∆ :in spin (⊂1+⍳rowsIn BatchedNest),BatchedNest at 'Valn Method' 'Basis File' 'Basis Description' 'Sex' ⋄ (row meth file desc sex)←∆
+[9]       MembGroup←(('PEN' 'PPP' 'DEF' 'PPD')⍳⊂meth)⊃2 2 1/'Pensioners' 'Deferreds' 'Actives'
+[10]      :if members←~mt (InputDir,file) ReadFile (MembGroup,'_Basis') desc (⊃'CatSels' 'fILENAME')
+[11]          cat←CreateCat 1↓CatSels ⍝ Fix Lower Case Category
+[12]          File←UPPERCASE DLTB (↑sex),cat,fILENAME
+[13]          members←INIString 'Members' ('%',File) 0 (InputDir,'svscheme.ini')
+[14]      :endif
+[15]      MembTable←MembTable OVER row MembGroup members
+[16]  :endfor
+[17]  members←MembTable at 'members'
+[18]  
+[19]  :if hpcHTTP ⍝ Number of Members Weights of 1 (actives), 1.5 (deferreds) and 2 (pensioners)
+[20]      minmem←minmem×(1 1.5 2)[∆←'ADP'⍳↑¨MembTable at 'membgroup']
+[21]      maxmem←maxmem×(1 1.5 2)[∆]
+[22]      splits←(⌈members÷maxmem)⌈maxsubproc⌊1⌈⌈members÷minmem
+[23]  :else
+[24]      splits←(rowsIn MembTable)⍴1
+[25]  :endif
+[26]  MembTable←MembTable amend 'splits' splits
+    ∇

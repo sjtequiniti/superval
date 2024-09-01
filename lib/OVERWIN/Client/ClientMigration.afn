@@ -1,1 +1,85 @@
-    ∇ ClientMigration;Error;File;tieno;data;SelectedDir;parent;PickList[1]   ⍝ OVERWIN.sf#10[2]   ⍝ Run the Migration of "Client" details from the DOS system[3]   [4]   Win∆AssignVars ControlName ⍝ Trap current field entries[5]   [6]   :if uk=2 ⋄ :andif mt ClientFile ⋄ :andif ~0∊⍴Error←Create_ClientFile 1[7]       MDISPLAY Error ⋄ :return[8]   :endif[9]   FormName ⎕wi '∆decrfile' (Win∆Parent DecrFile)[10]  [11]  Top:[12]  :if ''≡SelectedDir←UPPERCASE 'Select Migration Folder' GetDir95 MigFolder[13]      :return[14]  :endif[15]  :if InputDir≡SelectedDir←FullFolder SelectedDir[16]      MDISPLAY 'NotInputDir' 'Migration' ⋄ →Top[17]  :endif[18]  :if ~FileExist SelectedDir,'CLIENT.SF' ⋄ :andif ~FileExist SelectedDir,'DEFAULT.SF'[19]      MDISPLAY 'No DOS SuperVal Files in ',¯1↓SelectedDir ⋄ →Top[20]  :endif[21]  MigFolder←SelectedDir[22]  [23]  ⍝ Get Client Details from CLIENT.SF[24]  :if 0=File FSTIE tieno←TieNumber File←MigFolder,'CLIENT'[25]      data←SStoMAT ⎕fread tieno,1 ⋄ ⎕funtie tieno[26]      cLIENT←ClientName←DLTB data[1;][27]      vDATE←'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP data[2;⍳8][28]      :if uk=2[29]          pvDATE←'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP data[3;⍳8][30]          Actsfile←DLTMB data[4;] ⋄ Pensfile←DLTMB data[5;][31]          Defsfile←DLTMB data[6;][32]      :endif[33]  :endif[34]  [35]  ⍝ Get Scheme Constants from DEFAULT.SF[36]  :if 0=File FSTIE tieno←TieNumber File←MigFolder,'DEFAULT'[37]  [38]      :if uk=0 ⍝ Australian version[39]      :andif 8≤(⎕fsize tieno)[2] ⍝ Check Fund Constants exists[40]      :andif 40=¯1↑⍴data←⎕fread tieno,7 ⍝ Read Fund Constants[41]      :andif 0≠1↑⍴data[42]          Migrate_Constant data[43]      :endif[44]  [45]      :if uk=2[46]      :andif 41≤(⎕fsize tieno)[2] ⍝ Check it is Latest DEFAULT file[47]      :andif 0≠1↑⍴data←SStoMAT ⎕fread tieno,19 ⍝ Read Fund Constants[48]          Migrate_Constant data[49]      :endif[50]      ⎕funtie tieno[51]  :endif[52]  [53]  Assign_Inputs 1 ⍝ Put Client Details onto form[54]  [55]  :if uk=2[56]  :andif accesslevel≥genAccess[2][57]      RunMigration 'Non-Basis'[58]  [59]      parent←'fmClient.sClient.pgData.fFiles.'[60]      (parent,'cbFormatD') ⎕wi 'list' (PickList←' ' OVER 1 0↓Formats 'D')[61]      (parent,'cbFormatD') ⎕wi 'extent' (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)[62]      (parent,'cbFormatP') ⎕wi 'list' (PickList←' ' OVER 1 0↓Formats 'P')[63]      (parent,'cbFormatP') ⎕wi 'extent' (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)[64]  [65]      RunMigration 'Basis'[66]  [67]      (parent,'cbFormatA') ⎕wi 'list' (PickList←' ' OVER 1 0↓Formats 'A')[68]      (parent,'cbFormatA') ⎕wi 'extent' (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)[69]  [70]      ⍝ Disable those with no options[71]      :for field :in 'cbFormatA' 'cbFormatD' 'cbFormatP'[72]          (parent field) Win∆SetRelated 'enabled' (~^/' '=,(parent,field) ⎕wi 'list')[73]      :endfor[74]  [75]      parent←'fmClient.sClient.pgFiles.fFiles.'[76]      (parent,'cbbasisFile') ⎕wi 'list' (PickList←1 0↓'BasisFile' GetParmFiles 1)[77]      (parent,'cbbasisFile') ⎕wi 'extent' (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize PickList)[78]      (parent,'cbbasisFile') ⎕wi 'enabled' (1<1↑⍴PickList)[79]      Assign_Inputs 1 ⍝ Put Client Details onto form[80]      migrated←'1'[81]  [82]  :endif[83]  'fmClient.bnClientMigrate' ⎕wi 'enabled' 0    ∇
+    ∇ ClientMigration;Error;File;tieno;data;SelectedDir;parent;PickList
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ Run the Migration of "Client" details from the DOS system
+[3]   
+[4]   Win∆AssignVars ControlName ⍝ Trap current field entries
+[5]   
+[6]   :if uk=2 ⋄ :andif mt ClientFile ⋄ :andif ~0∊⍴Error←Create_ClientFile 1
+[7]       MDISPLAY Error ⋄ :return
+[8]   :endif
+[9]   FormName ⎕wi '∆decrfile' (Win∆Parent DecrFile)
+[10]  
+[11]  Top:
+[12]  :if ''≡SelectedDir←UPPERCASE 'Select Migration Folder' GetDir95 MigFolder
+[13]      :return
+[14]  :endif
+[15]  :if InputDir≡SelectedDir←FullFolder SelectedDir
+[16]      MDISPLAY 'NotInputDir' 'Migration' ⋄ →Top
+[17]  :endif
+[18]  :if ~FileExist SelectedDir,'CLIENT.SF' ⋄ :andif ~FileExist SelectedDir,'DEFAULT.SF'
+[19]      MDISPLAY 'No DOS SuperVal Files in ',¯1↓SelectedDir ⋄ →Top
+[20]  :endif
+[21]  MigFolder←SelectedDir
+[22]  
+[23]  ⍝ Get Client Details from CLIENT.SF
+[24]  :if 0=File FSTIE tieno←TieNumber File←MigFolder,'CLIENT'
+[25]      data←SStoMAT ⎕fread tieno,1 ⋄ ⎕funtie tieno
+[26]      cLIENT←ClientName←DLTB data[1;]
+[27]      vDATE←'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP data[2;⍳8]
+[28]      :if uk=2
+[29]          pvDATE←'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP data[3;⍳8]
+[30]          Actsfile←DLTMB data[4;] ⋄ Pensfile←DLTMB data[5;]
+[31]          Defsfile←DLTMB data[6;]
+[32]      :endif
+[33]  :endif
+[34]  
+[35]  ⍝ Get Scheme Constants from DEFAULT.SF
+[36]  :if 0=File FSTIE tieno←TieNumber File←MigFolder,'DEFAULT'
+[37]  
+[38]      :if uk=0 ⍝ Australian version
+[39]      :andif 8≤(⎕fsize tieno)[2] ⍝ Check Fund Constants exists
+[40]      :andif 40=¯1↑⍴data←⎕fread tieno,7 ⍝ Read Fund Constants
+[41]      :andif 0≠1↑⍴data
+[42]          Migrate_Constant data
+[43]      :endif
+[44]  
+[45]      :if uk=2
+[46]      :andif 41≤(⎕fsize tieno)[2] ⍝ Check it is Latest DEFAULT file
+[47]      :andif 0≠1↑⍴data←SStoMAT ⎕fread tieno,19 ⍝ Read Fund Constants
+[48]          Migrate_Constant data
+[49]      :endif
+[50]      ⎕funtie tieno
+[51]  :endif
+[52]  
+[53]  Assign_Inputs 1 ⍝ Put Client Details onto form
+[54]  
+[55]  :if uk=2
+[56]  :andif accesslevel≥genAccess[2]
+[57]      RunMigration 'Non-Basis'
+[58]  
+[59]      parent←'fmClient.sClient.pgData.fFiles.'
+[60]      (parent,'cbFormatD') ⎕wi 'list' (PickList←' ' OVER 1 0↓Formats 'D')
+[61]      (parent,'cbFormatD') ⎕wi 'extent' (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)
+[62]      (parent,'cbFormatP') ⎕wi 'list' (PickList←' ' OVER 1 0↓Formats 'P')
+[63]      (parent,'cbFormatP') ⎕wi 'extent' (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)
+[64]  
+[65]      RunMigration 'Basis'
+[66]  
+[67]      (parent,'cbFormatA') ⎕wi 'list' (PickList←' ' OVER 1 0↓Formats 'A')
+[68]      (parent,'cbFormatA') ⎕wi 'extent' (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)
+[69]  
+[70]      ⍝ Disable those with no options
+[71]      :for field :in 'cbFormatA' 'cbFormatD' 'cbFormatP'
+[72]          (parent field) Win∆SetRelated 'enabled' (~^/' '=,(parent,field) ⎕wi 'list')
+[73]      :endfor
+[74]  
+[75]      parent←'fmClient.sClient.pgFiles.fFiles.'
+[76]      (parent,'cbbasisFile') ⎕wi 'list' (PickList←1 0↓'BasisFile' GetParmFiles 1)
+[77]      (parent,'cbbasisFile') ⎕wi 'extent' (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize PickList)
+[78]      (parent,'cbbasisFile') ⎕wi 'enabled' (1<1↑⍴PickList)
+[79]      Assign_Inputs 1 ⍝ Put Client Details onto form
+[80]      migrated←'1'
+[81]  
+[82]  :endif
+[83]  'fmClient.bnClientMigrate' ⎕wi 'enabled' 0
+    ∇

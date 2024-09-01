@@ -1,1 +1,68 @@
-    ∇ res←field Help_Editing parm;parent;seln;∆;htmlFile[1]   ⍝ HELPEDIT.sf#2[2]   ⍝ Function to allow user control on Help Editing[3]   [4]   parent←'fmHelpEdit.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       ⍝ Create and store list of all Help and Parameter fields[10]      CreateHelpLists[11]  [12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[13]      (parent,'lsHelpField') ⎕wi 'list' (1 0↓GetHelpFields '')[14]      (parent,'lsParmField') ⎕wi 'list' (1 0↓GetParmFields '')[15]      (parent,'edSearch') ⎕wi 'onChange' ((parent,'edSearch') ⎕wi 'onExit')[16]  [17]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[18]  [19]      :repeat[20]          :select 1⊃,field[21]          :case 'edSearch'[22]              Search←(parent,'edSearch') ⎕wi 'text'[23]              (parent,'lsHelpField') ⎕wi 'list' (1 0↓GetHelpFields Search)[24]              (parent,'lsParmField') ⎕wi 'list' (1 0↓GetParmFields Search)[25]  [26]  ⍝  The user can select from either the Help Field list or the parameter Field list[27]  ⍝  However, once anything is selected, the displays in each ListBox will be the same[28]  ⍝   A single Help Text item in the Help Field list[29]  ⍝   A list of Parameter Fields that use the same Help Text[30]  ⍝  and the current Help Text will be displayed[31]  [32]          :case 'lsHelpField'[33]              ⍝ Change HelpField display to only the Selected Item[34]              (parent,'lsHelpField') ⎕wi 'list' (MATRIX seln←DLTB ((parent,'lsHelpField') ⎕wi 'list')[(parent,'lsHelpField') ⎕wi 'value';])[35]  [36]              ⍝ Change ParmField display to fields that share the Help Text[37]              ∆←(⊂seln)≡¨parent ⎕wi '∆HelpField'[38]              (parent,'lsParmField') ⎕wi 'list' (⊃nub ∆/parent ⎕wi '∆ParmField')[39]  [40]              htmlFile←SystemDir,'help\html\topics\',seln,'.html'[41]              0 0⍴(parent,'webHelpText') ⎕wi 'XNavigate2' htmlFile[42]  [43]          :case 'lsParmField'[44]              ⍝ Change HelpField display to Help Text used by Selected Item[45]              seln←DLTB ((parent,'lsParmField') ⎕wi 'list')[(parent,'lsParmField') ⎕wi 'value';][46]              ∆←(⊂seln)≡¨parent ⎕wi '∆ParmField'[47]              (parent,'lsHelpField') ⎕wi 'list' (MATRIX ⊃seln←↑∆/parent ⎕wi '∆HelpField')[48]  [49]              ⍝ Change ParmField display to fields that share the Help Text[50]              ∆←(⊂seln)≡¨parent ⎕wi '∆HelpField'[51]              (parent,'lsParmField') ⎕wi 'list' (⊃nub ∆/parent ⎕wi '∆ParmField')[52]  [53]              htmlFile←SystemDir,'help\html\topics\',seln,'.htm'[54]              0 0⍴(parent,'webHelpText') ⎕wi 'XNavigate2' htmlFile[55]          :endselect[56]      :until 0∊⍴field←1↓field[57]  [58]  :case 'Valid' ⍝ Routine specific validation[59]  [60]  :case 'Run'[61]  [62]      res←'Quit'[63]  [64]  :case 'Quit' ⍝ Deleting "other" variables[65]  [66]  :endselect    ∇
+    ∇ res←field Help_Editing parm;parent;seln;∆;htmlFile
+[1]   ⍝ HELPEDIT.sf#2
+[2]   ⍝ Function to allow user control on Help Editing
+[3]   
+[4]   parent←'fmHelpEdit.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       ⍝ Create and store list of all Help and Parameter fields
+[10]      CreateHelpLists
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]      (parent,'lsHelpField') ⎕wi 'list' (1 0↓GetHelpFields '')
+[14]      (parent,'lsParmField') ⎕wi 'list' (1 0↓GetParmFields '')
+[15]      (parent,'edSearch') ⎕wi 'onChange' ((parent,'edSearch') ⎕wi 'onExit')
+[16]  
+[17]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[18]  
+[19]      :repeat
+[20]          :select 1⊃,field
+[21]          :case 'edSearch'
+[22]              Search←(parent,'edSearch') ⎕wi 'text'
+[23]              (parent,'lsHelpField') ⎕wi 'list' (1 0↓GetHelpFields Search)
+[24]              (parent,'lsParmField') ⎕wi 'list' (1 0↓GetParmFields Search)
+[25]  
+[26]  ⍝  The user can select from either the Help Field list or the parameter Field list
+[27]  ⍝  However, once anything is selected, the displays in each ListBox will be the same
+[28]  ⍝   A single Help Text item in the Help Field list
+[29]  ⍝   A list of Parameter Fields that use the same Help Text
+[30]  ⍝  and the current Help Text will be displayed
+[31]  
+[32]          :case 'lsHelpField'
+[33]              ⍝ Change HelpField display to only the Selected Item
+[34]              (parent,'lsHelpField') ⎕wi 'list' (MATRIX seln←DLTB ((parent,'lsHelpField') ⎕wi 'list')[(parent,'lsHelpField') ⎕wi 'value';])
+[35]  
+[36]              ⍝ Change ParmField display to fields that share the Help Text
+[37]              ∆←(⊂seln)≡¨parent ⎕wi '∆HelpField'
+[38]              (parent,'lsParmField') ⎕wi 'list' (⊃nub ∆/parent ⎕wi '∆ParmField')
+[39]  
+[40]              htmlFile←SystemDir,'help\html\topics\',seln,'.html'
+[41]              0 0⍴(parent,'webHelpText') ⎕wi 'XNavigate2' htmlFile
+[42]  
+[43]          :case 'lsParmField'
+[44]              ⍝ Change HelpField display to Help Text used by Selected Item
+[45]              seln←DLTB ((parent,'lsParmField') ⎕wi 'list')[(parent,'lsParmField') ⎕wi 'value';]
+[46]              ∆←(⊂seln)≡¨parent ⎕wi '∆ParmField'
+[47]              (parent,'lsHelpField') ⎕wi 'list' (MATRIX ⊃seln←↑∆/parent ⎕wi '∆HelpField')
+[48]  
+[49]              ⍝ Change ParmField display to fields that share the Help Text
+[50]              ∆←(⊂seln)≡¨parent ⎕wi '∆HelpField'
+[51]              (parent,'lsParmField') ⎕wi 'list' (⊃nub ∆/parent ⎕wi '∆ParmField')
+[52]  
+[53]              htmlFile←SystemDir,'help\html\topics\',seln,'.htm'
+[54]              0 0⍴(parent,'webHelpText') ⎕wi 'XNavigate2' htmlFile
+[55]          :endselect
+[56]      :until 0∊⍴field←1↓field
+[57]  
+[58]  :case 'Valid' ⍝ Routine specific validation
+[59]  
+[60]  :case 'Run'
+[61]  
+[62]      res←'Quit'
+[63]  
+[64]  :case 'Quit' ⍝ Deleting "other" variables
+[65]  
+[66]  :endselect
+    ∇

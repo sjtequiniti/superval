@@ -1,0 +1,29 @@
+    ∇ Z←test_ValidDate;⎕elx;∆;errs;test;result;oldelx;cases;QTS
+[1]   ⍝ REGISTER.sf#2
+[2]   
+[3]   QTS←2012 1 1 0 0 0 0 ⍝ test environment: system clock
+[4]   
+[5]   ∆←,[.5] 'answer' 'right'
+[6]   ∆←∆⍪ 0 '131o16' ⍝ not a date
+[7]   ∆←∆⍪ 1 '131016'
+[8]   ∆←∆⍪ 0 '131316' ⍝ not a date
+[9]   ∆←∆⍪ 0 '000000' ⍝ not a date
+[10]  ∆←∆⍪ 0 '000101' ⍝ in past
+[11]  ∆←∆⍪ 1 '120229'
+[12]  ∆←∆⍪ 1 '130228'
+[13]  ∆←∆⍪ 0 '130229' ⍝ not a date
+[14]  ∆←∆⍪ 0 '991016' ⍝ too far away
+[15]  cases←∆
+[16]  
+[17]  oldelx←⎕ELX
+[18]  errs←,[.5] 'right' 'answer' 'result'
+[19]  :for test :in ∆[1] push¨ 1↓∆←⎕SPLIT cases
+[20]      ⎕ELX←"⎕ERROR(~⎕SI[⎕IO;]≡'",⎕SI[⎕IO;],"')/'CUTBACK' ⋄ result←'broke' ⋄ →resume"
+[21]      result←ValidDate test at 'right'
+[22]      resume: ⎕ELX←oldelx
+[23]      :if ~result ≡ test at 'answer'
+[24]          errs←errs⍪ (test at 'right' 'answer'), ⊂result
+[25]      :endif
+[26]  :endfor
+[27]  Z←(0=rowsIn errs) (errs)
+    ∇

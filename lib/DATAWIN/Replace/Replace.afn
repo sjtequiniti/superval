@@ -1,1 +1,52 @@
-    ∇ res←field Replace parm;parent[1]   ⍝ DATAWIN.sf#15[2]   ⍝ Function to allow user control on Text Replace[3]   [4]   parent←'fmReplace.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       Search←origtext[10]  [11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[12]      (parent,'lInfo') ⎕wi 'caption' (DLTMB 'Replace occurrences of Search Text',⎕tclf,'in ',NAMES[col;])[13]      (parent,'edSearch') ⎕wi 'limit' limit[14]      :select fieldtype[col][15]      :case 0[16]          (parent,'edNum') ⎕wi 'limit' limit[17]      :case 1[18]          (parent,'edSearch') ⎕wi 'extent' (2+CharSize×1 11)[19]          (parent,'edNum') ⎕wi 'visible' ¯1[20]          (parent,'edDate') ⎕wi 'visible' 1[21]          (parent,'edDate') ⎕wi 'limit' limit[22]          (parent,'edDate') ⎕wi '∆valid' (DLTB fmt[col;])[23]          0 Win∆SetFocus parent,'edDate'[24]      :case 2[25]          (parent,'edNum') ⎕wi 'visible' ¯1[26]          (parent,'edChar') ⎕wi 'visible' 1[27]          (parent,'edChar') ⎕wi 'limit' limit[28]          0 Win∆SetFocus parent,'edChar'[29]      :endselect[30]  [31]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[32]  [33]  :case 'Valid' ⍝ Routine specific validation[34]  [35]  :case 'Run'[36]      :if Search≡DLTB origtext[37]          changetext←limit↑origtext ⋄ origtext←1[38]      :else[39]          changetext←limit↑Search ⋄ origtext←0[40]      :endif[41]      :select fieldtype[col][42]      :case 0 ⋄ changetext←changetext OVER (-limit)↑Num[43]      :case 1 ⋄ changetext←changetext OVER (-limit)↑Date[44]      :case 2 ⋄ changetext←changetext OVER limit↑Char[45]      :endselect[46]      res←'Quit'[47]  [48]  :case 'Quit' ⍝ Deleting "other" variables[49]  [50]  :endselect    ∇
+    ∇ res←field Replace parm;parent
+[1]   ⍝ DATAWIN.sf#15
+[2]   ⍝ Function to allow user control on Text Replace
+[3]   
+[4]   parent←'fmReplace.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       Search←origtext
+[10]  
+[11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[12]      (parent,'lInfo') ⎕wi 'caption' (DLTMB 'Replace occurrences of Search Text',⎕tclf,'in ',NAMES[col;])
+[13]      (parent,'edSearch') ⎕wi 'limit' limit
+[14]      :select fieldtype[col]
+[15]      :case 0
+[16]          (parent,'edNum') ⎕wi 'limit' limit
+[17]      :case 1
+[18]          (parent,'edSearch') ⎕wi 'extent' (2+CharSize×1 11)
+[19]          (parent,'edNum') ⎕wi 'visible' ¯1
+[20]          (parent,'edDate') ⎕wi 'visible' 1
+[21]          (parent,'edDate') ⎕wi 'limit' limit
+[22]          (parent,'edDate') ⎕wi '∆valid' (DLTB fmt[col;])
+[23]          0 Win∆SetFocus parent,'edDate'
+[24]      :case 2
+[25]          (parent,'edNum') ⎕wi 'visible' ¯1
+[26]          (parent,'edChar') ⎕wi 'visible' 1
+[27]          (parent,'edChar') ⎕wi 'limit' limit
+[28]          0 Win∆SetFocus parent,'edChar'
+[29]      :endselect
+[30]  
+[31]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[32]  
+[33]  :case 'Valid' ⍝ Routine specific validation
+[34]  
+[35]  :case 'Run'
+[36]      :if Search≡DLTB origtext
+[37]          changetext←limit↑origtext ⋄ origtext←1
+[38]      :else
+[39]          changetext←limit↑Search ⋄ origtext←0
+[40]      :endif
+[41]      :select fieldtype[col]
+[42]      :case 0 ⋄ changetext←changetext OVER (-limit)↑Num
+[43]      :case 1 ⋄ changetext←changetext OVER (-limit)↑Date
+[44]      :case 2 ⋄ changetext←changetext OVER limit↑Char
+[45]      :endselect
+[46]      res←'Quit'
+[47]  
+[48]  :case 'Quit' ⍝ Deleting "other" variables
+[49]  
+[50]  :endselect
+    ∇

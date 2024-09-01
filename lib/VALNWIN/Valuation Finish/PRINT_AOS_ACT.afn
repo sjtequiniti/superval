@@ -1,0 +1,110 @@
+    ∇ PRINT∆AOS∆ACT;⎕IO;SUMMREC;SUMM;MAT;TOTS;row;N;I;code;rows;Z;X;TOT;LAB;line
+[1]   ⍝ VALNWIN.sf#4
+[2]   ⍝ Output Analysis of Surplus Results for a Valuation
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   ⎕IO←1
+[7]   ⍝ Sum the Old and New Exits
+[8]   MAT←(aos∆TOTS[1 2 ;;]⍪+⌿aos∆TOTS[1+X;;])⍪+⌿aos∆TOTS[2+X←2×⍳1↑⍴MOE;;]
+[9]   
+[10]  ⍝ New Entrant Strain
+[11]  SUMMREC← 2 132 ↑(MATRIX 'New Entrant Profit - Reserve at Entry')⍪'='
+[12]  SUMMREC←SUMMREC⍪(52↑'     Estimated Expected Reserve at Entry'),,'2CM<->I32,CM<->I16' ⎕FMT MATRIX TOT←TOT,+/TOT←,MAT[2 4;1;1]
+[13]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'2CM<->I32,CM<->I16' ⎕FMT MATRIX X←X,+/X←,MAT[2 4;13;ResSize] ⋄ TOT←-TOT+X
+[14]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'New Entrant Profit (inc Expected Interest)'),,X←'2CM<->I32,CM<->I16' ⎕FMT MATRIX TOT
+[15]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←((1 52 ↑SUMMREC),X)⍪' '
+[16]  
+[17]  TOTS←0 1 0 1 1\TOT ⋄ (PPAGE line)←H6 OUTPUT tpr1,PPAGE,pAGE
+[18]  
+[19]  ⍝ Exit Profits/Losses
+[20]  rows←⍳N←0 ⋄ LAB← 5 11 ⍴'RetirementsDeaths     Ill-HealthsLeavers    Unspecified'
+[21]  
+[22]  LOOP:→(5 6 =N←N+1)/L0,F1 ⋄ code←(CODEcol=N-1)⌿CODE ⋄ →L1
+[23]  L0:rows←rows,1↓MOE TLU MOE[1;] ⋄ code←MOE[(⍳1↑⍴MOE)~rows;]
+[24]  L1:TOT←3/I←0 ⋄ SUMMREC← 2 132 ↑(MATRIX 'Exit Profits - ',DLTMB LAB[N;])⍪'='
+[25]  
+[26]  loop:→((1↑⍴code)<I←I+1)/F0
+[27]  →(0∊⍴row←MOE TLU code[I;])/loop ⋄ rows←rows,row
+[28]  →(^/0=,aos∆TOTS[1 2 +2×row;;])/loop
+[29]  SUMMREC←SUMMREC⍪(84↑'     Actual Reserve at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,aos∆TOTS[1 2 +2×row;25;ResSize]
+[30]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,aos∆TOTS[1 2 +2×row;31;ResSize] ⋄ Z←Z+X
+[31]  SUMMREC←(SUMMREC⍪' ')⍪(84↑'less Cash Benefit Paid at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT X←X,+/X←,aos∆TOTS[1 2 +2×row;26;ResSize] ⋄ Z←Z-X
+[32]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,aos∆TOTS[1 2 +2×row;32;ResSize] ⋄ Z←Z-X
+[33]  SUMMREC←((SUMMREC⍪' ')⍪(84↑'Actual Release at Exit - Code of Exit "',code[I;],'"'),,'CM<->I16' ⎕FMT Z)⍪' ' ⋄ TOT←TOT+Z
+[34]  →loop
+[35]  
+[36]  F0:SUMMREC←(SUMMREC⍪' ')⍪(60↑'     ',DLTMB 'Actual ',LAB[N;],' Release (inc Expected Interest)'),,'CM<->I8,4CM<->I16' ⎕FMT MATRIX TOT←¯5↑TOT
+[37]  SUMMREC←(SUMMREC⍪' ')⍪(52↑DLTMB 'less Expected ',LAB[N;],' Release'),,'CM<->I16' ⎕FMT Z←Z,+/Z←(N≠5)×,MAT[;N+2;ResSize]+(N=1)×MAT[;2;ResSize]
+[38]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←(N≠5)×,MAT[;N+15;ResSize]+(N=1)×MAT[;15;ResSize] ⋄ Z←Z+X
+[39]  TOT←TOT-Z ⋄ →(N∊ 1 4 5)/F2
+[40]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'plus Expected Current Cost Conts - ',LAB[N;]),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;N+8;ResSize]
+[41]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;N+21;ResSize] ⋄ Z←Z+X
+[42]  TOT←TOT+Z
+[43]  F2:SUMMREC←(SUMMREC⍪' ')⍪(52↑DLTMB 'Total ',LAB[N;],' Profit (inc Expected Interest)'),,X←'CM<->I16' ⎕FMT MATRIX TOT
+[44]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '
+[45]  TOTS←TOTS+TOT ⋄ (PPAGE line)←H6 OUTPUT tpr1,PPAGE,line ⋄ →LOOP
+[46]  
+[47]  ⍝ Salaries Profits/Losses
+[48]  F1:SUMMREC← 2 132 ↑(MATRIX 'Salary Increase Profits - Reserve Release')⍪'='
+[49]  SUMMREC←SUMMREC⍪(52↑'     Expected Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;1;ResSize]
+[50]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←2↓,MAT[;14;ResSize] ⋄ Z←Z+¯5↑X
+[51]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;25;ResSize] ⋄ Z←Z-X
+[52]  SUMMREC←SUMMREC⍪(84↑¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←2↓,MAT[;31;ResSize] ⋄ Z←Z-¯5↑X
+[53]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'Reserve Release at Valuation Date/Exit'),,X←'CM<->I16' ⎕FMT MATRIX Z
+[54]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '
+[55]  TOTS←TOTS+Z ⋄ (PPAGE line)←H6 OUTPUT tpr1,PPAGE,line
+[56]  
+[57]  ⍝ Contributions Profits
+[58]  N←7 ⋄ LAB← 4 18 ⍴'Member            Company           Death Current CostIll-H Current Cost'
+[59]  
+[60]  LP:→(12=N←N+1)/F3 ⋄ code←DLTMB LAB[N-7;]
+[61]  SUMMREC← 2 132 ↑(MATRIX 'Salary Increase Profits - ',code,' Conts')⍪'='
+[62]  SUMMREC←(SUMMREC⍪(52↑'Expected Rate of ',code,' Conts'),,'4M<->N<%>Q<%>F16.3,16< >' ⎕FMT MATRIX,MAT[;N;ResSize]CDIV MAT[;12;ResSize])⍪' '
+[63]  SUMMREC←SUMMREC⍪(52↑'     Actual ',code,' Conts'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;N+19;ResSize]
+[64]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;N+25;ResSize] ⋄ Z←Z+X
+[65]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Expected ',code,' Conts'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;N;ResSize] ⋄ Z←Z-X
+[66]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;N+13;ResSize] ⋄ Z←Z-X
+[67]  SUMMREC←(SUMMREC⍪' ')⍪(52↑code,' Contributions Profit'),,X←'CM<->I16' ⎕FMT MATRIX Z
+[68]  SUMMREC←(SUMMREC⍪'_')⍪' ' ⋄ SUMM←SUMM⍪((1 52 ↑SUMMREC),X)⍪' '
+[69]  TOTS←TOTS+Z ⋄ (PPAGE line)←H6 OUTPUT tpr1,PPAGE,line ⋄ →LP
+[70]  
+[71]  ⍝ Funding Profits
+[72]  F3:SUMMREC← 2 132 ↑(MATRIX 'Funding Profits - Company Conts')⍪'='
+[73]  SUMMREC←(SUMMREC⍪(52↑'Expected Rate of Required Company Conts'),,'4M<->N<%>Q<%>F16.3,16< >' ⎕FMT MATRIX,MAT[;7;ResSize]CDIV MAT[;12;ResSize])⍪' '
+[74]  SUMMREC←SUMMREC⍪MATRIX(52↑'     Expected Company Conts'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;9;ResSize]
+[75]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;22;ResSize] ⋄ Z←Z+X
+[76]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Required Company Conts'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;7;ResSize] ⋄ Z←Z-X
+[77]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;20;ResSize] ⋄ Z←Z-X
+[78]  TOTS←TOTS+Z
+[79]  SUMMREC←((SUMMREC⍪' ')⍪X←(52↑'Funding Level Profit'),,'CM<->I16' ⎕FMT Z)⍪'_'
+[80]  SUMM←(SUMM⍪X)⍪' '
+[81]  
+[82]  SUMMREC←(SUMMREC⍪' ')⍪ 2 132 ↑(MATRIX 'Calculation Error')⍪'='
+[83]  SUMMREC←SUMMREC⍪(52↑'     Calculated Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT X←X,+/X←,MAT[;1;,1]+(+/[2]MAT[;(1+⍳7),13,14+⍳7;ResSize])-0⍪0⍪MAT[3 4;14;ResSize]
+[84]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Expected Reserve at Valuation Date/Exit'),,'CM<->I16' ⎕FMT Z←Z,+/Z←,MAT[;1;ResSize]
+[85]  TOTS←TOTS+TOT←X-Z
+[86]  SUMMREC←(SUMMREC⍪' ')⍪X←(52↑'Error in Reserve Build-Up'),,'CM<->I16' ⎕FMT TOT
+[87]  SUMMREC←(SUMMREC⍪(52↑'Percentage Error in Reserve Build-Up'),,'M<->N<%>Q<%>F16.5' ⎕FMT 100×TOT CDIV Z)⍪'_'
+[88]  SUMM←(SUMM⍪X)⍪' '
+[89]  
+[90]  SUMMREC←SUMMREC⍪ ¯2 132 ↑MATRIX(52↑'Total Profit'),,'CM<->I16' ⎕FMT TOTS
+[91]  SUMM←(SUMM⍪ ¯3 132 ↑SUMMREC)⍪' ' ⋄ (PPAGE line)←H6 OUTPUT tpr1,PPAGE,line
+[92]  
+[93]  SUMMREC←(2 132 ↑(MATRIX 'Summary')⍪'=')⍪SUMM
+[94]  
+[95]  SUMMREC←(SUMMREC⍪' ')⍪ 2 132 ↑(MATRIX 'Cross-Check of Surplus')⍪'='
+[96]  SUMMREC←SUMMREC⍪(52↑'     Reserves at Previous Valuation Date'),,'CM<->I16' ⎕FMT TOT←TOT,+/TOT←1 0 1 0×,MAT[;1;1]
+[97]  SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←1 0 1 0×,MAT[;13;ResSize] ⋄ TOT←TOT+X
+[98]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Reserves at Current Valuation Date'),,'CM<->I16' ⎕FMT X←X,+/X←4↑,MAT[1 2 ;25;ResSize] ⋄ TOT←TOT-X
+[99]  SUMMREC←(SUMMREC⍪' ')⍪(52↑'plus Actual Contributions Paid'),,'CM<->I16' ⎕FMT X←X,+/X←,+/[2]MAT[;26+⍳4;ResSize] ⋄ TOT←TOT+X
+[100] SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←,+/[2]MAT[;32+⍳4;ResSize] ⋄ TOT←TOT+X
+[101] SUMMREC←(SUMMREC⍪' ')⍪(52↑'less Actual Benefits Paid'),,'CM<->I16' ⎕FMT X←X,+/X←¯4↑,MAT[3 4;26;ResSize] ⋄ TOT←TOT-X
+[102] SUMMREC←SUMMREC⍪(¯52↑'plus Expected Interest to Valuation Date '),,'CM<->I16' ⎕FMT X←X,+/X←¯4↑,MAT[3 4;32;ResSize] ⋄ TOT←TOT-X
+[103] SUMMREC←SUMMREC⍪'_'
+[104] SUMMREC←((SUMMREC⍪' ')⍪(52↑'Total Profit'),,'CM<->I16' ⎕FMT MATRIX TOT)⍪' '
+[105] SUMMREC←' '⍪SUMMREC⍪(52↑'Unexplained Error'),,'CM<->I16' ⎕FMT MATRIX TOTS-TOT
+[106] (PPAGE line)←H6 OUTPUT tpr1,PPAGE,line
+[107] 
+[108] MOEcol←4,CODEcol[(CODE TLU MOE)-~⎕io]
+    ∇

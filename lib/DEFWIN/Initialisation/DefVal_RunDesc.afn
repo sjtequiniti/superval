@@ -1,1 +1,753 @@
-    ∇ res←DefVal_RunDesc;⎕io;Header;CHeader;PickList;n;z;GHeader;PHeader;BHeader;tab;∆;Name;Value;Desc[1]   ⍝ DEFWIN.sf#2[2]   ⍝ Valuation Run Description[3]   ⎕io←1 ⋄ res←0 2⍴""[4]   [5]   res←res OVER ('Valuation Run Time') RunTime[6]   res←res OVER ('User') uSER[7]   res←res OVER "" ""[8]   [9]   CHeader← ClientFile ReadFile "Index"[10]  ⍝⍝⍝ GHeader←GlobalsFile ReadFile "Index"[11]  res←res OVER "Scheme Details" ""[12]  res←res OVER "==============" ""[13]  res←res OVER ("Scheme Parameter File") (DLTB ClientFile)[14]  res←res OVER "Scheme " ParametersSaved "Client"[15]  res←res OVER "" ""[16]  res←res OVER "Data" ""[17]  res←res OVER "====" ""[18]  res←res OVER "Scheme Name" cLIENT[19]  :if aosind ⋄ :orif vDATEind[20]      res←res OVER "Current Valuation Date" (,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX vDATE)[21]  :endif[22]  :if aosind ⋄ :orif ~vDATEind[23]      res←res OVER "Previous Valuation Date" (,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX pvDATE)[24]  :endif[25]  Header←DECRFile ReadFile 'Index'[26]  res←res OVER ("Decrements File Name") ((DLTB DECRFile),'.sf')[27]  res←res OVER ("Decrements File Last Modified") (↑(Header for 1=⍳rowsIn Header) at '∆_TSModified')[28]  res←res OVER "" ""[29]  :if 0≠rowsIn tab←(AbsDict for 'Module' 'Constants') for 'Type' 'Number'[30]      res←res OVER "Numeric Constants" ""[31]      res←res OVER "=================" ""[32]      :for ∆ :in spin tab at 'Variable' 'Parameter' 'Description' ⋄ (Name Value Desc)←∆ ⋄ Desc←(~Desc≡Name)/Desc[33]          res←res OVER Name ("<",Value,">"," - ",Desc)[34]      :endfor[35]      res←res OVER "" ""[36]  :endif[37]  :if 0≠rowsIn tab←(AbsDict for 'Module' 'Constants') for 'Type' 'Date'[38]      res←res OVER "Date Constants" ""[39]      res←res OVER "==============" ""[40]      :for ∆ :in spin tab at 'Variable' 'Parameter' 'Description' ⋄ (Name Value Desc)←∆ ⋄ Desc←(~Desc≡Name)/Desc[41]          res←res OVER Name ("<",Value,">"," - ",Desc)[42]      :endfor[43]      res←res OVER "" ""[44]  :endif[45]  [46]  res←res OVER "Financial Parameters Description" FinDefault[47]  res←res OVER "Financial " ParametersSaved "Financials" FinDefault[48]  :if 0≠1↑⍴(∨/' '≠intName)⌿MATRIX intName[49]      res←res OVER "Interest Assumptions" ""[50]      res←res OVER "====================" ""[51]      res←res OVER Fin_RunDesc intName intValue intCap intCollar intGroup intDesc ''[52]  :endif[53]  :if 0≠1↑⍴(∨/' '≠infName)⌿MATRIX infName[54]      res←res OVER "Inflation Assumptions" ""[55]      res←res OVER "=====================" ""[56]      res←res OVER Fin_RunDesc infName infValue infCap infCollar infGroup infDesc ''[57]  :endif[58]  :if 0≠1↑⍴(∨/' '≠revName)⌿MATRIX revName[59]      res←res OVER "Revaluation Assumptions" ""[60]      res←res OVER "=======================" ""[61]      res←res OVER Fin_RunDesc revName revValue revCap revCollar revGroup revDesc ''[62]  :endif[63]  :if 0≠1↑⍴(∨/' '≠incName)⌿MATRIX incName[64]      res←res OVER "Increase Assumptions" ""[65]      res←res OVER "====================" ""[66]      res←res OVER Fin_RunDesc incName incValue incCap incCollar incGroup incDesc incConsDyn[67]  :endif[68]  :if 0≠rowsIn tab←(AbsDict for 'Module' 'Financials') ⍝⍝⍝ for 'Type' 'Number'[69]      res←res OVER "Financial Constants" ""[70]      res←res OVER "===================" ""[71]      :for ∆ :in spin tab at 'Variable' 'Parameter' 'Description' ⋄ (Name Value Desc)←∆ ⋄ Desc←(~Desc≡Name)/Desc[72]          res←res OVER Name ("<",Value,">"," - ",Desc)[73]      :endfor[74]      res←res OVER "" ""[75]  :endif[76]  [77]  res←res OVER "Valuation Batch Parameters" ""[78]  res←res OVER "====================" ""[79]  :if scenario[80]      res←res OVER ("Scenario Parameters Description") ScenarioJobName[81]      res←res OVER "Scenario Batch " ParametersSaved 'Run_Scenarios' ScenarioJobName[82]  :endif[83]  res←res OVER ("Valuation Parameters Description") BatchJobName[84]  res←res OVER "Valuation Batch " ParametersSaved 'Batch_Display' BatchJobName[85]  res←res OVER ValParmdesc[86]  res←res OVER "" ""[87]  [88]  BHeader←(InputDir,basisFile) ReadFile "Index"[89]  res←res OVER "Valuation Basis" ""[90]  res←res OVER "===============" ""[91]  res←res OVER "Basis File Name" (DLTB InputDir,basisFile)[92]  res←res OVER "Basis File Description" (↑(BHeader for 1=⍳rowsIn BHeader) at '∆_Description')[93]  res←res OVER 'Saved Basis Description' basisDesc[94]  res←res OVER "Basis " ParametersSaved 'Deferreds_Basis' basisDesc[95]  res←res OVER "" ""[96]  [97]  res←res OVER ("Main") ""[98]  res←res OVER ("====") ""[99]  res←res OVER ("Membership Data") ""[100] [101] :if zwb FileSelections[102]     :if 0∊⍴n←FilesList ExactTLU fILENAME[103]         res←res OVER ("    ","Deferred Members Data File") ((DLTB fILENAME)," ",0 1 WGetFileTime InputDir,fILENAME)[104]     :else[105]         res←res OVER ("    ","Deferred Members Data File") ((DLTB fILENAME)," <",,FilesDesc[n;],">")[106]     :endif[107]     res←res OVER ('Sex/Category Selection') (1↓CatSels,' <File: ',(DLTB FILES),' ',(WGetFileTime InputDir,FILES),'>')[108] :else[109]     :if 0∊⍴n←FilesList ExactTLU FILES[110]         res←res OVER ("    ","Deferred Members Data File") ((DLTB FILES)," ",0 1 WGetFileTime InputDir,FILES)[111]     :else[112]         res←res OVER ("    ","Deferred Members Data File") ((DLTB FILES)," <",,FilesDesc[n;],">")[113]     :endif[114] :endif[115] res←res OVER ("    ",'Data Format') ((DLTB Format),' <',(,ClientFile ReadFile (Format[1+⍳3],'Format') (6↓Format) 'TSTAMP'),'>')[116] [117] res←res OVER ("Pension Payment Parameters") ""[118] res←res OVER ("    ","Guarantee Period") (DLTB GPeriod," years")[119] res←res OVER ("    ","Overlap during Guarantee Period") (CheckTranslate GPOverlap)[120] res←res OVER ("    ","Discounted LS on Death in Guarantee Period") (DLTB CheckTranslate DISC)[121] res←res OVER ("    ","Payment Frequency") (DLTB FREQ)[122] res←res OVER ("    ","Mode") (DLTB MODE)[123] res←res OVER ("    ","First Year Increase") (DLTB IncTiming)[124] res←res OVER ("Cash Flow Parameters") ""[125] res←res OVER ("    ","Pension Benefits Capitalised or Spread") (DLTB capind)[126] res←res OVER ("    ","Underpin Method") (DLTB Umethod)[127] res←res OVER ("    ","Retirement Age") (DLTB DecrDescription ¯5↑DLTB URAGE)[128] res←res OVER ("    ","Death Age") (DLTB DecrDescription ¯5↑DLTB UDAGE)[129] res←res OVER ("Additional Benefits") ""[130] res←res OVER ("    ","Independent PUPs") (DLTB CheckTranslate IndPUPs)[131] [132] res←res OVER "" ""[133] res←res OVER ("Financial") ""[134] res←res OVER ("=========") ""[135] res←res OVER ("Interest Rate Assumptions") ""[136] res←res OVER ("    ","Pre Retirement Interest Rate") (IR ConcatLabel lrIR ConcatScen termAdjFin sCEN_IR)[137] res←res OVER ("    ","Post Retirement Interest Rate") (pi ConcatLabel lrpi ConcatScen termAdjFin sCEN_pi)[138] res←res OVER ("Excess Revaluation - Overall Parameters") ""[139] res←res OVER ("    ","Excess Revaluation") (REVN ConcatLabel lrREVN ConcatScen termAdjFin sCEN_REVN)[140] res←res OVER ("    ","Count Complete Years") (DLTB CheckTranslate REVYRS)[141] res←res OVER ("    ","NRA Exits Rounding") (DLTB NRARND)[142] res←res OVER ("    ","Pre Valuation Date Revaluation") (DLTB PASTREV)[143] res←res OVER ("    ","Pre Valuation Date Factor Set") ((DLTB REVSet),0 FactorTimestamp REVSet)[144] res←res OVER ("    ","Pre Valuation Date Rate") (PASTREVN ConcatLabel lrPASTREVN ConcatScen termAdjFin sCEN_PASTREVN)[145] res←res OVER ("    ","Pre Valuation Date Rate Rounding") (DLTB PASTREVNRND)[146] res←res OVER ("Pension Escalation") ""[147] res←res OVER ("    ","Pre 1988 GMP") (B88GMPINC ConcatLabel lrB88GMPINC ConcatScen termAdjFin sCEN_B88GMPINC)[148] res←res OVER ("    ","Post 1988 GMP") (A88GMPINC ConcatLabel lrA88GMPINC ConcatScen termAdjFin sCEN_A88GMPINC)[149] res←res OVER ("    ","Main") (DYNINC ConcatLabel lrDYNINC ConcatScen termAdjFin sCEN_DYNINC)[150] res←res OVER ("    ","Special") (NDYNINC ConcatLabel lrNDYNINC ConcatScen termAdjFin sCEN_NDYNINC)[151] res←res OVER ("    ","PenInc3") (DYNINC3 ConcatLabel lrDYNINC3 ConcatScen termAdjFin sCEN_DYNINC3)[152] res←res OVER ("    ","PenInc4") (DYNINC4 ConcatLabel lrDYNINC4 ConcatScen termAdjFin sCEN_DYNINC4)[153] res←res OVER ("    ","Timing of Pension Increases") (DLTB INCIND)[154] res←res OVER ("    ","Increase Date") (DLTB INCDAT," DD/MM")[155] res←res OVER "" ""[156] [157] res←res OVER ("Legislation") ""[158] res←res OVER ("===========") ""[159] res←res OVER ("GMPs") ""[160] res←res OVER ("    ","GMPs as at Leaving Date") (DLTB CheckTranslate GMPORIGIN)[161] res←res OVER ("    ","Fixed  Revaluation Rate to SPA") ((CheckTranslate GMPREV2),1 FactorTimestamp 'GMPFixed')[162] res←res OVER ("    ","Revaluation Rate To SPA") (GMPREV1 ConcatLabel lrGMPREV1 ConcatScen termAdjFin sCEN_GMPREV1)[163] res←res OVER ("    ","Past GMP Revaluation Rate(s) to NRA<SPA Factor Set") ((DLTB pastPRESPAREV),0 FactorTimestamp pastPRESPAREV)[164] res←res OVER ("    ","Revaluation Rate to NRA<SPA") (PRESPAREV ConcatLabel lrPRESPAREV ConcatScen termAdjFin sCEN_PRESPAREV)[165] res←res OVER ("    ","Complete Years Pre NRA") (DLTB CheckTranslate GMPREVYRS)[166] res←res OVER ("    ","NRA Exits Rounding") (DLTB GMPNRARND)[167] res←res OVER ("    ","Franking Code") (DLTB OFFCOD)[168] res←res OVER ("    ","Franking In Deferment") (DLTB CheckTranslate FID)[169] res←res OVER ("    ","Statutory GMP Increases to NRA>SPA") (DLTB CheckTranslate GMPLRInc)[170] res←res OVER ("    ","Public Sector GMPs") (DLTB CheckTranslate PubSect)[171] :if ppf[172]     res←res OVER ("    ","Male PPF NRA (Levy Valuations)") (DLTB m_PPFGMPNRA)[173]     res←res OVER ("    ","Female PPF NRA (Levy Valuations)") (DLTB f_PPFGMPNRA)[174] :endif[175] res←res OVER ("    ","Treat Pre 1988 GMP As Zero") (DLTB CheckTranslate IGNOREPre)[176] res←res OVER ("    ","Treat Post 1988 GMP As Zero") (DLTB CheckTranslate IGNOREPost)[177] res←res OVER ("Pre 1988 GMP Parameters") ""[178] res←res OVER ("    ","Ignore Pre 1988 GMP For Cash Benefit") (DLTB CheckTranslate COOPre)[179] res←res OVER ("    ","Ignore Pre 1988 GMP For Death Benefit") (DLTB MOOPre)[180] res←res OVER ("    ","Pre 1988 Start Date") (PreSTART ConcatLabel lrPreSTART)[181] res←res OVER ("    ","Pre 1988 Finish Date") (PreFINISH ConcatLabel lrPreFINISH)[182] res←res OVER ("    ","Pre 1988 ERF Indicator") (DLTB bpreIND)[183] res←res OVER ("    ","Pre 1988 Dynamism") (DLTB mpreIND)[184] res←res OVER ("    ","Pre 1988 Underpin Indicator") (DLTB upreIND)[185] res←res OVER ("    ","Pre 1988 GMP Adjustment Factor") (preADJ ConcatLabel lrpreADJ ConcatScen 0 sCEN_preADJ)[186] res←res OVER ("Post 1988 GMP Parameters") ""[187] res←res OVER ("    ","Ignore Post 1988 GMP For Cash Benefit") (DLTB CheckTranslate COOPost)[188] res←res OVER ("    ","Ignore Post 1988 GMP For Death Benefit") (DLTB MOOPost)[189] res←res OVER ("    ","Post 1988 Start Date") (PostSTART ConcatLabel lrPostSTART)[190] res←res OVER ("    ","Post 1988 Finish Date") (PostFINISH ConcatLabel lrPostFINISH)[191] res←res OVER ("    ","Post 1988 ERF Indicator") (DLTB bpostIND)[192] res←res OVER ("    ","Post 1988 Dynamism") (DLTB mpostIND)[193] res←res OVER ("    ","Post 1988 Underpin Indicator") (DLTB upostIND)[194] res←res OVER ("    ","Post 1988 GMP Adjustment Factor") (postADJ ConcatLabel lrpostADJ ConcatScen 0 sCEN_postADJ)[195] res←res OVER ("Barber Window") ""[196] res←res OVER ("    ","Barber Start Date") (BARBDATE ConcatLabel lrBARBDATE)[197] res←res OVER ("    ","Barber End Date") (BARBEND ConcatLabel lrBARBEND)[198] res←res OVER "" ""[199] [200] :if ppf ⋄ :orif bencap[201]     res←res OVER ("PPF/CAP") ""[202]     res←res OVER ("=======") ""[203]     :if ppf[204]         res←res OVER ("NRA (Levy Valuations)") ""[205]         res←res OVER ("    ","Male PPF Retirement Ages") (DLTB 1↓,'!',m_PPFNRAtab,' ')[206]         res←res OVER ("    ","Female PPF Retirement Ages") (DLTB 1↓,'!',f_PPFNRAtab,' ')[207]     :endif[208]     res←res OVER ("Cap") ""[209]     res←res OVER ("    ","Service Cap Start Date") PPFServCapBDate[210]     res←res OVER ("    ","Service Cap End Date") PPFServCapEDate[211]     res←res OVER ("    ","Cap Offset") (DLTB OFFCAP,'%')[212]     :if bencap[213]         res←res OVER ("Discontinuance Pension Increases") ""[214]         res←res OVER ("    ","Pre 1997 Discontinuance Pension Increases") (DYNINCPre ConcatLabel lrDYNINCPre ConcatScen termAdjFin sCEN_DYNINCPre)[215]         res←res OVER ("    ","Post 1997 Discontinuance Pension Increases") (DYNINCPost ConcatLabel lrDYNINCPost ConcatScen termAdjFin sCEN_DYNINCPost)[216]     :endif[217]     res←res OVER "" ""[218] [219]     res←res OVER PPF_RunDesc 'Deferreds'[220] :endif[221] [222] res←res OVER ("Mortality") ""[223] res←res OVER ("=========") ""[224] res←res OVER ("Pre Retirement Mortality") ""[225] :if ppf[226]     res←res OVER ("    ","Male Mortality Rates") (DecrDescription m_DPRETABXX)[227]     res←res OVER ("    ","Base Year of Male Mortality Rates") (DLTB m_DPREORIG)[228] :else[229]     res←res OVER ("    ","Male Mortality Rate Parameters") (0 DropEther m_DPRE)[230]     :if ~'None'≡4↑m_DPRE[231]         res←res OVER ParametersSaved 'Mortality_Rate' m_DPRE[232]         res←res OVER ("    ","Male Mortality Rates") (DecrDescription m_DPRETABXX)[233]         res←res OVER ("    ","Base Year of Male Member Mortality Table") (DLTB m_DPREORIG)[234]         res←res OVER ("    ","Male Member % Rating") (DLTB m_DPREMEMB)[235]     :endif[236] :endif[237] :if ppf[238]     res←res OVER "    " MI_RunDesc 'm_miDPRE' (0 0)[239] :else[240]     res←res OVER ("    ","Male Mortality Improvement Parameters") (DLTB m_miDPRE)[241]     :if ~'None'≡4↑m_miDPRE[242]         res←res OVER ParametersSaved 'Mort_Improvement' m_miDPRE[243]         res←res OVER "    " MI_RunDesc 'm_miDPRE' (0 0)[244]     :endif[245] :endif[246] :if ppf[247]     res←res OVER ("    ","Female Mortality Rates") (DecrDescription f_DPRETABXX)[248]     res←res OVER ("    ","Base Year of Female Mortality Rates") (DLTB f_DPREORIG)[249] :else[250]     res←res OVER ("    ","Female Mortality Rate Parameters") (0 DropEther f_DPRE)[251]     :if ~'None'≡4↑f_DPRE[252]         res←res OVER ParametersSaved 'Mortality_Rate' f_DPRE[253]         res←res OVER ("    ","Female Mortality Rates") (DecrDescription f_DPRETABXX)[254]         res←res OVER ("    ","Base Year of Female Member Mortality Table") (DLTB f_DPREORIG)[255]         res←res OVER ("    ","Female Member % Rating") (DLTB f_DPREMEMB)[256]     :endif[257] :endif[258] :if ppf[259]     res←res OVER "    " MI_RunDesc 'f_miDPRE' (0 0)[260] :else[261]     res←res OVER ("    ","Female Mortality Improvement Parameters") (DLTB f_miDPRE)[262]     :if ~'None'≡4↑f_miDPRE[263]         res←res OVER ParametersSaved 'Mort_Improvement' f_miDPRE[264]         res←res OVER "    " MI_RunDesc 'f_miDPRE' (0 0)[265]     :endif[266] :endif[267] res←res OVER "Member's Post Retirement Mortality" ""[268] :if ppf[269]     res←res OVER ("    ","Male Member Mortality Rates") (DecrDescription m_DPOSTTABXX)[270]     res←res OVER ("    ","Base Year of Male Member Mortality Rates") (DLTB m_DPOSTORIG)[271] :else[272]     res←res OVER ("    ","Male Member Mortality Rates Description") (0 DropEther m_DPOST)[273]     :if ~'None'≡4↑m_DPOST[274]         res←res OVER ParametersSaved 'Mortality_Rate' m_DPOST[275]         res←res OVER ("    ","Male Member Mortality Rates") (DecrDescription m_DPOSTTABXX)[276]         res←res OVER ("    ","Base Year of Male Member Mortality Table") (DLTB m_DPOSTORIG)[277]         res←res OVER ("    ","Male Member Individual % Rating") (DLTB m_DPOSTMEMB)[278]     :endif[279] :endif[280] :if ppf[281]     res←res OVER "    " MI_RunDesc 'm_miDPOST' (1 0)[282] :else[283]     res←res OVER ("    ","Male Member Mortality Improvement") (DLTB m_miDPOST)[284]     :if ~'None'≡4↑m_miDPOST[285]         res←res OVER ParametersSaved 'Mort_Improvement' m_miDPOST[286]         res←res OVER "    " MI_RunDesc 'm_miDPOST' (1 0)[287]     :endif[288] :endif[289] :if ppf[290]     res←res OVER ("    ","Female Member Mortality Rates") (DecrDescription f_DPOSTTABXX)[291]     res←res OVER ("    ","Base Year of Female Member Mortality Rates") (DLTB f_DPOSTORIG)[292] :else[293]     res←res OVER ("    ","Female Member Mortality Rates Description") (0 DropEther f_DPOST)[294]     :if ~'None'≡4↑f_DPOST[295]         res←res OVER ParametersSaved 'Mortality_Rate' f_DPOST[296]         res←res OVER ("    ","Female Member Mortality Rates") (DecrDescription f_DPOSTTABXX)[297]         res←res OVER ("    ","Base Year of Female Member Mortality Table") (DLTB f_DPOSTORIG)[298]         res←res OVER ("    ","Female Member Individual % Rating") (DLTB f_DPOSTMEMB)[299]     :endif[300] :endif[301] :if ppf[302]     res←res OVER "    " MI_RunDesc 'f_miDPOST' (1 0)[303] :else[304]     res←res OVER ("    ","Female Member Mortality Improvement") (DLTB f_miDPOST)[305]     :if ~'None'≡4↑f_miDPOST[306]         res←res OVER ParametersSaved 'Mort_Improvement' f_miDPOST[307]         res←res OVER "    " MI_RunDesc 'f_miDPOST' (1 0)[308]     :endif[309] :endif[310] ⍝⍝⍝ :if bGAD[311] res←res OVER ("Spouse/Partner's Post Retirement Mortality") ""[312] :if ppf[313]     res←res OVER ("    ","Male Member's Spouse/Partner Mortality Rates") (DecrDescription m_SDPOSTTABXX)[314]     res←res OVER ("    ","Base Year of Male Member's Spouse/Partner Mortality Rates") (DLTB m_SDPOSTORIG)[315] :else[316]     res←res OVER ("    ","Male Member's Spouse/Partner Mortality Rates Description") (0 DropEther m_SDPOST)[317]     :if ~'None'≡4↑m_SDPOST[318]         res←res OVER ParametersSaved 'Mortality_Rate' m_SDPOST[319]         res←res OVER ("    ","Male Member's Spouse/Partner Mortality Rates") (DecrDescription m_SDPOSTTABXX)[320]         res←res OVER ("    ","Base Year of Male Member's Spouse/Partner Mortality Table") (DLTB m_SDPOSTORIG)[321]         res←res OVER ("    ","Male Member's Spouse/Partner Individual % Rating") (DLTB m_SDPOSTMEMB)[322]     :endif[323] :endif[324] :if ppf[325]     res←res OVER "    " MI_RunDesc 'm_miSDPOST' (0 1)[326] :else[327]     res←res OVER ("    ","Male Member's Spouse/Partner Mortality Improvement") (DLTB m_miSDPOST)[328]     :if ~'None'≡4↑m_miSDPOST[329]         res←res OVER ParametersSaved 'Mort_Improvement' m_miSDPOST[330]         res←res OVER "    " MI_RunDesc 'm_miSDPOST' (0 1)[331]     :endif[332] :endif[333] :if ppf[334]     res←res OVER ("    ","Female Member's Spouse/Partner Mortality Rates") (DecrDescription f_SDPOSTTABXX)[335]     res←res OVER ("    ","Base Year of Female Member's Spouse/Partner Mortality Rates") (DLTB f_SDPOSTORIG)[336] :else[337]     res←res OVER ("    ","Female Member's Spouse/Partner Mortality Rates Description") (0 DropEther f_SDPOST)[338]     :if ~'None'≡4↑f_SDPOST[339]         res←res OVER ParametersSaved 'Mortality_Rate' f_SDPOST[340]         res←res OVER ("    ","Female Member's Spouse/Partner Mortality Rates") (DecrDescription f_SDPOSTTABXX)[341]         res←res OVER ("    ","Base Year of Female Member's Spouse/Partner Mortality Table") (DLTB f_SDPOSTORIG)[342]         res←res OVER ("    ","Female Member's Spouse/Partner Individual % Rating") (DLTB f_SDPOSTMEMB)[343]     :endif[344] :endif[345] :if ppf[346]     res←res OVER "    " MI_RunDesc 'f_miSDPOST' (0 1)[347] :else[348]     res←res OVER ("    ","Female Member's Spouse/Partner Mortality Improvement") (DLTB f_miSDPOST)[349]     :if ~'None'≡4↑f_miSDPOST[350]         res←res OVER ParametersSaved 'Mort_Improvement' f_miSDPOST[351]         res←res OVER "    " MI_RunDesc 'f_miSDPOST' (0 1)[352]     :endif[353] :endif[354] ⍝⍝⍝ :endif[355] res←res OVER "" ""[356] [357] res←res OVER ("Demographic") ""[358] res←res OVER ("===========") ""[359] res←res OVER ("Male Decrement Rates") ""[360] res←res OVER ("    ","Male Decrement Rates Parameter Set") (DLTB m_DRateParm)[361] res←res OVER ("    ","Male Retirement Rates") (DecrDescription m_RXX)[362] res←res OVER ("    ","Male Transfers Out Rates") (DecrDescription m_TOXX)[363] res←res OVER ("    ","Proportion of Male Retirees Transferring Out") (DecrDescription m_TPXX)[364] res←res OVER ("Female Decrement Rates") ""[365] res←res OVER ("    ","Female Decrement Rates Parameter Set") (DLTB f_DRateParm)[366] res←res OVER ("    ","Female Retirement Rates") (DecrDescription f_RXX)[367] res←res OVER ("    ","Female Transfers Out Rates") (DecrDescription f_TOXX)[368] res←res OVER ("    ","Proportion of Female Retirees Transferring Out") (DecrDescription f_TPXX)[369] res←res OVER "" ""[370] [371] res←res OVER ("Spouse") ""[372] res←res OVER ("======") ""[373] res←res OVER ("Spouse Parameters") ""[374] res←res OVER ("    ","Spouse Parameter Set") (DLTB SpouseParm)[375] res←res OVER ("    ","Spouse Definition") (DLTB SPMethod)[376] res←res OVER ("    ","Male Proportion Married Table") (DLTB DecrDescription m_HXX)[377] res←res OVER ("    ","Male Proportion Married") (' %' embrace m_PropMarr)[378] res←res OVER ("    ","Female Proportion Married Table") (DLTB DecrDescription f_HXX)[379] res←res OVER ("    ","Female Proportion Married") (' %' embrace f_PropMarr)[380] res←res OVER ("    ","Male Age Difference Table (m-f)") (DLTB DecrDescription m_AGEDIFT)[381] res←res OVER ("    ","Male Age Difference (m-f)") (DLTB m_AGEDIF," years")[382] res←res OVER ("    ","Female Age Difference Table (f-m)") (DLTB DecrDescription f_AGEDIFT)[383] res←res OVER ("    ","Female Age Difference (f-m)") (DLTB f_AGEDIF," years")[384] res←res OVER "" ""[385] [386] res←res OVER ("Membership") ""[387] res←res OVER ("==========") ""[388] res←res OVER ("Retirement Definitions") ""[389] res←res OVER ("    ","Male Retirement Age Parameter Set") (DLTB m_RAParm)[390] res←res OVER ("    ","Female Retirement Age Parameter Set") (DLTB f_RAParm)[391] res←res OVER ("    ","Male Normal Retirement Age") (DLTB m_NRA," years")[392] res←res OVER ("    ","Female Normal Retirement Age") (DLTB f_NRA," years")[393] res←res OVER ("    ","Normal Retirement Date Indicator") (DLTB nrdind)[394] res←res OVER ("    ","Date Left Active") (LEAVING ConcatLabel lrLEAVING)[395] res←res OVER "" ""[396] [397] res←res OVER ("PUPs") ""[398] res←res OVER ("====") ""[399] :for n :in ⍳1↑⍴MATRIX PUP[400]     res←res OVER ("    ","PUP Description") (DLTB 1↑[1](n-1)↓[1]MATRIX PUPDesc)[401]     res←res OVER ("    ","PUP Amount") (DLTB 1↑[1](n-1)↓[1]MATRIX PUP)[402]     res←res OVER ("    ","Revaluation Rate Override") ((1↑[1](n-1)↓[1]MATRIX INDREV) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrINDREV) ConcatScen termAdjFin (1↑[1](n-1)↓[1]MATRIX sCEN_INDREV))[403] ⍝⍝⍝    res←res OVER ("    ","Transfers Revaluation Rate Override") ((1↑[1](n-1)↓[1]MATRIX TVINDREV) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrTVINDREV) ConcatScen termAdjFin (1↑[1](n-1)↓[1]MATRIX sCEN_TVINDREV))[404]     res←res OVER ("    ","Spouses DAR Override") ((DLTB 1↑[1](n-1)↓[1]MATRIX INDWARFRAC),'%')[405]     res←res OVER ("    ","Override % for DBR Pension") ((DLTB 1↑[1](n-1)↓[1]MATRIX INDDBRFRAC),'%')[406]     res←res OVER ("    ","Complete Years Only Override") (DLTB 1↑[1](n-1)↓[1]MATRIX INDREVYRS)[407]     res←res OVER ("    ","NRA Exits Rounding Override") (DLTB 1↑[1](n-1)↓[1]MATRIX INDNRARND)[408]     res←res OVER ("    ","Start Date") ((1↑[1](n-1)↓[1]MATRIX INDSTART) ConcatLabel 1↑[1](n-1)↓[1]MATRIX lrINDSTART)[409]     res←res OVER ("    ","Finish Date") ((1↑[1](n-1)↓[1]MATRIX INDFINISH) ConcatLabel 1↑[1](n-1)↓[1]MATRIX lrINDFINISH)[410]     res←res OVER ("    ","PUP Adjustment Factor") ((1↑[1](n-1)↓[1]MATRIX PUPADJ) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrPUPADJ) ConcatScen 0 (1↑[1](n-1)↓[1]MATRIX sCEN_PUPADJ))[411]     res←res OVER ("    ","Ignore for Cash") (DLTB 1↑[1](n-1)↓[1]MATRIX COO)[412]     res←res OVER ("    ","Ignore for DBR") (DLTB 1↑[1](n-1)↓[1]MATRIX MOO)[413]     res←res OVER ("    ","ERF Indicator") (DLTB 1↑[1](n-1)↓[1]MATRIX BARBIND)[414]     res←res OVER ("    ","Pension Increases in Payment") (DLTB 1↑[1](n-1)↓[1]MATRIX DYNIND)[415]     res←res OVER ("    ","Include In Underpin") (DLTB 1↑[1](n-1)↓[1]MATRIX UNDIND)[416]     :if ppf[417]         res←res OVER ("    ","Male PPF NRA (Levy Valuations)") (DLTB 1↑[1](n-1)↓[1]MATRIX m_PPFNRA)[418]         res←res OVER ("    ","Female PPF NRA (Levy Valuations)") (DLTB 1↑[1](n-1)↓[1]MATRIX f_PPFNRA)[419]     :endif[420]     :if ppf ⋄ :orif bencap[421]         res←res OVER ("    ","PPF Service Period") (DLTB 1↑[1](n-1)↓[1]MATRIX PPFPAYINC)[422]     :endif[423]     res←res OVER "" ""[424] :endfor[425] [426] res←res OVER ("Retirement Pension") ""[427] res←res OVER ("==================") ""[428] res←res OVER ("Spouse's Pension") ""[429] res←res OVER ("    ","Spouse's Reversion Death After Retirement") (DLTB WARFRAC,"%")[430] res←res OVER ("    ","Apply Early Retirement Factor to Spouse's Pension") (CheckTranslate WARERFind)[431] res←res OVER ("    ","Spouse's Pension based on Pre Commutation Pension") (CheckTranslate WARCOMind)[432] res←res OVER ("Early Retirement Factors",(bBuck∨ClntCode=3)/"- Pension") ""[433] res←res OVER ("    ","Male Retirement Factors Parameter Set") (DLTB m_ERTABParm)[434] res←res OVER ("    ","Males ERF1") (DLTB DecrDescription m_ERTAB)[435] res←res OVER ("    ","Males ERF2") (DLTB DecrDescription m_ERTAB2)[436] res←res OVER ("    ","Linearly Interpolate Male Retirement Factors for mid-point Exit values") (CheckTranslate m_ERTABExactAge)[437] res←res OVER ("    ","Female Retirement Factors Parameter Set") (DLTB f_ERTABParm)[438] res←res OVER ("    ","Females ERF1") (DLTB DecrDescription f_ERTAB)[439] res←res OVER ("    ","Females ERF2") (DLTB DecrDescription f_ERTAB2)[440] res←res OVER ("    ","Linearly Interpolate Female Retirement Factors for mid-point Exit values") (CheckTranslate f_ERTABExactAge)[441] res←res OVER "" ""[442] [443] res←res OVER ("Retirement Cash") ""[444] res←res OVER ("===============") ""[445] res←res OVER ("Retirement Cash",(bBuck∨ClntCode=3)/" Commutation") ""[446] res←res OVER ("    ","Cash Parameter Set") (DLTB CashParm)[447] res←res OVER ("    ","Benefit Basis") (DLTB CTYPE)[448] :if ClntCode≠3 ⋄ :andif ~bBuck[449]     res←res OVER ("    ","Cash Indicator") (DLTB CASHIND)[450] :endif[451] res←res OVER ("    ","Cash Multiple") (DLTB COMMULT)[452] res←res OVER ("    ","Cash Percentage") (DLTB COMPER,"%")[453] res←res OVER ("    ","Calculate separate A-Day Cash Factors for each Pension Increase") (CheckTranslate COMADaySep)[454] res←res OVER ("    ","Treat Independent PUP Cash as Cash on Top") (DLTB CheckTranslate COMADayInd)[455] res←res OVER ("    ","Commutation Priority") (DLTB CASHP)[456] res←res OVER ("Commutation Tables") ""[457] res←res OVER ("    ","Male Commutation Tables Parameter Set") (DLTB m_COMTABParm)[458] res←res OVER ("    ","Female Commutation Tables Parameter Set") (DLTB f_COMTABParm)[459] res←res OVER ("    ","Calculate Male Commutation Factors based on Valuation Basis") (CheckTranslate m_COMValBas)[460] res←res OVER ("    ","Male % of Valuation Basis Factor") (DLTB m_COMValpc,"%")[461] res←res OVER ("    ","Males Main") (DLTB DecrDescription m_COMTAB2)[462] res←res OVER ("    ","Males Special") (DLTB DecrDescription m_COMTAB1)[463] res←res OVER ("    ","Males PenInc3") (DLTB DecrDescription m_COMTAB3)[464] res←res OVER ("    ","Males PenInc4") (DLTB DecrDescription m_COMTAB4)[465] res←res OVER ("    ","Linearly Interpolate Male Commutation Tables for mid-point Exit values") (CheckTranslate m_COMTABExactAge)[466] res←res OVER ("    ","Adjust Male Commutation Tables by the change in member's expectation of life") (CheckTranslate m_COMAdjbyEx)[467] res←res OVER ("    ","Calculate Female Commutation Factors based on Valuation Basis") (CheckTranslate f_COMValBas)[468] res←res OVER ("    ","Female % of Valuation Basis Factor") (DLTB f_COMValpc,"%")[469] res←res OVER ("    ","Females Main") (DLTB DecrDescription f_COMTAB2)[470] res←res OVER ("    ","Females Special") (DLTB DecrDescription f_COMTAB1)[471] res←res OVER ("    ","Females PenInc3") (DLTB DecrDescription f_COMTAB3)[472] res←res OVER ("    ","Females PenInc4") (DLTB DecrDescription f_COMTAB4)[473] res←res OVER ("    ","Linearly Interpolate Female Commutation Tables for mid-point Exit values") (CheckTranslate f_COMTABExactAge)[474] res←res OVER ("    ","Adjust Female Commutation Tables by the change in member's expectation of life") (CheckTranslate f_COMAdjbyEx)[475] res←res OVER ("Cash Cap") ""[476] res←res OVER ("    ","Cash Cap Amount") (DLTB DATACASHCAP)[477] res←res OVER ("    ","% of Cash Cap Amount") (DLTB PERCENTCASHCAP,"%")[478] res←res OVER ("    ","Revaluation Rate Override") (REVCASHCAP ConcatLabel lrREVCASHCAP ConcatScen termAdjFin sCEN_REVCASHCAP)[479] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITCASHCAP)[480] res←res OVER ("    ","Exit Rounding Override") (DLTB NRAEXITCASHCAP)[481] res←res OVER ("    ","ERF Indicator") (DLTB ERFCASHCAP)[482] res←res OVER ("    ","Adjustment Factor") (CASHCAPADJ ConcatLabel lrCASHCAPADJ ConcatScen 0 sCEN_CASHCAPADJ)[483] res←res OVER "" ""[484] [485] :if ClntCode=3 ⋄ :orif bBuck[486]     res←res OVER ("Retirement COT") ""[487]     res←res OVER ("==============") ""[488]     res←res OVER ("Retirement Cash on Top") ""[489]     res←res OVER ("    ","Cash on Top Parameter Set") (DLTB CashParm2)[490]     res←res OVER ("    ","Benefit Basis") (DLTB CTYPE2)[491]     res←res OVER ("    ","Cash Data Field") (DLTB COTDATA)[492]     res←res OVER ("    ","Cash Multiple") (DLTB COMMULT2)[493]     res←res OVER ("    ","Cash Percentage") (DLTB COMPER2,"%")[494]     res←res OVER ("    ","Male Retirement Factors Parameter Set") (DLTB m_ERTABParmC)[495]     res←res OVER ("    ","Males ERF1") (DLTB DecrDescription m_ERTABC)[496]     res←res OVER ("    ","Males ERF2") (DLTB DecrDescription m_ERTAB2C)[497]     res←res OVER ("    ","Linearly Interpolate Male Retirement Factors for mid-point Exit values") (CheckTranslate m_ERTABExactAgeC)[498]     res←res OVER ("    ","Female Retirement Factors Parameter Set") (DLTB f_ERTABParmC)[499]     res←res OVER ("    ","Females ERF1") (DLTB DecrDescription f_ERTABC)[500]     res←res OVER ("    ","Females ERF2") (DLTB DecrDescription f_ERTAB2C)[501]     res←res OVER ("    ","Linearly Interpolate Female Retirement Factors for mid-point Exit values") (CheckTranslate f_ERTABExactAgeC)[502]     res←res OVER "" ""[503] :endif[504] [505] res←res OVER ("Death") ""[506] res←res OVER ("=====") ""[507] res←res OVER ("Death in Deferment Pension") ""[508] res←res OVER ("    ","Spouse's Reversion Death Before Retirement") (DLTB WOFRAC,"%")[509] res←res OVER ("Death in Deferment Cash") ""[510] res←res OVER ("    ","Death Cash Multiple") (DLTB GLBENMULT)[511] res←res OVER ("    ","Add/Compare") (DLTB GLPUP)[512] res←res OVER ("    ","Conts Data Item") (DLTB DCONTS1)[513] res←res OVER ("    ","Conts Interest Rate") (iDCONTS1 ConcatLabel lriDCONTS1 ConcatScen termAdjFin sCEN_iDCONTS1)[514] res←res OVER ("    ","Plus Conts Data Item") (DLTB DCONTS2)[515] res←res OVER ("    ","Plus Conts Interest Rate") (iDCONTS2 ConcatLabel lriDCONTS2 ConcatScen termAdjFin sCEN_iDCONTS2)[516] res←res OVER "" ""[517] [518] :if bTVs[519]     res←res OVER ("TV Basis") ""[520]     res←res OVER ("========") ""[521]     res←res OVER ("Transfers Cash Flow Parameters") ""[522]     res←res OVER ("    ","Same as Valuation Basis Cash Flows") (CheckTranslate TVCFSame)[523]     res←res OVER ("    ","Transfer Benefits Capitalised or Spread") (DLTB TVcapind)[524]     res←res OVER ("Transfers Interest Rate Assumptions") ""[525]     res←res OVER ("    ","Same as Valuation Basis Interest Rates") (CheckTranslate TVIntSame)[526]     res←res OVER ("    ","Transfers Pre Retirement Interest Rate") (TVIR ConcatLabel lrTVIR ConcatScen termAdjFin sCEN_TVIR)[527]     res←res OVER ("    ","Transfers Post Retirement Interest Rate") (TVpi ConcatLabel lrTVpi ConcatScen termAdjFin sCEN_TVpi)[528]     ⍝⍝⍝ res←res OVER ("Transfers Revaluation") ""[529]     ⍝⍝⍝ res←res OVER ("    ","Same as Valuation Basis Revaluation Rates") (CheckTranslate TVRevSame)[530]     ⍝⍝⍝ res←res OVER ("    ","Transfers Excess Revaluation") (TVREVN ConcatLabel lrTVREVN ConcatScen termAdjFin sCEN_TVREVN)[531]     ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate To SPA") (TVGMPREV1 ConcatLabel lrTVGMPREV1 ConcatScen termAdjFin sCEN_TVGMPREV1)[532]     ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate to NRA<SPA") (TVPRESPAREV ConcatLabel lrTVPRESPAREV ConcatScen termAdjFin sCEN_TVPRESPAREV)[533]     res←res OVER ("Transfers Pension Escalation") ""[534]     res←res OVER ("    ","Same as Valuation Basis Increase Rates") (CheckTranslate TVEscSame)[535]     res←res OVER ("    ","Transfers Pre 1988 GMP") (TVB88GMPINC ConcatLabel lrTVB88GMPINC ConcatScen termAdjFin sCEN_TVB88GMPINC)[536]     res←res OVER ("    ","Transfers Post 1988 GMP") (TVA88GMPINC ConcatLabel lrTVA88GMPINC ConcatScen termAdjFin sCEN_TVA88GMPINC)[537]     res←res OVER ("    ","Transfers Main") (TVDYNINC ConcatLabel lrTVDYNINC ConcatScen termAdjFin sCEN_TVDYNINC)[538]     res←res OVER ("    ","Transfers Special") (TVNDYNINC ConcatLabel lrTVNDYNINC ConcatScen termAdjFin sCEN_TVNDYNINC)[539]     res←res OVER ("    ","Transfers PenInc3") (TVDYNINC3 ConcatLabel lrTVDYNINC3 ConcatScen termAdjFin sCEN_TVDYNINC3)[540]     res←res OVER ("    ","Transfers PenInc4") (TVDYNINC4 ConcatLabel lrTVDYNINC4 ConcatScen termAdjFin sCEN_TVDYNINC4)[541]     res←res OVER ("Transfers Spouse Parameters") ""[542]     res←res OVER ("    ","Same as Valuation Basis Spouse Parameters") (CheckTranslate TVSpouseSame)[543]     res←res OVER ("    ","Transfers Spouse Parameter Set") (DLTB TVSpouseParm)[544]     res←res OVER ("    ","Transfers Spouse Definition") (DLTB TVSPMethod)[545]     res←res OVER ("    ","Male Transfers Proportion Married Table") (DLTB DecrDescription m_TVHXX)[546]     res←res OVER ("    ","Male Transfers Proportion Married") (' %' embrace m_TVPropMarr)[547]     res←res OVER ("    ","Female Transfers Proportion Married Table") (DLTB DecrDescription f_TVHXX)[548]     res←res OVER ("    ","Female Transfers Proportion Married") (' %' embrace f_TVPropMarr)[549]     res←res OVER ("    ","Male Transfers Age Difference Table (m-f)") (DLTB DecrDescription m_TVAGEDIFT)[550]     res←res OVER ("    ","Male Transfers Age Difference (m-f)") (DLTB m_TVAGEDIF," years")[551]     res←res OVER ("    ","Female Transfers Age Difference Table (f-m)") (DLTB DecrDescription f_TVAGEDIFT)[552]     res←res OVER ("    ","Female Transfers Age Difference (f-m)") (DLTB f_TVAGEDIF," years")[553]     res←res OVER "" ""[554] [555]     res←res OVER ("TV Mortality") ""[556]     res←res OVER ("=========") ""[557]     res←res OVER ("Transfers Pre Retirement Mortality") ""[558]     res←res OVER ("    ","Ignore Death in Deferment in Transfer Calculations") (CheckTranslate TVIgnoreDiD)[559]     res←res OVER ("    ","Same as Valuation Basis Pre Retirement Mortality") (CheckTranslate TVDPreSame)[560]     res←res OVER ("    ","Male Transfers Mortality Rate Parameters") (0 DropEther m_TVDPRE)[561]     :if ~(⊂m_TVDPRE)∊'' 'None'[562]         res←res OVER ParametersSaved 'Mortality_Rate' m_TVDPRE[563]         res←res OVER ("    ","Male Transfers Mortality Rates") (DecrDescription m_TVDPRETABXX)[564]         res←res OVER ("    ","Base Year of Male Transfer Member Mortality Table") (DLTB m_TVDPREORIG)[565]         res←res OVER ("    ","Male Transfer Member % Rating") (DLTB m_TVDPREMEMB)[566]     :endif[567]     res←res OVER ("    ","Male Transfers Mortality Improvement Parameters") (DLTB m_TVmiDPRE)[568]     :if ~(⊂m_TVmiDPRE)∊'' 'None'[569]         res←res OVER ParametersSaved 'Mort_Improvement' m_TVmiDPRE[570]         res←res OVER "    " MI_RunDesc 'm_TVmiDPRE' (0 0)[571]     :endif[572]     res←res OVER ("    ","Female Transfers Mortality Rate Parameters") (0 DropEther f_TVDPRE)[573]     :if ~(⊂f_TVDPRE)∊'' 'None'[574]         res←res OVER ParametersSaved 'Mortality_Rate' f_TVDPRE[575]         res←res OVER ("    ","Female Transfers Mortality Rates") (DecrDescription f_TVDPRETABXX)[576]         res←res OVER ("    ","Base Year of Female Transfer Member Mortality Table") (DLTB f_TVDPREORIG)[577]         res←res OVER ("    ","Female Transfer Member % Rating") (DLTB f_TVDPREMEMB)[578]     :endif[579]     res←res OVER ("    ","Female Transfers Mortality Improvement Parameters") (DLTB f_TVmiDPRE)[580]     :if ~(⊂f_TVmiDPRE)∊'' 'None'[581]         res←res OVER ParametersSaved 'Mort_Improvement' f_TVmiDPRE[582]         res←res OVER "    " MI_RunDesc 'f_TVmiDPRE' (0 0)[583]     :endif[584]     res←res OVER ("Transfers Member's Post Retirement Mortality") ""[585]     res←res OVER ("    ","Same as Valuation Basis Member Post Retirement Mortality") (CheckTranslate TVDPostSame)[586]     res←res OVER ("    ","Male Post Transfer Member Mortality Rates Description") (0 DropEther m_TVDPOST)[587]     :if ~(⊂m_TVDPOST)∊'' 'None'[588]         res←res OVER ParametersSaved 'Mortality_Rate' m_TVDPOST[589]         res←res OVER ("    ","Male Post Transfer Member Mortality Rates") (DecrDescription m_TVDPOSTTABXX)[590]         res←res OVER ("    ","Base Year of Male Post Transfer Member Mortality Table") (DLTB m_TVDPOSTORIG)[591]         res←res OVER ("    ","Male Post Transfer Member Individual % Rating") (DLTB m_TVDPOSTMEMB)[592]     :endif[593]     res←res OVER ("    ","Male Post Transfer Member Mortality Improvement") (DLTB m_TVmiDPOST)[594]     :if ~(⊂m_TVmiDPOST)∊'' 'None'[595]         res←res OVER ParametersSaved 'Mort_Improvement' m_TVmiDPOST[596]         res←res OVER "    " MI_RunDesc 'm_TVmiDPOST' (1 0)[597]     :endif[598]     res←res OVER ("    ","Female Post Transfer Member Mortality Rates Description") (0 DropEther f_TVDPOST)[599]     :if ~(⊂f_TVDPOST)∊'' 'None'[600]         res←res OVER ParametersSaved 'Mortality_Rate' f_TVDPOST[601]         res←res OVER ("    ","Female Post Transfer Member Mortality Rates") (DecrDescription f_TVDPOSTTABXX)[602]         res←res OVER ("    ","Base Year of Female Post Transfer Member Mortality Table") (DLTB f_TVDPOSTORIG)[603]         res←res OVER ("    ","Female Post Transfer Member Individual % Rating") (DLTB f_TVDPOSTMEMB)[604]     :endif[605]     res←res OVER ("    ","Female Post Transfer Member Mortality Improvement") (DLTB f_TVmiDPOST)[606]     :if ~(⊂f_TVmiDPOST)∊'' 'None'[607]         res←res OVER ParametersSaved 'Mort_Improvement' f_TVmiDPOST[608]         res←res OVER "    " MI_RunDesc 'f_TVmiDPOST' (1 0)[609]     :endif[610] ⍝⍝⍝    :if bGAD[611]     res←res OVER ("Transfers Spouse/Partner's Post Retirement Mortality") ""[612]     res←res OVER ("    ","Same as Valuation Basis Spouse Post Retirement Mortality") (CheckTranslate TVSDPostSame)[613]     res←res OVER ("    ","Male Post Transfer Member's Spouse/Partner Mortality Rates Description") (0 DropEther m_TVSDPOST)[614]     :if ~(⊂m_TVSDPOST)∊'' 'None'[615]         res←res OVER ParametersSaved 'Mortality_Rate' m_TVSDPOST[616]         res←res OVER ("    ","Male Post Transfer Member's Spouse/Partner Mortality Rates") (DecrDescription m_TVSDPOSTTABXX)[617]         res←res OVER ("    ","Base Year of Male Post Transfer Member's Spouse/Partner Mortality Table") (DLTB m_TVSDPOSTORIG)[618]         res←res OVER ("    ","Male Post Transfer Member's Spouse/Partner Individual % Rating") (DLTB m_TVSDPOSTMEMB)[619]     :endif[620]     res←res OVER ("    ","Male Post Transfer Member's Spouse/Partner Mortality Improvement") (DLTB m_TVmiSDPOST)[621]     :if ~(⊂m_TVmiSDPOST)∊'' 'None'[622]         res←res OVER ParametersSaved 'Mort_Improvement' m_TVmiSDPOST[623]         res←res OVER "    " MI_RunDesc 'm_TVmiSDPOST' (0 1)[624]     :endif[625]     res←res OVER ("    ","Female Post Transfer Member's Spouse/Partner Mortality Rates Description") (0 DropEther f_TVSDPOST)[626]     :if ~(⊂f_TVSDPOST)∊'' 'None'[627]         res←res OVER ParametersSaved 'Mortality_Rate' f_TVSDPOST[628]         res←res OVER ("    ","Female Post Transfer Member's Spouse/Partner Mortality Rates") (DecrDescription f_TVSDPOSTTABXX)[629]         res←res OVER ("    ","Base Year of Female Post Transfer Member's Spouse/Partner Mortality Table") (DLTB f_TVSDPOSTORIG)[630]         res←res OVER ("    ","Female Post Transfer Member's Spouse/Partner Individual % Rating") (DLTB f_TVSDPOSTMEMB)[631]     :endif[632]     res←res OVER ("    ","Female Post Transfer Member's Spouse/Partner Mortality Improvement") (DLTB f_TVmiSDPOST)[633]     :if ~(⊂f_TVmiSDPOST)∊'' 'None'[634]         res←res OVER ParametersSaved 'Mort_Improvement' f_TVmiSDPOST[635]         res←res OVER "    " MI_RunDesc 'f_TVmiSDPOST' (0 1)[636]     :endif[637] ⍝⍝⍝    :endif[638]     res←res OVER "" ""[639] :endif[640] [641] res←res OVER ("Underpin") ""[642] res←res OVER ("========") ""[643] res←res OVER ("Underpin Parameters") ""[644] res←res OVER ("    ","Benefits Underpinned") (DLTB CheckTranslate mpuflag)[645] res←res OVER ("    ","Underpin Commencement Date") (mpuDATE ConcatLabel lrmpuDATE)[646] res←res OVER ("    ","Underpin Interest (% p.a.)") (jmpu ConcatLabel lrjmpu ConcatScen termAdjFin sCEN_jmpu)[647] res←res OVER "" ""[648] [649] res←res OVER ("Independent PUPs") ""[650] res←res OVER ("================") ""[651] :if zwb IndPUPs[652]     :for n :in ⍳1↑⍴MATRIX IndPUP[653]         res←res OVER ("PUP Description") (DLTB 1↑[1](n-1)↓[1]MATRIX IndPUPDesc)[654]         res←res OVER ("PUP Amount") (DLTB 1↑[1](n-1)↓[1]MATRIX IndPUP)[655]         res←res OVER ("Revaluation Rate Override") ((1↑[1](n-1)↓[1]MATRIX IndINDREV) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrIndINDREV) ConcatScen termAdjFin (1↑[1](n-1)↓[1]MATRIX sCEN_IndINDREV))[656] ⍝⍝⍝        res←res OVER ("Transfers Revaluation Rate Override") ((1↑[1](n-1)↓[1]MATRIX IndTVINDREV) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrIndTVINDREV) ConcatScen termAdjFin (1↑[1](n-1)↓[1]MATRIX sCEN_IndTVINDREV))[657]         res←res OVER ("Spouses DAR Override") ((DLTB 1↑[1](n-1)↓[1]MATRIX IndINDWARFRAC),'%')[658]         res←res OVER ("Complete Years Only Override") (DLTB 1↑[1](n-1)↓[1]MATRIX IndINDREVYRS)[659]         res←res OVER ("NRA Exits Rounding Override") (DLTB 1↑[1](n-1)↓[1]MATRIX IndINDNRARND)[660]         res←res OVER ("Start Date") ((1↑[1](n-1)↓[1]MATRIX IndINDSTART) ConcatLabel 1↑[1](n-1)↓[1]MATRIX lrIndINDSTART)[661]         res←res OVER ("Finish Date") ((1↑[1](n-1)↓[1]MATRIX IndINDFINISH) ConcatLabel 1↑[1](n-1)↓[1]MATRIX lrIndINDFINISH)[662]         res←res OVER ("Male Start Age") (DLTB 1↑[1](n-1)↓[1]MATRIX m_IndPayStart)[663]         res←res OVER ("Female Start Age") (DLTB 1↑[1](n-1)↓[1]MATRIX f_IndPayStart)[664]         res←res OVER ("Male End Age") (DLTB 1↑[1](n-1)↓[1]MATRIX m_IndPayEnd)[665]         res←res OVER ("Female End Age") (DLTB 1↑[1](n-1)↓[1]MATRIX f_IndPayEnd)[666]         res←res OVER ("PUP Adjustment Factor") ((1↑[1](n-1)↓[1]MATRIX IndPUPADJ) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrIndPUPADJ) ConcatScen 0 (1↑[1](n-1)↓[1]MATRIX sCEN_IndPUPADJ))[667]         res←res OVER ("ERF Indicator") (DLTB 1↑[1](n-1)↓[1]MATRIX IndBARBIND)[668]         res←res OVER ("Pension Increases in Payment") (DLTB 1↑[1](n-1)↓[1]MATRIX IndDYNIND)[669]         res←res OVER ("Pension Increases Pre Start") (DLTB 1↑[1](n-1)↓[1]MATRIX IndDYNIND2)[670]         res←res OVER ("Include In Underpin") (DLTB 1↑[1](n-1)↓[1]MATRIX IndUNDIND)[671]         :if ppf[672]             res←res OVER ("Male PPF NRA (Levy Valuations)") (DLTB 1↑[1](n-1)↓[1]MATRIX m_IndPPFNRA)[673]             res←res OVER ("Female PPF NRA (Levy Valuations)") (DLTB 1↑[1](n-1)↓[1]MATRIX f_IndPPFNRA)[674]         :endif[675]         :if ppf ⋄ :orif bencap[676]             res←res OVER ("PPF Service Period") (DLTB 1↑[1](n-1)↓[1]MATRIX IndPPFPAYINC)[677]         :endif[678]         res←res OVER "" ""[679]     :endfor[680] :endif[681] res←res OVER "" ""[682] [683] res←res OVER ("Non-Standard PUPs") ""[684] res←res OVER ("=================") ""[685] res←res OVER ("Death Before Retirement PUP 1") ""[686] res←res OVER ("    ","PUP Amount") (DLTB DATADBR1)[687] res←res OVER ("    ","% of PUP Amount") (DLTB PERCENTDBR1,"%")[688] res←res OVER ("    ","Revaluation Rate Override") (REVDBR1 ConcatLabel lrREVDBR1 ConcatScen termAdjFin sCEN_REVDBR1)[689] ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate Override") (TVREVDBR1 ConcatLabel lrTVREVDBR1 ConcatScen termAdjFin sCEN_TVREVDBR1)[690] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITDBR1)[691] res←res OVER ("    ","Pension Increases in Payment") (DLTB DYNDBR1)[692] res←res OVER ("    ","Adjustment Factor") (DBR1ADJ ConcatLabel lrDBR1ADJ ConcatScen 0 sCEN_DBR1ADJ)[693] :if bencap[694]     res←res OVER ("    ","Treat as Post 1997 for CAP") (DLTB CheckTranslate PPFPAYINCDBR1)[695] :endif[696] res←res OVER ("Death Before Retirement PUP 2") ""[697] res←res OVER ("    ","PUP Amount") (DLTB DATADBR2)[698] res←res OVER ("    ","% of PUP Amount") (DLTB PERCENTDBR2,"%")[699] res←res OVER ("    ","Revaluation Rate Override") (REVDBR2 ConcatLabel lrREVDBR2 ConcatScen termAdjFin sCEN_REVDBR2)[700] ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate Override") (TVREVDBR2 ConcatLabel lrTVREVDBR2 ConcatScen termAdjFin sCEN_TVREVDBR2)[701] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITDBR2)[702] res←res OVER ("    ","Pension Increases in Payment") (DLTB DYNDBR2)[703] res←res OVER ("    ","Adjustment Factor") (DBR2ADJ ConcatLabel lrDBR2ADJ ConcatScen 0 sCEN_DBR2ADJ)[704] :if bencap[705]     res←res OVER ("    ","Treat as Post 1997 for CAP") (DLTB CheckTranslate PPFPAYINCDBR2)[706] :endif[707] res←res OVER ("Death After Retirement PUP 1") ""[708] res←res OVER ("    ","PUP Amount") (DLTB DATADAR1)[709] res←res OVER ("    ","% of PUP Amount") (DLTB PERCENTDAR1,"%")[710] res←res OVER ("    ","Revaluation Rate Override") (REVDAR1 ConcatLabel lrREVDAR1 ConcatScen termAdjFin sCEN_REVDAR1)[711] ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate Override") (TVREVDAR1 ConcatLabel lrTVREVDAR1 ConcatScen termAdjFin sCEN_TVREVDAR1)[712] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITDAR1)[713] res←res OVER ("    ","Exit Rounding Override") (DLTB NRAEXITDAR1)[714] res←res OVER ("    ","ERF Indicator") (DLTB ERFDAR1)[715] res←res OVER ("    ","Pension Increases in Payment") (DLTB DYNDAR1)[716] res←res OVER ("    ","Adjustment Factor") (DAR1ADJ ConcatLabel lrDAR1ADJ ConcatScen 0 sCEN_DAR1ADJ)[717] :if bencap[718]     res←res OVER ("    ","Treat as Post 1997 for CAP") (DLTB CheckTranslate PPFPAYINCDAR1)[719] :endif[720] res←res OVER ("Death After Retirement PUP 2") ""[721] res←res OVER ("    ","PUP Amount") (DLTB DATADAR2)[722] res←res OVER ("    ","% of PUP Amount") (DLTB PERCENTDAR2,"%")[723] res←res OVER ("    ","Revaluation Rate Override") (REVDAR2 ConcatLabel lrREVDAR2 ConcatScen termAdjFin sCEN_REVDAR2)[724] ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate Override") (TVREVDAR2 ConcatLabel lrTVREVDAR2 ConcatScen termAdjFin sCEN_TVREVDAR2)[725] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITDAR2)[726] res←res OVER ("    ","Exit Rounding Override") (DLTB NRAEXITDAR2)[727] res←res OVER ("    ","ERF Indicator") (DLTB ERFDAR2)[728] res←res OVER ("    ","Pension Increases in Payment") (DLTB DYNDAR2)[729] res←res OVER ("    ","Adjustment Factor") (DAR2ADJ ConcatLabel lrDAR2ADJ ConcatScen 0 sCEN_DAR2ADJ)[730] :if bencap[731]     res←res OVER ("    ","Treat as Post 1997 for CAP") (DLTB CheckTranslate PPFPAYINCDAR2)[732] :endif[733] res←res OVER "" ""[734] [735] :if aosind[736]     res←res OVER "" ""[737]     res←res OVER ("AOS Parameters") ""[738]     res←res OVER ("==============") ""[739]     res←res OVER ("Modes of Termination") ""[740]     PickList←(SStoMAT RetCode) OVER ' '[741]     :for n :in ⍳1⌈¯1+1↑⍴PickList[742]         res←res OVER ('    ',(n=1)/'Retirement') (PickList[n;])[743]     :endfor[744]     PickList←(SStoMAT DISCode) OVER ' '[745]     :for n :in ⍳1⌈¯1+1↑⍴PickList[746]         res←res OVER ('    ',(n=1)/'Death In Deferment') (PickList[n;])[747]     :endfor[748] :endif[749] [750] Header←(Header,' '),(∨/' '≠(Header←⊃res[;1]),⊃res[;2])\':'[751] res←Header," ",⊃res[;2]    ∇
+    ∇ res←DefVal_RunDesc;⎕io;Header;CHeader;PickList;n;z;GHeader;PHeader;BHeader;tab;∆;Name;Value;Desc
+[1]   ⍝ DEFWIN.sf#2
+[2]   ⍝ Valuation Run Description
+[3]   ⎕io←1 ⋄ res←0 2⍴""
+[4]   
+[5]   res←res OVER ('Valuation Run Time') RunTime
+[6]   res←res OVER ('User') uSER
+[7]   res←res OVER "" ""
+[8]   
+[9]   CHeader← ClientFile ReadFile "Index"
+[10]  ⍝⍝⍝ GHeader←GlobalsFile ReadFile "Index"
+[11]  res←res OVER "Scheme Details" ""
+[12]  res←res OVER "==============" ""
+[13]  res←res OVER ("Scheme Parameter File") (DLTB ClientFile)
+[14]  res←res OVER "Scheme " ParametersSaved "Client"
+[15]  res←res OVER "" ""
+[16]  res←res OVER "Data" ""
+[17]  res←res OVER "====" ""
+[18]  res←res OVER "Scheme Name" cLIENT
+[19]  :if aosind ⋄ :orif vDATEind
+[20]      res←res OVER "Current Valuation Date" (,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX vDATE)
+[21]  :endif
+[22]  :if aosind ⋄ :orif ~vDATEind
+[23]      res←res OVER "Previous Valuation Date" (,'ZI2,</>,ZI2,</>,ZI4' ⎕fmt MATRIX pvDATE)
+[24]  :endif
+[25]  Header←DECRFile ReadFile 'Index'
+[26]  res←res OVER ("Decrements File Name") ((DLTB DECRFile),'.sf')
+[27]  res←res OVER ("Decrements File Last Modified") (↑(Header for 1=⍳rowsIn Header) at '∆_TSModified')
+[28]  res←res OVER "" ""
+[29]  :if 0≠rowsIn tab←(AbsDict for 'Module' 'Constants') for 'Type' 'Number'
+[30]      res←res OVER "Numeric Constants" ""
+[31]      res←res OVER "=================" ""
+[32]      :for ∆ :in spin tab at 'Variable' 'Parameter' 'Description' ⋄ (Name Value Desc)←∆ ⋄ Desc←(~Desc≡Name)/Desc
+[33]          res←res OVER Name ("<",Value,">"," - ",Desc)
+[34]      :endfor
+[35]      res←res OVER "" ""
+[36]  :endif
+[37]  :if 0≠rowsIn tab←(AbsDict for 'Module' 'Constants') for 'Type' 'Date'
+[38]      res←res OVER "Date Constants" ""
+[39]      res←res OVER "==============" ""
+[40]      :for ∆ :in spin tab at 'Variable' 'Parameter' 'Description' ⋄ (Name Value Desc)←∆ ⋄ Desc←(~Desc≡Name)/Desc
+[41]          res←res OVER Name ("<",Value,">"," - ",Desc)
+[42]      :endfor
+[43]      res←res OVER "" ""
+[44]  :endif
+[45]  
+[46]  res←res OVER "Financial Parameters Description" FinDefault
+[47]  res←res OVER "Financial " ParametersSaved "Financials" FinDefault
+[48]  :if 0≠1↑⍴(∨/' '≠intName)⌿MATRIX intName
+[49]      res←res OVER "Interest Assumptions" ""
+[50]      res←res OVER "====================" ""
+[51]      res←res OVER Fin_RunDesc intName intValue intCap intCollar intGroup intDesc ''
+[52]  :endif
+[53]  :if 0≠1↑⍴(∨/' '≠infName)⌿MATRIX infName
+[54]      res←res OVER "Inflation Assumptions" ""
+[55]      res←res OVER "=====================" ""
+[56]      res←res OVER Fin_RunDesc infName infValue infCap infCollar infGroup infDesc ''
+[57]  :endif
+[58]  :if 0≠1↑⍴(∨/' '≠revName)⌿MATRIX revName
+[59]      res←res OVER "Revaluation Assumptions" ""
+[60]      res←res OVER "=======================" ""
+[61]      res←res OVER Fin_RunDesc revName revValue revCap revCollar revGroup revDesc ''
+[62]  :endif
+[63]  :if 0≠1↑⍴(∨/' '≠incName)⌿MATRIX incName
+[64]      res←res OVER "Increase Assumptions" ""
+[65]      res←res OVER "====================" ""
+[66]      res←res OVER Fin_RunDesc incName incValue incCap incCollar incGroup incDesc incConsDyn
+[67]  :endif
+[68]  :if 0≠rowsIn tab←(AbsDict for 'Module' 'Financials') ⍝⍝⍝ for 'Type' 'Number'
+[69]      res←res OVER "Financial Constants" ""
+[70]      res←res OVER "===================" ""
+[71]      :for ∆ :in spin tab at 'Variable' 'Parameter' 'Description' ⋄ (Name Value Desc)←∆ ⋄ Desc←(~Desc≡Name)/Desc
+[72]          res←res OVER Name ("<",Value,">"," - ",Desc)
+[73]      :endfor
+[74]      res←res OVER "" ""
+[75]  :endif
+[76]  
+[77]  res←res OVER "Valuation Batch Parameters" ""
+[78]  res←res OVER "====================" ""
+[79]  :if scenario
+[80]      res←res OVER ("Scenario Parameters Description") ScenarioJobName
+[81]      res←res OVER "Scenario Batch " ParametersSaved 'Run_Scenarios' ScenarioJobName
+[82]  :endif
+[83]  res←res OVER ("Valuation Parameters Description") BatchJobName
+[84]  res←res OVER "Valuation Batch " ParametersSaved 'Batch_Display' BatchJobName
+[85]  res←res OVER ValParmdesc
+[86]  res←res OVER "" ""
+[87]  
+[88]  BHeader←(InputDir,basisFile) ReadFile "Index"
+[89]  res←res OVER "Valuation Basis" ""
+[90]  res←res OVER "===============" ""
+[91]  res←res OVER "Basis File Name" (DLTB InputDir,basisFile)
+[92]  res←res OVER "Basis File Description" (↑(BHeader for 1=⍳rowsIn BHeader) at '∆_Description')
+[93]  res←res OVER 'Saved Basis Description' basisDesc
+[94]  res←res OVER "Basis " ParametersSaved 'Deferreds_Basis' basisDesc
+[95]  res←res OVER "" ""
+[96]  
+[97]  res←res OVER ("Main") ""
+[98]  res←res OVER ("====") ""
+[99]  res←res OVER ("Membership Data") ""
+[100] 
+[101] :if zwb FileSelections
+[102]     :if 0∊⍴n←FilesList ExactTLU fILENAME
+[103]         res←res OVER ("    ","Deferred Members Data File") ((DLTB fILENAME)," ",0 1 WGetFileTime InputDir,fILENAME)
+[104]     :else
+[105]         res←res OVER ("    ","Deferred Members Data File") ((DLTB fILENAME)," <",,FilesDesc[n;],">")
+[106]     :endif
+[107]     res←res OVER ('Sex/Category Selection') (1↓CatSels,' <File: ',(DLTB FILES),' ',(WGetFileTime InputDir,FILES),'>')
+[108] :else
+[109]     :if 0∊⍴n←FilesList ExactTLU FILES
+[110]         res←res OVER ("    ","Deferred Members Data File") ((DLTB FILES)," ",0 1 WGetFileTime InputDir,FILES)
+[111]     :else
+[112]         res←res OVER ("    ","Deferred Members Data File") ((DLTB FILES)," <",,FilesDesc[n;],">")
+[113]     :endif
+[114] :endif
+[115] res←res OVER ("    ",'Data Format') ((DLTB Format),' <',(,ClientFile ReadFile (Format[1+⍳3],'Format') (6↓Format) 'TSTAMP'),'>')
+[116] 
+[117] res←res OVER ("Pension Payment Parameters") ""
+[118] res←res OVER ("    ","Guarantee Period") (DLTB GPeriod," years")
+[119] res←res OVER ("    ","Overlap during Guarantee Period") (CheckTranslate GPOverlap)
+[120] res←res OVER ("    ","Discounted LS on Death in Guarantee Period") (DLTB CheckTranslate DISC)
+[121] res←res OVER ("    ","Payment Frequency") (DLTB FREQ)
+[122] res←res OVER ("    ","Mode") (DLTB MODE)
+[123] res←res OVER ("    ","First Year Increase") (DLTB IncTiming)
+[124] res←res OVER ("Cash Flow Parameters") ""
+[125] res←res OVER ("    ","Pension Benefits Capitalised or Spread") (DLTB capind)
+[126] res←res OVER ("    ","Underpin Method") (DLTB Umethod)
+[127] res←res OVER ("    ","Retirement Age") (DLTB DecrDescription ¯5↑DLTB URAGE)
+[128] res←res OVER ("    ","Death Age") (DLTB DecrDescription ¯5↑DLTB UDAGE)
+[129] res←res OVER ("Additional Benefits") ""
+[130] res←res OVER ("    ","Independent PUPs") (DLTB CheckTranslate IndPUPs)
+[131] 
+[132] res←res OVER "" ""
+[133] res←res OVER ("Financial") ""
+[134] res←res OVER ("=========") ""
+[135] res←res OVER ("Interest Rate Assumptions") ""
+[136] res←res OVER ("    ","Pre Retirement Interest Rate") (IR ConcatLabel lrIR ConcatScen termAdjFin sCEN_IR)
+[137] res←res OVER ("    ","Post Retirement Interest Rate") (pi ConcatLabel lrpi ConcatScen termAdjFin sCEN_pi)
+[138] res←res OVER ("Excess Revaluation - Overall Parameters") ""
+[139] res←res OVER ("    ","Excess Revaluation") (REVN ConcatLabel lrREVN ConcatScen termAdjFin sCEN_REVN)
+[140] res←res OVER ("    ","Count Complete Years") (DLTB CheckTranslate REVYRS)
+[141] res←res OVER ("    ","NRA Exits Rounding") (DLTB NRARND)
+[142] res←res OVER ("    ","Pre Valuation Date Revaluation") (DLTB PASTREV)
+[143] res←res OVER ("    ","Pre Valuation Date Factor Set") ((DLTB REVSet),0 FactorTimestamp REVSet)
+[144] res←res OVER ("    ","Pre Valuation Date Rate") (PASTREVN ConcatLabel lrPASTREVN ConcatScen termAdjFin sCEN_PASTREVN)
+[145] res←res OVER ("    ","Pre Valuation Date Rate Rounding") (DLTB PASTREVNRND)
+[146] res←res OVER ("Pension Escalation") ""
+[147] res←res OVER ("    ","Pre 1988 GMP") (B88GMPINC ConcatLabel lrB88GMPINC ConcatScen termAdjFin sCEN_B88GMPINC)
+[148] res←res OVER ("    ","Post 1988 GMP") (A88GMPINC ConcatLabel lrA88GMPINC ConcatScen termAdjFin sCEN_A88GMPINC)
+[149] res←res OVER ("    ","Main") (DYNINC ConcatLabel lrDYNINC ConcatScen termAdjFin sCEN_DYNINC)
+[150] res←res OVER ("    ","Special") (NDYNINC ConcatLabel lrNDYNINC ConcatScen termAdjFin sCEN_NDYNINC)
+[151] res←res OVER ("    ","PenInc3") (DYNINC3 ConcatLabel lrDYNINC3 ConcatScen termAdjFin sCEN_DYNINC3)
+[152] res←res OVER ("    ","PenInc4") (DYNINC4 ConcatLabel lrDYNINC4 ConcatScen termAdjFin sCEN_DYNINC4)
+[153] res←res OVER ("    ","Timing of Pension Increases") (DLTB INCIND)
+[154] res←res OVER ("    ","Increase Date") (DLTB INCDAT," DD/MM")
+[155] res←res OVER "" ""
+[156] 
+[157] res←res OVER ("Legislation") ""
+[158] res←res OVER ("===========") ""
+[159] res←res OVER ("GMPs") ""
+[160] res←res OVER ("    ","GMPs as at Leaving Date") (DLTB CheckTranslate GMPORIGIN)
+[161] res←res OVER ("    ","Fixed  Revaluation Rate to SPA") ((CheckTranslate GMPREV2),1 FactorTimestamp 'GMPFixed')
+[162] res←res OVER ("    ","Revaluation Rate To SPA") (GMPREV1 ConcatLabel lrGMPREV1 ConcatScen termAdjFin sCEN_GMPREV1)
+[163] res←res OVER ("    ","Past GMP Revaluation Rate(s) to NRA<SPA Factor Set") ((DLTB pastPRESPAREV),0 FactorTimestamp pastPRESPAREV)
+[164] res←res OVER ("    ","Revaluation Rate to NRA<SPA") (PRESPAREV ConcatLabel lrPRESPAREV ConcatScen termAdjFin sCEN_PRESPAREV)
+[165] res←res OVER ("    ","Complete Years Pre NRA") (DLTB CheckTranslate GMPREVYRS)
+[166] res←res OVER ("    ","NRA Exits Rounding") (DLTB GMPNRARND)
+[167] res←res OVER ("    ","Franking Code") (DLTB OFFCOD)
+[168] res←res OVER ("    ","Franking In Deferment") (DLTB CheckTranslate FID)
+[169] res←res OVER ("    ","Statutory GMP Increases to NRA>SPA") (DLTB CheckTranslate GMPLRInc)
+[170] res←res OVER ("    ","Public Sector GMPs") (DLTB CheckTranslate PubSect)
+[171] :if ppf
+[172]     res←res OVER ("    ","Male PPF NRA (Levy Valuations)") (DLTB m_PPFGMPNRA)
+[173]     res←res OVER ("    ","Female PPF NRA (Levy Valuations)") (DLTB f_PPFGMPNRA)
+[174] :endif
+[175] res←res OVER ("    ","Treat Pre 1988 GMP As Zero") (DLTB CheckTranslate IGNOREPre)
+[176] res←res OVER ("    ","Treat Post 1988 GMP As Zero") (DLTB CheckTranslate IGNOREPost)
+[177] res←res OVER ("Pre 1988 GMP Parameters") ""
+[178] res←res OVER ("    ","Ignore Pre 1988 GMP For Cash Benefit") (DLTB CheckTranslate COOPre)
+[179] res←res OVER ("    ","Ignore Pre 1988 GMP For Death Benefit") (DLTB MOOPre)
+[180] res←res OVER ("    ","Pre 1988 Start Date") (PreSTART ConcatLabel lrPreSTART)
+[181] res←res OVER ("    ","Pre 1988 Finish Date") (PreFINISH ConcatLabel lrPreFINISH)
+[182] res←res OVER ("    ","Pre 1988 ERF Indicator") (DLTB bpreIND)
+[183] res←res OVER ("    ","Pre 1988 Dynamism") (DLTB mpreIND)
+[184] res←res OVER ("    ","Pre 1988 Underpin Indicator") (DLTB upreIND)
+[185] res←res OVER ("    ","Pre 1988 GMP Adjustment Factor") (preADJ ConcatLabel lrpreADJ ConcatScen 0 sCEN_preADJ)
+[186] res←res OVER ("Post 1988 GMP Parameters") ""
+[187] res←res OVER ("    ","Ignore Post 1988 GMP For Cash Benefit") (DLTB CheckTranslate COOPost)
+[188] res←res OVER ("    ","Ignore Post 1988 GMP For Death Benefit") (DLTB MOOPost)
+[189] res←res OVER ("    ","Post 1988 Start Date") (PostSTART ConcatLabel lrPostSTART)
+[190] res←res OVER ("    ","Post 1988 Finish Date") (PostFINISH ConcatLabel lrPostFINISH)
+[191] res←res OVER ("    ","Post 1988 ERF Indicator") (DLTB bpostIND)
+[192] res←res OVER ("    ","Post 1988 Dynamism") (DLTB mpostIND)
+[193] res←res OVER ("    ","Post 1988 Underpin Indicator") (DLTB upostIND)
+[194] res←res OVER ("    ","Post 1988 GMP Adjustment Factor") (postADJ ConcatLabel lrpostADJ ConcatScen 0 sCEN_postADJ)
+[195] res←res OVER ("Barber Window") ""
+[196] res←res OVER ("    ","Barber Start Date") (BARBDATE ConcatLabel lrBARBDATE)
+[197] res←res OVER ("    ","Barber End Date") (BARBEND ConcatLabel lrBARBEND)
+[198] res←res OVER "" ""
+[199] 
+[200] :if ppf ⋄ :orif bencap
+[201]     res←res OVER ("PPF/CAP") ""
+[202]     res←res OVER ("=======") ""
+[203]     :if ppf
+[204]         res←res OVER ("NRA (Levy Valuations)") ""
+[205]         res←res OVER ("    ","Male PPF Retirement Ages") (DLTB 1↓,'!',m_PPFNRAtab,' ')
+[206]         res←res OVER ("    ","Female PPF Retirement Ages") (DLTB 1↓,'!',f_PPFNRAtab,' ')
+[207]     :endif
+[208]     res←res OVER ("Cap") ""
+[209]     res←res OVER ("    ","Service Cap Start Date") PPFServCapBDate
+[210]     res←res OVER ("    ","Service Cap End Date") PPFServCapEDate
+[211]     res←res OVER ("    ","Cap Offset") (DLTB OFFCAP,'%')
+[212]     :if bencap
+[213]         res←res OVER ("Discontinuance Pension Increases") ""
+[214]         res←res OVER ("    ","Pre 1997 Discontinuance Pension Increases") (DYNINCPre ConcatLabel lrDYNINCPre ConcatScen termAdjFin sCEN_DYNINCPre)
+[215]         res←res OVER ("    ","Post 1997 Discontinuance Pension Increases") (DYNINCPost ConcatLabel lrDYNINCPost ConcatScen termAdjFin sCEN_DYNINCPost)
+[216]     :endif
+[217]     res←res OVER "" ""
+[218] 
+[219]     res←res OVER PPF_RunDesc 'Deferreds'
+[220] :endif
+[221] 
+[222] res←res OVER ("Mortality") ""
+[223] res←res OVER ("=========") ""
+[224] res←res OVER ("Pre Retirement Mortality") ""
+[225] :if ppf
+[226]     res←res OVER ("    ","Male Mortality Rates") (DecrDescription m_DPRETABXX)
+[227]     res←res OVER ("    ","Base Year of Male Mortality Rates") (DLTB m_DPREORIG)
+[228] :else
+[229]     res←res OVER ("    ","Male Mortality Rate Parameters") (0 DropEther m_DPRE)
+[230]     :if ~'None'≡4↑m_DPRE
+[231]         res←res OVER ParametersSaved 'Mortality_Rate' m_DPRE
+[232]         res←res OVER ("    ","Male Mortality Rates") (DecrDescription m_DPRETABXX)
+[233]         res←res OVER ("    ","Base Year of Male Member Mortality Table") (DLTB m_DPREORIG)
+[234]         res←res OVER ("    ","Male Member % Rating") (DLTB m_DPREMEMB)
+[235]     :endif
+[236] :endif
+[237] :if ppf
+[238]     res←res OVER "    " MI_RunDesc 'm_miDPRE' (0 0)
+[239] :else
+[240]     res←res OVER ("    ","Male Mortality Improvement Parameters") (DLTB m_miDPRE)
+[241]     :if ~'None'≡4↑m_miDPRE
+[242]         res←res OVER ParametersSaved 'Mort_Improvement' m_miDPRE
+[243]         res←res OVER "    " MI_RunDesc 'm_miDPRE' (0 0)
+[244]     :endif
+[245] :endif
+[246] :if ppf
+[247]     res←res OVER ("    ","Female Mortality Rates") (DecrDescription f_DPRETABXX)
+[248]     res←res OVER ("    ","Base Year of Female Mortality Rates") (DLTB f_DPREORIG)
+[249] :else
+[250]     res←res OVER ("    ","Female Mortality Rate Parameters") (0 DropEther f_DPRE)
+[251]     :if ~'None'≡4↑f_DPRE
+[252]         res←res OVER ParametersSaved 'Mortality_Rate' f_DPRE
+[253]         res←res OVER ("    ","Female Mortality Rates") (DecrDescription f_DPRETABXX)
+[254]         res←res OVER ("    ","Base Year of Female Member Mortality Table") (DLTB f_DPREORIG)
+[255]         res←res OVER ("    ","Female Member % Rating") (DLTB f_DPREMEMB)
+[256]     :endif
+[257] :endif
+[258] :if ppf
+[259]     res←res OVER "    " MI_RunDesc 'f_miDPRE' (0 0)
+[260] :else
+[261]     res←res OVER ("    ","Female Mortality Improvement Parameters") (DLTB f_miDPRE)
+[262]     :if ~'None'≡4↑f_miDPRE
+[263]         res←res OVER ParametersSaved 'Mort_Improvement' f_miDPRE
+[264]         res←res OVER "    " MI_RunDesc 'f_miDPRE' (0 0)
+[265]     :endif
+[266] :endif
+[267] res←res OVER "Member's Post Retirement Mortality" ""
+[268] :if ppf
+[269]     res←res OVER ("    ","Male Member Mortality Rates") (DecrDescription m_DPOSTTABXX)
+[270]     res←res OVER ("    ","Base Year of Male Member Mortality Rates") (DLTB m_DPOSTORIG)
+[271] :else
+[272]     res←res OVER ("    ","Male Member Mortality Rates Description") (0 DropEther m_DPOST)
+[273]     :if ~'None'≡4↑m_DPOST
+[274]         res←res OVER ParametersSaved 'Mortality_Rate' m_DPOST
+[275]         res←res OVER ("    ","Male Member Mortality Rates") (DecrDescription m_DPOSTTABXX)
+[276]         res←res OVER ("    ","Base Year of Male Member Mortality Table") (DLTB m_DPOSTORIG)
+[277]         res←res OVER ("    ","Male Member Individual % Rating") (DLTB m_DPOSTMEMB)
+[278]     :endif
+[279] :endif
+[280] :if ppf
+[281]     res←res OVER "    " MI_RunDesc 'm_miDPOST' (1 0)
+[282] :else
+[283]     res←res OVER ("    ","Male Member Mortality Improvement") (DLTB m_miDPOST)
+[284]     :if ~'None'≡4↑m_miDPOST
+[285]         res←res OVER ParametersSaved 'Mort_Improvement' m_miDPOST
+[286]         res←res OVER "    " MI_RunDesc 'm_miDPOST' (1 0)
+[287]     :endif
+[288] :endif
+[289] :if ppf
+[290]     res←res OVER ("    ","Female Member Mortality Rates") (DecrDescription f_DPOSTTABXX)
+[291]     res←res OVER ("    ","Base Year of Female Member Mortality Rates") (DLTB f_DPOSTORIG)
+[292] :else
+[293]     res←res OVER ("    ","Female Member Mortality Rates Description") (0 DropEther f_DPOST)
+[294]     :if ~'None'≡4↑f_DPOST
+[295]         res←res OVER ParametersSaved 'Mortality_Rate' f_DPOST
+[296]         res←res OVER ("    ","Female Member Mortality Rates") (DecrDescription f_DPOSTTABXX)
+[297]         res←res OVER ("    ","Base Year of Female Member Mortality Table") (DLTB f_DPOSTORIG)
+[298]         res←res OVER ("    ","Female Member Individual % Rating") (DLTB f_DPOSTMEMB)
+[299]     :endif
+[300] :endif
+[301] :if ppf
+[302]     res←res OVER "    " MI_RunDesc 'f_miDPOST' (1 0)
+[303] :else
+[304]     res←res OVER ("    ","Female Member Mortality Improvement") (DLTB f_miDPOST)
+[305]     :if ~'None'≡4↑f_miDPOST
+[306]         res←res OVER ParametersSaved 'Mort_Improvement' f_miDPOST
+[307]         res←res OVER "    " MI_RunDesc 'f_miDPOST' (1 0)
+[308]     :endif
+[309] :endif
+[310] ⍝⍝⍝ :if bGAD
+[311] res←res OVER ("Spouse/Partner's Post Retirement Mortality") ""
+[312] :if ppf
+[313]     res←res OVER ("    ","Male Member's Spouse/Partner Mortality Rates") (DecrDescription m_SDPOSTTABXX)
+[314]     res←res OVER ("    ","Base Year of Male Member's Spouse/Partner Mortality Rates") (DLTB m_SDPOSTORIG)
+[315] :else
+[316]     res←res OVER ("    ","Male Member's Spouse/Partner Mortality Rates Description") (0 DropEther m_SDPOST)
+[317]     :if ~'None'≡4↑m_SDPOST
+[318]         res←res OVER ParametersSaved 'Mortality_Rate' m_SDPOST
+[319]         res←res OVER ("    ","Male Member's Spouse/Partner Mortality Rates") (DecrDescription m_SDPOSTTABXX)
+[320]         res←res OVER ("    ","Base Year of Male Member's Spouse/Partner Mortality Table") (DLTB m_SDPOSTORIG)
+[321]         res←res OVER ("    ","Male Member's Spouse/Partner Individual % Rating") (DLTB m_SDPOSTMEMB)
+[322]     :endif
+[323] :endif
+[324] :if ppf
+[325]     res←res OVER "    " MI_RunDesc 'm_miSDPOST' (0 1)
+[326] :else
+[327]     res←res OVER ("    ","Male Member's Spouse/Partner Mortality Improvement") (DLTB m_miSDPOST)
+[328]     :if ~'None'≡4↑m_miSDPOST
+[329]         res←res OVER ParametersSaved 'Mort_Improvement' m_miSDPOST
+[330]         res←res OVER "    " MI_RunDesc 'm_miSDPOST' (0 1)
+[331]     :endif
+[332] :endif
+[333] :if ppf
+[334]     res←res OVER ("    ","Female Member's Spouse/Partner Mortality Rates") (DecrDescription f_SDPOSTTABXX)
+[335]     res←res OVER ("    ","Base Year of Female Member's Spouse/Partner Mortality Rates") (DLTB f_SDPOSTORIG)
+[336] :else
+[337]     res←res OVER ("    ","Female Member's Spouse/Partner Mortality Rates Description") (0 DropEther f_SDPOST)
+[338]     :if ~'None'≡4↑f_SDPOST
+[339]         res←res OVER ParametersSaved 'Mortality_Rate' f_SDPOST
+[340]         res←res OVER ("    ","Female Member's Spouse/Partner Mortality Rates") (DecrDescription f_SDPOSTTABXX)
+[341]         res←res OVER ("    ","Base Year of Female Member's Spouse/Partner Mortality Table") (DLTB f_SDPOSTORIG)
+[342]         res←res OVER ("    ","Female Member's Spouse/Partner Individual % Rating") (DLTB f_SDPOSTMEMB)
+[343]     :endif
+[344] :endif
+[345] :if ppf
+[346]     res←res OVER "    " MI_RunDesc 'f_miSDPOST' (0 1)
+[347] :else
+[348]     res←res OVER ("    ","Female Member's Spouse/Partner Mortality Improvement") (DLTB f_miSDPOST)
+[349]     :if ~'None'≡4↑f_miSDPOST
+[350]         res←res OVER ParametersSaved 'Mort_Improvement' f_miSDPOST
+[351]         res←res OVER "    " MI_RunDesc 'f_miSDPOST' (0 1)
+[352]     :endif
+[353] :endif
+[354] ⍝⍝⍝ :endif
+[355] res←res OVER "" ""
+[356] 
+[357] res←res OVER ("Demographic") ""
+[358] res←res OVER ("===========") ""
+[359] res←res OVER ("Male Decrement Rates") ""
+[360] res←res OVER ("    ","Male Decrement Rates Parameter Set") (DLTB m_DRateParm)
+[361] res←res OVER ("    ","Male Retirement Rates") (DecrDescription m_RXX)
+[362] res←res OVER ("    ","Male Transfers Out Rates") (DecrDescription m_TOXX)
+[363] res←res OVER ("    ","Proportion of Male Retirees Transferring Out") (DecrDescription m_TPXX)
+[364] res←res OVER ("Female Decrement Rates") ""
+[365] res←res OVER ("    ","Female Decrement Rates Parameter Set") (DLTB f_DRateParm)
+[366] res←res OVER ("    ","Female Retirement Rates") (DecrDescription f_RXX)
+[367] res←res OVER ("    ","Female Transfers Out Rates") (DecrDescription f_TOXX)
+[368] res←res OVER ("    ","Proportion of Female Retirees Transferring Out") (DecrDescription f_TPXX)
+[369] res←res OVER "" ""
+[370] 
+[371] res←res OVER ("Spouse") ""
+[372] res←res OVER ("======") ""
+[373] res←res OVER ("Spouse Parameters") ""
+[374] res←res OVER ("    ","Spouse Parameter Set") (DLTB SpouseParm)
+[375] res←res OVER ("    ","Spouse Definition") (DLTB SPMethod)
+[376] res←res OVER ("    ","Male Proportion Married Table") (DLTB DecrDescription m_HXX)
+[377] res←res OVER ("    ","Male Proportion Married") (' %' embrace m_PropMarr)
+[378] res←res OVER ("    ","Female Proportion Married Table") (DLTB DecrDescription f_HXX)
+[379] res←res OVER ("    ","Female Proportion Married") (' %' embrace f_PropMarr)
+[380] res←res OVER ("    ","Male Age Difference Table (m-f)") (DLTB DecrDescription m_AGEDIFT)
+[381] res←res OVER ("    ","Male Age Difference (m-f)") (DLTB m_AGEDIF," years")
+[382] res←res OVER ("    ","Female Age Difference Table (f-m)") (DLTB DecrDescription f_AGEDIFT)
+[383] res←res OVER ("    ","Female Age Difference (f-m)") (DLTB f_AGEDIF," years")
+[384] res←res OVER "" ""
+[385] 
+[386] res←res OVER ("Membership") ""
+[387] res←res OVER ("==========") ""
+[388] res←res OVER ("Retirement Definitions") ""
+[389] res←res OVER ("    ","Male Retirement Age Parameter Set") (DLTB m_RAParm)
+[390] res←res OVER ("    ","Female Retirement Age Parameter Set") (DLTB f_RAParm)
+[391] res←res OVER ("    ","Male Normal Retirement Age") (DLTB m_NRA," years")
+[392] res←res OVER ("    ","Female Normal Retirement Age") (DLTB f_NRA," years")
+[393] res←res OVER ("    ","Normal Retirement Date Indicator") (DLTB nrdind)
+[394] res←res OVER ("    ","Date Left Active") (LEAVING ConcatLabel lrLEAVING)
+[395] res←res OVER "" ""
+[396] 
+[397] res←res OVER ("PUPs") ""
+[398] res←res OVER ("====") ""
+[399] :for n :in ⍳1↑⍴MATRIX PUP
+[400]     res←res OVER ("    ","PUP Description") (DLTB 1↑[1](n-1)↓[1]MATRIX PUPDesc)
+[401]     res←res OVER ("    ","PUP Amount") (DLTB 1↑[1](n-1)↓[1]MATRIX PUP)
+[402]     res←res OVER ("    ","Revaluation Rate Override") ((1↑[1](n-1)↓[1]MATRIX INDREV) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrINDREV) ConcatScen termAdjFin (1↑[1](n-1)↓[1]MATRIX sCEN_INDREV))
+[403] ⍝⍝⍝    res←res OVER ("    ","Transfers Revaluation Rate Override") ((1↑[1](n-1)↓[1]MATRIX TVINDREV) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrTVINDREV) ConcatScen termAdjFin (1↑[1](n-1)↓[1]MATRIX sCEN_TVINDREV))
+[404]     res←res OVER ("    ","Spouses DAR Override") ((DLTB 1↑[1](n-1)↓[1]MATRIX INDWARFRAC),'%')
+[405]     res←res OVER ("    ","Override % for DBR Pension") ((DLTB 1↑[1](n-1)↓[1]MATRIX INDDBRFRAC),'%')
+[406]     res←res OVER ("    ","Complete Years Only Override") (DLTB 1↑[1](n-1)↓[1]MATRIX INDREVYRS)
+[407]     res←res OVER ("    ","NRA Exits Rounding Override") (DLTB 1↑[1](n-1)↓[1]MATRIX INDNRARND)
+[408]     res←res OVER ("    ","Start Date") ((1↑[1](n-1)↓[1]MATRIX INDSTART) ConcatLabel 1↑[1](n-1)↓[1]MATRIX lrINDSTART)
+[409]     res←res OVER ("    ","Finish Date") ((1↑[1](n-1)↓[1]MATRIX INDFINISH) ConcatLabel 1↑[1](n-1)↓[1]MATRIX lrINDFINISH)
+[410]     res←res OVER ("    ","PUP Adjustment Factor") ((1↑[1](n-1)↓[1]MATRIX PUPADJ) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrPUPADJ) ConcatScen 0 (1↑[1](n-1)↓[1]MATRIX sCEN_PUPADJ))
+[411]     res←res OVER ("    ","Ignore for Cash") (DLTB 1↑[1](n-1)↓[1]MATRIX COO)
+[412]     res←res OVER ("    ","Ignore for DBR") (DLTB 1↑[1](n-1)↓[1]MATRIX MOO)
+[413]     res←res OVER ("    ","ERF Indicator") (DLTB 1↑[1](n-1)↓[1]MATRIX BARBIND)
+[414]     res←res OVER ("    ","Pension Increases in Payment") (DLTB 1↑[1](n-1)↓[1]MATRIX DYNIND)
+[415]     res←res OVER ("    ","Include In Underpin") (DLTB 1↑[1](n-1)↓[1]MATRIX UNDIND)
+[416]     :if ppf
+[417]         res←res OVER ("    ","Male PPF NRA (Levy Valuations)") (DLTB 1↑[1](n-1)↓[1]MATRIX m_PPFNRA)
+[418]         res←res OVER ("    ","Female PPF NRA (Levy Valuations)") (DLTB 1↑[1](n-1)↓[1]MATRIX f_PPFNRA)
+[419]     :endif
+[420]     :if ppf ⋄ :orif bencap
+[421]         res←res OVER ("    ","PPF Service Period") (DLTB 1↑[1](n-1)↓[1]MATRIX PPFPAYINC)
+[422]     :endif
+[423]     res←res OVER "" ""
+[424] :endfor
+[425] 
+[426] res←res OVER ("Retirement Pension") ""
+[427] res←res OVER ("==================") ""
+[428] res←res OVER ("Spouse's Pension") ""
+[429] res←res OVER ("    ","Spouse's Reversion Death After Retirement") (DLTB WARFRAC,"%")
+[430] res←res OVER ("    ","Apply Early Retirement Factor to Spouse's Pension") (CheckTranslate WARERFind)
+[431] res←res OVER ("    ","Spouse's Pension based on Pre Commutation Pension") (CheckTranslate WARCOMind)
+[432] res←res OVER ("Early Retirement Factors",(bBuck∨ClntCode=3)/"- Pension") ""
+[433] res←res OVER ("    ","Male Retirement Factors Parameter Set") (DLTB m_ERTABParm)
+[434] res←res OVER ("    ","Males ERF1") (DLTB DecrDescription m_ERTAB)
+[435] res←res OVER ("    ","Males ERF2") (DLTB DecrDescription m_ERTAB2)
+[436] res←res OVER ("    ","Linearly Interpolate Male Retirement Factors for mid-point Exit values") (CheckTranslate m_ERTABExactAge)
+[437] res←res OVER ("    ","Female Retirement Factors Parameter Set") (DLTB f_ERTABParm)
+[438] res←res OVER ("    ","Females ERF1") (DLTB DecrDescription f_ERTAB)
+[439] res←res OVER ("    ","Females ERF2") (DLTB DecrDescription f_ERTAB2)
+[440] res←res OVER ("    ","Linearly Interpolate Female Retirement Factors for mid-point Exit values") (CheckTranslate f_ERTABExactAge)
+[441] res←res OVER "" ""
+[442] 
+[443] res←res OVER ("Retirement Cash") ""
+[444] res←res OVER ("===============") ""
+[445] res←res OVER ("Retirement Cash",(bBuck∨ClntCode=3)/" Commutation") ""
+[446] res←res OVER ("    ","Cash Parameter Set") (DLTB CashParm)
+[447] res←res OVER ("    ","Benefit Basis") (DLTB CTYPE)
+[448] :if ClntCode≠3 ⋄ :andif ~bBuck
+[449]     res←res OVER ("    ","Cash Indicator") (DLTB CASHIND)
+[450] :endif
+[451] res←res OVER ("    ","Cash Multiple") (DLTB COMMULT)
+[452] res←res OVER ("    ","Cash Percentage") (DLTB COMPER,"%")
+[453] res←res OVER ("    ","Calculate separate A-Day Cash Factors for each Pension Increase") (CheckTranslate COMADaySep)
+[454] res←res OVER ("    ","Treat Independent PUP Cash as Cash on Top") (DLTB CheckTranslate COMADayInd)
+[455] res←res OVER ("    ","Commutation Priority") (DLTB CASHP)
+[456] res←res OVER ("Commutation Tables") ""
+[457] res←res OVER ("    ","Male Commutation Tables Parameter Set") (DLTB m_COMTABParm)
+[458] res←res OVER ("    ","Female Commutation Tables Parameter Set") (DLTB f_COMTABParm)
+[459] res←res OVER ("    ","Calculate Male Commutation Factors based on Valuation Basis") (CheckTranslate m_COMValBas)
+[460] res←res OVER ("    ","Male % of Valuation Basis Factor") (DLTB m_COMValpc,"%")
+[461] res←res OVER ("    ","Males Main") (DLTB DecrDescription m_COMTAB2)
+[462] res←res OVER ("    ","Males Special") (DLTB DecrDescription m_COMTAB1)
+[463] res←res OVER ("    ","Males PenInc3") (DLTB DecrDescription m_COMTAB3)
+[464] res←res OVER ("    ","Males PenInc4") (DLTB DecrDescription m_COMTAB4)
+[465] res←res OVER ("    ","Linearly Interpolate Male Commutation Tables for mid-point Exit values") (CheckTranslate m_COMTABExactAge)
+[466] res←res OVER ("    ","Adjust Male Commutation Tables by the change in member's expectation of life") (CheckTranslate m_COMAdjbyEx)
+[467] res←res OVER ("    ","Calculate Female Commutation Factors based on Valuation Basis") (CheckTranslate f_COMValBas)
+[468] res←res OVER ("    ","Female % of Valuation Basis Factor") (DLTB f_COMValpc,"%")
+[469] res←res OVER ("    ","Females Main") (DLTB DecrDescription f_COMTAB2)
+[470] res←res OVER ("    ","Females Special") (DLTB DecrDescription f_COMTAB1)
+[471] res←res OVER ("    ","Females PenInc3") (DLTB DecrDescription f_COMTAB3)
+[472] res←res OVER ("    ","Females PenInc4") (DLTB DecrDescription f_COMTAB4)
+[473] res←res OVER ("    ","Linearly Interpolate Female Commutation Tables for mid-point Exit values") (CheckTranslate f_COMTABExactAge)
+[474] res←res OVER ("    ","Adjust Female Commutation Tables by the change in member's expectation of life") (CheckTranslate f_COMAdjbyEx)
+[475] res←res OVER ("Cash Cap") ""
+[476] res←res OVER ("    ","Cash Cap Amount") (DLTB DATACASHCAP)
+[477] res←res OVER ("    ","% of Cash Cap Amount") (DLTB PERCENTCASHCAP,"%")
+[478] res←res OVER ("    ","Revaluation Rate Override") (REVCASHCAP ConcatLabel lrREVCASHCAP ConcatScen termAdjFin sCEN_REVCASHCAP)
+[479] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITCASHCAP)
+[480] res←res OVER ("    ","Exit Rounding Override") (DLTB NRAEXITCASHCAP)
+[481] res←res OVER ("    ","ERF Indicator") (DLTB ERFCASHCAP)
+[482] res←res OVER ("    ","Adjustment Factor") (CASHCAPADJ ConcatLabel lrCASHCAPADJ ConcatScen 0 sCEN_CASHCAPADJ)
+[483] res←res OVER "" ""
+[484] 
+[485] :if ClntCode=3 ⋄ :orif bBuck
+[486]     res←res OVER ("Retirement COT") ""
+[487]     res←res OVER ("==============") ""
+[488]     res←res OVER ("Retirement Cash on Top") ""
+[489]     res←res OVER ("    ","Cash on Top Parameter Set") (DLTB CashParm2)
+[490]     res←res OVER ("    ","Benefit Basis") (DLTB CTYPE2)
+[491]     res←res OVER ("    ","Cash Data Field") (DLTB COTDATA)
+[492]     res←res OVER ("    ","Cash Multiple") (DLTB COMMULT2)
+[493]     res←res OVER ("    ","Cash Percentage") (DLTB COMPER2,"%")
+[494]     res←res OVER ("    ","Male Retirement Factors Parameter Set") (DLTB m_ERTABParmC)
+[495]     res←res OVER ("    ","Males ERF1") (DLTB DecrDescription m_ERTABC)
+[496]     res←res OVER ("    ","Males ERF2") (DLTB DecrDescription m_ERTAB2C)
+[497]     res←res OVER ("    ","Linearly Interpolate Male Retirement Factors for mid-point Exit values") (CheckTranslate m_ERTABExactAgeC)
+[498]     res←res OVER ("    ","Female Retirement Factors Parameter Set") (DLTB f_ERTABParmC)
+[499]     res←res OVER ("    ","Females ERF1") (DLTB DecrDescription f_ERTABC)
+[500]     res←res OVER ("    ","Females ERF2") (DLTB DecrDescription f_ERTAB2C)
+[501]     res←res OVER ("    ","Linearly Interpolate Female Retirement Factors for mid-point Exit values") (CheckTranslate f_ERTABExactAgeC)
+[502]     res←res OVER "" ""
+[503] :endif
+[504] 
+[505] res←res OVER ("Death") ""
+[506] res←res OVER ("=====") ""
+[507] res←res OVER ("Death in Deferment Pension") ""
+[508] res←res OVER ("    ","Spouse's Reversion Death Before Retirement") (DLTB WOFRAC,"%")
+[509] res←res OVER ("Death in Deferment Cash") ""
+[510] res←res OVER ("    ","Death Cash Multiple") (DLTB GLBENMULT)
+[511] res←res OVER ("    ","Add/Compare") (DLTB GLPUP)
+[512] res←res OVER ("    ","Conts Data Item") (DLTB DCONTS1)
+[513] res←res OVER ("    ","Conts Interest Rate") (iDCONTS1 ConcatLabel lriDCONTS1 ConcatScen termAdjFin sCEN_iDCONTS1)
+[514] res←res OVER ("    ","Plus Conts Data Item") (DLTB DCONTS2)
+[515] res←res OVER ("    ","Plus Conts Interest Rate") (iDCONTS2 ConcatLabel lriDCONTS2 ConcatScen termAdjFin sCEN_iDCONTS2)
+[516] res←res OVER "" ""
+[517] 
+[518] :if bTVs
+[519]     res←res OVER ("TV Basis") ""
+[520]     res←res OVER ("========") ""
+[521]     res←res OVER ("Transfers Cash Flow Parameters") ""
+[522]     res←res OVER ("    ","Same as Valuation Basis Cash Flows") (CheckTranslate TVCFSame)
+[523]     res←res OVER ("    ","Transfer Benefits Capitalised or Spread") (DLTB TVcapind)
+[524]     res←res OVER ("Transfers Interest Rate Assumptions") ""
+[525]     res←res OVER ("    ","Same as Valuation Basis Interest Rates") (CheckTranslate TVIntSame)
+[526]     res←res OVER ("    ","Transfers Pre Retirement Interest Rate") (TVIR ConcatLabel lrTVIR ConcatScen termAdjFin sCEN_TVIR)
+[527]     res←res OVER ("    ","Transfers Post Retirement Interest Rate") (TVpi ConcatLabel lrTVpi ConcatScen termAdjFin sCEN_TVpi)
+[528]     ⍝⍝⍝ res←res OVER ("Transfers Revaluation") ""
+[529]     ⍝⍝⍝ res←res OVER ("    ","Same as Valuation Basis Revaluation Rates") (CheckTranslate TVRevSame)
+[530]     ⍝⍝⍝ res←res OVER ("    ","Transfers Excess Revaluation") (TVREVN ConcatLabel lrTVREVN ConcatScen termAdjFin sCEN_TVREVN)
+[531]     ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate To SPA") (TVGMPREV1 ConcatLabel lrTVGMPREV1 ConcatScen termAdjFin sCEN_TVGMPREV1)
+[532]     ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate to NRA<SPA") (TVPRESPAREV ConcatLabel lrTVPRESPAREV ConcatScen termAdjFin sCEN_TVPRESPAREV)
+[533]     res←res OVER ("Transfers Pension Escalation") ""
+[534]     res←res OVER ("    ","Same as Valuation Basis Increase Rates") (CheckTranslate TVEscSame)
+[535]     res←res OVER ("    ","Transfers Pre 1988 GMP") (TVB88GMPINC ConcatLabel lrTVB88GMPINC ConcatScen termAdjFin sCEN_TVB88GMPINC)
+[536]     res←res OVER ("    ","Transfers Post 1988 GMP") (TVA88GMPINC ConcatLabel lrTVA88GMPINC ConcatScen termAdjFin sCEN_TVA88GMPINC)
+[537]     res←res OVER ("    ","Transfers Main") (TVDYNINC ConcatLabel lrTVDYNINC ConcatScen termAdjFin sCEN_TVDYNINC)
+[538]     res←res OVER ("    ","Transfers Special") (TVNDYNINC ConcatLabel lrTVNDYNINC ConcatScen termAdjFin sCEN_TVNDYNINC)
+[539]     res←res OVER ("    ","Transfers PenInc3") (TVDYNINC3 ConcatLabel lrTVDYNINC3 ConcatScen termAdjFin sCEN_TVDYNINC3)
+[540]     res←res OVER ("    ","Transfers PenInc4") (TVDYNINC4 ConcatLabel lrTVDYNINC4 ConcatScen termAdjFin sCEN_TVDYNINC4)
+[541]     res←res OVER ("Transfers Spouse Parameters") ""
+[542]     res←res OVER ("    ","Same as Valuation Basis Spouse Parameters") (CheckTranslate TVSpouseSame)
+[543]     res←res OVER ("    ","Transfers Spouse Parameter Set") (DLTB TVSpouseParm)
+[544]     res←res OVER ("    ","Transfers Spouse Definition") (DLTB TVSPMethod)
+[545]     res←res OVER ("    ","Male Transfers Proportion Married Table") (DLTB DecrDescription m_TVHXX)
+[546]     res←res OVER ("    ","Male Transfers Proportion Married") (' %' embrace m_TVPropMarr)
+[547]     res←res OVER ("    ","Female Transfers Proportion Married Table") (DLTB DecrDescription f_TVHXX)
+[548]     res←res OVER ("    ","Female Transfers Proportion Married") (' %' embrace f_TVPropMarr)
+[549]     res←res OVER ("    ","Male Transfers Age Difference Table (m-f)") (DLTB DecrDescription m_TVAGEDIFT)
+[550]     res←res OVER ("    ","Male Transfers Age Difference (m-f)") (DLTB m_TVAGEDIF," years")
+[551]     res←res OVER ("    ","Female Transfers Age Difference Table (f-m)") (DLTB DecrDescription f_TVAGEDIFT)
+[552]     res←res OVER ("    ","Female Transfers Age Difference (f-m)") (DLTB f_TVAGEDIF," years")
+[553]     res←res OVER "" ""
+[554] 
+[555]     res←res OVER ("TV Mortality") ""
+[556]     res←res OVER ("=========") ""
+[557]     res←res OVER ("Transfers Pre Retirement Mortality") ""
+[558]     res←res OVER ("    ","Ignore Death in Deferment in Transfer Calculations") (CheckTranslate TVIgnoreDiD)
+[559]     res←res OVER ("    ","Same as Valuation Basis Pre Retirement Mortality") (CheckTranslate TVDPreSame)
+[560]     res←res OVER ("    ","Male Transfers Mortality Rate Parameters") (0 DropEther m_TVDPRE)
+[561]     :if ~(⊂m_TVDPRE)∊'' 'None'
+[562]         res←res OVER ParametersSaved 'Mortality_Rate' m_TVDPRE
+[563]         res←res OVER ("    ","Male Transfers Mortality Rates") (DecrDescription m_TVDPRETABXX)
+[564]         res←res OVER ("    ","Base Year of Male Transfer Member Mortality Table") (DLTB m_TVDPREORIG)
+[565]         res←res OVER ("    ","Male Transfer Member % Rating") (DLTB m_TVDPREMEMB)
+[566]     :endif
+[567]     res←res OVER ("    ","Male Transfers Mortality Improvement Parameters") (DLTB m_TVmiDPRE)
+[568]     :if ~(⊂m_TVmiDPRE)∊'' 'None'
+[569]         res←res OVER ParametersSaved 'Mort_Improvement' m_TVmiDPRE
+[570]         res←res OVER "    " MI_RunDesc 'm_TVmiDPRE' (0 0)
+[571]     :endif
+[572]     res←res OVER ("    ","Female Transfers Mortality Rate Parameters") (0 DropEther f_TVDPRE)
+[573]     :if ~(⊂f_TVDPRE)∊'' 'None'
+[574]         res←res OVER ParametersSaved 'Mortality_Rate' f_TVDPRE
+[575]         res←res OVER ("    ","Female Transfers Mortality Rates") (DecrDescription f_TVDPRETABXX)
+[576]         res←res OVER ("    ","Base Year of Female Transfer Member Mortality Table") (DLTB f_TVDPREORIG)
+[577]         res←res OVER ("    ","Female Transfer Member % Rating") (DLTB f_TVDPREMEMB)
+[578]     :endif
+[579]     res←res OVER ("    ","Female Transfers Mortality Improvement Parameters") (DLTB f_TVmiDPRE)
+[580]     :if ~(⊂f_TVmiDPRE)∊'' 'None'
+[581]         res←res OVER ParametersSaved 'Mort_Improvement' f_TVmiDPRE
+[582]         res←res OVER "    " MI_RunDesc 'f_TVmiDPRE' (0 0)
+[583]     :endif
+[584]     res←res OVER ("Transfers Member's Post Retirement Mortality") ""
+[585]     res←res OVER ("    ","Same as Valuation Basis Member Post Retirement Mortality") (CheckTranslate TVDPostSame)
+[586]     res←res OVER ("    ","Male Post Transfer Member Mortality Rates Description") (0 DropEther m_TVDPOST)
+[587]     :if ~(⊂m_TVDPOST)∊'' 'None'
+[588]         res←res OVER ParametersSaved 'Mortality_Rate' m_TVDPOST
+[589]         res←res OVER ("    ","Male Post Transfer Member Mortality Rates") (DecrDescription m_TVDPOSTTABXX)
+[590]         res←res OVER ("    ","Base Year of Male Post Transfer Member Mortality Table") (DLTB m_TVDPOSTORIG)
+[591]         res←res OVER ("    ","Male Post Transfer Member Individual % Rating") (DLTB m_TVDPOSTMEMB)
+[592]     :endif
+[593]     res←res OVER ("    ","Male Post Transfer Member Mortality Improvement") (DLTB m_TVmiDPOST)
+[594]     :if ~(⊂m_TVmiDPOST)∊'' 'None'
+[595]         res←res OVER ParametersSaved 'Mort_Improvement' m_TVmiDPOST
+[596]         res←res OVER "    " MI_RunDesc 'm_TVmiDPOST' (1 0)
+[597]     :endif
+[598]     res←res OVER ("    ","Female Post Transfer Member Mortality Rates Description") (0 DropEther f_TVDPOST)
+[599]     :if ~(⊂f_TVDPOST)∊'' 'None'
+[600]         res←res OVER ParametersSaved 'Mortality_Rate' f_TVDPOST
+[601]         res←res OVER ("    ","Female Post Transfer Member Mortality Rates") (DecrDescription f_TVDPOSTTABXX)
+[602]         res←res OVER ("    ","Base Year of Female Post Transfer Member Mortality Table") (DLTB f_TVDPOSTORIG)
+[603]         res←res OVER ("    ","Female Post Transfer Member Individual % Rating") (DLTB f_TVDPOSTMEMB)
+[604]     :endif
+[605]     res←res OVER ("    ","Female Post Transfer Member Mortality Improvement") (DLTB f_TVmiDPOST)
+[606]     :if ~(⊂f_TVmiDPOST)∊'' 'None'
+[607]         res←res OVER ParametersSaved 'Mort_Improvement' f_TVmiDPOST
+[608]         res←res OVER "    " MI_RunDesc 'f_TVmiDPOST' (1 0)
+[609]     :endif
+[610] ⍝⍝⍝    :if bGAD
+[611]     res←res OVER ("Transfers Spouse/Partner's Post Retirement Mortality") ""
+[612]     res←res OVER ("    ","Same as Valuation Basis Spouse Post Retirement Mortality") (CheckTranslate TVSDPostSame)
+[613]     res←res OVER ("    ","Male Post Transfer Member's Spouse/Partner Mortality Rates Description") (0 DropEther m_TVSDPOST)
+[614]     :if ~(⊂m_TVSDPOST)∊'' 'None'
+[615]         res←res OVER ParametersSaved 'Mortality_Rate' m_TVSDPOST
+[616]         res←res OVER ("    ","Male Post Transfer Member's Spouse/Partner Mortality Rates") (DecrDescription m_TVSDPOSTTABXX)
+[617]         res←res OVER ("    ","Base Year of Male Post Transfer Member's Spouse/Partner Mortality Table") (DLTB m_TVSDPOSTORIG)
+[618]         res←res OVER ("    ","Male Post Transfer Member's Spouse/Partner Individual % Rating") (DLTB m_TVSDPOSTMEMB)
+[619]     :endif
+[620]     res←res OVER ("    ","Male Post Transfer Member's Spouse/Partner Mortality Improvement") (DLTB m_TVmiSDPOST)
+[621]     :if ~(⊂m_TVmiSDPOST)∊'' 'None'
+[622]         res←res OVER ParametersSaved 'Mort_Improvement' m_TVmiSDPOST
+[623]         res←res OVER "    " MI_RunDesc 'm_TVmiSDPOST' (0 1)
+[624]     :endif
+[625]     res←res OVER ("    ","Female Post Transfer Member's Spouse/Partner Mortality Rates Description") (0 DropEther f_TVSDPOST)
+[626]     :if ~(⊂f_TVSDPOST)∊'' 'None'
+[627]         res←res OVER ParametersSaved 'Mortality_Rate' f_TVSDPOST
+[628]         res←res OVER ("    ","Female Post Transfer Member's Spouse/Partner Mortality Rates") (DecrDescription f_TVSDPOSTTABXX)
+[629]         res←res OVER ("    ","Base Year of Female Post Transfer Member's Spouse/Partner Mortality Table") (DLTB f_TVSDPOSTORIG)
+[630]         res←res OVER ("    ","Female Post Transfer Member's Spouse/Partner Individual % Rating") (DLTB f_TVSDPOSTMEMB)
+[631]     :endif
+[632]     res←res OVER ("    ","Female Post Transfer Member's Spouse/Partner Mortality Improvement") (DLTB f_TVmiSDPOST)
+[633]     :if ~(⊂f_TVmiSDPOST)∊'' 'None'
+[634]         res←res OVER ParametersSaved 'Mort_Improvement' f_TVmiSDPOST
+[635]         res←res OVER "    " MI_RunDesc 'f_TVmiSDPOST' (0 1)
+[636]     :endif
+[637] ⍝⍝⍝    :endif
+[638]     res←res OVER "" ""
+[639] :endif
+[640] 
+[641] res←res OVER ("Underpin") ""
+[642] res←res OVER ("========") ""
+[643] res←res OVER ("Underpin Parameters") ""
+[644] res←res OVER ("    ","Benefits Underpinned") (DLTB CheckTranslate mpuflag)
+[645] res←res OVER ("    ","Underpin Commencement Date") (mpuDATE ConcatLabel lrmpuDATE)
+[646] res←res OVER ("    ","Underpin Interest (% p.a.)") (jmpu ConcatLabel lrjmpu ConcatScen termAdjFin sCEN_jmpu)
+[647] res←res OVER "" ""
+[648] 
+[649] res←res OVER ("Independent PUPs") ""
+[650] res←res OVER ("================") ""
+[651] :if zwb IndPUPs
+[652]     :for n :in ⍳1↑⍴MATRIX IndPUP
+[653]         res←res OVER ("PUP Description") (DLTB 1↑[1](n-1)↓[1]MATRIX IndPUPDesc)
+[654]         res←res OVER ("PUP Amount") (DLTB 1↑[1](n-1)↓[1]MATRIX IndPUP)
+[655]         res←res OVER ("Revaluation Rate Override") ((1↑[1](n-1)↓[1]MATRIX IndINDREV) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrIndINDREV) ConcatScen termAdjFin (1↑[1](n-1)↓[1]MATRIX sCEN_IndINDREV))
+[656] ⍝⍝⍝        res←res OVER ("Transfers Revaluation Rate Override") ((1↑[1](n-1)↓[1]MATRIX IndTVINDREV) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrIndTVINDREV) ConcatScen termAdjFin (1↑[1](n-1)↓[1]MATRIX sCEN_IndTVINDREV))
+[657]         res←res OVER ("Spouses DAR Override") ((DLTB 1↑[1](n-1)↓[1]MATRIX IndINDWARFRAC),'%')
+[658]         res←res OVER ("Complete Years Only Override") (DLTB 1↑[1](n-1)↓[1]MATRIX IndINDREVYRS)
+[659]         res←res OVER ("NRA Exits Rounding Override") (DLTB 1↑[1](n-1)↓[1]MATRIX IndINDNRARND)
+[660]         res←res OVER ("Start Date") ((1↑[1](n-1)↓[1]MATRIX IndINDSTART) ConcatLabel 1↑[1](n-1)↓[1]MATRIX lrIndINDSTART)
+[661]         res←res OVER ("Finish Date") ((1↑[1](n-1)↓[1]MATRIX IndINDFINISH) ConcatLabel 1↑[1](n-1)↓[1]MATRIX lrIndINDFINISH)
+[662]         res←res OVER ("Male Start Age") (DLTB 1↑[1](n-1)↓[1]MATRIX m_IndPayStart)
+[663]         res←res OVER ("Female Start Age") (DLTB 1↑[1](n-1)↓[1]MATRIX f_IndPayStart)
+[664]         res←res OVER ("Male End Age") (DLTB 1↑[1](n-1)↓[1]MATRIX m_IndPayEnd)
+[665]         res←res OVER ("Female End Age") (DLTB 1↑[1](n-1)↓[1]MATRIX f_IndPayEnd)
+[666]         res←res OVER ("PUP Adjustment Factor") ((1↑[1](n-1)↓[1]MATRIX IndPUPADJ) ConcatLabel (1↑[1](n-1)↓[1]MATRIX lrIndPUPADJ) ConcatScen 0 (1↑[1](n-1)↓[1]MATRIX sCEN_IndPUPADJ))
+[667]         res←res OVER ("ERF Indicator") (DLTB 1↑[1](n-1)↓[1]MATRIX IndBARBIND)
+[668]         res←res OVER ("Pension Increases in Payment") (DLTB 1↑[1](n-1)↓[1]MATRIX IndDYNIND)
+[669]         res←res OVER ("Pension Increases Pre Start") (DLTB 1↑[1](n-1)↓[1]MATRIX IndDYNIND2)
+[670]         res←res OVER ("Include In Underpin") (DLTB 1↑[1](n-1)↓[1]MATRIX IndUNDIND)
+[671]         :if ppf
+[672]             res←res OVER ("Male PPF NRA (Levy Valuations)") (DLTB 1↑[1](n-1)↓[1]MATRIX m_IndPPFNRA)
+[673]             res←res OVER ("Female PPF NRA (Levy Valuations)") (DLTB 1↑[1](n-1)↓[1]MATRIX f_IndPPFNRA)
+[674]         :endif
+[675]         :if ppf ⋄ :orif bencap
+[676]             res←res OVER ("PPF Service Period") (DLTB 1↑[1](n-1)↓[1]MATRIX IndPPFPAYINC)
+[677]         :endif
+[678]         res←res OVER "" ""
+[679]     :endfor
+[680] :endif
+[681] res←res OVER "" ""
+[682] 
+[683] res←res OVER ("Non-Standard PUPs") ""
+[684] res←res OVER ("=================") ""
+[685] res←res OVER ("Death Before Retirement PUP 1") ""
+[686] res←res OVER ("    ","PUP Amount") (DLTB DATADBR1)
+[687] res←res OVER ("    ","% of PUP Amount") (DLTB PERCENTDBR1,"%")
+[688] res←res OVER ("    ","Revaluation Rate Override") (REVDBR1 ConcatLabel lrREVDBR1 ConcatScen termAdjFin sCEN_REVDBR1)
+[689] ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate Override") (TVREVDBR1 ConcatLabel lrTVREVDBR1 ConcatScen termAdjFin sCEN_TVREVDBR1)
+[690] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITDBR1)
+[691] res←res OVER ("    ","Pension Increases in Payment") (DLTB DYNDBR1)
+[692] res←res OVER ("    ","Adjustment Factor") (DBR1ADJ ConcatLabel lrDBR1ADJ ConcatScen 0 sCEN_DBR1ADJ)
+[693] :if bencap
+[694]     res←res OVER ("    ","Treat as Post 1997 for CAP") (DLTB CheckTranslate PPFPAYINCDBR1)
+[695] :endif
+[696] res←res OVER ("Death Before Retirement PUP 2") ""
+[697] res←res OVER ("    ","PUP Amount") (DLTB DATADBR2)
+[698] res←res OVER ("    ","% of PUP Amount") (DLTB PERCENTDBR2,"%")
+[699] res←res OVER ("    ","Revaluation Rate Override") (REVDBR2 ConcatLabel lrREVDBR2 ConcatScen termAdjFin sCEN_REVDBR2)
+[700] ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate Override") (TVREVDBR2 ConcatLabel lrTVREVDBR2 ConcatScen termAdjFin sCEN_TVREVDBR2)
+[701] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITDBR2)
+[702] res←res OVER ("    ","Pension Increases in Payment") (DLTB DYNDBR2)
+[703] res←res OVER ("    ","Adjustment Factor") (DBR2ADJ ConcatLabel lrDBR2ADJ ConcatScen 0 sCEN_DBR2ADJ)
+[704] :if bencap
+[705]     res←res OVER ("    ","Treat as Post 1997 for CAP") (DLTB CheckTranslate PPFPAYINCDBR2)
+[706] :endif
+[707] res←res OVER ("Death After Retirement PUP 1") ""
+[708] res←res OVER ("    ","PUP Amount") (DLTB DATADAR1)
+[709] res←res OVER ("    ","% of PUP Amount") (DLTB PERCENTDAR1,"%")
+[710] res←res OVER ("    ","Revaluation Rate Override") (REVDAR1 ConcatLabel lrREVDAR1 ConcatScen termAdjFin sCEN_REVDAR1)
+[711] ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate Override") (TVREVDAR1 ConcatLabel lrTVREVDAR1 ConcatScen termAdjFin sCEN_TVREVDAR1)
+[712] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITDAR1)
+[713] res←res OVER ("    ","Exit Rounding Override") (DLTB NRAEXITDAR1)
+[714] res←res OVER ("    ","ERF Indicator") (DLTB ERFDAR1)
+[715] res←res OVER ("    ","Pension Increases in Payment") (DLTB DYNDAR1)
+[716] res←res OVER ("    ","Adjustment Factor") (DAR1ADJ ConcatLabel lrDAR1ADJ ConcatScen 0 sCEN_DAR1ADJ)
+[717] :if bencap
+[718]     res←res OVER ("    ","Treat as Post 1997 for CAP") (DLTB CheckTranslate PPFPAYINCDAR1)
+[719] :endif
+[720] res←res OVER ("Death After Retirement PUP 2") ""
+[721] res←res OVER ("    ","PUP Amount") (DLTB DATADAR2)
+[722] res←res OVER ("    ","% of PUP Amount") (DLTB PERCENTDAR2,"%")
+[723] res←res OVER ("    ","Revaluation Rate Override") (REVDAR2 ConcatLabel lrREVDAR2 ConcatScen termAdjFin sCEN_REVDAR2)
+[724] ⍝⍝⍝ res←res OVER ("    ","Transfers Revaluation Rate Override") (TVREVDAR2 ConcatLabel lrTVREVDAR2 ConcatScen termAdjFin sCEN_TVREVDAR2)
+[725] res←res OVER ("    ","Complete Years Only Override") (DLTB PreNRAEXITDAR2)
+[726] res←res OVER ("    ","Exit Rounding Override") (DLTB NRAEXITDAR2)
+[727] res←res OVER ("    ","ERF Indicator") (DLTB ERFDAR2)
+[728] res←res OVER ("    ","Pension Increases in Payment") (DLTB DYNDAR2)
+[729] res←res OVER ("    ","Adjustment Factor") (DAR2ADJ ConcatLabel lrDAR2ADJ ConcatScen 0 sCEN_DAR2ADJ)
+[730] :if bencap
+[731]     res←res OVER ("    ","Treat as Post 1997 for CAP") (DLTB CheckTranslate PPFPAYINCDAR2)
+[732] :endif
+[733] res←res OVER "" ""
+[734] 
+[735] :if aosind
+[736]     res←res OVER "" ""
+[737]     res←res OVER ("AOS Parameters") ""
+[738]     res←res OVER ("==============") ""
+[739]     res←res OVER ("Modes of Termination") ""
+[740]     PickList←(SStoMAT RetCode) OVER ' '
+[741]     :for n :in ⍳1⌈¯1+1↑⍴PickList
+[742]         res←res OVER ('    ',(n=1)/'Retirement') (PickList[n;])
+[743]     :endfor
+[744]     PickList←(SStoMAT DISCode) OVER ' '
+[745]     :for n :in ⍳1⌈¯1+1↑⍴PickList
+[746]         res←res OVER ('    ',(n=1)/'Death In Deferment') (PickList[n;])
+[747]     :endfor
+[748] :endif
+[749] 
+[750] Header←(Header,' '),(∨/' '≠(Header←⊃res[;1]),⊃res[;2])\':'
+[751] res←Header," ",⊃res[;2]
+    ∇

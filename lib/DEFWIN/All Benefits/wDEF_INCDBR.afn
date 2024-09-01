@@ -1,1 +1,15 @@
-    ∇ Z←rate wDEF_INCDBR R;rate;optn;rtyp;full;half;rndg;rates;last[1]   ⍝ DEFWIN.sf#4[2]   ⍝ Project Deferred Increase rates as a fn[3]   ⍝ of revaluation rate, option to suppress 1/2-yr valuation, and rounding type[4]   ⍝ v8.50 [EnhDef] SJT Jul2010 adapted from wPUP_PROJ[5]   ⍝ NB where NX←→1 original returned 2 rates: a presumed error corrected here[6]   (optn rtyp)←R[7]    rates     ←NX_1 OVERTAKE rate                                   ⍝ rate may have rank 0 or 1 SV5000145[8]    last      ←       ¯1↑1,rates                                    ⍝ SV5000145[9]   (full half)←⊂[⎕IO]0 1⊖1⍪rates∘.*÷1 2                             ⍝ full- and 1/2-yr rates[10]  [11]   rndg←last*(rtyp DURN VDATE,NRD)-NX_1                            ⍝ exit rounding[12]  [13]   Z←  (×\full)×(half*~optn)× 1+(-NX)↑rndg-1    ∇
+    ∇ Z←rate wDEF_INCDBR R;rate;optn;rtyp;full;half;rndg;rates;last
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ Project Deferred Increase rates as a fn
+[3]   ⍝ of revaluation rate, option to suppress 1/2-yr valuation, and rounding type
+[4]   ⍝ v8.50 [EnhDef] SJT Jul2010 adapted from wPUP_PROJ
+[5]   ⍝ NB where NX←→1 original returned 2 rates: a presumed error corrected here
+[6]   (optn rtyp)←R
+[7]    rates     ←NX_1 OVERTAKE rate                                   ⍝ rate may have rank 0 or 1 SV5000145
+[8]    last      ←       ¯1↑1,rates                                    ⍝ SV5000145
+[9]   (full half)←⊂[⎕IO]0 1⊖1⍪rates∘.*÷1 2                             ⍝ full- and 1/2-yr rates
+[10]  
+[11]   rndg←last*(rtyp DURN VDATE,NRD)-NX_1                            ⍝ exit rounding
+[12]  
+[13]   Z←  (×\full)×(half*~optn)× 1+(-NX)↑rndg-1
+    ∇

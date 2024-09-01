@@ -1,1 +1,60 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Cohort_Review" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Cohort_Review" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmCohortReview.lvRUNDESC" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX RUNDESC) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX RUNDESC[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmCohortReview.lvRUNDESC" ⎕wi "value" value[25]  0 0⍴"fmCohortReview.lvRUNDESC" ⎕wi "EnsureVisible" ((1↑value),1)[26]  "fmCohortReview.ckRetrieve" ⎕wi "value" (zwb Retrieve)[27]  "fmCohortReview.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)[28]  "fmCohortReview.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)[29]  "fmCohortReview.fParms.edGROUP" ⎕wi "text" (DLTB GROUP)[30]  PickList←"fmCohortReview.fParms.cbf" ⎕wi "list"[31]  warnings←warnings OVER "Inflation Rates (% p.a.)" Win∆FinRelative "f" "lrf" 1[32]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText f[33]  :if mt selection[34]      :if ~mt DLTB f ⋄ :andif ~^/⎕vi f[35]          warnings←warnings OVER "Previous Selection for 'Inflation Rates (% p.a.)' is no longer available"[36]      :else[37]          "fmCohortReview.fParms.cbf" ⎕wi "text" (DLTB f)[38]      :endif[39]  :else[40]      "fmCohortReview.fParms.cbf" ⎕wi "value" selection[41]  :endif[42]  0 0⍴GetDecrList "List"[43]  warnings←warnings OVER "Expected Table" Win∆CheckDecr (TABXX[1;]) (lrTABXX1)[44]  "fmCohortReview.fTable.edTABXX1" ⎕wi "text" (DLTB TABXX[1;])[45]  "fmCohortReview.fTable.edTABXX2" ⎕wi "text" (DLTB TABXX[2;])[46]  "fmCohortReview.fTable.edTABXX3" ⎕wi "text" (DLTB TABXX[3;])[47]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Cohort_Review[48]      :for var :in spin Comment_Cohort_Review at "variable" "row" ⋄ (var row)←var[49]          "Cohort_Review" ParmColor ((FormFields for "variable" var) at "control"),var row 1[50]      :endfor[51]  :endif[52]  :if ~0∊⍴,warnings[53]      MDISPLAY DLTMB warnings,⎕tcnl[54]      Win∆AssignVars "fmCohortReview"[55]  :endif[56]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Cohort_Review" "" "Names"[57]      "fmCohortReview" ⎕wi "modified" 0[58]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Cohort_Review" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Cohort_Review" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmCohortReview.lvRUNDESC" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX RUNDESC) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX RUNDESC
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmCohortReview.lvRUNDESC" ⎕wi "value" value
+[25]  0 0⍴"fmCohortReview.lvRUNDESC" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  "fmCohortReview.ckRetrieve" ⎕wi "value" (zwb Retrieve)
+[27]  "fmCohortReview.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)
+[28]  "fmCohortReview.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)
+[29]  "fmCohortReview.fParms.edGROUP" ⎕wi "text" (DLTB GROUP)
+[30]  PickList←"fmCohortReview.fParms.cbf" ⎕wi "list"
+[31]  warnings←warnings OVER "Inflation Rates (% p.a.)" Win∆FinRelative "f" "lrf" 1
+[32]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText f
+[33]  :if mt selection
+[34]      :if ~mt DLTB f ⋄ :andif ~^/⎕vi f
+[35]          warnings←warnings OVER "Previous Selection for 'Inflation Rates (% p.a.)' is no longer available"
+[36]      :else
+[37]          "fmCohortReview.fParms.cbf" ⎕wi "text" (DLTB f)
+[38]      :endif
+[39]  :else
+[40]      "fmCohortReview.fParms.cbf" ⎕wi "value" selection
+[41]  :endif
+[42]  0 0⍴GetDecrList "List"
+[43]  warnings←warnings OVER "Expected Table" Win∆CheckDecr (TABXX[1;]) (lrTABXX1)
+[44]  "fmCohortReview.fTable.edTABXX1" ⎕wi "text" (DLTB TABXX[1;])
+[45]  "fmCohortReview.fTable.edTABXX2" ⎕wi "text" (DLTB TABXX[2;])
+[46]  "fmCohortReview.fTable.edTABXX3" ⎕wi "text" (DLTB TABXX[3;])
+[47]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Cohort_Review
+[48]      :for var :in spin Comment_Cohort_Review at "variable" "row" ⋄ (var row)←var
+[49]          "Cohort_Review" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[50]      :endfor
+[51]  :endif
+[52]  :if ~0∊⍴,warnings
+[53]      MDISPLAY DLTMB warnings,⎕tcnl
+[54]      Win∆AssignVars "fmCohortReview"
+[55]  :endif
+[56]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Cohort_Review" "" "Names"
+[57]      "fmCohortReview" ⎕wi "modified" 0
+[58]  :endif
+    ∇

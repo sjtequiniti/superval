@@ -1,0 +1,15 @@
+    ∇ Z←BasesIn folder;∆;files
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ Bases in folder
+[3]   ⍝ folder: (str) filepath
+[4]   ⍝ Z: (tbl) `file`∆_Name`∆_Description
+[5]   ⍝ eg BasesIn InputDir
+[6]   ⍝ Vern: sjt11nov15
+[7]   ∆←1 file_get_cns¨(⊂folder),¨files←m2n ⎕XLIB folder,'*.SF'               ⍝ file indexes
+[8]   (files ∆)←(⊂2=rank¨∆)                   ⎕REPL¨ files ∆                  ⍝   of rank-2
+[9]   (files ∆)←(⊂(⊂'BasisFile')≡¨(⊂⊂2 2)⊃¨∆) ⎕REPL¨ files ∆                  ⍝   for basis files
+[10]  ∆←(↑append/∆) amend 'file' ((rowsIn¨∆)/files)                           ⍝ tabulate bases
+[11]  ∆←∆ for '∆_Name' push 'Actives' 'Deferreds' 'Pensioners',¨ ⊂'_Basis'    ⍝   that are current
+[12]  ∆←∆ for 'Y'≠⎕FIRST¨∆ at '∆_Deleted'                                     ⍝   not deleted
+[13]  Z←∆ select 'file' '∆_Name' '∆_Description'
+    ∇

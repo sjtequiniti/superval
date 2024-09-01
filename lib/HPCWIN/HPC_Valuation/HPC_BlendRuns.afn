@@ -1,1 +1,52 @@
-    ∇ inerror HPC_BlendRuns arg;⎕elx;elx;⍙⍙otherdir;⍙⍙otherfile;⍙⍙nattie;⍙⍙hELDTie;⍙⍙file;⍙⍙secondvars;⍙⍙tries;∆;⍙⍙ctie[1]   ⍝ HPCWIN.sf#5[2]   ⍝ Transfer all results file to Primary run and clean up folder[3]   [4]   (⍙⍙otherdir ⍙⍙otherfile)←arg[5]   ⍝⍝⍝ FIXME ⍙⍙hELDTie←(⍙⍙otherdir 'Sub-Process Split Valuation Results' (TieNumber '')) FolderHeld 'Start'[6]   [7]                inerror HPC_TransferRuns ⍙dbfundfile  ⍙dbfundtie  ⍙⍙otherdir[8]   :if fscopt ⋄ inerror HPC_TransferRuns ⍙dbscenfile  ⍙dbscentie  ⍙⍙otherdir ⋄ :endif[9]   :if ~neIND ⋄ inerror HPC_TransferRuns xl_membfile  xl_membtie  ⍙⍙otherdir[10]               inerror HPC_TransferRuns xl_ndatafile xl_ndatatie ⍙⍙otherdir[11]               inerror HPC_TransferRuns xl_cdatafile xl_cdatatie ⍙⍙otherdir ⋄ :endif[12]  :if aosind ⋄ inerror HPC_TransferRuns xl_maosfile  xl_maostie  ⍙⍙otherdir[13]               inerror HPC_TransferRuns ⍙dbaosfile   ⍙dbaostie   ⍙⍙otherdir ⋄ :endif[14]  [15]  :if ~⍙⍙file FSTIE ⍙⍙ctie←TieNumber ⍙⍙file←⍙⍙otherdir,⍙⍙otherfile ⍝ Tie results file[16]      ⍙⍙tries←0[17]      elx←⎕elx ⋄ ⎕elx←'→retry'[18]  retry:[19]      :repeat                           ⍝ Read variable from package representing the state of the (secondary) Valuation workspace[20]          ⍙⍙secondvars←'inflate no_header wrapl=1' ⎕dr ⎕fread ⍙⍙ctie 2[21]      :until pchk ⍙⍙secondvars ⋄ :orif 100=⍙⍙tries←⍙⍙tries+1[22]      ⎕elx←elx[23]      :if ⍙⍙tries=100[24]          MDISPLAY 'Unable to read secondary run Valuation variables'[25]          crash[26]      :endif[27]      ⎕funtie ⍙⍙ctie[28]  :else[29]      MDISPLAY 'Unable to tie secondary results file'[30]      crash[31]  :endif[32]  [33]  :if ~inerror[34]      :if 0≠⎕nc 'VFDBtab'    ⋄ VFDBtab   ←             HPC_BlendVF VFDBtab    ⋄ :endif[35]      :if 0≠⎕nc 'RETcomfacs' ⋄ RETcomfacs←'RETcomfacs' HPC_BlendCF RETcomfacs ⋄ :endif[36]      :if 0≠⎕nc 'ILLcomfacs' ⋄ ILLcomfacs←'ILLcomfacs' HPC_BlendCF ILLcomfacs ⋄ :endif[37]  :endif[38]  [39]  VALN∆Errors←HPC_BlendValnLog VALN∆Errors[40]  [41]  0 0⍴(⍙⍙otherdir ⍙⍙heldtie) FolderHeld 'End' ⍝ Release Directory[42]  ⍙⍙nattie←'Native' TieNumber ''[43]  :for ⍙⍙file :in 'SVSCHEME.INI' 'SESSION.HLD',⊂⍙⍙otherfile[44]      :if (⍙⍙otherdir,⍙⍙file) NTIE ⍙⍙nattie ⋄ (⍙⍙otherdir,⍙⍙file) NERASE ⍙⍙nattie,1 ⋄ :endif ⍝ Delete all files remaining in ⍙⍙otherdir[45]  :endfor[46]  :if ~WRemoveDirectory ⍙⍙otherdir[47]      ∆←m2n ⎕xlib ⍙⍙otherdir[48]      MDISPLAY "Didn't delete ",(', ' join ∆),' in ',⍙⍙otherdir[49]      crash[50]  :endif    ∇
+    ∇ inerror HPC_BlendRuns arg;⎕elx;elx;⍙⍙otherdir;⍙⍙otherfile;⍙⍙nattie;⍙⍙hELDTie;⍙⍙file;⍙⍙secondvars;⍙⍙tries;∆;⍙⍙ctie
+[1]   ⍝ HPCWIN.sf#5
+[2]   ⍝ Transfer all results file to Primary run and clean up folder
+[3]   
+[4]   (⍙⍙otherdir ⍙⍙otherfile)←arg
+[5]   ⍝⍝⍝ FIXME ⍙⍙hELDTie←(⍙⍙otherdir 'Sub-Process Split Valuation Results' (TieNumber '')) FolderHeld 'Start'
+[6]   
+[7]                inerror HPC_TransferRuns ⍙dbfundfile  ⍙dbfundtie  ⍙⍙otherdir
+[8]   :if fscopt ⋄ inerror HPC_TransferRuns ⍙dbscenfile  ⍙dbscentie  ⍙⍙otherdir ⋄ :endif
+[9]   :if ~neIND ⋄ inerror HPC_TransferRuns xl_membfile  xl_membtie  ⍙⍙otherdir
+[10]               inerror HPC_TransferRuns xl_ndatafile xl_ndatatie ⍙⍙otherdir
+[11]               inerror HPC_TransferRuns xl_cdatafile xl_cdatatie ⍙⍙otherdir ⋄ :endif
+[12]  :if aosind ⋄ inerror HPC_TransferRuns xl_maosfile  xl_maostie  ⍙⍙otherdir
+[13]               inerror HPC_TransferRuns ⍙dbaosfile   ⍙dbaostie   ⍙⍙otherdir ⋄ :endif
+[14]  
+[15]  :if ~⍙⍙file FSTIE ⍙⍙ctie←TieNumber ⍙⍙file←⍙⍙otherdir,⍙⍙otherfile ⍝ Tie results file
+[16]      ⍙⍙tries←0
+[17]      elx←⎕elx ⋄ ⎕elx←'→retry'
+[18]  retry:
+[19]      :repeat                           ⍝ Read variable from package representing the state of the (secondary) Valuation workspace
+[20]          ⍙⍙secondvars←'inflate no_header wrapl=1' ⎕dr ⎕fread ⍙⍙ctie 2
+[21]      :until pchk ⍙⍙secondvars ⋄ :orif 100=⍙⍙tries←⍙⍙tries+1
+[22]      ⎕elx←elx
+[23]      :if ⍙⍙tries=100
+[24]          MDISPLAY 'Unable to read secondary run Valuation variables'
+[25]          crash
+[26]      :endif
+[27]      ⎕funtie ⍙⍙ctie
+[28]  :else
+[29]      MDISPLAY 'Unable to tie secondary results file'
+[30]      crash
+[31]  :endif
+[32]  
+[33]  :if ~inerror
+[34]      :if 0≠⎕nc 'VFDBtab'    ⋄ VFDBtab   ←             HPC_BlendVF VFDBtab    ⋄ :endif
+[35]      :if 0≠⎕nc 'RETcomfacs' ⋄ RETcomfacs←'RETcomfacs' HPC_BlendCF RETcomfacs ⋄ :endif
+[36]      :if 0≠⎕nc 'ILLcomfacs' ⋄ ILLcomfacs←'ILLcomfacs' HPC_BlendCF ILLcomfacs ⋄ :endif
+[37]  :endif
+[38]  
+[39]  VALN∆Errors←HPC_BlendValnLog VALN∆Errors
+[40]  
+[41]  0 0⍴(⍙⍙otherdir ⍙⍙heldtie) FolderHeld 'End' ⍝ Release Directory
+[42]  ⍙⍙nattie←'Native' TieNumber ''
+[43]  :for ⍙⍙file :in 'SVSCHEME.INI' 'SESSION.HLD',⊂⍙⍙otherfile
+[44]      :if (⍙⍙otherdir,⍙⍙file) NTIE ⍙⍙nattie ⋄ (⍙⍙otherdir,⍙⍙file) NERASE ⍙⍙nattie,1 ⋄ :endif ⍝ Delete all files remaining in ⍙⍙otherdir
+[45]  :endfor
+[46]  :if ~WRemoveDirectory ⍙⍙otherdir
+[47]      ∆←m2n ⎕xlib ⍙⍙otherdir
+[48]      MDISPLAY "Didn't delete ",(', ' join ∆),' in ',⍙⍙otherdir
+[49]      crash
+[50]  :endif
+    ∇

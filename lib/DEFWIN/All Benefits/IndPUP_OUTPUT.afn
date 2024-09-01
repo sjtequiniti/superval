@@ -1,1 +1,223 @@
-    ∇ prms IndPUP∆OUTPUT ben;DYNRAT;PENNRAN;PENNRAD;WARNRAN;WARNRAD;PENStartN;PENStartD;WARStartN;WARStartD;escfact;CASHD;CASHN;Identifier∆pp;SL∆pp;Upin∆pp;Con∆pp;End∆pp;Inc∆pp;BenType∆pp;IncType∆pp;Start∆pp;ABno∆pp;GP∆pp;PENNRA3;PENNRA4;WARNRA3;WARNRA4;WARStart3;PENStart3;PENStart4;WARStart4;CASH3;CASH4;ERACCPNN;ERACCPND;ERACCPN3;ERACCPN4;SERACCPN4;SERACCPN3;SERACCPND;SERACCPNN;Dec∆pp;RetAge∆pp;AltABno∆pp;post09adj;end;∆;GFRACD;SGFRACD;GFRACN;SGFRACN;GFRAC3;SGFRAC3;GFRAC4;SGFRAC4;ninetypct;VFYear∆pp;pension;TVStart∆pp;TVEnd∆pp[1]   ⍝ DEFWIN.sf#4[2]   ⍝ V8.50 [EnhDef] DT/RJW/SJT 2010[3]   [4]   ⍝ V8.50: 90% adjustment on non-PPF capped runs does not apply to members ≥NRA at VDATE[5]   :if 0≠+/,ben[6]       Identifier∆pp←'I',¯2↑'0',⍕'ind' zip prms ⍝ INDEX[7]   [8]       ⍝ Pension Projector Variables[9]       Dec∆pp←'R' ⋄ GP∆pp←⍬[10]      :if ppf ⋄ VFYear∆pp←¯1[11]      :else   ⋄ VFYear∆pp←PROBS[;⎕io] PP∆AverageTerm XMP-X0[12]      :endif[13]  [14]      :if ppf           ⋄ RetAge∆pp←   ,Age∆pp⌈'nra' zip prms[15]      :elseif IsAccrued ⋄ RetAge∆pp←NX⍴,X0⌈NRA[16]      :else             ⋄ RetAge∆pp←   ,Age∆pp[17]      :endif[18]      Start∆pp←RetAge∆pp⌈↑'pays' zip prms                   ⍝ IndPayStart -- Allow for blank field[19]  [20]      :if 0=⍴,'paye' zip prms ⋄ End∆pp←          'paye' zip prms                    ⍝ IndPayEnd -- If field is blank there is no end age[21]      :else                   ⋄ End∆pp←,Start∆pp⌈'paye' zip prms                    ⍝ IndPayEnd[22]      :endif[23]  [24]      PENStartN←PENStartD←PENStart3←PENStart4←WARStartN←WARStartD←WARStart3←WARStart4←CASHN←CASHD←CASH3←CASH4←0[25]  [26]      ( ERACCPNN  ERACCPND  ERACCPN3  ERACCPN4)←⊂[⎕IO+1](aINC aAGE+⎕IO)SUMSOF ben[;iWho+⎕IO;iPen+⎕IO;iRet+⎕IO;;iWth+⎕IO;][27]      (SERACCPNN SERACCPND SERACCPN3 SERACCPN4)←⊂[⎕IO+1](aINC aAGE+⎕IO)SUMSOF ben[;iWho+⎕IO;iPen+⎕IO;iDar+⎕IO;;iWth+⎕IO;][28]  [29]      :if isNPCR[30]          ninetypct←0.9*X0<NRA[31]          (ERACCPNN ERACCPND SERACCPNN SERACCPND)←ERACCPNN ERACCPND SERACCPNN SERACCPND×ninetypct[32]          (ERACCPN3 ERACCPN4 SERACCPN3 SERACCPN4)←ERACCPN3 ERACCPN4 SERACCPN3 SERACCPN4×ninetypct[33]         ⍝ Pension escalation between retirement and start[34]          DYNRAT←('123'⍳↑'ppf' zip prms)⊃DYNRATPre DYNRATPost DYNRATPost[35]      :elseif ppf[36]          DYNRAT←('123'⍳↑'ppf' zip prms)⊃(201⍴1)   DYNRATPPF  DYNRATPPF[37]      :else[38]          DYNRAT←('SM34'⍳↑'inc2' zip prms)⊃DYNRAT2 DYNRAT1    DYNRAT3   DYNRAT4[39]      :endif[40]  [41]      :if pension←0='cash' zip prms ⍝ IndCASH∆Ind=0[42]          (PENNRAN PENNRAD PENNRA3 PENNRA4)← ERACCPNN  ERACCPND  ERACCPN3  ERACCPN4[43]          (WARNRAN WARNRAD WARNRA3 WARNRA4)←SERACCPNN SERACCPND SERACCPN3 SERACCPN4[44]  [45]          end←↑ppf⌽XMP NRA[46]          escfact←1⌈DYNRAT[⎕io+2×0⌈Start∆pp-X0] CDIV DYNRAT[⎕io+2×0⌈end-X0][47]  [48]          (PENStartN PENStartD PENStart3 PENStart4)←PENNRAN PENNRAD PENNRA3 PENNRA4×¨⊂escfact[49]          (WARStartN WARStartD WARStart3 WARStart4)←WARNRAN WARNRAD WARNRA3 WARNRA4×¨⊂escfact[50]          ⍎('IPEN' ,1↓Identifier∆pp),'←↑+/PENStartN PENStartD PENStart3 PENStart4'[51]          ⍎('ISPEN',1↓Identifier∆pp),'←↑+/WARStartN WARStartD WARStart3 WARStart4'[52]      :else[53]          :if ~ppf ⋄ IndCOTCASH←IndCOTCASH+(aUND aAGE aINC aPPF+⎕IO) SUMSOF ben[;;iPen+⎕IO;iRet+⎕IO;;iWth+⎕IO;] ⋄ :endif[54]          (CASHN   CASHD   CASH3   CASH4)  ← ERACCPNN  ERACCPND  ERACCPN3  ERACCPN4   ⍝ Differentiate Pre/Post[55]      :endif[56]  [57]      :if transfers[58]          TVStart∆pp←NRA⌈Start∆pp[59]          :if ~mt TVEnd∆pp←End∆pp ⋄ TVEnd∆pp←TVStart∆pp⌈End∆pp ⋄ :endif[60]      :endif[61]  [62]      ⍝ .............................................................................. moved here SV5000329[63]      ⍝ Richard's approximation for GCASH SV5000311: FIXME remove eventually[64]      ∆←CDIV⌿⊖(aUND aDEC aAGE aINC+⎕IO)SUMSOF ben[;;iPen+⎕IO;iRet+⎕IO,iDar+⎕IO;;iWto+⎕IO;] ⍝ [DAI][65]      :if ClntCode=3[66]          (GFRACN GFRACD GFRAC3 GFRAC4   SGFRACN SGFRACD SGFRAC3 SGFRAC4)←  ,⊂[1+⎕IO] ∆[67]      :else[68]          (GFRACN GFRACD GFRAC3 GFRAC4)←(SGFRACN SGFRACD SGFRAC3 SGFRAC4)←4↑,⊂[1+⎕IO] ∆[69]      :endif[70]      ⍝ ..............................................................................[71]  [72]      :if isNPCR ⋄ :andif pension[73]          BenType∆pp←'P' ⋄ Upin∆pp←0 ⍝ Not "underpinned"[74]          Inc∆pp←('123'⍳↑'ppf' zip prms)⊃DYNINCPre DYNINCPost DYNINCPost ⍝ 8.50: now independent from S/M[75]          IncType∆pp←('123'⍳↑'ppf' zip prms)⊃'SMM'[76]  [77]          SL∆pp ←NX⍴,¯1↑,PENStartN+PENStartD+PENStart3+PENStart4[78]          Con∆pp←NX⍴,¯1↑,WARStartN+WARStartD+WARStart3+WARStart4 ⋄ ABno∆pp←"2" ⋄ AltABno∆pp←''[79]  [80]          PP∆CreateInterface[81]  [82]      :elseif ppf ⍝ PPF[83]          BenType∆pp←'P' ⋄ Upin∆pp←0 ⍝ Not "underpinned"[84]          :if '1'=ABno∆pp←'ppf' zip prms[85]              Inc∆pp←1      ⋄ IncType∆pp←'S'[86]          :else[87]              Inc∆pp←PPFINC ⋄ IncType∆pp←'M'[88]          :endif[89]          AltABno∆pp←'4'[90]          :if ~post09adj←'3'≠ABno∆pp ⋄ post09adj←(ppfI CDIV ppfI20)*0⌈RetAge∆pp-Age∆pp ⋄ :endif[91]  [92]          SL∆pp←,post09adj×PENStartN+PENStartD+PENStart3+PENStart4 ⋄ Con∆pp←,post09adj×WARStartN+WARStartD+WARStart3+WARStart4[93]          PP∆CreateInterface[94]  [95]          Con∆pp←End∆pp←Inc∆pp←⍬ ⋄ BenType∆pp←IncType∆pp←'L' ⍝⍝⍝ ,sepComCot/'T'[96]          SL∆pp←,post09adj×CASHD+CASHN+CASH3+CASH4[97]  [98]          PP∆CreateInterface[99]  [100]     :elseif pension[101]         BenType∆pp←'P' ⋄ AltABno∆pp←'' ⍝ SV5000269[102] [103]         Inc∆pp←DYNINC ⋄ IncType∆pp←'M'[104]         :if IsAccrued ⋄ ABno∆pp←'2' ⋄ :endif[105] [106]         Upin∆pp←0 ⍝ Not "underpinned"[107]         SL∆pp←,(1-GFRACD)×PENStartD ⋄ Con∆pp←,(1-SGFRACD)×WARStartD[108]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[109] [110]         PP∆CreateInterface[111] [112]         Upin∆pp←1 ⍝ "Underpinned"[113]         SL∆pp←,   GFRACD ×PENStartD ⋄ Con∆pp←,   SGFRACD ×WARStartD[114]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[115] [116]         PP∆CreateInterface[117] [118]         Inc∆pp←NDYNINC ⋄ IncType∆pp←'S'[119] [120]         Upin∆pp←0 ⍝ Not "underpinned"[121]         SL∆pp←,(1-GFRACN)×PENStartN ⋄ Con∆pp←,(1-SGFRACN)×WARStartN[122]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[123] [124]         PP∆CreateInterface[125] [126]         Upin∆pp←1 ⍝ "Underpinned"[127]         SL∆pp←,   GFRACN ×PENStartN ⋄ Con∆pp←,   SGFRACN ×WARStartN[128]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[129] [130]         PP∆CreateInterface[131] [132]         Inc∆pp←DYNINC3 ⋄ IncType∆pp←'P3'[133] [134]         Upin∆pp←0 ⍝ Not "underpinned"[135]         SL∆pp←,(1-GFRAC3)×PENStart3 ⋄ Con∆pp←,(1-SGFRAC3)×WARStart3[136]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[137] [138]         PP∆CreateInterface[139] [140]         Upin∆pp←1 ⍝ "Underpinned"[141]         SL∆pp←,   GFRAC3 ×PENStart3 ⋄ Con∆pp←,   SGFRAC3 ×WARStart3[142]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[143] [144]         PP∆CreateInterface[145] [146]         Inc∆pp←DYNINC4 ⋄ IncType∆pp←'P4'[147] [148]         Upin∆pp←0 ⍝ Not "underpinned"[149]         SL∆pp←,(1-GFRAC4)×PENStart4 ⋄ Con∆pp←,(1-SGFRAC4)×WARStart4[150]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[151] [152]         PP∆CreateInterface[153] [154]         Upin∆pp←1 ⍝ "Underpinned"[155]         SL∆pp←,   GFRAC4 ×PENStart4 ⋄ Con∆pp←,   SGFRAC4 ×WARStart4[156]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[157] [158]         PP∆CreateInterface[159] [160]         :if transfers ⋄ :andif ~IsAccrued[161]             IndPUPTransfers pension[162]         :endif[163]     :endif[164] [165]     :if ~ppf ⋄ :andif ~pension[166]         Con∆pp←End∆pp←Inc∆pp←⍬ ⋄ BenType∆pp←IncType∆pp←'L',sepComCot/'T'[167]         :if IsAccrued ⋄ ABno∆pp←'2' ⋄ AltABno∆pp←'' ⋄ :endif[168] [169]         Upin∆pp←0 ⍝ Not "underpinned"[170]         SL∆pp←,(1-GFRACD)×CASHD[171]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑SL∆pp ⋄ :endif[172] [173]         PP∆CreateInterface[174] [175]         Upin∆pp←1 ⍝ "Underpinned"[176]         SL∆pp←,   GFRACD ×CASHD[177]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif[178] [179]         PP∆CreateInterface[180] [181]         Upin∆pp←0 ⍝ Not "underpinned"[182]         SL∆pp←,(1-GFRACN)×CASHN[183]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif[184] [185]         PP∆CreateInterface[186] [187]         Upin∆pp←1 ⍝ "Underpinned"[188]         SL∆pp←,   GFRACN ×CASHN[189]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif[190] [191]         PP∆CreateInterface[192] [193]         Upin∆pp←0 ⍝ Not "underpinned"[194]         SL∆pp←,(1-GFRAC3)×CASH3[195]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑SL∆pp ⋄ :endif[196] [197]         PP∆CreateInterface[198] [199]         Upin∆pp←1 ⍝ "Underpinned"[200]         SL∆pp←,   GFRAC3 ×CASH3[201]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif[202] [203]         PP∆CreateInterface[204] [205]         Upin∆pp←0 ⍝ Not "underpinned"[206]         SL∆pp←,(1-GFRAC4)×CASH4[207]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif[208] [209]         PP∆CreateInterface[210] [211]         Upin∆pp←1 ⍝ "Underpinned"[212]         SL∆pp←,   GFRAC4 ×CASH4[213]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif[214] [215]         PP∆CreateInterface[216] [217]         :if transfers ⋄ :andif ~IsAccrued[218]             IndPUPTransfers pension[219]         :endif[220]     :endif[221] :endif    ∇
+    ∇ prms IndPUP∆OUTPUT ben;DYNRAT;PENNRAN;PENNRAD;WARNRAN;WARNRAD;PENStartN;PENStartD;WARStartN;WARStartD;escfact;CASHD;CASHN;Identifier∆pp;SL∆pp;Upin∆pp;Con∆pp;End∆pp;Inc∆pp;BenType∆pp;IncType∆pp;Start∆pp;ABno∆pp;GP∆pp;PENNRA3;PENNRA4;WARNRA3;WARNRA4;WARStart3;PENStart3;PENStart4;WARStart4;CASH3;CASH4;ERACCPNN;ERACCPND;ERACCPN3;ERACCPN4;SERACCPN4;SERACCPN3;SERACCPND;SERACCPNN;Dec∆pp;RetAge∆pp;AltABno∆pp;post09adj;end;∆;GFRACD;SGFRACD;GFRACN;SGFRACN;GFRAC3;SGFRAC3;GFRAC4;SGFRAC4;ninetypct;VFYear∆pp;pension;TVStart∆pp;TVEnd∆pp
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ V8.50 [EnhDef] DT/RJW/SJT 2010
+[3]   
+[4]   ⍝ V8.50: 90% adjustment on non-PPF capped runs does not apply to members ≥NRA at VDATE
+[5]   :if 0≠+/,ben
+[6]       Identifier∆pp←'I',¯2↑'0',⍕'ind' zip prms ⍝ INDEX
+[7]   
+[8]       ⍝ Pension Projector Variables
+[9]       Dec∆pp←'R' ⋄ GP∆pp←⍬
+[10]      :if ppf ⋄ VFYear∆pp←¯1
+[11]      :else   ⋄ VFYear∆pp←PROBS[;⎕io] PP∆AverageTerm XMP-X0
+[12]      :endif
+[13]  
+[14]      :if ppf           ⋄ RetAge∆pp←   ,Age∆pp⌈'nra' zip prms
+[15]      :elseif IsAccrued ⋄ RetAge∆pp←NX⍴,X0⌈NRA
+[16]      :else             ⋄ RetAge∆pp←   ,Age∆pp
+[17]      :endif
+[18]      Start∆pp←RetAge∆pp⌈↑'pays' zip prms                   ⍝ IndPayStart -- Allow for blank field
+[19]  
+[20]      :if 0=⍴,'paye' zip prms ⋄ End∆pp←          'paye' zip prms                    ⍝ IndPayEnd -- If field is blank there is no end age
+[21]      :else                   ⋄ End∆pp←,Start∆pp⌈'paye' zip prms                    ⍝ IndPayEnd
+[22]      :endif
+[23]  
+[24]      PENStartN←PENStartD←PENStart3←PENStart4←WARStartN←WARStartD←WARStart3←WARStart4←CASHN←CASHD←CASH3←CASH4←0
+[25]  
+[26]      ( ERACCPNN  ERACCPND  ERACCPN3  ERACCPN4)←⊂[⎕IO+1](aINC aAGE+⎕IO)SUMSOF ben[;iWho+⎕IO;iPen+⎕IO;iRet+⎕IO;;iWth+⎕IO;]
+[27]      (SERACCPNN SERACCPND SERACCPN3 SERACCPN4)←⊂[⎕IO+1](aINC aAGE+⎕IO)SUMSOF ben[;iWho+⎕IO;iPen+⎕IO;iDar+⎕IO;;iWth+⎕IO;]
+[28]  
+[29]      :if isNPCR
+[30]          ninetypct←0.9*X0<NRA
+[31]          (ERACCPNN ERACCPND SERACCPNN SERACCPND)←ERACCPNN ERACCPND SERACCPNN SERACCPND×ninetypct
+[32]          (ERACCPN3 ERACCPN4 SERACCPN3 SERACCPN4)←ERACCPN3 ERACCPN4 SERACCPN3 SERACCPN4×ninetypct
+[33]         ⍝ Pension escalation between retirement and start
+[34]          DYNRAT←('123'⍳↑'ppf' zip prms)⊃DYNRATPre DYNRATPost DYNRATPost
+[35]      :elseif ppf
+[36]          DYNRAT←('123'⍳↑'ppf' zip prms)⊃(201⍴1)   DYNRATPPF  DYNRATPPF
+[37]      :else
+[38]          DYNRAT←('SM34'⍳↑'inc2' zip prms)⊃DYNRAT2 DYNRAT1    DYNRAT3   DYNRAT4
+[39]      :endif
+[40]  
+[41]      :if pension←0='cash' zip prms ⍝ IndCASH∆Ind=0
+[42]          (PENNRAN PENNRAD PENNRA3 PENNRA4)← ERACCPNN  ERACCPND  ERACCPN3  ERACCPN4
+[43]          (WARNRAN WARNRAD WARNRA3 WARNRA4)←SERACCPNN SERACCPND SERACCPN3 SERACCPN4
+[44]  
+[45]          end←↑ppf⌽XMP NRA
+[46]          escfact←1⌈DYNRAT[⎕io+2×0⌈Start∆pp-X0] CDIV DYNRAT[⎕io+2×0⌈end-X0]
+[47]  
+[48]          (PENStartN PENStartD PENStart3 PENStart4)←PENNRAN PENNRAD PENNRA3 PENNRA4×¨⊂escfact
+[49]          (WARStartN WARStartD WARStart3 WARStart4)←WARNRAN WARNRAD WARNRA3 WARNRA4×¨⊂escfact
+[50]          ⍎('IPEN' ,1↓Identifier∆pp),'←↑+/PENStartN PENStartD PENStart3 PENStart4'
+[51]          ⍎('ISPEN',1↓Identifier∆pp),'←↑+/WARStartN WARStartD WARStart3 WARStart4'
+[52]      :else
+[53]          :if ~ppf ⋄ IndCOTCASH←IndCOTCASH+(aUND aAGE aINC aPPF+⎕IO) SUMSOF ben[;;iPen+⎕IO;iRet+⎕IO;;iWth+⎕IO;] ⋄ :endif
+[54]          (CASHN   CASHD   CASH3   CASH4)  ← ERACCPNN  ERACCPND  ERACCPN3  ERACCPN4   ⍝ Differentiate Pre/Post
+[55]      :endif
+[56]  
+[57]      :if transfers
+[58]          TVStart∆pp←NRA⌈Start∆pp
+[59]          :if ~mt TVEnd∆pp←End∆pp ⋄ TVEnd∆pp←TVStart∆pp⌈End∆pp ⋄ :endif
+[60]      :endif
+[61]  
+[62]      ⍝ .............................................................................. moved here SV5000329
+[63]      ⍝ Richard's approximation for GCASH SV5000311: FIXME remove eventually
+[64]      ∆←CDIV⌿⊖(aUND aDEC aAGE aINC+⎕IO)SUMSOF ben[;;iPen+⎕IO;iRet+⎕IO,iDar+⎕IO;;iWto+⎕IO;] ⍝ [DAI]
+[65]      :if ClntCode=3
+[66]          (GFRACN GFRACD GFRAC3 GFRAC4   SGFRACN SGFRACD SGFRAC3 SGFRAC4)←  ,⊂[1+⎕IO] ∆
+[67]      :else
+[68]          (GFRACN GFRACD GFRAC3 GFRAC4)←(SGFRACN SGFRACD SGFRAC3 SGFRAC4)←4↑,⊂[1+⎕IO] ∆
+[69]      :endif
+[70]      ⍝ ..............................................................................
+[71]  
+[72]      :if isNPCR ⋄ :andif pension
+[73]          BenType∆pp←'P' ⋄ Upin∆pp←0 ⍝ Not "underpinned"
+[74]          Inc∆pp←('123'⍳↑'ppf' zip prms)⊃DYNINCPre DYNINCPost DYNINCPost ⍝ 8.50: now independent from S/M
+[75]          IncType∆pp←('123'⍳↑'ppf' zip prms)⊃'SMM'
+[76]  
+[77]          SL∆pp ←NX⍴,¯1↑,PENStartN+PENStartD+PENStart3+PENStart4
+[78]          Con∆pp←NX⍴,¯1↑,WARStartN+WARStartD+WARStart3+WARStart4 ⋄ ABno∆pp←"2" ⋄ AltABno∆pp←''
+[79]  
+[80]          PP∆CreateInterface
+[81]  
+[82]      :elseif ppf ⍝ PPF
+[83]          BenType∆pp←'P' ⋄ Upin∆pp←0 ⍝ Not "underpinned"
+[84]          :if '1'=ABno∆pp←'ppf' zip prms
+[85]              Inc∆pp←1      ⋄ IncType∆pp←'S'
+[86]          :else
+[87]              Inc∆pp←PPFINC ⋄ IncType∆pp←'M'
+[88]          :endif
+[89]          AltABno∆pp←'4'
+[90]          :if ~post09adj←'3'≠ABno∆pp ⋄ post09adj←(ppfI CDIV ppfI20)*0⌈RetAge∆pp-Age∆pp ⋄ :endif
+[91]  
+[92]          SL∆pp←,post09adj×PENStartN+PENStartD+PENStart3+PENStart4 ⋄ Con∆pp←,post09adj×WARStartN+WARStartD+WARStart3+WARStart4
+[93]          PP∆CreateInterface
+[94]  
+[95]          Con∆pp←End∆pp←Inc∆pp←⍬ ⋄ BenType∆pp←IncType∆pp←'L' ⍝⍝⍝ ,sepComCot/'T'
+[96]          SL∆pp←,post09adj×CASHD+CASHN+CASH3+CASH4
+[97]  
+[98]          PP∆CreateInterface
+[99]  
+[100]     :elseif pension
+[101]         BenType∆pp←'P' ⋄ AltABno∆pp←'' ⍝ SV5000269
+[102] 
+[103]         Inc∆pp←DYNINC ⋄ IncType∆pp←'M'
+[104]         :if IsAccrued ⋄ ABno∆pp←'2' ⋄ :endif
+[105] 
+[106]         Upin∆pp←0 ⍝ Not "underpinned"
+[107]         SL∆pp←,(1-GFRACD)×PENStartD ⋄ Con∆pp←,(1-SGFRACD)×WARStartD
+[108]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[109] 
+[110]         PP∆CreateInterface
+[111] 
+[112]         Upin∆pp←1 ⍝ "Underpinned"
+[113]         SL∆pp←,   GFRACD ×PENStartD ⋄ Con∆pp←,   SGFRACD ×WARStartD
+[114]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[115] 
+[116]         PP∆CreateInterface
+[117] 
+[118]         Inc∆pp←NDYNINC ⋄ IncType∆pp←'S'
+[119] 
+[120]         Upin∆pp←0 ⍝ Not "underpinned"
+[121]         SL∆pp←,(1-GFRACN)×PENStartN ⋄ Con∆pp←,(1-SGFRACN)×WARStartN
+[122]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[123] 
+[124]         PP∆CreateInterface
+[125] 
+[126]         Upin∆pp←1 ⍝ "Underpinned"
+[127]         SL∆pp←,   GFRACN ×PENStartN ⋄ Con∆pp←,   SGFRACN ×WARStartN
+[128]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[129] 
+[130]         PP∆CreateInterface
+[131] 
+[132]         Inc∆pp←DYNINC3 ⋄ IncType∆pp←'P3'
+[133] 
+[134]         Upin∆pp←0 ⍝ Not "underpinned"
+[135]         SL∆pp←,(1-GFRAC3)×PENStart3 ⋄ Con∆pp←,(1-SGFRAC3)×WARStart3
+[136]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[137] 
+[138]         PP∆CreateInterface
+[139] 
+[140]         Upin∆pp←1 ⍝ "Underpinned"
+[141]         SL∆pp←,   GFRAC3 ×PENStart3 ⋄ Con∆pp←,   SGFRAC3 ×WARStart3
+[142]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[143] 
+[144]         PP∆CreateInterface
+[145] 
+[146]         Inc∆pp←DYNINC4 ⋄ IncType∆pp←'P4'
+[147] 
+[148]         Upin∆pp←0 ⍝ Not "underpinned"
+[149]         SL∆pp←,(1-GFRAC4)×PENStart4 ⋄ Con∆pp←,(1-SGFRAC4)×WARStart4
+[150]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[151] 
+[152]         PP∆CreateInterface
+[153] 
+[154]         Upin∆pp←1 ⍝ "Underpinned"
+[155]         SL∆pp←,   GFRAC4 ×PENStart4 ⋄ Con∆pp←,   SGFRAC4 ×WARStart4
+[156]         :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[157] 
+[158]         PP∆CreateInterface
+[159] 
+[160]         :if transfers ⋄ :andif ~IsAccrued
+[161]             IndPUPTransfers pension
+[162]         :endif
+[163]     :endif
+[164] 
+[165]     :if ~ppf ⋄ :andif ~pension
+[166]         Con∆pp←End∆pp←Inc∆pp←⍬ ⋄ BenType∆pp←IncType∆pp←'L',sepComCot/'T'
+[167]         :if IsAccrued ⋄ ABno∆pp←'2' ⋄ AltABno∆pp←'' ⋄ :endif
+[168] 
+[169]         Upin∆pp←0 ⍝ Not "underpinned"
+[170]         SL∆pp←,(1-GFRACD)×CASHD
+[171]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑SL∆pp ⋄ :endif
+[172] 
+[173]         PP∆CreateInterface
+[174] 
+[175]         Upin∆pp←1 ⍝ "Underpinned"
+[176]         SL∆pp←,   GFRACD ×CASHD
+[177]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif
+[178] 
+[179]         PP∆CreateInterface
+[180] 
+[181]         Upin∆pp←0 ⍝ Not "underpinned"
+[182]         SL∆pp←,(1-GFRACN)×CASHN
+[183]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif
+[184] 
+[185]         PP∆CreateInterface
+[186] 
+[187]         Upin∆pp←1 ⍝ "Underpinned"
+[188]         SL∆pp←,   GFRACN ×CASHN
+[189]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif
+[190] 
+[191]         PP∆CreateInterface
+[192] 
+[193]         Upin∆pp←0 ⍝ Not "underpinned"
+[194]         SL∆pp←,(1-GFRAC3)×CASH3
+[195]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑SL∆pp ⋄ :endif
+[196] 
+[197]         PP∆CreateInterface
+[198] 
+[199]         Upin∆pp←1 ⍝ "Underpinned"
+[200]         SL∆pp←,   GFRAC3 ×CASH3
+[201]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif
+[202] 
+[203]         PP∆CreateInterface
+[204] 
+[205]         Upin∆pp←0 ⍝ Not "underpinned"
+[206]         SL∆pp←,(1-GFRAC4)×CASH4
+[207]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif
+[208] 
+[209]         PP∆CreateInterface
+[210] 
+[211]         Upin∆pp←1 ⍝ "Underpinned"
+[212]         SL∆pp←,   GFRAC4 ×CASH4
+[213]         :if IsAccrued ⋄ SL∆pp←NX⍴,¯1↑,SL∆pp ⋄ :endif
+[214] 
+[215]         PP∆CreateInterface
+[216] 
+[217]         :if transfers ⋄ :andif ~IsAccrued
+[218]             IndPUPTransfers pension
+[219]         :endif
+[220]     :endif
+[221] :endif
+    ∇

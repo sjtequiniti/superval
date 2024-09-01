@@ -1,1 +1,28 @@
-    ∇ IndPHIOUTPUT;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;BenType∆pp;IncType∆pp;End∆pp;Inc∆pp;Dec∆pp;ExitProbs∆pp;Start∆pp;ProRate∆pp;VFYear∆pp[1]   ⍝ ACTWIN.sf#4[2]   ⍝[3]   Dec∆pp←'PR' ⍝ Set "decrement" locally[4]   ExitProbs∆pp←PHIQxret ⍝ Probability of Ret post PHI[5]   VFYear∆pp←PROBS[;2] PP∆AverageTerm XMP-X0 ⍝⍝⍝ FIXME: different for PHI???[6]   [7]   BenType∆pp←'P' ⋄ IncType∆pp←((DYNIND∆L∊'34')/'P'),DYNIND∆L ⋄ Inc∆pp←DYNINC∆L[8]   Start∆pp←,X0⌈RetStart ⋄ End∆pp←,RetEnd[9]   [10]  :if IsAccrued                             ⋄ ProRate∆pp←⍬[11]  :elseif 'C'=¯1↑(↑ACCBASIS),(×NoAltSlices)↑,AltACCBASIS ⋄ :andif ∨/0≠,ProRate∆CARE ⋄ :andif ProRate∆INoCap≡ProRate∆IServ ⋄ ProRate∆pp←ProRate∆CARE[12]  :elseif accind ⋄ :andif ∨/0≠,ProRate∆CARE ⋄ ProRate∆pp←ProRate∆CARE[13]  :else                                     ⋄ ProRate∆pp←ProRate∆INoCap[14]  :endif[15]  [16]   SL∆pp← IndPHITStart[⍬⍴ENX_1;] ⋄  FSL∆pp← IndPHIFStart[⍬⍴ENX_1;][17]  Con∆pp←IndPHISTStart[⍬⍴ENX_1;] ⋄ FCon∆pp←IndPHISFStart[⍬⍴ENX_1;][18]  [19]  PP∆CreateInterface[20]  [21]  :if ∨/0≠,IndPHICASH[22]      BenType∆pp←IncType∆pp←'L',sepComCot/'T' ⋄ End∆pp←Inc∆pp←Con∆pp←FCon∆pp←⍬[23]      SL∆pp← IndPHICASH[⍬⍴ENX_1;] ⋄ FSL∆pp←IndPHIFCASH[⍬⍴ENX_1;][24]  [25]      PP∆CreateInterface[26]  :endif    ∇
+    ∇ IndPHIOUTPUT;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;BenType∆pp;IncType∆pp;End∆pp;Inc∆pp;Dec∆pp;ExitProbs∆pp;Start∆pp;ProRate∆pp;VFYear∆pp
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝
+[3]   Dec∆pp←'PR' ⍝ Set "decrement" locally
+[4]   ExitProbs∆pp←PHIQxret ⍝ Probability of Ret post PHI
+[5]   VFYear∆pp←PROBS[;2] PP∆AverageTerm XMP-X0 ⍝⍝⍝ FIXME: different for PHI???
+[6]   
+[7]   BenType∆pp←'P' ⋄ IncType∆pp←((DYNIND∆L∊'34')/'P'),DYNIND∆L ⋄ Inc∆pp←DYNINC∆L
+[8]   Start∆pp←,X0⌈RetStart ⋄ End∆pp←,RetEnd
+[9]   
+[10]  :if IsAccrued                             ⋄ ProRate∆pp←⍬
+[11]  :elseif 'C'=¯1↑(↑ACCBASIS),(×NoAltSlices)↑,AltACCBASIS ⋄ :andif ∨/0≠,ProRate∆CARE ⋄ :andif ProRate∆INoCap≡ProRate∆IServ ⋄ ProRate∆pp←ProRate∆CARE
+[12]  :elseif accind ⋄ :andif ∨/0≠,ProRate∆CARE ⋄ ProRate∆pp←ProRate∆CARE
+[13]  :else                                     ⋄ ProRate∆pp←ProRate∆INoCap
+[14]  :endif
+[15]  
+[16]   SL∆pp← IndPHITStart[⍬⍴ENX_1;] ⋄  FSL∆pp← IndPHIFStart[⍬⍴ENX_1;]
+[17]  Con∆pp←IndPHISTStart[⍬⍴ENX_1;] ⋄ FCon∆pp←IndPHISFStart[⍬⍴ENX_1;]
+[18]  
+[19]  PP∆CreateInterface
+[20]  
+[21]  :if ∨/0≠,IndPHICASH
+[22]      BenType∆pp←IncType∆pp←'L',sepComCot/'T' ⋄ End∆pp←Inc∆pp←Con∆pp←FCon∆pp←⍬
+[23]      SL∆pp← IndPHICASH[⍬⍴ENX_1;] ⋄ FSL∆pp←IndPHIFCASH[⍬⍴ENX_1;]
+[24]  
+[25]      PP∆CreateInterface
+[26]  :endif
+    ∇

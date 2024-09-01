@@ -1,1 +1,20 @@
-    ∇ Z←L F∆PUPS R;gtee;frankp;real;ntnl;escfact;pre;post;SM34;mpreIND;mpostIND[1]   ⍝ DEFWIN.sf#4[2]   ⍝ New Deferreds Franking Routine For PUPS .. AJW July 95[3]   ⍝ V8.50 [EnhDef] DT/FAS/RJW/SJT 2010[4]    (pre post)←R ⍝ (GRPre GPre)←pre ⋄ (GRPost GPost)←post[5]   (escfact frankp SM34 mpreIND mpostIND)←L                                        ⍝ ¨[IX][6]   [7]   ⍝ Allocate real and notional GMPs-to-SPA to increase-rates[8]   (real ntnl)←⊂[0 2]+⌿⊃(⊂[1 2]⊃⊃pre post) ×[0] (↑¨mpreIND mpostIND)∘.='SM34'      ⍝ ¨[IX][9]   [10]   :Select OFFCOD[11]   :Case 0 ⋄ gtee←               real - ntnl[12]   :Case 1 ⋄ gtee←               real - ntnl          × escfact[13]   :Case 2 ⋄ gtee←               real - ntnl + frankp × escfact-1[14]   :Case 3 ⋄ gtee←(XMP≥NRA)×[1]  real - ntnl + frankp × escfact-1                 ⍝ SV5000309[15]   :Caselist 4 5 ⋄ gtee←(lI,NX)⍴0                                                 ⍝ 5 Catches when OFFCOD is "undefined" (or irrelevant)[16]   :EndSelect[17]  [18]  Z ← (0⌊Z) ⌈ (Z←SM34×escfact) + (⍉TOT∆NOT∆NEG⍉gtee) - real                      ⍝ [IX] - retain -ve pensions    ∇
+    ∇ Z←L F∆PUPS R;gtee;frankp;real;ntnl;escfact;pre;post;SM34;mpreIND;mpostIND
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ New Deferreds Franking Routine For PUPS .. AJW July 95
+[3]   ⍝ V8.50 [EnhDef] DT/FAS/RJW/SJT 2010
+[4]    (pre post)←R ⍝ (GRPre GPre)←pre ⋄ (GRPost GPost)←post
+[5]   (escfact frankp SM34 mpreIND mpostIND)←L                                        ⍝ ¨[IX]
+[6]   
+[7]   ⍝ Allocate real and notional GMPs-to-SPA to increase-rates
+[8]   (real ntnl)←⊂[0 2]+⌿⊃(⊂[1 2]⊃⊃pre post) ×[0] (↑¨mpreIND mpostIND)∘.='SM34'      ⍝ ¨[IX]
+[9]   
+[10]   :Select OFFCOD
+[11]   :Case 0 ⋄ gtee←               real - ntnl
+[12]   :Case 1 ⋄ gtee←               real - ntnl          × escfact
+[13]   :Case 2 ⋄ gtee←               real - ntnl + frankp × escfact-1
+[14]   :Case 3 ⋄ gtee←(XMP≥NRA)×[1]  real - ntnl + frankp × escfact-1                 ⍝ SV5000309
+[15]   :Caselist 4 5 ⋄ gtee←(lI,NX)⍴0                                                 ⍝ 5 Catches when OFFCOD is "undefined" (or irrelevant)
+[16]   :EndSelect
+[17]  
+[18]  Z ← (0⌊Z) ⌈ (Z←SM34×escfact) + (⍉TOT∆NOT∆NEG⍉gtee) - real                      ⍝ [IX] - retain -ve pensions
+    ∇

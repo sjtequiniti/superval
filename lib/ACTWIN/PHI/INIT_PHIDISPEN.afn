@@ -1,1 +1,58 @@
-    ∇ INIT∆PHIDISPEN;PHIWOPEN;FPHIWOPEN;XSPHIWOPEN;SPREADFRAC2;wossd;wosfd;PPHIWOPEN[1]   ⍝ ACTWIN.sf#8[2]   ⍝ Initialise DIS Benefits (post PHI)[3]   [4]   SPREADFRAC2←SPREADFRAC←PHIWOPEND←FPHIWOPEND←PHIWOPENN←FPHIWOPENN←PHIWOPENL←FPHIWOPENL←PHIWOPEN4←FPHIWOPEN4←XSPHIWOPEND←XSPHIWOPENN←XSPHIWOPENL←XSPHIWOPEN4←(NX,NX)⍴0[5]   [6]   :if WOBAS=2 ⋄ PHIWOPEN←WOFRAC∆l×'SALMP' PHISALS wosal,(×PROBS[;2])/⍳NX[7]   :else       ⋄ XSPHIWOPEN←PHIWOPEN←WOFRAC∆l×+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIDTPEN ⍝ Create partial sum[8]   :endif[9]   ⍝[10]  :if ~WINSDIS ⋄ :andif WOBAS∊2 4 5[11]      :if DSTYPE ⋄ :andif WOBAS∊4 5 ⍝ want defaults[12]          SPREADFRAC←(NX,NX)⍴1[13]      :elseif DISCARESpread ⋄ :andif CAREFutAcc ⍝ Spread by Accrued Pension[14]          SPREADFRAC ←(+⌿+⌿+⌿+⌿+⌿PHIDTPEN[;⎕io+2;;;;;;]) CDIV +⌿+⌿+⌿+⌿+⌿+⌿PHIDTPEN[15]          SPREADFRAC2←(+⌿+⌿+⌿+⌿+⌿PHIDTPEN[;⎕io  ;;;;;;]) CDIV +⌿+⌿+⌿+⌿+⌿+⌿PHIDTPEN[16]      :else[17]          wossd←⍎WOSSD ⋄ wosfd←⍎WOSFD[18]          SPREADFRAC ←(NX,NX)⍴   (servrnd DURN VDATE TO wosfd)                              CDIV  servrnd DURN wossd TO wosfd[19]          SPREADFRAC2←(NX,NX)⍴0⌈((servrnd DURN DJF   TO COEND)⌊servrnd DURN wossd TO COEND) CDIV (servrnd DURN wossd TO wosfd)⌊servrnd DURN DJF TO wosfd[20]      :endif[21]  :endif[22]  [23]  :select WOBAS[24]  :case 2[25]      FPHIWOPEN←SPREADFRAC ×PHIWOPEN[26]      PPHIWOPEN←SPREADFRAC2×PHIWOPEN[27]      XSPHIWOPEN←(PHIWOPEN-PPHIWOPEN)+0⌈PPHIWOPEN-[1]WGMP ⍝ Take WGMP off first tranche[28]      :select WODYN[29]      :case 'M' ⋄ PHIWOPEND←PHIWOPEN ⋄ FPHIWOPEND←FPHIWOPEN ⋄ XSPHIWOPEND←XSPHIWOPEN[30]      :case 'S' ⋄ PHIWOPENN←PHIWOPEN ⋄ FPHIWOPENN←FPHIWOPEN ⋄ XSPHIWOPENN←XSPHIWOPEN[31]      :case '3' ⋄ PHIWOPENL←PHIWOPEN ⋄ FPHIWOPENL←FPHIWOPEN ⋄ XSPHIWOPENL←XSPHIWOPEN[32]      :case '4' ⋄ PHIWOPEN4←PHIWOPEN ⋄ FPHIWOPEN4←FPHIWOPEN ⋄ XSPHIWOPEN4←XSPHIWOPEN[33]      :endselect[34]  [35]      :return[36]  :case 3[37]      PPHIWOPEN←+/[⎕io]PHIWOPEN[;⎕io;;][38]  [39]  :caselist 4 5 ⍝ Prospective Service/Table[40]      FPHIWOPEN←PHIWOPEN[;⎕io+2;;]         +WOFRAC∆l×(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIDPROSPEN) MultiDimMult SPREADFRAC[41]      PPHIWOPEN←PHIWOPEN[;⎕io  ;;]         +WOFRAC∆l×(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIDPROSPEN) MultiDimMult SPREADFRAC2[42]      PHIWOPEN[;⎕io+1;;]←(+/[⎕io+1]PHIWOPEN+WOFRAC∆l×          +/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIDPROSPEN)-FPHIWOPEN+PPHIWOPEN[43]      PHIWOPEN[;⎕io  ;;]←PPHIWOPEN[44]      PHIWOPEN[;⎕io+2;;]←FPHIWOPEN[45]      PPHIWOPEN←+/[⎕io]PPHIWOPEN[46]      XSPHIWOPEN←PHIWOPEN[47]  [48]  :else ⋄ :return[49]  :endselect[50]  [51]  ⍝ Final Calcs for WOBAS 3, 4 and 5[52]  XSPHIWOPEN[;⎕io;;]←XSPHIWOPEN[;⎕io;;] MultiDimMult 0⌈1-((NX,NX)⍴WGMP) CDIV PPHIWOPEN ⍝ Take WGMP off first tranche[53]  PHIWOPEND←+/[⎕io]PHIWOPEN[⎕io+1;;;] ⋄ FPHIWOPEND←PHIWOPEN[⎕io+1;⎕io+2;;] ⋄ XSPHIWOPEND←+/[⎕io]XSPHIWOPEN[⎕io+1;;;][54]  PHIWOPENN←+/[⎕io]PHIWOPEN[⎕io  ;;;] ⋄ FPHIWOPENN←PHIWOPEN[⎕io  ;⎕io+2;;] ⋄ XSPHIWOPENN←+/[⎕io]XSPHIWOPEN[⎕io  ;;;][55]  PHIWOPENL←+/[⎕io]PHIWOPEN[⎕io+2;;;] ⋄ FPHIWOPENL←PHIWOPEN[⎕io+2;⎕io+2;;] ⋄ XSPHIWOPENL←+/[⎕io]XSPHIWOPEN[⎕io+2;;;][56]  PHIWOPEN4←+/[⎕io]PHIWOPEN[⎕io+3;;;] ⋄ FPHIWOPEN4←PHIWOPEN[⎕io+3;⎕io+2;;] ⋄ XSPHIWOPEN4←+/[⎕io]XSPHIWOPEN[⎕io+3;;;]    ∇
+    ∇ INIT∆PHIDISPEN;PHIWOPEN;FPHIWOPEN;XSPHIWOPEN;SPREADFRAC2;wossd;wosfd;PPHIWOPEN
+[1]   ⍝ ACTWIN.sf#8
+[2]   ⍝ Initialise DIS Benefits (post PHI)
+[3]   
+[4]   SPREADFRAC2←SPREADFRAC←PHIWOPEND←FPHIWOPEND←PHIWOPENN←FPHIWOPENN←PHIWOPENL←FPHIWOPENL←PHIWOPEN4←FPHIWOPEN4←XSPHIWOPEND←XSPHIWOPENN←XSPHIWOPENL←XSPHIWOPEN4←(NX,NX)⍴0
+[5]   
+[6]   :if WOBAS=2 ⋄ PHIWOPEN←WOFRAC∆l×'SALMP' PHISALS wosal,(×PROBS[;2])/⍳NX
+[7]   :else       ⋄ XSPHIWOPEN←PHIWOPEN←WOFRAC∆l×+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIDTPEN ⍝ Create partial sum
+[8]   :endif
+[9]   ⍝
+[10]  :if ~WINSDIS ⋄ :andif WOBAS∊2 4 5
+[11]      :if DSTYPE ⋄ :andif WOBAS∊4 5 ⍝ want defaults
+[12]          SPREADFRAC←(NX,NX)⍴1
+[13]      :elseif DISCARESpread ⋄ :andif CAREFutAcc ⍝ Spread by Accrued Pension
+[14]          SPREADFRAC ←(+⌿+⌿+⌿+⌿+⌿PHIDTPEN[;⎕io+2;;;;;;]) CDIV +⌿+⌿+⌿+⌿+⌿+⌿PHIDTPEN
+[15]          SPREADFRAC2←(+⌿+⌿+⌿+⌿+⌿PHIDTPEN[;⎕io  ;;;;;;]) CDIV +⌿+⌿+⌿+⌿+⌿+⌿PHIDTPEN
+[16]      :else
+[17]          wossd←⍎WOSSD ⋄ wosfd←⍎WOSFD
+[18]          SPREADFRAC ←(NX,NX)⍴   (servrnd DURN VDATE TO wosfd)                              CDIV  servrnd DURN wossd TO wosfd
+[19]          SPREADFRAC2←(NX,NX)⍴0⌈((servrnd DURN DJF   TO COEND)⌊servrnd DURN wossd TO COEND) CDIV (servrnd DURN wossd TO wosfd)⌊servrnd DURN DJF TO wosfd
+[20]      :endif
+[21]  :endif
+[22]  
+[23]  :select WOBAS
+[24]  :case 2
+[25]      FPHIWOPEN←SPREADFRAC ×PHIWOPEN
+[26]      PPHIWOPEN←SPREADFRAC2×PHIWOPEN
+[27]      XSPHIWOPEN←(PHIWOPEN-PPHIWOPEN)+0⌈PPHIWOPEN-[1]WGMP ⍝ Take WGMP off first tranche
+[28]      :select WODYN
+[29]      :case 'M' ⋄ PHIWOPEND←PHIWOPEN ⋄ FPHIWOPEND←FPHIWOPEN ⋄ XSPHIWOPEND←XSPHIWOPEN
+[30]      :case 'S' ⋄ PHIWOPENN←PHIWOPEN ⋄ FPHIWOPENN←FPHIWOPEN ⋄ XSPHIWOPENN←XSPHIWOPEN
+[31]      :case '3' ⋄ PHIWOPENL←PHIWOPEN ⋄ FPHIWOPENL←FPHIWOPEN ⋄ XSPHIWOPENL←XSPHIWOPEN
+[32]      :case '4' ⋄ PHIWOPEN4←PHIWOPEN ⋄ FPHIWOPEN4←FPHIWOPEN ⋄ XSPHIWOPEN4←XSPHIWOPEN
+[33]      :endselect
+[34]  
+[35]      :return
+[36]  :case 3
+[37]      PPHIWOPEN←+/[⎕io]PHIWOPEN[;⎕io;;]
+[38]  
+[39]  :caselist 4 5 ⍝ Prospective Service/Table
+[40]      FPHIWOPEN←PHIWOPEN[;⎕io+2;;]         +WOFRAC∆l×(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIDPROSPEN) MultiDimMult SPREADFRAC
+[41]      PPHIWOPEN←PHIWOPEN[;⎕io  ;;]         +WOFRAC∆l×(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIDPROSPEN) MultiDimMult SPREADFRAC2
+[42]      PHIWOPEN[;⎕io+1;;]←(+/[⎕io+1]PHIWOPEN+WOFRAC∆l×          +/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIDPROSPEN)-FPHIWOPEN+PPHIWOPEN
+[43]      PHIWOPEN[;⎕io  ;;]←PPHIWOPEN
+[44]      PHIWOPEN[;⎕io+2;;]←FPHIWOPEN
+[45]      PPHIWOPEN←+/[⎕io]PPHIWOPEN
+[46]      XSPHIWOPEN←PHIWOPEN
+[47]  
+[48]  :else ⋄ :return
+[49]  :endselect
+[50]  
+[51]  ⍝ Final Calcs for WOBAS 3, 4 and 5
+[52]  XSPHIWOPEN[;⎕io;;]←XSPHIWOPEN[;⎕io;;] MultiDimMult 0⌈1-((NX,NX)⍴WGMP) CDIV PPHIWOPEN ⍝ Take WGMP off first tranche
+[53]  PHIWOPEND←+/[⎕io]PHIWOPEN[⎕io+1;;;] ⋄ FPHIWOPEND←PHIWOPEN[⎕io+1;⎕io+2;;] ⋄ XSPHIWOPEND←+/[⎕io]XSPHIWOPEN[⎕io+1;;;]
+[54]  PHIWOPENN←+/[⎕io]PHIWOPEN[⎕io  ;;;] ⋄ FPHIWOPENN←PHIWOPEN[⎕io  ;⎕io+2;;] ⋄ XSPHIWOPENN←+/[⎕io]XSPHIWOPEN[⎕io  ;;;]
+[55]  PHIWOPENL←+/[⎕io]PHIWOPEN[⎕io+2;;;] ⋄ FPHIWOPENL←PHIWOPEN[⎕io+2;⎕io+2;;] ⋄ XSPHIWOPENL←+/[⎕io]XSPHIWOPEN[⎕io+2;;;]
+[56]  PHIWOPEN4←+/[⎕io]PHIWOPEN[⎕io+3;;;] ⋄ FPHIWOPEN4←PHIWOPEN[⎕io+3;⎕io+2;;] ⋄ XSPHIWOPEN4←+/[⎕io]XSPHIWOPEN[⎕io+3;;;]
+    ∇

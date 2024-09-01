@@ -1,0 +1,11 @@
+    ∇ Z←sqlserver ⍙DBNumList nums
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Return the SQL string for a list of numeric field values selected in SQL
+[3]   ⍝ SQL Server requires column headers in PIVOT's to be embraced in brackets
+[4]   ⍝   nums is the list of numbers
+[5]   ⍝ Reads: sqlDatabase
+[6]   
+[7]   :if 0=⎕nc "sqlserver" ⋄ sqlserver←sqlDatabase ⋄ :endif
+[8]   
+[9]   Z←', ' join (⊂sqlserver/'[]') embrace¨⍕¨nums
+    ∇

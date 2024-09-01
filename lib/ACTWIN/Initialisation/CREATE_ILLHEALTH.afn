@@ -1,1 +1,149 @@
-    ∇ CREATE∆ILLHEALTH[1]   ⍝ ACTWIN.sf#2[2]   ⍝ Assign all the Ill-Health Retirement Benefit Variables[3]   [4]   PHIContsDed←zwb PHIContsDed ⍝ Stored in Conts∆Output - must be numeric for Aggregate[5]   [6]   :if PHI ⍝ PHI Benefit Parameters[7]       PHISalary←↑(×⍴PHISalary)×(m2n SALdesc)⍳⊂DLTB PHISalary[8]       PHImult←0.01×zwb PHImult[9]       PHICompare←0⌈¯1+('' 'Maximum' 'Minimum')⍳⊂DLTB PHICompare[10]      PHIOffSalary←↑(×⍴PHIOffSalary)×(m2n SALdesc)⍳⊂DLTB PHIOffSalary[11]      PHIOffset←,'Act' DescToVariableUK PHIOffset[12]      PHIOffmult←0.01×zwb PHIOffmult[13]      PHIWait←zwb PHIWait[14]  [15]      FinAdjTable←FinAdjTable OVER 'PHIOffInc' 'PHIOffInc' (PHIOffInc←termAdjFin BlendRates (~ValMeth≡'UCM')/¨PHIOffInc sCEN_PHIOffInc)[16]      PHIOffIncInd←,(PHIOffIncInd≠3)×PHIOffIncInd←,'CRW'⍳↑PHIOffIncInd[17]      PHIOffRevD←2↑'DD/MM' DATEEXP PHIOffRevD[18]      FinAdjTable←FinAdjTable OVER 'PHISalInc' 'PHISalInc' (PHISalInc←termAdjFin BlendRates (~ValMeth≡'UCM')/¨PHISalInc sCEN_PHISalInc)[19]      PHISalIncInd←,(PHISalIncInd≠3)×PHISalIncInd←,'CRW'⍳↑PHISalIncInd[20]      PHISalRevD←2↑'DD/MM' DATEEXP PHISalRevD[21]      PHIBenInc←,' MS34'[('' 'Main Pension' 'Special Pension' 'Pension Increase 3' 'Pension Increase 4')⍳m2n PHIBenInc][22]  :endif[23]  [24]  ⍝ Ill-Health Pension[25]  ILLIND←0⌈¯1+('' 'None' 'Accrued Pension' 'Prospective Pension' 'Prospective Table')⍳⊂DLTB ILLIND[26]  ILLFRAC←(ILLIND=3)⌈0.01×zwb ILLFRAC ⍝⍝⍝ FIXME - use ILLFRAC for Prospective Table[27]  [28]  :if ¯1=↑ILLTAB1←¯1 DEC∆CHECK ILLTAB1 ⋄ ILLTAB1←120/1[29]  :else[30]      :if 2=⍴⍴ILLTAB1                  ⋄ ILLTAB1←120↑ILLTAB1 AgeSelect NRA[31]      :else                            ⋄ ILLTAB1←120↑ILLTAB1[32]      :endif[33]      :if zwb ILLTAB1ExactAge          ⋄ ILLTAB1←NRA PREP∆RATE ILLTAB1   ⋄ :endif[34]  :endif[35]  [36]  :if ¯1=↑,ILL2D←((lra+1),120)↑¯1 DEC∆CHECK ILL2D ⋄ ILL2D←,0 ⋄ :endif[37]  SDIH2D←,ConvertDates ↑⌽'Date' SwapRelFields lrSDIH2D SDIH2D[38]  [39]  EXIHSERV←zwb EXIHSERV[40]  [41]  WIHERFind←zwb WIHERFind[42]  WIHCOMind←zwb WIHCOMind[43]  [44]  ⍝ IH Cash Maximum Service[45]  :if ~bGAD               ⋄ ihcSRVMAXT←SRVMAXT[46]  :elseif ∨/' '≠IHSRVMAXT ⋄ ihcSRVMAXT←100 OVERTAKE DTZ ¯1 DEC∆CHECK IHSRVMAXT[47]  :elseif ^/' '=IHSRVMAX  ⋄ ihcSRVMAXT←SRVMAXT[48]  :else                   ⋄ ihcSRVMAXT←100⍴¯1↑99,(zwb IHSRVMAX)~0[49]  :endif[50]  IHSRVMAXT←ihcSRVMAXT[51]  ⍝⍝⍝    :if ILLIND∊2 3 ⋄ IHSRVMAXT←ihcSRVMAXT ⍝ IH Service Max only used for Prospective Pension[52]  ⍝⍝⍝    :else          ⋄ IHSRVMAXT←SRVMAXT    ⍝ else it is the same as Retirement[53]  ⍝⍝⍝    :endif[54]  [55]  IHCAREProspective←0⌈¯1+('' 'Accrued CARE Pension' 'Current Salary')⍳⊂DLTB IHCAREProspective[56]  IHCARESpread←CARESpread^~IHCAREProspective[57]  STYPE←('P'=↑STYPEIH)^dab∨~NotPUC[58]  SSDIHC←SSDIH←DLTB ,ConvertDates ↑⌽'Date' SwapRelFields lrSSDIH SSDIH[59]  SFDIHC←SFDIH←DLTB ,ConvertDates ↑⌽'Date' SwapRelFields lrSFDIH SFDIH[60]  [61]  ⍝ Retirement Cash[62]  ICTYPE←('' 'Neutral or Nil' '25% Pension' 'IR Maximum' '2.25 x Pension' 'Accrual x Salary for each year' '3 x Pension' 'Multiple of Pension' '% of Pension' '% of A-Day Cash')⍳⊂DLTB ILLCTYPE[63]  ICONTOP←'O'=↑ICONTOP[64]  ILLCOMACC←0.01×zwb ILLCOMACC[65]  ILLCOMCASH←↑(×⍴ILLCOMCASH)×(m2n SALdesc)⍳⊂DLTB ILLCOMCASH[66]  ILLSERVIND←↑' ' Win∆Child ILLCOMDAT[67]  ILLCOMMult←,'Act' DescToVariableUK ILLCOMMULT[68]  ILLCOMPer← ,'Act' DescToVariableUK ILLCOMPER[69]  ILLCOMADaySep←zwb ILLCOMADaySep[70]  ILLCOMADayInd←zwb ILLCOMADayInd[71]  COMMIND←zwb COMMIND[72]  Icashp←↑(ILLCOMADaySep/'D'),((ICASHP≡'Priority')/'R'),ICASHP[73]  ICGMP←zwb ICGMP[74]  ILLCOMADayPer←'100'[75]  [76]  :select ICTYPE[77]  :case 2 ⋄ ILLCOMPer ←'25'[78]  :case 4 ⋄ ILLCOMMult←'2.25'[79]  :case 6 ⋄ ILLCOMMult←'3'[80]  :case 9 ⋄ ILLCOMADayPer←ILLCOMPer[81]  :endselect[82]  [83]  :if ¯1=↑ILLTAB1C←¯1 DEC∆CHECK ILLTAB1C ⋄ ILLTAB1C←ILLTAB1[84]  :else[85]      :if 2=⍴⍴ILLTAB1C                   ⋄ ILLTAB1C←120↑ILLTAB1C AgeSelect NRA[86]      :else                              ⋄ ILLTAB1C←120↑ILLTAB1C ⍝⍝⍝ OVERTAKE in 9.10[87]      :endif[88]      :if zwb ILLTAB1CExactAge           ⋄ ILLTAB1C←NRA PREP∆RATE ILLTAB1C   ⋄ :endif[89]  :endif[90]  [91]  ICTYPE2←('' 'Neutral or Nil' '25% Pension' 'IR Maximum' '2.25 x Pension' 'Accrual x Salary for each year' '3 x Pension' 'Multiple of Pension' '% of Pension')⍳⊂DLTB ILLCTYPE2[92]  ILLCOMACC2←0.01×zwb ILLCOMACC2[93]  ILLCOMCASH2←↑(×⍴ILLCOMCASH2)×(m2n SALdesc)⍳⊂DLTB ILLCOMCASH2[94]  ILLSERVIND2←↑' ' Win∆Child ILLCOMDAT2[95]  ILLCOMMult2←,'Act' DescToVariableUK ILLCOMMULT2[96]  ILLCOMPer2← ,'Act' DescToVariableUK ILLCOMPER2[97]  COMMIND2←zwb COMMIND2[98]  [99]  :select ICTYPE2[100] :case 2 ⋄ ILLCOMPer2 ←'25'[101] :case 4 ⋄ ILLCOMMult2←'2.25'[102] :case 6 ⋄ ILLCOMMult2←'3'[103] :endselect[104] [105] :if ILLCOMValBas←zwb ILLCOMValBas[106]     ILLCOMValpc←0.01×zwb ILLCOMValpc[107]     ⍝ Relevance Rules for Commutation Tables - msk for relevant Tables[108]     ILLCOMValmsk←(~PHI)^(∨/0≠,IXX)^((ICTYPE∊2 8)∨((~ICTYPE∊0 1)^~ICONTOP)∨ICTYPE2∊2 8)^'SM34'∊,DYNIND OVER (×AltSw)⌿AltDYNIND[109] :else[110]     :if ¯1=↑ILLCOMTAB1←¯1 DEC∆CHECK ILLCOMTAB1 ⋄ ILLCOMTAB1←100/0[111]     :elseif 2=⍴⍴ILLCOMTAB1                     ⋄ ILLCOMTAB1←100↑ILLCOMTAB1 AgeSelect NRA[112]     :else                                      ⋄ ILLCOMTAB1←100↑ILLCOMTAB1[113]     :endif[114]     :if ¯1=↑ILLCOMTAB2←¯1 DEC∆CHECK ILLCOMTAB2 ⋄ ILLCOMTAB2←100/0[115]     :elseif 2=⍴⍴ILLCOMTAB2                     ⋄ ILLCOMTAB2←100↑ILLCOMTAB2 AgeSelect NRA[116]     :else                                      ⋄ ILLCOMTAB2←100↑ILLCOMTAB2[117]     :endif[118]     :if ¯1=↑ILLCOMTAB3←¯1 DEC∆CHECK ILLCOMTAB3 ⋄ ILLCOMTAB3←100/0[119]     :elseif 2=⍴⍴ILLCOMTAB3                     ⋄ ILLCOMTAB3←100↑ILLCOMTAB3 AgeSelect NRA[120]     :else                                      ⋄ ILLCOMTAB3←100↑ILLCOMTAB3[121]     :endif[122]     :if ¯1=↑ILLCOMTAB4←¯1 DEC∆CHECK ILLCOMTAB4 ⋄ ILLCOMTAB4←100/0[123]     :elseif 2=⍴⍴ILLCOMTAB4                     ⋄ ILLCOMTAB4←100↑ILLCOMTAB4 AgeSelect NRA[124]     :else                                      ⋄ ILLCOMTAB4←100↑ILLCOMTAB4[125]     :endif[126]     :if zwb ILLCOMTABExactAge[127]         ILLCOMTAB1←NRA PREP∆RATE ILLCOMTAB1 ⋄ ILLCOMTAB2←NRA PREP∆RATE ILLCOMTAB2[128]         ILLCOMTAB3←NRA PREP∆RATE ILLCOMTAB3 ⋄ ILLCOMTAB4←NRA PREP∆RATE ILLCOMTAB4[129]     :endif[130] :endif[131] ILLCOMAdjbyEx←zwb ILLCOMAdjbyEx[132] [133] :if ILLCOMValBas∨ILLCOMAdjbyEx ⋄ :andif ~test[134]     :if ~mt ILLMEMB ⋄ :orif ~mt (~WIHCOMind)/SPOSTMEMB[135]         ('Note: Ill-Health ',(↑ILLCOMValBas ILLCOMAdjbyEx/'Valuation Basis' 'Life Expectancy Adjusted'),' Commutation Factors not output due to member-specific Mortality Loadings') VALN∆LOG 'Add'[136]     :elseif basischanged∨CFmissing[137]         ILLcomfacs←(LatestAge,4,LatestAge-10)⍴0 ⍝ Store Commutation Factors for Database[138]     :endif[139] :endif[140] [141] STYPEC←STYPE[142] ⍝⍝⍝ STYPEC←('P'=↑STYPEIHC)^dab∨~NotPUC[143] ⍝⍝⍝ STYPEC←('P'=↑STYPEIHC,STYPEIH)^dab∨~NotPUC  ⍝ Only GAD has STYPEIHC[144] ⍝⍝⍝ SSDIHC←,ConvertDates ↑⌽'Date' SwapRelFields lrSSDIHC SSDIHC[145] ⍝⍝⍝ SFDIHC←,ConvertDates ↑⌽'Date' SwapRelFields lrSFDIHC SFDIHC[146] [147] CAREProspective←DISCAREProspective,IHCAREProspective    ∇
+    ∇ CREATE∆ILLHEALTH
+[1]   ⍝ ACTWIN.sf#2
+[2]   ⍝ Assign all the Ill-Health Retirement Benefit Variables
+[3]   
+[4]   PHIContsDed←zwb PHIContsDed ⍝ Stored in Conts∆Output - must be numeric for Aggregate
+[5]   
+[6]   :if PHI ⍝ PHI Benefit Parameters
+[7]       PHISalary←↑(×⍴PHISalary)×(m2n SALdesc)⍳⊂DLTB PHISalary
+[8]       PHImult←0.01×zwb PHImult
+[9]       PHICompare←0⌈¯1+('' 'Maximum' 'Minimum')⍳⊂DLTB PHICompare
+[10]      PHIOffSalary←↑(×⍴PHIOffSalary)×(m2n SALdesc)⍳⊂DLTB PHIOffSalary
+[11]      PHIOffset←,'Act' DescToVariableUK PHIOffset
+[12]      PHIOffmult←0.01×zwb PHIOffmult
+[13]      PHIWait←zwb PHIWait
+[14]  
+[15]      FinAdjTable←FinAdjTable OVER 'PHIOffInc' 'PHIOffInc' (PHIOffInc←termAdjFin BlendRates (~ValMeth≡'UCM')/¨PHIOffInc sCEN_PHIOffInc)
+[16]      PHIOffIncInd←,(PHIOffIncInd≠3)×PHIOffIncInd←,'CRW'⍳↑PHIOffIncInd
+[17]      PHIOffRevD←2↑'DD/MM' DATEEXP PHIOffRevD
+[18]      FinAdjTable←FinAdjTable OVER 'PHISalInc' 'PHISalInc' (PHISalInc←termAdjFin BlendRates (~ValMeth≡'UCM')/¨PHISalInc sCEN_PHISalInc)
+[19]      PHISalIncInd←,(PHISalIncInd≠3)×PHISalIncInd←,'CRW'⍳↑PHISalIncInd
+[20]      PHISalRevD←2↑'DD/MM' DATEEXP PHISalRevD
+[21]      PHIBenInc←,' MS34'[('' 'Main Pension' 'Special Pension' 'Pension Increase 3' 'Pension Increase 4')⍳m2n PHIBenInc]
+[22]  :endif
+[23]  
+[24]  ⍝ Ill-Health Pension
+[25]  ILLIND←0⌈¯1+('' 'None' 'Accrued Pension' 'Prospective Pension' 'Prospective Table')⍳⊂DLTB ILLIND
+[26]  ILLFRAC←(ILLIND=3)⌈0.01×zwb ILLFRAC ⍝⍝⍝ FIXME - use ILLFRAC for Prospective Table
+[27]  
+[28]  :if ¯1=↑ILLTAB1←¯1 DEC∆CHECK ILLTAB1 ⋄ ILLTAB1←120/1
+[29]  :else
+[30]      :if 2=⍴⍴ILLTAB1                  ⋄ ILLTAB1←120↑ILLTAB1 AgeSelect NRA
+[31]      :else                            ⋄ ILLTAB1←120↑ILLTAB1
+[32]      :endif
+[33]      :if zwb ILLTAB1ExactAge          ⋄ ILLTAB1←NRA PREP∆RATE ILLTAB1   ⋄ :endif
+[34]  :endif
+[35]  
+[36]  :if ¯1=↑,ILL2D←((lra+1),120)↑¯1 DEC∆CHECK ILL2D ⋄ ILL2D←,0 ⋄ :endif
+[37]  SDIH2D←,ConvertDates ↑⌽'Date' SwapRelFields lrSDIH2D SDIH2D
+[38]  
+[39]  EXIHSERV←zwb EXIHSERV
+[40]  
+[41]  WIHERFind←zwb WIHERFind
+[42]  WIHCOMind←zwb WIHCOMind
+[43]  
+[44]  ⍝ IH Cash Maximum Service
+[45]  :if ~bGAD               ⋄ ihcSRVMAXT←SRVMAXT
+[46]  :elseif ∨/' '≠IHSRVMAXT ⋄ ihcSRVMAXT←100 OVERTAKE DTZ ¯1 DEC∆CHECK IHSRVMAXT
+[47]  :elseif ^/' '=IHSRVMAX  ⋄ ihcSRVMAXT←SRVMAXT
+[48]  :else                   ⋄ ihcSRVMAXT←100⍴¯1↑99,(zwb IHSRVMAX)~0
+[49]  :endif
+[50]  IHSRVMAXT←ihcSRVMAXT
+[51]  ⍝⍝⍝    :if ILLIND∊2 3 ⋄ IHSRVMAXT←ihcSRVMAXT ⍝ IH Service Max only used for Prospective Pension
+[52]  ⍝⍝⍝    :else          ⋄ IHSRVMAXT←SRVMAXT    ⍝ else it is the same as Retirement
+[53]  ⍝⍝⍝    :endif
+[54]  
+[55]  IHCAREProspective←0⌈¯1+('' 'Accrued CARE Pension' 'Current Salary')⍳⊂DLTB IHCAREProspective
+[56]  IHCARESpread←CARESpread^~IHCAREProspective
+[57]  STYPE←('P'=↑STYPEIH)^dab∨~NotPUC
+[58]  SSDIHC←SSDIH←DLTB ,ConvertDates ↑⌽'Date' SwapRelFields lrSSDIH SSDIH
+[59]  SFDIHC←SFDIH←DLTB ,ConvertDates ↑⌽'Date' SwapRelFields lrSFDIH SFDIH
+[60]  
+[61]  ⍝ Retirement Cash
+[62]  ICTYPE←('' 'Neutral or Nil' '25% Pension' 'IR Maximum' '2.25 x Pension' 'Accrual x Salary for each year' '3 x Pension' 'Multiple of Pension' '% of Pension' '% of A-Day Cash')⍳⊂DLTB ILLCTYPE
+[63]  ICONTOP←'O'=↑ICONTOP
+[64]  ILLCOMACC←0.01×zwb ILLCOMACC
+[65]  ILLCOMCASH←↑(×⍴ILLCOMCASH)×(m2n SALdesc)⍳⊂DLTB ILLCOMCASH
+[66]  ILLSERVIND←↑' ' Win∆Child ILLCOMDAT
+[67]  ILLCOMMult←,'Act' DescToVariableUK ILLCOMMULT
+[68]  ILLCOMPer← ,'Act' DescToVariableUK ILLCOMPER
+[69]  ILLCOMADaySep←zwb ILLCOMADaySep
+[70]  ILLCOMADayInd←zwb ILLCOMADayInd
+[71]  COMMIND←zwb COMMIND
+[72]  Icashp←↑(ILLCOMADaySep/'D'),((ICASHP≡'Priority')/'R'),ICASHP
+[73]  ICGMP←zwb ICGMP
+[74]  ILLCOMADayPer←'100'
+[75]  
+[76]  :select ICTYPE
+[77]  :case 2 ⋄ ILLCOMPer ←'25'
+[78]  :case 4 ⋄ ILLCOMMult←'2.25'
+[79]  :case 6 ⋄ ILLCOMMult←'3'
+[80]  :case 9 ⋄ ILLCOMADayPer←ILLCOMPer
+[81]  :endselect
+[82]  
+[83]  :if ¯1=↑ILLTAB1C←¯1 DEC∆CHECK ILLTAB1C ⋄ ILLTAB1C←ILLTAB1
+[84]  :else
+[85]      :if 2=⍴⍴ILLTAB1C                   ⋄ ILLTAB1C←120↑ILLTAB1C AgeSelect NRA
+[86]      :else                              ⋄ ILLTAB1C←120↑ILLTAB1C ⍝⍝⍝ OVERTAKE in 9.10
+[87]      :endif
+[88]      :if zwb ILLTAB1CExactAge           ⋄ ILLTAB1C←NRA PREP∆RATE ILLTAB1C   ⋄ :endif
+[89]  :endif
+[90]  
+[91]  ICTYPE2←('' 'Neutral or Nil' '25% Pension' 'IR Maximum' '2.25 x Pension' 'Accrual x Salary for each year' '3 x Pension' 'Multiple of Pension' '% of Pension')⍳⊂DLTB ILLCTYPE2
+[92]  ILLCOMACC2←0.01×zwb ILLCOMACC2
+[93]  ILLCOMCASH2←↑(×⍴ILLCOMCASH2)×(m2n SALdesc)⍳⊂DLTB ILLCOMCASH2
+[94]  ILLSERVIND2←↑' ' Win∆Child ILLCOMDAT2
+[95]  ILLCOMMult2←,'Act' DescToVariableUK ILLCOMMULT2
+[96]  ILLCOMPer2← ,'Act' DescToVariableUK ILLCOMPER2
+[97]  COMMIND2←zwb COMMIND2
+[98]  
+[99]  :select ICTYPE2
+[100] :case 2 ⋄ ILLCOMPer2 ←'25'
+[101] :case 4 ⋄ ILLCOMMult2←'2.25'
+[102] :case 6 ⋄ ILLCOMMult2←'3'
+[103] :endselect
+[104] 
+[105] :if ILLCOMValBas←zwb ILLCOMValBas
+[106]     ILLCOMValpc←0.01×zwb ILLCOMValpc
+[107]     ⍝ Relevance Rules for Commutation Tables - msk for relevant Tables
+[108]     ILLCOMValmsk←(~PHI)^(∨/0≠,IXX)^((ICTYPE∊2 8)∨((~ICTYPE∊0 1)^~ICONTOP)∨ICTYPE2∊2 8)^'SM34'∊,DYNIND OVER (×AltSw)⌿AltDYNIND
+[109] :else
+[110]     :if ¯1=↑ILLCOMTAB1←¯1 DEC∆CHECK ILLCOMTAB1 ⋄ ILLCOMTAB1←100/0
+[111]     :elseif 2=⍴⍴ILLCOMTAB1                     ⋄ ILLCOMTAB1←100↑ILLCOMTAB1 AgeSelect NRA
+[112]     :else                                      ⋄ ILLCOMTAB1←100↑ILLCOMTAB1
+[113]     :endif
+[114]     :if ¯1=↑ILLCOMTAB2←¯1 DEC∆CHECK ILLCOMTAB2 ⋄ ILLCOMTAB2←100/0
+[115]     :elseif 2=⍴⍴ILLCOMTAB2                     ⋄ ILLCOMTAB2←100↑ILLCOMTAB2 AgeSelect NRA
+[116]     :else                                      ⋄ ILLCOMTAB2←100↑ILLCOMTAB2
+[117]     :endif
+[118]     :if ¯1=↑ILLCOMTAB3←¯1 DEC∆CHECK ILLCOMTAB3 ⋄ ILLCOMTAB3←100/0
+[119]     :elseif 2=⍴⍴ILLCOMTAB3                     ⋄ ILLCOMTAB3←100↑ILLCOMTAB3 AgeSelect NRA
+[120]     :else                                      ⋄ ILLCOMTAB3←100↑ILLCOMTAB3
+[121]     :endif
+[122]     :if ¯1=↑ILLCOMTAB4←¯1 DEC∆CHECK ILLCOMTAB4 ⋄ ILLCOMTAB4←100/0
+[123]     :elseif 2=⍴⍴ILLCOMTAB4                     ⋄ ILLCOMTAB4←100↑ILLCOMTAB4 AgeSelect NRA
+[124]     :else                                      ⋄ ILLCOMTAB4←100↑ILLCOMTAB4
+[125]     :endif
+[126]     :if zwb ILLCOMTABExactAge
+[127]         ILLCOMTAB1←NRA PREP∆RATE ILLCOMTAB1 ⋄ ILLCOMTAB2←NRA PREP∆RATE ILLCOMTAB2
+[128]         ILLCOMTAB3←NRA PREP∆RATE ILLCOMTAB3 ⋄ ILLCOMTAB4←NRA PREP∆RATE ILLCOMTAB4
+[129]     :endif
+[130] :endif
+[131] ILLCOMAdjbyEx←zwb ILLCOMAdjbyEx
+[132] 
+[133] :if ILLCOMValBas∨ILLCOMAdjbyEx ⋄ :andif ~test
+[134]     :if ~mt ILLMEMB ⋄ :orif ~mt (~WIHCOMind)/SPOSTMEMB
+[135]         ('Note: Ill-Health ',(↑ILLCOMValBas ILLCOMAdjbyEx/'Valuation Basis' 'Life Expectancy Adjusted'),' Commutation Factors not output due to member-specific Mortality Loadings') VALN∆LOG 'Add'
+[136]     :elseif basischanged∨CFmissing
+[137]         ILLcomfacs←(LatestAge,4,LatestAge-10)⍴0 ⍝ Store Commutation Factors for Database
+[138]     :endif
+[139] :endif
+[140] 
+[141] STYPEC←STYPE
+[142] ⍝⍝⍝ STYPEC←('P'=↑STYPEIHC)^dab∨~NotPUC
+[143] ⍝⍝⍝ STYPEC←('P'=↑STYPEIHC,STYPEIH)^dab∨~NotPUC  ⍝ Only GAD has STYPEIHC
+[144] ⍝⍝⍝ SSDIHC←,ConvertDates ↑⌽'Date' SwapRelFields lrSSDIHC SSDIHC
+[145] ⍝⍝⍝ SFDIHC←,ConvertDates ↑⌽'Date' SwapRelFields lrSFDIHC SFDIHC
+[146] 
+[147] CAREProspective←DISCAREProspective,IHCAREProspective
+    ∇

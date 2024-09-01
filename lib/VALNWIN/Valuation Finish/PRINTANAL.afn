@@ -1,0 +1,51 @@
+    ∇ PRINTANAL;SUMMREC;t;v;vMP;TOTS;N;LAB;HEAD;heading;COSThead
+[1]   ⍝ VALNWIN.sf#4
+[2]   ⍝ Analysis Summary for a Valuation - Write averages out to files
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   HEAD←¯4 0↓H2
+[7]   t←3/0 ⋄ SUMMREC← 0 132 ⍴'' ⋄ →(×term)/F1 ⋄ →IsDeferred/F0
+[8]   TOTS←TOTALS[1+⍳3;⍳10]CDIV TOTALS[1;0],⍉ 9 3 ⍴TOTALS[1+⍳3;0] ⍝ Averages
+[9]   SUMMREC←' '⍪MATRIX 109↑'Weighted Averages'
+[10]  SUMMREC←SUMMREC⍪(¯11↑'Age'),'  Salary     Past Serv  Memb    Total Serv  Memb     Future Memb    Age at Entry to Company ',¯6↑'  Fund',(×uk)/'Scheme'
+[11]  LAB←(3 6 ⍴'NumberMC SalCC Sal'),':' ⋄ N←0
+[12]  LOOP:SUMMREC←SUMMREC⍪LAB[N;],(,'I4,BCI8' ⎕FMT MATRIX TOTS[N;2],(N=0)×TOTS[2;0]),(¯20↑DECTOYYMM TOTS[N; 3 4]),(¯20↑DECTOYYMM TOTS[N; 5 6]),(¯16↑DECTOYYMM TOTS[N;7]),¯34↑DECTOYYMM TOTS[N; 8 9]
+[13]  →(3>N←N+1)/LOOP ⋄ SUMMREC←SUMMREC⍪' ' ⋄ (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN
+[14]  →neIND/F2 ⋄ GROUP∆TOT ⍝ Group Grand Totals
+[15]  F2:SUMMREC←' '⍪'<Average Remaining Service Life weighted by Number: >,F5.2,< years, Member Cont Salary: >,F5.2,< years and Company Cont Salary: >,F5.2,< years>' ⎕FMT MATRIX t←TOTS[;1]
+[16]  ⍝ Discounter at t=0.5, 1.5, 2.5,......,49.5 and vMP is V1%
+[17]  F1:vMP←0,+\(50↑CFTOT[0;;15])×v←((⍴v)⍴ 0 1)/v←×\1,(÷2/50 OVERTAKE i)*0.5 ⋄ v←0,+\v
+[18]  ⍝ Figures for Short Term Conts
+[19]  SUMMREC←SUMMREC⍪' '⍪'<Present Value - Years:>,8I10,3BF10.2' ⎕FMT MATRIX 1 5 10 15 20 25 30 50 ,t
+[20]  SUMMREC←SUMMREC⍪' '⍪'<Present Value  £1 p.a.>,8F10.4,3BF10.4' ⎕FMT MATRIX v[1 5 10 15 20 25 30 50],(v[⌊t]×1-1∣t)+v[⌈t]×1∣t
+[21]  SUMMREC←SUMMREC⍪'<Pres Value  1% of Sals>,8CI10,3BCI10' ⎕FMT MATRIX vMP[1 5 10 15 20 25 30 50],(vMP[⌊t]×1-1∣t)+vMP[⌈t]×1∣t
+[22]  (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN
+[23]  ⍝ Totals for each of benefits separately
+[24]  →(~NotPUC)/L1 ⍝ Different Printout for PUC and UCM
+[25]  F0:
+[26]  :if IsDeferred
+[27]      SUMMREC←' '⍪MATRIX 'Average Age weighted by NRAPUP = ',,'I3' ⎕fmt PUPBYAGE CDIV TOTNRAPUP
+[28]      (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN
+[29]  :endif
+[30]  
+[31]  ⍝⍝⍝ :if uk=1 ⋄ :andif bencap ⋄ :return ⋄ :endif
+[32]  
+[33]  SUMMREC←'Past Service Values' PRINT∆SPLIT 1⊖TOTALS[5+⍳No∆Bens+3;12+⍳6]
+[34]  (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN ⋄ →IsDeferred/0
+[35]  heading←(⍕contper),' Year Pres Value' ⋄ →dab/L2
+[36]  SUMMREC←'Future Service Values' PRINT∆SPLIT 1⊖TOTALS[5+⍳No∆Bens+3;6+⍳6]
+[37]  (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN ⋄ heading←'Present Value'
+[38]  
+[39]  L2:SUMMREC←heading PRINT∆SPLIT 1⊖TOTALS[5+⍳No∆Bens+3;⍳6]
+[40]  (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN ⋄ →0
+[41]  
+[42]  L1:SUMMREC←((ValMeth≡'UCM')↓'PUC Accrued Benefit')PRINT∆SPLIT 1⊖TOTALS[5+⍳No∆Bens+3;12+⍳6]
+[43]  (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN
+[44]  SUMMREC←((⍕contper),' Year Normal Cost')PRINT∆SPLIT 1⊖TOTALS[5+⍳No∆Bens+3;⍳6]
+[45]  (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN
+[46]  ⍝ Co Norm Cost as a % of Salaries
+[47]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation NormCost'
+[48]  SUMMREC←' '⍪COSThead⍪(12⍴' '),,'20M<->F6.1' ⎕FMT CFTOT[0;⍳20;13]CDIV CFTOT[0;⍳20;15]
+[49]  (SPAGE RECN)←HEAD OUTPUT tpr1,SPAGE,RECN
+    ∇

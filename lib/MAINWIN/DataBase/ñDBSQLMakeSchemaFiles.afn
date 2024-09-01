@@ -1,0 +1,33 @@
+    ∇ Z←files ⍙DBSQLMakeSchemaFiles tables;∆;file;table;tab;wid;id;fld;typ;rec;row;xml
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Write XML schema files into Input Folder to support BULK INSERT (bcp)
+[3]   ⍝ using Schema description in Dictionary Tables
+[4]   ⍝ Z: (strs) list of XML schema files made
+[5]   ⍝ Reads: CatIDwid InputDir
+[6]   ⍝ Vern: sjt21oct15
+[7]   
+[8]   :for ∆ :in spin files tables ⋄ (file table)←∆
+[9]       tab←⍙SCHEMADict at table
+[10]      tab←tab for ZWB¨(⊂'()') embrace¨tab at 'Alternate'      ⍝ Alternate Fields for different licences
+[11]      tab←tab for ZWB¨(⊂'()') embrace¨tab at 'Relevant'       ⍝ Relevant Fields for different options
+[12]      tab←tab amend 'id' ((~⎕io)+⍳rowsIn tab)
+[13]      row←rec←⎕TCNL
+[14]      :for ∆ :in ⎕SPLIT valsIn tab select 'id' 'Cols' 'Fields' 'XsiType' ⋄ (id wid fld typ)←∆
+[15]          wid←⍕⌊∣ZWB wid
+[16]          rec←rec,ScriptFollowing
+[17]          ⍝    <FIELD ID="{id}" xsi:type="CharFixed" LENGTH="{wid}" />
+[18]          row←row,ScriptFollowing
+[19]          ⍝    <COLUMN SOURCE="{id}" NAME="{fld}" xsi:type="{typ}" />
+[20]      :endfor
+[21]      rec←rec,ScriptFollowing ⍝ declare line terminator as CR LF
+[22]      ⍝    <FIELD ID="{⍕1+rowsIn tab}" xsi:type="CharTerm" TERMINATOR="\r\n" />
+[23]      xml←XML_DECLARATION,⎕TCNL,ScriptFollowing
+[24]      ⍝<BCPFORMAT xmlns="http://schemas.microsoft.com/sqlserver/2004/bulkload/format"
+[25]      ⍝      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+[26]      ⍝  <RECORD>{rec}  </RECORD>
+[27]      ⍝  <ROW>{row}  </ROW>
+[28]      ⍝ </BCPFORMAT>
+[29]      xml nfile_put_contents InputDir,file asExt 'xml'
+[30]  :endfor
+[31]  Z←files asExt¨⊂'xml'
+    ∇

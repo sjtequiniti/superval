@@ -1,1 +1,226 @@
-    ∇ res←field Actives_Basis parm;parent;SSName;z[1]   ⍝ PARMWIN.sf#6[2]   ⍝ Function to allow user control on Actives Basis[3]   [4]   parent←'fmSV.sActives_Basis.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       TotNumVars←CharVars←DateVars←0 0⍴Function←''[10]      Format←HyphenSwap Format[11]      FixRelFields 'Actives'[12]      :if uk=0[13]          :if 0∊⍴DLTMB jpres ⋄ :andif 0∊⍴lrjpres ⍝ "Default" jpres to jdef[14]              :if 0∊⍴DLTMB jpres←jdef ⋄ jpres←'0.0' ⋄ :endif[15]              lrjpres←lrjdef[16]          :endif[17]          ⍝ Set Defaults for Parameters[18]          :if 0∊⍴Rform ⋄ Rform←18⍴'∆⍺⍺' ⋄ :endif[19]          :if 0∊⍴Mform ⋄ Mform←21⍴'∆⍺⍺' ⋄ :endif[20]          :if 0∊⍴Dform ⋄ Dform←21⍴'∆⍺⍺' ⋄ :endif[21]          :if 0∊⍴Wform ⋄ Wform←24⍴'∆⍺⍺' ⋄ :endif[22]          :if 0∊⍴Aform ⋄ Aform←21⍴'∆⍺⍺' ⋄ :endif[23]      :endif[24]      0 0⍴Actives_Basis 'Lock' ⍝ Lock Spreadsheet Cells[25]      Act_CatVars 'Vars'[26]      Act_Salaries 'Vars'[27]      :if uk=2 ⍝⍝⍝[28]          0 0⍴(⊂'ssSlices') Actives_Basis 'Change'[29]          (parent,'pgSlices.fSlices.ssSlices') ⎕wi 'xFixedRows' 1 ⍝ Freeze First Row[30]          Act_Death 'Vars'[31]          Act_IllHealth 'Vars'[32]          Act_Withdrawal 'Vars'[33]          Act_DeathDefer 'Vars'[34]      :endif ⍝⍝⍝[35]      :if ~'-'∊erSind ⋄ erSind←(1↑erSind),' -',1↓erSind ⋄ :endif[36]      :if ~'-'∊pucind ⋄ pucind←(1↑pucind),' -',1↓pucind ⋄ :endif[37]      comment_var←'Comment_Actives_Basis'[38]  [39]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[40]      Act_Main 'Init'[41]      Act_Demographic 'Init'[42]      Act_Membership 'Init'[43]      Act_Salaries 'Init'[44]      Act_Annuities 'Init'[45]      Act_CatVars 'Init'[46]      Act_Benefits 'Init'[47]      Act_NewEntrants 'Init'[48]      Act_DataDefaults 'Init'[49]      :if uk=0[50]  ⍝⍝⍝        Act_Contributions 'Init'[51]      :else[52]          Act_MemberConts 'Init'[53]          Act_UnderpinConts 'Init'[54]          Act_CompanyConts 'Init'[55]          Act_PostRet 'Init'[56]          Act_Slices 'Init'[57]          Act_Retirement 'Init'[58]          Act_Death 'Init'[59]          Act_IllHealth 'Init'[60]          Act_Insurance 'Init'[61]          Act_Withdrawal 'Init'[62]          Act_Comparison 'Init'[63]          Act_DeathDefer 'Init'[64]      :endif[65]      Display∆Access basAccess[1 2][66]  [67]  :case 'Lock'[68]      :if 0≠⎕nc 'field' ⋄ SSName←field[69]      :else             ⋄ SSName←(⊂parent),¨'pgSalaries.fSalaries.ssSalaries' 'pgSlices.fSlices.ssSlices' 'pgNEDataDefaults.fNumData.ssNumData' 'pgNEDataDefaults.fCharData.ssCharData' 'pgNEDataDefaults.fDateData.ssDateData'[70]      :endif[71]      :for SSName :in SSName[72]          :if ~0∊⍴SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1) ⋄ :endif[73]      :endfor[74]  [75]      :if uk=2[76]          FIXME: different Lock for different Spreadsheets??[77]          :if ~0∊⍴(SSName←parent,'pgDeath.fROC.ssROC') ⎕wi 'self'[78]              SSName Act_Death 'Lock'[79]          :endif[80]          :if ~0∊⍴(SSName←parent,'pgIll_Health.fROC.ssROC') ⎕wi 'self'[81]              SSName Act_IllHealth 'Lock'[82]          :endif[83]          :if ~0∊⍴(SSName←parent,'pgWithdrawal.fROC.ssROC') ⎕wi 'self'[84]              SSName Act_Withdrawal 'Lock'[85]          :endif[86]          :if ~0∊⍴(SSName←parent,'pgDeathInDefer.fROC.ssROC') ⎕wi 'self'[87]              SSName Act_DeathDefer 'Lock'[88]          :endif[89]      :endif[90]  [91]  :case 'Unlock'[92]      :if 0≠⎕nc 'field' ⋄ SSName←field[93]      :else             ⋄ SSName←(⊂parent),¨'pgSalaries.fSalaries.ssSalaries' 'pgSlices.fSlices.ssSlices' 'pgNEDataDefaults.fNumData.ssNumData' 'pgNEDataDefaults.fCharData.ssCharData' 'pgNEDataDefaults.fDateData.ssDateData'[94]               :if uk=2 ⋄ SSName←SSName,(⊂parent),¨'pgDeath.fROC.ssROC' 'pgIll_Health.fROC.ssROC' 'pgWithdrawal.fROC.ssROC' 'pgDeathInDefer.fROC.ssROC' ⋄ :endif[95]      :endif[96]      :for SSName :in SSName[97]          :if ~0∊⍴SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells 'Unlock' ⋄ :endif[98]      :endfor[99]  [100] :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[101] [102]     :repeat[103]         :select ↑field[104]             :caselist 'edfILENAME' 'edFILES' 'cbFormat' 'cbcapind' 'ckFileSelections' 'ckUseSex' 'ckUseCat' 'lsCatSels' 'ckUseSubs'[105]                 (↑field) Act_Main 'Change'[106]             :caselist ' '[107]                 (↑field) Act_Demographic 'Change'[108]             :case 'cbImpMeth'[109]                 (↑field) Act_PostRet 'Change'[110]             :caselist 'cbnrdind' 'edNRA'[111]                 (↑field) Act_Membership 'Change'[112]             :case 'ssSalaries'[113]                 (↑field) Act_Salaries 'Change'[114]             :caselist '⍝⍝⍝⍝⍝' 'cbcontsDEF',(uk=0)/⊂'ckdefind'[115]                 :if 0 ⍝⍝⍝ uk=0[116]                     (↑field) Act_Contributions 'Change'[117]                 :else[118]                     (↑field) Act_MemberConts 'Change'[119]                 :endif[120]             :case 'cbmpuDEF'[121]                 (↑field) Act_UnderpinConts 'Change'[122]             :case 'cbV1pcDEF'[123]                 (↑field) Act_CompanyConts 'Change'[124]             :caselist 'ssMiscTab' 'ssNumConst' 'ssDateConst'[125]                 (↑field) Act_CatVars 'Change'[126]             :case 'ssSlices'[127]                 (↑field) Act_Slices 'Change'[128]             :case 'cbCTYPE'[129]                 (↑field) Act_Retirement 'Change'[130]             :caselist 'edGLMULTM' 'edGLMULTS' 'cbWOBAS1' 'cbWOBAS2' 'cbDISbasis' 'edDISrestab'[131]                 (↑field) Act_Death 'Change'[132]             :caselist 'cbICTYPE' 'cbILLIND1' 'cbILLIND2' 'cbILLbasis' 'edILLrestab'[133]                 (↑field) Act_IllHealth 'Change'[134]             :caselist 'cbGLCOST' 'cbWOCOST' 'cbICCOST' 'cbILLCOST'[135]                 (↑field) Act_Insurance 'Change'[136]             :caselist 'ckWTHretain' 'edpuptab' 'cbWTHbasis' 'edWTHrestab'[137]                 (↑field) Act_Withdrawal 'Change'[138]             :caselist 'edlsum_vtab' 'edspouse_vtab' 'ckpair_db1' 'ckpair_db2' 'ckpair_db3' 'ckpair_db4' 'ckpair_wd1' 'ckpair_wd2' 'ckpair_wd3'[139]                 (↑field) Act_Comparison 'Change'[140]             :caselist 'cbDIDbasis' 'edDIDrestab' 'ckDDIND',(uk=2)/⊂'ckdefind'[141]                 (↑field) Act_DeathDefer 'Change'[142]             :caselist 'trBenefit' 'ckStandard' 'edBenCode'[143]                 (↑field) Act_Benefits 'Change'[144]             :case 'cbCOCRind'[145]                 (↑field) Act_NewEntrants 'Change'[146]         :endselect[147]     :until mt field←1↓field[148] [149] :case 'Valid' ⍝ Routine specific validation[150] [151]     :repeat[152]     :select DLTMB ↑field[153]     :case 'All'[154]         :if uk=0[155]             res←('pgMain' 'pgDemographic' 'pgMembership' 'pgSalaries' 'pgMemberConts' 'pgAnnuities' 'pgVariables' 'pgBenefits' 'pgNewEntrants' 'pgNEDataDefaults') Actives_Basis 'Valid'[156] ⍝⍝⍝            res←('pgMain' 'pgDemographic' 'pgMembership' 'pgSalaries' 'pgContributions' 'pgAnnuities' 'pgVariables' 'pgBenefits' 'pgNewEntrants' 'pgNEDataDefaults') Actives_Basis 'Valid'[157]         :else[158]             res←('pgMain' 'pgDemographic' 'pgPostRetirement' 'pgMembership' 'pgSalaries' 'pgMemberConts' 'pgUnderpinConts' 'pgCompanyConts' 'pgAnnuities' 'pgAnnuities2' 'pgVariables' 'pgRetirement' 'pgDeath' 'pgIll_Health' 'pgInsurance' 'pgWithdrawal' 'pgComparison' 'pgDeathInDefer' 'pgBenefits' 'pgNewEntrants' 'pgNEDataDefaults') Actives_Basis 'Valid'[159]         :endif[160] [161]     :case 'pgMain'[162]         Act_Main 'Valid'[163]     :case 'pgDemographic'[164]         Act_Demographic 'Valid'[165]     :case 'pgMembership'[166]         Act_Membership 'Valid'[167]     :case 'pgSalaries'[168]         Act_Salaries 'Valid'[169]     :case 'pgContributions'[170]         Act_Contributions 'Valid'[171]     :case 'pgMemberConts'[172]         Act_MemberConts 'Valid'[173]     :case 'pgAnnuities'[174]         Act_Annuities 'Valid'[175]     :caselist 'pgVariables' 'ssNumConst' 'ssDateConst'[176]         (↑field) Act_CatVars 'Valid'[177]     :case 'pgBenefits'[178]         Act_Benefits 'Valid'[179]     :case 'pgNewEntrants'[180]         Act_NewEntrants 'Valid'[181]     :case 'pgNEDataDefaults'[182]         Act_DataDefaults 'Valid'[183] [184]     :case 'pgUnderpinConts'[185]         Act_UnderpinConts 'Valid'[186]     :case 'pgCompanyConts'[187]         Act_CompanyConts 'Valid'[188]     :case 'pgPostRet'[189]         Act_PostRet 'Valid'[190]     :case 'pgSlices'[191]         Act_Slices 'Valid'[192]     :case 'pgRetirement'[193]         Act_Retirement 'Valid'[194]     :case 'pgDeath'[195]         Act_Death 'Valid'[196]     :case 'pgIllHealth'[197]         Act_IllHealth 'Valid'[198]     :case 'pgInsurance'[199]         Act_Insurance 'Valid'[200]     :case 'pgWithdrawal'[201]         Act_Withdrawal 'Valid'[202]     :case 'pgComparison'[203]         Act_Comparison 'Valid'[204]     :endselect[205]     :until mt field←1↓field[206] [207] :case 'Run'[208] [209]     res←'Quit'[210] [211] :case 'Quit' ⍝ Deleting "other" variables[212] [213]     :if 0≠⎕nc 'DateVars'[214]         0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars[215]         0 0⍴⎕ex 'd','f',DateVars[216]         :if uk≠1 ⋄ 0 0⍴⎕ex MiscTab OVER NumName OVER DateName OVER CatNumName OVER CatDateName ⋄ :endif[217]     :endif[218]     0 0⍴DeleteVars 'ActFormat'[219]     0 0⍴⎕ex 'nra FormatType Filesettings ValYear BasisFile comment_var'[220]     0 0⍴⎕ex 'ALLparms BenForm'[221] [222]     AbsDict←AbsDict for (~(AbsDict at 'Module')∊⊂'Basis') ⍝ Remove Basis entries from AbsDict[223] [224] :endselect    ∇
+    ∇ res←field Actives_Basis parm;parent;SSName;z
+[1]   ⍝ PARMWIN.sf#6
+[2]   ⍝ Function to allow user control on Actives Basis
+[3]   
+[4]   parent←'fmSV.sActives_Basis.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       TotNumVars←CharVars←DateVars←0 0⍴Function←''
+[10]      Format←HyphenSwap Format
+[11]      FixRelFields 'Actives'
+[12]      :if uk=0
+[13]          :if 0∊⍴DLTMB jpres ⋄ :andif 0∊⍴lrjpres ⍝ "Default" jpres to jdef
+[14]              :if 0∊⍴DLTMB jpres←jdef ⋄ jpres←'0.0' ⋄ :endif
+[15]              lrjpres←lrjdef
+[16]          :endif
+[17]          ⍝ Set Defaults for Parameters
+[18]          :if 0∊⍴Rform ⋄ Rform←18⍴'∆⍺⍺' ⋄ :endif
+[19]          :if 0∊⍴Mform ⋄ Mform←21⍴'∆⍺⍺' ⋄ :endif
+[20]          :if 0∊⍴Dform ⋄ Dform←21⍴'∆⍺⍺' ⋄ :endif
+[21]          :if 0∊⍴Wform ⋄ Wform←24⍴'∆⍺⍺' ⋄ :endif
+[22]          :if 0∊⍴Aform ⋄ Aform←21⍴'∆⍺⍺' ⋄ :endif
+[23]      :endif
+[24]      0 0⍴Actives_Basis 'Lock' ⍝ Lock Spreadsheet Cells
+[25]      Act_CatVars 'Vars'
+[26]      Act_Salaries 'Vars'
+[27]      :if uk=2 ⍝⍝⍝
+[28]          0 0⍴(⊂'ssSlices') Actives_Basis 'Change'
+[29]          (parent,'pgSlices.fSlices.ssSlices') ⎕wi 'xFixedRows' 1 ⍝ Freeze First Row
+[30]          Act_Death 'Vars'
+[31]          Act_IllHealth 'Vars'
+[32]          Act_Withdrawal 'Vars'
+[33]          Act_DeathDefer 'Vars'
+[34]      :endif ⍝⍝⍝
+[35]      :if ~'-'∊erSind ⋄ erSind←(1↑erSind),' -',1↓erSind ⋄ :endif
+[36]      :if ~'-'∊pucind ⋄ pucind←(1↑pucind),' -',1↓pucind ⋄ :endif
+[37]      comment_var←'Comment_Actives_Basis'
+[38]  
+[39]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[40]      Act_Main 'Init'
+[41]      Act_Demographic 'Init'
+[42]      Act_Membership 'Init'
+[43]      Act_Salaries 'Init'
+[44]      Act_Annuities 'Init'
+[45]      Act_CatVars 'Init'
+[46]      Act_Benefits 'Init'
+[47]      Act_NewEntrants 'Init'
+[48]      Act_DataDefaults 'Init'
+[49]      :if uk=0
+[50]  ⍝⍝⍝        Act_Contributions 'Init'
+[51]      :else
+[52]          Act_MemberConts 'Init'
+[53]          Act_UnderpinConts 'Init'
+[54]          Act_CompanyConts 'Init'
+[55]          Act_PostRet 'Init'
+[56]          Act_Slices 'Init'
+[57]          Act_Retirement 'Init'
+[58]          Act_Death 'Init'
+[59]          Act_IllHealth 'Init'
+[60]          Act_Insurance 'Init'
+[61]          Act_Withdrawal 'Init'
+[62]          Act_Comparison 'Init'
+[63]          Act_DeathDefer 'Init'
+[64]      :endif
+[65]      Display∆Access basAccess[1 2]
+[66]  
+[67]  :case 'Lock'
+[68]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[69]      :else             ⋄ SSName←(⊂parent),¨'pgSalaries.fSalaries.ssSalaries' 'pgSlices.fSlices.ssSlices' 'pgNEDataDefaults.fNumData.ssNumData' 'pgNEDataDefaults.fCharData.ssCharData' 'pgNEDataDefaults.fDateData.ssDateData'
+[70]      :endif
+[71]      :for SSName :in SSName
+[72]          :if ~0∊⍴SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1) ⋄ :endif
+[73]      :endfor
+[74]  
+[75]      :if uk=2
+[76]          FIXME: different Lock for different Spreadsheets??
+[77]          :if ~0∊⍴(SSName←parent,'pgDeath.fROC.ssROC') ⎕wi 'self'
+[78]              SSName Act_Death 'Lock'
+[79]          :endif
+[80]          :if ~0∊⍴(SSName←parent,'pgIll_Health.fROC.ssROC') ⎕wi 'self'
+[81]              SSName Act_IllHealth 'Lock'
+[82]          :endif
+[83]          :if ~0∊⍴(SSName←parent,'pgWithdrawal.fROC.ssROC') ⎕wi 'self'
+[84]              SSName Act_Withdrawal 'Lock'
+[85]          :endif
+[86]          :if ~0∊⍴(SSName←parent,'pgDeathInDefer.fROC.ssROC') ⎕wi 'self'
+[87]              SSName Act_DeathDefer 'Lock'
+[88]          :endif
+[89]      :endif
+[90]  
+[91]  :case 'Unlock'
+[92]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[93]      :else             ⋄ SSName←(⊂parent),¨'pgSalaries.fSalaries.ssSalaries' 'pgSlices.fSlices.ssSlices' 'pgNEDataDefaults.fNumData.ssNumData' 'pgNEDataDefaults.fCharData.ssCharData' 'pgNEDataDefaults.fDateData.ssDateData'
+[94]               :if uk=2 ⋄ SSName←SSName,(⊂parent),¨'pgDeath.fROC.ssROC' 'pgIll_Health.fROC.ssROC' 'pgWithdrawal.fROC.ssROC' 'pgDeathInDefer.fROC.ssROC' ⋄ :endif
+[95]      :endif
+[96]      :for SSName :in SSName
+[97]          :if ~0∊⍴SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells 'Unlock' ⋄ :endif
+[98]      :endfor
+[99]  
+[100] :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[101] 
+[102]     :repeat
+[103]         :select ↑field
+[104]             :caselist 'edfILENAME' 'edFILES' 'cbFormat' 'cbcapind' 'ckFileSelections' 'ckUseSex' 'ckUseCat' 'lsCatSels' 'ckUseSubs'
+[105]                 (↑field) Act_Main 'Change'
+[106]             :caselist ' '
+[107]                 (↑field) Act_Demographic 'Change'
+[108]             :case 'cbImpMeth'
+[109]                 (↑field) Act_PostRet 'Change'
+[110]             :caselist 'cbnrdind' 'edNRA'
+[111]                 (↑field) Act_Membership 'Change'
+[112]             :case 'ssSalaries'
+[113]                 (↑field) Act_Salaries 'Change'
+[114]             :caselist '⍝⍝⍝⍝⍝' 'cbcontsDEF',(uk=0)/⊂'ckdefind'
+[115]                 :if 0 ⍝⍝⍝ uk=0
+[116]                     (↑field) Act_Contributions 'Change'
+[117]                 :else
+[118]                     (↑field) Act_MemberConts 'Change'
+[119]                 :endif
+[120]             :case 'cbmpuDEF'
+[121]                 (↑field) Act_UnderpinConts 'Change'
+[122]             :case 'cbV1pcDEF'
+[123]                 (↑field) Act_CompanyConts 'Change'
+[124]             :caselist 'ssMiscTab' 'ssNumConst' 'ssDateConst'
+[125]                 (↑field) Act_CatVars 'Change'
+[126]             :case 'ssSlices'
+[127]                 (↑field) Act_Slices 'Change'
+[128]             :case 'cbCTYPE'
+[129]                 (↑field) Act_Retirement 'Change'
+[130]             :caselist 'edGLMULTM' 'edGLMULTS' 'cbWOBAS1' 'cbWOBAS2' 'cbDISbasis' 'edDISrestab'
+[131]                 (↑field) Act_Death 'Change'
+[132]             :caselist 'cbICTYPE' 'cbILLIND1' 'cbILLIND2' 'cbILLbasis' 'edILLrestab'
+[133]                 (↑field) Act_IllHealth 'Change'
+[134]             :caselist 'cbGLCOST' 'cbWOCOST' 'cbICCOST' 'cbILLCOST'
+[135]                 (↑field) Act_Insurance 'Change'
+[136]             :caselist 'ckWTHretain' 'edpuptab' 'cbWTHbasis' 'edWTHrestab'
+[137]                 (↑field) Act_Withdrawal 'Change'
+[138]             :caselist 'edlsum_vtab' 'edspouse_vtab' 'ckpair_db1' 'ckpair_db2' 'ckpair_db3' 'ckpair_db4' 'ckpair_wd1' 'ckpair_wd2' 'ckpair_wd3'
+[139]                 (↑field) Act_Comparison 'Change'
+[140]             :caselist 'cbDIDbasis' 'edDIDrestab' 'ckDDIND',(uk=2)/⊂'ckdefind'
+[141]                 (↑field) Act_DeathDefer 'Change'
+[142]             :caselist 'trBenefit' 'ckStandard' 'edBenCode'
+[143]                 (↑field) Act_Benefits 'Change'
+[144]             :case 'cbCOCRind'
+[145]                 (↑field) Act_NewEntrants 'Change'
+[146]         :endselect
+[147]     :until mt field←1↓field
+[148] 
+[149] :case 'Valid' ⍝ Routine specific validation
+[150] 
+[151]     :repeat
+[152]     :select DLTMB ↑field
+[153]     :case 'All'
+[154]         :if uk=0
+[155]             res←('pgMain' 'pgDemographic' 'pgMembership' 'pgSalaries' 'pgMemberConts' 'pgAnnuities' 'pgVariables' 'pgBenefits' 'pgNewEntrants' 'pgNEDataDefaults') Actives_Basis 'Valid'
+[156] ⍝⍝⍝            res←('pgMain' 'pgDemographic' 'pgMembership' 'pgSalaries' 'pgContributions' 'pgAnnuities' 'pgVariables' 'pgBenefits' 'pgNewEntrants' 'pgNEDataDefaults') Actives_Basis 'Valid'
+[157]         :else
+[158]             res←('pgMain' 'pgDemographic' 'pgPostRetirement' 'pgMembership' 'pgSalaries' 'pgMemberConts' 'pgUnderpinConts' 'pgCompanyConts' 'pgAnnuities' 'pgAnnuities2' 'pgVariables' 'pgRetirement' 'pgDeath' 'pgIll_Health' 'pgInsurance' 'pgWithdrawal' 'pgComparison' 'pgDeathInDefer' 'pgBenefits' 'pgNewEntrants' 'pgNEDataDefaults') Actives_Basis 'Valid'
+[159]         :endif
+[160] 
+[161]     :case 'pgMain'
+[162]         Act_Main 'Valid'
+[163]     :case 'pgDemographic'
+[164]         Act_Demographic 'Valid'
+[165]     :case 'pgMembership'
+[166]         Act_Membership 'Valid'
+[167]     :case 'pgSalaries'
+[168]         Act_Salaries 'Valid'
+[169]     :case 'pgContributions'
+[170]         Act_Contributions 'Valid'
+[171]     :case 'pgMemberConts'
+[172]         Act_MemberConts 'Valid'
+[173]     :case 'pgAnnuities'
+[174]         Act_Annuities 'Valid'
+[175]     :caselist 'pgVariables' 'ssNumConst' 'ssDateConst'
+[176]         (↑field) Act_CatVars 'Valid'
+[177]     :case 'pgBenefits'
+[178]         Act_Benefits 'Valid'
+[179]     :case 'pgNewEntrants'
+[180]         Act_NewEntrants 'Valid'
+[181]     :case 'pgNEDataDefaults'
+[182]         Act_DataDefaults 'Valid'
+[183] 
+[184]     :case 'pgUnderpinConts'
+[185]         Act_UnderpinConts 'Valid'
+[186]     :case 'pgCompanyConts'
+[187]         Act_CompanyConts 'Valid'
+[188]     :case 'pgPostRet'
+[189]         Act_PostRet 'Valid'
+[190]     :case 'pgSlices'
+[191]         Act_Slices 'Valid'
+[192]     :case 'pgRetirement'
+[193]         Act_Retirement 'Valid'
+[194]     :case 'pgDeath'
+[195]         Act_Death 'Valid'
+[196]     :case 'pgIllHealth'
+[197]         Act_IllHealth 'Valid'
+[198]     :case 'pgInsurance'
+[199]         Act_Insurance 'Valid'
+[200]     :case 'pgWithdrawal'
+[201]         Act_Withdrawal 'Valid'
+[202]     :case 'pgComparison'
+[203]         Act_Comparison 'Valid'
+[204]     :endselect
+[205]     :until mt field←1↓field
+[206] 
+[207] :case 'Run'
+[208] 
+[209]     res←'Quit'
+[210] 
+[211] :case 'Quit' ⍝ Deleting "other" variables
+[212] 
+[213]     :if 0≠⎕nc 'DateVars'
+[214]         0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars
+[215]         0 0⍴⎕ex 'd','f',DateVars
+[216]         :if uk≠1 ⋄ 0 0⍴⎕ex MiscTab OVER NumName OVER DateName OVER CatNumName OVER CatDateName ⋄ :endif
+[217]     :endif
+[218]     0 0⍴DeleteVars 'ActFormat'
+[219]     0 0⍴⎕ex 'nra FormatType Filesettings ValYear BasisFile comment_var'
+[220]     0 0⍴⎕ex 'ALLparms BenForm'
+[221] 
+[222]     AbsDict←AbsDict for (~(AbsDict at 'Module')∊⊂'Basis') ⍝ Remove Basis entries from AbsDict
+[223] 
+[224] :endselect
+    ∇

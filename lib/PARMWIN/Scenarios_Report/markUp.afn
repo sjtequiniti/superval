@@ -1,1 +1,40 @@
-    ∇ Z←L markUp R;∆;type1;type2;type3;levels;tips;attrs;warnings[1]   ⍝ PARMWIN.sf#41[2]   ⍝ XML for data cells R, with attributes tip and warning-level[3]   ⍝ R: (strs)[4]   ⍝ type1: (flgs) ⍴ ←→ 1 0+⍴scenarioValues[5]   ⍝ type2: (flgs) ⍴ ←→ tally¨currentGlobals scenarioGlobals[6]   ⍝ type3: (flgs) ⍴ ←→ ⍴ scenarioGlobals[7]   ⍝ Vern: sjt 22jun16 * specn of 31may[8]   [9]   ⍝ map warning flags to R[10]  :select ↑⍴⍴R[11]  :case 1 ⍝ parameter sets[12]      type1←(1⊃L)[1;][13]      type2←0 ⍝ irrelevant[14]      type3←∨⌿3⊃L[15]  :case 2 ⍝ scenario values[16]      type1←(((1 0↓1⊃L))^~∆) ∨ (1⊃L)[1;] ^[2] ∆←mt¨R[17]      type2←2⊃L[18]      type3←3⊃L[19]  :endselect[20]  warnings←⊃type1 type2 type3[21]  [22]  ⍝ worst warning-levels[23]  levels←(∆,0)(,¨'1' '2' '3' '')map ⌈/[1] warnings×[1] ∆←10 5 1[24]  [25]  ⍝ each cell may have multiple warnings[26]  ∆←'Not a Defined Global.' 'New Current Global.' 'No longer in use.'[27]  tips←DLTB¨' 'join¨ ((⊂[1] warnings)) ⎕REPL¨¨⊂∆[28]  [29]  attrs←pr⌿⊃(⊂¨'tip' 'warning-level')pr¨¨tips levels[30]  [31]  :select ↑⍴⍴R[32]  :case 1[33]      Z←(⊂'parm-set')xattr¨((⊂'name')pr¨DLTB¨R) push¨ attrs[34]  :case 2[35]      ∆←xmlEscape¨faSpecialCase¨R[36]      Z←((⊂'alternative')xattr¨attrs) xtag¨∆[37]  :endselect[38]      ∇
+    ∇ Z←L markUp R;∆;type1;type2;type3;levels;tips;attrs;warnings
+[1]   ⍝ PARMWIN.sf#41
+[2]   ⍝ XML for data cells R, with attributes tip and warning-level
+[3]   ⍝ R: (strs)
+[4]   ⍝ type1: (flgs) ⍴ ←→ 1 0+⍴scenarioValues
+[5]   ⍝ type2: (flgs) ⍴ ←→ tally¨currentGlobals scenarioGlobals
+[6]   ⍝ type3: (flgs) ⍴ ←→ ⍴ scenarioGlobals
+[7]   ⍝ Vern: sjt 22jun16 * specn of 31may
+[8]   
+[9]   ⍝ map warning flags to R
+[10]  :select ↑⍴⍴R
+[11]  :case 1 ⍝ parameter sets
+[12]      type1←(1⊃L)[1;]
+[13]      type2←0 ⍝ irrelevant
+[14]      type3←∨⌿3⊃L
+[15]  :case 2 ⍝ scenario values
+[16]      type1←(((1 0↓1⊃L))^~∆) ∨ (1⊃L)[1;] ^[2] ∆←mt¨R
+[17]      type2←2⊃L
+[18]      type3←3⊃L
+[19]  :endselect
+[20]  warnings←⊃type1 type2 type3
+[21]  
+[22]  ⍝ worst warning-levels
+[23]  levels←(∆,0)(,¨'1' '2' '3' '')map ⌈/[1] warnings×[1] ∆←10 5 1
+[24]  
+[25]  ⍝ each cell may have multiple warnings
+[26]  ∆←'Not a Defined Global.' 'New Current Global.' 'No longer in use.'
+[27]  tips←DLTB¨' 'join¨ ((⊂[1] warnings)) ⎕REPL¨¨⊂∆
+[28]  
+[29]  attrs←pr⌿⊃(⊂¨'tip' 'warning-level')pr¨¨tips levels
+[30]  
+[31]  :select ↑⍴⍴R
+[32]  :case 1
+[33]      Z←(⊂'parm-set')xattr¨((⊂'name')pr¨DLTB¨R) push¨ attrs
+[34]  :case 2
+[35]      ∆←xmlEscape¨faSpecialCase¨R
+[36]      Z←((⊂'alternative')xattr¨attrs) xtag¨∆
+[37]  :endselect
+[38]  
+    ∇

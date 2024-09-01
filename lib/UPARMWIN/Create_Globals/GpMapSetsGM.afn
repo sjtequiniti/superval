@@ -1,0 +1,38 @@
+    ∇ Z←L GpMapSetsGM basesTable;∆;bases;basis;idx;dsc;this;gpKey;var;typ;thismap;thesevars;seln;vars;bs850;method;gpNub;gpMap;gid_dsc;xxx;saveVersion
+[1]   ⍝ UPARMWIN.sf#13
+[2]   ⍝ Map Global Parameter sets to V9 bases
+[3]   (gpNub gpMap)←L
+[4]   bases←(rowsIn basesTable)⍴⊂'* PLACEHOLDER '                                       ⍝ avoid compaction
+[5]   gid_dsc←push gpNub at 'Gid' 'Dsc'                                               ⍝ GP names by ID
+[6]   gpKey←spin gpMap at 'Fil' 'Cat'                                                 ⍝ key to GP map
+[7]   
+[8]   vars←nub gpMap at 'Var'
+[9]   
+[10]  'Migrating Superval/21 Bases' Win∆ProgressBar 'Open'
+[11]  (4 5 'Reading Bases') Win∆ProgressBar 'FileUpdate'                              ⍝ ↑⍉
+[12]  
+[13]  :for idx :in ⍳⍴bases
+[14]  
+[15]      this←basesTable[1;] push basesTable[idx+1;]                                 ⍝ row => dictionary
+[16]      ∆←' from ' join this at 'Name' 'File'
+[17]      (idx (⍴bases) ∆) Win∆ProgressBar 'MemberUpdate'                             ⍝ ↑⍉↓
+[18]  
+[19]      basis←this at 'V9Basis'
+[20]      thismap←gpMap for gpKey∊⊂this at 'File' 'Name'                              ⍝ GP map for this basis
+[21]      thesevars←thismap at 'Var'                                                  ⍝ vars for this basis
+[22]  
+[23]      :for var :in (vars∊m2n pnames basis)/vars                                   ⍝ vars already defined in basis
+[24]          :if ∨/seln←thesevars∊⊂var
+[25]              dsc←↑gid_dsc at ↑(thismap for seln) at 'Gid'                        ⍝ name of Global Parameter set
+[26]              basis←basis pvins var dsc
+[27]          :endif
+[28]      :endfor
+[29]      saveVersion←+/(10*-0 2 4)×MatrixZWB SStoMAT '.',version
+[30]      (xxx xxx basis xxx)←basis pevalz '⍙pkg UpdateBasisParms "',(this at 'Memtype'),'" ¯1'
+[31]  
+[32]      (idx⊃bases)←basis
+[33]  :endfor
+[34]  Win∆ProgressBar 'Hide'                                                          ⍝ ⍉↓
+[35]  
+[36]  Z←basesTable amend 'NewBasis' bases
+    ∇

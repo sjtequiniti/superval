@@ -1,0 +1,32 @@
+    ∇ Range XL_HAlign value;⎕elx;elx;noranges;range;rng;MaxNo;roworcol;splits;∆
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Apply a Horizontal Alignment to range (cut down version of XL_ApplyProperty)
+[3]   
+[4]   noranges←1 ⋄ range←⊂Range←4⍴Range ⋄ elx←⎕elx ⋄ ⎕elx←'→Retry' ⍝ Retry with "Range" split into smaller bits
+[5]   
+[6]   Top:
+[7]   :for rng :in range
+[8]       'XL' ⎕wi 'Range>.Rng' (RCtoA1 rng)
+[9]       0 0⍴'XL.Rng' ⎕wi 'xHorizontalAlignment' (↑⍙XL at value)
+[10]  :endfor
+[11]  
+[12]  :return ⍝ Success
+[13]  
+[14]  Retry:
+[15]  :if ~mt ∆←(WHERE (⊂⍬)≡¨Range)-⎕io ⋄ roworcol←~↑∆
+[16]  :else                             ⋄ roworcol←≠/Range[⎕io+1 3] ⍝ 1 is Column based copying (0 is row based)
+[17]  :endif
+[18]  MaxNo←1+-/Range[⎕io+roworcol+2 0]
+[19]  ⎕elx←'→Retry1'
+[20]  
+[21]  Retry1:                                 ⍝ Use smaller ranges to overcome error
+[22]  :if noranges=MaxNo ⋄ ⎕elx←elx ⋄ →Top ⋄ :endif ⍝ One last try!
+[23]  noranges←MaxNo⌊noranges×2               ⍝ Set the number of smaller ranges
+[24]  
+[25]  ⍝ Create a number of smaller ranges, if required
+[26]  splits←MaxNo÷noranges
+[27]  splits←(Range[⎕io+roworcol]+⌊splits×(⍳noranges)-⎕io),Range[⎕io+2+roworcol]+1
+[28]  range←noranges⌿MATRIX Range ⋄ range[;⎕io+roworcol]←¯1↓splits ⋄ range[;⎕io+2+roworcol]←1↓splits-1 ⋄ range←⎕split range
+[29]  
+[30]  →Top
+    ∇

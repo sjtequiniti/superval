@@ -1,1 +1,12 @@
-    ∇ res←arg ⍙WebInterpolation mat;rfTerm;tyweight;nyweight;rfPeriod[1]   ⍝ QSMWIN.sf#2[2]   ⍝ rfTerm and Interpolate discounts/inflators/etc for Roll-Forward Date[3]   [4]   (rfPeriod arg)←arg[5]   rfTerm←⌊rfPeriod ⋄ tyweight←1-nyweight←1∣rfPeriod ⍝ Years to rfTerm, this year weight and next year weight[6]   [7]   :select arg[8]   :case 'Original'   ⋄ res←(rfTerm↑[2]¨mat),¨(tyweight×(-rfTerm)↓[2]¨mat)+nyweight×(1↑[2]¨rfTerm↓[2]¨mat),¨(-rfTerm+1)↓[2]¨mat[9]   :case 'Adjustment' ⋄ res←(-rfTerm)↓(0×rfTerm↑mat),(tyweight×mat)+nyweight×0,¯1↓mat[10]  :endselect    ∇
+    ∇ res←arg ⍙WebInterpolation mat;rfTerm;tyweight;nyweight;rfPeriod
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ rfTerm and Interpolate discounts/inflators/etc for Roll-Forward Date
+[3]   
+[4]   (rfPeriod arg)←arg
+[5]   rfTerm←⌊rfPeriod ⋄ tyweight←1-nyweight←1∣rfPeriod ⍝ Years to rfTerm, this year weight and next year weight
+[6]   
+[7]   :select arg
+[8]   :case 'Original'   ⋄ res←(rfTerm↑[2]¨mat),¨(tyweight×(-rfTerm)↓[2]¨mat)+nyweight×(1↑[2]¨rfTerm↓[2]¨mat),¨(-rfTerm+1)↓[2]¨mat
+[9]   :case 'Adjustment' ⋄ res←(-rfTerm)↓(0×rfTerm↑mat),(tyweight×mat)+nyweight×0,¯1↓mat
+[10]  :endselect
+    ∇

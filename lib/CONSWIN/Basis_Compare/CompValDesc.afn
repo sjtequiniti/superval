@@ -1,1 +1,15 @@
-    ∇ ValMethdesc←CompValDesc data;contper;insind;bencap;valtypeRef[1]   ⍝ CONSWIN.sf#12[2]   ⍝ Create a Valuation Method Description for a row of "data"[3]   [4]   (valtypeRef contper insind bencap)←data[5]   [6]   ValMethdesc←bencap/'Capped'[7]   :select valtypeRef←⊃valtypeRef[8]   :case 'PUC' ⋄ ValMethdesc←('CP ',(⍕contper),' yr',((1≠contper)/'s'),' ',(¯2↑'ex',insind/'in'),'c Ins'),bencap/' - ',ValMethdesc[9]   :case 'DAB' ⋄ ValMethdesc←('CP ',(⍕contper),' yr',((1≠contper)/'s')),bencap/' - ',ValMethdesc[10]  :endselect[11]  :if 0<⍴,ValMethdesc ⋄ ValMethdesc←' (',ValMethdesc,')' ⋄ :endif[12]  [13]  ValMethdesc←valtypeRef,ValMethdesc    ∇
+    ∇ ValMethdesc←CompValDesc data;contper;insind;bencap;valtypeRef
+[1]   ⍝ CONSWIN.sf#12
+[2]   ⍝ Create a Valuation Method Description for a row of "data"
+[3]   
+[4]   (valtypeRef contper insind bencap)←data
+[5]   
+[6]   ValMethdesc←bencap/'Capped'
+[7]   :select valtypeRef←⊃valtypeRef
+[8]   :case 'PUC' ⋄ ValMethdesc←('CP ',(⍕contper),' yr',((1≠contper)/'s'),' ',(¯2↑'ex',insind/'in'),'c Ins'),bencap/' - ',ValMethdesc
+[9]   :case 'DAB' ⋄ ValMethdesc←('CP ',(⍕contper),' yr',((1≠contper)/'s')),bencap/' - ',ValMethdesc
+[10]  :endselect
+[11]  :if 0<⍴,ValMethdesc ⋄ ValMethdesc←' (',ValMethdesc,')' ⋄ :endif
+[12]  
+[13]  ValMethdesc←valtypeRef,ValMethdesc
+    ∇

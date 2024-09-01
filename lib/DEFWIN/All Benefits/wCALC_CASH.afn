@@ -1,1 +1,168 @@
-    ∇ Z←cotcom wCALC_CASH R;gtr;fid;PUP_iPen;GMPN_iPen;PUP_iCom;GMPN_iCom;fac;GMPR;capped;∆;maxavail;method;cashben;maxav;ratio;cashratio;Maxed;xsrow;fU;cot_method;com_method;cot_fac;com_fac;com_cashben;com_maxavail;com_capped;GMPN_iCom_pre;GMPN_iCom_post;GMPR_pre;GMPR_post;GMPN_iPen_pre;GMPN_iPen_post;over;left;right;totpen;ma;limit;whole;under;gcash;uontop;cash;multn;perpn;iCsh;ctype;ADaysep;ADayper;xxx;cotcash;denom;com_ADaypc[1]   ⍝ DEFWIN.sf#4[2]   ⍝ Cash [aUND aAGE aINC] for Cash-on-top or commutation from pension, according to cotcom: ['COT'∣'COM'][3]   ⍝ v8.50 [EnhDef] DT/SJT Summer 2010 OO/KS/SJT Spring 2011[4]   [5]    (ctype multn perpn ADaysep ADayper cotcash)←R[6]    iCsh←↑(cotcom≡'COM')⌽iCot,iCom[7]   [8]   ⍝ Three ways to limit how much cash may be produced[9]   ⍝ also have different bases for pro rata commutation[10]  :select ctype[11]  :case 7 ⋄ fac←multn   ⋄ method←'multiple'                                       ⍝ multiple of commutable pension rights[12]  :case 8 ⋄ fac←perpn   ⋄ method←'percentage'                                     ⍝ % of commuted pension considered for cash SV5000144[13]  :case 9 ⋄               method←'ADay'                                           ⍝ % of A-Day Cash[14]  :Else   ⋄               method←'none'                                           ⍝ uncapped commuted cpr[15]  :Endselect[16]  [17]  :If method≡'none'[18]      Z←(lU,NX,lI,(cotcom≡'COT')/lP)⍴0                                            ⍝ SV5000235, SV5000329[19]  :Else[20]      ⍝ ======================================================================[21]      ⍝ Rules derived 3 Apr 2011 from commutation model in worksheet[22]      ⍝ (All limits now expressed as cash, not pnsn.)[23]      ⍝ https://spreadsheets0.google.com/ccc?hl=en_GB&key=t0x1bYX8RH7hzN-_Ukc6rMA&hl=en_GB#gid=0 (no longer exists)[24]      ⍝ ======================================================================[25]  [26]      ⍝ Pension rights to be considered for commutation or COT[27]       PUP_iPen      ← ⍉+/STDPUP[;↑iWho;↑iPen;↑iRet;;↑iWth;]                  ⍝ excess [pnsn] [XI] 5apr[28]       GMPN_iPen_pre ← ⍉  GMPraw[;↑iWho;↑iPen;↑iRet;;↑iWth;↑iNot;↑iGmp;↑iPr8] ⍝ notional GMP pre-88  [pnsn] [XI][29]       GMPN_iPen_post← ⍉  GMPraw[;↑iWho;↑iPen;↑iRet;;↑iWth;↑iNot;↑iGmp;↑iPo8] ⍝ notional GMP post-88 [pnsn] [XI][30]       GMPN_iPen     ← ⍉     GMP[;↑iWho;↑iPen;↑iRet;;↑iWth;↑iNot]             ⍝ notional GMP [pnsn] [XI][31]       gtr←↑>/+/¨PUP_iPen GMPN_iPen                                           ⍝ [X][32]       PUP_iCom      ←(⍉+/STDPUP[;↑iWho;↑iCsh;↑iRet;;↑iWth;])      ×[0]  gtr *FID  ⍝ excess to be considered for cash [pnsn] [XI] 5apr[33]       GMPN_iCom_pre ←(⍉  GMPraw[;↑iWho;↑iCsh;↑iRet;;↑iWth;↑iNot;↑iGmp;↑iPr8]) ×[0](~gtr)*FID[34]       GMPN_iCom_post←(⍉  GMPraw[;↑iWho;↑iCsh;↑iRet;;↑iWth;↑iNot;↑iGmp;↑iPo8]) ×[0](~gtr)*FID[35]       GMPN_iCom     ←(⍉     GMP[;↑iWho;↑iCsh;↑iRet;;↑iWth;↑iNot])             ×[0](~gtr)*FID[36]       GMPR_pre      ←    PreGMPR         ∘.× (↑ mpreIND         )=  'SM34'   ⍝ real GMP pre-88  [pens] [XI][37]       GMPR_post     ←            PostGMPR∘.× (↑         mpostIND)=  'SM34'   ⍝ real GMP post-88 [pens] [XI][38]       GMPR          ← +⌿⊃PreGMPR PostGMPR∘.×¨(↑¨mpreIND mpostIND)=¨⊂'SM34'   ⍝ real GMP         [pens] [XI][39]       totpen        ← PUP_iPen+GMPN_iPen[40]  [41]      :if method≡'ADay'[42]          denom←totpen×20+3×comtab[43]          :if ADaysep ⋄ fac←0⌈          ((20×  totpen)-3×1 2 SUMSOF cotcash) CDIV   denom[44]          :else       ⋄ fac←0⌈4/⍉MATRIX ((20×+/totpen)-3×1   SUMSOF cotcash) CDIV +/denom[45]          :endif[46]      :endif[47]  [48]      ⍝ Limit to cash benefits derived from method ⍝⍝⍝ FIXME[49]      :if cotcom≡'COT'                                                        ⍝ COT cannot be A-Day Cash[50]      :andif (bBuck ∨ ClntCode=3) ∨ method≡'multiple'[51]          cashben←⊃(⍉⊂[2]PRE[;↑iWho;↑iCsh;↑iRet;;↑iWth;]) × fac × comtab*method≡'percentage'[52]      :elseif 'D'=CASHP ⍝ A-Day cash with separate factors by Pension Increase[53]          cashben←fac × totpen × comtab[54]      :elseIf  (⊂method)∊'percentage' 'ADay'[55]      :AndIf  'R'=CASHP[56]          cashben← comtab                               × DIFF 0,(+/fac×PUP_iCom+GMPN_iCom)⌊[0] +\ 0⌈distribute ∆×10E¯6<∣∆←PUP_iPen+GMPN_iPen -GMPR ⍝  [cash] [XI][57]      :Else[58]          cashben←(comtab*(⊂method)∊'percentage' 'ADay')×        (  fac×                                                   PUP_iCom+GMPN_iCom)      ⍝  [cash] [XI][59]      :EndIf[60]  [61]      ⍝ ======================================================================[62]  [63]      :Select cotcom[64]      :Case 'COM'[65]          ⍝ Limit cash benefits so as to leave GMP funded [cash] [XI[66]          :If FID[67]              maxavail←comtab × ↑⊂[0 2]⊃(↑≤/+/¨PUP_iPen GMPR)⊖¨⊂[0 2]⊃(PUP_iPen-GMPR⌈PUP_iPen-PUP_iCom)(0⌈GMPN_iCom-GMPR) ⍝ 15apr[68]          :Else[69]              :Select method CASHP[70]              ⍝ Watch out: there seems no justification for maxavail being a function of method or CASHP[71]              ⍝ This distinction has been drawn in pursuit of backwards compatibility with 8.46.[72]              ⍝ Perhaps we have discovered an unreported error in the earlier code.[73]              :Case 'multiple' 'P'[74]                  (left right)←                   (PUP_iCom + GMPN_iCom) (PUP_iPen + GMPN_iPen - GMPR) ⍝ 5may[75]                  maxavail←comtab × ↑⊂[0 2]⊃(↑>/+/¨left right)⊖¨⊂[0 2]⊃left right ⍝ lesser of the two at each exit age[76]  [77]  ⍝⍝⍝            :Case 'multiple' 'R'[78]  ⍝⍝⍝                maxavail←comtab × ↑⌊/distribute¨(PUP_iCom + GMPN_iCom) (PUP_iPen + GMPN_iPen - GMPR) ⍝ 19apr[79]  ⍝⍝⍝[80]              :Caselist ('multiple' 'R') ('percentage' 'R') ('ADay' 'R') ⍝ 19apr[81]                  maxavail←comtab × ↑⌊/distribute¨(PUP_iCom + GMPN_iCom) (PUP_iPen + GMPN_iPen - GMPR)[82]  [83]              :Caselist ('percentage' 'P') ('ADay' 'P') ('ADay' 'D')[84]                  maxavail←comtab ×  PUP_iPen + ↑+/(GMPN_iPen_pre GMPN_iPen_post)-GMPR_pre GMPR_post ⍝ 15may[85]  ⍝⍝⍝[86]  ⍝⍝⍝            :Case 'ADay' 'D'[87]  ⍝⍝⍝                maxavail←comtab ×  PUP_iPen + ↑+/(GMPN_iPen_pre GMPN_iPen_post)-GMPR_pre GMPR_post[88]              :EndSelect[89]          :EndIf[90]  [91]      :Case 'COT'[92]          ⍝ Limit to cash benefits derived from method [cash] [XI][93]  ⍝        cashben← (⍉  +/PRE[;↑iWho;↑iCsh;↑iRet;;↑iWth;]) × fac × comtab*(⊂method)≡'percentage' 'ADay'[94]          ⍝ Limit to cash benefits derived from method [cash] [XIP][95]  ⍝        cashben←⊃(⍉⊂[2]PRE[;↑iWho;↑iCsh;↑iRet;;↑iWth;]) × fac × comtab*(⊂method)≡'percentage' 'ADay'[96]  [97]      :EndSelect[98]  [99]     ⍝ cap [X] is [cash][100]    ⍝ limit [X] is [cash∣pens] according to method[101]    ⍝ maxavail [XI] is [cash] ⍝ suspect[102]    ⍝ ma [XI] is [pens][103] [104]    ⍝ Apportion cash to increase rates[105]     :Select cotcom[106]     :Case 'COT'[107]         capped←cashben ×[0] 1⌊ cap CDIV 1⌈+/+/cashben                           ⍝ cap applied pro rata across increase rates [XIP] SV5000307 SV5000329[108]         cash←capped                                                             ⍝ capped yield [cash] [XIP][109]     :Case 'COM'[110]         cashben←cashben×1⌈ADayper[111]         capped←cashben ×[0] 1⌊ cap CDIV 1⌈  +/cashben                           ⍝ cap applied pro rata across increase rates [XI]  SV5000307 SV5000329[112]         maxav   ←losenegs maxavail[113] [114]         :If 'P'=CASHP  ⍝ pro rata[115]             :if method≡'ADay'[116]                 capped←capped CDIV comtab[117]                 maxav ←maxav  CDIV comtab[118]             :endif[119]             cashratio←1⌊ratio←           (maxav=0)⌈capped ZDIV maxav            ⍝ SV5000306[120]             Maxed←ratio≥1[121]             cash←cashratio×maxav[122]             :while ∨/xsrow←(0.01<+/capped-cash)^~^/Maxed[123]                 ratio←(xsrow×+/capped-maxav×Maxed) ZDIV +/maxav×~Maxed[124]                 cashratio←1⌊(cashratio×(~xsrow)⌈[0]Maxed)+ratio×[0]~Maxed[125]                 Maxed←(ratio>1)∨[0]Maxed[126]                 cash←cashratio×maxav[127]             :endwhile[128]             :if method≡'ADay'[129]                 cash  ←cash  ×comtab[130]                 capped←capped×comtab[131]             :endif[132] [133]         :elseif 'D'=CASHP                   ⍝ ADay cash[134]             cash←capped⌊maxavail[135]         :Else                               ⍝ priority                          ⍝ WATCH OUT: assumes (iS,iM,i3,i4)≡⍳4[136]             cash←DIFF 0,(+/capped)⌊[0]+\maxav[137]         :EndIf[138]         cash←cash×1⌊ADayper[139]     :EndSelect[140] [141]    ⍝ Underpinned cash benefits are the underpinned fraction of the whole cash benefits[142]     ⍝ Richard's approximation for GCASH SV5000311: FIXME remove eventually[143]     under←aAGE aINC SUMSOF PRE[;iUnd;iPen;iRet;;iWto;]                          ⍝ GDYNPEN GNDYNPEN[144]     whole←aAGE aINC SUMSOF PRE[;iWho;iPen;iRet;;iWto;]                          ⍝  DYNPEN  NDYNPEN[145]     :select cotcom[146]     :case 'COT'[147]         uontop←cash ×[0] ↑CDIV/ +/¨ under whole                                 ⍝ dividend and divisor summed across increase rates[148]         Z←⎕MIX cash uontop                                                      ⍝ [UXIP][149]     :case 'COM'[150]         gcash←cash  × under CDIV whole                                          ⍝ cashben ←→ CASHFAC×COMPENDYN+COMPENNDYN Jide![151]         Z←⎕MIX cash gcash                                                       ⍝ [UXI][152]     :endselect[153] [154] :EndIf[155] [156] ⍝ Preserve values for trace file[157] ⍝⌿⍝ :If ~method≡'none'[158] ⍝⌿⍝    :Select cotcom[159] ⍝⌿⍝    :Case 'COT'[160] ⍝⌿⍝        (cot_fac cot_method)←fac method[161] ⍝⌿⍝        TRACEVALS 'cot_fac' 'cot_method'[162] ⍝⌿⍝    :Case 'COM'[163] ⍝⌿⍝        (com_method com_fac com_cashben com_maxavail com_capped com_ADaypc)←method fac cashben maxavail capped ADayper[164] ⍝⌿⍝        :if test ⋄ TRACEVALS 'com_method' 'com_fac' 'PUP_iPen' 'GMPN_iPen' 'gtr' 'PUP_iCom' 'GMPN_iCom' 'com_cashben' 'GMPR' 'com_maxavail' 'com_capped' 'com_ADaypc' ⋄ :endif[165] ⍝⌿⍝    :EndSelect[166] ⍝⌿⍝ :EndIf    ∇
+    ∇ Z←cotcom wCALC_CASH R;gtr;fid;PUP_iPen;GMPN_iPen;PUP_iCom;GMPN_iCom;fac;GMPR;capped;∆;maxavail;method;cashben;maxav;ratio;cashratio;Maxed;xsrow;fU;cot_method;com_method;cot_fac;com_fac;com_cashben;com_maxavail;com_capped;GMPN_iCom_pre;GMPN_iCom_post;GMPR_pre;GMPR_post;GMPN_iPen_pre;GMPN_iPen_post;over;left;right;totpen;ma;limit;whole;under;gcash;uontop;cash;multn;perpn;iCsh;ctype;ADaysep;ADayper;xxx;cotcash;denom;com_ADaypc
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ Cash [aUND aAGE aINC] for Cash-on-top or commutation from pension, according to cotcom: ['COT'∣'COM']
+[3]   ⍝ v8.50 [EnhDef] DT/SJT Summer 2010 OO/KS/SJT Spring 2011
+[4]   
+[5]    (ctype multn perpn ADaysep ADayper cotcash)←R
+[6]    iCsh←↑(cotcom≡'COM')⌽iCot,iCom
+[7]   
+[8]   ⍝ Three ways to limit how much cash may be produced
+[9]   ⍝ also have different bases for pro rata commutation
+[10]  :select ctype
+[11]  :case 7 ⋄ fac←multn   ⋄ method←'multiple'                                       ⍝ multiple of commutable pension rights
+[12]  :case 8 ⋄ fac←perpn   ⋄ method←'percentage'                                     ⍝ % of commuted pension considered for cash SV5000144
+[13]  :case 9 ⋄               method←'ADay'                                           ⍝ % of A-Day Cash
+[14]  :Else   ⋄               method←'none'                                           ⍝ uncapped commuted cpr
+[15]  :Endselect
+[16]  
+[17]  :If method≡'none'
+[18]      Z←(lU,NX,lI,(cotcom≡'COT')/lP)⍴0                                            ⍝ SV5000235, SV5000329
+[19]  :Else
+[20]      ⍝ ======================================================================
+[21]      ⍝ Rules derived 3 Apr 2011 from commutation model in worksheet
+[22]      ⍝ (All limits now expressed as cash, not pnsn.)
+[23]      ⍝ https://spreadsheets0.google.com/ccc?hl=en_GB&key=t0x1bYX8RH7hzN-_Ukc6rMA&hl=en_GB#gid=0 (no longer exists)
+[24]      ⍝ ======================================================================
+[25]  
+[26]      ⍝ Pension rights to be considered for commutation or COT
+[27]       PUP_iPen      ← ⍉+/STDPUP[;↑iWho;↑iPen;↑iRet;;↑iWth;]                  ⍝ excess [pnsn] [XI] 5apr
+[28]       GMPN_iPen_pre ← ⍉  GMPraw[;↑iWho;↑iPen;↑iRet;;↑iWth;↑iNot;↑iGmp;↑iPr8] ⍝ notional GMP pre-88  [pnsn] [XI]
+[29]       GMPN_iPen_post← ⍉  GMPraw[;↑iWho;↑iPen;↑iRet;;↑iWth;↑iNot;↑iGmp;↑iPo8] ⍝ notional GMP post-88 [pnsn] [XI]
+[30]       GMPN_iPen     ← ⍉     GMP[;↑iWho;↑iPen;↑iRet;;↑iWth;↑iNot]             ⍝ notional GMP [pnsn] [XI]
+[31]       gtr←↑>/+/¨PUP_iPen GMPN_iPen                                           ⍝ [X]
+[32]       PUP_iCom      ←(⍉+/STDPUP[;↑iWho;↑iCsh;↑iRet;;↑iWth;])      ×[0]  gtr *FID  ⍝ excess to be considered for cash [pnsn] [XI] 5apr
+[33]       GMPN_iCom_pre ←(⍉  GMPraw[;↑iWho;↑iCsh;↑iRet;;↑iWth;↑iNot;↑iGmp;↑iPr8]) ×[0](~gtr)*FID
+[34]       GMPN_iCom_post←(⍉  GMPraw[;↑iWho;↑iCsh;↑iRet;;↑iWth;↑iNot;↑iGmp;↑iPo8]) ×[0](~gtr)*FID
+[35]       GMPN_iCom     ←(⍉     GMP[;↑iWho;↑iCsh;↑iRet;;↑iWth;↑iNot])             ×[0](~gtr)*FID
+[36]       GMPR_pre      ←    PreGMPR         ∘.× (↑ mpreIND         )=  'SM34'   ⍝ real GMP pre-88  [pens] [XI]
+[37]       GMPR_post     ←            PostGMPR∘.× (↑         mpostIND)=  'SM34'   ⍝ real GMP post-88 [pens] [XI]
+[38]       GMPR          ← +⌿⊃PreGMPR PostGMPR∘.×¨(↑¨mpreIND mpostIND)=¨⊂'SM34'   ⍝ real GMP         [pens] [XI]
+[39]       totpen        ← PUP_iPen+GMPN_iPen
+[40]  
+[41]      :if method≡'ADay'
+[42]          denom←totpen×20+3×comtab
+[43]          :if ADaysep ⋄ fac←0⌈          ((20×  totpen)-3×1 2 SUMSOF cotcash) CDIV   denom
+[44]          :else       ⋄ fac←0⌈4/⍉MATRIX ((20×+/totpen)-3×1   SUMSOF cotcash) CDIV +/denom
+[45]          :endif
+[46]      :endif
+[47]  
+[48]      ⍝ Limit to cash benefits derived from method ⍝⍝⍝ FIXME
+[49]      :if cotcom≡'COT'                                                        ⍝ COT cannot be A-Day Cash
+[50]      :andif (bBuck ∨ ClntCode=3) ∨ method≡'multiple'
+[51]          cashben←⊃(⍉⊂[2]PRE[;↑iWho;↑iCsh;↑iRet;;↑iWth;]) × fac × comtab*method≡'percentage'
+[52]      :elseif 'D'=CASHP ⍝ A-Day cash with separate factors by Pension Increase
+[53]          cashben←fac × totpen × comtab
+[54]      :elseIf  (⊂method)∊'percentage' 'ADay'
+[55]      :AndIf  'R'=CASHP
+[56]          cashben← comtab                               × DIFF 0,(+/fac×PUP_iCom+GMPN_iCom)⌊[0] +\ 0⌈distribute ∆×10E¯6<∣∆←PUP_iPen+GMPN_iPen -GMPR ⍝  [cash] [XI]
+[57]      :Else
+[58]          cashben←(comtab*(⊂method)∊'percentage' 'ADay')×        (  fac×                                                   PUP_iCom+GMPN_iCom)      ⍝  [cash] [XI]
+[59]      :EndIf
+[60]  
+[61]      ⍝ ======================================================================
+[62]  
+[63]      :Select cotcom
+[64]      :Case 'COM'
+[65]          ⍝ Limit cash benefits so as to leave GMP funded [cash] [XI
+[66]          :If FID
+[67]              maxavail←comtab × ↑⊂[0 2]⊃(↑≤/+/¨PUP_iPen GMPR)⊖¨⊂[0 2]⊃(PUP_iPen-GMPR⌈PUP_iPen-PUP_iCom)(0⌈GMPN_iCom-GMPR) ⍝ 15apr
+[68]          :Else
+[69]              :Select method CASHP
+[70]              ⍝ Watch out: there seems no justification for maxavail being a function of method or CASHP
+[71]              ⍝ This distinction has been drawn in pursuit of backwards compatibility with 8.46.
+[72]              ⍝ Perhaps we have discovered an unreported error in the earlier code.
+[73]              :Case 'multiple' 'P'
+[74]                  (left right)←                   (PUP_iCom + GMPN_iCom) (PUP_iPen + GMPN_iPen - GMPR) ⍝ 5may
+[75]                  maxavail←comtab × ↑⊂[0 2]⊃(↑>/+/¨left right)⊖¨⊂[0 2]⊃left right ⍝ lesser of the two at each exit age
+[76]  
+[77]  ⍝⍝⍝            :Case 'multiple' 'R'
+[78]  ⍝⍝⍝                maxavail←comtab × ↑⌊/distribute¨(PUP_iCom + GMPN_iCom) (PUP_iPen + GMPN_iPen - GMPR) ⍝ 19apr
+[79]  ⍝⍝⍝
+[80]              :Caselist ('multiple' 'R') ('percentage' 'R') ('ADay' 'R') ⍝ 19apr
+[81]                  maxavail←comtab × ↑⌊/distribute¨(PUP_iCom + GMPN_iCom) (PUP_iPen + GMPN_iPen - GMPR)
+[82]  
+[83]              :Caselist ('percentage' 'P') ('ADay' 'P') ('ADay' 'D')
+[84]                  maxavail←comtab ×  PUP_iPen + ↑+/(GMPN_iPen_pre GMPN_iPen_post)-GMPR_pre GMPR_post ⍝ 15may
+[85]  ⍝⍝⍝
+[86]  ⍝⍝⍝            :Case 'ADay' 'D'
+[87]  ⍝⍝⍝                maxavail←comtab ×  PUP_iPen + ↑+/(GMPN_iPen_pre GMPN_iPen_post)-GMPR_pre GMPR_post
+[88]              :EndSelect
+[89]          :EndIf
+[90]  
+[91]      :Case 'COT'
+[92]          ⍝ Limit to cash benefits derived from method [cash] [XI]
+[93]  ⍝        cashben← (⍉  +/PRE[;↑iWho;↑iCsh;↑iRet;;↑iWth;]) × fac × comtab*(⊂method)≡'percentage' 'ADay'
+[94]          ⍝ Limit to cash benefits derived from method [cash] [XIP]
+[95]  ⍝        cashben←⊃(⍉⊂[2]PRE[;↑iWho;↑iCsh;↑iRet;;↑iWth;]) × fac × comtab*(⊂method)≡'percentage' 'ADay'
+[96]  
+[97]      :EndSelect
+[98]  
+[99]     ⍝ cap [X] is [cash]
+[100]    ⍝ limit [X] is [cash∣pens] according to method
+[101]    ⍝ maxavail [XI] is [cash] ⍝ suspect
+[102]    ⍝ ma [XI] is [pens]
+[103] 
+[104]    ⍝ Apportion cash to increase rates
+[105]     :Select cotcom
+[106]     :Case 'COT'
+[107]         capped←cashben ×[0] 1⌊ cap CDIV 1⌈+/+/cashben                           ⍝ cap applied pro rata across increase rates [XIP] SV5000307 SV5000329
+[108]         cash←capped                                                             ⍝ capped yield [cash] [XIP]
+[109]     :Case 'COM'
+[110]         cashben←cashben×1⌈ADayper
+[111]         capped←cashben ×[0] 1⌊ cap CDIV 1⌈  +/cashben                           ⍝ cap applied pro rata across increase rates [XI]  SV5000307 SV5000329
+[112]         maxav   ←losenegs maxavail
+[113] 
+[114]         :If 'P'=CASHP  ⍝ pro rata
+[115]             :if method≡'ADay'
+[116]                 capped←capped CDIV comtab
+[117]                 maxav ←maxav  CDIV comtab
+[118]             :endif
+[119]             cashratio←1⌊ratio←           (maxav=0)⌈capped ZDIV maxav            ⍝ SV5000306
+[120]             Maxed←ratio≥1
+[121]             cash←cashratio×maxav
+[122]             :while ∨/xsrow←(0.01<+/capped-cash)^~^/Maxed
+[123]                 ratio←(xsrow×+/capped-maxav×Maxed) ZDIV +/maxav×~Maxed
+[124]                 cashratio←1⌊(cashratio×(~xsrow)⌈[0]Maxed)+ratio×[0]~Maxed
+[125]                 Maxed←(ratio>1)∨[0]Maxed
+[126]                 cash←cashratio×maxav
+[127]             :endwhile
+[128]             :if method≡'ADay'
+[129]                 cash  ←cash  ×comtab
+[130]                 capped←capped×comtab
+[131]             :endif
+[132] 
+[133]         :elseif 'D'=CASHP                   ⍝ ADay cash
+[134]             cash←capped⌊maxavail
+[135]         :Else                               ⍝ priority                          ⍝ WATCH OUT: assumes (iS,iM,i3,i4)≡⍳4
+[136]             cash←DIFF 0,(+/capped)⌊[0]+\maxav
+[137]         :EndIf
+[138]         cash←cash×1⌊ADayper
+[139]     :EndSelect
+[140] 
+[141]    ⍝ Underpinned cash benefits are the underpinned fraction of the whole cash benefits
+[142]     ⍝ Richard's approximation for GCASH SV5000311: FIXME remove eventually
+[143]     under←aAGE aINC SUMSOF PRE[;iUnd;iPen;iRet;;iWto;]                          ⍝ GDYNPEN GNDYNPEN
+[144]     whole←aAGE aINC SUMSOF PRE[;iWho;iPen;iRet;;iWto;]                          ⍝  DYNPEN  NDYNPEN
+[145]     :select cotcom
+[146]     :case 'COT'
+[147]         uontop←cash ×[0] ↑CDIV/ +/¨ under whole                                 ⍝ dividend and divisor summed across increase rates
+[148]         Z←⎕MIX cash uontop                                                      ⍝ [UXIP]
+[149]     :case 'COM'
+[150]         gcash←cash  × under CDIV whole                                          ⍝ cashben ←→ CASHFAC×COMPENDYN+COMPENNDYN Jide!
+[151]         Z←⎕MIX cash gcash                                                       ⍝ [UXI]
+[152]     :endselect
+[153] 
+[154] :EndIf
+[155] 
+[156] ⍝ Preserve values for trace file
+[157] ⍝⌿⍝ :If ~method≡'none'
+[158] ⍝⌿⍝    :Select cotcom
+[159] ⍝⌿⍝    :Case 'COT'
+[160] ⍝⌿⍝        (cot_fac cot_method)←fac method
+[161] ⍝⌿⍝        TRACEVALS 'cot_fac' 'cot_method'
+[162] ⍝⌿⍝    :Case 'COM'
+[163] ⍝⌿⍝        (com_method com_fac com_cashben com_maxavail com_capped com_ADaypc)←method fac cashben maxavail capped ADayper
+[164] ⍝⌿⍝        :if test ⋄ TRACEVALS 'com_method' 'com_fac' 'PUP_iPen' 'GMPN_iPen' 'gtr' 'PUP_iCom' 'GMPN_iCom' 'com_cashben' 'GMPR' 'com_maxavail' 'com_capped' 'com_ADaypc' ⋄ :endif
+[165] ⍝⌿⍝    :EndSelect
+[166] ⍝⌿⍝ :EndIf
+    ∇

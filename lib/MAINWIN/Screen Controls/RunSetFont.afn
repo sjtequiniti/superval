@@ -1,0 +1,59 @@
+    ∇ parm RunSetFont CallingModule;FontName;FontSize;FontStyle;FontCharSet;selection;n
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Set the Display font for either the Browser or Help
+[3]   ⍝ This function simplys localises the "standard" functions!!
+[4]   
+[5]   :select parm
+[6]   :case 'Run'
+[7]       :if 0≠⍴'fmSetFont' ⎕wi 'self' ⍝ Set Font already loaded
+[8]           :return
+[9]       :endif
+[10]  
+[11]      :select CallingModule
+[12]      :case 'Browser'
+[13]          selection←'fmBrowser.edText' ⎕wi 'selection'
+[14]          'OVERWIN' CallModule 'Set_Font'
+[15]          'fmBrowser.edText' ⎕wi 'selection' selection
+[16]      :case 'Help'
+[17]          selection←'fmHelp.redText' ⎕wi 'selection'
+[18]          'OVERWIN' CallModule 'Set_Font'
+[19]          :if 0≠¯1↑selection
+[20]              'fmHelp.redText' ⎕wi 'selection' selection
+[21]          :else
+[22]              'fmHelp.redText' ⎕wi 'selection' (('fmHelp.redText' ⎕wi 'LineToChar' (1↑'fmHelp.redText' ⎕wi 'range')),0)
+[23]          :endif
+[24]      :endselect
+[25]  
+[26]  :case 'Change' ⍝ Set the display font
+[27]      :if 0=⎕nc 'uSER' ⋄ :orif 0∊⍴,DLTB uSER ⋄ :return ⋄ :endif
+[28]  
+[29]      FontStyle←INIString uSER 'B_FontStyle' 'Roman' PrefINI
+[30]      FontSize←INIString uSER 'B_FontSize' 'Normal' PrefINI
+[31]      :if CallingModule≡'Help'
+[32]          FontStyle←INIString uSER 'H_FontStyle' FontStyle PrefINI
+[33]          FontSize←INIString uSER 'H_FontSize' FontSize PrefINI
+[34]      :endif
+[35]  
+[36]      :select FontStyle
+[37]      :case 'APL'
+[38]          FontName←APLScreen ⋄ FontCharSet←APLScrCharSet ⋄ FontStyle←2048
+[39]      :else
+[40]          n←¯1↑6,(SStoMAT '⍺Roman⍺Swiss⍺Modern⍺Script⍺Decorative') TLU FontStyle
+[41]          FontStyle←(2048+32)×CallingModule≡'Browser'
+[42]          :if 0∊⍴,DLTMB FontName←DLTMB (SStoMAT '⍺Times New Roman⍺MS Sans Serif⍺Courier New⍺Script⍺Old English⍺')[n;]
+[43]              FontName←⍬ ⋄ FontStyle←FontStyle+128×⍬⍴n×n≠6
+[44]          :endif
+[45]          FontCharSet←'ansi'
+[46]      :endselect
+[47]      FontSize←4+4×¯1↑3,(SStoMAT '⍺Fine⍺Small⍺Normal⍺Large⍺Very Large') TLU FontSize
+[48]  
+[49]      :select CallingModule
+[50]      :case 'Browser'
+[51]          'fmBrowser.edText' ⎕wi 'font' FontName FontSize FontStyle FontCharSet
+[52]  
+[53]      :case 'Help'
+[54]          'fmHelp.redText' ⎕wi 'selection' 0 ¯1
+[55]          'fmHelp.redText' ⎕wi 'selfont' FontName FontSize FontStyle FontCharSet
+[56]      :endselect
+[57]  :endselect
+    ∇

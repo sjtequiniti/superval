@@ -1,0 +1,22 @@
+    ∇ ⍙DBAddAccrued;spouseContID
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Add Accrued Benefits and (1st year) Cash Flow results to the Database
+[3]   ⍝⍝⍝ Assumes there is only one Accrued Benefit
+[4]   
+[5]   :if ~ppf
+[6]       ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 9 14) 0 (1+term+⍳120)) ⍙DBValnRecords -+/⍙dbABres
+[7]       :if ClassID=4 ⍝⍝⍝ ⋄ :andif bencap FIXME: Did I mean ~bencap????
+[8]           ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 9 14) 0 (1+term+⍳120)) ⍙DBValnRecords -⍙dbRESres
+[9]       :endif
+[10]  :endif
+[11]  
+[12]  :if term=0
+[13]  ⍝⍝⍝    spouseContID←⍬⍴¯1↑ContingencyID,(ContingencyID=21 1 2 4 26 5)/22 7 12 13 27 14
+[14]      spouseContID←↑¯1↑ContingencyID,↑(ContingencyID≡¨¨pp∆ExitContID)sel¨pp∆SpouseContID
+[15]      ⍙dbbenres←⍙dbbenres⍪((BenefitTypeID ContingencyID 3 14) pp∆dbXe term) ⍙DBValnRecords -⍙dbABres[0;0]
+[16]      ⍙dbbenres←⍙dbbenres⍪((BenefitTypeID spouseContID 3 14) pp∆dbXe term) ⍙DBValnRecords -⍙dbABres[0;1]
+[17]      :if ~ppf
+[18]          ⍙dbbenproj←⍙dbbenproj⍪((BenefitTypeID ContingencyID 5 12) 0 (1+term+⍳125)) ⍙DBValnRecords -+/⍙dbCFres
+[19]      :endif
+[20]  :endif
+    ∇

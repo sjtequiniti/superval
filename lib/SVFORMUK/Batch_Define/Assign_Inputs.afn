@@ -1,1 +1,147 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Batch_Define" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Batch_Define" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   [10]  :if ppfenabled[11]  PickList←"fmBatchDefine.lsValMeth" ⎕wi "list"[12]  :if 0∊⍴selection←PickList ExactTLU SStoMAT ValMeth[13]      "fmBatchDefine.lsValMeth" ⎕wi "value" ((×1↑⍴PickList)⍴0)[14]      modified←⌈/modified,"fmBatchDefine.lsValMeth" ⎕wi "value"[15]  :else[16]      "fmBatchDefine.lsValMeth" ⎕wi "visible" ¯1[17]      "fmBatchDefine.lsValMeth" ⎕wi "value" selection[18]      "fmBatchDefine.lsValMeth" ⎕wi "visible" (¯1+2×ppfenabled)[19]  :endif[20]  :endif[21]  [22]  :if ~ppfenabled[23]  PickList←"fmBatchDefine.lsValMeth" ⎕wi "list"[24]  :if 0∊⍴selection←PickList ExactTLU SStoMAT ValMeth[25]      "fmBatchDefine.lsValMeth" ⎕wi "value" ((×1↑⍴PickList)⍴0)[26]      modified←⌈/modified,"fmBatchDefine.lsValMeth" ⎕wi "value"[27]  :else[28]      "fmBatchDefine.lsValMeth" ⎕wi "visible" ¯1[29]      "fmBatchDefine.lsValMeth" ⎕wi "value" selection[30]      "fmBatchDefine.lsValMeth" ⎕wi "visible" (¯1+2×~ppfenabled)[31]  :endif[32]  :endif[33]  PickList←"fmBatchDefine.lvBases" ⎕wi "list"[34]  :if 0∊⍴PickList[35]      value←⍬[36]  :else[37]      list←(1 0×⍴PickList)⍴""[38]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX Bases) OVER " ")[1;][39]          list←list,"⍺",(⊃PickList[;n])," "[40]      :endfor[41]      list←m2n list[42]      NameList←m2n MATRIX Bases[43]      value←(list∊NameList)/PickList[;1][44]  :endif[45]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[46]      value←PickList[1;1] ⋄ modified←1[47]  :endif[48]  "fmBatchDefine.lvBases" ⎕wi "value" value[49]  0 0⍴"fmBatchDefine.lvBases" ⎕wi "EnsureVisible" ((1↑value),1)[50]  PickList←"fmBatchDefine.fRunOpt.cbSexSel" ⎕wi "list"[51]  selection←PickList ExactTLU DLTB SexSel[52]  :if mt selection[53]      :if ~mt DLTB SexSel[54]          warnings←warnings OVER "Previous Selection for 'Sex Selection' is no longer available"[55]      :endif[56]      modified←⌈/modified,1[57]  :endif[58]  "fmBatchDefine.fRunOpt.cbSexSel" ⎕wi "value" (¯1↑1,selection)[59]  PickList←"fmBatchDefine.fRunOpt.cbtest" ⎕wi "list"[60]  selection←PickList ExactTLU DLTB test[61]  :if mt selection[62]      :if ~mt DLTB test[63]          warnings←warnings OVER "Previous Selection for 'Test Valuation Run' is no longer available"[64]      :endif[65]      modified←⌈/modified,1[66]  :endif[67]  "fmBatchDefine.fRunOpt.cbtest" ⎕wi "value" (¯1↑1,selection)[68]  "fmBatchDefine.fRunOpt.ckAgeInterp" ⎕wi "value" (zwb AgeInterp)[69]  "fmBatchDefine.fRunOpt.ckaggopt" ⎕wi "value" (zwb aggopt)[70]  "fmBatchDefine.fRunOpt.ckPROPT" ⎕wi "value" (zwb PROPT)[71]  "fmBatchDefine.fRunOpt.edcontper" ⎕wi "text" (DLTB contper)[72]  "fmBatchDefine.fRunOpt.ckinsind" ⎕wi "value" (zwb insind)[73]  PickList←"fmBatchDefine.fRunOpt.cbabNO" ⎕wi "list"[74]  selection←PickList ExactTLU DLTB abNO[75]  :if mt selection[76]      :if ~mt DLTB abNO[77]          warnings←warnings OVER "Previous Selection for 'Target Accrued Benefit' is no longer available"[78]      :endif[79]      modified←⌈/modified,1[80]  :endif[81]  "fmBatchDefine.fRunOpt.cbabNO" ⎕wi "value" (¯1↑1,selection)[82]  "fmBatchDefine.fRunOpt.cknewent" ⎕wi "value" (zwb newent)[83]  PickList←"fmBatchDefine.fRunOpt.cbNEparms" ⎕wi "list"[84]  selection←PickList ExactTLU DLTB NEparms[85]  :if mt selection[86]      :if ~mt DLTB NEparms[87]          warnings←warnings OVER "Previous Selection for 'New Entrant Model Parameters' is no longer available"[88]      :endif[89]      modified←⌈/modified,1[90]  :endif[91]  "fmBatchDefine.fRunOpt.cbNEparms" ⎕wi "value" (¯1↑1,selection)[92]  PickList←"fmBatchDefine.fRunOpt.cbvDATEind" ⎕wi "list"[93]  selection←PickList ExactTLU DLTB vDATEind[94]  :if mt selection[95]      :if ~mt DLTB vDATEind[96]          warnings←warnings OVER "Previous Selection for 'Valuation Date' is no longer available"[97]      :endif[98]      modified←⌈/modified,1[99]  :endif[100] "fmBatchDefine.fRunOpt.cbvDATEind" ⎕wi "value" (¯1↑1,selection)[101] PickList←"fmBatchDefine.fRunOpt.cbSurcparms" ⎕wi "list"[102] selection←PickList ExactTLU DLTB Surcparms[103] :if mt selection[104]     :if ~mt DLTB Surcparms[105]         warnings←warnings OVER "Previous Selection for 'Surcharge Parameters' is no longer available"[106]     :endif[107]     modified←⌈/modified,1[108] :endif[109] "fmBatchDefine.fRunOpt.cbSurcparms" ⎕wi "value" (¯1↑1,selection)[110] "fmBatchDefine.fRunOpt.ckaosind" ⎕wi "value" (zwb aosind)[111] "fmBatchDefine.fRunOpt.ckbencap" ⎕wi "value" (zwb bencap)[112] "fmBatchDefine.fRunOpt.cks143" ⎕wi "value" (zwb s143)[113] "fmBatchDefine.fOutOpt.ckKeepResult" ⎕wi "value" (zwb KeepResult)[114] "fmBatchDefine.fOutOpt.ckfscopt" ⎕wi "value" (zwb fscopt)[115] "fmBatchDefine.fOutOpt.cksummopt" ⎕wi "value" (zwb summopt)[116] "fmBatchDefine.fOutOpt.ckIndCashFlow" ⎕wi "value" (zwb IndCashFlow)[117] "fmBatchDefine.fOutOpt.ckVFtables" ⎕wi "value" (zwb VFtables)[118] "fmBatchDefine.fOutOpt.ckdecopt" ⎕wi "value" (zwb decopt)[119] "fmBatchDefine.fOutOpt.ckpbens" ⎕wi "value" (zwb pbens)[120] PickList←"fmBatchDefine.fOutOpt.cbdataind" ⎕wi "list"[121] selection←PickList ExactTLU DLTB dataind[122] :if mt selection[123]     :if ~mt DLTB dataind[124]         warnings←warnings OVER "Previous Selection for 'Input Data File in Text Output' is no longer available"[125]     :endif[126]     modified←⌈/modified,1[127] :endif[128] "fmBatchDefine.fOutOpt.cbdataind" ⎕wi "value" (¯1↑1,selection)[129] "fmBatchDefine.fOutOpt.ckmemsumm" ⎕wi "value" (zwb memsumm)[130] "fmBatchDefine.fOutOpt.ckvalout" ⎕wi "value" (zwb valout)[131] "fmBatchDefine.fOutOpt.ckkeepfile" ⎕wi "value" (zwb keepfile)[132] "fmBatchDefine.fOutOpt.ckSSexport" ⎕wi "value" (zwb SSexport)[133] "fmBatchDefine.fOutOpt.ckSSexpparms" ⎕wi "value" (zwb SSexpparms)[134] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Batch_Define[135]     :for var :in spin Comment_Batch_Define at "variable" "row" ⋄ (var row)←var[136]         "Batch_Define" ParmColor ((FormFields for "variable" var) at "control"),var row 1[137]     :endfor[138] :endif[139] :if ~0∊⍴,warnings[140]     MDISPLAY DLTMB warnings,⎕tcnl[141]     Win∆AssignVars "fmBatchDefine"[142] :endif[143] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Batch_Define" "" "Names"[144]     "fmBatchDefine" ⎕wi "modified" 0[145] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Batch_Define" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Batch_Define" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   
+[10]  :if ppfenabled
+[11]  PickList←"fmBatchDefine.lsValMeth" ⎕wi "list"
+[12]  :if 0∊⍴selection←PickList ExactTLU SStoMAT ValMeth
+[13]      "fmBatchDefine.lsValMeth" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[14]      modified←⌈/modified,"fmBatchDefine.lsValMeth" ⎕wi "value"
+[15]  :else
+[16]      "fmBatchDefine.lsValMeth" ⎕wi "visible" ¯1
+[17]      "fmBatchDefine.lsValMeth" ⎕wi "value" selection
+[18]      "fmBatchDefine.lsValMeth" ⎕wi "visible" (¯1+2×ppfenabled)
+[19]  :endif
+[20]  :endif
+[21]  
+[22]  :if ~ppfenabled
+[23]  PickList←"fmBatchDefine.lsValMeth" ⎕wi "list"
+[24]  :if 0∊⍴selection←PickList ExactTLU SStoMAT ValMeth
+[25]      "fmBatchDefine.lsValMeth" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[26]      modified←⌈/modified,"fmBatchDefine.lsValMeth" ⎕wi "value"
+[27]  :else
+[28]      "fmBatchDefine.lsValMeth" ⎕wi "visible" ¯1
+[29]      "fmBatchDefine.lsValMeth" ⎕wi "value" selection
+[30]      "fmBatchDefine.lsValMeth" ⎕wi "visible" (¯1+2×~ppfenabled)
+[31]  :endif
+[32]  :endif
+[33]  PickList←"fmBatchDefine.lvBases" ⎕wi "list"
+[34]  :if 0∊⍴PickList
+[35]      value←⍬
+[36]  :else
+[37]      list←(1 0×⍴PickList)⍴""
+[38]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX Bases) OVER " ")[1;]
+[39]          list←list,"⍺",(⊃PickList[;n])," "
+[40]      :endfor
+[41]      list←m2n list
+[42]      NameList←m2n MATRIX Bases
+[43]      value←(list∊NameList)/PickList[;1]
+[44]  :endif
+[45]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[46]      value←PickList[1;1] ⋄ modified←1
+[47]  :endif
+[48]  "fmBatchDefine.lvBases" ⎕wi "value" value
+[49]  0 0⍴"fmBatchDefine.lvBases" ⎕wi "EnsureVisible" ((1↑value),1)
+[50]  PickList←"fmBatchDefine.fRunOpt.cbSexSel" ⎕wi "list"
+[51]  selection←PickList ExactTLU DLTB SexSel
+[52]  :if mt selection
+[53]      :if ~mt DLTB SexSel
+[54]          warnings←warnings OVER "Previous Selection for 'Sex Selection' is no longer available"
+[55]      :endif
+[56]      modified←⌈/modified,1
+[57]  :endif
+[58]  "fmBatchDefine.fRunOpt.cbSexSel" ⎕wi "value" (¯1↑1,selection)
+[59]  PickList←"fmBatchDefine.fRunOpt.cbtest" ⎕wi "list"
+[60]  selection←PickList ExactTLU DLTB test
+[61]  :if mt selection
+[62]      :if ~mt DLTB test
+[63]          warnings←warnings OVER "Previous Selection for 'Test Valuation Run' is no longer available"
+[64]      :endif
+[65]      modified←⌈/modified,1
+[66]  :endif
+[67]  "fmBatchDefine.fRunOpt.cbtest" ⎕wi "value" (¯1↑1,selection)
+[68]  "fmBatchDefine.fRunOpt.ckAgeInterp" ⎕wi "value" (zwb AgeInterp)
+[69]  "fmBatchDefine.fRunOpt.ckaggopt" ⎕wi "value" (zwb aggopt)
+[70]  "fmBatchDefine.fRunOpt.ckPROPT" ⎕wi "value" (zwb PROPT)
+[71]  "fmBatchDefine.fRunOpt.edcontper" ⎕wi "text" (DLTB contper)
+[72]  "fmBatchDefine.fRunOpt.ckinsind" ⎕wi "value" (zwb insind)
+[73]  PickList←"fmBatchDefine.fRunOpt.cbabNO" ⎕wi "list"
+[74]  selection←PickList ExactTLU DLTB abNO
+[75]  :if mt selection
+[76]      :if ~mt DLTB abNO
+[77]          warnings←warnings OVER "Previous Selection for 'Target Accrued Benefit' is no longer available"
+[78]      :endif
+[79]      modified←⌈/modified,1
+[80]  :endif
+[81]  "fmBatchDefine.fRunOpt.cbabNO" ⎕wi "value" (¯1↑1,selection)
+[82]  "fmBatchDefine.fRunOpt.cknewent" ⎕wi "value" (zwb newent)
+[83]  PickList←"fmBatchDefine.fRunOpt.cbNEparms" ⎕wi "list"
+[84]  selection←PickList ExactTLU DLTB NEparms
+[85]  :if mt selection
+[86]      :if ~mt DLTB NEparms
+[87]          warnings←warnings OVER "Previous Selection for 'New Entrant Model Parameters' is no longer available"
+[88]      :endif
+[89]      modified←⌈/modified,1
+[90]  :endif
+[91]  "fmBatchDefine.fRunOpt.cbNEparms" ⎕wi "value" (¯1↑1,selection)
+[92]  PickList←"fmBatchDefine.fRunOpt.cbvDATEind" ⎕wi "list"
+[93]  selection←PickList ExactTLU DLTB vDATEind
+[94]  :if mt selection
+[95]      :if ~mt DLTB vDATEind
+[96]          warnings←warnings OVER "Previous Selection for 'Valuation Date' is no longer available"
+[97]      :endif
+[98]      modified←⌈/modified,1
+[99]  :endif
+[100] "fmBatchDefine.fRunOpt.cbvDATEind" ⎕wi "value" (¯1↑1,selection)
+[101] PickList←"fmBatchDefine.fRunOpt.cbSurcparms" ⎕wi "list"
+[102] selection←PickList ExactTLU DLTB Surcparms
+[103] :if mt selection
+[104]     :if ~mt DLTB Surcparms
+[105]         warnings←warnings OVER "Previous Selection for 'Surcharge Parameters' is no longer available"
+[106]     :endif
+[107]     modified←⌈/modified,1
+[108] :endif
+[109] "fmBatchDefine.fRunOpt.cbSurcparms" ⎕wi "value" (¯1↑1,selection)
+[110] "fmBatchDefine.fRunOpt.ckaosind" ⎕wi "value" (zwb aosind)
+[111] "fmBatchDefine.fRunOpt.ckbencap" ⎕wi "value" (zwb bencap)
+[112] "fmBatchDefine.fRunOpt.cks143" ⎕wi "value" (zwb s143)
+[113] "fmBatchDefine.fOutOpt.ckKeepResult" ⎕wi "value" (zwb KeepResult)
+[114] "fmBatchDefine.fOutOpt.ckfscopt" ⎕wi "value" (zwb fscopt)
+[115] "fmBatchDefine.fOutOpt.cksummopt" ⎕wi "value" (zwb summopt)
+[116] "fmBatchDefine.fOutOpt.ckIndCashFlow" ⎕wi "value" (zwb IndCashFlow)
+[117] "fmBatchDefine.fOutOpt.ckVFtables" ⎕wi "value" (zwb VFtables)
+[118] "fmBatchDefine.fOutOpt.ckdecopt" ⎕wi "value" (zwb decopt)
+[119] "fmBatchDefine.fOutOpt.ckpbens" ⎕wi "value" (zwb pbens)
+[120] PickList←"fmBatchDefine.fOutOpt.cbdataind" ⎕wi "list"
+[121] selection←PickList ExactTLU DLTB dataind
+[122] :if mt selection
+[123]     :if ~mt DLTB dataind
+[124]         warnings←warnings OVER "Previous Selection for 'Input Data File in Text Output' is no longer available"
+[125]     :endif
+[126]     modified←⌈/modified,1
+[127] :endif
+[128] "fmBatchDefine.fOutOpt.cbdataind" ⎕wi "value" (¯1↑1,selection)
+[129] "fmBatchDefine.fOutOpt.ckmemsumm" ⎕wi "value" (zwb memsumm)
+[130] "fmBatchDefine.fOutOpt.ckvalout" ⎕wi "value" (zwb valout)
+[131] "fmBatchDefine.fOutOpt.ckkeepfile" ⎕wi "value" (zwb keepfile)
+[132] "fmBatchDefine.fOutOpt.ckSSexport" ⎕wi "value" (zwb SSexport)
+[133] "fmBatchDefine.fOutOpt.ckSSexpparms" ⎕wi "value" (zwb SSexpparms)
+[134] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Batch_Define
+[135]     :for var :in spin Comment_Batch_Define at "variable" "row" ⋄ (var row)←var
+[136]         "Batch_Define" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[137]     :endfor
+[138] :endif
+[139] :if ~0∊⍴,warnings
+[140]     MDISPLAY DLTMB warnings,⎕tcnl
+[141]     Win∆AssignVars "fmBatchDefine"
+[142] :endif
+[143] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Batch_Define" "" "Names"
+[144]     "fmBatchDefine" ⎕wi "modified" 0
+[145] :endif
+    ∇

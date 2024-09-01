@@ -1,0 +1,20 @@
+    ∇ PrinterName←InitPrinter arg;⎕elx
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Initailaise the Printer object
+[3]   
+[4]   ⎕elx←"PrinterName←'' ⋄ →0" ⍝ Abort Printer Creation if an error
+[5]   
+[6]   FormName ⎕wi '∆printerlist' (('Default Printer' '') OVER ps_printers)
+[7]   
+[8]   PrinterName←'pr',2↑(SystemName∊⎕av[65+⍳26])/SystemName
+[9]   :if arg
+[10]      ⎕wself←PrinterName ⎕wi 'New' 'Printer' ⍝ Create once only here - when requested!
+[11]      PrinterName ⎕wi 'scale' 3 ⍝ Points (1/72nd of an inch)
+[12]      :if INIString uSER 'PrinterSetupInit%' 0 PrefINI
+[13]          FormName ⎕wi 'enabled' 0
+[14]          0 0⍴PrinterName ⎕wi 'Setup'
+[15]          FormName ⎕wi 'enabled' 1
+[16]          FormName ⎕wi 'Focus'
+[17]      :endif
+[18]  :endif
+    ∇

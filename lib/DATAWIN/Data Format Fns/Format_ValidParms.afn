@@ -1,1 +1,72 @@
-    ∇ larg Format∆ValidParms parm;offset;NonSNames;MaxRow;MaxCol;value;n;ValidNames;z;Name;i;Z;standard;SSName;NewMaxCol[1]   ⍝ DATAWIN.sf#2[2]   ⍝ Update the Non-Standards Validation Parameters[3]   [4]   :if 0=⎕nc 'TotNumVars' ⋄ :return ⋄ :endif ⍝ Only used for Non-Standard Numerics[5]   [6]   (standard SSName)←larg[7]   [8]   offset←1+2×standard ⍝ Number of Rows before Non-Standards (Category and some Standards min/max (depending on Country))[9]   [10]  :if 0=⎕nc 'AvNumVars' ⋄ NonSNames←0 0⍴' '[11]  :else                 ⋄ NonSNames←AvNumVars[12]  :endif[13]  :if 0∊⍴NonSNames←(∨/' '≠NonSNames)⌿NonSNames←⊃nub m2n NonSNames OVER TotNumVars ⍝ Return if no Non-Standard fields[14]      SSName ⎕wi 'xMaxRow' offset ⋄ :return[15]  :endif[16]  [17]  ValidNonS←(0 2⌈⍴ValidNonS)↑MATRIX ValidNonS[18]  MaxCol←SSName ⎕wi 'xMaxCol' ⋄ MaxRow←SSName ⎕wi 'xMaxRow'[19]  [20]  :select parm[21]  :case 'SetUp'[22]      ⍝ Match up current validation fields with new Non-Standard fields[23]      n←↑⍴ValidNames←⊃ValidNonS[;1] ⋄ n←↑⍴ValidNames←(n⍴1 0)⌿ValidNames[24]      NewMaxCol←↑⍴MATRIX ↑ValidNonS[;2][25]  [26]      z←⍳0[27]      :for Name :in ⎕split NonSNames[28]          z←z,↑ValidNames ExactTLU Name[29]      :endfor[30]  [31]      :if ~z≡⍳n[32]      :orif (MaxRow←offset+2×n)             ≠MaxRow[33]      :orif ^/' '=,⊃SSName Win∆F1SSGetTextArray (offset+1) 1 (MaxRow-offset) MaxCol[34]      :orif NewMaxCol                       ≠MaxCol[35]          n←↑⍴NonSNames ⋄ Z←(MATRIX ValidNonS)[,(2×z~0)∘.+¯1 0;][36]          ValidNonS←(2×n,1)⍴2 2⍴'' ((MaxCol,1)⍴'0') '' ((MaxCol,10)⍴'9')[37]          ValidNonS[;1]←⎕split 2⌿NonSNames[38]          ValidNonS[(2/×z)/⍳2×n;2]←Z[;2][39]          SSName ⎕wi 'xMaxCol' NewMaxCol[40]          SSName ⎕wi 'xMaxRow' MaxRow[41]          SSName ⎕wi '∆limit' (MaxRow/10)[42]          SSName ⎕wi '∆mandatory' (MaxRow/1)[43]          SSName ⎕wi '∆range' (MaxRow/'⍺')[44]          SSName ⎕wi '∆name' ((SSName ⎕wi '∆name')[⍳offset;] OVER '<ValidNonS[>,I4,<;2]>' ⎕fmt ⍳2×n)[45]          SSName ⎕wi '∆type' ('⍺Char',(4×MaxRow-1)⍴'⍺Num')[46]          SSName ⎕wi '∆valid' ("⍺''",(9×MaxRow-1)⍴"⍺'Scalar'")[47]          :if uk=1 ⋄ SSName ⎕wi '∆helpid' (MaxRow⍴SSName ⎕wi '∆helpid')[48]          :else    ⋄ SSName ⎕wi '∆helpword' (MaxRow/'⍺')[49]          :endif[50]          :for i :in ⍳1↑⍴NonSNames[51]              SSName ⎕wi 'xRowText' (¯1+offset+2×i) ("Min. ",DLTB NonSNames[i;])[52]              SSName ⎕wi 'xRowText' (   offset+2×i) ("Max. ",DLTB NonSNames[i;])[53]          :endfor[54]      :endif[55]  [56]  :case 'Write'[57]      :for i :in ⍳1↑⍴NonSNames[58]          SSName ⎕wi 'TextRC[]' (⎕mix (¯1+offset+2×i)∘.,⍳MaxCol) (m2n ⊃ValidNonS[¯1+2×i;2])[59]          SSName ⎕wi 'TextRC[]' (⎕mix (   offset+2×i)∘.,⍳MaxCol) (m2n ⊃ValidNonS[   2×i;2])[60]      :endfor[61]  [62]  :endselect[63]  ⍝⍝⍝    ⍝ Update ValidNonS with Current values in Validation Grid[64]  ⍝⍝⍝    :if MaxRow>offset[65]  ⍝⍝⍝    :andif ∨/' '≠,⊃SSName Win∆F1SSGetTextArray (offset+1) 1 (MaxRow-offset) MaxCol[66]  ⍝⍝⍝        :for i :in offset↓⍳MaxRow[67]  ⍝⍝⍝            value←⊃,SSName Win∆F1SSGetTextArray i 1 1 MaxCol[68]  ⍝⍝⍝            value ASSIGN∆Dict 'ValidNonS[',(⍕i-offset),';2]'[69]  ⍝⍝⍝        :endfor[70]  ⍝⍝⍝    :endif    ∇
+    ∇ larg Format∆ValidParms parm;offset;NonSNames;MaxRow;MaxCol;value;n;ValidNames;z;Name;i;Z;standard;SSName;NewMaxCol
+[1]   ⍝ DATAWIN.sf#2
+[2]   ⍝ Update the Non-Standards Validation Parameters
+[3]   
+[4]   :if 0=⎕nc 'TotNumVars' ⋄ :return ⋄ :endif ⍝ Only used for Non-Standard Numerics
+[5]   
+[6]   (standard SSName)←larg
+[7]   
+[8]   offset←1+2×standard ⍝ Number of Rows before Non-Standards (Category and some Standards min/max (depending on Country))
+[9]   
+[10]  :if 0=⎕nc 'AvNumVars' ⋄ NonSNames←0 0⍴' '
+[11]  :else                 ⋄ NonSNames←AvNumVars
+[12]  :endif
+[13]  :if 0∊⍴NonSNames←(∨/' '≠NonSNames)⌿NonSNames←⊃nub m2n NonSNames OVER TotNumVars ⍝ Return if no Non-Standard fields
+[14]      SSName ⎕wi 'xMaxRow' offset ⋄ :return
+[15]  :endif
+[16]  
+[17]  ValidNonS←(0 2⌈⍴ValidNonS)↑MATRIX ValidNonS
+[18]  MaxCol←SSName ⎕wi 'xMaxCol' ⋄ MaxRow←SSName ⎕wi 'xMaxRow'
+[19]  
+[20]  :select parm
+[21]  :case 'SetUp'
+[22]      ⍝ Match up current validation fields with new Non-Standard fields
+[23]      n←↑⍴ValidNames←⊃ValidNonS[;1] ⋄ n←↑⍴ValidNames←(n⍴1 0)⌿ValidNames
+[24]      NewMaxCol←↑⍴MATRIX ↑ValidNonS[;2]
+[25]  
+[26]      z←⍳0
+[27]      :for Name :in ⎕split NonSNames
+[28]          z←z,↑ValidNames ExactTLU Name
+[29]      :endfor
+[30]  
+[31]      :if ~z≡⍳n
+[32]      :orif (MaxRow←offset+2×n)             ≠MaxRow
+[33]      :orif ^/' '=,⊃SSName Win∆F1SSGetTextArray (offset+1) 1 (MaxRow-offset) MaxCol
+[34]      :orif NewMaxCol                       ≠MaxCol
+[35]          n←↑⍴NonSNames ⋄ Z←(MATRIX ValidNonS)[,(2×z~0)∘.+¯1 0;]
+[36]          ValidNonS←(2×n,1)⍴2 2⍴'' ((MaxCol,1)⍴'0') '' ((MaxCol,10)⍴'9')
+[37]          ValidNonS[;1]←⎕split 2⌿NonSNames
+[38]          ValidNonS[(2/×z)/⍳2×n;2]←Z[;2]
+[39]          SSName ⎕wi 'xMaxCol' NewMaxCol
+[40]          SSName ⎕wi 'xMaxRow' MaxRow
+[41]          SSName ⎕wi '∆limit' (MaxRow/10)
+[42]          SSName ⎕wi '∆mandatory' (MaxRow/1)
+[43]          SSName ⎕wi '∆range' (MaxRow/'⍺')
+[44]          SSName ⎕wi '∆name' ((SSName ⎕wi '∆name')[⍳offset;] OVER '<ValidNonS[>,I4,<;2]>' ⎕fmt ⍳2×n)
+[45]          SSName ⎕wi '∆type' ('⍺Char',(4×MaxRow-1)⍴'⍺Num')
+[46]          SSName ⎕wi '∆valid' ("⍺''",(9×MaxRow-1)⍴"⍺'Scalar'")
+[47]          :if uk=1 ⋄ SSName ⎕wi '∆helpid' (MaxRow⍴SSName ⎕wi '∆helpid')
+[48]          :else    ⋄ SSName ⎕wi '∆helpword' (MaxRow/'⍺')
+[49]          :endif
+[50]          :for i :in ⍳1↑⍴NonSNames
+[51]              SSName ⎕wi 'xRowText' (¯1+offset+2×i) ("Min. ",DLTB NonSNames[i;])
+[52]              SSName ⎕wi 'xRowText' (   offset+2×i) ("Max. ",DLTB NonSNames[i;])
+[53]          :endfor
+[54]      :endif
+[55]  
+[56]  :case 'Write'
+[57]      :for i :in ⍳1↑⍴NonSNames
+[58]          SSName ⎕wi 'TextRC[]' (⎕mix (¯1+offset+2×i)∘.,⍳MaxCol) (m2n ⊃ValidNonS[¯1+2×i;2])
+[59]          SSName ⎕wi 'TextRC[]' (⎕mix (   offset+2×i)∘.,⍳MaxCol) (m2n ⊃ValidNonS[   2×i;2])
+[60]      :endfor
+[61]  
+[62]  :endselect
+[63]  ⍝⍝⍝    ⍝ Update ValidNonS with Current values in Validation Grid
+[64]  ⍝⍝⍝    :if MaxRow>offset
+[65]  ⍝⍝⍝    :andif ∨/' '≠,⊃SSName Win∆F1SSGetTextArray (offset+1) 1 (MaxRow-offset) MaxCol
+[66]  ⍝⍝⍝        :for i :in offset↓⍳MaxRow
+[67]  ⍝⍝⍝            value←⊃,SSName Win∆F1SSGetTextArray i 1 1 MaxCol
+[68]  ⍝⍝⍝            value ASSIGN∆Dict 'ValidNonS[',(⍕i-offset),';2]'
+[69]  ⍝⍝⍝        :endfor
+[70]  ⍝⍝⍝    :endif
+    ∇

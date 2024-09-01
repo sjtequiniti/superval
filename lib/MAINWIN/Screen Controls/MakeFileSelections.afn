@@ -1,0 +1,27 @@
+    ∇ field MakeFileSelections parm;list;newlist;values;index
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Module to handle all events related to File Selections
+[3]   ⍝  Enable - Disable and enable fields according to "FileSelections"
+[4]   ⍝  Create - Create the selected files
+[5]   ⍝  ValCreate - Create the selected files for Valuation
+[6]   
+[7]   :select parm
+[8]   :case 'Enable' ⍝ Assumes fields called fILENAME, CatSels and UseSubs on "Form"
+[9]       (field 'edFILES') Win∆SetRelated 'visible' (1-2×FileSelections)
+[10]      :if uk≠1 ⋄ :orif ~∨/,⊃(⊂parent) ⎕ss ¨'sActives_Basis' 'sDefBasis' 'sPenBasis'
+[11]          ((⊂field),¨'ckUseSex' 'ckUseCat') MultiWI 'visible' (¯1+2×FileSelections)
+[12]      :endif
+[13]                 (field ('edfILENAME' 'lsCatSels'  )) Win∆SetRelated 'visible' (¯1+2×FileSelections)
+[14]      :if uk≠1 ⋄ (field ('ckUseSubs' 'ckDeleteSubs')) Win∆SetRelated 'visible' (¯1+2×FileSelections) ⋄ :endif
+[15]  
+[16]  :case 'Create'
+[17]      :if ~FileSelections ⋄ :return ⋄ :endif ⍝ Not Required
+[18]      FILES←((SStoMAT CatSels) (MatrixZWB UseSex OVER UseCat)) CreateSubFiles InputDir,(ControlName ⎕wi "∆singlefile") ⎕wi "text"
+[19]  
+[20]  :case 'ValCreate'
+[21]      :if ~FileSelections ⋄ :return ⋄ :endif ⍝ Not Required
+[22]      FILES←((SStoMAT CatSels) (MatrixZWB UseSex OVER UseCat)) CreateSubFiles field
+[23]      0 0⍴(InputDir,FILES) NTIE tieno←'Native' TieNumber InputDir,FILES
+[24]  
+[25]  :endselect
+    ∇

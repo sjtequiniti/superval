@@ -1,1 +1,27 @@
-    ∇ CREATE∆HEAD∆ver;Z[1]   ⍝ PENWIN.sf#2[2]   ⍝ Add necessary Valuation Parameters to Headers[3]   ⍝ also modify if Summarised Results selected[4]   ⍝[5]   ⍝[6]   ⍝ V Windows RSE Aug 98 "Windowised"[7]   H2[2;]←(¯1↑⍴H2)↑'Run Description: ',gROUP[8]   H2[3;]←(¯1↑⍴H2)↑'Data File: ',FILES[9]   [10]  :if ppf∨bencap ⋄ H3←((-¯1↑⍴H2) WRITE∆HEAD 'ACCRUED BENEFITS SUMMARY LISTING') OVER 2 0↓H2 ⋄ :endif[11]  [12]  ⍝ Make Header changes for "summary" option[13]  :if summopt[14]      summtie←SUMMARY∆OPT[15]      H2[5+⍳2;⍳21]←Z←¯2 21↑MATRIX 'Number of Pensioners'[16]      :if aosind[17]          H8[4+⍳2;⍳21]←Z←¯2 21↑MATRIX 'Number of Pensioners'[18]      :endif[19]  :endif[20]  [21]  :if aosind[22]      0 0⍴(SystemDir,'HEADERS') ReadFile 'PEN AOSGroup'[23]      H8←((-¯1↑⍴H8) WRITE∆HEAD 'ANALYSIS OF SURPLUS SUMMARY LISTING') OVER H8[24]      H6[3;(43+⍳22),103+⍳17]←'Date Pension Commenced',17↑DLTMB 2 DATESPELL⌽pvDATE[25]  :endif    ∇
+    ∇ CREATE∆HEAD∆ver;Z
+[1]   ⍝ PENWIN.sf#2
+[2]   ⍝ Add necessary Valuation Parameters to Headers
+[3]   ⍝ also modify if Summarised Results selected
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V Windows RSE Aug 98 "Windowised"
+[7]   H2[2;]←(¯1↑⍴H2)↑'Run Description: ',gROUP
+[8]   H2[3;]←(¯1↑⍴H2)↑'Data File: ',FILES
+[9]   
+[10]  :if ppf∨bencap ⋄ H3←((-¯1↑⍴H2) WRITE∆HEAD 'ACCRUED BENEFITS SUMMARY LISTING') OVER 2 0↓H2 ⋄ :endif
+[11]  
+[12]  ⍝ Make Header changes for "summary" option
+[13]  :if summopt
+[14]      summtie←SUMMARY∆OPT
+[15]      H2[5+⍳2;⍳21]←Z←¯2 21↑MATRIX 'Number of Pensioners'
+[16]      :if aosind
+[17]          H8[4+⍳2;⍳21]←Z←¯2 21↑MATRIX 'Number of Pensioners'
+[18]      :endif
+[19]  :endif
+[20]  
+[21]  :if aosind
+[22]      0 0⍴(SystemDir,'HEADERS') ReadFile 'PEN AOSGroup'
+[23]      H8←((-¯1↑⍴H8) WRITE∆HEAD 'ANALYSIS OF SURPLUS SUMMARY LISTING') OVER H8
+[24]      H6[3;(43+⍳22),103+⍳17]←'Date Pension Commenced',17↑DLTMB 2 DATESPELL⌽pvDATE
+[25]  :endif
+    ∇

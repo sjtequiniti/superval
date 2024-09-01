@@ -1,1 +1,30 @@
-    ∇ larg Win∆SetFocus field;Family;page;parent;pagevalue[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Give the focus to a field[3]   ⍝  resetting the page, if necessary[4]   [5]   :if ~0∊⍴,field[6]       Family←,⊂field[7]       :while ~'#'∊Win∆Parent ⊃Family[⎕io][8]           Family←(⊂Win∆Parent ⊃Family[⎕io]),Family[9]       :endwhile[10]  [11]      :if (⊂'Page')∊Family MultiWI 'class' ⍝ Must be on a Page[12]          page←,⊃((Family MultiWI 'class')∊⊂'Page')/Family[13]          parent←Win∆Parent page[14]          pagevalue←(~⎕io)+(parent ⎕wi 'pages')⍳⊂Win∆Child page[15]          :if (parent ⎕wi 'value')≠pagevalue[16]              parent ⎕wi 'value' pagevalue[17]              :if (parent ⎕wi 'value')≠pagevalue[18]                  :return ⍝ "Overriding" Error found on current page[19]              :endif[20]          :endif[21]      :endif[22]  :endif[23]  [24]  '#' ⎕wi 'focus' field[25]  [26]  :if 0=⎕nc 'larg' ⋄ :orif larg[27]      Win∆LabelRed field[28]  :endif    ∇
+    ∇ larg Win∆SetFocus field;Family;page;parent;pagevalue
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Give the focus to a field
+[3]   ⍝  resetting the page, if necessary
+[4]   
+[5]   :if ~0∊⍴,field
+[6]       Family←,⊂field
+[7]       :while ~'#'∊Win∆Parent ⊃Family[⎕io]
+[8]           Family←(⊂Win∆Parent ⊃Family[⎕io]),Family
+[9]       :endwhile
+[10]  
+[11]      :if (⊂'Page')∊Family MultiWI 'class' ⍝ Must be on a Page
+[12]          page←,⊃((Family MultiWI 'class')∊⊂'Page')/Family
+[13]          parent←Win∆Parent page
+[14]          pagevalue←(~⎕io)+(parent ⎕wi 'pages')⍳⊂Win∆Child page
+[15]          :if (parent ⎕wi 'value')≠pagevalue
+[16]              parent ⎕wi 'value' pagevalue
+[17]              :if (parent ⎕wi 'value')≠pagevalue
+[18]                  :return ⍝ "Overriding" Error found on current page
+[19]              :endif
+[20]          :endif
+[21]      :endif
+[22]  :endif
+[23]  
+[24]  '#' ⎕wi 'focus' field
+[25]  
+[26]  :if 0=⎕nc 'larg' ⋄ :orif larg
+[27]      Win∆LabelRed field
+[28]  :endif
+    ∇

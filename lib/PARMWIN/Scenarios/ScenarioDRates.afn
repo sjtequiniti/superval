@@ -1,1 +1,47 @@
-    ∇ res←ScenarioDRates parm;SSName;z;row;col;MESS[1]   ⍝ PARMWIN.sf#24[2]   ⍝ Update the Decrement Rates Scenario Parameters[3]   [4]   res←0⍴'' ⋄ SSName←(DTDot parent),'.pgDecrements.fDRates.ssDRates'[5]   [6]   :select parm[7]   :case 'Prepare'[8]       DRatesGlobs←0 Uniquelist ⊃(LocalGlobals for 'Type' 'ParmsD') at 'value' ⍝ Currently used Globals[9]   [10]  :case 'Vars'[11]      (MESS DRatesDesc DRatesScenDesc)←⊃¨((CIndex for '∆_Name' 'Decrement_Rates') at '∆_Description') AdjustPointers m2n¨DRatesGlobs DRatesDesc DRatesScenDesc[12]      :if mt MESS ⋄ res←0 0⍴' '[13]      :else       ⋄ res←⊃(⊂'Decrement Rates Parameters: "'),¨⎕split MESS[14]      :endif[15]  [16]  :case 'Init'[17]      :if mt DRatesGlobs[18]          (parent,'pgDecrements') ⎕wi 'Delete'[19]      :else[20]          SSName ⎕wi 'onXStartEdit' '0 0⍴ScenarioDRates "Edit"'[21]          SSName ⎕wi 'xShowRowHeading' 0 ⍝ Hide Row Headings[22]          SSName Win∆F1SSProtectCells (⊂¯1 1 ¯1 1) ⍝ Lock first column[23]      :endif[24]  [25]  :case 'Edit'[26]      (row col)←SSName ⎕wi 'GetActiveCell' 0 0[27]      :if col=2[28]          0 Win∆F1SSRowMenu ('Scenarios' SSName)[29]          ⎕warg[1]←SSName Win∆F1SSGetTextArray row col 1 1[30]          SSName ⎕wi 'AllowArrows' 1 ⋄ row Win∆ValidF1SSCell col ⋄ 0 0⍴⎕ex 'F1SSEvent'[31]      :else[32]          SSName ⎕wi 'AllowArrows' 1[33]      :endif[34]  [35]  :case 'Change'[36]      SSName ⎕wi "SetColWidthAuto" ¯1 1 (SSName ⎕wi 'MaxRow') 2 0[37]  [38]  :case 'Valid'[39]      :if ~unchanged ⋄ :andif ∨/' '≠,DRatesDesc ⋄ :andif ∨/z←(m2n DRatesDesc)≡¨m2n DRatesScenDesc[40]          unchanged←1 ⋄ z←↑WHERE z[41]          Win∆SetFocus SSName ⋄ SSName Win∆F1SSSetSelection 4⍴z 2[42]          res←'Unchanged Global assumptions do not need to be specified' ⋄ :return[43]      :endif[44]  [45]  :endselect    ∇
+    ∇ res←ScenarioDRates parm;SSName;z;row;col;MESS
+[1]   ⍝ PARMWIN.sf#24
+[2]   ⍝ Update the Decrement Rates Scenario Parameters
+[3]   
+[4]   res←0⍴'' ⋄ SSName←(DTDot parent),'.pgDecrements.fDRates.ssDRates'
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]       DRatesGlobs←0 Uniquelist ⊃(LocalGlobals for 'Type' 'ParmsD') at 'value' ⍝ Currently used Globals
+[9]   
+[10]  :case 'Vars'
+[11]      (MESS DRatesDesc DRatesScenDesc)←⊃¨((CIndex for '∆_Name' 'Decrement_Rates') at '∆_Description') AdjustPointers m2n¨DRatesGlobs DRatesDesc DRatesScenDesc
+[12]      :if mt MESS ⋄ res←0 0⍴' '
+[13]      :else       ⋄ res←⊃(⊂'Decrement Rates Parameters: "'),¨⎕split MESS
+[14]      :endif
+[15]  
+[16]  :case 'Init'
+[17]      :if mt DRatesGlobs
+[18]          (parent,'pgDecrements') ⎕wi 'Delete'
+[19]      :else
+[20]          SSName ⎕wi 'onXStartEdit' '0 0⍴ScenarioDRates "Edit"'
+[21]          SSName ⎕wi 'xShowRowHeading' 0 ⍝ Hide Row Headings
+[22]          SSName Win∆F1SSProtectCells (⊂¯1 1 ¯1 1) ⍝ Lock first column
+[23]      :endif
+[24]  
+[25]  :case 'Edit'
+[26]      (row col)←SSName ⎕wi 'GetActiveCell' 0 0
+[27]      :if col=2
+[28]          0 Win∆F1SSRowMenu ('Scenarios' SSName)
+[29]          ⎕warg[1]←SSName Win∆F1SSGetTextArray row col 1 1
+[30]          SSName ⎕wi 'AllowArrows' 1 ⋄ row Win∆ValidF1SSCell col ⋄ 0 0⍴⎕ex 'F1SSEvent'
+[31]      :else
+[32]          SSName ⎕wi 'AllowArrows' 1
+[33]      :endif
+[34]  
+[35]  :case 'Change'
+[36]      SSName ⎕wi "SetColWidthAuto" ¯1 1 (SSName ⎕wi 'MaxRow') 2 0
+[37]  
+[38]  :case 'Valid'
+[39]      :if ~unchanged ⋄ :andif ∨/' '≠,DRatesDesc ⋄ :andif ∨/z←(m2n DRatesDesc)≡¨m2n DRatesScenDesc
+[40]          unchanged←1 ⋄ z←↑WHERE z
+[41]          Win∆SetFocus SSName ⋄ SSName Win∆F1SSSetSelection 4⍴z 2
+[42]          res←'Unchanged Global assumptions do not need to be specified' ⋄ :return
+[43]      :endif
+[44]  
+[45]  :endselect
+    ∇

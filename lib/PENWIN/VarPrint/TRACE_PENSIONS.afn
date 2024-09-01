@@ -1,1 +1,147 @@
-    ∇ TRACE_PENSIONS;BenID;⍙indbenres;res;z;flds;data;N;take;Y0;ages;LY;bage;penind[1]   ⍝ PENWIN.sf#4[2]   ⍝ Output Trace details of Pensions valued[3]   [4]   ⍙indbenres←0 1↓⍙indmembres[5]   flds←'Age' 'Deferment' 'Deferment MP' 'Payment' 'Payment MP'[6]   data←⊂⍉MATRIX AGES[7]   :for z :in 11+⍳4[8]       res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres[9]       data←data,⊂⍉MATRIX rnd DTZ (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][10]  :endfor[11]  TRACE_BOOKMARK 'Factors'[12]  TRACE_Pen 'h1' xtag 'Valuation Factors - Pension Independent'[13]  'Discounters' TRACE_Pen flds,[¯0.5]data[14]  [15]  flds←'Age' 'LX Member' 'LX Member MP' 'Proportion Married MP' 'Age Difference'[16]  data←⊂⍉MATRIX AGES[17]  :for z :in 15 17[18]      res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres[19]      data←data,⊂⍉MATRIX rnd DTZ ((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][20]  :endfor[21]  :for z :in 19 20[22]      res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres[23]      data←data,⊂⍉MATRIX rnd (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][24]  :endfor[25]  'Member Factors' TRACE_Pen flds,[¯0.5]data[26]  [27]  :if 200≠Y0←⌊/200,(⍙indbenres[;0]=6)/⍙indbenres[;2][28]      flds←'Age' 'LY Spouse' 'LY Spouse MP'[29]      data←⊂⍉MATRIX ages←Y0↓⍳120[30]      :for z :in 16 18[31]          res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres[32]          res←(⍴ages)↑Y0↓((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][33]          :if z=16 ⋄ LY←↑res ⋄ :endif[34]          data←data,⊂⍉MATRIX rnd DTZ res CDIV LY[35]      :endfor[36]      'Spouse Factors' TRACE_Pen flds,[¯0.5]data[37]  :endif[38]  [39]  ⍝ Process each Pension in turn[40]  :for BenID :in 2 3,14+⍳16[41]      :if 0∊⍴⍙indbenres←0 1↓(⍙indmembres[;0]=BenID)⌿⍙indmembres ⋄ :continue ⋄ :endif[42]  [43]      N←(2 3,14+⍳16)⍳BenID[44]  [45]      :if BenID∊2 3 ⋄ :orif PENind[N-2] ⋄ flds←' ' 'Annual Pension' 'Adjustment' 'Reversion' 'Start Age'[46]      :else                             ⋄ flds←' ' 'Cash Sum' 'Adjustment' 'Payment Age'[47]      :endif[48]      data←⊂' '[49]      data←data,⊂1↑(⍙indbenres[;0]=1)/⍙indbenres[;2][50]      data←data,⊂1↑(⍙indbenres[;0]=2)/⍙indbenres[;2][51]      :if BenID∊2 3 ⋄ :orif PENind[N-2] ⋄ data←data,⊂1↑(⍙indbenres[;0]=3)/⍙indbenres[;2] ⋄ :endif[52]      data←data,⊂1↑(⍙indbenres[;0]=4)/⍙indbenres[;2][53]      TRACE_BOOKMARK (⊃0 Pens∆Title 1)[N+1;][54]      TRACE_Pen 'h1' xtag DLTMB (⊃0 Pens∆Title 2)[N+1;],((2 1⍴' ') OVER PenDesc)[N;][55]      'Pension Data' TRACE_Pen flds,[0.5]data[56]  [57]      ⍝ Franking Details if appropriate[58]      :if ¯1≠N←¯1⌈¯14+BenID ⋄ :andif PUPRDN ⋄ :andif NotSpouse ⋄ :andif Xe<SPA ⋄ :andif ∨/0≠GMP0,GMPE0 ⋄ :andif GMPADJ[N] ⋄ :andif ~REVind[N][59]          flds←⊂'Age' ⋄ data←⊂⍉MATRIX (1+ToSPA)↑AGES[60]          :if ~OFFCOD≡'None' ⋄ :orif BAGE[N]<X0[61]              :if 0≠gmpRET[0;N] ⋄ flds←flds,⊂'PreGMP at Ret'  ⋄ data←data,⊂⍉MATRIX gmpRET[0;N] ⋄ :endif[62]              :if 0≠gmpRET[1;N] ⋄ flds←flds,⊂'PostGMP at Ret' ⋄ data←data,⊂⍉MATRIX gmpRET[1;N] ⋄ :endif[63]          :endif[64]          :if ~OFFCOD≡'None' ⋄ :orif BAGE[N]≥X0[65]              :if 0≠gmpVD [0;N] ⋄ flds←flds,⊂'PreGMP at VD'   ⋄ data←data,⊂⍉MATRIX gmpVD [0;N] ⋄ :endif[66]              :if 0≠gmpVD [1;N] ⋄ flds←flds,⊂'PostGMP at VD'  ⋄ data←data,⊂⍉MATRIX gmpVD [1;N] ⋄ :endif[67]          :endif[68]          :if OFFCOD≡'None'[69]              flds←flds,'PreSPA GMP Revaluation' 'PreSPA GMP Revaluation MP'[70]              res←0 1↓(⍙indbenres[;0]=23)⌿⍙indbenres[71]              data←data,⊂⍉MATRIX rnd DTZ (1+ToSPA)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][72]              res←0 1↓(⍙indbenres[;0]=24)⌿⍙indbenres[73]              data←data,⊂⍉MATRIX rnd DTZ (1+ToSPA)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][74]              flds←flds,⊂ 'GMP at BAGE'       ⋄ data←data,⊂⍉MATRIX PP rnd  gmpdef[;N][75]              flds←flds,⊂'WGMP at BAGE'       ⋄ data←data,⊂⍉MATRIX PP rnd wgmpdef[;N][76]              flds←flds,⊂'Members before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd  memtot[;N][77]              flds←flds,⊂'Spouses before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd   sptot[;N][78]          :else[79]              flds←flds,⊂'Members Revalued GMP Split' ⋄ data←data,⊂⍉MATRIX PP rnd  GMPRsplit[;N][80]              flds←flds,⊂'Spouses Revalued GMP Split' ⋄ data←data,⊂⍉MATRIX PP rnd WGMPRsplit[;N][81]              :if OFFCOD≡'Partial Franking'[82]                  flds←flds,⊂'Pseudo GMP at SPA'       ⋄ data←data,⊂⍉MATRIX PP rnd  PGMP[;N][83]                  flds←flds,⊂'Pseudo WGMP at SPA/Death'⋄ data←data,⊂⍉MATRIX PP rnd WPGMP[;N][84]              :else[85]                  flds←flds,⊂ 'GMP at BAGE' ⋄ data←data,⊂⍉MATRIX PP rnd  gmpdef[;N][86]                  flds←flds,⊂'WGMP at BAGE' ⋄ data←data,⊂⍉MATRIX PP rnd wgmpdef[;N][87]                  flds←flds,⊂'Members before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd memtot[;N][88]                  flds←flds,⊂'Spouses before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd  sptot[;N][89]                  flds←flds,⊂'Members at BAGE' ⋄ data←data,⊂⍉MATRIX PP rnd memdef[;N][90]                  flds←flds,⊂'Spouses at BAGE' ⋄ data←data,⊂⍉MATRIX PP rnd  spdef[;N][91]              :endif[92]              flds←flds,⊂'Members GMP Guarantee' ⋄ data←data,⊂⍉MATRIX PP rnd (-1+ToSPA)↑gtee[N][93]              flds←flds,⊂'Spouses GMP Guarantee' ⋄ data←data,⊂⍉MATRIX PP rnd           wgtee[;N][94]          :endif[95]          ('Franking - ',(⊃0 Pens∆Title 1)[3+N;]) TRACE_Pen flds,[¯0.5]data[96]      :endif[97]  [98]      :if N=¯1 ⋄ bage←0       ⋄ penind←0[99]      :else    ⋄ bage←BAGE[N] ⋄ penind←PENind[N][100]     :endif[101] [102]     :if (BenID∊2 3)^Xe<SPA ⋄ :orif X0<bage[103]         flds←'Age' 'Deferment'[104] [105]         data←⊂⍉MATRIX (take←AGES≤⌈/bage,(BenID∊2 3)/SPA)/AGES ⋄ take←+/take[106]         res←0 1↓(⍙indbenres[;0]=21)⌿⍙indbenres[107]         data←data,⊂⍉MATRIX rnd ((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][108]         :if BenID∊2 3[109]             flds←flds,⊂'Revalued GMP'[110]             res←0 1↓(⍙indbenres[;0]=5 )⌿⍙indbenres[111]             data←data,⊂⍉MATRIX rnd DTZ take↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][112]         :endif[113]         TRACE_Pen 'h2' xtag 'Pension Revaluation Factors'[114]         '' TRACE_Pen flds,[¯0.5]data[115]     :endif[116] [117]     :if BenID∊2 3 ⋄ :orif penind[118]         flds←'Age' 'In Payment' 'Member MP' 'Spouse MP'[119]         data←⊂⍉MATRIX AGES[120]         :for z :in 31+⍳3[121]             res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres[122]             data←data,⊂⍉MATRIX rnd DTZ (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1][123]         :endfor[124]         TRACE_Pen 'h2' xtag 'Pension Increase Factors'[125]         '' TRACE_Pen flds,[¯0.5]data[126]     :endif[127] [128]     flds←' ' 'Member' 'Spouse in Deferment' 'Spouse post Retirement'[129]     data←⊂' '[130]     data←data,⊂,PP rnd +/(⍙indbenres[;0]=41)/⍙indbenres[;2][131]     data←data,⊂,PP rnd +/(⍙indbenres[;0]=42)/⍙indbenres[;2][132]     data←data,⊂,PP rnd +/(⍙indbenres[;0]=43)/⍙indbenres[;2][133]     TRACE_Pen 'h2' xtag DLTMB 'Liabilities'[134]     '' TRACE_Pen flds,[0.5]data[135] [136]     flds←'Age' 'Member' 'Spouse in Deferment' 'Spouse post Retirement' ⋄ take←1 ⋄ data←⊂' '[137]     :for z :in 51+⍳3[138]         res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres[139]         take←⌈/take,⍴res←,PP rnd DTZ (1+⌈/0,res[;0]) ⍙DBCrossTab res[140]         data←data,⊂⍉MATRIX res[141]     :endfor[142]     data[0]←⊂⍉MATRIX take↑AGES[143]     TRACE_Pen 'h2' xtag 'Cash Flows'[144]     '' TRACE_Pen flds,[¯0.5]data[145] :endfor    ∇
+    ∇ TRACE_PENSIONS;BenID;⍙indbenres;res;z;flds;data;N;take;Y0;ages;LY;bage;penind
+[1]   ⍝ PENWIN.sf#4
+[2]   ⍝ Output Trace details of Pensions valued
+[3]   
+[4]   ⍙indbenres←0 1↓⍙indmembres
+[5]   flds←'Age' 'Deferment' 'Deferment MP' 'Payment' 'Payment MP'
+[6]   data←⊂⍉MATRIX AGES
+[7]   :for z :in 11+⍳4
+[8]       res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[9]       data←data,⊂⍉MATRIX rnd DTZ (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[10]  :endfor
+[11]  TRACE_BOOKMARK 'Factors'
+[12]  TRACE_Pen 'h1' xtag 'Valuation Factors - Pension Independent'
+[13]  'Discounters' TRACE_Pen flds,[¯0.5]data
+[14]  
+[15]  flds←'Age' 'LX Member' 'LX Member MP' 'Proportion Married MP' 'Age Difference'
+[16]  data←⊂⍉MATRIX AGES
+[17]  :for z :in 15 17
+[18]      res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[19]      data←data,⊂⍉MATRIX rnd DTZ ((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[20]  :endfor
+[21]  :for z :in 19 20
+[22]      res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[23]      data←data,⊂⍉MATRIX rnd (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[24]  :endfor
+[25]  'Member Factors' TRACE_Pen flds,[¯0.5]data
+[26]  
+[27]  :if 200≠Y0←⌊/200,(⍙indbenres[;0]=6)/⍙indbenres[;2]
+[28]      flds←'Age' 'LY Spouse' 'LY Spouse MP'
+[29]      data←⊂⍉MATRIX ages←Y0↓⍳120
+[30]      :for z :in 16 18
+[31]          res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[32]          res←(⍴ages)↑Y0↓((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[33]          :if z=16 ⋄ LY←↑res ⋄ :endif
+[34]          data←data,⊂⍉MATRIX rnd DTZ res CDIV LY
+[35]      :endfor
+[36]      'Spouse Factors' TRACE_Pen flds,[¯0.5]data
+[37]  :endif
+[38]  
+[39]  ⍝ Process each Pension in turn
+[40]  :for BenID :in 2 3,14+⍳16
+[41]      :if 0∊⍴⍙indbenres←0 1↓(⍙indmembres[;0]=BenID)⌿⍙indmembres ⋄ :continue ⋄ :endif
+[42]  
+[43]      N←(2 3,14+⍳16)⍳BenID
+[44]  
+[45]      :if BenID∊2 3 ⋄ :orif PENind[N-2] ⋄ flds←' ' 'Annual Pension' 'Adjustment' 'Reversion' 'Start Age'
+[46]      :else                             ⋄ flds←' ' 'Cash Sum' 'Adjustment' 'Payment Age'
+[47]      :endif
+[48]      data←⊂' '
+[49]      data←data,⊂1↑(⍙indbenres[;0]=1)/⍙indbenres[;2]
+[50]      data←data,⊂1↑(⍙indbenres[;0]=2)/⍙indbenres[;2]
+[51]      :if BenID∊2 3 ⋄ :orif PENind[N-2] ⋄ data←data,⊂1↑(⍙indbenres[;0]=3)/⍙indbenres[;2] ⋄ :endif
+[52]      data←data,⊂1↑(⍙indbenres[;0]=4)/⍙indbenres[;2]
+[53]      TRACE_BOOKMARK (⊃0 Pens∆Title 1)[N+1;]
+[54]      TRACE_Pen 'h1' xtag DLTMB (⊃0 Pens∆Title 2)[N+1;],((2 1⍴' ') OVER PenDesc)[N;]
+[55]      'Pension Data' TRACE_Pen flds,[0.5]data
+[56]  
+[57]      ⍝ Franking Details if appropriate
+[58]      :if ¯1≠N←¯1⌈¯14+BenID ⋄ :andif PUPRDN ⋄ :andif NotSpouse ⋄ :andif Xe<SPA ⋄ :andif ∨/0≠GMP0,GMPE0 ⋄ :andif GMPADJ[N] ⋄ :andif ~REVind[N]
+[59]          flds←⊂'Age' ⋄ data←⊂⍉MATRIX (1+ToSPA)↑AGES
+[60]          :if ~OFFCOD≡'None' ⋄ :orif BAGE[N]<X0
+[61]              :if 0≠gmpRET[0;N] ⋄ flds←flds,⊂'PreGMP at Ret'  ⋄ data←data,⊂⍉MATRIX gmpRET[0;N] ⋄ :endif
+[62]              :if 0≠gmpRET[1;N] ⋄ flds←flds,⊂'PostGMP at Ret' ⋄ data←data,⊂⍉MATRIX gmpRET[1;N] ⋄ :endif
+[63]          :endif
+[64]          :if ~OFFCOD≡'None' ⋄ :orif BAGE[N]≥X0
+[65]              :if 0≠gmpVD [0;N] ⋄ flds←flds,⊂'PreGMP at VD'   ⋄ data←data,⊂⍉MATRIX gmpVD [0;N] ⋄ :endif
+[66]              :if 0≠gmpVD [1;N] ⋄ flds←flds,⊂'PostGMP at VD'  ⋄ data←data,⊂⍉MATRIX gmpVD [1;N] ⋄ :endif
+[67]          :endif
+[68]          :if OFFCOD≡'None'
+[69]              flds←flds,'PreSPA GMP Revaluation' 'PreSPA GMP Revaluation MP'
+[70]              res←0 1↓(⍙indbenres[;0]=23)⌿⍙indbenres
+[71]              data←data,⊂⍉MATRIX rnd DTZ (1+ToSPA)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[72]              res←0 1↓(⍙indbenres[;0]=24)⌿⍙indbenres
+[73]              data←data,⊂⍉MATRIX rnd DTZ (1+ToSPA)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[74]              flds←flds,⊂ 'GMP at BAGE'       ⋄ data←data,⊂⍉MATRIX PP rnd  gmpdef[;N]
+[75]              flds←flds,⊂'WGMP at BAGE'       ⋄ data←data,⊂⍉MATRIX PP rnd wgmpdef[;N]
+[76]              flds←flds,⊂'Members before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd  memtot[;N]
+[77]              flds←flds,⊂'Spouses before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd   sptot[;N]
+[78]          :else
+[79]              flds←flds,⊂'Members Revalued GMP Split' ⋄ data←data,⊂⍉MATRIX PP rnd  GMPRsplit[;N]
+[80]              flds←flds,⊂'Spouses Revalued GMP Split' ⋄ data←data,⊂⍉MATRIX PP rnd WGMPRsplit[;N]
+[81]              :if OFFCOD≡'Partial Franking'
+[82]                  flds←flds,⊂'Pseudo GMP at SPA'       ⋄ data←data,⊂⍉MATRIX PP rnd  PGMP[;N]
+[83]                  flds←flds,⊂'Pseudo WGMP at SPA/Death'⋄ data←data,⊂⍉MATRIX PP rnd WPGMP[;N]
+[84]              :else
+[85]                  flds←flds,⊂ 'GMP at BAGE' ⋄ data←data,⊂⍉MATRIX PP rnd  gmpdef[;N]
+[86]                  flds←flds,⊂'WGMP at BAGE' ⋄ data←data,⊂⍉MATRIX PP rnd wgmpdef[;N]
+[87]                  flds←flds,⊂'Members before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd memtot[;N]
+[88]                  flds←flds,⊂'Spouses before Adj' ⋄ data←data,⊂⍉MATRIX PP rnd  sptot[;N]
+[89]                  flds←flds,⊂'Members at BAGE' ⋄ data←data,⊂⍉MATRIX PP rnd memdef[;N]
+[90]                  flds←flds,⊂'Spouses at BAGE' ⋄ data←data,⊂⍉MATRIX PP rnd  spdef[;N]
+[91]              :endif
+[92]              flds←flds,⊂'Members GMP Guarantee' ⋄ data←data,⊂⍉MATRIX PP rnd (-1+ToSPA)↑gtee[N]
+[93]              flds←flds,⊂'Spouses GMP Guarantee' ⋄ data←data,⊂⍉MATRIX PP rnd           wgtee[;N]
+[94]          :endif
+[95]          ('Franking - ',(⊃0 Pens∆Title 1)[3+N;]) TRACE_Pen flds,[¯0.5]data
+[96]      :endif
+[97]  
+[98]      :if N=¯1 ⋄ bage←0       ⋄ penind←0
+[99]      :else    ⋄ bage←BAGE[N] ⋄ penind←PENind[N]
+[100]     :endif
+[101] 
+[102]     :if (BenID∊2 3)^Xe<SPA ⋄ :orif X0<bage
+[103]         flds←'Age' 'Deferment'
+[104] 
+[105]         data←⊂⍉MATRIX (take←AGES≤⌈/bage,(BenID∊2 3)/SPA)/AGES ⋄ take←+/take
+[106]         res←0 1↓(⍙indbenres[;0]=21)⌿⍙indbenres
+[107]         data←data,⊂⍉MATRIX rnd ((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[108]         :if BenID∊2 3
+[109]             flds←flds,⊂'Revalued GMP'
+[110]             res←0 1↓(⍙indbenres[;0]=5 )⌿⍙indbenres
+[111]             data←data,⊂⍉MATRIX rnd DTZ take↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[112]         :endif
+[113]         TRACE_Pen 'h2' xtag 'Pension Revaluation Factors'
+[114]         '' TRACE_Pen flds,[¯0.5]data
+[115]     :endif
+[116] 
+[117]     :if BenID∊2 3 ⋄ :orif penind
+[118]         flds←'Age' 'In Payment' 'Member MP' 'Spouse MP'
+[119]         data←⊂⍉MATRIX AGES
+[120]         :for z :in 31+⍳3
+[121]             res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[122]             data←data,⊂⍉MATRIX rnd DTZ (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[123]         :endfor
+[124]         TRACE_Pen 'h2' xtag 'Pension Increase Factors'
+[125]         '' TRACE_Pen flds,[¯0.5]data
+[126]     :endif
+[127] 
+[128]     flds←' ' 'Member' 'Spouse in Deferment' 'Spouse post Retirement'
+[129]     data←⊂' '
+[130]     data←data,⊂,PP rnd +/(⍙indbenres[;0]=41)/⍙indbenres[;2]
+[131]     data←data,⊂,PP rnd +/(⍙indbenres[;0]=42)/⍙indbenres[;2]
+[132]     data←data,⊂,PP rnd +/(⍙indbenres[;0]=43)/⍙indbenres[;2]
+[133]     TRACE_Pen 'h2' xtag DLTMB 'Liabilities'
+[134]     '' TRACE_Pen flds,[0.5]data
+[135] 
+[136]     flds←'Age' 'Member' 'Spouse in Deferment' 'Spouse post Retirement' ⋄ take←1 ⋄ data←⊂' '
+[137]     :for z :in 51+⍳3
+[138]         res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[139]         take←⌈/take,⍴res←,PP rnd DTZ (1+⌈/0,res[;0]) ⍙DBCrossTab res
+[140]         data←data,⊂⍉MATRIX res
+[141]     :endfor
+[142]     data[0]←⊂⍉MATRIX take↑AGES
+[143]     TRACE_Pen 'h2' xtag 'Cash Flows'
+[144]     '' TRACE_Pen flds,[¯0.5]data
+[145] :endfor
+    ∇

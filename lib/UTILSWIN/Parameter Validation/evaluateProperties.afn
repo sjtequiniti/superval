@@ -1,0 +1,35 @@
+    ∇ evaluateProperties R;props;them;ind;shapes;∆;dep
+[1]   ⍝ UTILSWIN.sf#5
+[2]   ⍝ ⍙CACHE is a dictionary: string=>⍕value
+[3]   ⍝  string: variable name, alone, with index, or with property or both
+[4]   ⍝          eg: FIELD, FIELD[2;], FIELD.Required, FIELD[2;].Required
+[5]   ⍝  ⍕value: a string that evaluates to an array and refers to no names
+[6]   ⍝          eg: (1), ('abc'), (2 3⍴'abcdef')
+[7]   ⍝ Revn: sjt13jun14 sjt10apr15
+[8]   ⍝ Reads: ALLDEPENS ALLEPREFS ALLPROPS ALLREFS ALLRULES ⍙CACHE
+[9]   ⍝ Sets: ⍙CACHE
+[10]  
+[11]  :if ×⍴props←((R∊ALLPROPS)/R)~keysIn ⍙CACHE                                              ⍝ any uncached properties to evaluate?
+[12]  
+[13]      them←ALLPROPS⍳props                                                                 ⍝ find properties in master lists
+[14]  ⍝⍝⍝    shapes←¯1↓¨⍴¨MATRIX¨⍙CACHE at fieldsOf props ⍝⍝⍝ MATRIX to fix problemon [19] but causes other problems ⍝ v[props]: shapes of properties
+[15]      shapes←¯1↓¨⍴¨⍙CACHE at fieldsOf props                                               ⍝ v[props]: shapes of properties
+[16]  
+[17]      ⍝ evaluate and cache independent properties (if any)
+[18]      :if ~mt ind←WHERE ~ALLDEPENS[them]                                               ⍝ find independents in props: rules without EP references
+[19]          ⍙CACHE←⍙CACHE update props[ind] push shapes[ind] ⍴¨ nubex ALLRULES[them[ind]]   ⍝ d: prop=>⍕status
+[20]      :endif
+[21]  
+[22]      :if ×⍴dep←WHERE ALLDEPENS[them]                                                     ⍝ find dependants in props: rules with EP references
+[23]  
+[24]  ⍝⍝⍝        'some properties resolved' ASSERT "≠/↑¨⍴¨dep them"                              ⍝ else recurses forever
+[25]          evaluateProperties nub ↑,/ALLEPREFS[them[dep]]                                  ⍝ Evaluate and cache any other props referred to
+[26]  
+[27]          ⍝ Evaluate and cache dependent properties
+[28]          :if ~mt dep←(~props[dep]∊keysIn ⍙CACHE)/dep                                  ⍝ exclude dependants now evaluated
+[29]              ⍙CACHE←⍙CACHE update props[dep] push shapes[dep] ⍴¨ nubex ALLRULES[them[dep]]
+[30]          :endif
+[31]      :endif
+[32]  
+[33]  :endif
+    ∇

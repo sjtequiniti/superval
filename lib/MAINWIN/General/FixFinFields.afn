@@ -1,0 +1,37 @@
+    ∇ FixFinFields Module;var;varname;list;AbsFinList;AbsFinName;N;n
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Fix the hyphens in Financial Fields
+[3]   
+[4]   :select Module
+[5]   :case 'PPF_Details'      ⋄ list←'a_CAPincPre' 'a_CAPinc' 'd_CAPincPre' 'd_CAPinc' 'p_PPFGMPREV1'
+[6]   :case 'Ind_Annuity'      ⋄ list←'IR' 'defi' 'PVMdef' 'PVM'
+[7]   :case 'Bulk_Annuity'     ⋄ list←'IR' 'defi' 'PVMdef' 'PVM'
+[8]   :case 'Contributions'    ⋄ list←⊂'gcdF'
+[9]   :case 'Expense_Rates'    ⋄ list←⊂'EXPf'
+[10]  :case 'Actives_Basis'    ⋄ list←'IR' 'pi' 'SALINC' 'SALREV' 'REVRAT' 'AUXREVRAT' 'REVRAT3' 'B88GMPINC' 'A88GMPINC' 'DYNINC' 'NDYNINC' 'DYNINC3' 'DYNINC4' 's148' 'GMPREVALRAT' 'IRCAPESC' 'DYNINCPre' 'DYNINCPost' 'PHIOffInc' 'PHISalInc' 'j' 'jdef' 'jmpu' 'SALinf[;]' 'LRSalInc[;]' 'SALdednf[;]' 'SALmaxf[;]'
+[11]  ⍝⍝⍝ FIXME: 'TVIR' 'TVpi' 'TVB88GMPINC' 'TVA88GMPINC' 'TVDYNINC' 'TVNDYNINC' 'TVDYNINC3' 'TVDYNINC4' 'TVREVN'
+[12]  :case 'Deferreds_Basis'  ⋄ list←'IR' 'pi' 'REVN' 'PASTREVN' 'B88GMPINC' 'A88GMPINC' 'DYNINC' 'NDYNINC' 'DYNINC3' 'DYNINC4' 'GMPREV1' 'PRESPAREV' 'DYNINCPre' 'DYNINCPost' 'REVCASHCAP' 'iDCONTS1' 'iDCONTS2' 'TVIR' 'TVpi' 'TVB88GMPINC' 'TVA88GMPINC' 'TVDYNINC' 'TVNDYNINC' 'TVDYNINC3' 'TVDYNINC4' 'jmpu' 'REVDBR1' 'REVDBR2' 'REVDAR1' 'REVDAR2' 'INDREV[;]' 'IndINDREV[;]' ⍝⍝⍝ 'TVREVN' 'TVGMPREV1' 'TVPRESPAREV' 'TVREVDBR1' 'TVREVDBR2' 'TVREVDAR1' 'TVREVDAR2' 'TVINDREV[;]' 'IndTVINDREV[;]'
+[13]  :case 'Pensioners_Basis' ⋄ list←'pi' 'B88GMPINC' 'A88GMPINC' 'GMPREV1' 'PRESPAREV' 'DEFINC[;]' 'PAYINC[;]' 'PPFDEFINC[;]'
+[14]  :case 'Consolidation'    ⋄ list←'amorti[⎕io;]' 'amorti[⎕io+1;]' 'IR' 'EXPf' 'Expi'
+[15]  :else                    ⋄ :return
+[16]  :endselect
+[17]  
+[18]  AbsFinList←⍙FinAssdict at 'List' ⋄ N←⎕io+⍴AbsFinName←⍙FinAssdict at 'Name'
+[19]  
+[20]  :for varname :in list
+[21]      var←⍎varname
+[22]      :if '[;]'≡¯3↑varname ⋄ varname←⎕split ('<',("[" StripText varname),'[>,I3,<;]>') ⎕fmt ⍳↑⍴var
+[23]      :else                ⋄ varname←⊂varname
+[24]      :endif
+[25]      :for varname :in varname
+[26]          :if (⊂var←⍎varname)∊AbsFinList ⋄ :orif (⎕io+208)∊⎕av⍳var ⍝ Already converted or in List
+[27]              :continue
+[28]          :endif
+[29]          :while ~(var←DLTB ⌽DropText ⌽var)≡var
+[30]              :if N≠n←AbsFinName⍳⊂var
+[31]                  (n⊃AbsFinList) ASSIGN∆Dict varname ⋄ :leave
+[32]              :endif
+[33]          :endwhile
+[34]      :endfor
+[35]  :endfor
+    ∇

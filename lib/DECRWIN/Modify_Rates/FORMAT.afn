@@ -1,1 +1,44 @@
-    ∇ FORMAT code;heading;X;N;fmt;SUMMREC;ind;TABLE;NN;n;row;CN;cols;srt[1]   ⍝ DECRWIN.sf#4[2]   ⍝ Output the Rates in Columns[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50 RE 1/11/93 Standardised[7]   →(0=⍴row←Index[;⍳2] TLU code OVER caseDn code)/0[8]   srt←⎕av⍋Index[row;⍳5][9]   CN←((DECRIndex for (⊂'∆_Name'),⎕split Index[row;⍳5]) at '∆_CompNo')[srt] ⋄ row←row[srt][10]  [11]  n←rtCODE TLU code ⋄ ind←code[2]∊'Tt'[12]  fmt←DLTMB ((~ind∨(⊂code[⍳2])∊'AD' 'ad')/'B'),'M<->',('IF')[1+×rtDecP[n]],'12',(0≠rtDecP[n])/'.',⍕rtDecP[n][13]  [14]  :if TwoDTable code ⍝ 2D Tables[15]      NN←⌊(wIDTH-3)÷12 ⋄ X←¯1+⍳120[16]      :for N :in ⍳⍴CN[17]          heading←MATRIX ¯12↑6↑,Index[row[N];⍳5][18]          TABLE←120 120↑DECRFile ReadFile CN[N][19]          (N (⍴CN) heading) Win∆ProgressBar 'MemberUpdate'[20]          :for n :in ⍳⌈120÷NN[21]              cols←(NN×n-1)+⍳NN ⋄ cols←(cols<120)/cols[22]              heading←heading[1;] OVER ' ',,'I12' ⎕fmt cols[23]              SUMMREC←('I3,',(⍕NN),fmt) ⎕fmt (X;TABLE[;cols])[24]              DPAGE←1↑(H1 OVER heading)OUTPUT tpr1,DPAGE[25]          :endfor[26]      :endfor[27]  :else[28]      N←0 ⋄ NN←¯1+⌊wIDTH÷12[29]      ⍝ Different Formats for different tables[30]      heading←DLTMB rtXLabel[n;1 2 3 8] ⋄ X←¯1+⍳120-60×ind[31]  [32]  TOP:SUMMREC←'I6' ⎕FMT X ⋄ heading←¯6↑heading[33]  LOOP:heading←heading,¯12↑6↑Index[row[N←N+1];⍳5][34]      (N (⍴CN) (¯12↑heading)) Win∆ProgressBar 'MemberUpdate'[35]      TABLE←DECRFile ReadFile CN[N][36]      :if ind ⋄ TABLE←60 OVERTAKE TABLE[37]      :else   ⋄ TABLE←120↑TABLE[38]      :endif[39]      SUMMREC←SUMMREC,(((N=1)^~ind∨(⊂code[⍳2])∊'AD' 'ad')↓fmt)⎕FMT TABLE ⋄ →((0=NN∣N)⍱N=⍴CN)/LOOP[40]      SUMMREC←SUMMREC,'I6' ⎕FMT X ⋄ heading←heading,6↑heading[41]      DPAGE←1↑(H1 OVER heading)OUTPUT tpr1,DPAGE ⋄ →(N<⍴CN)/TOP[42]  :endif    ∇
+    ∇ FORMAT code;heading;X;N;fmt;SUMMREC;ind;TABLE;NN;n;row;CN;cols;srt
+[1]   ⍝ DECRWIN.sf#4
+[2]   ⍝ Output the Rates in Columns
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50 RE 1/11/93 Standardised
+[7]   →(0=⍴row←Index[;⍳2] TLU code OVER caseDn code)/0
+[8]   srt←⎕av⍋Index[row;⍳5]
+[9]   CN←((DECRIndex for (⊂'∆_Name'),⎕split Index[row;⍳5]) at '∆_CompNo')[srt] ⋄ row←row[srt]
+[10]  
+[11]  n←rtCODE TLU code ⋄ ind←code[2]∊'Tt'
+[12]  fmt←DLTMB ((~ind∨(⊂code[⍳2])∊'AD' 'ad')/'B'),'M<->',('IF')[1+×rtDecP[n]],'12',(0≠rtDecP[n])/'.',⍕rtDecP[n]
+[13]  
+[14]  :if TwoDTable code ⍝ 2D Tables
+[15]      NN←⌊(wIDTH-3)÷12 ⋄ X←¯1+⍳120
+[16]      :for N :in ⍳⍴CN
+[17]          heading←MATRIX ¯12↑6↑,Index[row[N];⍳5]
+[18]          TABLE←120 120↑DECRFile ReadFile CN[N]
+[19]          (N (⍴CN) heading) Win∆ProgressBar 'MemberUpdate'
+[20]          :for n :in ⍳⌈120÷NN
+[21]              cols←(NN×n-1)+⍳NN ⋄ cols←(cols<120)/cols
+[22]              heading←heading[1;] OVER ' ',,'I12' ⎕fmt cols
+[23]              SUMMREC←('I3,',(⍕NN),fmt) ⎕fmt (X;TABLE[;cols])
+[24]              DPAGE←1↑(H1 OVER heading)OUTPUT tpr1,DPAGE
+[25]          :endfor
+[26]      :endfor
+[27]  :else
+[28]      N←0 ⋄ NN←¯1+⌊wIDTH÷12
+[29]      ⍝ Different Formats for different tables
+[30]      heading←DLTMB rtXLabel[n;1 2 3 8] ⋄ X←¯1+⍳120-60×ind
+[31]  
+[32]  TOP:SUMMREC←'I6' ⎕FMT X ⋄ heading←¯6↑heading
+[33]  LOOP:heading←heading,¯12↑6↑Index[row[N←N+1];⍳5]
+[34]      (N (⍴CN) (¯12↑heading)) Win∆ProgressBar 'MemberUpdate'
+[35]      TABLE←DECRFile ReadFile CN[N]
+[36]      :if ind ⋄ TABLE←60 OVERTAKE TABLE
+[37]      :else   ⋄ TABLE←120↑TABLE
+[38]      :endif
+[39]      SUMMREC←SUMMREC,(((N=1)^~ind∨(⊂code[⍳2])∊'AD' 'ad')↓fmt)⎕FMT TABLE ⋄ →((0=NN∣N)⍱N=⍴CN)/LOOP
+[40]      SUMMREC←SUMMREC,'I6' ⎕FMT X ⋄ heading←heading,6↑heading
+[41]      DPAGE←1↑(H1 OVER heading)OUTPUT tpr1,DPAGE ⋄ →(N<⍴CN)/TOP
+[42]  :endif
+    ∇

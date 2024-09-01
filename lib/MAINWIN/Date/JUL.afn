@@ -1,0 +1,13 @@
+    ∇ Z←JUL DATE;Y;M;⎕IO
+[1]   ⍝ MAINWIN.sf#7
+[2]   ⍝ Returns the Julian day number, given DATE in format DD MM YY
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕IO←1 ⋄ DATE←MATRIX DATE ⍝ DATE may be a 3-vector, or a 3-column matrix.
+[8]   DATE[;3]←DATE[;3]+1900×(DATE[;3]<1000)^(DATE[;3]≠0)
+[9]   Y←DATE[;,3]-1×DATE[;,2]≤2 ⋄ M←DATE[;,2]+1+12×DATE[;,2]≤2
+[10]  Z←(⌊365.25×Y)+(⌊30.6001×M)+DATE[;,1]+1720982
+[11]  →(1≠1↑⍴Z)/0 ⋄ Z←,Z
+    ∇

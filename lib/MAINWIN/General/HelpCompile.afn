@@ -1,0 +1,19 @@
+    ∇ HelpCompile type
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Function to compile the CHM or html Help
+[3]   ⍝ Revn: sjt03may16 * prompt to confirm CHM closed
+[4]   
+[5]   :if ~uSERisRSE ⋄ :andif ~'M:'≡UPPERCASE 2↑SystemDir
+[6]       MDISPLAY 'Must be on the M: Drive to compile Help'
+[7]   :else
+[8]       0 0⍴(SystemDir,'HELPEDIT') ReadFile 'Help Compile'
+[9]       :if type≡'CHM'
+[10]      :andif 1=MessageBox 'Is the CHM closed?' 'Help Compiler' 'OC' '?' 'A' 1
+[11]          CompilePages HelpFolder
+[12]      :elseif type≡'html'
+[13]          CompileDocs HelpFolder
+[14]      :endif
+[15]      BROWSE 'ß',HelpFolder,'SVHelpUK.log'
+[16]      0 0⍴(SystemDir,'HELPEDIT') DeleteModule 'Help Compile'
+[17]  :endif
+    ∇

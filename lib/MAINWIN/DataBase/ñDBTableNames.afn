@@ -1,0 +1,14 @@
+    ∇ tnames←⍙DBTableNames con;⎕IO;xxx;ADO_SCHEMA_TABLES;∆
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Names of tables in database associated with con
+[3]   ⍝ con: (ocx) ADODB.Connection object
+[4]   ⍝ tnames: (strs)
+[5]   ⍝ Vern: sjt02mar16
+[6]   ⎕IO←1
+[7]   ADO_SCHEMA_TABLES←20
+[8]   xxx←con ⎕WI 'XOpenSchema > rst' ADO_SCHEMA_TABLES
+[9]   ∆←'rst' ⎕WI 'XGetRows'
+[10]  tnames←(∆[;4]∊⊂'TABLE')/∆[;3]
+[11]  xxx←'rst' ⎕WI 'Close'
+[12]  xxx←'rst' ⎕WI 'Delete'
+    ∇

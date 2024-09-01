@@ -1,0 +1,58 @@
+    ∇ basischanged ⍙DBClearMainDB new;∆ResIDs;ResID;max;IDs
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Clean out any results that are outdated by this valuation run ie
+[3]   ⍝ this valuation run and attaching new entrant run, results for other sex if Basis has changed at all
+[4]   
+[5]   ∆ResIDs←⍳0
+[6]   :if 1≠new ⍝ Results of current run are deleted
+[7]       :if ¯1=new ⋄ :orif ~OldResID≡ResultsCategoryID ⋄ :orif ClassID=2
+[8]           0 0⍴0 ⍙DBadoCONCommand "DELETE FROM ResultsCategory WHERE ResultsCategoryID=",⍕DatabaseID+OldResID
+[9]       :else
+[10]          0 0⍴0 ⍙DBadoCONCommand "UPDATE ResultsCategory SET Finalised=0 WHERE ResultsCategoryID=",⍕DatabaseID+ResultsCategoryID ⍝ Finalised Flag
+[11]      :endif
+[12]      ⍝ ResultsIDs to be deleted - current run tand NE attached
+[13]      ∆ResIDs←(DatabaseID+OldResID),(~mt ResID)/↑ResID←1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ActResultsID=",⍕DatabaseID+OldResID
+[14]      :if ×rowsIn ValuationRunList ⋄ :andif (DatabaseID+OldResID)∊ValuationRunList at 'ResultsCategoryID'
+[15]          'This Valuation has previously been run in this Batch' VALN∆LOG 'Warning'
+[16]          ValuationRunList←ValuationRunList for ~(ValuationRunList at 'ResultsCategoryID')∊DatabaseID+OldResID
+[17]      :endif
+[18]  :endif
+[19]  
+[20]  :if basischanged ⋄ :andif ~mt OtherResID
+[21]      ∆ResIDs←∆ResIDs,(DatabaseID+OtherResID),(~mt ResID)/↑ResID←1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory WHERE ActResultsID=",⍕DatabaseID+OtherResID
+[22]  :endif
+[23]  
+[24]  :if ~mt ∆ResIDs←∆ResIDs~0,DatabaseID
+[25]      0 0⍴0 ⍙DBadoCONCommand "DELETE FROM ResultsData    WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[26]      0 0⍴0 ⍙DBadoCONCommand "DELETE FROM CharMemberData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[27]      0 0⍴0 ⍙DBadoCONCommand "DELETE FROM NumMemberData  WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[28]      0 0⍴0 ⍙DBadoCONCommand "DELETE FROM MemberResults  WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[29]      0 0⍴0 ⍙DBadoCONCommand "DELETE FROM AltScenData    WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[30]      :if AOSCtl
+[31]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM AOSResults     WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[32]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM AOSMember      WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[33]      :endif
+[34]      :if bAON∨bQSM ⋄ :andif (⊂'CategoryAssumptions')∊⍙DBTableNames 'ADOcon'
+[35]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM CategoryAssumptions WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[36]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM BenefitAssumptions  WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[37]      :endif
+[38]      :if ~mt ∆ResIDs←∆ResIDs~DatabaseID+OldResID
+[39]          0 0⍴0 ⍙DBadoCONCommand "DELETE FROM ResultsCategory WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ∆ResIDs),")"
+[40]          :if ×rowsIn ValuationRunList
+[41]              ValuationRunList←ValuationRunList for ~(ValuationRunList at 'ResultsCategoryID')∊∆ResIDs
+[42]          :endif
+[43]      :endif
+[44]  
+[45]      max←↑1 ⍙DBadoCONCommand "SELECT MaxResultsCategoryID FROM Identification",sqlDatabase/" WHERE DatabaseID=",DBID
+[46]      :if ~mt IDs←DLTB 1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",DBID
+[47]      :andif max>⌈/IDs←10000∣IDs
+[48]          0 0⍴0 ⍙DBadoCONCommand "UPDATE Identification SET MaxResultsCategoryID=",(⍕⌈/IDs),sqlDatabase/" WHERE DatabaseID=",DBID
+[49]      :endif
+[50]  
+[51]      max←↑1 ⍙DBadoCONCommand "SELECT MaxBasisCategoryID FROM Identification",sqlDatabase/" WHERE DatabaseID=",DBID
+[52]      :if ~mt IDs←DLTB 1 ⍙DBadoCONCommand "SELECT BasisCategoryID FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",DBID
+[53]      :andif max>⌈/IDs←10000∣IDs
+[54]          0 0⍴0 ⍙DBadoCONCommand "UPDATE Identification SET MaxBasisCategoryID=",(⍕⌈/IDs),sqlDatabase/" WHERE DatabaseID=",DBID
+[55]      :endif
+[56]  :endif
+    ∇

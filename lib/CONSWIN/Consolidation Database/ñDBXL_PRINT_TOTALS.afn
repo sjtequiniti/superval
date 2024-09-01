@@ -1,1 +1,119 @@
-    ∇ ⍙DBXL_PRINT∆TOTALS;sql;tab;BenType;desc;pstab;IDs;N;AvAge;data;NumAge;bentab;psbentab;ID[1]   ⍝ CONSWIN.sf#11[2]   ⍝ Summaries and Statistics[3]   ⍝[4]   ⍝[5]   ⍝[6]   1 XL_ActivateWorksheet 'ValnSumm'[7]   [8]   ⍝⍝⍝ BenType←1 ⍙DBadoCONCommand "SELECT * FROM BenefitType"[9]   BenType←1 ⍙DBadoCONCommand 'SELECT * FROM BenefitType WHERE BenefitTypeID > 100'[10]  BenType←(1 ⍙DBFixedData 'BenefitType') OVER BenType[11]  [12]  :if ~mt runsP[13]      (1 3 'Pensioners') Win∆ProgressBar 'MemberUpdate'[14]  [15]      sql←⍙DBPivot "SUM" "SVValue" "ResultsData" ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",(0 ⍙DBNumList (4+DatabaseID),runsP),")",sqlDatabase/" AND DatabaseID=",DBID) "BenefitTypeID" "ContingencyID" (1 2 7 12 6)[16]      tab←XL_Pivot sql 0[17]  [18]      IDs←tab[;⎕io] ⋄ desc←DLTB¨BenType[BenType[;⎕io]⍳IDs;⎕io+1][19]      tab←DIFF 0,(+\-0 1↓tab)[;⎕io+1 4][20]  [21]      :if ⍙dbopen[22]          sql←"SELECT MemberAge, SUM(MemberValue) FROM MemberResults WHERE BenefitTypeID=? AND DataItemID=# AND ResultsCategoryID IN (",(0 ⍙DBNumList runsP),") GROUP BY MemberAge"[23]          AvAge←2 0⍴0[24]          :for ID :in IDs[25]              :if mt data←1 ⍙DBadoCONCommand ('/?/',⍕ID) TEXTREPL ('/#/1') TEXTREPL sql[26]                  AvAge←AvAge,0 0[27]              :else[28]                  NumAge←(+/×/data) CDIV +/data[;2][29]                  :if mt data←1 ⍙DBadoCONCommand ('/?/',⍕ID) TEXTREPL ('/#/10') TEXTREPL sql[30]                      AvAge←AvAge,NumAge,0[31]                  :else[32]                      AvAge←AvAge,NumAge,(+/×/data) CDIV +/data[;2][33]                  :endif[34]              :endif[35]          :endfor[36]          (53 5 55 5) XL_PasteAll 53 5 55 (4+↑⍴,IDs)[37]          0 0⍴(MATRIX (⊂' ',⎕tclf) REPL ¨desc) XL_Data RCtoA1 53 5 53 (4+↑⍴,IDs) ⋄ 0 0⍴AvAge XL_Data RCtoA1 54 5 55 (4+⍬⍴⍴,IDs)[38]      :else[39]          'U' XL_RangeDelete 52 ⍬ 56 ⍬[40]      :endif[41]  [42]      :select N←⍬⍴↑⍴desc[43]      :case 0 ⋄ ⍝ Me thinks not Possible[44]      :case 1 ⋄[45]      :else   ⋄ 'D↓' XL_RangeInsert 49 ⍬ (47+N) ⍬[46]                ((48+N) 2) XL_PasteAll 49 2 (48+N) 2[47]                ((48+N) 6) XL_PasteAll 49 6 (48+N) 6[48]      :endselect[49]      0 0⍴(⍉MATRIX desc) XL_Data RCtoA1 49 3 (48+N) 3 ⋄ 0 0⍴tab XL_Data RCtoA1 49 4 (48+N) 5[50]  [51]  :else[52]      'U' XL_RangeDelete 47 ⍬ 56 ⍬[53]  :endif[54]  [55]  :if ~mt runsD[56]      (2 3 'Deferreds') Win∆ProgressBar 'MemberUpdate'[57]  [58]      sql←⍙DBPivot "SUM" "SVValue" "ResultsData" ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",(0 ⍙DBNumList (3+DatabaseID),runsD),")",sqlDatabase/" AND DatabaseID=",DBID) "BenefitTypeID" "ContingencyID" (1 2 7 12 6 31 32 37 38 34 35 40 41)[59]      tab←XL_Pivot sql 0[60]  [61]      IDs←tab[;⎕io] ⋄ desc←DLTB¨BenType[BenType[;⎕io]⍳IDs;⎕io+1][62]      bentab←DIFF 0,(+\-0 1↓tab)[;⎕io+3 4 12] ⋄ tab←⍉3 2⍴1 1 0 1 1 1\+/¨1 0 1 0 1 1 0 0 0 1 0 0 0 ⎕penclose -+⌿0 1↓tab[63]  [64]      :select N←⍬⍴↑⍴desc[65]      :case 0 ⋄ ⍝ Me thinks not Possible[66]      :case 1 ⋄[67]      :else   ⋄ 'D↓' XL_RangeInsert 42 ⍬ (40+N) ⍬[68]                ((41+N) 2) XL_PasteAll 42 2 (41+N) 2[69]                ((41+N) 7) XL_PasteAll 42 7 (41+N) 7[70]      :endselect[71]      0 0⍴(⍉MATRIX desc) XL_Data RCtoA1 42 3 (41+N) 3 ⋄ 0 0⍴bentab XL_Data RCtoA1 42 4 (41+N) 6[72]      0 0⍴tab XL_Data RCtoA1 (43+N) 4 (44+N) 6[73]  :else[74]      'U' XL_RangeDelete 40 ⍬ 46 ⍬[75]  :endif[76]  [77]  :if ~mt runsA[78]      (3 3 'Actives') Win∆ProgressBar 'MemberUpdate'[79]  [80]      ⍙DBXL_PRINTANAL ⍝ Averages and Present Value of 1pc of Salary[81]  [82]      sql←⍙DBPivot "SUM" "SVValue" "ResultsData" ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",(0 ⍙DBNumList (1 2+DatabaseID),runsA),")",sqlDatabase/" AND DatabaseID=",DBID) "BenefitTypeID" "ContingencyID" (1 2 21 7 12 22 3 23 4 13 5 14 6)[83]      :if mt pstab←XL_Pivot sql 0 ⋄ pstab←(⍴pstab)⍴0 ⋄ :endif[84]      sql←⍙DBPivot "SUM" "SVValue" "ResultsData" ("LiabilityTypeID=2 AND DataItemID=13 AND ResultsCategoryID IN (",(0 ⍙DBNumList (1 2+DatabaseID),runsA),")",sqlDatabase/" AND DatabaseID=",DBID) "BenefitTypeID" "ContingencyID" (1 2 21 7 12 22 3 23 4 13 5 14 6)[85]      :if mt   tab←XL_Pivot sql 0 ⋄   tab←(  ⍴tab)⍴0 ⋄ :endif[86]  [87]      :if ~insind^~NotPUC ⋄ tab←(~tab[;⎕io]∊9 10)⌿tab ⋄ :endif ⍝ Insured only for PUC (inc Insured)[88]  [89]      IDs←pstab[;⎕io],tab[;⎕io] ⋄ IDs←IDs[⍋IDs] ⋄ IDs←(1,(1↓IDs)≠¯1↓IDs)/IDs ⍝ Unique IDs[90]      desc←DLTB¨BenType[BenType[;⎕io]⍳IDs;⎕io+1][91]      pstab←(IDs∊pstab[;⎕io])⍀pstab ⋄ tab←(IDs∊tab[;⎕io])⍀tab[92]      psbentab←DIFF 0,(+\-0 1↓pstab)[;⎕io+5 7 9 11 12] ⋄ bentab←DIFF 0,(+\-0 1↓tab)[;⎕io+5 7 9 11 12][93]      pstab←⍉5 2⍴1 1 0 1 1 1 1 1 0 1\+/¨1 0 0 1 0 0 1 0 1 1 1 1 1 ⎕penclose -+⌿0 1↓pstab[94]        tab←⍉5 2⍴1 1 0 1 1 1 1 1 0 1\+/¨1 0 0 1 0 0 1 0 1 1 1 1 1 ⎕penclose -+⌿0 1↓tab[95]  [96]      :select N←⍬⍴↑⍴desc[97]      :case 0 ⋄ ⍝ Me thinks not Possible[98]      :case 1 ⋄[99]      :else   ⋄ 'D↓' XL_RangeInsert 10 ⍬ (8+N) ⍬[100]               ((9+N)  2         ) XL_PasteAll 10  2 (9+N)  2[101]               ((9+N)  9 (9+N) 11) XL_PasteAll 10  9 (9+N) 11[102]               ((9+N) 17 (9+N) 25) XL_PasteAll 10 17 (9+N) 25[103]     :endselect[104]     0 0⍴(⍉MATRIX desc) XL_Data RCtoA1 10 3 (9+N) 3 ⋄ 0 0⍴psbentab XL_Data RCtoA1 10 4 (9+N) 8 ⋄ 0 0⍴bentab XL_Data RCtoA1 10 12 (9+N) 16[105]     0 0⍴pstab XL_Data RCtoA1 (11+N) 4 (12+N) 8 ⋄ 0 0⍴tab XL_Data RCtoA1 (11+N) 12 (12+N) 16[106] [107]     :if dab ⋄ :orif ~NotPUC ⍝ No Total for PUC, UCM or DAB[108]         'L' XL_RangeDelete 9 19 (12+N) 25[109]     :endif[110] :else[111]     'U' XL_RangeDelete 8 ⍬ 39 ⍬[112] :endif[113] [114] 0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on[115] XL_AutoFit 5 3 (53+⍴runs) 25[116] 0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off[117] 'ValnSumm' XL_ProtectSheet 1    ∇
+    ∇ ⍙DBXL_PRINT∆TOTALS;sql;tab;BenType;desc;pstab;IDs;N;AvAge;data;NumAge;bentab;psbentab;ID
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ Summaries and Statistics
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   1 XL_ActivateWorksheet 'ValnSumm'
+[7]   
+[8]   ⍝⍝⍝ BenType←1 ⍙DBadoCONCommand "SELECT * FROM BenefitType"
+[9]   BenType←1 ⍙DBadoCONCommand 'SELECT * FROM BenefitType WHERE BenefitTypeID > 100'
+[10]  BenType←(1 ⍙DBFixedData 'BenefitType') OVER BenType
+[11]  
+[12]  :if ~mt runsP
+[13]      (1 3 'Pensioners') Win∆ProgressBar 'MemberUpdate'
+[14]  
+[15]      sql←⍙DBPivot "SUM" "SVValue" "ResultsData" ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",(0 ⍙DBNumList (4+DatabaseID),runsP),")",sqlDatabase/" AND DatabaseID=",DBID) "BenefitTypeID" "ContingencyID" (1 2 7 12 6)
+[16]      tab←XL_Pivot sql 0
+[17]  
+[18]      IDs←tab[;⎕io] ⋄ desc←DLTB¨BenType[BenType[;⎕io]⍳IDs;⎕io+1]
+[19]      tab←DIFF 0,(+\-0 1↓tab)[;⎕io+1 4]
+[20]  
+[21]      :if ⍙dbopen
+[22]          sql←"SELECT MemberAge, SUM(MemberValue) FROM MemberResults WHERE BenefitTypeID=? AND DataItemID=# AND ResultsCategoryID IN (",(0 ⍙DBNumList runsP),") GROUP BY MemberAge"
+[23]          AvAge←2 0⍴0
+[24]          :for ID :in IDs
+[25]              :if mt data←1 ⍙DBadoCONCommand ('/?/',⍕ID) TEXTREPL ('/#/1') TEXTREPL sql
+[26]                  AvAge←AvAge,0 0
+[27]              :else
+[28]                  NumAge←(+/×/data) CDIV +/data[;2]
+[29]                  :if mt data←1 ⍙DBadoCONCommand ('/?/',⍕ID) TEXTREPL ('/#/10') TEXTREPL sql
+[30]                      AvAge←AvAge,NumAge,0
+[31]                  :else
+[32]                      AvAge←AvAge,NumAge,(+/×/data) CDIV +/data[;2]
+[33]                  :endif
+[34]              :endif
+[35]          :endfor
+[36]          (53 5 55 5) XL_PasteAll 53 5 55 (4+↑⍴,IDs)
+[37]          0 0⍴(MATRIX (⊂' ',⎕tclf) REPL ¨desc) XL_Data RCtoA1 53 5 53 (4+↑⍴,IDs) ⋄ 0 0⍴AvAge XL_Data RCtoA1 54 5 55 (4+⍬⍴⍴,IDs)
+[38]      :else
+[39]          'U' XL_RangeDelete 52 ⍬ 56 ⍬
+[40]      :endif
+[41]  
+[42]      :select N←⍬⍴↑⍴desc
+[43]      :case 0 ⋄ ⍝ Me thinks not Possible
+[44]      :case 1 ⋄
+[45]      :else   ⋄ 'D↓' XL_RangeInsert 49 ⍬ (47+N) ⍬
+[46]                ((48+N) 2) XL_PasteAll 49 2 (48+N) 2
+[47]                ((48+N) 6) XL_PasteAll 49 6 (48+N) 6
+[48]      :endselect
+[49]      0 0⍴(⍉MATRIX desc) XL_Data RCtoA1 49 3 (48+N) 3 ⋄ 0 0⍴tab XL_Data RCtoA1 49 4 (48+N) 5
+[50]  
+[51]  :else
+[52]      'U' XL_RangeDelete 47 ⍬ 56 ⍬
+[53]  :endif
+[54]  
+[55]  :if ~mt runsD
+[56]      (2 3 'Deferreds') Win∆ProgressBar 'MemberUpdate'
+[57]  
+[58]      sql←⍙DBPivot "SUM" "SVValue" "ResultsData" ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",(0 ⍙DBNumList (3+DatabaseID),runsD),")",sqlDatabase/" AND DatabaseID=",DBID) "BenefitTypeID" "ContingencyID" (1 2 7 12 6 31 32 37 38 34 35 40 41)
+[59]      tab←XL_Pivot sql 0
+[60]  
+[61]      IDs←tab[;⎕io] ⋄ desc←DLTB¨BenType[BenType[;⎕io]⍳IDs;⎕io+1]
+[62]      bentab←DIFF 0,(+\-0 1↓tab)[;⎕io+3 4 12] ⋄ tab←⍉3 2⍴1 1 0 1 1 1\+/¨1 0 1 0 1 1 0 0 0 1 0 0 0 ⎕penclose -+⌿0 1↓tab
+[63]  
+[64]      :select N←⍬⍴↑⍴desc
+[65]      :case 0 ⋄ ⍝ Me thinks not Possible
+[66]      :case 1 ⋄
+[67]      :else   ⋄ 'D↓' XL_RangeInsert 42 ⍬ (40+N) ⍬
+[68]                ((41+N) 2) XL_PasteAll 42 2 (41+N) 2
+[69]                ((41+N) 7) XL_PasteAll 42 7 (41+N) 7
+[70]      :endselect
+[71]      0 0⍴(⍉MATRIX desc) XL_Data RCtoA1 42 3 (41+N) 3 ⋄ 0 0⍴bentab XL_Data RCtoA1 42 4 (41+N) 6
+[72]      0 0⍴tab XL_Data RCtoA1 (43+N) 4 (44+N) 6
+[73]  :else
+[74]      'U' XL_RangeDelete 40 ⍬ 46 ⍬
+[75]  :endif
+[76]  
+[77]  :if ~mt runsA
+[78]      (3 3 'Actives') Win∆ProgressBar 'MemberUpdate'
+[79]  
+[80]      ⍙DBXL_PRINTANAL ⍝ Averages and Present Value of 1pc of Salary
+[81]  
+[82]      sql←⍙DBPivot "SUM" "SVValue" "ResultsData" ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",(0 ⍙DBNumList (1 2+DatabaseID),runsA),")",sqlDatabase/" AND DatabaseID=",DBID) "BenefitTypeID" "ContingencyID" (1 2 21 7 12 22 3 23 4 13 5 14 6)
+[83]      :if mt pstab←XL_Pivot sql 0 ⋄ pstab←(⍴pstab)⍴0 ⋄ :endif
+[84]      sql←⍙DBPivot "SUM" "SVValue" "ResultsData" ("LiabilityTypeID=2 AND DataItemID=13 AND ResultsCategoryID IN (",(0 ⍙DBNumList (1 2+DatabaseID),runsA),")",sqlDatabase/" AND DatabaseID=",DBID) "BenefitTypeID" "ContingencyID" (1 2 21 7 12 22 3 23 4 13 5 14 6)
+[85]      :if mt   tab←XL_Pivot sql 0 ⋄   tab←(  ⍴tab)⍴0 ⋄ :endif
+[86]  
+[87]      :if ~insind^~NotPUC ⋄ tab←(~tab[;⎕io]∊9 10)⌿tab ⋄ :endif ⍝ Insured only for PUC (inc Insured)
+[88]  
+[89]      IDs←pstab[;⎕io],tab[;⎕io] ⋄ IDs←IDs[⍋IDs] ⋄ IDs←(1,(1↓IDs)≠¯1↓IDs)/IDs ⍝ Unique IDs
+[90]      desc←DLTB¨BenType[BenType[;⎕io]⍳IDs;⎕io+1]
+[91]      pstab←(IDs∊pstab[;⎕io])⍀pstab ⋄ tab←(IDs∊tab[;⎕io])⍀tab
+[92]      psbentab←DIFF 0,(+\-0 1↓pstab)[;⎕io+5 7 9 11 12] ⋄ bentab←DIFF 0,(+\-0 1↓tab)[;⎕io+5 7 9 11 12]
+[93]      pstab←⍉5 2⍴1 1 0 1 1 1 1 1 0 1\+/¨1 0 0 1 0 0 1 0 1 1 1 1 1 ⎕penclose -+⌿0 1↓pstab
+[94]        tab←⍉5 2⍴1 1 0 1 1 1 1 1 0 1\+/¨1 0 0 1 0 0 1 0 1 1 1 1 1 ⎕penclose -+⌿0 1↓tab
+[95]  
+[96]      :select N←⍬⍴↑⍴desc
+[97]      :case 0 ⋄ ⍝ Me thinks not Possible
+[98]      :case 1 ⋄
+[99]      :else   ⋄ 'D↓' XL_RangeInsert 10 ⍬ (8+N) ⍬
+[100]               ((9+N)  2         ) XL_PasteAll 10  2 (9+N)  2
+[101]               ((9+N)  9 (9+N) 11) XL_PasteAll 10  9 (9+N) 11
+[102]               ((9+N) 17 (9+N) 25) XL_PasteAll 10 17 (9+N) 25
+[103]     :endselect
+[104]     0 0⍴(⍉MATRIX desc) XL_Data RCtoA1 10 3 (9+N) 3 ⋄ 0 0⍴psbentab XL_Data RCtoA1 10 4 (9+N) 8 ⋄ 0 0⍴bentab XL_Data RCtoA1 10 12 (9+N) 16
+[105]     0 0⍴pstab XL_Data RCtoA1 (11+N) 4 (12+N) 8 ⋄ 0 0⍴tab XL_Data RCtoA1 (11+N) 12 (12+N) 16
+[106] 
+[107]     :if dab ⋄ :orif ~NotPUC ⍝ No Total for PUC, UCM or DAB
+[108]         'L' XL_RangeDelete 9 19 (12+N) 25
+[109]     :endif
+[110] :else
+[111]     'U' XL_RangeDelete 8 ⍬ 39 ⍬
+[112] :endif
+[113] 
+[114] 0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+[115] XL_AutoFit 5 3 (53+⍴runs) 25
+[116] 0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[117] 'ValnSumm' XL_ProtectSheet 1
+    ∇

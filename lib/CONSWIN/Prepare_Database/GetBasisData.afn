@@ -1,1 +1,31 @@
-    ∇ data←fin GetBasisData dataitem;TabID;finname;group;FinID;value;collar;cap;consdyn[1]   ⍝ CONSWIN.sf#18[2]   ⍝ Get Basis data for BasisCategoryID ID based on a Basis Variable name[3]   ⍝ If financial assumption and a Table, get the Cap, Collar, Group, Table ID and, for Increases (fin≡¯1), ConsDyn[4]   [5]   :if mt data←⍕,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE BasisItemName=",(1 ⍙DBString dataitem)," AND BasisItemID BETWEEN ",(⍕1+ClassBase)," AND ",(⍕9999+ClassBase)[6]       :if ∣fin[7]           data←(0⌊-fin)↓mtFin,⊂''[8]       :endif[9]   :else[10]      data←DLTB ↑,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData",where," AND BasisItemID=",data[11]  [12]      :if ∣fin[13]          FinID←⍕,1 ⍙DBadoCONCommand "SELECT FinancialsID FROM FinancialsGroups",where[14]          :if ~mt finname←DLTB ¯1↓'<' Win∆Child data[15]              :repeat[16]                  (value cap collar consdyn group)←DLTB¨'' ⍙DBRemoveNulls 5↑,1 ⍙DBadoCONCommand "SELECT FinancialsValue, FinancialsCap, FinancialsCollar, FinancialsConsDesc",(bQSM/", FinancialsGroup")," FROM FinancialsValues WHERE FinancialsID=",FinID," AND FinancialsName=",1 ⍙DBString finname[17]              :until ~mt value[18]              :orif   mt finname←DLTB ¯1↓'-' Win∆Parent finname[19]  [20]              :if TabID←~^/⎕vi value[21]                  TabID←↑,1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames",where," AND TableName=",1 ⍙DBString value[22]              :endif[23]              data←finname group value cap collar TabID consdyn ⍝ ConsDyn only required for Increases[24]          :else[25]              data←mtFin,⊂''[26]          :endif[27]          data←(0⌊-fin)↓data[28]      :endif[29]  :endif    ∇
+    ∇ data←fin GetBasisData dataitem;TabID;finname;group;FinID;value;collar;cap;consdyn
+[1]   ⍝ CONSWIN.sf#18
+[2]   ⍝ Get Basis data for BasisCategoryID ID based on a Basis Variable name
+[3]   ⍝ If financial assumption and a Table, get the Cap, Collar, Group, Table ID and, for Increases (fin≡¯1), ConsDyn
+[4]   
+[5]   :if mt data←⍕,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE BasisItemName=",(1 ⍙DBString dataitem)," AND BasisItemID BETWEEN ",(⍕1+ClassBase)," AND ",(⍕9999+ClassBase)
+[6]       :if ∣fin
+[7]           data←(0⌊-fin)↓mtFin,⊂''
+[8]       :endif
+[9]   :else
+[10]      data←DLTB ↑,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData",where," AND BasisItemID=",data
+[11]  
+[12]      :if ∣fin
+[13]          FinID←⍕,1 ⍙DBadoCONCommand "SELECT FinancialsID FROM FinancialsGroups",where
+[14]          :if ~mt finname←DLTB ¯1↓'<' Win∆Child data
+[15]              :repeat
+[16]                  (value cap collar consdyn group)←DLTB¨'' ⍙DBRemoveNulls 5↑,1 ⍙DBadoCONCommand "SELECT FinancialsValue, FinancialsCap, FinancialsCollar, FinancialsConsDesc",(bQSM/", FinancialsGroup")," FROM FinancialsValues WHERE FinancialsID=",FinID," AND FinancialsName=",1 ⍙DBString finname
+[17]              :until ~mt value
+[18]              :orif   mt finname←DLTB ¯1↓'-' Win∆Parent finname
+[19]  
+[20]              :if TabID←~^/⎕vi value
+[21]                  TabID←↑,1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames",where," AND TableName=",1 ⍙DBString value
+[22]              :endif
+[23]              data←finname group value cap collar TabID consdyn ⍝ ConsDyn only required for Increases
+[24]          :else
+[25]              data←mtFin,⊂''
+[26]          :endif
+[27]          data←(0⌊-fin)↓data
+[28]      :endif
+[29]  :endif
+    ∇

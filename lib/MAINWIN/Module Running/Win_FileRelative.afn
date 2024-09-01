@@ -1,1 +1,38 @@
-    ∇ warnings←fielddesc Win∆FileRelative vars;⎕elx;elx;n;newval;value;label;errflag;lab;val[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Assign the Relative value of a File field[3]   ⍝  "fielddesc" is a text string with the description of the field[4]   ⍝  "vars" contains[5]   ⍝    "label" is a text string with the label variable (may be indexed eg "lrcontsEntry[n;]")[6]   ⍝    "value" is a text string with the variable value (may be indexed eg "contsEntry[n;]")[7]   ⍝ The label and value variables must be global to this function[8]   ⍝ Assumes that FilesList and FilesDesc have been created globally[9]   [10]  ⍝ If "label" exists in FilesDesc, then assign "relative" value to value variable (if different)[11]  ⍝ If "label" does not exist in FilesDesc, then clear label value[12]  ⍝ If "value" exists in FilesList, "label" becomes that relative value[13]  ⍝ If "label" is already blank and "value" not in FilesList, nothing happens![14]  [15]  warnings←0 0⍴'' ⋄ (value label errflag)←3↑vars,0[16]  [17]  elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ →0' ⍝ Exit if execution fails[18]  lab←⍎label ⋄ val←⍎value[19]  ⎕elx←elx[20]  [21]  :if ~mt n←(StripText FilesDesc) ExactTLU StripText lab[22]      :if ~(UPPERCASE newval←DLTB FilesList[n;])≡UPPERCASE DLTB val[23]          warnings←DLTB (errflag/"Warning:  "),"Relative Value for ",fielddesc," has changed to '",newval,"'"[24]          newval ASSIGN∆Dict value[25]      :endif[26]  :else[27]      :if ~mt DLTB lab[28]          warnings←DLTB (errflag/"ERROR:  "),"Relative Value '",lab,"' for ",fielddesc," is no longer defined"[29]          '' ASSIGN∆Dict label[30]      :endif[31]      :if ~mt n←(UPPERCASE FilesList) ExactTLU UPPERCASE val[32]      :andif 0=⎕nc 'BatchJobName' ⍝ No assignment when running valuation[33]          (newval←DLTB FilesDesc[n;]) ASSIGN∆Dict label[34]          warnings←warnings OVER (errflag/"Warning:  "),fielddesc," has been assigned Relative Value '",newval,"'"[35]      :endif[36]  :endif    ∇
+    ∇ warnings←fielddesc Win∆FileRelative vars;⎕elx;elx;n;newval;value;label;errflag;lab;val
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Assign the Relative value of a File field
+[3]   ⍝  "fielddesc" is a text string with the description of the field
+[4]   ⍝  "vars" contains
+[5]   ⍝    "label" is a text string with the label variable (may be indexed eg "lrcontsEntry[n;]")
+[6]   ⍝    "value" is a text string with the variable value (may be indexed eg "contsEntry[n;]")
+[7]   ⍝ The label and value variables must be global to this function
+[8]   ⍝ Assumes that FilesList and FilesDesc have been created globally
+[9]   
+[10]  ⍝ If "label" exists in FilesDesc, then assign "relative" value to value variable (if different)
+[11]  ⍝ If "label" does not exist in FilesDesc, then clear label value
+[12]  ⍝ If "value" exists in FilesList, "label" becomes that relative value
+[13]  ⍝ If "label" is already blank and "value" not in FilesList, nothing happens!
+[14]  
+[15]  warnings←0 0⍴'' ⋄ (value label errflag)←3↑vars,0
+[16]  
+[17]  elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ →0' ⍝ Exit if execution fails
+[18]  lab←⍎label ⋄ val←⍎value
+[19]  ⎕elx←elx
+[20]  
+[21]  :if ~mt n←(StripText FilesDesc) ExactTLU StripText lab
+[22]      :if ~(UPPERCASE newval←DLTB FilesList[n;])≡UPPERCASE DLTB val
+[23]          warnings←DLTB (errflag/"Warning:  "),"Relative Value for ",fielddesc," has changed to '",newval,"'"
+[24]          newval ASSIGN∆Dict value
+[25]      :endif
+[26]  :else
+[27]      :if ~mt DLTB lab
+[28]          warnings←DLTB (errflag/"ERROR:  "),"Relative Value '",lab,"' for ",fielddesc," is no longer defined"
+[29]          '' ASSIGN∆Dict label
+[30]      :endif
+[31]      :if ~mt n←(UPPERCASE FilesList) ExactTLU UPPERCASE val
+[32]      :andif 0=⎕nc 'BatchJobName' ⍝ No assignment when running valuation
+[33]          (newval←DLTB FilesDesc[n;]) ASSIGN∆Dict label
+[34]          warnings←warnings OVER (errflag/"Warning:  "),fielddesc," has been assigned Relative Value '",newval,"'"
+[35]      :endif
+[36]  :endif
+    ∇

@@ -1,1 +1,23 @@
-    ∇ Migrate_FundSurc;data;list;desc[1]   ⍝ OVERWIN.sf#13[2]   ⍝ Migrate the DOS Surcharge Paraemeters[3]   [4]   :if 9≤(⎕fsize tieno)[2] ⍝ Check Surcharge Parameters exist[5]       list←⍙VALUESdict ReadDictFile 'Surcharge_Parameter' '' 'NAMES'[6]       0 0⍴ReadModule 'Surcharge_Parameter' 'None'[7]       data←⎕fread tieno,8 ⍝ Read Surcharge Parameters[8]       SurcDATE←'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP data[1;⍳8][9]       Surci←DLTMB data[2;] ⋄ Conv∆DD←⍕data[9;1]∊'Yy'[10]      SurcMXX←SStoMAT DLTMB '⍺',('M0',data[3;]) OVER data[4 5;][11]      SurcDXX←SStoMAT DLTMB '⍺',('D0',data[6;]) OVER data[7 8;][12]      SurcFact←DLTMB data[15;] ⋄ surcsumm←⍕data[17;1]∊'Yy'[13]      surcind←¯7↑'Service',(data[16;1]∊'Mm')/'Fund   '[14]      BAGE←DLTMB data[21;] ⋄ Askip←DLTMB data[22;] ⋄ LAGE←DLTMB data[23;][15]      SDurn←DLTMB data[24;] ⋄ Dskip←DLTMB data[25;] ⋄ LDURN←DLTMB data[26;][16]      :if 0∊⍴,neMinAge←DLTMB data[37;] ⋄ neMinAge←'15' ⋄ :endif[17]  [18]      desc←ClientFile Win∆ReplaceParms ('Surcharge_Parameter') (ParmDesc)[19]      0 0⍴ClientFile SaveToFile 'Surcharge_Parameter' desc (pack list) 1[20]      0 0⍴⎕ex list[21]  :endif    ∇
+    ∇ Migrate_FundSurc;data;list;desc
+[1]   ⍝ OVERWIN.sf#13
+[2]   ⍝ Migrate the DOS Surcharge Paraemeters
+[3]   
+[4]   :if 9≤(⎕fsize tieno)[2] ⍝ Check Surcharge Parameters exist
+[5]       list←⍙VALUESdict ReadDictFile 'Surcharge_Parameter' '' 'NAMES'
+[6]       0 0⍴ReadModule 'Surcharge_Parameter' 'None'
+[7]       data←⎕fread tieno,8 ⍝ Read Surcharge Parameters
+[8]       SurcDATE←'ZI2,</>,ZI2,</>,I4' ⎕fmt MATRIX 'DDMMYYYY' DATEEXP data[1;⍳8]
+[9]       Surci←DLTMB data[2;] ⋄ Conv∆DD←⍕data[9;1]∊'Yy'
+[10]      SurcMXX←SStoMAT DLTMB '⍺',('M0',data[3;]) OVER data[4 5;]
+[11]      SurcDXX←SStoMAT DLTMB '⍺',('D0',data[6;]) OVER data[7 8;]
+[12]      SurcFact←DLTMB data[15;] ⋄ surcsumm←⍕data[17;1]∊'Yy'
+[13]      surcind←¯7↑'Service',(data[16;1]∊'Mm')/'Fund   '
+[14]      BAGE←DLTMB data[21;] ⋄ Askip←DLTMB data[22;] ⋄ LAGE←DLTMB data[23;]
+[15]      SDurn←DLTMB data[24;] ⋄ Dskip←DLTMB data[25;] ⋄ LDURN←DLTMB data[26;]
+[16]      :if 0∊⍴,neMinAge←DLTMB data[37;] ⋄ neMinAge←'15' ⋄ :endif
+[17]  
+[18]      desc←ClientFile Win∆ReplaceParms ('Surcharge_Parameter') (ParmDesc)
+[19]      0 0⍴ClientFile SaveToFile 'Surcharge_Parameter' desc (pack list) 1
+[20]      0 0⍴⎕ex list
+[21]  :endif
+    ∇

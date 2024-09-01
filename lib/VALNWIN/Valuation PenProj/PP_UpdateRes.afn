@@ -1,0 +1,29 @@
+    ∇ PP∆UpdateRes;cols;norows
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Update (old) Results matrices
+[3]   
+[4]   pp∆AccumPV[;;;pp∆exitcol]←pp∆AccumPV[;;;pp∆exitcol]+pp∆PresValue
+[5]   pp∆AccumNormC[;;pp∆exitcol]←pp∆AccumNormC[;;pp∆exitcol]+pp∆NormC
+[6]   
+[7]   ⍝⍝⍝:if ecflag
+[8]   ⍝⍝⍝    cols←pp∆exitcol×pp∆exitcol<4
+[9]   ⍝⍝⍝    MAT[;cols]←MAT[;cols]++⌿pp∆PresValue[1;;]
+[10]  ⍝⍝⍝    :if dab
+[11]  ⍝⍝⍝        TOTSPLIT[;cols]←TOTSPLIT[;cols]+(+⌿pp∆PresValue[0;⍳pp∆CP;]-pp∆PresValue[1;⍳pp∆CP;])++⌿pp∆PresValue[1;;]
+[12]  ⍝⍝⍝    :elseif NotPUC
+[13]  ⍝⍝⍝        TOTSPLIT[;cols]←TOTSPLIT[;cols]++⌿pp∆PresValue[0;;]
+[14]  ⍝⍝⍝    :else
+[15]  ⍝⍝⍝        TOTSPLIT[;cols]←TOTSPLIT[;cols]++⌿pp∆NormC
+[16]  ⍝⍝⍝    :endif
+[17]  ⍝⍝⍝:endif
+[18]  
+[19]  :if ~suppressText
+[20]      pp∆Reserve←DTZ pp∆Reserve ⋄ pp∆CashFlow←((-+/^\⌽^/0=pp∆CashFlow),0)↓pp∆CashFlow
+[21]      norows←(⍴pp∆Reserve)⌈1↑⍴pp∆CashFlow ⋄ norows←(⍴CFTOT←((⍴CFTOT)⌈0,norows,0)↑CFTOT)[1]
+[22]  
+[23]      CFTOT[1;;0]←CFTOT[1;;0]+norows↑pp∆Reserve ⍝ "Deferred" Accrued
+[24]  
+[25]      cols←(pp∆exitcol<4)×(0 2,(pp∆exitcol∊1 2)/0)⌈(pp∆exit≡'ER')+(3×pp∆exitcol)+⍳2+pp∆exitcol∊1 2
+[26]      CFTOT[0;⍳norows;cols]←CFTOT[0;⍳norows;cols]+(norows,2+pp∆exitcol∊1 2)↑pp∆CashFlow
+[27]  :endif
+    ∇

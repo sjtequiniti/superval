@@ -1,0 +1,183 @@
+    ∇ res←field Create_Globals parm;parent;xxx;∆;typs;MigGpMatch;xGPs;xmlPath;BASES9MAPPED;Index;row;this;SavedModule;saveVersion;AuditLog;AuditCN;Auditdescription;File;GlobParm
+[1]   ⍝ UPARMWIN.sf#13
+[2]   ⍝ Function to allow user control on Creating Global Parameters
+[3]   
+[4]   parent←'fmCreateGlob.' ⋄  res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Prepare'  ⍝ Preparatory Routines
+[9]       0 0⍴(⊂MigDir,'MIGRATE') ReadFile¨'Migration_Callbacks' 'Migration_Utilities'
+[10]  
+[11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[12]      globParm←4↑[1]globParm OVER 2 1⍴'0'
+[13]  
+[14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[15]  
+[16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[17]  
+[18]  :case 'Back'
+[19]  
+[20]      :select DLTMB Win∆Child ↑field
+[21]      :case 'fDecRates'
+[22]          0 0⍴(parent,'fDecRates.edResults')  ⎕wi 'text' ''
+[23]      :case 'fSpouse'
+[24]          0 0⍴(parent,'fSpouse.edResults')  ⎕wi 'text' ''
+[25]          :if ~(⊂'Decrement Rates')∊globtypes ⋄ res←'Back'
+[26]          :else                               ⋄ res←('Decrement_Rates' TreeCreate parent,'fDecRates.trDecRates')/'Back'
+[27]          :endif
+[28]      :case 'fRetAge'
+[29]          0 0⍴(parent,'fRetAge.edResults')  ⎕wi 'text' ''
+[30]          :if ~(⊂'Spouse Parameters')∊globtypes ⋄ res←'Back'
+[31]          :else                                 ⋄ res←('Spouse_Parameters' TreeCreate parent,'fSpouse.trSpouse')/'Back'
+[32]          :endif
+[33]      :case 'fRetFact'
+[34]          0 0⍴(parent,'fRetFact.edResults')  ⎕wi 'text' ''
+[35]          :if ~(⊂'Retirement Age')∊globtypes ⋄ res←'Back'
+[36]          :else                              ⋄ res←('Retirement_Age' TreeCreate parent,'fRetAge.trRetAge')/'Back'
+[37]          :endif
+[38]      :case 'fRetCash'
+[39]          0 0⍴(parent,'fRetCash.edResults')  ⎕wi 'text' ''
+[40]          :if ~(⊂'Retirement Factors')∊globtypes ⋄ res←'Back'
+[41]          :else                                  ⋄ res←('Retirement_Factors' TreeCreate parent,'fRetFact.trRetFact')/'Back'
+[42]          :endif
+[43]      :case 'fCommTab'
+[44]          0 0⍴(parent,'fCommTab.edResults')  ⎕wi 'text' ''
+[45]          :if ~(⊂'Retirement Cash')∊globtypes ⋄ res←'Back'
+[46]          :else                               ⋄ res←('Retirement_Cash' TreeCreate parent,'fRetCash.trRetCash')/'Back'
+[47]          :endif
+[48]      :case 'fSpreadDate'
+[49]          0 0⍴(parent,'fSpreadDate.edResults')  ⎕wi 'text' ''
+[50]          :if ~(⊂'Commutation Tables')∊globtypes ⋄ res←'Back'
+[51]          :else                                  ⋄ res←('Commutation_Tables' TreeCreate parent,'fCommTab.trCommTab')/'Back'
+[52]          :endif
+[53]      :case 'fSummary'
+[54]          0 0⍴(parent,'fSummary.webSummary') ⎕wi 'XNavigate2' (StyleDir,'blank.htm')
+[55]          :if ~(⊂'Spreading Dates')∊globtypes ⋄ res←'Back'
+[56]          :else                               ⋄ res←('Spreading_Dates' TreeCreate parent,'fSpreadDate.trSpreadDate')/'Back'
+[57]          :endif
+[58]      :endselect
+[59]  
+[60]  :case 'Next'
+[61]  
+[62]      :select DLTMB Win∆Child ↑field
+[63]      :case 'fParms'
+[64]          MigGpMatch←3 3⍴MatrixZWB migGpMatch
+[65]          GlobParm←MatrixZWB globParm
+[66]  
+[67]          ∆←('Memtype' 'File' 'Name' 'user' 'savetime') ⍪ MATRIX ⍉⊃ spin  m2n¨ SStoMAT¨ ⎕SPLIT SavedParms
+[68]          ∆←∆ amend 'memtyp' ((∆ at 'Memtype'),¨⊂'_Basis')
+[69]          b900table←B900CreateTable ∆
+[70]  
+[71]          globtypes←m2n SStoMAT GlobTypes
+[72]          typs←(⊂' ' '_') REPL ¨globtypes                                                 ⍝ parmset types to be mapped
+[73]          DEFINED_GPS ← typs GpGetDefined ClientFile
+[74]          (GPNUB GPMAP) ← DEFINED_GPS GpDeriveSetsGM typs b900table
+[75]          :if 0=rowsIn GPNUB
+[76]              res←'No un-Globalised Parameter Sets found'
+[77]              :return                                                                     ⍝ Abort if nocandidates found
+[78]          :endif
+[79]  
+[80]          TreePrepare ⍝ Create POPUP menu
+[81]          :if ~(⊂'Decrement Rates')∊globtypes ⋄ res←'Next'
+[82]          :else                               ⋄ res←('Decrement_Rates' TreeCreate parent,'fDecRates.trDecRates')/'Next'
+[83]          :endif
+[84]  
+[85]      :case 'fDecRates'
+[86]          :if (⊂'Decrement Rates')∊globtypes
+[87]              (GPNUB GPMAP)←(GPNUB GPMAP 'Decrement_Rates') GpUnloadListFor parent,'fDecRates.trDecRates'
+[88]          :endif
+[89]          :if ~(⊂'Spouse Parameters')∊globtypes ⋄ res←'Next'
+[90]          :else                                 ⋄ res←('Spouse_Parameters' TreeCreate parent,'fSpouse.trSpouse')/'Next'
+[91]          :endif
+[92]  
+[93]      :case 'fSpouse'
+[94]          :if (⊂'Spouse Parameters')∊globtypes
+[95]              (GPNUB GPMAP)←(GPNUB GPMAP 'Spouse_Parameters') GpUnloadListFor parent,'fSpouse.trSpouse'
+[96]          :endif
+[97]          :if ~(⊂'Retirement Age')∊globtypes ⋄ res←'Next'
+[98]          :else                              ⋄ res←('Retirement_Age' TreeCreate parent,'fRetAge.trRetAge')/'Next'
+[99]          :endif
+[100] 
+[101]     :case 'fRetAge'
+[102]         :if (⊂'Retirement Age')∊globtypes
+[103]             (GPNUB GPMAP)←(GPNUB GPMAP 'Retirement_Age') GpUnloadListFor parent,'fRetAge.trRetAge'
+[104]         :endif
+[105]         :if ~(⊂'Retirement Factors')∊globtypes ⋄ res←'Next'
+[106]         :else                                  ⋄ res←('Retirement_Factors' TreeCreate parent,'fRetFact.trRetFact')/'Next'
+[107]         :endif
+[108] 
+[109]     :case 'fRetFact'
+[110]         :if (⊂'Retirement Factors')∊globtypes
+[111]             (GPNUB GPMAP)←(GPNUB GPMAP 'Retirement_Factors') GpUnloadListFor parent,'fRetFact.trRetFact'
+[112]         :endif
+[113]         :if ~(⊂'Retirement Cash')∊globtypes ⋄ res←'Next'
+[114]         :else                               ⋄ res←('Retirement_Cash' TreeCreate parent,'fRetCash.trRetCash')/'Next'
+[115]         :endif
+[116] 
+[117]     :case 'fRetCash'
+[118]         :if (⊂'Retirement Cash')∊globtypes
+[119]             (GPNUB GPMAP)←(GPNUB GPMAP 'Retirement_Cash') GpUnloadListFor parent,'fRetCash.trRetCash'
+[120]         :endif
+[121]         :if ~(⊂'Commutation Tables')∊globtypes ⋄ res←'Next'
+[122]         :else                                  ⋄ res←('Commutation_Tables' TreeCreate parent,'fCommTab.trCommTab')/'Next'
+[123]         :endif
+[124] 
+[125]     :case 'fCommTab'
+[126]         :if (⊂'Commutation Tables')∊globtypes
+[127]             (GPNUB GPMAP)←(GPNUB GPMAP 'Commutation_Tables') GpUnloadListFor parent,'fCommTab.trCommTab'
+[128]         :endif
+[129]         :if ~(⊂'Spreading Dates')∊globtypes ⋄ res←'Next'
+[130]         :else                               ⋄ res←('Spreading_Dates' TreeCreate parent,'fSpreadDate.trSpreadDate')/'Next'
+[131]         :endif
+[132] 
+[133]     :case 'fSpreadDate'
+[134]         :if (⊂'Spreading Dates')∊globtypes
+[135]            (GPNUB GPMAP)←(GPNUB GPMAP 'Spreading_Dates') GpUnloadListFor parent,'fSpreadDate.trSpreadDate'
+[136]         :endif
+[137] 
+[138]         xGPs←GPNUB ReportGpMap GPMAP
+[139]         xmlPath←InputDir,'migration',(,'I12' ⎕FMT 100⊥5↑⎕TS),'.htm'                       ⍝ HTM filename includes timestamp
+[140]         xmlPath (StyleDir,'migration.xsl') writeHtmReport xGPs
+[141] 
+[142]         xxx←(parent,'fSummary.webSummary') ⎕wi 'XNavigate2' xmlPath ⍝ display summary report
+[143] 
+[144]     :case 'fSummary'
+[145] 
+[146]     :endselect
+[147] 
+[148] :case 'Valid' ⍝ Routine specific validation
+[149] 
+[150] :case 'Run'
+[151]     ⍝ Create Globals
+[152] 
+[153]     BASES9MAPPED←(GPNUB GPMAP) GpMapSetsGM b900table     ⍝ SIDE EFFECT: saves new FAs in PPF Details in ClientFile
+[154] 
+[155]     ⍝ Save new Globals
+[156]     Index←ClientFile ReadFile 'Index'
+[157]     ∆←spin Index at '∆_CompNo' '∆_Name' '∆_Description'
+[158]     ∆←~ (spin GPNUB at 'Cmp' 'Typ' 'Dsc') ∊ ∆                                   ⍝ flag new GPs
+[159]     xxx←(⊂ClientFile) SaveToFile¨ spin (GPNUB for ∆) at 'Typ' 'Dsc' 'Pkg'       ⍝ save them
+[160] 
+[161]     ⍝ Save Change bases
+[162]     :for row :in 1+⍳rowsIn BASES9MAPPED
+[163]         this←BASES9MAPPED[1;] push BASES9MAPPED[row;]                                 ⍝ row => dictionary
+[164]         SavedModule←↑BASES9MAPPED at 'memtyp' ⋄ saveVersion←+/(10*-0 2 4)×MatrixZWB SStoMAT '.',version
+[165]         :if 1<↑⍴AuditLog←(this at 'V9Basis') Win∆AuditLog (this at 'NewBasis')
+[166]             ⍝ Save the Basis Details
+[167]             0 0⍴(File←InputDir,this at 'File') SaveToFile (this at 'memtyp') (this at 'Name') (this at 'NewBasis')
+[168]             ⍝ Audit the changes in the Basis
+[169]             AuditCN←File AddToFile ('⊂',(⍕this at 'cn'),'⊃') (Auditdescription←'Global Creation - ',this at 'Name')
+[170]             0 0⍴File SaveToFile AuditCN Auditdescription (pack 'AuditLog') 0
+[171]         :endif
+[172]     :endfor
+[173] 
+[174]     res←'Quit'
+[175] 
+[176] :case 'Quit' ⍝ Deleting "other" variables
+[177]     0 0⍴(⊂MigDir,'MIGRATE') DeleteModule¨'Migration_Callbacks' 'Migration_Utilities'
+[178]     0 0⍴⎕ex 'BRWSR POPUP LEAVES TWIGS EXCLUDED_TWIG_NAMES MINIMUM_TWIG_ID'
+[179]     0 0⍴⎕ex 'DEFINED_GPS GPNUB GPMAP globtypes b900table'
+[180] 
+[181] :endselect
+    ∇

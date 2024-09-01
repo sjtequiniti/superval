@@ -1,1 +1,59 @@
-    ∇ PHIRTC∆BENEFIT;BenType∆pp;IncType∆pp;SL∆pp;FSL∆pp;Upin∆pp;Start∆pp;type;com;comF;comG;∆[1]   ⍝ ACTWIN.sf#8[2]   ⍝ CLAYBROOK VALUATION SYSTEM[3]   [4]   Start∆pp←,NRA⌈Age∆pp[5]   [6]   :if sepComCot[7]       :if splitCombyPI[8]           ∆←  ('S' splitPHICASHN splitPHIFCASHN PHIUCASH∆N) ('M' splitPHICASHD splitPHIFCASHD PHIUCASH∆D)[9]           ∆←∆,('3' splitPHICASHL splitPHIFCASHL PHIUCASH∆L) ('4' splitPHICASH4 splitPHIFCASH4 PHIUCASH∆4)[10]          :for ∆ :in ∆[11]              (type com comF comG)←∆[12]              BenType∆pp←IncType∆pp←'L',type[13]              Upin∆pp←0 ⍝ Not "underpinned"[14]              SL∆pp←com-comG ⋄ FSL∆pp←comF-comF⌊comG[15]  [16]              PP∆CreateInterface[17]  [18]              Upin∆pp←1 ⍝ "underpinned"[19]              SL∆pp←com ⋄ FSL∆pp←comF⌊comG[20]  [21]              PP∆CreateInterface[22]          :endfor[23]      :else[24]          BenType∆pp←IncType∆pp←'LC'[25]          Upin∆pp←0 ⍝ Not "underpinned"[26]          SL∆pp←comPHICASH-comPHIGCASH ⋄ FSL∆pp←comPHIFCASH-comPHIFCASH⌊comPHIGCASH[27]  [28]          PP∆CreateInterface[29]  [30]          Upin∆pp←1 ⍝ "underpinned"[31]          SL∆pp←comPHIGCASH ⋄ FSL∆pp←comPHIFCASH⌊comPHIGCASH[32]  [33]          PP∆CreateInterface[34]      :endif[35]  [36]      BenType∆pp←IncType∆pp←'LT'[37]      Upin∆pp←0 ⍝ Not "underpinned"[38]      SL∆pp←cotPHICASH-cotPHIGCASH ⋄ FSL∆pp←cotPHIFCASH-cotPHIFCASH⌊cotPHIGCASH[39]  [40]      PP∆CreateInterface[41]  [42]      Upin∆pp←1 ⍝ "underpinned"[43]      SL∆pp←cotPHIGCASH ⋄ FSL∆pp←cotPHIFCASH⌊cotPHIGCASH[44]  [45]      PP∆CreateInterface[46]  :else[47]      BenType∆pp←IncType∆pp←'L'[48]      Upin∆pp←0 ⍝ Not "underpinned"[49]      SL∆pp←PHICASH-PHIGCASH ⋄ FSL∆pp←PHIFCASH-PHIFCASH⌊PHIGCASH[50]  [51]      PP∆CreateInterface[52]  [53]      Upin∆pp←1 ⍝ "underpinned"[54]      SL∆pp←PHIGCASH ⋄ FSL∆pp←PHIFCASH⌊PHIGCASH[55]  [56]      PP∆CreateInterface[57]  :endif    ∇
+    ∇ PHIRTC∆BENEFIT;BenType∆pp;IncType∆pp;SL∆pp;FSL∆pp;Upin∆pp;Start∆pp;type;com;comF;comG;∆
+[1]   ⍝ ACTWIN.sf#8
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM
+[3]   
+[4]   Start∆pp←,NRA⌈Age∆pp
+[5]   
+[6]   :if sepComCot
+[7]       :if splitCombyPI
+[8]           ∆←  ('S' splitPHICASHN splitPHIFCASHN PHIUCASH∆N) ('M' splitPHICASHD splitPHIFCASHD PHIUCASH∆D)
+[9]           ∆←∆,('3' splitPHICASHL splitPHIFCASHL PHIUCASH∆L) ('4' splitPHICASH4 splitPHIFCASH4 PHIUCASH∆4)
+[10]          :for ∆ :in ∆
+[11]              (type com comF comG)←∆
+[12]              BenType∆pp←IncType∆pp←'L',type
+[13]              Upin∆pp←0 ⍝ Not "underpinned"
+[14]              SL∆pp←com-comG ⋄ FSL∆pp←comF-comF⌊comG
+[15]  
+[16]              PP∆CreateInterface
+[17]  
+[18]              Upin∆pp←1 ⍝ "underpinned"
+[19]              SL∆pp←com ⋄ FSL∆pp←comF⌊comG
+[20]  
+[21]              PP∆CreateInterface
+[22]          :endfor
+[23]      :else
+[24]          BenType∆pp←IncType∆pp←'LC'
+[25]          Upin∆pp←0 ⍝ Not "underpinned"
+[26]          SL∆pp←comPHICASH-comPHIGCASH ⋄ FSL∆pp←comPHIFCASH-comPHIFCASH⌊comPHIGCASH
+[27]  
+[28]          PP∆CreateInterface
+[29]  
+[30]          Upin∆pp←1 ⍝ "underpinned"
+[31]          SL∆pp←comPHIGCASH ⋄ FSL∆pp←comPHIFCASH⌊comPHIGCASH
+[32]  
+[33]          PP∆CreateInterface
+[34]      :endif
+[35]  
+[36]      BenType∆pp←IncType∆pp←'LT'
+[37]      Upin∆pp←0 ⍝ Not "underpinned"
+[38]      SL∆pp←cotPHICASH-cotPHIGCASH ⋄ FSL∆pp←cotPHIFCASH-cotPHIFCASH⌊cotPHIGCASH
+[39]  
+[40]      PP∆CreateInterface
+[41]  
+[42]      Upin∆pp←1 ⍝ "underpinned"
+[43]      SL∆pp←cotPHIGCASH ⋄ FSL∆pp←cotPHIFCASH⌊cotPHIGCASH
+[44]  
+[45]      PP∆CreateInterface
+[46]  :else
+[47]      BenType∆pp←IncType∆pp←'L'
+[48]      Upin∆pp←0 ⍝ Not "underpinned"
+[49]      SL∆pp←PHICASH-PHIGCASH ⋄ FSL∆pp←PHIFCASH-PHIFCASH⌊PHIGCASH
+[50]  
+[51]      PP∆CreateInterface
+[52]  
+[53]      Upin∆pp←1 ⍝ "underpinned"
+[54]      SL∆pp←PHIGCASH ⋄ FSL∆pp←PHIFCASH⌊PHIGCASH
+[55]  
+[56]      PP∆CreateInterface
+[57]  :endif
+    ∇

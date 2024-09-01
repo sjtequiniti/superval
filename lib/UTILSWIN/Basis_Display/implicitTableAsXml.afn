@@ -1,0 +1,48 @@
+    ∇ Z←L implicitTableAsXml ⍙CACHE;values;table;nc;c;params;relvnt;nr;cellatts;rowatts;sliceup;FirstSlice;AltFirstSlice;IndFirstSlice;OffsetSlice;∆;names;sexes;relevances;rows;cols;rel;cellprobs;rowprobs;emsgs;etyps;erows;probs;problems;rls;S;M
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ XML for implicit table described in L
+[3]   ⍝ Local ⍙CACHE read by applyRulesFor
+[4]   ⍝ Revn: sjt19may15
+[5]   ⍝       sjt22dec15 * warnings
+[6]   ⍝       sjt06jan16 * row@sex; row@relevant
+[7]   ⍝       sjt28jan16 * distinguish error types
+[8]   ⍝       sjt04feb16 * merge with RSE branch
+[9]   ⍝       sjt08mar16 * errors on multiple columns
+[10]  (rls problems)←L ⍝ 08mar16
+[11]  :if 0=rowsIn rls
+[12]      Z←''
+[13]  :else
+[14]      (params names values sexes)←rls at 'param' 'name' 'value' 'sex'
+[15]      probs←problems for 'variable' push params
+[16]      (nr nc)←⍴table←⊃m2n¨values
+[17]      ⍝ row problems
+[18]      ∆←probs for 'row' ⍬
+[19]      rowprobs←((valsIn ∆ select 'etyp' 'message')⍪⊂'')[(∆ at 'variable')⍳params;]
+[20]      ⍝ cell problems
+[21]      (S M)←⍳2 ⍝ indexes for status and messages
+[22]      cellprobs←,2 nr nc⍴⊂''
+[23]      ∆←probs for ×↑¨probs at 'row'
+[24]      cellprobs[(,↑∘.,/⍳¨2 nr nc)⍳,S M∘.,(params⍳∆ at 'variable'),¨∆ at 'row']←↑,/∆ at 'etyp' 'message'
+[25]      cellprobs←2 nr nc⍴cellprobs
+[26]      ⍝ a row inherits the worst status of its cells
+[27]      rowprobs[;S]←worstStatus¨⎕SPLIT rowprobs[;S],cellprobs[S;;]
+[28]  ⍝    (rowprobs cellprobs)←nc parseWarnings emsgs etyps erows 08mar16
+[29]      ⍝ Loop on columns to evaluate Relevant
+[30]      ⍝ because rules defined in terms of column values
+[31]      sliceup←zwb ⍙CACHE at 'SLICEUP'
+[32]      relvnt←(⍴table)⍴0
+[33]      :for c :in ⍳nc
+[34]          (FirstSlice AltFirstSlice IndFirstSlice OffsetSlice)←3 1/c=1,sliceup    ⍝ environment for evaluateProperties
+[35]          ⍙CACHE←⍙CACHE update params push table[;c]                              ⍝ locally cache column values
+[36]          relvnt[;c]←↑¨valsIn 1 applyRulesFor params
+[37]      :endfor
+[38]      relevances←∨/relvnt ⍝ row relevance
+[39]  
+[40]      ⍝ mark up table
+[41]      cellatts←(⊂'etyp' 'message' 'relevant' 'column')pr¨¨ ⊂[1] ⍕¨(cellprobs⍪ ∣relvnt)⍪ nr nc⍴⍳nc ⍝ 28jan16
+[42]      rowatts←(⊂'param' 'name' 'row' 'sex' 'relevant' 'etyp' 'message') pr¨¨ ⎕SPLIT xmlEscape¨⍕¨↑,/params names (⍕¨⍳nr) sexes (⍕¨relevances) rowprobs ⍝ 28jan16
+[43]      ∆←((⊂'row')xattr¨rowatts) xtag¨ ⎕SPLIT ((⊂'cell') xattr¨cellatts) xtag¨xmlEscape¨table ⍝ 06jan16
+[44]      (rows cols)←⍴table ⋄ rel←∨/relevances
+[45]      Z←('implicit-table' xattr 'rows' 'cols' 'relevance' pr¨⍕¨rows cols rel) xtag ↑,/∆
+[46]  :endif
+    ∇

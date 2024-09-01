@@ -1,0 +1,18 @@
+    ∇ CREATE∆VALRES;File;tieno;NOS;HEAD;FileList
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Create Valuation Results Component File for Consolidation
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   
+[8]   ⍝ Check file already exists and create if not
+[9]   :if ~FileExist File←ConsolidDir,'VALRES.SF'
+[10]      tieno←TieNumber File
+[11]      File ⎕xfcreate tieno ⋄ File ⎕xftie tieno
+[12]      ⍝ Append Header Record
+[13]      HEAD←MATRIX (,⊃'Val Method' ' Val Date' 'AB Ind' 'Default AB' 'AOS Ind' 'NE Ind' 'Cont Per.' 'Insure Ind' 'Target AB' 'COCR Ind' 'COCR' 'MFR Ind'),(,⊃ 'Scheme Name' 'Valuation Run Description' 'New Entrant Model Run Description' (80↑'Output Name')),,(,⊃ 'Valuation Run Time' (26↑'Valn/New Ents Unique Key')),112↑'Version     Reserved'
+[14]      0 0⍴(HEAD OVER 'File Created at ',RunTime) ⎕fappend tieno
+[15]      FileList←0 0⍴'' ⋄ NOS←⍳0 ⋄ 0 0⍴(FileList NOS) ⎕fappend tieno
+[16]  :endif
+    ∇

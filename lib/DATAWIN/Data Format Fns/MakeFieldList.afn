@@ -1,1 +1,26 @@
-    ∇ FieldList←Format MakeFieldList List[1]   ⍝ DATAWIN.sf#2[2]   ⍝ Make a nested vector of nested vectors of field names for Date formats.[3]   ⍝  The nested vectors are as follows:[4]   ⍝  1.   "Normal" Matrix of Field Names[5]   ⍝  2.   Short Names of Current ("Standard") Data Format Items[6]   ⍝  3.   Short Names of Previous Data Format Items[7]   ⍝  4.   Fully Qualified Names of Current ("Standard") Data Format Items[8]   ⍝  5.   Fully Qualified Names of Previous Data Format Items[9]   [10]  :if 2=⍴⍴List ⍝ Date Format fields (only 1 entry) passed as matrix[11]       FieldList←⊂List ⋄ List←m2n List[12]  :else ⍝ Data Fields (with 2 entries) passed as segmented strings,[13]       FieldList←⊂List←SStoMAT List[14]       List←m2n List ⋄ List←(List,¨'1'),List,¨'2'[15]  :endif[16]  [17]  FieldList←FieldList,⊂(⊂'ed'),¨List[18]  FieldList←FieldList,⊂(⊂'edp'),¨List[19]  :if prevind[20]      FieldList←FieldList,⊂(⊂FormName,'.s',Format,'.pgCurrent.ed'),¨List[21]  :else[22]      FieldList←FieldList,⊂(⊂FormName,'.s',Format,'.pgStandard.ed'),¨List[23]  :endif[24]  FieldList←FieldList,⊂(⊂FormName,'.s',Format,'.pgPrevious.edp'),¨List    ∇
+    ∇ FieldList←Format MakeFieldList List
+[1]   ⍝ DATAWIN.sf#2
+[2]   ⍝ Make a nested vector of nested vectors of field names for Date formats.
+[3]   ⍝  The nested vectors are as follows:
+[4]   ⍝  1.   "Normal" Matrix of Field Names
+[5]   ⍝  2.   Short Names of Current ("Standard") Data Format Items
+[6]   ⍝  3.   Short Names of Previous Data Format Items
+[7]   ⍝  4.   Fully Qualified Names of Current ("Standard") Data Format Items
+[8]   ⍝  5.   Fully Qualified Names of Previous Data Format Items
+[9]   
+[10]  :if 2=⍴⍴List ⍝ Date Format fields (only 1 entry) passed as matrix
+[11]       FieldList←⊂List ⋄ List←m2n List
+[12]  :else ⍝ Data Fields (with 2 entries) passed as segmented strings,
+[13]       FieldList←⊂List←SStoMAT List
+[14]       List←m2n List ⋄ List←(List,¨'1'),List,¨'2'
+[15]  :endif
+[16]  
+[17]  FieldList←FieldList,⊂(⊂'ed'),¨List
+[18]  FieldList←FieldList,⊂(⊂'edp'),¨List
+[19]  :if prevind
+[20]      FieldList←FieldList,⊂(⊂FormName,'.s',Format,'.pgCurrent.ed'),¨List
+[21]  :else
+[22]      FieldList←FieldList,⊂(⊂FormName,'.s',Format,'.pgStandard.ed'),¨List
+[23]  :endif
+[24]  FieldList←FieldList,⊂(⊂FormName,'.s',Format,'.pgPrevious.edp'),¨List
+    ∇

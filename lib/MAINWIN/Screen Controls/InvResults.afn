@@ -1,0 +1,38 @@
+    ∇ res←InvResults parm;index;indexrow;i;PickList;NameList;list;sortorder;usercol;tscol;File;tieno;oldFile;oldtie;∆_Index;cn
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Get the list of saved Investigation Results
+[3]   
+[4]   :if ~File FTIE tieno←TieNumber File←OutputDir,'SVINVRES.sf'
+[5]       :if oldFile FTIE oldtie←TieNumber oldFile←OutputDir,'INVRES'
+[6]           :if 0∊⍴∆_Index←(⎕fread oldtie,1) ConvertIndex oldtie
+[7]               ⎕funtie oldtie ⋄ →start
+[8]           :else
+[9]               File ⎕xfdup oldtie ⋄ ⎕funtie oldtie
+[10]              0 0⍴File FTIE tieno
+[11]              ∆_Index ⎕freplace tieno,1 ⋄ ⎕funtie oldtie
+[12]          :endif
+[13]      :endif
+[14]  :endif
+[15]  
+[16]  start:PickList←0 6⍴'' ⋄ cn←⍳0
+[17]  
+[18]  :if ~0∊⍴index←File ReadFile 'Index'
+[19]      indexrow←((⊂parm)≡¨index[;index[1;]⍳⊂'∆_Name'])/⍳↑⍴index
+[20]      cn←index[indexrow;index[1;]⍳⊂'∆_CompNo']
+[21]      (usercol tscol)←index[1;]⍳'∆_UserModified' '∆_TSModified'
+[22]  
+[23]      :for i :in indexrow
+[24]         list←SStoMAT '⍺',⊃index[i;index[1;]⍳⊂'∆_Description']
+[25]         PickList←PickList⍪(index[i;index[1;]⍳⊂'∆_CompNo']) (1 0 ¯2) (DLTB list[1;]) (⊃index[i;usercol]) (DLTB list[2;]) (⊃index[i;tscol])
+[26]      :endfor
+[27]  :endif
+[28]  
+[29]  NameList←         MATRIX 'Saved Results Run Description' (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  1 1 0 1
+[30]  NameList←NameList⍪MATRIX 'User Name'                     (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  2 2 0 1
+[31]  NameList←NameList⍪MATRIX 'Output File'                   (¯1↑Win∆TextSize ⊃PickList[;5]) 'left'  3 3 0 1
+[32]  NameList←NameList⍪MATRIX 'Run Time'                      (¯1↑Win∆TextSize ⊃PickList[;6]) 'right' 4 4 0 1
+[33]  
+[34]  sortorder←'⍺Alpha⍺Alpha⍺Alpha⍺RowID'
+[35]  
+[36]  res←PickList NameList sortorder cn
+    ∇

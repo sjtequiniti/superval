@@ -1,1 +1,36 @@
-    ∇ Tables RunDecr parm;NewTable;field;OldTable[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Run Rate_Tables Module as a "popup"[3]   ⍝  Variable "Tables" required for "Rate_Tables" routine to limit selections[4]   [5]   :if 'fmRateTables'≡'fmRateTables' ⎕wi 'self'[6]       MDISPLAY 'Unable to load Rate Tables Display' ⋄ →LAB[7]   :endif[8]   [9]   :select parm[10]  :case 'Menu' ⍝ Rate Tables called from Menu[11]     Tables←rtCODE OVER caseDn rtCODE ⍝ All Tables[12]     SelectInd←0[13]  :case 'Form' ⍝ Rate Tables called from Form[14]     :if 0≡Tables ⍝ No specific Table specified[15]         Tables←rtCODE OVER caseDn rtCODE  ⍝ All Tables[16]     :else[17]         Tables←⊃Tables,caseDn¨Tables←¯2↑¨eis Tables[18]     :endif[19]     SelectInd←1[20]     OldTable←¯5↑DLTB (field←'#' ⎕wi 'focus') ⎕wi 'text'[21]  :endselect[22]  [23]  'DECRWIN' CallModule 'Rate_Tables'[24]  [25]  LAB:[26]  :if parm≡'Form'[27]      ControlName ⎕wi '∆decrchecked' 0[28]      0 0⍴GetDecrList 'List'[29]      :if 0≠⎕nc 'NewTable'[30]          0 Win∆SetFocus field[31]          field ⎕wi 'text' NewTable[32]      :endif[33]      ⎕wres←¯1 ⍝ Bypass Windows DoubleClick events[34]  :endif    ∇
+    ∇ Tables RunDecr parm;NewTable;field;OldTable
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Run Rate_Tables Module as a "popup"
+[3]   ⍝  Variable "Tables" required for "Rate_Tables" routine to limit selections
+[4]   
+[5]   :if 'fmRateTables'≡'fmRateTables' ⎕wi 'self'
+[6]       MDISPLAY 'Unable to load Rate Tables Display' ⋄ →LAB
+[7]   :endif
+[8]   
+[9]   :select parm
+[10]  :case 'Menu' ⍝ Rate Tables called from Menu
+[11]     Tables←rtCODE OVER caseDn rtCODE ⍝ All Tables
+[12]     SelectInd←0
+[13]  :case 'Form' ⍝ Rate Tables called from Form
+[14]     :if 0≡Tables ⍝ No specific Table specified
+[15]         Tables←rtCODE OVER caseDn rtCODE  ⍝ All Tables
+[16]     :else
+[17]         Tables←⊃Tables,caseDn¨Tables←¯2↑¨eis Tables
+[18]     :endif
+[19]     SelectInd←1
+[20]     OldTable←¯5↑DLTB (field←'#' ⎕wi 'focus') ⎕wi 'text'
+[21]  :endselect
+[22]  
+[23]  'DECRWIN' CallModule 'Rate_Tables'
+[24]  
+[25]  LAB:
+[26]  :if parm≡'Form'
+[27]      ControlName ⎕wi '∆decrchecked' 0
+[28]      0 0⍴GetDecrList 'List'
+[29]      :if 0≠⎕nc 'NewTable'
+[30]          0 Win∆SetFocus field
+[31]          field ⎕wi 'text' NewTable
+[32]      :endif
+[33]      ⎕wres←¯1 ⍝ Bypass Windows DoubleClick events
+[34]  :endif
+    ∇

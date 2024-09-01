@@ -1,0 +1,81 @@
+    ∇ SALARIES;SALHIST;ind;fas;sal;Z;salprop
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Calculates SAL & SALMP,& FAS & FASMP, using the globals.
+[3]   ⍝ SAL & FAS are for benefits at t=0,1, ....(nRA-X0) and
+[4]   ⍝ SALMP & FASMP are for benefits at t=0.5,1.5, ....(¯.5+nRA-X0),(nRA-X0)
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   
+[7]   FAS←SAL←¯1↓sal←data××\1,(ENX↑inc)×ENX↑X0↓S
+[8]   
+[9]   :if SalInd∊1 2 ⍝ 'RW' Review Salaries
+[10]      ⍝ There is a Salary Increase if age is the same at next review
+[11]      salprop←ValDATE DAYS (2 2⍴rEVdate),2 1⍴ValDATE[2]+ 0 1
+[12]      salprop←salprop÷365⌈salprop←1↑(Z←0<salprop)/salprop
+[13]  ⍝⍝⍝    salprop←¯1↑salprop,(css^0.5=1∣'MN' DURN ValDATE,rEVdate,ValDATE[2])/0.5
+[14]      ind←0⌈⌈(rEVdate,1↑Z/ValDATE[2]+ 0 1)YDAYS DOB+0 0,NRA⌊X0+1
+[15]      ⍝ Only get the last salary increase if X0 Birthday is after next review
+[16]      ⍝⍝⍝ "2⌊" is Temporary Fix for UK - 07/10/1999 AJW
+[17]      FAS←SAL←(¯1↓SAL),(¯3↑(3⌈⍴sal)OVERTAKE sal)[0⌈2⌊ind-X0≥NRA]
+[18]      ⍝ End bit allows for those X0 ≥ NRA who are due a salary increase
+[19]      ⍝ Take the proportion of salary to Review Date and beyond
+[20]      FASMP←SALMP←((salprop×¯2↓sal)+1↓¯1↓sal×1-salprop),¯1↑(¯1↑SAL),((×ind)^X0≥NRA)/¯1↑sal
+[21]  
+[22]  ⍝⍝⍝    :if css
+[23]  ⍝⍝⍝        ⍝ CSS benefits are based on final salary
+[24]  ⍝⍝⍝        ⍝ On average the final salary of the member will be higher than the
+[25]  ⍝⍝⍝        ⍝ contribution salary by about 1/2 a year's worth of salary inflation ??
+[26]  ⍝⍝⍝        FAS←(MID SAL),¯1↑SAL ⋄ FASMP←(1↓SAL),(¯1↑FAS)×(¯1↑inc)*0.5
+[27]  ⍝⍝⍝    :endif
+[28]  
+[29]  :else ⍝ Continous Salaries (and FAS's if fASPERIOD = 0)
+[30]      FASMP←SALMP←(MID SAL),¯1↑SAL ⋄ ind←0
+[31]  :endif
+[32]  
+[33]  :if 0≠LNX-SNX ⍝ Late Retirement Projection
+[34]      FAS←SAL←SAL,(¯1↑SAL)××\((LNX-SNX)↑(ENX_1+×ind)↓LRinc)×((LNX-SNX)↑(X0+ENX_1+×ind)↓S)*LRSalary
+[35]      sal←sal,(¯1↑sal)××\(ENX↓LRinc)×((X0+ENX)↓S)*LRSalary
+[36]      :if SalInd∊1 2 ⍝ 'RW' Review Salaries
+[37]          FASMP←SALMP←((salprop×¯2↓sal)+1↓¯1↓sal×1-salprop),¯1↑(¯1↑SAL)
+[38]      :else
+[39]          FASMP←SALMP←(MID SAL),¯1↑SAL
+[40]      :endif
+[41]  :endif
+[42]  
+[43]  ⍝ "Last Year" salary for CARE calculations - replace final 1 or 2 figures with part year for Normal Retirements
+[44]  :if SalInd∊1 2 ⍝ 'RW' Review Salaries
+[45]      CARESALLY←0.5×SAL×1+(¯1+(ENX↑inc),ENX↓LRinc)×(1-salprop)*2 ⍝ Part year for leavers
+[46]      :if     0≥last  ⋄ CARESALLY[ENX_1+⍳1+LNX-SNX]←sal[   ENX_1+⍳1+LNX-SNX]×( -last)+(0⌈(( -last)-salprop))×¯1+(-1+LNX-SNX)↑(NX  -SNX)↑inc ⍝ Member retires after last anniversary
+[47]      :elseif ENX_1>0 ⋄ CARESALLY[ENX_1+⍳1+LNX-SNX]←SAL[¯1+ENX_1+⍳1+LNX-SNX]×(1-last)+(0⌈((1-last)-salprop))×¯1+(-1+LNX-SNX)↑(NX_1-SNX)↑inc ⍝ Member has not yet reached NRD
+[48]      :elseif  NX_1>0 ⋄ CARESALLY[ENX  +⍳  LNX-SNX]←SAL[¯1+ENX  +⍳  LNX-SNX]×(1-last)+(0⌈((1-last)-salprop))×¯1+(-  LNX-SNX)↑(NX_1-SNX)↑inc ⍝ Member has not yet reached NRD
+[49]      :else           ⋄ CARESALLY[ NX_1]←0
+[50]      :endif
+[51]  :else
+[52]      CARESALLY←((2×SAL)+1↓sal)÷6 ⍝ Part year for leavers
+[53]      :if     0≥last  ⋄ CARESALLY[ENX_1+⍳1+LNX-SNX]←SAL[   ENX_1+⍳1+LNX-SNX]×( -last)×1+0.5×( -last)×¯1+(-1+LNX-SNX)↑(NX  -SNX)↑inc ⍝ Member retires after last anniversary
+[54]      :elseif ENX_1>0 ⋄ CARESALLY[ENX_1+⍳1+LNX-SNX]←SAL[¯1+ENX_1+⍳1+LNX-SNX]×(1-last)×1+0.5×(1-last)×¯1+(-1+LNX-SNX)↑(NX_1-SNX)↑inc ⍝ Member has not yet reached NRD
+[55]      :elseif  NX_1>0 ⋄ CARESALLY[ENX  +⍳  LNX-SNX]←SAL[¯1+ENX  +⍳  LNX-SNX]×(1-last)×1+0.5×(1-last)×¯1+(-  LNX-SNX)↑(NX_1-SNX)↑inc ⍝ Member has not yet reached NRD
+[56]      :else           ⋄ CARESALLY[ NX_1]←0
+[57]      :endif
+[58]  :endif
+[59]  
+[60]  :if 0≠fasperiod ⍝ Calculation of FAS's
+[61]      ⍝ For FAS & FASMP, salaries are projected backwards as well.
+[62]      SALHIST←(0,fasperiod)↓(-⍳1+fasperiod)⌽(1+fasperiod)⌿MATRIX(⌽data÷×\⌽(fasperiod↑(X0-fasperiod)↓S)×1↑inc),sal
+[63]      FAS←¯1↓(+⌿(⍉(⌽⍴SALHIST)⍴(1,(¯1+fasperiod),1)/ 1 2 1)×SALHIST)÷2×fasperiod
+[64]      FASMP←(¯2↓fas←(+⌿ ¯1 0 ↓SALHIST)÷fasperiod),¯1↑FAS
+[65]      :select ↑SalInd
+[66]      :case 1
+[67]          ind←0⌈⌈(rEVdate,1↑Z/ValDATE[2]+ 0 1)YDAYS DOB+0 0,LRA⌊X0+1
+[68]          ⍝ allow for those X0 ≥ LRA who are due salary increase
+[69]          ⍝⍝⍝ "2⌊" is Temporary Fix for UK - 07/10/1999 AJW
+[70]          FAS←(¯1↓FASMP),(¯3↑(3⌈⍴fas)OVERTAKE fas)[0⌈2⌊ind-X0≥LRA]
+[71]          ⍝ Take the proportion of FAS to Review Date and beyond
+[72]          FASMP←¯1↑(¯1↑FAS),((×ind)^X0≥LRA)/¯1↑fas ⋄ fas←¯1↓fas
+[73]          FASMP←((salprop×¯1↓fas)+1↓fas×1-salprop),FASMP
+[74]      :case 2
+[75]          ⍝ "Expected" FAS at NRD
+[76]          FAS←((1-salprop)×¯1↓fas)+salprop×(+⌿1 ¯1↓SALHIST)÷fasperiod
+[77]          FASMP←(MID FAS),¯1↑FAS
+[78]      :endselect
+[79]  :endif
+    ∇

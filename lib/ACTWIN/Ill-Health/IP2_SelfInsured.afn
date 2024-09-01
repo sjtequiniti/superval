@@ -1,1 +1,27 @@
-    ∇ IP2∆SelfInsured;End∆pp;Start∆pp;GP∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;ProRate∆pp;Dec∆pp;WILLPROSPRESPAD[1]   ⍝ ACTWIN.sf#7[2]   ⍝ Self-Insured benefits[3]   [4]   ILLPROSPEND←(+/[⎕io+1]+/[⎕io+2]TILLPROSPEN)[⎕io+1;][5]   ILLPROSSPAD←(+/[⎕io+1]+/[⎕io+2]TILLPROSSPA)[⎕io+1;][6]   :if PreSPASplit ⋄ (WILLPROSSPAD WILLPROSPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]TWILLPROSSPA)[⎕io+1;;][7]   :else           ⋄  WILLPROSSPAD                              ←(+/[⎕io+1]+/[⎕io+2]TWILLPROSSPA)[⎕io+1; ][8]                   ⋄  WILLPROSPEND                              ←(+/[⎕io+1]+/[⎕io+2]TWILLPROSPEN)[⎕io+1; ][9]   :endif[10]  [11]  ⍝ Pension Projector Variables[12]  ProRate∆pp←ProRate∆SelfIns[13]  [14]  End∆pp←,SPA⌈Start∆pp←Age∆pp ⋄ GP∆pp←,NX⍴GPeriod[15]  SL∆pp←FSL∆pp←,ILLPROSPEND[16]  :if PreSPASplit ⋄ Dec∆pp←'I2' ⋄ Con∆pp←FCon∆pp← WILLPROSPRESPAD[17]  :else           ⋄ Dec∆pp←'I'  ⋄ Con∆pp←FCon∆pp←,WILLPROSPEND[18]  :endif[19]  [20]  PP∆CreateInterface[21]  [22]  Dec∆pp←'I' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←,0⌈GPeriod-0⌈Start∆pp-Age∆pp[23]  SL∆pp←FSL∆pp←,ILLPROSSPAD ⋄ Con∆pp←FCon∆pp←,WILLPROSSPAD[24]  [25]  PP∆CreateInterface    ∇
+    ∇ IP2∆SelfInsured;End∆pp;Start∆pp;GP∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;ProRate∆pp;Dec∆pp;WILLPROSPRESPAD
+[1]   ⍝ ACTWIN.sf#7
+[2]   ⍝ Self-Insured benefits
+[3]   
+[4]   ILLPROSPEND←(+/[⎕io+1]+/[⎕io+2]TILLPROSPEN)[⎕io+1;]
+[5]   ILLPROSSPAD←(+/[⎕io+1]+/[⎕io+2]TILLPROSSPA)[⎕io+1;]
+[6]   :if PreSPASplit ⋄ (WILLPROSSPAD WILLPROSPRESPAD)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]TWILLPROSSPA)[⎕io+1;;]
+[7]   :else           ⋄  WILLPROSSPAD                              ←(+/[⎕io+1]+/[⎕io+2]TWILLPROSSPA)[⎕io+1; ]
+[8]                   ⋄  WILLPROSPEND                              ←(+/[⎕io+1]+/[⎕io+2]TWILLPROSPEN)[⎕io+1; ]
+[9]   :endif
+[10]  
+[11]  ⍝ Pension Projector Variables
+[12]  ProRate∆pp←ProRate∆SelfIns
+[13]  
+[14]  End∆pp←,SPA⌈Start∆pp←Age∆pp ⋄ GP∆pp←,NX⍴GPeriod
+[15]  SL∆pp←FSL∆pp←,ILLPROSPEND
+[16]  :if PreSPASplit ⋄ Dec∆pp←'I2' ⋄ Con∆pp←FCon∆pp← WILLPROSPRESPAD
+[17]  :else           ⋄ Dec∆pp←'I'  ⋄ Con∆pp←FCon∆pp←,WILLPROSPEND
+[18]  :endif
+[19]  
+[20]  PP∆CreateInterface
+[21]  
+[22]  Dec∆pp←'I' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←,0⌈GPeriod-0⌈Start∆pp-Age∆pp
+[23]  SL∆pp←FSL∆pp←,ILLPROSSPAD ⋄ Con∆pp←FCon∆pp←,WILLPROSSPAD
+[24]  
+[25]  PP∆CreateInterface
+    ∇

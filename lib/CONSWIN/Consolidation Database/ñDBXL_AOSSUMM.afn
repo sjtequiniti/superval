@@ -1,1 +1,74 @@
-    ∇ ⍙DBXL_AOSSUMM;Surplus;PrevLiab;ValPer;ResMult;Int;Int1;Exp[1]   ⍝ CONSWIN.sf#11[2]   ⍝[3]   ⍝ Writre AOS results out to Excel[4]   [5]   0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'[6]   'ADOrst' ⎕wi 'XOpen' 'AOSResults' ('ADOcon' ⎕wi 'obj') ('ADOrst' ⎕wi 'adOpenStatic') ('ADOrst' ⎕wi 'adLockOptimistic')[7]   [8]   :if 0≠MembConts ⍝ Adjust Actual Member Conts (and Interest)[9]       MembConts AOS_ActAdjust 34 41 11 27[10]  :endif[11]  [12]  :if 0≠ErConts←ErConts-InsDIS+InsIH ⍝ Adjust Actual Employer Conts (and Interest)[13]      ErConts AOS_ActAdjust 35 42 12 28[14]  :endif[15]  [16]  :if 0≠InsDIS ⍝ Adjust Actual Insured Death Conts (and Interest)[17]      InsDIS AOS_ActAdjust 36 43 13 29[18]  :endif[19]  [20]  :if 0≠InsIH ⍝ Adjust Actual Insured Ill-Health Conts (and Interest)[21]      InsIH AOS_ActAdjust 37 44 14 30[22]  :endif[23]  [24]  :if 0≠PenAmts ⍝ Adjust Actual Pension Payments (and Interest)[25]      PenAmts AOS_ActAdjust 38 45 15 31[26]  :endif[27]  [28]  :if 0≠CashAmts ⍝ Adjust Actual Cash Benefit Payments (and Interest)[29]      CashAmts AOS_ActAdjust 33 40 0 0[30]  :endif[31]  [32]  ValPer←pvDATE YDAYS VDATE ⋄ ResMult←(-⌈ValPer)↑(1∣ValPer),(⌊ValPer)/1[33]  Expi←((⌈ValPer) OVERTAKE Expi)*ResMult[34]  NetCF←(⌈ValPer)↑NetCF[35]  1 XL_ActivateWorksheet 'TotAOS'[36]  [37]  ⍙DBInsertData (~sqlDatabase)↓[2]DatabaseID,0,0,4 2⍴47 (⍬⍴PrevASSETS) 48 (+/NetCF) 50 (⍬⍴ASSETS) 56 (⍬⍴IntAmts)[38]  [39]  ⍝ Interest Surplus Calculation here[40]  0 0⍴IntAmts XL_Data RCtoA1 12 9[41]  [42]  Int←⍬⍴(¯1↑Expi ROLLUP PrevASSETS,ResMult×0)-PrevASSETS[43]  Int1←⍬⍴(¯1↑Expi ROLLUP 0,NetCF)-+/NetCF[44]  ⍙DBInsertData (~sqlDatabase)↓[2]DatabaseID,0,0,2 2⍴52 Int 53 Int1[45]  0 0⍴(Int+Int1) XL_Data RCtoA1 13 9[46]  [47]  ⍝ Previous Surplus carried forward here[48]  PrevLiab←,⊃1 ⍙DBadoCONCommand "SELECT SUM(AOSValue) FROM AOSResults WHERE AOSItemID = 1",sqlDatabase/" AND DatabaseID=",DBID[49]  Surplus←PrevASSETS-PrevLiab[50]  0 0⍴PrevASSETS XL_Data RCtoA1 16 9 ⋄ 0 0⍴PrevLiab XL_Data RCtoA1 17 9[51]  0 0⍴(Int←⍬⍴(¯1↑Expi ROLLUP Surplus,ResMult×0)-Surplus) XL_Data RCtoA1 19 9[52]  ⍙DBInsertData (~sqlDatabase)↓DatabaseID,0 0 55 Int[53]  [54]  :if 0 ⍝⍝⍝ Expenses Surplus calculation here[55]      Exp←Exp+EXPSAL×,⊃1 ⍙DBadoCONCommand "SELECT SUM(AOSValue) FROM AOSResults WHERE AOSItemID = 16",sqlDatabase/" AND DatabaseID=",DBID[56]      Exp←Exp+EXPMC ×,⊃1 ⍙DBadoCONCommand "SELECT SUM(AOSValue) FROM AOSResults WHERE AOSItemID = 11",sqlDatabase/" AND DatabaseID=",DBID[57]      Exp←Exp+EXPCC ×,⊃1 ⍙DBadoCONCommand "SELECT SUM(AOSValue) FROM AOSResults WHERE AOSItemID = 12",sqlDatabase/" AND DatabaseID=",DBID[58]      ⍝⍝⍝ Exp←Exp+EXPPM ×,⊃1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ??? ResultsData_NoIndex WHERE AOSItemID = 12",sqlDatabase/" AND DatabaseID=",DBID[59]  [60]      ⍙DBInsertData (~sqlDatabase)↓DatabaseID,0 0 46 Exp ⍝ 46 49 51 541[61]  :endif[62]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on[63]  XL_AutoFit 3 5 56 10[64]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off[65]  'TotAOS' XL_ProtectSheet 1[66]  [67]  0 0⍴'ADOrst' ⎕wi 'XClose'[68]  0 0⍴'ADOrst' ⎕wi 'Delete'[69]  [70]  :if ~mt runsA ⋄ ⍙DBActAOSRes ⋄ :endif[71]  :if ~mt runsD ⋄ ⍙DBDefAOSRes ⋄ :endif[72]  :if ~mt runsP ⋄ ⍙DBPenAOSRes ⋄ :endif    ∇
+    ∇ ⍙DBXL_AOSSUMM;Surplus;PrevLiab;ValPer;ResMult;Int;Int1;Exp
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝
+[3]   ⍝ Writre AOS results out to Excel
+[4]   
+[5]   0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'
+[6]   'ADOrst' ⎕wi 'XOpen' 'AOSResults' ('ADOcon' ⎕wi 'obj') ('ADOrst' ⎕wi 'adOpenStatic') ('ADOrst' ⎕wi 'adLockOptimistic')
+[7]   
+[8]   :if 0≠MembConts ⍝ Adjust Actual Member Conts (and Interest)
+[9]       MembConts AOS_ActAdjust 34 41 11 27
+[10]  :endif
+[11]  
+[12]  :if 0≠ErConts←ErConts-InsDIS+InsIH ⍝ Adjust Actual Employer Conts (and Interest)
+[13]      ErConts AOS_ActAdjust 35 42 12 28
+[14]  :endif
+[15]  
+[16]  :if 0≠InsDIS ⍝ Adjust Actual Insured Death Conts (and Interest)
+[17]      InsDIS AOS_ActAdjust 36 43 13 29
+[18]  :endif
+[19]  
+[20]  :if 0≠InsIH ⍝ Adjust Actual Insured Ill-Health Conts (and Interest)
+[21]      InsIH AOS_ActAdjust 37 44 14 30
+[22]  :endif
+[23]  
+[24]  :if 0≠PenAmts ⍝ Adjust Actual Pension Payments (and Interest)
+[25]      PenAmts AOS_ActAdjust 38 45 15 31
+[26]  :endif
+[27]  
+[28]  :if 0≠CashAmts ⍝ Adjust Actual Cash Benefit Payments (and Interest)
+[29]      CashAmts AOS_ActAdjust 33 40 0 0
+[30]  :endif
+[31]  
+[32]  ValPer←pvDATE YDAYS VDATE ⋄ ResMult←(-⌈ValPer)↑(1∣ValPer),(⌊ValPer)/1
+[33]  Expi←((⌈ValPer) OVERTAKE Expi)*ResMult
+[34]  NetCF←(⌈ValPer)↑NetCF
+[35]  1 XL_ActivateWorksheet 'TotAOS'
+[36]  
+[37]  ⍙DBInsertData (~sqlDatabase)↓[2]DatabaseID,0,0,4 2⍴47 (⍬⍴PrevASSETS) 48 (+/NetCF) 50 (⍬⍴ASSETS) 56 (⍬⍴IntAmts)
+[38]  
+[39]  ⍝ Interest Surplus Calculation here
+[40]  0 0⍴IntAmts XL_Data RCtoA1 12 9
+[41]  
+[42]  Int←⍬⍴(¯1↑Expi ROLLUP PrevASSETS,ResMult×0)-PrevASSETS
+[43]  Int1←⍬⍴(¯1↑Expi ROLLUP 0,NetCF)-+/NetCF
+[44]  ⍙DBInsertData (~sqlDatabase)↓[2]DatabaseID,0,0,2 2⍴52 Int 53 Int1
+[45]  0 0⍴(Int+Int1) XL_Data RCtoA1 13 9
+[46]  
+[47]  ⍝ Previous Surplus carried forward here
+[48]  PrevLiab←,⊃1 ⍙DBadoCONCommand "SELECT SUM(AOSValue) FROM AOSResults WHERE AOSItemID = 1",sqlDatabase/" AND DatabaseID=",DBID
+[49]  Surplus←PrevASSETS-PrevLiab
+[50]  0 0⍴PrevASSETS XL_Data RCtoA1 16 9 ⋄ 0 0⍴PrevLiab XL_Data RCtoA1 17 9
+[51]  0 0⍴(Int←⍬⍴(¯1↑Expi ROLLUP Surplus,ResMult×0)-Surplus) XL_Data RCtoA1 19 9
+[52]  ⍙DBInsertData (~sqlDatabase)↓DatabaseID,0 0 55 Int
+[53]  
+[54]  :if 0 ⍝⍝⍝ Expenses Surplus calculation here
+[55]      Exp←Exp+EXPSAL×,⊃1 ⍙DBadoCONCommand "SELECT SUM(AOSValue) FROM AOSResults WHERE AOSItemID = 16",sqlDatabase/" AND DatabaseID=",DBID
+[56]      Exp←Exp+EXPMC ×,⊃1 ⍙DBadoCONCommand "SELECT SUM(AOSValue) FROM AOSResults WHERE AOSItemID = 11",sqlDatabase/" AND DatabaseID=",DBID
+[57]      Exp←Exp+EXPCC ×,⊃1 ⍙DBadoCONCommand "SELECT SUM(AOSValue) FROM AOSResults WHERE AOSItemID = 12",sqlDatabase/" AND DatabaseID=",DBID
+[58]      ⍝⍝⍝ Exp←Exp+EXPPM ×,⊃1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ??? ResultsData_NoIndex WHERE AOSItemID = 12",sqlDatabase/" AND DatabaseID=",DBID
+[59]  
+[60]      ⍙DBInsertData (~sqlDatabase)↓DatabaseID,0 0 46 Exp ⍝ 46 49 51 541
+[61]  :endif
+[62]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+[63]  XL_AutoFit 3 5 56 10
+[64]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[65]  'TotAOS' XL_ProtectSheet 1
+[66]  
+[67]  0 0⍴'ADOrst' ⎕wi 'XClose'
+[68]  0 0⍴'ADOrst' ⎕wi 'Delete'
+[69]  
+[70]  :if ~mt runsA ⋄ ⍙DBActAOSRes ⋄ :endif
+[71]  :if ~mt runsD ⋄ ⍙DBDefAOSRes ⋄ :endif
+[72]  :if ~mt runsP ⋄ ⍙DBPenAOSRes ⋄ :endif
+    ∇

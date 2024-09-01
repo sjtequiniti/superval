@@ -1,0 +1,47 @@
+    ∇ sqlnest←⍙DBPivot arg;aggtype;aggfield;table;where;rowfield;colfield;fldnos;recs;sql;flds;no;cols;readlimit
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Create a Pivot SQL string according to Database Type
+[3]   ⍝   arg contains the following variables:
+[4]   ⍝    aggtype - the type of Aggregator ("SUM" for numbers, "MAX" for characters)
+[5]   ⍝    aggfield - the field being aggregated
+[6]   ⍝    table - the table being pivoted
+[7]   ⍝    where - any restrictions on the records selected
+[8]   ⍝    rowfield - the field being the row in the Pivot table
+[9]   ⍝    colfield - the field being the column in the Pivot table
+[10]  ⍝    fldnos - the list of colum field values to be pivoted
+[11]  ⍝ Reads: sqlDatabase
+[12]  
+[13]  (aggtype aggfield table where rowfield colfield flds recs)←8↑arg,0
+[14]  readlimit←250000
+[15]  
+[16]  :if recs≠0 ⋄ :andif 1≠no←⍴,flds ⋄ :andif readlimit<recs←recs×no
+[17]      cols←1⌈⌊no÷recs÷readlimit
+[18]      flds←(no⍴cols OVERTAKE 1 0) ⎕penclose flds
+[19]  :else
+[20]      flds←⊂flds
+[21]  :endif
+[22]  fldnos←⍙DBNumList¨flds
+[23]  
+[24]  sqlnest←0⍴⊂''
+[25]  
+[26]  :for fldnos :in fldnos
+[27]      :if sqlDatabase
+[28]          sqlnest←sqlnest,⊂ScriptFollowing ⍝ for SQL Server
+[29]          ⍝⍝ https://technet.microsoft.com/en-us/library/ms177410(v=sql.105).aspx
+[30]          ⍝⍝ https://www.simple-talk.com/sql/t-sql-programming/questions-about-pivoting-data-in-sql-server-you-were-too-shy-to-ask/
+[31]          ⍝ SELECT * FROM
+[32]          ⍝ (SELECT {rowfield}, {colfield}, {aggfield}
+[33]          ⍝  FROM {table}
+[34]          ⍝  WHERE {where}) p
+[35]          ⍝ PIVOT ({aggtype}({aggfield})
+[36]          ⍝  FOR {colfield} IN ({fldnos})
+[37]          ⍝ ) AS PivotVals
+[38]          ⍝  ORDER BY {rowfield};
+[39]      :else
+[40]          sql←    "TRANSFORM ",aggtype,"(",aggfield,") SELECT ",rowfield," FROM ",table
+[41]          sql←sql," WHERE ",where
+[42]          sql←sql," GROUP BY ",rowfield," ORDER BY ",rowfield," PIVOT ",colfield," IN (",fldnos,")"
+[43]          sqlnest←sqlnest,⊂sql
+[44]      :endif
+[45]  :endfor
+    ∇

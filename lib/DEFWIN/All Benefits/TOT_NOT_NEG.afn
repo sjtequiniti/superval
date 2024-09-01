@@ -1,1 +1,24 @@
-    ∇ Z←TOT∆NOT∆NEG M;⎕IO;∆;prn;pnc;neg;RND;re;nc;nr;shp;rnk;REC[1]   ⍝ DEFWIN.sf#4[2]   ⍝ @NDFBEN.8  "total non-negative" Z is matrix M with adjustments to ensure 0^.≤+/Z[3]   ⍝ V8.50 [EnhDef] SJT autumn 2010[4]   ⍝ test expression for C columns:[5]   ⍝   (m,+/m) (∆,+/∆←TOT∆NOT∆NEG m←¯10+?20 C⍴20)[6]    ⎕IO←1[7]    (nr nc)←shp←⍴M[8]    prn←10*⌈/+/×∆-⌊∆←M∘.×10*(⍳10)-1            ⍝ row precisions[9]   [10]  ⍝ Apportion adjustments to -ve row elements by magnitude,[11]  ⍝ rounded to a precision derived for each row.[12]   pnc←M ×[1] prn                             ⍝ shift real to integers[13]   neg←0⌊+/pnc                                ⍝ -ve to be distributed[14]   RND←⌊.5+ neg×[1] ∆ ÷[1] +/∆←∣pnc×pnc<0     ⍝ adjustments apportioned by mag and rounded[15]  [16]  ⍝ Distribute corrections for any rounding errors to the larger adjustments.[17]   re←neg - +/RND                             ⍝ rounding errors (^.<nc÷2)[18]   rnk←,⊃ (⍋¨⊂[2]RND) +nc×(⍳nr)-1             ⍝ grade each row by mag of adjustments[19]   REC←,shp⍴0                                 ⍝ frame for rndg-error corrections[20]   REC[rnk]←,(×re)×[1] (∣re)∘.≥⍳nc            ⍝ distribute corrections[21]  [22]   Z←M - (RND+shp⍴REC) ÷[1] prn               ⍝ adjustments and corrections restored to real    ∇
+    ∇ Z←TOT∆NOT∆NEG M;⎕IO;∆;prn;pnc;neg;RND;re;nc;nr;shp;rnk;REC
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ @NDFBEN.8  "total non-negative" Z is matrix M with adjustments to ensure 0^.≤+/Z
+[3]   ⍝ V8.50 [EnhDef] SJT autumn 2010
+[4]   ⍝ test expression for C columns:
+[5]   ⍝   (m,+/m) (∆,+/∆←TOT∆NOT∆NEG m←¯10+?20 C⍴20)
+[6]    ⎕IO←1
+[7]    (nr nc)←shp←⍴M
+[8]    prn←10*⌈/+/×∆-⌊∆←M∘.×10*(⍳10)-1            ⍝ row precisions
+[9]   
+[10]  ⍝ Apportion adjustments to -ve row elements by magnitude,
+[11]  ⍝ rounded to a precision derived for each row.
+[12]   pnc←M ×[1] prn                             ⍝ shift real to integers
+[13]   neg←0⌊+/pnc                                ⍝ -ve to be distributed
+[14]   RND←⌊.5+ neg×[1] ∆ ÷[1] +/∆←∣pnc×pnc<0     ⍝ adjustments apportioned by mag and rounded
+[15]  
+[16]  ⍝ Distribute corrections for any rounding errors to the larger adjustments.
+[17]   re←neg - +/RND                             ⍝ rounding errors (^.<nc÷2)
+[18]   rnk←,⊃ (⍋¨⊂[2]RND) +nc×(⍳nr)-1             ⍝ grade each row by mag of adjustments
+[19]   REC←,shp⍴0                                 ⍝ frame for rndg-error corrections
+[20]   REC[rnk]←,(×re)×[1] (∣re)∘.≥⍳nc            ⍝ distribute corrections
+[21]  
+[22]   Z←M - (RND+shp⍴REC) ÷[1] prn               ⍝ adjustments and corrections restored to real
+    ∇

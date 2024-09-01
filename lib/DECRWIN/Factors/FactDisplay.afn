@@ -1,1 +1,40 @@
-    ∇ FactDisplay code;values;Index;cn;size[1]   ⍝ DECRWIN.sf#10[2]   ⍝ Display Textually, Numerically and Graphically a Factor Table[3]   [4]   Index←FactorFile ReadFile 'Index'[5]   [6]   TableDesc←DLTB DropText code[7]   :if ∨/' '≠TableNo←DLTB StripText code[8]   :andif ~'aDD'≡TableNo[9]       :if   (uk≠1)^0∊⍴,cn←1+Index[;⍳3] TLU TableNo[10]      :orif (uk=1)^0∊⍴,cn←((Index at '∆_Name')≡¨⊂TableNo)/Index at '∆_CompNo'[11]          MDISPLAY 'NoRateFound' TableNo ⋄ :return ⍝ Deleted by another user!![12]      :elseif uk≠1[13]          size←1↑⍴values←FactorFile ReadFile cn[14]          Dates←(size⍴1 0)⌿values[15]          Dates←Dates[;7 8],'/',Dates[;5 6],'/',Dates[;1 2 3 4][16]          values←,MatrixZWB (size⍴0 1)⌿values[17]  [18]          DecP←¯1[19]          :repeat ⋄ DecP←DecP+1 ⋄ :until (values×10*DecP)≡⌊values×10*DecP[20]          RATES←('IF'[1+×DecP],'11',(0≠DecP)/'.',⍕DecP) ⎕fmt values[21]          DecP←⍕DecP[22]      :elseif uk=1[23]          0 0⍴FactorFile ReadFile cn[24]          values←,MatrixZWB RATES[25]      :endif[26]      PageView←(TableNo TableDesc) FactGraph (MATRIX ¯2415014+JUL 'DD/MM/YYYY' DATEEXP Dates),values[27]      ps_exec PageView 'fmFactors.picPretty' ppt ps∆cmap 1[28]      'fmFactors.bnFactorsEdit' ⎕wi 'enabled' (accesslevel≥rtAccess[4])[29]      'fmFactors.bnFactorsDelete' ⎕wi 'enabled' (accesslevel≥rtAccess[6])[30]  :else[31]      0 0⍴⎕ex 'PageView' ⋄ psWipe 'fmFactors.picPretty' ⍝ Clear Picture[32]      TableNo←TableDesc←'' ⋄ DecP←'0' ⋄ Dates←RATES←0 0⍴''[33]      ((⊂'fmFactors.bnFactors'),¨'Edit' 'Delete') MultiWI 'enabled' 0[34]  :endif[35]  [36]  ((⊂'fmFactors.'),¨'lsTABLE' 'cbDecP') MultiWI 'suppress' 1[37]  Assign_Inputs 0[38]  ((⊂'fmFactors.'),¨'lsTABLE' 'cbDecP') MultiWI 'suppress' 0    ∇
+    ∇ FactDisplay code;values;Index;cn;size
+[1]   ⍝ DECRWIN.sf#10
+[2]   ⍝ Display Textually, Numerically and Graphically a Factor Table
+[3]   
+[4]   Index←FactorFile ReadFile 'Index'
+[5]   
+[6]   TableDesc←DLTB DropText code
+[7]   :if ∨/' '≠TableNo←DLTB StripText code
+[8]   :andif ~'aDD'≡TableNo
+[9]       :if   (uk≠1)^0∊⍴,cn←1+Index[;⍳3] TLU TableNo
+[10]      :orif (uk=1)^0∊⍴,cn←((Index at '∆_Name')≡¨⊂TableNo)/Index at '∆_CompNo'
+[11]          MDISPLAY 'NoRateFound' TableNo ⋄ :return ⍝ Deleted by another user!!
+[12]      :elseif uk≠1
+[13]          size←1↑⍴values←FactorFile ReadFile cn
+[14]          Dates←(size⍴1 0)⌿values
+[15]          Dates←Dates[;7 8],'/',Dates[;5 6],'/',Dates[;1 2 3 4]
+[16]          values←,MatrixZWB (size⍴0 1)⌿values
+[17]  
+[18]          DecP←¯1
+[19]          :repeat ⋄ DecP←DecP+1 ⋄ :until (values×10*DecP)≡⌊values×10*DecP
+[20]          RATES←('IF'[1+×DecP],'11',(0≠DecP)/'.',⍕DecP) ⎕fmt values
+[21]          DecP←⍕DecP
+[22]      :elseif uk=1
+[23]          0 0⍴FactorFile ReadFile cn
+[24]          values←,MatrixZWB RATES
+[25]      :endif
+[26]      PageView←(TableNo TableDesc) FactGraph (MATRIX ¯2415014+JUL 'DD/MM/YYYY' DATEEXP Dates),values
+[27]      ps_exec PageView 'fmFactors.picPretty' ppt ps∆cmap 1
+[28]      'fmFactors.bnFactorsEdit' ⎕wi 'enabled' (accesslevel≥rtAccess[4])
+[29]      'fmFactors.bnFactorsDelete' ⎕wi 'enabled' (accesslevel≥rtAccess[6])
+[30]  :else
+[31]      0 0⍴⎕ex 'PageView' ⋄ psWipe 'fmFactors.picPretty' ⍝ Clear Picture
+[32]      TableNo←TableDesc←'' ⋄ DecP←'0' ⋄ Dates←RATES←0 0⍴''
+[33]      ((⊂'fmFactors.bnFactors'),¨'Edit' 'Delete') MultiWI 'enabled' 0
+[34]  :endif
+[35]  
+[36]  ((⊂'fmFactors.'),¨'lsTABLE' 'cbDecP') MultiWI 'suppress' 1
+[37]  Assign_Inputs 0
+[38]  ((⊂'fmFactors.'),¨'lsTABLE' 'cbDecP') MultiWI 'suppress' 0
+    ∇

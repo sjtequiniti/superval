@@ -1,0 +1,73 @@
+    ∇ res←field Convert_Database parm;parent;sqlDatabase;cursor;lock;list;text;z;ID;type;ParmTS;ParmDesc;ConsDBName;ScenDBName
+[1]   ⍝ UTILSWIN.sf#14
+[2]   ⍝ Function to allow user control on Convert SQL Database to Access
+[3]   
+[4]   parent←'fmDBConvert.' ⋄ res←0⍴'' ⍝ Default response
+[5]   sqlDatabase←1
+[6]   
+[7]   :select parm
+[8]   
+[9]   :case 'Prepare'
+[10]  
+[11]      :if 0=⎕nc 'sql_properties'
+[12]          :if mt sqlConName ⋄ :orif mt ConfigFile ReadFile 'Configure_SQL' sqlConName ⋄ :orif accesslevel<zwb SQLAccess
+[13]              res←'SQL Server Connection properties not specified.',⎕tcnl
+[14]              res←res,'First update your User details (Tools/Administration/Manage Users)'
+[15]              :return
+[16]          :endif
+[17]          sql_properties←⊃spin m2n¨property propvalue
+[18]          sqlTimeout←zwb SQLTimeout
+[19]          0 0⍴DeleteVars 'Configure_SQL'
+[20]      :endif
+[21]      :if mt progid←⍙DBAccessProvider 0
+[22]          res←'No Microsoft Access engines installed on this machine' ⋄ :return
+[23]      :endif
+[24]  
+[25]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[26]  
+[27]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[28]  
+[29]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[30]  
+[31]      :repeat
+[32]          :select ↑field
+[33]          :case 'lvSQLDBase'
+[34]              :if (parent,'ckUseSQLName') ⎕wi 'value'
+[35]              :andif ~mt z←(parent,'lvSQLDBase') ⎕wi 'value'
+[36]                  list←(parent,'lvSQLDBase') ⎕wi 'list'
+[37]                  :if mt text←↑list[list[;1]⍳z;4]
+[38]                      text←'SVResultsDB'
+[39]                  :endif
+[40]                  (parent,'eddbfile') ⎕wi 'text' text
+[41]              :endif
+[42]          :case 'ckUseSQLName'
+[43]              (parent,'eddbfile') ⎕wi 'enabled' (~(parent,'ckUseSQLName') ⎕wi 'value')
+[44]          :endselect
+[45]      :until mt field←1↓field
+[46]  
+[47]  :case 'Valid' ⍝ Routine specific validation
+[48]  
+[49]      :if (⊂UPPERCASE '.' Win∆Child dbfile)∊'MDB' 'ACCDB'
+[50]          dbfile←'.' StripText dbfile
+[51]      :endif
+[52]      :if (⊂UPPERCASE dbfile)∊UPPERCASE¨Win∆Parent¨m2n ⎕xlib ConsolidDir,'*.*db'
+[53]          Win∆SetFocus parent,'eddbfile'
+[54]          res←'AlreadyFile' ('Database File named "',dbfile,'"') ⋄ :return
+[55]      :endif
+[56]  
+[57]  :case 'Run'
+[58]  
+[59]      ID←(parent,'lvSQLDBase') ⎕wi 'value'
+[60]      list←(parent,'lvSQLDBase') ⎕wi 'list'
+[61]      :if (type←'Client' 'Consolidation' 'Scenario'⍳list[list[;1]⍳ID;3])∊2 3
+[62]          (ParmDesc ParmTS)←,list[list[;1]⍳ID;5 7]
+[63]          ConsDBName←ScenDBName←↑list[list[;1]⍳ID;4]
+[64]      :endif
+[65]      '(⍕ID) SQLDatabasetoAccess dbfile type' Win∆ProgressBar 'Start'
+[66]      res←'Quit'
+[67]  
+[68]  :case 'Quit' ⍝ Deleting "other" variables
+[69]      0 0⍴⎕ex 'progid'
+[70]  
+[71]  :endselect
+    ∇

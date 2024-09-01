@@ -1,1 +1,37 @@
-    ∇ sum ⍙DBCopyTables R;DBID;CatID;sql;table;size;FiElDs;vAlUeS;flds;mask;xxx;where;∆;no;newno;groupby;rtable;wtable;sql1;BasID;temptab[1]   ⍝ CONSWIN.sf#15[2]   ⍝ Copy Tables from Database to New Database with any remappings required[3]   ⍝ sum indicates if Table Values need "summing" when transferred[4]   ⍝ R contains Table Name[5]   ⍝            skeleton of sql statement (Database specific)[6]   ⍝            SQL where condition(s)[7]   ⍝            a string to replace DatabaseID[8]   ⍝            a string to replace ResultsCategoryID[9]   ⍝            a string to replace BasisCategoryID[10]  ⍝            an indicator of Temp Table is used (0 is no, 1 is yes (write to unindexed Temp table), ¯1 is copy from Temp Table to "main" table)[11]  [12]  (table sql where DBID CatID BasID temptab)←R[13]  [14]  (flds xxx mask xxx xxx xxx xxx)←⍙DBTableVars table[15]  size←⍴flds←mask/flds[16]  [17]  ⍝ Copy records[18]  ⍝ if not mt DBID, replace DatabaseID in vAlUeS with DBID[19]  ⍝ if not mt CatID, replace ResultsCategoryID in vAlUeS with CatID[20]  ⍝ if not mt BasID, replace BasisCategoryID in vAlUeS with BasID[21]  rtable←table,(¯1=temptab)/'_NoIndex'           ⍝ Read Table[22]  wtable←table,( 1=temptab)/'_NoIndex'           ⍝ Write Table[23]  groupby←sum/"GROUP BY ",', ' join ¯1↓flds~(~mt¨DBID CatID BasID)/'DatabaseID' 'ResultsCategoryID' 'BasisCategoryID'[24]  [25]  :if ~sqlDatabase ⋄ :andif 'Table'≡5↑table ⍝ Access doesn't like my TableNames and TableValues tables!?#$&[26]      FiElDs←'' ⋄ vAlUeS←'*' ⋄ sql←'/(FiElDs)/' TEXTREPL sql[27]  :else[28]      FiElDs←', ' join flds[29]      vAlUeS←((~mt¨DBID CatID BasID)/¨('DatabaseID' 'ResultsCategoryID' 'BasisCategoryID') (DBID CatID BasID)) mapp flds[30]      vAlUeS←', ' join (⌽size OVERTAKE (sum/'SUM(') ''),¨vAlUeS,¨⌽DLTB¨size↑sum/')'[31]  :endif[32]  where←(~mt where)/"WHERE ",where," "[33]  [34]  sql1←('/FiElDs/',FiElDs) TEXTREPL ('/vAlUeS/',vAlUeS) TEXTREPL ('/WriteTaBlE/',wtable) TEXTREPL ('/ReadTaBlE/',rtable) TEXTREPL sql,where,groupby[35]  0 0⍴0 ⍙DBadoCONCommand sql1    ∇
+    ∇ sum ⍙DBCopyTables R;DBID;CatID;sql;table;size;FiElDs;vAlUeS;flds;mask;xxx;where;∆;no;newno;groupby;rtable;wtable;sql1;BasID;temptab
+[1]   ⍝ CONSWIN.sf#15
+[2]   ⍝ Copy Tables from Database to New Database with any remappings required
+[3]   ⍝ sum indicates if Table Values need "summing" when transferred
+[4]   ⍝ R contains Table Name
+[5]   ⍝            skeleton of sql statement (Database specific)
+[6]   ⍝            SQL where condition(s)
+[7]   ⍝            a string to replace DatabaseID
+[8]   ⍝            a string to replace ResultsCategoryID
+[9]   ⍝            a string to replace BasisCategoryID
+[10]  ⍝            an indicator of Temp Table is used (0 is no, 1 is yes (write to unindexed Temp table), ¯1 is copy from Temp Table to "main" table)
+[11]  
+[12]  (table sql where DBID CatID BasID temptab)←R
+[13]  
+[14]  (flds xxx mask xxx xxx xxx xxx)←⍙DBTableVars table
+[15]  size←⍴flds←mask/flds
+[16]  
+[17]  ⍝ Copy records
+[18]  ⍝ if not mt DBID, replace DatabaseID in vAlUeS with DBID
+[19]  ⍝ if not mt CatID, replace ResultsCategoryID in vAlUeS with CatID
+[20]  ⍝ if not mt BasID, replace BasisCategoryID in vAlUeS with BasID
+[21]  rtable←table,(¯1=temptab)/'_NoIndex'           ⍝ Read Table
+[22]  wtable←table,( 1=temptab)/'_NoIndex'           ⍝ Write Table
+[23]  groupby←sum/"GROUP BY ",', ' join ¯1↓flds~(~mt¨DBID CatID BasID)/'DatabaseID' 'ResultsCategoryID' 'BasisCategoryID'
+[24]  
+[25]  :if ~sqlDatabase ⋄ :andif 'Table'≡5↑table ⍝ Access doesn't like my TableNames and TableValues tables!?#$&
+[26]      FiElDs←'' ⋄ vAlUeS←'*' ⋄ sql←'/(FiElDs)/' TEXTREPL sql
+[27]  :else
+[28]      FiElDs←', ' join flds
+[29]      vAlUeS←((~mt¨DBID CatID BasID)/¨('DatabaseID' 'ResultsCategoryID' 'BasisCategoryID') (DBID CatID BasID)) mapp flds
+[30]      vAlUeS←', ' join (⌽size OVERTAKE (sum/'SUM(') ''),¨vAlUeS,¨⌽DLTB¨size↑sum/')'
+[31]  :endif
+[32]  where←(~mt where)/"WHERE ",where," "
+[33]  
+[34]  sql1←('/FiElDs/',FiElDs) TEXTREPL ('/vAlUeS/',vAlUeS) TEXTREPL ('/WriteTaBlE/',wtable) TEXTREPL ('/ReadTaBlE/',rtable) TEXTREPL sql,where,groupby
+[35]  0 0⍴0 ⍙DBadoCONCommand sql1
+    ∇

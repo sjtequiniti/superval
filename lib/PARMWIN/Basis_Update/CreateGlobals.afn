@@ -1,1 +1,63 @@
-    ∇ CreateGlobals;∆;defaults;row;graNRA;graLRA;packnew;SavedModule;desc;lrmtTABXX;mtTABXX;mtORIG;RATING;fmt;DecP;xxx;LocalGlobals;GlobList[1]   ⍝ PARMWIN.sf#39[2]   ⍝ Create Global Parameter Sets where adjustment factors are used[3]   [4]   (2 3 'Creating New Global Parameter Sets') Win∆ProgressBar 'FileUpdate'[5]   LocalGlobals←↑((3↑¨m2n¨SStoMAT¨m2n MATRIX SavedParms),¨¨⊂'_Basis' '' '') gucommon 1 'ParmsM' 'ParmsMS' 'ParmsX'[6]   [7]   GlobList←nub (LocalGlobals for 'Type' 'ParmsM' 'ParmsMS') at 'value' ⍝ Globals in selected bases[8]   (xxx MortDesc MortScenDesc MortScenRating MortScenLifeExp MortScenAge)←⊃¨GlobList AdjustPointers (⊂GlobList),m2n¨MortDesc MortScenDesc MortScenRating MortScenLifeExp MortScenAge[9]   [10]  GlobList←nub (LocalGlobals for 'Type' 'ParmsX') at 'value' ⍝ Globals in selected bases[11]  (xxx RetAgeDesc RetAgeScenDesc RetAgeScenNRA RetAgeScenLRA)←⊃¨GlobList AdjustPointers (⊂GlobList),m2n¨RetAgeDesc RetAgeScenDesc RetAgeScenNRA RetAgeScenLRA[12]  [13]  :if ∨/∆←∨/' '≠RetAgeScenNRA,RetAgeScenLRA[14]      (1 2 'Retirement Age Globals') Win∆ProgressBar 'MemberUpdate'[15]      defaults←⍙VALUESdict at (SavedModule←'Retirement_Age')[16]      :for row :in WHERE ∆[17]          (graNRA graLRA)←m2n (RetAgeScenNRA[row;] OVER RetAgeScenLRA[row;])[1+0 bGAD;][18]          packnew←defaults pins pack 'graLRA graNRA'[19]          desc←'NRA ',graNRA,bGAD/' and LRA ',graLRA[20]  [21]          desc←CIndex SavedModule SaveGlobals desc packnew[22]          desc ASSIGN∆Dict 'RetAgeScenDesc[',(⍕row),';]'[23]      :endfor[24]      RetAgeScenNRA←0/RetAgeScenNRA ⋄ RetAgeScenLRA←0/RetAgeScenLRA[25]  :endif[26]  [27]  :if ∨/∆←∨/' '≠MortScenRating,MortScenAge,MortScenLifeExp[28]      (2 2 'Mortality Globals') Win∆ProgressBar 'MemberUpdate'[29]      :for row :in WHERE ∆[30]          :if '[Select] '≡9↑desc←fnonmt DLTB¨(MortDesc[row;]) (MortScenDesc[row;])[31]              SavedModule←'Mortality_Rate_Select' ⋄ desc←9↓desc[32]          :else[33]              SavedModule←'Mortality_Rate'[34]          :endif[35]          defaults←⍙VALUESdict at SavedModule[36]  [37]          0 0⍴ClientFile ReadFile ((CIndex for '∆_Name' SavedModule) for '∆_Description' desc) at '∆_CompNo'[38]  [39]          :if ∨/' '≠MortScenRating[row;][40]              desc←desc,' {adjusted by ',(DLTB MortScenRating[row;]),'%}'[41]              RATING←1+0.01×ZWB MortScenRating[row;][42]          :elseif ∨/' '≠MortScenAge[row;][43]              desc←desc,' ',(DLTMB '{life expectancy adjusted by ',MortScenLifeExp[row;],' years at age ',MortScenAge[row;]),'}'[44]              RATING←(ZWB¨(MortScenAge[row;]) (MortScenLifeExp[row;])) Scenario_LifeExpAdj ¯1 DEC∆CHECK mtTABXX[45]          :endif[46]          :if RATING=⌊RATING←100×¯1+RATING×1+0.01×ZWB mtTABXX[3;][47]              fmt←'I20'[48]          :else[49]              DecP←0[50]              :repeat ⋄ DecP←DecP+1 ⋄ :until (RATING×10*DecP)≡⌊RATING×10*DecP[51]              fmt←'F',(⍕DecP+5),'.',⍕DecP[52]          :endif[53]          mtTABXX←mtTABXX[⍳2;] OVER DLTB ('LM<->P<+>',fmt) ⎕FMT RATING[54]  [55]          packnew←defaults pins pack 'lrmtTABXX1 mtORIG mtTABXX'[56]  [57]          desc←CIndex SavedModule SaveGlobals desc packnew[58]          desc ASSIGN∆Dict 'MortScenDesc[',(⍕row),';]'[59]      :endfor[60]      MortScenRating←0/MortScenRating ⋄ MortScenAge←0/MortScenAge ⋄ MortScenLifeExp←0/MortScenLifeExp[61]  :endif    ∇
+    ∇ CreateGlobals;∆;defaults;row;graNRA;graLRA;packnew;SavedModule;desc;lrmtTABXX;mtTABXX;mtORIG;RATING;fmt;DecP;xxx;LocalGlobals;GlobList
+[1]   ⍝ PARMWIN.sf#39
+[2]   ⍝ Create Global Parameter Sets where adjustment factors are used
+[3]   
+[4]   (2 3 'Creating New Global Parameter Sets') Win∆ProgressBar 'FileUpdate'
+[5]   LocalGlobals←↑((3↑¨m2n¨SStoMAT¨m2n MATRIX SavedParms),¨¨⊂'_Basis' '' '') gucommon 1 'ParmsM' 'ParmsMS' 'ParmsX'
+[6]   
+[7]   GlobList←nub (LocalGlobals for 'Type' 'ParmsM' 'ParmsMS') at 'value' ⍝ Globals in selected bases
+[8]   (xxx MortDesc MortScenDesc MortScenRating MortScenLifeExp MortScenAge)←⊃¨GlobList AdjustPointers (⊂GlobList),m2n¨MortDesc MortScenDesc MortScenRating MortScenLifeExp MortScenAge
+[9]   
+[10]  GlobList←nub (LocalGlobals for 'Type' 'ParmsX') at 'value' ⍝ Globals in selected bases
+[11]  (xxx RetAgeDesc RetAgeScenDesc RetAgeScenNRA RetAgeScenLRA)←⊃¨GlobList AdjustPointers (⊂GlobList),m2n¨RetAgeDesc RetAgeScenDesc RetAgeScenNRA RetAgeScenLRA
+[12]  
+[13]  :if ∨/∆←∨/' '≠RetAgeScenNRA,RetAgeScenLRA
+[14]      (1 2 'Retirement Age Globals') Win∆ProgressBar 'MemberUpdate'
+[15]      defaults←⍙VALUESdict at (SavedModule←'Retirement_Age')
+[16]      :for row :in WHERE ∆
+[17]          (graNRA graLRA)←m2n (RetAgeScenNRA[row;] OVER RetAgeScenLRA[row;])[1+0 bGAD;]
+[18]          packnew←defaults pins pack 'graLRA graNRA'
+[19]          desc←'NRA ',graNRA,bGAD/' and LRA ',graLRA
+[20]  
+[21]          desc←CIndex SavedModule SaveGlobals desc packnew
+[22]          desc ASSIGN∆Dict 'RetAgeScenDesc[',(⍕row),';]'
+[23]      :endfor
+[24]      RetAgeScenNRA←0/RetAgeScenNRA ⋄ RetAgeScenLRA←0/RetAgeScenLRA
+[25]  :endif
+[26]  
+[27]  :if ∨/∆←∨/' '≠MortScenRating,MortScenAge,MortScenLifeExp
+[28]      (2 2 'Mortality Globals') Win∆ProgressBar 'MemberUpdate'
+[29]      :for row :in WHERE ∆
+[30]          :if '[Select] '≡9↑desc←fnonmt DLTB¨(MortDesc[row;]) (MortScenDesc[row;])
+[31]              SavedModule←'Mortality_Rate_Select' ⋄ desc←9↓desc
+[32]          :else
+[33]              SavedModule←'Mortality_Rate'
+[34]          :endif
+[35]          defaults←⍙VALUESdict at SavedModule
+[36]  
+[37]          0 0⍴ClientFile ReadFile ((CIndex for '∆_Name' SavedModule) for '∆_Description' desc) at '∆_CompNo'
+[38]  
+[39]          :if ∨/' '≠MortScenRating[row;]
+[40]              desc←desc,' {adjusted by ',(DLTB MortScenRating[row;]),'%}'
+[41]              RATING←1+0.01×ZWB MortScenRating[row;]
+[42]          :elseif ∨/' '≠MortScenAge[row;]
+[43]              desc←desc,' ',(DLTMB '{life expectancy adjusted by ',MortScenLifeExp[row;],' years at age ',MortScenAge[row;]),'}'
+[44]              RATING←(ZWB¨(MortScenAge[row;]) (MortScenLifeExp[row;])) Scenario_LifeExpAdj ¯1 DEC∆CHECK mtTABXX
+[45]          :endif
+[46]          :if RATING=⌊RATING←100×¯1+RATING×1+0.01×ZWB mtTABXX[3;]
+[47]              fmt←'I20'
+[48]          :else
+[49]              DecP←0
+[50]              :repeat ⋄ DecP←DecP+1 ⋄ :until (RATING×10*DecP)≡⌊RATING×10*DecP
+[51]              fmt←'F',(⍕DecP+5),'.',⍕DecP
+[52]          :endif
+[53]          mtTABXX←mtTABXX[⍳2;] OVER DLTB ('LM<->P<+>',fmt) ⎕FMT RATING
+[54]  
+[55]          packnew←defaults pins pack 'lrmtTABXX1 mtORIG mtTABXX'
+[56]  
+[57]          desc←CIndex SavedModule SaveGlobals desc packnew
+[58]          desc ASSIGN∆Dict 'MortScenDesc[',(⍕row),';]'
+[59]      :endfor
+[60]      MortScenRating←0/MortScenRating ⋄ MortScenAge←0/MortScenAge ⋄ MortScenLifeExp←0/MortScenLifeExp
+[61]  :endif
+    ∇

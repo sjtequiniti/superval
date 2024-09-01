@@ -1,0 +1,92 @@
+    ∇ MembGroup TVBasisUpdate parms;parm;ind
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Update TV Basis items that the same as Valuation Basis
+[3]   
+[4]   :if ~MembGroup≡'Pensioners'  ⋄ :andif ~MembGroup≡'Actives' ⍝⍝⍝ FIXME
+[5]       :if ind←parms≡'All' ⍝ Do all at start of Valuation or load Basis
+[6]           parms←'TVCFSame' 'TVIntSame' 'TVEscSame' 'TVSpouseSame' 'TVDPreSame' 'TVDPostSame' 'TVSDPostSame' ⍝⍝⍝ 'TVRevSame'
+[7]       :else           ⍝ Only do what required on change of Page
+[8]           Win∆AssignVars ControlName
+[9]       :endif
+[10]  
+[11]      :for parm :in parms
+[12]          :select parm
+[13]          :case 'TVCFSame'
+[14]              :if zwb TVCFSame
+[15]                  TVcapind←capind
+[16]              :endif
+[17]          :case 'TVIntSame'
+[18]              :if zwb TVIntSame
+[19]                  TVIR←IR ⋄ lrTVIR←lrIR ⋄ TVpi←pi ⋄ lrTVpi←lrpi
+[20]              :endif
+[21]  ⍝⍝⍝        :case 'TVRevSame'
+[22]  ⍝⍝⍝            :if zwb TVRevSame
+[23]  ⍝⍝⍝                :if     MembGroup≡'Actives'
+[24]  ⍝⍝⍝                :elseif MembGroup≡'Deferreds'
+[25]  ⍝⍝⍝                    TVREVN     ←REVN      ⋄ lrTVREVN     ←lrREVN
+[26]  ⍝⍝⍝                    TVGMPREV1  ←GMPREV1   ⋄ lrTVGMPREV1  ←lrGMPREV1
+[27]  ⍝⍝⍝                    TVPRESPAREV←PRESPAREV ⋄ lrTVPRESPAREV←lrPRESPAREV
+[28]  ⍝⍝⍝                    TVINDREV   ←INDREV    ⋄ lrTVINDREV   ←lrINDREV
+[29]  ⍝⍝⍝                    IndTVINDREV←IndINDREV ⋄ lrIndTVINDREV←lrIndINDREV
+[30]  ⍝⍝⍝                    TVREVDBR1  ←REVDBR1   ⋄ lrTVREVDBR1  ←lrREVDBR1
+[31]  ⍝⍝⍝                    TVREVDBR2  ←REVDBR2   ⋄ lrTVREVDBR2  ←lrREVDBR2
+[32]  ⍝⍝⍝                    TVREVDAR1  ←REVDAR1   ⋄ lrTVREVDAR1  ←lrREVDAR1
+[33]  ⍝⍝⍝                    TVREVDAR2  ←REVDAR2   ⋄ lrTVREVDAR2  ←lrREVDAR2
+[34]  ⍝⍝⍝                :endif
+[35]  ⍝⍝⍝            :endif
+[36]          :case 'TVEscSame'
+[37]              :if zwb TVEscSame
+[38]                  TVB88GMPINC←B88GMPINC ⋄ lrTVB88GMPINC←lrB88GMPINC
+[39]                  TVA88GMPINC←A88GMPINC ⋄ lrTVA88GMPINC←lrA88GMPINC
+[40]                  TVDYNINC   ←DYNINC    ⋄ lrTVDYNINC   ←lrDYNINC
+[41]                  TVNDYNINC  ←NDYNINC   ⋄ lrTVNDYNINC  ←lrNDYNINC
+[42]                  TVDYNINC3  ←DYNINC3   ⋄ lrTVDYNINC3  ←lrDYNINC3
+[43]                  TVDYNINC4  ←DYNINC4   ⋄ lrTVDYNINC4  ←lrDYNINC4
+[44]              :endif
+[45]          :case 'TVSpouseSame'
+[46]              :if zwb TVSpouseSame
+[47]                  TVSpouseParm←SpouseParm
+[48]                  TVSPMethod  ←TVSPMethod
+[49]                  m_TVHXX     ←m_HXX      ⋄ lrm_TVHXX1←lrm_HXX1
+[50]                  m_TVPropMarr←m_PropMarr
+[51]                  f_TVHXX     ←f_HXX      ⋄ lrf_TVHXX1←lrf_HXX1
+[52]                  f_TVPropMarr←f_PropMarr
+[53]                  m_TVAGEDIFT ←m_AGEDIFT
+[54]                  m_TVAGEDIF  ←m_AGEDIF
+[55]                  f_TVAGEDIFT ←f_AGEDIFT
+[56]                  f_TVAGEDIF  ←f_AGEDIF
+[57]              :endif
+[58]          :case 'TVDPreSame'
+[59]              :if zwb TVDPreSame
+[60]                  m_TVDPRE    ←m_DPRE   ⋄ lrm_TVDPRE  ←lrm_DPRE
+[61]                  m_TVDPREMEMB←m_DPREMEMB
+[62]                  m_TVmiDPRE  ←m_miDPRE ⋄ lrm_TVmiDPRE←lrm_miDPRE
+[63]                  f_TVDPRE    ←f_DPRE   ⋄ lrf_TVDPRE  ←lrf_DPRE
+[64]                  f_TVDPREMEMB←f_DPREMEMB
+[65]                  f_TVmiDPRE  ←f_miDPRE ⋄ lrf_TVmiDPRE←lrf_miDPRE
+[66]              :endif
+[67]          :case 'TVDPostSame'
+[68]              :if zwb TVDPostSame
+[69]                  m_TVDPOST    ←m_DPOST   ⋄ lrm_TVDPOST  ←lrm_DPOST
+[70]                  m_TVDPOSTMEMB←m_DPOSTMEMB
+[71]                  m_TVmiDPOST  ←m_miDPOST ⋄ lrm_TVmiDPOST←lrm_miDPOST
+[72]                  f_TVDPOST    ←f_DPOST   ⋄ lrf_TVDPOST  ←lrf_DPOST
+[73]                  f_TVDPOSTMEMB←f_DPOSTMEMB
+[74]                  f_TVmiDPOST  ←f_miDPOST ⋄ lrf_TVmiDPOST←lrf_miDPOST
+[75]              :endif
+[76]          :case 'TVSDPostSame'
+[77]              :if zwb TVSDPostSame
+[78]                  m_TVSDPOST    ←m_SDPOST   ⋄ lrm_TVSDPOST  ←lrm_SDPOST
+[79]                  m_TVSDPOSTMEMB←m_SDPOSTMEMB
+[80]                  m_TVmiSDPOST  ←m_miSDPOST ⋄ lrm_TVmiSDPOST←lrm_miSDPOST
+[81]                  f_TVSDPOST    ←f_SDPOST   ⋄ lrf_TVSDPOST  ←lrf_SDPOST
+[82]                  f_TVSDPOSTMEMB←f_SDPOSTMEMB
+[83]                  f_TVmiSDPOST  ←f_miSDPOST ⋄ lrf_TVmiSDPOST←lrf_miSDPOST
+[84]              :endif
+[85]          :endselect
+[86]      :endfor
+[87]      :if ~ind ⋄ :andif ~∨/,'Assign_Inputs'⍷⎕si
+[88]          TVSameSuppress 1 ⋄ Assign_Inputs 1 ⋄ TVSameSuppress 0
+[89]      :endif
+[90]  :endif
+    ∇

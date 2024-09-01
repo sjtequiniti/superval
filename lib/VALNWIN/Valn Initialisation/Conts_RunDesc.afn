@@ -1,0 +1,34 @@
+    ∇ res←tab Conts_RunDesc prefix;∆
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Create a description of the Contributions parameters
+[3]   res←0 2⍴""
+[4]   
+[5]   :if ∨/' '≠prefix,'DEF'
+[6]       res←res OVER (tab,"Contributions Method") (⍎prefix,'DEF')
+[7]       :select 6↑∆←⍎prefix,'DEF'
+[8]       :case 'Fixed '
+[9]           res←res OVER (tab,"Contribution Rate") ((DLTB ⍎prefix,'CR'),"%")
+[10]      :case 'Differ'
+[11]          res←res OVER (tab,"Lower Band Amounts") (DLTB (⍎prefix,'Band'),"!")
+[12]          res←res OVER (tab,"Band Contribution Rates") (DLTB ((⍎prefix,'BandCR'),"%"),"!")
+[13]          res←res OVER (tab,"Contributions Band Method") (⍎prefix,'Bandmeth')
+[14]          res←res OVER (tab,"Earnings Bands Increase") ((⍎prefix,'F') ConcatLabel (⍎'lr',prefix,'F') ConcatScen termAdjFin (⍎'sCEN_',prefix,'F'))
+[15]      :case 'Varyin'
+[16]          :if ∨/'Duration'⍷∆ ⋄ :orif ∨/'Durn'⍷∆
+[17]              res←res OVER (tab,"Contribution Rate Duration Table") (DecrDescription ⍎prefix,'DurnTab')
+[18]          :else
+[19]              res←res OVER (tab,"Contribution Rate Age Table") (DecrDescription ⍎prefix,'AgeTab')
+[20]          :endif
+[21]          :if 'Entry'≡¯5↑⍎prefix,'DEF'
+[22]              res←res OVER (tab,"Entry Age Based on") (⍎prefix,'EntryDate')
+[23]          :endif
+[24]      :case 'Salary'
+[25]          res←res OVER (tab,"Band Contribution Rates") (DLTB ((⍎prefix,'BandCR'),"%"),"!")
+[26]          res←res OVER (tab,"Contributions Band Method") (⍎prefix,'Bandmeth')
+[27]          res←res OVER (tab,"Contribution Salary Band Table") (DecrDescription ⍎prefix,'SalTab')
+[28]          res←res OVER (tab,"Contribution Salary Band Table Base Year") (DLTB ⍎prefix,'SalBase')
+[29]      :endselect
+[30]      res←res OVER (tab,"Contributions Cease after") ((DLTB ⍎prefix,'Cease')," years")
+[31]      res←res OVER (tab,"Cessation Based on") (⍎prefix,'CeaseDate')
+[32]  :endif
+    ∇

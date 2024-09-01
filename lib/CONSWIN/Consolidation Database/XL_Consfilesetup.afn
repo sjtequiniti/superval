@@ -1,1 +1,70 @@
-    ∇ XL_Consfilesetup;basis;NO[1]   ⍝ CONSWIN.sf#11[2]   ⍝ General Modifications to Excel file to suit Valn Method, Client Code, etc etc[3]   [4]   0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off[5]   [6]   0 0⍴ClntCode XL_Data 'ClntCode'[7]   0 0⍴sqlschemeID XL_Data 'SchemeID'[8]   0 0⍴(100∣⌊0.0001×DatabaseID) XL_Data 'DatabaseID'[9]   0 0⍴(cLIENT,sqlDatabase/' (SchemeID ',(⍕sqlschemeID),' DatabaseID ',(⍕100∣⌊0.0001×DatabaseID),')') XL_Data 'Client'[10]  0 0⍴(,'ZI4,</>,ZI2,</>,ZI2' ⎕fmt MATRIX ⌽VDATE) XL_Data 'VDate'[11]  [12]  0 0⍴(ValMeth,bencap/' (Capped)') XL_Data 'ValMeth' ⍝ ??? More descriptive[13]  0 0⍴ppf XL_Data 'PPF'[14]  0 0⍴(~NotPUC) XL_Data 'PUC'[15]  0 0⍴(dab×1-2×approx) XL_Data 'DAB'[16]  0 0⍴bencap XL_Data 'BenCap'[17]  0 0⍴aosind XL_Data 'AOS'[18]  0 0⍴insind XL_Data 'InsInd'[19]  :if aosind ⋄ 0 0⍴(,'ZI4,</>,ZI2,</>,ZI2' ⎕fmt MATRIX ⌽pvDATE) XL_Data 'PVDate'⋄ :endif[20]  :if dab ⋄ 0 0⍴abNO XL_Data 'ABno' ⋄ :endif[21]  0 0⍴PROPT XL_Data 'ABopt'[22]  0 0⍴contper XL_Data 'ContPer'[23]  0 0⍴(100×EXPCC) XL_Data 'ExpCC'[24]  0 0⍴(100×EXPMC) XL_Data 'ExpMC'[25]  0 0⍴EXPSAL XL_Data 'ExpSAL'[26]  0 0⍴EXPPM XL_Data 'ExpPM'[27]  0 0⍴(↑EXPSF) XL_Data 'ExpSF'[28]  0 0⍴('[' StripText '⋄ ' REPL EXPf) XL_Data 'Expf'[29]  [30]  :if ~aosind ⋄ :orif ppf[31]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActAOS') ⎕wi 'XDelete'[32]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'DefAOS') ⎕wi 'XDelete'[33]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'PenAOS') ⎕wi 'XDelete'[34]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'TotAOS') ⎕wi 'XDelete'[35]  :endif[36]  [37]  :if ~PROPT ⋄ :orif ppf[38]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'Accrueds') ⎕wi 'XDelete'[39]  :endif[40]  [41]  :if ppf[42]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActMembProj') ⎕wi 'XDelete'[43]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'BalSheet') ⎕wi 'XDelete'[44]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ValnSumm') ⎕wi 'XDelete'[45]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'CashFlow') ⎕wi 'XDelete'[46]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'FundingRates') ⎕wi 'XDelete'[47]  :else[48]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'PPFBens') ⎕wi 'XDelete'[49]  :endif[50]  [51]  1 XL_ActivateWorksheet 'AllBases' ⋄ 'BasisPages' XL_specsetup ¯5[52]  [53]  :if mt runsA     ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActBases') ⎕wi 'XDelete'[54]      :if ~ppf     ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActMembProj') ⎕wi 'XDelete'[55]                     (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'FundingRates') ⎕wi 'XDelete'[56]        :if aosind ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActAOS') ⎕wi 'XDelete' ⋄ :endif[57]      :endif[58]  :else            ⋄ 1 XL_ActivateWorksheet 'ActBases' ⋄ 'BasisPages' XL_specsetup ¯1[59]      :if ~dab ⋄ :andif ~ppf ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'FundingRates') ⎕wi 'XDelete' ⋄ :endif[60]  :endif[61]  :if mt runsD ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'DefBases') ⎕wi 'XDelete'[62]      :if aosind^~ppf ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'DefAOS') ⎕wi 'XDelete' ⋄ :endif[63]  :else         ⋄ 1 XL_ActivateWorksheet 'DefBases' ⋄ 'BasisPages' XL_specsetup ¯3[64]  :endif[65]  :if mt runsP  ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'PenBases') ⎕wi 'XDelete'[66]      :if aosind^~ppf ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'PenAOS') ⎕wi 'XDelete' ⋄ :endif[67]  :else         ⋄ 1 XL_ActivateWorksheet 'PenBases' ⋄ 'BasisPages' XL_specsetup ¯4[68]  :endif    ∇
+    ∇ XL_Consfilesetup;basis;NO
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝ General Modifications to Excel file to suit Valn Method, Client Code, etc etc
+[3]   
+[4]   0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[5]   
+[6]   0 0⍴ClntCode XL_Data 'ClntCode'
+[7]   0 0⍴sqlschemeID XL_Data 'SchemeID'
+[8]   0 0⍴(100∣⌊0.0001×DatabaseID) XL_Data 'DatabaseID'
+[9]   0 0⍴(cLIENT,sqlDatabase/' (SchemeID ',(⍕sqlschemeID),' DatabaseID ',(⍕100∣⌊0.0001×DatabaseID),')') XL_Data 'Client'
+[10]  0 0⍴(,'ZI4,</>,ZI2,</>,ZI2' ⎕fmt MATRIX ⌽VDATE) XL_Data 'VDate'
+[11]  
+[12]  0 0⍴(ValMeth,bencap/' (Capped)') XL_Data 'ValMeth' ⍝ ??? More descriptive
+[13]  0 0⍴ppf XL_Data 'PPF'
+[14]  0 0⍴(~NotPUC) XL_Data 'PUC'
+[15]  0 0⍴(dab×1-2×approx) XL_Data 'DAB'
+[16]  0 0⍴bencap XL_Data 'BenCap'
+[17]  0 0⍴aosind XL_Data 'AOS'
+[18]  0 0⍴insind XL_Data 'InsInd'
+[19]  :if aosind ⋄ 0 0⍴(,'ZI4,</>,ZI2,</>,ZI2' ⎕fmt MATRIX ⌽pvDATE) XL_Data 'PVDate'⋄ :endif
+[20]  :if dab ⋄ 0 0⍴abNO XL_Data 'ABno' ⋄ :endif
+[21]  0 0⍴PROPT XL_Data 'ABopt'
+[22]  0 0⍴contper XL_Data 'ContPer'
+[23]  0 0⍴(100×EXPCC) XL_Data 'ExpCC'
+[24]  0 0⍴(100×EXPMC) XL_Data 'ExpMC'
+[25]  0 0⍴EXPSAL XL_Data 'ExpSAL'
+[26]  0 0⍴EXPPM XL_Data 'ExpPM'
+[27]  0 0⍴(↑EXPSF) XL_Data 'ExpSF'
+[28]  0 0⍴('[' StripText '⋄ ' REPL EXPf) XL_Data 'Expf'
+[29]  
+[30]  :if ~aosind ⋄ :orif ppf
+[31]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActAOS') ⎕wi 'XDelete'
+[32]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'DefAOS') ⎕wi 'XDelete'
+[33]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'PenAOS') ⎕wi 'XDelete'
+[34]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'TotAOS') ⎕wi 'XDelete'
+[35]  :endif
+[36]  
+[37]  :if ~PROPT ⋄ :orif ppf
+[38]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'Accrueds') ⎕wi 'XDelete'
+[39]  :endif
+[40]  
+[41]  :if ppf
+[42]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActMembProj') ⎕wi 'XDelete'
+[43]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'BalSheet') ⎕wi 'XDelete'
+[44]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ValnSumm') ⎕wi 'XDelete'
+[45]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'CashFlow') ⎕wi 'XDelete'
+[46]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'FundingRates') ⎕wi 'XDelete'
+[47]  :else
+[48]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'PPFBens') ⎕wi 'XDelete'
+[49]  :endif
+[50]  
+[51]  1 XL_ActivateWorksheet 'AllBases' ⋄ 'BasisPages' XL_specsetup ¯5
+[52]  
+[53]  :if mt runsA     ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActBases') ⎕wi 'XDelete'
+[54]      :if ~ppf     ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActMembProj') ⎕wi 'XDelete'
+[55]                     (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'FundingRates') ⎕wi 'XDelete'
+[56]        :if aosind ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ActAOS') ⎕wi 'XDelete' ⋄ :endif
+[57]      :endif
+[58]  :else            ⋄ 1 XL_ActivateWorksheet 'ActBases' ⋄ 'BasisPages' XL_specsetup ¯1
+[59]      :if ~dab ⋄ :andif ~ppf ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'FundingRates') ⎕wi 'XDelete' ⋄ :endif
+[60]  :endif
+[61]  :if mt runsD ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'DefBases') ⎕wi 'XDelete'
+[62]      :if aosind^~ppf ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'DefAOS') ⎕wi 'XDelete' ⋄ :endif
+[63]  :else         ⋄ 1 XL_ActivateWorksheet 'DefBases' ⋄ 'BasisPages' XL_specsetup ¯3
+[64]  :endif
+[65]  :if mt runsP  ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'PenBases') ⎕wi 'XDelete'
+[66]      :if aosind^~ppf ⋄ (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'PenAOS') ⎕wi 'XDelete' ⋄ :endif
+[67]  :else         ⋄ 1 XL_ActivateWorksheet 'PenBases' ⋄ 'BasisPages' XL_specsetup ¯4
+[68]  :endif
+    ∇

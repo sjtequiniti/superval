@@ -1,0 +1,13 @@
+    ∇ Z←L perioddays R;bgn;prds;end
+[1]   ⍝ MAINWIN.sf#7
+[2]   ⍝ Days in period R falling before, into and after periods L. SJT 21jun2010
+[3]   ⍝ Periods are defined as one or more start dates terminating with an end date:
+[4]   ⍝       (DATEBASE¨(2008 1 1)(2009 1 1)(2009 12 31)) perioddays DATEBASE¨(2007 1 1)(2010 12 31)
+[5]   ⍝ 365 366 365 365
+[6]   ⍝ If only one date is given it is the start date of the second of two periods
+[7]   ⍝       (DATEBASE 2009 1 1) perioddays DATEBASE¨(2008 1 1)(2009 12 31)
+[8]   ⍝ 366 365
+[9]   (bgn end)←R+0 1                         ⍝ R is a single period
+[10]  prds←L+0,1↓(-⍴L)↑1                      ⍝ 1st date is a start date
+[11]  Z←0⌈(end⌊prds,end)-(bgn⌈bgn,prds)
+    ∇

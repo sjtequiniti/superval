@@ -1,0 +1,39 @@
+    ∇ larg Update_Table rarg;table;xxx;flds;oldflds;fields;∆;sqlDatabase;mask;mapped
+[1]   ⍝ UTILSWIN.sf#11
+[2]   ⍝ Update the fields in a table
+[3]   ⍝  by renaming existing Table, creating new Table and copying data to new Table
+[4]   ⍝ larg is pairs of new Fields and their default value
+[5]   
+[6]   (table sqlDatabase)←rarg
+[7]   
+[8]   'ADOrst' ⎕wi 'XOpen' table ('ADOcon' ⎕wi 'obj') cursor lock
+[9]   fields←⍙DBadoRstFields 'ADOrst'
+[10]  xxx←'ADOrst' ⎕wi 'XClose'
+[11]  
+[12]  :if mt ↑larg ⋄ :orif ∨/∆←~(↑larg)∊fields ⍝ Only new fields
+[13]      :if ~mt ↑larg ⋄ larg←(⊂∆) sel¨larg ⋄ :endif
+[14]  
+[15]      :if (⊂table,"_new")∊tables ⍝ Delete if already exists (presumably failed previous migration)
+[16]          xxx←0 ⍙DBadoCONCommand "DROP TABLE ",table,"_new"
+[17]      :endif
+[18]  
+[19]      sqlDatabase Create_Table 0 table (table,"_new") ⍝ Create Temporary (new) table
+[20]  
+[21]      (flds xxx mask xxx xxx xxx xxx)←⍙DBTableVars table
+[22]      :if ∨/∆←flds∊⊂'TableID' ⍝ Reserved Name needs to be enclosed in []
+[23]          (∆/flds)←(⊂'[]') embrace ¨∆/flds
+[24]      :endif
+[25]      :if ~mt ↑larg ⋄ :andif ∨/∆←mt¨↑1↓larg ⋄ mask←mask^~flds∊∆/↑larg ⋄ :endif
+[26]      flds←mask/flds
+[27]      ∆←~flds≡¨mapped←larg mapp flds
+[28]      oldflds←(⊂'RTRIM('),¨flds,¨')' ⋄ (∆/oldflds)←∆/mapped
+[29]      oldflds←', ' join oldflds
+[30]      flds←', ' join flds ⍝ Use default values for new fields
+[31]  
+[32]      xxx←0 ⍙DBadoCONCommand "INSERT INTO ",table,"_new(",flds,") SELECT ",oldflds," FROM ",table ⍝ Copy data from old Table
+[33]      xxx←0 ⍙DBadoCONCommand "DROP TABLE ",table                                                  ⍝ Drop old Table
+[34]      sqlDatabase Create_Table 1 table                                                            ⍝ Create New table
+[35]      xxx←0 ⍙DBadoCONCommand "INSERT INTO ",table,"(",flds,") SELECT ",flds," FROM ",table,"_new" ⍝ Copy data from old Table
+[36]      xxx←0 ⍙DBadoCONCommand "DROP TABLE ",table,"_new"                                           ⍝ Drop Temporary Table
+[37]  :endif
+    ∇

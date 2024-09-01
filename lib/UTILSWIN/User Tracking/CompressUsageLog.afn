@@ -1,0 +1,25 @@
+    ∇ done←CompressUsageLog;tno;elx;∆
+[1]   ⍝ UTILSWIN.sf#3
+[2]   ⍝ Compress usage log
+[3]   ⍝ Revn: sjt26feb2015
+[4]   tno←TieNumber UsageLog
+[5]   done←0
+[6]   elx←⎕ELX
+[7]   ⍝ Compressing the file requires an exclusive tie.
+[8]   ⍝ The exclusive tie might fail if another user has a share tie.
+[9]   ⍝ No retries: if compression fails here leave it
+[10]  ⍝ for the next call that can tie the file exclusively.
+[11]  ⎕ELX←"→Catch"
+[12]      UsageLog ⎕XFTIE tno
+[13]      UsageLog ⎕XFDUP tno
+[14]      done←1
+[15]      →Resume
+[16]  
+[17]  Catch:
+[18]      ∆←'Unable to compress ',UsageLog
+[19]      MDISPLAY ∆,⎕TCNL,'Other users at work?'
+[20]  
+[21]  Resume:
+[22]      ⎕ELX←elx
+[23]      ⎕FUNTIE tno
+    ∇

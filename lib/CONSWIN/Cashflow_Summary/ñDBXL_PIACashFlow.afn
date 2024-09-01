@@ -1,1 +1,40 @@
-    ∇ XLfile ⍙DBXL_PIACashFlow ⍙dbfilename;cLIENT;VDATE;template;error;found;DBID[1]   ⍝ CONSWIN.sf#13[2]   ⍝ Create an Excel File with Liability Driven Invesments Cash Flows[3]   ⍝  ⍙dbfilename is the name of the (Consolidation) Database file (fully qualified)[4]   ⍝  XLfile is the name of the output XL file (fully qualified)[5]   [6]   (⍙dbfilename DBID found)←⍙dbfilename ⍙DBOpen ¯2[7]   [8]   :if   ~found[9]   :orif ~'Consolidation'≡DLTB ↑1 ⍙DBadoCONCommand "SELECT DataBaseType FROM Identification",sqlDatabase/" WHERE DatabaseID=",⍕DBID[10]      MDISPLAY ('\' Win∆Child ⍙dbfilename),' is an invalid Database File.  Try again with a Consolidation Database File.'[11]      →end[12]  :endif[13]  [14]  cLIENT←DLTB ↑1 ⍙DBadoCONCommand "SELECT ",(sqlDatabase/"SV"),"Scheme FROM Identification",sqlDatabase/" WHERE DatabaseID=",⍕DBID[15]  VDATE←⊃,1 ⍙DBadoCONCommand "SELECT",("ValuationDate" ⍙DBDateFormat 'dd/mm/yyyy')," FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DBID[16]  :if ^/VDATE^.=VDATE[1;] ⋄ VDATE←VDATE[1;] ⋄ :else ⋄ VDATE←'Various' ⋄ :endif[17]  [18]  template←TemplatesDir,'PIA Cash Flow.xls',(12≤ExcelVersion)/XLtype[19]  :if ~1 CopyFile template XLfile[20]      MDISPLAY 'Unable to copy Template Spreadsheet File, please report to Claybrook to resolve the problem.'[21]      →end[22]  :endif[23]  [24]  :if ~mt error←XL_Create ExcelRunButton ⍝ Connect to Excel Application[25]      MDISPLAY error ⋄ →end[26]  :endif[27]  [28]  :if ~mt error←0 0 XL_FileLoad XLfile ⍝ open EXCEL Output workbook[29]      MDISPLAY error ⋄ XL_Quit ⋄ :return[30]  :endif[31]  ⎕wgive 0 ⋄ 0 0⍴⎕dl 0.5 ⋄ ⎕wgive 0 ⍝ Allow time for Excel open (including Pivot Table refresh!)[32]  [33]  XL_PopulatePIAsumm[34]  [35]  'XL.wb' ⎕wi 'Save'[36]  XL_Quit[37]  [38]  end:0 0⍴'ADOconcmd' ⎕wi 'Delete' ⋄ 'ADOcon' ⎕wi 'XClose' ⋄ 'ADOcon' ⎕wi 'Delete'    ∇
+    ∇ XLfile ⍙DBXL_PIACashFlow ⍙dbfilename;cLIENT;VDATE;template;error;found;DBID
+[1]   ⍝ CONSWIN.sf#13
+[2]   ⍝ Create an Excel File with Liability Driven Invesments Cash Flows
+[3]   ⍝  ⍙dbfilename is the name of the (Consolidation) Database file (fully qualified)
+[4]   ⍝  XLfile is the name of the output XL file (fully qualified)
+[5]   
+[6]   (⍙dbfilename DBID found)←⍙dbfilename ⍙DBOpen ¯2
+[7]   
+[8]   :if   ~found
+[9]   :orif ~'Consolidation'≡DLTB ↑1 ⍙DBadoCONCommand "SELECT DataBaseType FROM Identification",sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[10]      MDISPLAY ('\' Win∆Child ⍙dbfilename),' is an invalid Database File.  Try again with a Consolidation Database File.'
+[11]      →end
+[12]  :endif
+[13]  
+[14]  cLIENT←DLTB ↑1 ⍙DBadoCONCommand "SELECT ",(sqlDatabase/"SV"),"Scheme FROM Identification",sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[15]  VDATE←⊃,1 ⍙DBadoCONCommand "SELECT",("ValuationDate" ⍙DBDateFormat 'dd/mm/yyyy')," FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[16]  :if ^/VDATE^.=VDATE[1;] ⋄ VDATE←VDATE[1;] ⋄ :else ⋄ VDATE←'Various' ⋄ :endif
+[17]  
+[18]  template←TemplatesDir,'PIA Cash Flow.xls',(12≤ExcelVersion)/XLtype
+[19]  :if ~1 CopyFile template XLfile
+[20]      MDISPLAY 'Unable to copy Template Spreadsheet File, please report to Claybrook to resolve the problem.'
+[21]      →end
+[22]  :endif
+[23]  
+[24]  :if ~mt error←XL_Create ExcelRunButton ⍝ Connect to Excel Application
+[25]      MDISPLAY error ⋄ →end
+[26]  :endif
+[27]  
+[28]  :if ~mt error←0 0 XL_FileLoad XLfile ⍝ open EXCEL Output workbook
+[29]      MDISPLAY error ⋄ XL_Quit ⋄ :return
+[30]  :endif
+[31]  ⎕wgive 0 ⋄ 0 0⍴⎕dl 0.5 ⋄ ⎕wgive 0 ⍝ Allow time for Excel open (including Pivot Table refresh!)
+[32]  
+[33]  XL_PopulatePIAsumm
+[34]  
+[35]  'XL.wb' ⎕wi 'Save'
+[36]  XL_Quit
+[37]  
+[38]  end:0 0⍴'ADOconcmd' ⎕wi 'Delete' ⋄ 'ADOcon' ⎕wi 'XClose' ⋄ 'ADOcon' ⎕wi 'Delete'
+    ∇

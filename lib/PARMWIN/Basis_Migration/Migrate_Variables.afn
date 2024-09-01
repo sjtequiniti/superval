@@ -1,1 +1,31 @@
-    ∇ Migrate_Variables;data;Z;n;i;Name;value[1]   ⍝ PARMWIN.sf#2[2]   ⍝ Migrate Category Variables[3]   [4]   data←16 CONV∆BASIS ⎕fread tieno,16 ⍝ Read Category Variables[5]   data←(0 40⌈⍴data)↑data[6]   [7]   :if ~0=n←1↑⍴data[8]       Name←(n⍴1 0)⌿data ⋄ n←1↑⍴value←(n⍴0 1)⌿data[9]       :for i :in ⍳n[10]          :if '3'=¯1↑Name[i;][11]          :andif DATEVALID ⎕fi '⍝' StripText value[i;][12]              :if 0∊⍴,CatDateName ExactTLU DLTB ¯1↓Name[i;][13]                  CatDateName←CatDateName OVER ¯1↓Name[i;][14]                  CatDateValue←CatDateValue OVER '⍝' StripText value[i;][15]                  CatDateComment←CatDateComment OVER (value[i;]⍳'⍝')↓value[i;][16]              :endif[17]          :else[18]              :if 0∊⍴,CatNumName ExactTLU DLTB ¯1↓Name[i;][19]                  CatNumName←CatNumName OVER ¯1↓Name[i;][20]                  CatNumValue←CatNumValue OVER '⍝' StripText value[i;][21]                  CatNumComment←CatNumComment OVER (value[i;]⍳'⍝')↓value[i;][22]              :endif[23]          :endif[24]      :endfor[25]  :endif[26]  CatDateName←(Z←∨/' '≠CatDateName)⌿CatDateName[27]  CatDateValue←Z⌿CatDateValue ⋄ CatDateComment←Z⌿CatDateComment[28]  CatNumName←(Z←∨/' '≠CatNumName)⌿CatNumName[29]  CatNumValue←Z⌿CatNumValue ⋄ CatNumComment←Z⌿CatNumComment    ∇
+    ∇ Migrate_Variables;data;Z;n;i;Name;value
+[1]   ⍝ PARMWIN.sf#2
+[2]   ⍝ Migrate Category Variables
+[3]   
+[4]   data←16 CONV∆BASIS ⎕fread tieno,16 ⍝ Read Category Variables
+[5]   data←(0 40⌈⍴data)↑data
+[6]   
+[7]   :if ~0=n←1↑⍴data
+[8]       Name←(n⍴1 0)⌿data ⋄ n←1↑⍴value←(n⍴0 1)⌿data
+[9]       :for i :in ⍳n
+[10]          :if '3'=¯1↑Name[i;]
+[11]          :andif DATEVALID ⎕fi '⍝' StripText value[i;]
+[12]              :if 0∊⍴,CatDateName ExactTLU DLTB ¯1↓Name[i;]
+[13]                  CatDateName←CatDateName OVER ¯1↓Name[i;]
+[14]                  CatDateValue←CatDateValue OVER '⍝' StripText value[i;]
+[15]                  CatDateComment←CatDateComment OVER (value[i;]⍳'⍝')↓value[i;]
+[16]              :endif
+[17]          :else
+[18]              :if 0∊⍴,CatNumName ExactTLU DLTB ¯1↓Name[i;]
+[19]                  CatNumName←CatNumName OVER ¯1↓Name[i;]
+[20]                  CatNumValue←CatNumValue OVER '⍝' StripText value[i;]
+[21]                  CatNumComment←CatNumComment OVER (value[i;]⍳'⍝')↓value[i;]
+[22]              :endif
+[23]          :endif
+[24]      :endfor
+[25]  :endif
+[26]  CatDateName←(Z←∨/' '≠CatDateName)⌿CatDateName
+[27]  CatDateValue←Z⌿CatDateValue ⋄ CatDateComment←Z⌿CatDateComment
+[28]  CatNumName←(Z←∨/' '≠CatNumName)⌿CatNumName
+[29]  CatNumValue←Z⌿CatNumValue ⋄ CatNumComment←Z⌿CatNumComment
+    ∇

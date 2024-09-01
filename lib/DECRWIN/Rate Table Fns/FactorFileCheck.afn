@@ -1,1 +1,20 @@
-    ∇ FactorFileCheck File;z;Index;Dates;DecP;RATES;tieno[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Reveal the GMP Fixed Revaluation Factors[3]   [4]   :if mt File ReadFile 'GMPFixed'[5]       :if ~0∊⍴z←1+WHERE (⊂'GMPFixed')≡¨(Index←File ReadFile 1) at '∆_Name' ⍝ Remove deleted Flag[6]           Index[z;Index[⎕io;]⍳'∆_UserModified' '∆_TSModified' '∆_TimeModified' '∆_VersModified' '∆_Deleted']←uSER (,1 DATESPELL ⎕ts) (TIMEBASE ⎕ts) version ''[7]           :if File FTIE tieno←TieNumber File[8]               Index ⎕freplace tieno,1[9]               ⎕funtie tieno[10]          :endif[11]      :else ⍝ Add New set[12]          Dates←⊃(⊂'06/04/'),¨'1978' '1988' '1993' '1997' '2002' '2007' '2012'[13]          DecP←'2'[14]          RATES←⊃'8.50' '7.50' '7.00' '6.25' '4.50' '4.00' '4.75'[15]          0 0⍴File AddToFile 'GMPFixed' 'GMP Fixed Revaluation Rates' (pack 'Dates DecP RATES')[16]      :endif[17]  :endif[18]      ∇
+    ∇ FactorFileCheck File;z;Index;Dates;DecP;RATES;tieno
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Reveal the GMP Fixed Revaluation Factors
+[3]   
+[4]   :if mt File ReadFile 'GMPFixed'
+[5]       :if ~0∊⍴z←1+WHERE (⊂'GMPFixed')≡¨(Index←File ReadFile 1) at '∆_Name' ⍝ Remove deleted Flag
+[6]           Index[z;Index[⎕io;]⍳'∆_UserModified' '∆_TSModified' '∆_TimeModified' '∆_VersModified' '∆_Deleted']←uSER (,1 DATESPELL ⎕ts) (TIMEBASE ⎕ts) version ''
+[7]           :if File FTIE tieno←TieNumber File
+[8]               Index ⎕freplace tieno,1
+[9]               ⎕funtie tieno
+[10]          :endif
+[11]      :else ⍝ Add New set
+[12]          Dates←⊃(⊂'06/04/'),¨'1978' '1988' '1993' '1997' '2002' '2007' '2012'
+[13]          DecP←'2'
+[14]          RATES←⊃'8.50' '7.50' '7.00' '6.25' '4.50' '4.00' '4.75'
+[15]          0 0⍴File AddToFile 'GMPFixed' 'GMP Fixed Revaluation Rates' (pack 'Dates DecP RATES')
+[16]      :endif
+[17]  :endif
+[18]  
+    ∇

@@ -1,0 +1,120 @@
+    ∇ PP∆CreateInterface;PrSL∆pp;PrCon∆pp;PrFSL∆pp;PrFCon∆pp;ProRate∆l;Dec∆l;ABno∆l;mult;pp∆PrSL;pp∆PrCon;Upin∆l;FutBens;ExitProbs∆l;FSL∆l;FCon∆l;DelayPI∆l;AltABno∆l;exp;RevOnly∆l;msk;SL∆l;Con∆l
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Create the Interface Records from "global" ...∆pp variables
+[3]   ⍝ Assumes the existence of the following variables:
+[4]   ⍝   Upin∆pp - whether benefit is "underpinned"
+[5]   ⍝   Age∆pp - the age at "exit" - commemcement of the liability
+[6]   ⍝   SL∆pp - the total service benefit payable to the primary recipient (can be 2D)
+[7]   ⍝   FSL∆pp - the future service benefit payable to the primary recipient (can be 2D)
+[8]   ⍝   Con∆pp - the total service reversionary benefit payable to the secondary recipient (can be 2D)
+[9]   ⍝   FCon∆pp - the future service reversionary benefit payable to the secondary recipient (can be 2D)
+[10]  ⍝   ExitProbs∆pp - the probability of receipt of this benefit (can be 2D)
+[11]  ⍝   ProRate∆pp - the Proration (2D) array for the spreading of future service benefits
+[12]  ⍝   Dec∆pp - the decrement "description" (ongoing valuation)
+[13]  ⍝   ABno∆pp - the "primary" accrued benefit "number" (accrued valuation)
+[14]  ⍝   BenType∆pp - the type of benefit eg Cash, Funeral, Pension, etc
+[15]  ⍝   IncType∆pp - the increase "description" eg M for Main, S for Special, etc
+[16]  ⍝   RetAge∆pp - the age of retirement (when the benefit "commences" and post-retirement mortality starts but any individual benefit may be further deferred)
+[17]  ⍝   Start∆pp - the age at which this benefit actually starts (could be after RetAge)
+[18]  ⍝   End∆pp - the age at which this benefit ends
+[19]  ⍝   GP∆pp - the guarantee period for this benefit
+[20]  ⍝   Inc∆pp - the rate of increase for this benefit
+[21]  ⍝   PPFRatio∆pp - the PPF ratio used by s143 runs
+[22]  ⍝   Identifier∆pp - the Slice/PUP/Pension number (preceded by I for Independent Slice/PUP/Pension) G1/G2 for GMPs
+[23]  ⍝   RevOnly∆pp - indicate if only Reversionary part valued
+[24]  ⍝   IncOnly∆pp - indicate if only Increases valued (used by Pensioners only)
+[25]  ⍝   AltABno∆pp - other accrued benefit "number(s)" that benefit is added to
+[26]  ⍝   VFYear∆pp - year to output Valuation Factors to database
+[27]  ⍝   Comment∆pp - any comment for this benefit
+[28]  
+[29]  ⍝8.50⍝ Restrict PPF to just first values
+[30]  
+[31]  ⍝⍀⍝ :if exp←0=⎕nc 'VARIABLE_ALIASES' ⋄ VARIABLE_ALIASES←push ⊂¨'' ''            ⍝ Default variable
+[32]  ⍝⍀⍝ :elseif VARIABLE_ALIASES≡push ⊂¨'' ''                                       ⍝ Already default variable
+[33]  ⍝⍀⍝ :elseif  ^/1=≡¨VARIABLE_ALIASES  ⋄ VARIABLE_ALIASES←push/⊂¨VARIABLE_ALIASES ⍝ Single Variable alias
+[34]  ⍝⍀⍝ :else                            ⋄ VARIABLE_ALIASES←push/  VARIABLE_ALIASES ⍝ Multiple Variable Alias
+[35]  ⍝⍀⍝ :endif
+[36]  ExitProbs∆l←ExitProbs∆pp
+[37]  
+[38]  :if ~End∆pp≡⍬ ⋄ :andif (⊂BenType∆pp)∊'P' 'F' ⍝ Exclude Pension that End at or before Start
+[39]      ExitProbs∆l←(Start∆pp<End∆pp) PP∆mult ExitProbs∆l
+[40]  :endif
+[41]  msk←VFYear∆pp=⍳NX
+[42]  :if ~mt PrSL∆pp ←ExitProbs∆l PP∆mult SL∆pp  ⋄ PrSL∆pp ←PrSL∆pp ×msk∨[⎕io]0.0001<∣PrSL∆pp  ⋄ :endif
+[43]  :if ~mt PrCon∆pp←ExitProbs∆l PP∆mult Con∆pp ⋄ PrCon∆pp←PrCon∆pp×msk∨[⎕io]0.0001<∣PrCon∆pp ⋄ :endif
+[44]  
+[45]  :if ^/0=(,PrSL∆pp),,PrCon∆pp ⍝ Exit if:  No benefits payable (assuming always Total ≥ Future)
+[46]  :orif aggopt[⎕io]^(⊂BenType∆pp)∊'U' 'U ' 'UF' ⍝ or  Underpin record for "Grouped" Benefits
+[47]      :return
+[48]  :endif
+[49]  
+[50]  :if mt SL∆l ←SL∆pp  ⋄ SL∆l ←0×Con∆pp ⋄ :endif
+[51]  :if mt Con∆l←Con∆pp ⋄ Con∆l←0×SL∆l   ⋄ :endif
+[52]  :if IsAccrued
+[53]      FSL∆l←PrFSL∆pp←0×PrSL∆pp ⋄ FCon∆l←PrFCon∆pp←0×PrCon∆pp ⋄ ABno∆l←ABno∆pp ⋄ AltABno∆l←AltABno∆pp~' ' ⍝ No Future Bens and "Default" Accrued Benefit Number
+[54]  :else
+[55]      :if mt FSL∆l ←FSL∆pp  ⋄ FSL∆l ←0×SL∆l   ⋄ :endif
+[56]      :if mt FCon∆l←FCon∆pp ⋄ FCon∆l←0×Con∆l  ⋄ :endif
+[57]      PrFSL∆pp←ExitProbs∆l PP∆mult FSL∆l ⋄ PrFCon∆pp←ExitProbs∆l PP∆mult FCon∆l ⋄ ABno∆l←AltABno∆l←''
+[58]      :if 2=↑⍴⍴PrSL∆pp ⋄ :orif 2=↑⍴⍴PrCon∆pp
+[59]          FutBens←(NX,NX)⍴PrFSL∆pp ⋄ FutBens←+/FutBens+(0=FutBens)×(NX,NX)⍴PrFCon∆pp
+[60]      :else
+[61]          FutBens←    NX ↑PrFSL∆pp ⋄ FutBens←  FutBens+(0=FutBens)×    NX ↑PrFCon∆pp
+[62]      :endif
+[63]  :endif
+[64]  
+[65]  :if IsAccrued ⋄ ProRate∆l←⍬ ⍝ Proration multiplier (for future service benefits)
+[66]  :elseif ^/0=FutBens ⋄ :andif ~neIND ⍝⍝⍝ ∨(⊂BenType∆pp)∊'U' 'U ' 'UF' ⍝⍝⍝ FIXME - Future Underpin lost in AltScenData/PUC??
+[67]                ⋄ ProRate∆l←(NX+0 1)⍴0 ⍝ No Future Benefit
+[68]  :elseif neIND ⋄ :andif ^/0=,ProRate∆pp ⍝ Default Pro-ration vector for NEM
+[69]                ⋄ ProRate∆l←(⍳NX)∘.<⍳NX+1
+[70]  :else
+[71]      :if ^/0=,ProRate∆l←ProRate∆pp ⍝ No Proration vector for Future Benefit??
+[72]          ProRate∆l←((MID ⍳NX-LNX),(NX-LNX+1)↓⍳NX)⌊[⎕io](NX+0 1)⍴⍳NX+1 ⍝ so Best Guess
+[73]      :endif
+[74]          ProRate∆l←(FutBens CDIV ,ProRate∆l[;NX])×[⎕io]ProRate∆l ⍝ Modify Pro-ration arrays so they are additive
+[75]  :endif
+[76]  
+[77]  :if ^/0=↑,/,¨PrSL∆pp PrFSL∆pp ⋄ RevOnly∆l←1
+[78]  :else                         ⋄ RevOnly∆l←RevOnly∆pp
+[79]  :endif
+[80]  
+[81]  Upin∆l←Upin∆pp×~aggopt[⎕io] ⍝ No underpins for "Grouped" Benefits
+[82]  DelayPI∆l←⍬ ⍝ the Age at which Pension Increase are delayed to (only applies to Retirement if DelayedPI = 1)
+[83]  Inc∆pp←,Inc∆pp ⍝ Ensure scalars have shape
+[84]  
+[85]  :if (⊂Dec∆pp)∊'R' 'R2' 'T' 'TO' ⋄ :andif ClassID≠4 ⋄ :andif ~IsAccrued
+[86]      :if ClassID∊1 2 ⋄ :andif BenType∆pp≡'P' ⋄ :andif DelayedPI ⋄ DelayPI∆l←DelayedAGE ⋄ :endif
+[87]      :if 0≠LNX-SNX ⋄ :andif ∨/0≠(,pp∆PrSL←mult PP∆mult PrSL∆pp),,pp∆PrCon←(mult←((ENX×~(ENX=1)^(X0>NRA)),((LNX-SNX)+(ENX=1)^(X0>NRA)),SNX)/0 1 0) PP∆mult PrCon∆pp ⍝ Late Retirements
+[88]          Dec∆l←'NL'[ClassID∊1 2],¯1↑Dec∆pp
+[89]          Ind∆Output←Ind∆Output⍪Upin∆l Age∆pp SL∆l FSL∆l Con∆l FCon∆l (mult PP∆mult ExitProbs∆l) pp∆PrSL (mult PP∆mult PrFSL∆pp) pp∆PrCon (mult PP∆mult PrFCon∆pp) ABno∆l Dec∆l BenType∆pp IncType∆pp RetAge∆pp Start∆pp End∆pp GP∆pp Inc∆pp PPFRatio∆pp Identifier∆pp DelayPI∆l WaitPeriod∆pp RevOnly∆l IncOnly∆pp ProRate∆l AltABno∆l VFYear∆pp Comment∆pp
+[90]  ⍝⍀⍝        FOURDIT_aliases←FOURDIT_aliases,(3≥≡VARIABLE_ALIASES) eis VARIABLE_ALIASES
+[91]      :endif
+[92]      :if ∨/0≠(,pp∆PrSL←mult PP∆mult PrSL∆pp),,pp∆PrCon←(mult←(ENX_1,1,LNX)/0,((0=LNX-SNX)∨(X0≤NRA)),0) PP∆mult PrCon∆pp ⍝ Normal Retirement
+[93]          Dec∆l←'N',¯1↑Dec∆pp
+[94]          Ind∆Output←Ind∆Output⍪Upin∆l Age∆pp SL∆l FSL∆l Con∆l FCon∆l (mult PP∆mult ExitProbs∆l) pp∆PrSL (mult PP∆mult PrFSL∆pp) pp∆PrCon (mult PP∆mult PrFCon∆pp) ABno∆l Dec∆l BenType∆pp IncType∆pp RetAge∆pp Start∆pp End∆pp GP∆pp Inc∆pp PPFRatio∆pp Identifier∆pp DelayPI∆l WaitPeriod∆pp RevOnly∆l IncOnly∆pp ProRate∆l AltABno∆l VFYear∆pp Comment∆pp
+[95]  ⍝⍀⍝        FOURDIT_aliases←FOURDIT_aliases,(3≥≡VARIABLE_ALIASES) eis VARIABLE_ALIASES
+[96]      :endif
+[97]      Dec∆l←'E',¯1↑Dec∆pp ⋄ mult←(ENX_1,LNX+1)/1 0 ⍝ Early Retirements
+[98]  :else
+[99]      Dec∆l←Dec∆pp ⋄ mult←1
+[100]     :if     Dec∆pp≡'GR' ⋄ Dec∆l←'NR'
+[101]         :if ClassID∊1 2 ⋄ :andif DelayedPI ⋄ DelayPI∆l←DelayedAGE ⋄ :endif
+[102]     :elseif ClassID=4 ⍝ As Above for Pensioners
+[103]     :elseif IsAccrued
+[104]         :if ClassID∊1 2 ⋄ :andif BenType∆pp≡'P' ⋄ :andif DelayedPI ⋄ DelayPI∆l←DelayedAGE ⋄ :endif
+[105]         :if Dec∆pp≡'R' ⋄ Dec∆l←'NR' ⋄ :endif
+[106]     :elseif BenType∆pp≡'I' ⍝ As above to match up Insured Benefits - mult should be 1↓(NX,1)/1 0
+[107]     :elseif Dec∆pp≡'CR' ⋄ Dec∆l←'ER' ⍝ Special Commutation Calcs Decrements
+[108]         :if ClassID∊1 2 ⋄ :andif DelayedPI ⋄ DelayPI∆l←DelayedAGE ⋄ :endif
+[109]     :elseif Dec∆pp≡'CI' ⋄ Dec∆l←'I'
+[110]     :else               ⋄ mult←1↓(NX,1)/1 0
+[111]     :endif
+[112] :endif
+[113] 
+[114] :if ∨/0≠(,pp∆PrSL←mult PP∆mult PrSL∆pp),,pp∆PrCon←mult PP∆mult PrCon∆pp
+[115]         Ind∆Output←Ind∆Output⍪Upin∆l Age∆pp SL∆l FSL∆l Con∆l FCon∆l (mult PP∆mult ExitProbs∆l) pp∆PrSL (mult PP∆mult PrFSL∆pp) pp∆PrCon (mult PP∆mult PrFCon∆pp) ABno∆l Dec∆l BenType∆pp IncType∆pp RetAge∆pp Start∆pp End∆pp GP∆pp Inc∆pp PPFRatio∆pp Identifier∆pp DelayPI∆l WaitPeriod∆pp RevOnly∆l IncOnly∆pp ProRate∆l AltABno∆l VFYear∆pp Comment∆pp
+[116] ⍝⍀⍝        FOURDIT_aliases←FOURDIT_aliases,(3≥≡VARIABLE_ALIASES) eis VARIABLE_ALIASES
+[117] :endif
+[118] ⍝⍀⍝ :if exp ⋄ 0 0⍴⎕ex 'VARIABLE_ALIASES' ⋄ :endif
+    ∇

@@ -1,1 +1,59 @@
-    ∇ LP1∆BENEFIT∆SWITCH2;TEMP;i∆l;pi∆l[1]   ⍝ ACTWIN.sf#9[2]   ⍝ APR2001[3]   ⍝ replaces first part of LP1∆BENEFIT to include pre/post ret i switch parameter is called SWindic[4]   ⍝ logic is as follows :[5]   ⍝  ACCRUED[6]   ⍝    DeferNRA and SWindic[7]   ⍝    DeferNRA and not SWindic[8]   ⍝    other and SWindic[9]   ⍝    other and not SWindic[10]  ⍝  ONGOING[11]  ⍝    DeferNRA and SWindic[12]  ⍝    DeferNRA and not SWindic[13]  ⍝    other and SWindic[14]  ⍝    other and not SWindic[15]  ⍝[16]  ⍝ Allow for vector values of i and pi[17]  i∆l←×\1,(2/100 OVERTAKE i)*0.5[18]  pi∆l←×\1,(2/100 OVERTAKE pi)*0.5[19]  ⍝[20]  :if IsAccrued[21]      :if DeferNRA[22]          :IF SWindic[23]              DNRADX←(1⌊DX3XXA[NRA∆G] CDIV DX3)×(1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]) CDIV 1⌈v[⎕io+0⌈XMP-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X][24]              VNRAVX←1 CDIV 1⌈v[⎕io+0⌈XMP-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X][25]          :ELSE[26]              DNRADX←1⌊DX3XXA[NRA∆G] CDIV DX3[27]              VNRAVX←1 CDIV 1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X][28]          :ENDIF[29]      :ELSE[30]          :IF SWindic[31]              DNRADX←(1⌊v[⎕io+0⌈NRA∆G-↑X] CDIV v[⎕io+0⌈XMP-↑X])×1⌊(TEMP[0⌈NRA∆G-↑X]) CDIV TEMP←1,×\1-X0↓DXX∆l[32]              VNRAVX←1 CDIV 1⌈v[⎕io+0⌈XMP-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X][33]          :ELSE[34]              DNRADX←1⌊DX3XX[NRA∆G] CDIV DX3[35]              VNRAVX←1 CDIV 1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X][36]          :ENDIF[37]      :ENDIF[38]  :else ⍝ Ongoing[39]      :if DeferNRA[40]          :IF SWindic[41]              DNRADX←(1⌊DX3XXA[NRA∆G] CDIV DX3)×(1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]) CDIV 1⌈vMP[⎕io+0⌈X-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X][42]              VNRAVX←1 CDIV 1⌈vMP[⎕io+0⌈X-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X][43]          :ELSE[44]              DNRADX←1⌊DX3XXA[NRA∆G] CDIV DX3[45]              VNRAVX←1 CDIV 1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X][46]          :ENDIF[47]      :ELSE[48]          :IF SWindic[49]              DNRADX←(1⌊DX3XX[NRA∆G] CDIV DX3)×(1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]) CDIV 1⌈vMP[⎕io+0⌈X-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X][50]              VNRAVX←1 CDIV 1⌈vMP[⎕io+0⌈X-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X][51]          :ELSE[52]              DNRADX←1⌊DX3XX[NRA∆G] CDIV DX3[53]              VNRAVX←1 CDIV 1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X][54]          :ENDIF[55]      :ENDIF[56]  :endif[57]  DNRADX←NX OVERTAKE DNRADX,1 ⋄ VNRAVX←NX OVERTAKE VNRAVX,1    ∇
+    ∇ LP1∆BENEFIT∆SWITCH2;TEMP;i∆l;pi∆l
+[1]   ⍝ ACTWIN.sf#9
+[2]   ⍝ APR2001
+[3]   ⍝ replaces first part of LP1∆BENEFIT to include pre/post ret i switch parameter is called SWindic
+[4]   ⍝ logic is as follows :
+[5]   ⍝  ACCRUED
+[6]   ⍝    DeferNRA and SWindic
+[7]   ⍝    DeferNRA and not SWindic
+[8]   ⍝    other and SWindic
+[9]   ⍝    other and not SWindic
+[10]  ⍝  ONGOING
+[11]  ⍝    DeferNRA and SWindic
+[12]  ⍝    DeferNRA and not SWindic
+[13]  ⍝    other and SWindic
+[14]  ⍝    other and not SWindic
+[15]  ⍝
+[16]  ⍝ Allow for vector values of i and pi
+[17]  i∆l←×\1,(2/100 OVERTAKE i)*0.5
+[18]  pi∆l←×\1,(2/100 OVERTAKE pi)*0.5
+[19]  ⍝
+[20]  :if IsAccrued
+[21]      :if DeferNRA
+[22]          :IF SWindic
+[23]              DNRADX←(1⌊DX3XXA[NRA∆G] CDIV DX3)×(1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]) CDIV 1⌈v[⎕io+0⌈XMP-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X]
+[24]              VNRAVX←1 CDIV 1⌈v[⎕io+0⌈XMP-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X]
+[25]          :ELSE
+[26]              DNRADX←1⌊DX3XXA[NRA∆G] CDIV DX3
+[27]              VNRAVX←1 CDIV 1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]
+[28]          :ENDIF
+[29]      :ELSE
+[30]          :IF SWindic
+[31]              DNRADX←(1⌊v[⎕io+0⌈NRA∆G-↑X] CDIV v[⎕io+0⌈XMP-↑X])×1⌊(TEMP[0⌈NRA∆G-↑X]) CDIV TEMP←1,×\1-X0↓DXX∆l
+[32]              VNRAVX←1 CDIV 1⌈v[⎕io+0⌈XMP-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X]
+[33]          :ELSE
+[34]              DNRADX←1⌊DX3XX[NRA∆G] CDIV DX3
+[35]              VNRAVX←1 CDIV 1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]
+[36]          :ENDIF
+[37]      :ENDIF
+[38]  :else ⍝ Ongoing
+[39]      :if DeferNRA
+[40]          :IF SWindic
+[41]              DNRADX←(1⌊DX3XXA[NRA∆G] CDIV DX3)×(1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]) CDIV 1⌈vMP[⎕io+0⌈X-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X]
+[42]              VNRAVX←1 CDIV 1⌈vMP[⎕io+0⌈X-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X]
+[43]          :ELSE
+[44]              DNRADX←1⌊DX3XXA[NRA∆G] CDIV DX3
+[45]              VNRAVX←1 CDIV 1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]
+[46]          :ENDIF
+[47]      :ELSE
+[48]          :IF SWindic
+[49]              DNRADX←(1⌊DX3XX[NRA∆G] CDIV DX3)×(1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]) CDIV 1⌈vMP[⎕io+0⌈X-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X]
+[50]              VNRAVX←1 CDIV 1⌈vMP[⎕io+0⌈X-↑X] CDIV v[⎕io+0⌈NRA∆G-↑X]
+[51]          :ELSE
+[52]              DNRADX←1⌊DX3XX[NRA∆G] CDIV DX3
+[53]              VNRAVX←1 CDIV 1⌈pi∆l[⎕io+2×0⌈NRA∆G-↑X] CDIV pi∆l[⎕io+2×0⌈XMP-↑X]
+[54]          :ENDIF
+[55]      :ENDIF
+[56]  :endif
+[57]  DNRADX←NX OVERTAKE DNRADX,1 ⋄ VNRAVX←NX OVERTAKE VNRAVX,1
+    ∇

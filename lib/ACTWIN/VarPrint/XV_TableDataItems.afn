@@ -1,1 +1,35 @@
-    ∇ Z←tid XV_TableDataItems lines;nHds;pts;dep;next;cap;thd;tbd;rws;cnt;∆;cmmt;ttl;tid∆;toc[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag the "Data Items" table in lines, if there. SJT 13feb10[3]   ⍝ Return number of lines read and rws of an HTML table.[4]   ⍝ Reads ext vars: MAX_DEPTH STYLE_TH[5]   [6]   :If ' Data Items' ' Description'≡11 12↑¨2↑lines                                 ⍝ special case[7]   [8]       cmmt←⊂'<!-- XV_TableDataItems -->'[9]   [10]      pts←XV_PartOnDblSpace 2⊃lines                                               ⍝ ASSUME >1 space between col hds[11]      nHds←2[12]  [13]      next←MAX_DEPTH↑(1+nHds)↓lines                                               ⍝ candidate data rows[14]      dep←+/^\^/(⊃next)[;3↑pts/⍳⍴pts]≠' '                                         ⍝ ASSUME 1st 3 cols full and L-aligned[15]  [16]      tbd←'tbody' xtag (⊂'tr') xtag¨,/XV_TagCartesn (+\pts)⊂[2]⊃dep↑next[17]  [18]      ttl←DLTB↑lines[19]      tid∆←⍕tid←tid+1[20]      cap←xtag/'h2' ('a name="', tid∆,'"') ttl[21]      toc←xtag/'li' ('a href="#',tid∆,'"') ttl[22]  [23]      ∆←DLTB¨(+\pts)⊂⊃lines[1+⍳nHds][24]      thd←'thead' xtag (⊂'tr') xtag¨ ,/ (⊂'th',STYLE_TH) xtag¨∆[25]  [26]      rws←cap,'table' xtag cmmt,thd,tbd[27]      cnt←1+nHds+dep[28]  [29]  :Else[30]      (cnt rws toc)←0 '' ''                                                       ⍝ no table found[31]  :EndIf[32]  [33]  Z←cnt rws toc tid    ∇
+    ∇ Z←tid XV_TableDataItems lines;nHds;pts;dep;next;cap;thd;tbd;rws;cnt;∆;cmmt;ttl;tid∆;toc
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag the "Data Items" table in lines, if there. SJT 13feb10
+[3]   ⍝ Return number of lines read and rws of an HTML table.
+[4]   ⍝ Reads ext vars: MAX_DEPTH STYLE_TH
+[5]   
+[6]   :If ' Data Items' ' Description'≡11 12↑¨2↑lines                                 ⍝ special case
+[7]   
+[8]       cmmt←⊂'<!-- XV_TableDataItems -->'
+[9]   
+[10]      pts←XV_PartOnDblSpace 2⊃lines                                               ⍝ ASSUME >1 space between col hds
+[11]      nHds←2
+[12]  
+[13]      next←MAX_DEPTH↑(1+nHds)↓lines                                               ⍝ candidate data rows
+[14]      dep←+/^\^/(⊃next)[;3↑pts/⍳⍴pts]≠' '                                         ⍝ ASSUME 1st 3 cols full and L-aligned
+[15]  
+[16]      tbd←'tbody' xtag (⊂'tr') xtag¨,/XV_TagCartesn (+\pts)⊂[2]⊃dep↑next
+[17]  
+[18]      ttl←DLTB↑lines
+[19]      tid∆←⍕tid←tid+1
+[20]      cap←xtag/'h2' ('a name="', tid∆,'"') ttl
+[21]      toc←xtag/'li' ('a href="#',tid∆,'"') ttl
+[22]  
+[23]      ∆←DLTB¨(+\pts)⊂⊃lines[1+⍳nHds]
+[24]      thd←'thead' xtag (⊂'tr') xtag¨ ,/ (⊂'th',STYLE_TH) xtag¨∆
+[25]  
+[26]      rws←cap,'table' xtag cmmt,thd,tbd
+[27]      cnt←1+nHds+dep
+[28]  
+[29]  :Else
+[30]      (cnt rws toc)←0 '' ''                                                       ⍝ no table found
+[31]  :EndIf
+[32]  
+[33]  Z←cnt rws toc tid
+    ∇

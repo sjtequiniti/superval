@@ -1,1 +1,68 @@
-    ∇ CREATE∆Legislation;Year[1]   ⍝ PENWIN.sf#2[2]   ⍝ Assign all the Legislation Variables[3]   [4]   FinAdjTable←MATRIX 'variable' 'Field' 'value' ⍝ Dummy Financials Table for AOS term adjustments/Interpolated Rates display[5]   ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'SPA←'[6]   [7]   :if ~mt PRESPAREV←DLTB PRESPAREV[8]       ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'PRESPAREV sCEN_PRESPAREV'[9]       FinAdjTable←FinAdjTable OVER 'PRESPAREV' 'PRESPAREV' (PRESPAREV←termAdjFin BlendRates PRESPAREV sCEN_PRESPAREV)[10]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'PRESPAREV←'[11]      FinAdjTable←FinAdjTable OVER 'GMPREVDEF' '' PRESPAREV[12]      GMPREVDEF←PRESPAREV←×\1,(2/70 OVERTAKE PRESPAREV)*0.5[13]  :endif[14]  ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'GMPREV2'[15]  :if GMPREV2←zwb GMPREV2[16]      (GMPFixedDates GMPFixedRates)←↑¨(FactorsTable for 'Factor' 'GMPFixed') at 'Dates' 'Rates'[17]      GMPFixedRates←1,1+.01×GMPFixedRates[18]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'GMPFixedDates← GMPFixedRates←'[19]  :else[20]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'GMPREV1 sCEN_GMPREV1'[21]      FinAdjTable←FinAdjTable OVER 'GMPREV1' 'GMPREV1' (GMPREV1←termAdjFin BlendRates GMPREV1 sCEN_GMPREV1)[22]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'GMPREV1←'[23]      :if mt PRESPAREV ⋄ FinAdjTable←FinAdjTable OVER 'GMPREVDEF' '' GMPREV1 ⋄ :endif[24]      GMPREV1←×\1,(2/70 OVERTAKE GMPREV1)*0.5[25]      ⍝⍀⍝ Year←0.5×⍳141[26]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'Year GMPREV1←'[27]      :if mt PRESPAREV[28]          GMPREVDEF←GMPREV1[29]          ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'Year GMPREVDEF←'[30]      :endif[31]  :endif[32]  PUPRDN←zwb PUPRDN[33]  GMPSplit←zwb GMPSplit[34]  OFFCOD←DLTB OFFCOD[35]  [36]  :if PUPRDN ⋄ :andif GMPSplit ⍝ Containers to be filled in GMPSplit∆Vars created in CREATE∆PENS[37]      TotPreR ←,'Pen' DescToVariableUK TotPreR[38]      TotPreV ←,'Pen' DescToVariableUK TotPreV[39]      TotPostR←,'Pen' DescToVariableUK TotPostR[40]      TotPostV←,'Pen' DescToVariableUK TotPostV[41]  :endif[42]  preADJ ←+/ZWB¨sCEN_preADJ  preADJ[43]  postADJ←+/ZWB¨sCEN_postADJ postADJ[44]  ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'sCEN_preADJ preADJ← sCEN_postADJ postADJ←'[45]  [46]  :if ppf[47]      PPFGMPNRA←zwb PPFGMPNRA[48]      FinAdjTable←FinAdjTable OVER 'PPFGMPREV1' 'p_PPFGMPREV1' (PPFGMPREV1←termAdjFin BlendRates p_PPFGMPREV1 sCEN_p_PPFGMPREV1)[49]      ⍝⍀⍝ '' 'Legislative Parameters' FOURDIT 'p_PPFGMPREV1 sCEN_p_PPFGMPREV1 PPFGMPREV1←'[50]  :endif[51]  :if ppf ⋄ :orif bencap[52]      PPFCapNRA←zwb PPFCapNRA[53]      ⍝⍀⍝ '' 'Legislative Parameters' FOURDIT 'DYNINCPre sCEN_DYNINCPre DYNINCPost sCEN_DYNINCPost'[54]      FinAdjTable←FinAdjTable OVER 'DYNINCPre'  'DYNINCPre'  (DYNINCPre ←termAdjFin BlendRates DYNINCPre  sCEN_DYNINCPre )[55]      FinAdjTable←FinAdjTable OVER 'DYNINCPost' 'DYNINCPost' (DYNINCPost←termAdjFin BlendRates DYNINCPost sCEN_DYNINCPost)[56]      PPFPAYINC←('' 'Pre 97' '97 to 09' 'Post 09')⍳m2n PPFPAYINC[57]      ppfcap←PPFCAP←zwb PPFCAP[58]      PPFServiceCap←('Y'=↑PPFServiceCap) ∨ ('P'=↑PPFServiceCap)^0>VDATE YDAYS 5 4 2017[59]      PPFServCapBDate←'Pen' DescToVariableUK ,ConvertDates ↑⌽'Date' SwapRelFields lrPPFServCapBDate PPFServCapBDate[60]      PPFServCapEDate←'Pen' DescToVariableUK ,ConvertDates ↑⌽'Date' SwapRelFields lrPPFServCapEDate PPFServCapEDate[61]      PPFCapAdj  ←120 OVERTAKE ¯1 DEC∆CHECK StripText PPFCAPADJ[62]      PPFCashFac ←120 OVERTAKE ¯1 DEC∆CHECK StripText PPFCASHFAC[63]      PPFCashFac2←120 OVERTAKE ¯1 DEC∆CHECK StripText PPFCASHFAC2[64]      ⍝⍀⍝ '' 'Legislative Parameters' FOURDIT 'DYNINCPre← DYNINCPost←'[65]      ⍝⍀⍝ '' 'Legislative Parameters' FOURDIT 'Age PPFCapAdj← PPFCashFac← PPFCashFac2←'[66]  :endif    ∇
+    ∇ CREATE∆Legislation;Year
+[1]   ⍝ PENWIN.sf#2
+[2]   ⍝ Assign all the Legislation Variables
+[3]   
+[4]   FinAdjTable←MATRIX 'variable' 'Field' 'value' ⍝ Dummy Financials Table for AOS term adjustments/Interpolated Rates display
+[5]   ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'SPA←'
+[6]   
+[7]   :if ~mt PRESPAREV←DLTB PRESPAREV
+[8]       ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'PRESPAREV sCEN_PRESPAREV'
+[9]       FinAdjTable←FinAdjTable OVER 'PRESPAREV' 'PRESPAREV' (PRESPAREV←termAdjFin BlendRates PRESPAREV sCEN_PRESPAREV)
+[10]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'PRESPAREV←'
+[11]      FinAdjTable←FinAdjTable OVER 'GMPREVDEF' '' PRESPAREV
+[12]      GMPREVDEF←PRESPAREV←×\1,(2/70 OVERTAKE PRESPAREV)*0.5
+[13]  :endif
+[14]  ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'GMPREV2'
+[15]  :if GMPREV2←zwb GMPREV2
+[16]      (GMPFixedDates GMPFixedRates)←↑¨(FactorsTable for 'Factor' 'GMPFixed') at 'Dates' 'Rates'
+[17]      GMPFixedRates←1,1+.01×GMPFixedRates
+[18]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'GMPFixedDates← GMPFixedRates←'
+[19]  :else
+[20]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'GMPREV1 sCEN_GMPREV1'
+[21]      FinAdjTable←FinAdjTable OVER 'GMPREV1' 'GMPREV1' (GMPREV1←termAdjFin BlendRates GMPREV1 sCEN_GMPREV1)
+[22]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'GMPREV1←'
+[23]      :if mt PRESPAREV ⋄ FinAdjTable←FinAdjTable OVER 'GMPREVDEF' '' GMPREV1 ⋄ :endif
+[24]      GMPREV1←×\1,(2/70 OVERTAKE GMPREV1)*0.5
+[25]      ⍝⍀⍝ Year←0.5×⍳141
+[26]      ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'Year GMPREV1←'
+[27]      :if mt PRESPAREV
+[28]          GMPREVDEF←GMPREV1
+[29]          ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'Year GMPREVDEF←'
+[30]      :endif
+[31]  :endif
+[32]  PUPRDN←zwb PUPRDN
+[33]  GMPSplit←zwb GMPSplit
+[34]  OFFCOD←DLTB OFFCOD
+[35]  
+[36]  :if PUPRDN ⋄ :andif GMPSplit ⍝ Containers to be filled in GMPSplit∆Vars created in CREATE∆PENS
+[37]      TotPreR ←,'Pen' DescToVariableUK TotPreR
+[38]      TotPreV ←,'Pen' DescToVariableUK TotPreV
+[39]      TotPostR←,'Pen' DescToVariableUK TotPostR
+[40]      TotPostV←,'Pen' DescToVariableUK TotPostV
+[41]  :endif
+[42]  preADJ ←+/ZWB¨sCEN_preADJ  preADJ
+[43]  postADJ←+/ZWB¨sCEN_postADJ postADJ
+[44]  ⍝⍀⍝ '' 'GMP Parameters' FOURDIT 'sCEN_preADJ preADJ← sCEN_postADJ postADJ←'
+[45]  
+[46]  :if ppf
+[47]      PPFGMPNRA←zwb PPFGMPNRA
+[48]      FinAdjTable←FinAdjTable OVER 'PPFGMPREV1' 'p_PPFGMPREV1' (PPFGMPREV1←termAdjFin BlendRates p_PPFGMPREV1 sCEN_p_PPFGMPREV1)
+[49]      ⍝⍀⍝ '' 'Legislative Parameters' FOURDIT 'p_PPFGMPREV1 sCEN_p_PPFGMPREV1 PPFGMPREV1←'
+[50]  :endif
+[51]  :if ppf ⋄ :orif bencap
+[52]      PPFCapNRA←zwb PPFCapNRA
+[53]      ⍝⍀⍝ '' 'Legislative Parameters' FOURDIT 'DYNINCPre sCEN_DYNINCPre DYNINCPost sCEN_DYNINCPost'
+[54]      FinAdjTable←FinAdjTable OVER 'DYNINCPre'  'DYNINCPre'  (DYNINCPre ←termAdjFin BlendRates DYNINCPre  sCEN_DYNINCPre )
+[55]      FinAdjTable←FinAdjTable OVER 'DYNINCPost' 'DYNINCPost' (DYNINCPost←termAdjFin BlendRates DYNINCPost sCEN_DYNINCPost)
+[56]      PPFPAYINC←('' 'Pre 97' '97 to 09' 'Post 09')⍳m2n PPFPAYINC
+[57]      ppfcap←PPFCAP←zwb PPFCAP
+[58]      PPFServiceCap←('Y'=↑PPFServiceCap) ∨ ('P'=↑PPFServiceCap)^0>VDATE YDAYS 5 4 2017
+[59]      PPFServCapBDate←'Pen' DescToVariableUK ,ConvertDates ↑⌽'Date' SwapRelFields lrPPFServCapBDate PPFServCapBDate
+[60]      PPFServCapEDate←'Pen' DescToVariableUK ,ConvertDates ↑⌽'Date' SwapRelFields lrPPFServCapEDate PPFServCapEDate
+[61]      PPFCapAdj  ←120 OVERTAKE ¯1 DEC∆CHECK StripText PPFCAPADJ
+[62]      PPFCashFac ←120 OVERTAKE ¯1 DEC∆CHECK StripText PPFCASHFAC
+[63]      PPFCashFac2←120 OVERTAKE ¯1 DEC∆CHECK StripText PPFCASHFAC2
+[64]      ⍝⍀⍝ '' 'Legislative Parameters' FOURDIT 'DYNINCPre← DYNINCPost←'
+[65]      ⍝⍀⍝ '' 'Legislative Parameters' FOURDIT 'Age PPFCapAdj← PPFCashFac← PPFCashFac2←'
+[66]  :endif
+    ∇

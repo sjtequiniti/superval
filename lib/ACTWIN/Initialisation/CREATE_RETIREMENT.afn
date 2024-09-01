@@ -1,1 +1,234 @@
-    ∇ CREATE∆RETIREMENT[1]   ⍝ ACTWIN.sf#2[2]   ⍝ Assign all the Retirement Benefit Variables[3]   [4]   servrnd←,SelectRounding servrnd[5]   :if ∨/' '≠SRVMAXT ⋄ SRVMAXT←100 OVERTAKE DTZ ¯1 DEC∆CHECK SRVMAXT[6]   :else             ⋄ SRVMAXT←100⍴¯1↑99,(zwb SRVMAX)~0[7]   :endif[8]   :if 0∊⍴DoEqS←,ConvertDates ↑⌽'Date' SwapRelFields lrDOEQS DOEQS ⋄ DoEqS←'DJF' ⋄ :endif[9]   AccMethod←'U'=↑AccMethod[10]  CapAccrual←zwb CapAccrual[11]  ExactProsPen←zwb ExactProsPen[12]  :if bGAD ⋄ CareServ←,ConvertDates ↑⌽'Date' SwapRelFields lrCAREServ CAREServ[13]  :else    ⋄ CareServ←'VDATE'[14]  :endif[15]  CARESpread←∨/'Pen'⍷CARESpread[16]  [17]  ⍝ Retirement Pension[18]  WARFRAC←,'Act' DescToVariableUK WARFRAC[19]  WARERFind←zwb WARERFind[20]  WARCOMind←zwb WARCOMind[21]  [22]  :if ¯1=↑ERTAB  ←¯1 DEC∆CHECK ERTAB   ⋄ ERTAB  ←120/1[23]  :elseif 2=⍴⍴ERTAB                    ⋄ ERTAB  ←120↑ERTAB   AgeSelect NRA[24]  :else                                ⋄ ERTAB  ←120↑ERTAB[25]  :endif[26]  :if ¯1=↑ERTAB2 ←¯1 DEC∆CHECK ERTAB2  ⋄ ERTAB2 ←120/1[27]  :elseif 2=⍴⍴ERTAB2                   ⋄ ERTAB2 ←120↑ERTAB2  AgeSelect NRA[28]  :else                                ⋄ ERTAB2 ←120↑ERTAB2[29]  :endif[30]  :if ¯1=↑ERTABF ←¯1 DEC∆CHECK ERTABF  ⋄ ERTABF ←120/1[31]  :elseif 2=⍴⍴ERTABF                   ⋄ ERTABF ←120↑ERTABF  AgeSelect NRA[32]  :else                                ⋄ ERTABF ←120↑ERTABF[33]  :endif[34]  :if ¯1=↑ERTAB2F←¯1 DEC∆CHECK ERTAB2F ⋄ ERTAB2F←120/1[35]  :elseif 2=⍴⍴ERTAB2F                  ⋄ ERTAB2F←120↑ERTAB2F AgeSelect NRA[36]  :else                                ⋄ ERTAB2F←120↑ERTAB2F[37]  :endif[38]  :if zwb ERTABExactAge[39]      ERTAB  ←NRA PREP∆RATE ERTAB  ⋄ ERTAB2 ←NRA PREP∆RATE ERTAB2[40]      ERTABF ←NRA PREP∆RATE ERTABF ⋄ ERTAB2F←NRA PREP∆RATE ERTAB2F[41]  :endif[42]  [43]  DelayedPI←zwb DelayedPI ⋄ DelayedAGE←,zwb DelayedAGE[44]  [45]  ⍝ Retirement Cash[46]  CTYPE←('' 'Neutral or Nil' '25% Pension' 'IR Maximum' '2.25 x Pension' 'Accrual x Salary for each year' '3 x Pension' 'Multiple of Pension' '% of Pension' '% of A-Day Cash')⍳⊂DLTB CTYPE[47]  CONTOP←'O'=↑CONTOP[48]  COMACC←0.01×zwb COMACC[49]  COMSAL←↑(×⍴COMSAL)×(m2n SALdesc)⍳⊂DLTB COMSAL[50]  COMDAT←↑' ' Win∆Child COMDAT[51]  COMMult←,'Act' DescToVariableUK COMMULT[52]  COMPer← ,'Act' DescToVariableUK COMPER[53]  COMADaySep←zwb COMADaySep[54]  COMADayInd←zwb COMADayInd[55]  cashp←↑(COMADaySep/'D'),((CASHP≡'Priority')/'R'),CASHP[56]  CGMP←zwb CGMP[57]  COMADayPer←'100'[58]  [59]  :select CTYPE[60]  :case 2 ⋄ COMPer ←'25'[61]  :case 4 ⋄ COMMult←'2.25'[62]  :case 6 ⋄ COMMult←'3'[63]  :case 9 ⋄ COMADayPer←COMPer[64]  :endselect[65]  [66]  CTYPE2←('' 'Neutral or Nil' '25% Pension' 'IR Maximum' '2.25 x Pension' 'Accrual x Salary for each year' '3 x Pension' 'Multiple of Pension' '% of Pension')⍳⊂DLTB CTYPE2[67]  COMACC2←0.01×zwb COMACC2[68]  COMSAL2←↑(×⍴COMSAL2)×(m2n SALdesc)⍳⊂DLTB COMSAL2[69]  COMDAT2←↑' ' Win∆Child COMDAT2[70]  COMMult2←,'Act' DescToVariableUK COMMULT2[71]  COMPer2← ,'Act' DescToVariableUK COMPER2[72]  [73]  :select CTYPE2[74]  :case 2 ⋄ COMPer2 ←'25'[75]  :case 4 ⋄ COMMult2←'2.25'[76]  :case 6 ⋄ COMMult2←'3'[77]  :endselect[78]  [79]  :if COMValBas←zwb COMValBas[80]      COMValpc←0.01×zwb COMValpc[81]      ⍝ Relevance Rules for Commutation Tables - msk for relevant Tables[82]      COMValmsk←((CTYPE∊2 8)∨((~CTYPE∊0 1)^~CONTOP)∨CTYPE2∊2 8)^(2/bencap,0)∨'SM34'∊,DYNIND OVER (×AltSw)⌿AltDYNIND[83]  :else[84]      :if ¯1=↑COMTAB1←¯1 DEC∆CHECK COMTAB1 ⋄ COMTAB1←100/0[85]      :elseif 2=⍴⍴COMTAB1                  ⋄ COMTAB1←100↑COMTAB1 AgeSelect NRA[86]      :else                                ⋄ COMTAB1←100↑COMTAB1[87]      :endif[88]      :if ¯1=↑COMTAB2←¯1 DEC∆CHECK COMTAB2 ⋄ COMTAB2←100/0[89]      :elseif 2=⍴⍴COMTAB2                  ⋄ COMTAB2←100↑COMTAB2 AgeSelect NRA[90]      :else                                ⋄ COMTAB2←100↑COMTAB2[91]      :endif[92]      :if ¯1=↑COMTAB3←¯1 DEC∆CHECK COMTAB3 ⋄ COMTAB3←100/0[93]      :elseif 2=⍴⍴COMTAB3                  ⋄ COMTAB3←100↑COMTAB3 AgeSelect NRA[94]      :else                                ⋄ COMTAB3←100↑COMTAB3[95]      :endif[96]      :if ¯1=↑COMTAB4←¯1 DEC∆CHECK COMTAB4 ⋄ COMTAB4←100/0[97]      :elseif 2=⍴⍴COMTAB4                  ⋄ COMTAB4←100↑COMTAB4 AgeSelect NRA[98]      :else                                ⋄ COMTAB4←100↑COMTAB4[99]      :endif[100]     :if zwb COMTABExactAge[101]         COMTAB1←NRA PREP∆RATE COMTAB1∆G←COMTAB1 ⋄ COMTAB2←NRA PREP∆RATE COMTAB2∆G←COMTAB2[102]         COMTAB3←NRA PREP∆RATE COMTAB3∆G←COMTAB3 ⋄ COMTAB4←NRA PREP∆RATE COMTAB4∆G←COMTAB4[103]     :else[104]         COMTAB1∆G←(NRA↑0,NRA PREP∆RATE COMTAB1),NRA↓COMTAB1[105]         COMTAB2∆G←(NRA↑0,NRA PREP∆RATE COMTAB2),NRA↓COMTAB2[106]         COMTAB3∆G←(NRA↑0,NRA PREP∆RATE COMTAB3),NRA↓COMTAB3[107]         COMTAB4∆G←(NRA↑0,NRA PREP∆RATE COMTAB4),NRA↓COMTAB4[108]     :endif[109]     ⍝ Withdrawal/Accrued Benefits Commutation Factors[110]     COMTAB1∆GMP←(NRA∆G/COMTAB1∆G[NRA∆G]),NRA∆G↓COMTAB1 ⋄ COMTAB1∆G←(NRA∆G/COMTAB1∆G[NRA∆G]),NRA∆G↓COMTAB1∆G[111]     COMTAB2∆GMP←(NRA∆G/COMTAB2∆G[NRA∆G]),NRA∆G↓COMTAB2 ⋄ COMTAB2∆G←(NRA∆G/COMTAB2∆G[NRA∆G]),NRA∆G↓COMTAB2∆G[112]     COMTAB3∆GMP←(NRA∆G/COMTAB3∆G[NRA∆G]),NRA∆G↓COMTAB3 ⋄ COMTAB3∆G←(NRA∆G/COMTAB3∆G[NRA∆G]),NRA∆G↓COMTAB3∆G[113]     COMTAB4∆GMP←(NRA∆G/COMTAB4∆G[NRA∆G]),NRA∆G↓COMTAB4 ⋄ COMTAB4∆G←(NRA∆G/COMTAB4∆G[NRA∆G]),NRA∆G↓COMTAB4∆G[114] :endif[115] COMAdjbyEx←zwb COMAdjbyEx[116] [117] :if COMValBas∨COMAdjbyEx ⋄ :andif ~test[118]     :if ~mt PPOSTMEMB ⋄ :orif ~mt (~WARCOMind)/SPOSTMEMB[119]         ('Note: Retirement ',(↑COMValBas COMAdjbyEx/'Valuation Basis' 'Life Expectancy Adjusted'),' Commutation Factors not output due to member-specific Mortality Loadings') VALN∆LOG 'Add'[120]     :elseif basischanged∨CFmissing[121]         RETcomfacs←(100 4,LatestAge-10)⍴0 ⍝ Store Commutation Factors for Database[122]     :endif[123] :endif[124] [125] :if ¯1=↑ERTABC  ←¯1 DEC∆CHECK ERTABC[126]                              ERTABC  ←ERTAB[127] :else[128]     :if 2=⍴⍴ERTABC         ⋄ ERTABC  ←120↑ERTABC   AgeSelect NRA[129]     :else                  ⋄ ERTABC  ←120↑ERTABC[130]     :endif[131]     :if zwb ERTABExactAgeC ⋄ ERTABC  ←NRA PREP∆RATE ERTABC     ⋄ :endif[132] :endif[133] :if ¯1=↑ERTAB2C ←¯1 DEC∆CHECK ERTAB2C[134]                              ERTAB2C ←ERTAB2[135] :else[136]     :if 2=⍴⍴ERTAB2C        ⋄ ERTAB2C ←120↑ERTAB2C  AgeSelect NRA[137]     :else                  ⋄ ERTAB2C ←120↑ERTAB2C[138]     :endif[139]     :if zwb ERTABExactAgeC ⋄ ERTAB2C ←NRA PREP∆RATE ERTAB2C    ⋄ :endif[140] :endif[141] :if ¯1=↑ERTABFC ←¯1 DEC∆CHECK ERTABFC[142]                              ERTABFC ←ERTABF[143] :else[144]     :if 2=⍴⍴ERTABFC        ⋄ ERTABFC ←120↑ERTABFC  AgeSelect NRA[145]     :else                  ⋄ ERTABFC ←120↑ERTABFC[146]     :endif[147]     :if zwb ERTABExactAgeC ⋄ ERTABFC ←NRA PREP∆RATE ERTABFC    ⋄ :endif[148] :endif[149] :if ¯1=↑ERTAB2FC←¯1 DEC∆CHECK ERTAB2FC[150]                              ERTAB2FC←ERTAB2F[151] :else[152]     :if 2=⍴⍴ERTAB2FC       ⋄ ERTAB2FC←120↑ERTAB2FC AgeSelect NRA[153]     :else                  ⋄ ERTAB2FC←120↑ERTAB2FC[154]     :endif[155]     :if zwb ERTABExactAgeC ⋄ ERTAB2FC←NRA PREP∆RATE ERTAB2FC   ⋄ :endif[156] :endif[157] [158] ⍝ Late Retirement[159] servind←(~bGAD)∨zwb servind[160] LRSalary←'R'=↑LRSalary[161] [162] :if ¯1=↑LRTAB  ←¯1 DEC∆CHECK LRTAB[163]                             LRTAB  ←(LRA=NRA)⊃(120/1) ERTAB[164] :else[165]     :if 2=⍴⍴LRTAB         ⋄ LRTAB  ←120↑LRTAB   AgeSelect NRA[166]     :else                 ⋄ LRTAB  ←120↑LRTAB[167]     :endif[168]     :if zwb LRTABExactAge ⋄ LRTAB  ←NRA PREP∆RATE LRTAB   ⋄ :endif[169] :endif[170] :if ¯1=↑LRTAB2 ←¯1 DEC∆CHECK LRTAB2[171]                             LRTAB2 ←(LRA=NRA)⊃(120/1) ERTAB2[172] :else[173]     :if 2=⍴⍴LRTAB2        ⋄ LRTAB2 ←120↑LRTAB2  AgeSelect NRA[174]     :else                 ⋄ LRTAB2 ←120↑LRTAB2[175]     :endif[176]     :if zwb LRTABExactAge ⋄ LRTAB2 ←NRA PREP∆RATE LRTAB2  ⋄ :endif[177] :endif[178] :if ¯1=↑LRTABF ←¯1 DEC∆CHECK LRTABF[179]                             LRTABF ←(LRA=NRA)⊃(120/1) ERTABF[180] :else[181]     :if 2=⍴⍴LRTABF        ⋄ LRTABF ←120↑LRTABF  AgeSelect NRA[182]     :else                 ⋄ LRTABF ←120↑LRTABF[183]     :endif[184]     :if zwb LRTABExactAge ⋄ LRTABF ←NRA PREP∆RATE LRTABF  ⋄ :endif[185] :endif[186] :if ¯1=↑LRTAB2F←¯1 DEC∆CHECK LRTAB2F[187]                             LRTAB2F←(LRA=NRA)⊃(120/1) ERTAB2F[188] :else[189]     :if 2=⍴⍴LRTAB2F       ⋄ LRTAB2F←120↑LRTAB2F AgeSelect NRA[190]     :else                 ⋄ LRTAB2F←120↑LRTAB2F[191]     :endif[192]     :if zwb LRTABExactAge ⋄ LRTAB2F←NRA PREP∆RATE LRTAB2F ⋄ :endif[193] :endif[194] [195] LRFApplies←'P'=↑LRFApplies[196] WARLRFind←zwb WARLRFind[197] [198] :if ¯1=↑LRTABC  ←¯1 DEC∆CHECK LRTABC[199]                              LRTABC  ←(LRA=NRA)⊃LRTAB   ERTABC[200] :else[201]     :if 2=⍴⍴LRTABC         ⋄ LRTABC  ←120↑LRTABC   AgeSelect NRA[202]     :else                  ⋄ LRTABC  ←120↑LRTABC[203]     :endif[204]     :if zwb LRTABExactAgeC ⋄ LRTABC  ←NRA PREP∆RATE LRTABC     ⋄ :endif[205] :endif[206] :if ¯1=↑LRTAB2C ←¯1 DEC∆CHECK LRTAB2C[207]                              LRTAB2C ←(LRA=NRA)⊃LRTAB2  ERTAB2C[208] :else[209]     :if 2=⍴⍴LRTAB2C        ⋄ LRTAB2C ←120↑LRTAB2C  AgeSelect NRA[210]     :else                  ⋄ LRTAB2C ←120↑LRTAB2C[211]     :endif[212]     :if zwb LRTABExactAgeC ⋄ LRTAB2C ←NRA PREP∆RATE LRTAB2C    ⋄ :endif[213] :endif[214] :if ¯1=↑LRTABFC ←¯1 DEC∆CHECK LRTABFC[215]                              LRTABFC ←(LRA=NRA)⊃LRTABF  ERTABFC[216] :else[217]     :if 2=⍴⍴LRTABFC        ⋄ LRTABFC ←120↑LRTABFC  AgeSelect NRA[218]     :else                  ⋄ LRTABFC ←120↑LRTABFC[219]     :endif[220]     :if zwb LRTABExactAgeC ⋄ LRTABFC ←NRA PREP∆RATE LRTABFC    ⋄ :endif[221] :endif[222] :if ¯1=↑LRTAB2FC←¯1 DEC∆CHECK LRTAB2FC[223]                              LRTAB2FC←(LRA=NRA)⊃LRTAB2F ERTAB2FC[224] :else[225]     :if 2=⍴⍴LRTAB2FC       ⋄ LRTAB2FC←120↑LRTAB2FC AgeSelect NRA[226]     :else                  ⋄ LRTAB2FC←120↑LRTAB2FC[227]     :endif[228]     :if zwb LRTABExactAgeC ⋄ LRTAB2FC←NRA PREP∆RATE LRTAB2FC   ⋄ :endif[229] :endif[230] [231] ⍝ Underpin[232] UDATA←,'Act' DescToVariableUK UDATA    ∇
+    ∇ CREATE∆RETIREMENT
+[1]   ⍝ ACTWIN.sf#2
+[2]   ⍝ Assign all the Retirement Benefit Variables
+[3]   
+[4]   servrnd←,SelectRounding servrnd
+[5]   :if ∨/' '≠SRVMAXT ⋄ SRVMAXT←100 OVERTAKE DTZ ¯1 DEC∆CHECK SRVMAXT
+[6]   :else             ⋄ SRVMAXT←100⍴¯1↑99,(zwb SRVMAX)~0
+[7]   :endif
+[8]   :if 0∊⍴DoEqS←,ConvertDates ↑⌽'Date' SwapRelFields lrDOEQS DOEQS ⋄ DoEqS←'DJF' ⋄ :endif
+[9]   AccMethod←'U'=↑AccMethod
+[10]  CapAccrual←zwb CapAccrual
+[11]  ExactProsPen←zwb ExactProsPen
+[12]  :if bGAD ⋄ CareServ←,ConvertDates ↑⌽'Date' SwapRelFields lrCAREServ CAREServ
+[13]  :else    ⋄ CareServ←'VDATE'
+[14]  :endif
+[15]  CARESpread←∨/'Pen'⍷CARESpread
+[16]  
+[17]  ⍝ Retirement Pension
+[18]  WARFRAC←,'Act' DescToVariableUK WARFRAC
+[19]  WARERFind←zwb WARERFind
+[20]  WARCOMind←zwb WARCOMind
+[21]  
+[22]  :if ¯1=↑ERTAB  ←¯1 DEC∆CHECK ERTAB   ⋄ ERTAB  ←120/1
+[23]  :elseif 2=⍴⍴ERTAB                    ⋄ ERTAB  ←120↑ERTAB   AgeSelect NRA
+[24]  :else                                ⋄ ERTAB  ←120↑ERTAB
+[25]  :endif
+[26]  :if ¯1=↑ERTAB2 ←¯1 DEC∆CHECK ERTAB2  ⋄ ERTAB2 ←120/1
+[27]  :elseif 2=⍴⍴ERTAB2                   ⋄ ERTAB2 ←120↑ERTAB2  AgeSelect NRA
+[28]  :else                                ⋄ ERTAB2 ←120↑ERTAB2
+[29]  :endif
+[30]  :if ¯1=↑ERTABF ←¯1 DEC∆CHECK ERTABF  ⋄ ERTABF ←120/1
+[31]  :elseif 2=⍴⍴ERTABF                   ⋄ ERTABF ←120↑ERTABF  AgeSelect NRA
+[32]  :else                                ⋄ ERTABF ←120↑ERTABF
+[33]  :endif
+[34]  :if ¯1=↑ERTAB2F←¯1 DEC∆CHECK ERTAB2F ⋄ ERTAB2F←120/1
+[35]  :elseif 2=⍴⍴ERTAB2F                  ⋄ ERTAB2F←120↑ERTAB2F AgeSelect NRA
+[36]  :else                                ⋄ ERTAB2F←120↑ERTAB2F
+[37]  :endif
+[38]  :if zwb ERTABExactAge
+[39]      ERTAB  ←NRA PREP∆RATE ERTAB  ⋄ ERTAB2 ←NRA PREP∆RATE ERTAB2
+[40]      ERTABF ←NRA PREP∆RATE ERTABF ⋄ ERTAB2F←NRA PREP∆RATE ERTAB2F
+[41]  :endif
+[42]  
+[43]  DelayedPI←zwb DelayedPI ⋄ DelayedAGE←,zwb DelayedAGE
+[44]  
+[45]  ⍝ Retirement Cash
+[46]  CTYPE←('' 'Neutral or Nil' '25% Pension' 'IR Maximum' '2.25 x Pension' 'Accrual x Salary for each year' '3 x Pension' 'Multiple of Pension' '% of Pension' '% of A-Day Cash')⍳⊂DLTB CTYPE
+[47]  CONTOP←'O'=↑CONTOP
+[48]  COMACC←0.01×zwb COMACC
+[49]  COMSAL←↑(×⍴COMSAL)×(m2n SALdesc)⍳⊂DLTB COMSAL
+[50]  COMDAT←↑' ' Win∆Child COMDAT
+[51]  COMMult←,'Act' DescToVariableUK COMMULT
+[52]  COMPer← ,'Act' DescToVariableUK COMPER
+[53]  COMADaySep←zwb COMADaySep
+[54]  COMADayInd←zwb COMADayInd
+[55]  cashp←↑(COMADaySep/'D'),((CASHP≡'Priority')/'R'),CASHP
+[56]  CGMP←zwb CGMP
+[57]  COMADayPer←'100'
+[58]  
+[59]  :select CTYPE
+[60]  :case 2 ⋄ COMPer ←'25'
+[61]  :case 4 ⋄ COMMult←'2.25'
+[62]  :case 6 ⋄ COMMult←'3'
+[63]  :case 9 ⋄ COMADayPer←COMPer
+[64]  :endselect
+[65]  
+[66]  CTYPE2←('' 'Neutral or Nil' '25% Pension' 'IR Maximum' '2.25 x Pension' 'Accrual x Salary for each year' '3 x Pension' 'Multiple of Pension' '% of Pension')⍳⊂DLTB CTYPE2
+[67]  COMACC2←0.01×zwb COMACC2
+[68]  COMSAL2←↑(×⍴COMSAL2)×(m2n SALdesc)⍳⊂DLTB COMSAL2
+[69]  COMDAT2←↑' ' Win∆Child COMDAT2
+[70]  COMMult2←,'Act' DescToVariableUK COMMULT2
+[71]  COMPer2← ,'Act' DescToVariableUK COMPER2
+[72]  
+[73]  :select CTYPE2
+[74]  :case 2 ⋄ COMPer2 ←'25'
+[75]  :case 4 ⋄ COMMult2←'2.25'
+[76]  :case 6 ⋄ COMMult2←'3'
+[77]  :endselect
+[78]  
+[79]  :if COMValBas←zwb COMValBas
+[80]      COMValpc←0.01×zwb COMValpc
+[81]      ⍝ Relevance Rules for Commutation Tables - msk for relevant Tables
+[82]      COMValmsk←((CTYPE∊2 8)∨((~CTYPE∊0 1)^~CONTOP)∨CTYPE2∊2 8)^(2/bencap,0)∨'SM34'∊,DYNIND OVER (×AltSw)⌿AltDYNIND
+[83]  :else
+[84]      :if ¯1=↑COMTAB1←¯1 DEC∆CHECK COMTAB1 ⋄ COMTAB1←100/0
+[85]      :elseif 2=⍴⍴COMTAB1                  ⋄ COMTAB1←100↑COMTAB1 AgeSelect NRA
+[86]      :else                                ⋄ COMTAB1←100↑COMTAB1
+[87]      :endif
+[88]      :if ¯1=↑COMTAB2←¯1 DEC∆CHECK COMTAB2 ⋄ COMTAB2←100/0
+[89]      :elseif 2=⍴⍴COMTAB2                  ⋄ COMTAB2←100↑COMTAB2 AgeSelect NRA
+[90]      :else                                ⋄ COMTAB2←100↑COMTAB2
+[91]      :endif
+[92]      :if ¯1=↑COMTAB3←¯1 DEC∆CHECK COMTAB3 ⋄ COMTAB3←100/0
+[93]      :elseif 2=⍴⍴COMTAB3                  ⋄ COMTAB3←100↑COMTAB3 AgeSelect NRA
+[94]      :else                                ⋄ COMTAB3←100↑COMTAB3
+[95]      :endif
+[96]      :if ¯1=↑COMTAB4←¯1 DEC∆CHECK COMTAB4 ⋄ COMTAB4←100/0
+[97]      :elseif 2=⍴⍴COMTAB4                  ⋄ COMTAB4←100↑COMTAB4 AgeSelect NRA
+[98]      :else                                ⋄ COMTAB4←100↑COMTAB4
+[99]      :endif
+[100]     :if zwb COMTABExactAge
+[101]         COMTAB1←NRA PREP∆RATE COMTAB1∆G←COMTAB1 ⋄ COMTAB2←NRA PREP∆RATE COMTAB2∆G←COMTAB2
+[102]         COMTAB3←NRA PREP∆RATE COMTAB3∆G←COMTAB3 ⋄ COMTAB4←NRA PREP∆RATE COMTAB4∆G←COMTAB4
+[103]     :else
+[104]         COMTAB1∆G←(NRA↑0,NRA PREP∆RATE COMTAB1),NRA↓COMTAB1
+[105]         COMTAB2∆G←(NRA↑0,NRA PREP∆RATE COMTAB2),NRA↓COMTAB2
+[106]         COMTAB3∆G←(NRA↑0,NRA PREP∆RATE COMTAB3),NRA↓COMTAB3
+[107]         COMTAB4∆G←(NRA↑0,NRA PREP∆RATE COMTAB4),NRA↓COMTAB4
+[108]     :endif
+[109]     ⍝ Withdrawal/Accrued Benefits Commutation Factors
+[110]     COMTAB1∆GMP←(NRA∆G/COMTAB1∆G[NRA∆G]),NRA∆G↓COMTAB1 ⋄ COMTAB1∆G←(NRA∆G/COMTAB1∆G[NRA∆G]),NRA∆G↓COMTAB1∆G
+[111]     COMTAB2∆GMP←(NRA∆G/COMTAB2∆G[NRA∆G]),NRA∆G↓COMTAB2 ⋄ COMTAB2∆G←(NRA∆G/COMTAB2∆G[NRA∆G]),NRA∆G↓COMTAB2∆G
+[112]     COMTAB3∆GMP←(NRA∆G/COMTAB3∆G[NRA∆G]),NRA∆G↓COMTAB3 ⋄ COMTAB3∆G←(NRA∆G/COMTAB3∆G[NRA∆G]),NRA∆G↓COMTAB3∆G
+[113]     COMTAB4∆GMP←(NRA∆G/COMTAB4∆G[NRA∆G]),NRA∆G↓COMTAB4 ⋄ COMTAB4∆G←(NRA∆G/COMTAB4∆G[NRA∆G]),NRA∆G↓COMTAB4∆G
+[114] :endif
+[115] COMAdjbyEx←zwb COMAdjbyEx
+[116] 
+[117] :if COMValBas∨COMAdjbyEx ⋄ :andif ~test
+[118]     :if ~mt PPOSTMEMB ⋄ :orif ~mt (~WARCOMind)/SPOSTMEMB
+[119]         ('Note: Retirement ',(↑COMValBas COMAdjbyEx/'Valuation Basis' 'Life Expectancy Adjusted'),' Commutation Factors not output due to member-specific Mortality Loadings') VALN∆LOG 'Add'
+[120]     :elseif basischanged∨CFmissing
+[121]         RETcomfacs←(100 4,LatestAge-10)⍴0 ⍝ Store Commutation Factors for Database
+[122]     :endif
+[123] :endif
+[124] 
+[125] :if ¯1=↑ERTABC  ←¯1 DEC∆CHECK ERTABC
+[126]                              ERTABC  ←ERTAB
+[127] :else
+[128]     :if 2=⍴⍴ERTABC         ⋄ ERTABC  ←120↑ERTABC   AgeSelect NRA
+[129]     :else                  ⋄ ERTABC  ←120↑ERTABC
+[130]     :endif
+[131]     :if zwb ERTABExactAgeC ⋄ ERTABC  ←NRA PREP∆RATE ERTABC     ⋄ :endif
+[132] :endif
+[133] :if ¯1=↑ERTAB2C ←¯1 DEC∆CHECK ERTAB2C
+[134]                              ERTAB2C ←ERTAB2
+[135] :else
+[136]     :if 2=⍴⍴ERTAB2C        ⋄ ERTAB2C ←120↑ERTAB2C  AgeSelect NRA
+[137]     :else                  ⋄ ERTAB2C ←120↑ERTAB2C
+[138]     :endif
+[139]     :if zwb ERTABExactAgeC ⋄ ERTAB2C ←NRA PREP∆RATE ERTAB2C    ⋄ :endif
+[140] :endif
+[141] :if ¯1=↑ERTABFC ←¯1 DEC∆CHECK ERTABFC
+[142]                              ERTABFC ←ERTABF
+[143] :else
+[144]     :if 2=⍴⍴ERTABFC        ⋄ ERTABFC ←120↑ERTABFC  AgeSelect NRA
+[145]     :else                  ⋄ ERTABFC ←120↑ERTABFC
+[146]     :endif
+[147]     :if zwb ERTABExactAgeC ⋄ ERTABFC ←NRA PREP∆RATE ERTABFC    ⋄ :endif
+[148] :endif
+[149] :if ¯1=↑ERTAB2FC←¯1 DEC∆CHECK ERTAB2FC
+[150]                              ERTAB2FC←ERTAB2F
+[151] :else
+[152]     :if 2=⍴⍴ERTAB2FC       ⋄ ERTAB2FC←120↑ERTAB2FC AgeSelect NRA
+[153]     :else                  ⋄ ERTAB2FC←120↑ERTAB2FC
+[154]     :endif
+[155]     :if zwb ERTABExactAgeC ⋄ ERTAB2FC←NRA PREP∆RATE ERTAB2FC   ⋄ :endif
+[156] :endif
+[157] 
+[158] ⍝ Late Retirement
+[159] servind←(~bGAD)∨zwb servind
+[160] LRSalary←'R'=↑LRSalary
+[161] 
+[162] :if ¯1=↑LRTAB  ←¯1 DEC∆CHECK LRTAB
+[163]                             LRTAB  ←(LRA=NRA)⊃(120/1) ERTAB
+[164] :else
+[165]     :if 2=⍴⍴LRTAB         ⋄ LRTAB  ←120↑LRTAB   AgeSelect NRA
+[166]     :else                 ⋄ LRTAB  ←120↑LRTAB
+[167]     :endif
+[168]     :if zwb LRTABExactAge ⋄ LRTAB  ←NRA PREP∆RATE LRTAB   ⋄ :endif
+[169] :endif
+[170] :if ¯1=↑LRTAB2 ←¯1 DEC∆CHECK LRTAB2
+[171]                             LRTAB2 ←(LRA=NRA)⊃(120/1) ERTAB2
+[172] :else
+[173]     :if 2=⍴⍴LRTAB2        ⋄ LRTAB2 ←120↑LRTAB2  AgeSelect NRA
+[174]     :else                 ⋄ LRTAB2 ←120↑LRTAB2
+[175]     :endif
+[176]     :if zwb LRTABExactAge ⋄ LRTAB2 ←NRA PREP∆RATE LRTAB2  ⋄ :endif
+[177] :endif
+[178] :if ¯1=↑LRTABF ←¯1 DEC∆CHECK LRTABF
+[179]                             LRTABF ←(LRA=NRA)⊃(120/1) ERTABF
+[180] :else
+[181]     :if 2=⍴⍴LRTABF        ⋄ LRTABF ←120↑LRTABF  AgeSelect NRA
+[182]     :else                 ⋄ LRTABF ←120↑LRTABF
+[183]     :endif
+[184]     :if zwb LRTABExactAge ⋄ LRTABF ←NRA PREP∆RATE LRTABF  ⋄ :endif
+[185] :endif
+[186] :if ¯1=↑LRTAB2F←¯1 DEC∆CHECK LRTAB2F
+[187]                             LRTAB2F←(LRA=NRA)⊃(120/1) ERTAB2F
+[188] :else
+[189]     :if 2=⍴⍴LRTAB2F       ⋄ LRTAB2F←120↑LRTAB2F AgeSelect NRA
+[190]     :else                 ⋄ LRTAB2F←120↑LRTAB2F
+[191]     :endif
+[192]     :if zwb LRTABExactAge ⋄ LRTAB2F←NRA PREP∆RATE LRTAB2F ⋄ :endif
+[193] :endif
+[194] 
+[195] LRFApplies←'P'=↑LRFApplies
+[196] WARLRFind←zwb WARLRFind
+[197] 
+[198] :if ¯1=↑LRTABC  ←¯1 DEC∆CHECK LRTABC
+[199]                              LRTABC  ←(LRA=NRA)⊃LRTAB   ERTABC
+[200] :else
+[201]     :if 2=⍴⍴LRTABC         ⋄ LRTABC  ←120↑LRTABC   AgeSelect NRA
+[202]     :else                  ⋄ LRTABC  ←120↑LRTABC
+[203]     :endif
+[204]     :if zwb LRTABExactAgeC ⋄ LRTABC  ←NRA PREP∆RATE LRTABC     ⋄ :endif
+[205] :endif
+[206] :if ¯1=↑LRTAB2C ←¯1 DEC∆CHECK LRTAB2C
+[207]                              LRTAB2C ←(LRA=NRA)⊃LRTAB2  ERTAB2C
+[208] :else
+[209]     :if 2=⍴⍴LRTAB2C        ⋄ LRTAB2C ←120↑LRTAB2C  AgeSelect NRA
+[210]     :else                  ⋄ LRTAB2C ←120↑LRTAB2C
+[211]     :endif
+[212]     :if zwb LRTABExactAgeC ⋄ LRTAB2C ←NRA PREP∆RATE LRTAB2C    ⋄ :endif
+[213] :endif
+[214] :if ¯1=↑LRTABFC ←¯1 DEC∆CHECK LRTABFC
+[215]                              LRTABFC ←(LRA=NRA)⊃LRTABF  ERTABFC
+[216] :else
+[217]     :if 2=⍴⍴LRTABFC        ⋄ LRTABFC ←120↑LRTABFC  AgeSelect NRA
+[218]     :else                  ⋄ LRTABFC ←120↑LRTABFC
+[219]     :endif
+[220]     :if zwb LRTABExactAgeC ⋄ LRTABFC ←NRA PREP∆RATE LRTABFC    ⋄ :endif
+[221] :endif
+[222] :if ¯1=↑LRTAB2FC←¯1 DEC∆CHECK LRTAB2FC
+[223]                              LRTAB2FC←(LRA=NRA)⊃LRTAB2F ERTAB2FC
+[224] :else
+[225]     :if 2=⍴⍴LRTAB2FC       ⋄ LRTAB2FC←120↑LRTAB2FC AgeSelect NRA
+[226]     :else                  ⋄ LRTAB2FC←120↑LRTAB2FC
+[227]     :endif
+[228]     :if zwb LRTABExactAgeC ⋄ LRTAB2FC←NRA PREP∆RATE LRTAB2FC   ⋄ :endif
+[229] :endif
+[230] 
+[231] ⍝ Underpin
+[232] UDATA←,'Act' DescToVariableUK UDATA
+    ∇

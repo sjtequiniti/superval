@@ -1,1 +1,26 @@
-    ∇ res←text GetDecrMerge type;cn;PickList;NameList;list;sortorder;columns;∆[1]   ⍝ DECRWIN.sf#23[2]   ⍝ Get the Rate Tables according to "type"[3]   [4]   columns←'file' '∆_Name' '∆_Description' '∆_UserModified' '∆_TSModified' '∆_TimeModified'[5]   :if 0=⎕nc 'singletons' ⍝ Nothing yet[6]       list←MATRIX columns ⍝ empty table[7]   :else[8]       ∆←('Unique' 'File1' 'File2' push (singletons append matched) push unmatched) at type[9]       list←∆ select columns[10]  :endif[11]  [12]  cn←,⍒list at '∆_TimeModified' ⍝ display in reverse chronological order[13]  ∆←rowsIn list ⍝ Watch Out: (⊂1 0 ¯2) changes prototypes of other empty cells, so[14]  PickList←(∆=0) means (0 7⍴'') else (⍳∆) , (⊂1 0 ¯2) , (1 0↓ list select columns~⊂'∆_TimeModified')[cn;][15]  [16]  NameList←         MATRIX (text,'Rate Table File') (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  1 1 0 1[17]  NameList←NameList⍪MATRIX 'Rate Table Code'        (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  2 2 0 1[18]  NameList←NameList⍪MATRIX 'Rate Table Description' (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  3 3 0 1[19]  NameList←NameList⍪MATRIX 'User Modified'          (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  4 4 0 1[20]  NameList←NameList⍪MATRIX 'Last Modified'          (¯1↑Win∆TextSize ⊃PickList[;5]) 'right' 5 5 0 1[21]  [22]  sortorder←'⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺RowID'[23]  [24]  res←PickList NameList sortorder cn    ∇
+    ∇ res←text GetDecrMerge type;cn;PickList;NameList;list;sortorder;columns;∆
+[1]   ⍝ DECRWIN.sf#23
+[2]   ⍝ Get the Rate Tables according to "type"
+[3]   
+[4]   columns←'file' '∆_Name' '∆_Description' '∆_UserModified' '∆_TSModified' '∆_TimeModified'
+[5]   :if 0=⎕nc 'singletons' ⍝ Nothing yet
+[6]       list←MATRIX columns ⍝ empty table
+[7]   :else
+[8]       ∆←('Unique' 'File1' 'File2' push (singletons append matched) push unmatched) at type
+[9]       list←∆ select columns
+[10]  :endif
+[11]  
+[12]  cn←,⍒list at '∆_TimeModified' ⍝ display in reverse chronological order
+[13]  ∆←rowsIn list ⍝ Watch Out: (⊂1 0 ¯2) changes prototypes of other empty cells, so
+[14]  PickList←(∆=0) means (0 7⍴'') else (⍳∆) , (⊂1 0 ¯2) , (1 0↓ list select columns~⊂'∆_TimeModified')[cn;]
+[15]  
+[16]  NameList←         MATRIX (text,'Rate Table File') (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  1 1 0 1
+[17]  NameList←NameList⍪MATRIX 'Rate Table Code'        (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  2 2 0 1
+[18]  NameList←NameList⍪MATRIX 'Rate Table Description' (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  3 3 0 1
+[19]  NameList←NameList⍪MATRIX 'User Modified'          (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  4 4 0 1
+[20]  NameList←NameList⍪MATRIX 'Last Modified'          (¯1↑Win∆TextSize ⊃PickList[;5]) 'right' 5 5 0 1
+[21]  
+[22]  sortorder←'⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺RowID'
+[23]  
+[24]  res←PickList NameList sortorder cn
+    ∇

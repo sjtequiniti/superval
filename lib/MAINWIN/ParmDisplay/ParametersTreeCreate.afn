@@ -1,0 +1,31 @@
+    ∇ ParametersTreeCreate;⎕wself;txt
+[1]   ⍝ MAINWIN.sf#15
+[2]   ⍝ Create a Tree and Browser for showing Parameter Sets
+[3]   
+[4]   :if mt (FormName ,".trParameters") ⎕wi 'self'
+[5]       ⎕wself←(FormName ,".trParameters") ⎕wi "New" "Tree" "Hide"
+[6]       ⎕wi "∆name" "Parameters"
+[7]       ⎕wi "∆type" "Tree"
+[8]       ⎕wi "∆helpid" 0 ⍝⍝⍝ FIXME
+[9]       txt←    "Browse the Sets of Scheme Parameters",⎕tcnl
+[10]      txt←txt,"Right-click a Parameter Type to edit a Parameter Set of that Type",⎕tcnl
+[11]      txt←txt,"Right-click a Parameter Set to open the selected Parameter Set",⎕tcnl
+[12]      txt←txt,"Shift-Right-click a Parameter Type to audit a Parameter Set of that Type",⎕tcnl
+[13]      txt←txt,"Shift-Right-click a Parameter Set to produce an Audit Report on the selected Parameter Set",⎕tcnl
+[14]      txt←txt,"Right-click Top Node to select Sort Order of Parameter Sets"
+[15]      ⎕wi "tooltip" txt
+[16]      ⎕wi "style" 0 8
+[17]      ⎕wi "∆where" (4 2⍴0.05 0 0.51 0 0.9 0 0.47 0)
+[18]      ⎕wi "where" ((FormName ⎕wi "size") Win∆Resize (4 2⍴0.05 0 0.51 0 0.9 0 0.47 0))
+[19]      ⎕wi "onClick" "Parameters∆Click FormName ,'.trParameters'"
+[20]  
+[21]      ParmsSort←INIString uSER 'ParmsSort' 'Alpha' PrefINI
+[22]  
+[23]      ⎕wself←(FormName ,".webParmDisplay") ⎕wi "New" "Microsoft Web Browser" "Hide"
+[24]      ⎕wi "∆name" "ParmDisplay"
+[25]      ⎕wi "∆type" "Web"
+[26]      ⎕wi "∆helpid" 0 ⍝⍝⍝ FIXME
+[27]      ⎕wi "∆where" (4 2⍴0.05 0 0.02 0 0.9 0 0.47 0)
+[28]      ⎕wi "where" ((FormName ⎕wi "size") Win∆Resize (4 2⍴0.05 0 0.02 0 0.9 0 0.47 0))
+[29]  :endif
+    ∇

@@ -1,0 +1,182 @@
+    ∇ DumpResults;tab;cfs;∆;val;key;Desc;BenType;Class;Period;res;tpr1;File;control;label;grouptab;Sex;ContType;oldval;diff;parttab;msk;t;k;v;pound;r;body;pm
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Dump the adjusted results to file
+[3]   
+[4]   pound←'&pound;' ⍝ HTML entity
+[5]   
+[6]   tab←(restab for classsel) append (amorttab for 0≠⌊∣∊amorttab at 'NewLiabilityValue') for 'ClassName' (incexp/'Expenses') (inccont/'Contributions') ⍝ Restrict to non-zero chosen classes
+[7]   :if inccont ⋄ tab←tab append fundind means fundtab else conttab ⋄ :endif
+[8]   
+[9]   grouptab←tab groupby ('ClassName' 'ResultsCategoryID' 'PastService' 'BenefitTypeID' 'ContingencyID') ('StartYear' 'LiabilityValue' 'NewLiabilityValue')
+[10]  
+[11]  r←''
+[12]  r←r,⊂('p' xattr 'class' 'sv-database')xtag ((~sqlDatabase)/ConsolidDir),currentdbase,sqlDatabase/' - DatabaseID:  ',⍕DBID
+[13]  
+[14]  r←r,⊂'h2' xtag 'Membership Classes'
+[15]  r←r,⊂' and ' join nub tab at 'ClassName'
+[16]  t←0 2⍴''
+[17]  
+[18]  t←t⍪('Contributions Included')(CheckTranslate ⍕inccont)
+[19]  :if 1=('fmQuickSM.sQuick_Scenario.',controlpage,'fFilter.ckincexpense') ⎕wi 'visible'
+[20]      t←t⍪('Expenses Included')(CheckTranslate ⍕incexp)
+[21]  :endif
+[22]  :if 1=('fmQuickSM.sQuick_Scenario.',controlpage,'fFilter.ckincadditliab') ⎕wi 'visible'
+[23]      t←t⍪('Additional Liabilities Included')(CheckTranslate ⍕incaddit)
+[24]  :endif
+[25]  :if ~mt t ⋄ r←r,writeDict t ⋄ :endif
+[26]  
+[27]  r←r,⊂'h2' xtag 'Financial Assumption Variations'
+[28]  t←0 2⍴''
+[29]  ∆←↑finMethod/'Relative Change' 'New Values' '% Change' '% of Current Values'
+[30]  t←t⍪('Type of Variation')(∆)
+[31]  r←r,writeDict t
+[32]  ∆←(⊂'rate'),¨m2n 'ZI2' ⎕fmt ⍳15 ⍝ up to 15 rates
+[33]  ∆←(1=((⊂'fmQuickSM.sQuick_Scenario.pgFinancial.fFinAss.cb'),¨∆) MultiWI 'visible')/∆ ⍝ select visible controls
+[34]  ∆←(((⊂'fmQuickSM.sQuick_Scenario.pgFinancial.fFinAss.ll'),¨∆) MultiWI 'caption') pr¨ ((⊂'fmQuickSM.sQuick_Scenario.pgFinancial.fFinAss.cb'),¨∆) MultiWI 'text'
+[35]  r←r,writeDict ⎕MIX ∆
+[36]  
+[37]  :if mortadj ⍝⍝⍝ ∨decadj
+[38]      :if mortadj
+[39]          r←r,⊂'h2' xtag 'Demographic Assumption Variations'
+[40]          ∆←('fmQuickSM.sQuick_Scenario.pgDemographic.fPostRetAss.ckperannum' ⎕wi 'value')/' per annum from the Valuation Date'
+[41]          t←1 2⍴('Post-Retirement Mortality Adjustment')((DLTB 'fmQuickSM.sQuick_Scenario.pgDemographic.fPostRetAss.edmortality' ⎕wi 'text'),'%',∆)
+[42]          r←r,writeDict t
+[43]      :endif
+[44]  ⍝⍝⍝    :if decadj
+[45]  ⍝⍝⍝    :endif
+[46]  :endif
+[47]  
+[48]  :if active
+[49]      r←r,⊂'h2' xtag 'Future Service Funding'
+[50]      t←0 2⍴''
+[51]      t←t⍪('Adjust Future Service Funding Rate')(CheckTranslate ⍕fundind)
+[52]      :if fundind ⋄ :andif ValMeth≡'PUC'
+[53]          t←t⍪('Control Period')((⍕ContPer),' years')
+[54]      :endif
+[55]      r←r,writeDict t
+[56]  :endif
+[57]  
+[58]  r←r,⊂'h2' xtag 'Amortisation'
+[59]  r←r,⊂'h3' xtag 'Amortisation 1'
+[60]  t←0 2⍴''
+[61]  t←t⍪('Method')(ameth1)
+[62]  t←t⍪('Rate')((1+'P'=↑ameth1)⊃(pound,Cont1)(Ratepc1,'% of Salaries'))
+[63]  t←t⍪('Term')(TERMAM1)
+[64]  t←t⍪('Amount')(pound,amortamount1)
+[65]  r←r,writeDict t
+[66]  r←r,⊂'h3' xtag 'Amortisation 2'
+[67]  t←0 2⍴''
+[68]  t←t⍪('Method')(ameth2)
+[69]  t←t⍪('Rate')((1+'P'=↑ameth2)⊃(pound,Cont2)(Ratepc2,'% of Salaries'))
+[70]  t←t⍪('Term')(TERMAM2)
+[71]  t←t⍪('Amount')(pound,amortamount2)
+[72]  r←r,writeDict t
+[73]  
+[74]  r←r,⊂'h2' xtag 'Benefit Variations'
+[75]  t←0 2⍴''
+[76]  :if active
+[77]      t←t⍪('Cease Future Accrual after')((⍕accruallimit),' years')
+[78]      t←t⍪('Adjust Future Accrual')((⍕futaccrual),'%')
+[79]  :endif
+[80]  :if mortadj
+[81]      t←t⍪('Adjust Spouse Reversion')((⍕spouserev),'%')
+[82]  :endif
+[83]  :if ~mt t
+[84]      r←r,writeDict t
+[85]  :endif
+[86]  :if 1='fmQuickSM.sQuick_Scenario.pgBenefits.fCash' ⎕wi 'visible'
+[87]      r←r,⊂'h2' xtag 'Cash Variations'
+[88]      t←0 2⍴''
+[89]      t←t⍪('Adjust Commutation Factors')((⍕commfact),'%')
+[90]      t←t⍪('Adjust Commutation Rate')((⍕commpc),'%')
+[91]      t←t⍪('Adjust Cash on Top Amount (No Reduction of Past Service)')((⍕cotpc),'%')
+[92]      r←r,writeDict t
+[93]  :endif
+[94]  :if deferred
+[95]      r←r,⊂'h2' xtag 'Transfer Value Variations'
+[96]      t←0 2⍴''
+[97]      t←t⍪('Capitalise Transfer Values at Exit')(CheckTranslate TVcapind)
+[98]      t←t⍪('Adjust Transfer Values')((⍕TVpc),'%')
+[99]      t←t⍪('Adjust Retirement Transfer Proportions')((⍕TVprop),'%')
+[100]     r←r,writeDict t
+[101] :endif
+[102] r←r,⊂'h2' xtag 'Cash Flow Variations'
+[103] t←0 2⍴''
+[104] t←t⍪('Capitalise Pensions at Exit')(CheckTranslate ⍕Capind)
+[105] :if Capind
+[106]     t←t⍪('Expense/Profit Loading')((⍕100×¯1+Profit),'%')
+[107] :endif
+[108] r←r,writeDict t
+[109] 
+[110] res←MATRIX 'Class' 'Sex' 'Category' '' 'Benefit Type' 'Contingency' 'Original Liability' 'Change' 'New Liability'
+[111] r←r,⊂'h2' xtag 'Liabilities'
+[112] (k v)←pop grouptab                                      ⍝ keys and values
+[113] pm←(0 1)('Future Service' 'Past Service')               ⍝ period map
+[114] ∆←↑¨0 1↓⊃k                                              ⍝ indexes without nesting
+[115] t←(↑¨k),⍉⎕MIX SexMap ResIDDesc pm benTypes ContIDs map¨⎕SPLIT⍉2 1 1 1/∆
+[116] r←r,writeTable res⍪t,1⌽∆,-/∆←+/¨v∘.at 'NewLiabilityValue' 'LiabilityValue'
+[117] 
+[118] res←'Year' 'NR/TV Cash' 'ER/TV Cash' 'Ret/TV Pen' 'Death Cash' 'Death Pen' 'Death Ins' 'IH Cash' 'IH Pen' 'IH Ins' 'Leaving Cash' 'Leaving Pen' 'DiD' 'Def/Pen' 'Memb Conts' 'Employer Conts' 'Amort Conts' 'Expenses'
+[119] :if 0≠rowsIn parttab←tab for 'ClassName' 'Active' 'Additional Liability'
+[120]     cfs←     0   2 21 17    32 33    38 39 DumpCFs 1 35 36 33       ⍝ Include Transfer Cashflows in Retirement
+[121]     cfs←cfs,   1         31       37       DumpCFs 1 35 36
+[122]     cfs←cfs,(0 1 2 21 17 31 32 33 37 38 39 DumpCFs ⍬)-⍉MATRIX +/cfs
+[123]     cfs←cfs,     3 23     DumpCFs 1 35 36
+[124]     ∆←           3 23     DumpCFs 9 10
+[125]     cfs←cfs,(    3 23     DumpCFs ⍬)-cfs[;,4]+∆
+[126]     cfs←cfs,∆
+[127]     cfs←cfs,   4 24 25 26 DumpCFs 1 35 36
+[128]     ∆←         4 24 25 26 DumpCFs 9 10
+[129]     cfs←cfs,(  4 24 25 26 DumpCFs ⍬)-cfs[;,7]+∆
+[130]     cfs←cfs,∆
+[131]     cfs←cfs,   5          DumpCFs 1 35 36
+[132]     cfs←cfs,(  5          DumpCFs ⍬)-cfs[;,10]
+[133]     cfs←cfs,   6          DumpCFs 30
+[134] :else
+[135]     cfs←(maxyr,12)⍴0
+[136] :endif
+[137] :if 0≠rowsIn parttab←tab for 'ClassName' 'Deferred' 'Pensioner'
+[138]     cfs←cfs,↑+/+⌿¨parttab at 'RFCashFlow'
+[139] :else
+[140]     cfs←cfs,0
+[141] :endif
+[142] :if 0≠rowsIn parttab←tab for 'ClassName' 'Contributions'
+[143]     :if 8∊∊parttab at 'ContingencyID'
+[144]         cfs←cfs,↑+/+⌿¨(parttab for (⊂'ContingencyID'),⊂,8) at 'RFCashFlow'
+[145]     :else
+[146]         cfs←cfs,0
+[147]     :endif
+[148]     :if ∨/9 15∊∊parttab at 'ContingencyID'
+[149]         cfs←cfs,↑+/+⌿¨(parttab for (⊂'ContingencyID'),,¨9 15) at 'RFCashFlow'
+[150]     :else
+[151]         cfs←cfs,0
+[152]     :endif
+[153]     :if ∨/10 28∊∊parttab at 'ContingencyID'
+[154]         cfs←cfs,↑+/+⌿¨(parttab for (⊂'ContingencyID'),,¨10 28) at 'RFCashFlow'
+[155]     :else
+[156]         cfs←cfs,0
+[157]     :endif
+[158] :else
+[159]     cfs←cfs,(maxyr,3)⍴0
+[160] :endif
+[161] :if 0≠rowsIn parttab←tab for 'ClassName' 'Expenses'
+[162]     cfs←cfs,↑+/+⌿¨parttab at 'RFCashFlow'
+[163] :else
+[164]     cfs←cfs,0
+[165] :endif
+[166] :if ecflag ⋄ :andif ∨/(+/cfs)≠↑+/+⌿¨tab at 'RFCashFlow' ⋄ MDISPLAY 'Some Cash Flows missing from Dump - tell Robert' ⋄ :endif
+[167] r←r,⊂'h2' xtag 'Cash Flows'
+[168] r←r,writeTable res⍪(⍳maxyr),cfs
+[169] 
+[170] body←ScriptFollowing,join r
+[171] ⍝<style type="text/css">
+[172] ⍝   td.data         {font-weight: bold}
+[173] ⍝   td.label        {color: rgba(0,0,0,0.5)}
+[174] ⍝   td.label:after  {content: ":"}
+[175] ⍝   td.left-align   {text-align: left}
+[176] ⍝   td.right-align  {text-align: right}
+[177] ⍝</style>
+[178] 
+[179] (body 'Adjusted Results' (StyleDir,'Adjusted_Results.css')) writeHtmlFile ∆←OutputDir,'Adjusted Results ',((-⍳6)tsIM ⎕ts),'.htm'
+[180] 0 Win∆EditFile ∆
+    ∇

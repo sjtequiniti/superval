@@ -1,1 +1,179 @@
-    ∇ QS_AmortChange field;termam;liab;msk;vals;NO;ContID;mult;rawcf;disc;inf;amount;weighting;share;tots;∆;rate;newamount;v1pc;val;sals;weights;ameth;newval;ac;page[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Enable Amortisation fields as required[3]   [4]   :select field[5]   :caselist 'opamortconstant_1' 'opamortconstant_2' 'opamortconstant_3'[6]       ((⊂parent,'pgFunding.fAmort1.'),¨'cbameth1' 'edRatepc1' 'edCont1' 'edTERMAM1' 'edamortamount1') MultiWI 'enabled' 1[7]       ((⊂parent,'pgFunding.fAmort2.'),¨'cbameth2' 'edRatepc2' 'edCont2' 'edTERMAM2' 'edamortamount2') MultiWI 'enabled' 1[8]       ∆←↑('123'=¯1↑field)/('edRatepc' 'edCont') (⊂'edTERMAM') (⊂'edamortamount')[9]       ((⊂parent,'pgFunding.fAmort1.'),¨∆,¨'1') MultiWI 'enabled' 0[10]      ((⊂parent,'pgFunding.fAmort2.'),¨∆,¨'2') MultiWI 'enabled' 0[11]  [12]      (parent,'pgFunding.fAmort1.cbameth1') ⎕wi 'enabled' ('1'≠¯1↑field)[13]      (parent,'pgFunding.fAmort2.cbameth2') ⎕wi 'enabled' ('1'≠¯1↑field)[14]      ((Win∆Parent DTDot parent),'.bnQuick_ScenarioSolve') ⎕wi 'enabled' ('3'≠¯1↑field)[15]  [16]  :caselist 'cbameth1' 'cbameth2'[17]      NO←zwb ¯1↑field ⋄ ContID←NO⊃10 28[18]      ∆←∨/'Salaries'⍷ameth←⍎'ameth',⍕NO[19]      ((parent,'pgFunding.fAmort',(⍕NO),'.') ('edRatepc',⍕NO)) Win∆SetRelated 'visible'   ∆[20]      ((parent,'pgFunding.fAmort',(⍕NO),'.') ('edCont',⍕NO))   Win∆SetRelated 'visible' (~∆)[21]  [22]      msk←(ContID=∊amorttab at 'ContingencyID')^11=∊amorttab at 'BenefitTypeID' ⍝ Amortisation records[23]      vals←amorttab at 'AccrualLimit'[24]      (msk/vals)←0×msk/vals[25]      amorttab←amorttab amend 'AccrualLimit' vals[26]  [27]      vals←amorttab at 'NewLiabilityValue'[28]      newval←,0.01××+/∊msk/vals[29]      (msk/vals)←⊂,0 ⍝ Set all New LiabilityValue to zero[30]  [31]      :select ↑ameth[32]      :case 'P' ⍝ Salaries[33]          :if ∨/'Current'⍷ameth ⋄ msk←msk^∨/¨(⊂'Current')⍷¨amorttab at 'BenefitBasis'[34]          :else                 ⋄ msk←msk^∨/¨(⊂'Salaries')⍷¨amorttab at 'BenefitBasis'[35]          :endif[36]      :case 'L' ⍝ Level Amounts[37]           msk←msk^∨/¨(⊂'Level')⍷¨amorttab at 'BenefitBasis'[38]      :case 'F' ⍝ Fixed plus Interest[39]           msk←msk^∨/¨(⊂'Fixed')⍷¨amorttab at 'BenefitBasis'[40]      :endselect[41]      (msk/vals)←⊂newval ⍝ Set now relevant rows to new value of +/-0.01[42]      amorttab←amorttab amend 'NewLiabilityValue' vals[43]  [44]      ac←amortconstant ⋄ amortconstant←'A' ⍝ Force the correct calculation[45]      QS_AmortChange 'edTERMAM',⍕NO[46]      amortconstant←ac[47]  [48]  :caselist 'edRatepc1' 'edRatepc2'[49]      sals←1 ⋄ NO←zwb ¯1↑field ⋄ ContID←NO⊃10 28 ⋄ rate←zwb NO⊃Ratepc1 Ratepc2[50]      →RateCalc[51]  [52]  :caselist 'edCont1' 'edCont2'[53]      sals←0 ⋄ NO←zwb ¯1↑field ⋄ ContID←NO⊃10 28 ⋄ rate←zwb NO⊃Cont1 Cont2[54]  RateCalc:[55]      msk←(0≠∊amorttab at 'NewLiabilityValue')^(ContID=∊amorttab at 'ContingencyID')^11=∊amorttab at 'BenefitTypeID' ⍝ Amortisation records[56]      amount←-(0.01×(0=amount)××rate+1E¯13)+amount←zwb NO⊃amortamount1 amortamount2[57]      rate←rate+(1E¯12×(0=rate)×-×amount+0.001)[58]      :if 'T'=↑amortconstant  ⍝ Term fixed[59]          termam←zwb NO⊃TERMAM1 TERMAM2[60]      :else                   ⍝ Amount fixed[61]          :if =/×rate amount[62]              MDISPLAY 'Contribution Rate/Amount and Deficit/(Surplus) must be the same sign'[63]              :if sals ⋄ (DLTB 'M<->F10.2' ⎕fmt rate←-rate) ASSIGN∆Dict 'Ratepc',⍕NO[64]              :else    ⋄ (DLTB 'M<->I15' ⎕fmt rate←-rate) ASSIGN∆Dict 'Cont',⍕NO[65]              :endif[66]          :endif[67]          (rawcf disc inf)←(amorttab for msk) at 'RawMemberCF' 'NewDiscount' 'NewInflator'[68]          termam←+/(∣rate)<∣amount CDIV v1pc←+/↑+/rawcf×inf×disc[69]          :if amortmaxterm≤termam ⋄ :andif 0.001<∣rate[70]  ⍝⍝⍝            ⎕wres←('More than ',(⍕amortmaxterm),' years required at current Contribution Amount') ''[71]              MDISPLAY 'More than ',(⍕amortmaxterm),' years required at current Contribution Amount'[72]              :if 0≠⎕nc 'amortamounts'[73]                  1 ⍙WebUpdateControls (parent,'pgFunding.fAmort',(⍕NO),'.edamortamount',⍕NO) 'text' (NO⊃amortamounts)[74]              :else[75]                  ac←amortconstant ⋄ amortconstant←'R' ⍝ Force the correct calculation[76]                  QS_AmortChange 'edTERMAM',⍕NO[77]                  amortconstant←ac[78]              :endif[79]              :return[80]          :elseif 0.001>∣rate[81]              :return[82]          :else[83]              termam←↑termam+((rate×v1pc[1+termam])-amount) CDIV DIFF rate×v1pc[2 1+termam][84]          :endif[85]          ((-3×0=1∣2 gRound termam)↓DLTB 'M<->F10.2' ⎕fmt termam) ASSIGN∆Dict 'TERMAM',⍕NO[86]      :endif[87]      :if 0=weighting←1∣termam ⋄ weighting←1 0[88]      :else                    ⋄ weighting←(1-weighting),weighting ⍝ Non-integral terms[89]      :endif[90]  [91]      val←((amortmaxterm+1),maxyr)⍴maxyr/(amortmaxterm+1) OVERTAKE ∊((⌊termam) 1 1)/0 (weighting×rate) 0[92]      vals←amorttab at 'AccrualLimit'[93]      (msk/vals)←⊂val[94]      amorttab←amorttab amend 'AccrualLimit' vals[95]  [96]      amorttab←1 ⍙WebRecalculate amorttab[97]      ⍙WebAmortisation 'Update'[98]  [99]  :caselist 'edTERMAM1' 'edTERMAM2'[100]     NO←zwb ¯1↑field[101]     :if amortmaxterm<termam←zwb NO⊃TERMAM1 TERMAM2[102] ⍝⍝⍝        ⎕wres←('A maximum period of ',(⍕amortmaxterm),' years is allowable') ''[103]         MDISPLAY 'A maximum period of ',(⍕amortmaxterm),' years is allowable'[104]         :if 0≠⎕nc 'amortamounts'[105]             1 ⍙WebUpdateControls (parent,'pgFunding.fAmort',(⍕NO),'.edamortamount',⍕NO) 'text' (NO⊃amortamounts)[106]         :else[107] ⍝⍝⍝            ac←amortconstant ⋄ amortconstant←'R' ⍝ Force the correct calculation[108] ⍝⍝⍝            QS_AmortChange 'edTERMAM',⍕NO[109] ⍝⍝⍝            amortconstant←ac[110]         :endif[111]         :return[112]     :elseif termam=0[113]         :return[114]     :endif[115]     ContID←NO⊃10 28[116]     msk←(0≠∊amorttab at 'NewLiabilityValue')^(ContID=∊amorttab at 'ContingencyID')^11=∊amorttab at 'BenefitTypeID' ⍝ Amortisation records[117]     :if 0=weighting←1∣termam ⋄ weighting←1 0 ⋄ termam←2/termam ⍝ Non-integral terms[118]     :else                    ⋄ weighting←(1-weighting),weighting ⋄ termam←amortmaxterm⌊0 1+⌊termam[119]     :endif[120]     liab←-(0.01×liab=0)+liab←zwb NO⊃amortamount1 amortamount2[121]     sals←∨/'Salaries'⍷↑(amorttab for msk) at 'BenefitBasis' ⍝ % of Salaries[122]     :if 'A'=↑amortconstant ⍝ Constant Amount[123]         (rawcf disc inf)←(amorttab for msk) at 'RawMemberCF' 'NewDiscount' 'NewInflator'[124]         mult←liab CDIV +/,weighting×[1]∆←(↑+/rawcf×inf×disc)[termam+1;][125]         :if sals ⋄ (DLTB 'M<->F10.2' ⎕fmt mult) ASSIGN∆Dict 'Ratepc',⍕NO ⍝ % of Salaries[126]         :else[127]             :if 0=↑termam ⋄ :andif ~sals ⋄ weights←0 1 ⋄ :else ⋄ weights←weighting ⋄ :endif[128]             (DLTB 'M<->I15' ⎕fmt liab CDIV +/,weights×[1]∆) ASSIGN∆Dict 'Cont',⍕NO ⍝ Level Amounts and Fixed Amount plus Accrued Interest[129]         :endif[130]     :else ⍝ Constant Rate[131]         :if sals ⋄ mult←(1E¯12×(0=mult)×-×liab+0.001)+mult←zwb NO⊃Ratepc1 Ratepc2[132]         :else    ⋄ mult←(1E¯12×(0=mult)×-×liab+0.001)+mult←zwb NO⊃Cont1 Cont2[133]         :endif[134]     :endif[135] [136]     vals←amorttab at 'AccrualLimit'[137]     (msk/vals)←⊂((amortmaxterm+1),maxyr)⍴maxyr/(amortmaxterm+1) OVERTAKE ∊((↑termam) 1 1)/0 (weighting×mult) 0[138]     amorttab←amorttab amend 'AccrualLimit' vals[139] [140]     amorttab←1 ⍙WebRecalculate amorttab[141]     ⍙WebAmortisation 'Update'[142] [143] :caselist 'edamortamount1' 'edamortamount2'[144] [145]     NO←zwb ¯1↑field ⋄ ContID←NO⊃10 28[146]     msk←(0≠∊amorttab at 'NewLiabilityValue')^(ContID=∊amorttab at 'ContingencyID')^11=∊amorttab at 'BenefitTypeID' ⍝ Amortisation records[147]     :if 'T'=↑amortconstant ⍝ Constant Term[148]         ac←amortconstant ⋄ amortconstant←'A' ⍝ Force the correct calculation[149]         QS_AmortChange 'edTERMAM',⍕NO[150]     :else ⍝ Constant Rate[151]         ac←amortconstant ⋄ amortconstant←'A' ⍝ Force the correct calculation[152]         :if ∨/'Salaries'⍷↑(amorttab for msk) at 'BenefitBasis' ⍝ % of Salaries[153]             QS_AmortChange 'edRatepc',⍕NO[154]         :else[155]             QS_AmortChange 'edCont',⍕NO[156]         :endif[157]     :endif[158]     amortconstant←ac[159] [160] :case 'Solve' ⍝ Called from sub-Module QSM_Solve[161]     liab←(↑+/(restab append amorttab append fundind means fundtab else conttab) at 'NewLiabilityValue')-Assets[162]     NO←,(∆←1+zwb ¯1↑amortselect)⊃('1' '2') ('1') ('2')[163]     ContID←,∆⊃(10 28) (10) (28)[164]     share←(∆=1)^('P'=↑amortshare)[165]     amount←amount+0.01×0=amount←zwb¨⍎¨(⊂'amortamount'),¨NO[166]     :if share ⋄ amount←amount+liab×amount CDIV +/amount[167]     :else     ⋄ amount←amount+liab CDIV ⍴,amount[168]     :endif[169] [170]     amortamounts←amortamount1 amortamount2[171]     ac←amortconstant ⋄ amortconstant←'TR'~↑amortmethod[172]     :for ∆ :in spin NO amount ⋄ (NO amount)←∆[173]         0 ⍙WebUpdateControls ('fmQuickSM.sQuick_Scenario.pgFunding.fAmort',(⍕NO),'.edamortamount',⍕NO) 'text' (DLTB 'M<->I20' ⎕fmt amount)[174]     :endfor[175]     amortconstant←ac ⋄ 0 0⍴⎕ex 'amortamounts'[176] [177] :endselect    ∇
+    ∇ QS_AmortChange field;termam;liab;msk;vals;NO;ContID;mult;rawcf;disc;inf;amount;weighting;share;tots;∆;rate;newamount;v1pc;val;sals;weights;ameth;newval;ac;page
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Enable Amortisation fields as required
+[3]   
+[4]   :select field
+[5]   :caselist 'opamortconstant_1' 'opamortconstant_2' 'opamortconstant_3'
+[6]       ((⊂parent,'pgFunding.fAmort1.'),¨'cbameth1' 'edRatepc1' 'edCont1' 'edTERMAM1' 'edamortamount1') MultiWI 'enabled' 1
+[7]       ((⊂parent,'pgFunding.fAmort2.'),¨'cbameth2' 'edRatepc2' 'edCont2' 'edTERMAM2' 'edamortamount2') MultiWI 'enabled' 1
+[8]       ∆←↑('123'=¯1↑field)/('edRatepc' 'edCont') (⊂'edTERMAM') (⊂'edamortamount')
+[9]       ((⊂parent,'pgFunding.fAmort1.'),¨∆,¨'1') MultiWI 'enabled' 0
+[10]      ((⊂parent,'pgFunding.fAmort2.'),¨∆,¨'2') MultiWI 'enabled' 0
+[11]  
+[12]      (parent,'pgFunding.fAmort1.cbameth1') ⎕wi 'enabled' ('1'≠¯1↑field)
+[13]      (parent,'pgFunding.fAmort2.cbameth2') ⎕wi 'enabled' ('1'≠¯1↑field)
+[14]      ((Win∆Parent DTDot parent),'.bnQuick_ScenarioSolve') ⎕wi 'enabled' ('3'≠¯1↑field)
+[15]  
+[16]  :caselist 'cbameth1' 'cbameth2'
+[17]      NO←zwb ¯1↑field ⋄ ContID←NO⊃10 28
+[18]      ∆←∨/'Salaries'⍷ameth←⍎'ameth',⍕NO
+[19]      ((parent,'pgFunding.fAmort',(⍕NO),'.') ('edRatepc',⍕NO)) Win∆SetRelated 'visible'   ∆
+[20]      ((parent,'pgFunding.fAmort',(⍕NO),'.') ('edCont',⍕NO))   Win∆SetRelated 'visible' (~∆)
+[21]  
+[22]      msk←(ContID=∊amorttab at 'ContingencyID')^11=∊amorttab at 'BenefitTypeID' ⍝ Amortisation records
+[23]      vals←amorttab at 'AccrualLimit'
+[24]      (msk/vals)←0×msk/vals
+[25]      amorttab←amorttab amend 'AccrualLimit' vals
+[26]  
+[27]      vals←amorttab at 'NewLiabilityValue'
+[28]      newval←,0.01××+/∊msk/vals
+[29]      (msk/vals)←⊂,0 ⍝ Set all New LiabilityValue to zero
+[30]  
+[31]      :select ↑ameth
+[32]      :case 'P' ⍝ Salaries
+[33]          :if ∨/'Current'⍷ameth ⋄ msk←msk^∨/¨(⊂'Current')⍷¨amorttab at 'BenefitBasis'
+[34]          :else                 ⋄ msk←msk^∨/¨(⊂'Salaries')⍷¨amorttab at 'BenefitBasis'
+[35]          :endif
+[36]      :case 'L' ⍝ Level Amounts
+[37]           msk←msk^∨/¨(⊂'Level')⍷¨amorttab at 'BenefitBasis'
+[38]      :case 'F' ⍝ Fixed plus Interest
+[39]           msk←msk^∨/¨(⊂'Fixed')⍷¨amorttab at 'BenefitBasis'
+[40]      :endselect
+[41]      (msk/vals)←⊂newval ⍝ Set now relevant rows to new value of +/-0.01
+[42]      amorttab←amorttab amend 'NewLiabilityValue' vals
+[43]  
+[44]      ac←amortconstant ⋄ amortconstant←'A' ⍝ Force the correct calculation
+[45]      QS_AmortChange 'edTERMAM',⍕NO
+[46]      amortconstant←ac
+[47]  
+[48]  :caselist 'edRatepc1' 'edRatepc2'
+[49]      sals←1 ⋄ NO←zwb ¯1↑field ⋄ ContID←NO⊃10 28 ⋄ rate←zwb NO⊃Ratepc1 Ratepc2
+[50]      →RateCalc
+[51]  
+[52]  :caselist 'edCont1' 'edCont2'
+[53]      sals←0 ⋄ NO←zwb ¯1↑field ⋄ ContID←NO⊃10 28 ⋄ rate←zwb NO⊃Cont1 Cont2
+[54]  RateCalc:
+[55]      msk←(0≠∊amorttab at 'NewLiabilityValue')^(ContID=∊amorttab at 'ContingencyID')^11=∊amorttab at 'BenefitTypeID' ⍝ Amortisation records
+[56]      amount←-(0.01×(0=amount)××rate+1E¯13)+amount←zwb NO⊃amortamount1 amortamount2
+[57]      rate←rate+(1E¯12×(0=rate)×-×amount+0.001)
+[58]      :if 'T'=↑amortconstant  ⍝ Term fixed
+[59]          termam←zwb NO⊃TERMAM1 TERMAM2
+[60]      :else                   ⍝ Amount fixed
+[61]          :if =/×rate amount
+[62]              MDISPLAY 'Contribution Rate/Amount and Deficit/(Surplus) must be the same sign'
+[63]              :if sals ⋄ (DLTB 'M<->F10.2' ⎕fmt rate←-rate) ASSIGN∆Dict 'Ratepc',⍕NO
+[64]              :else    ⋄ (DLTB 'M<->I15' ⎕fmt rate←-rate) ASSIGN∆Dict 'Cont',⍕NO
+[65]              :endif
+[66]          :endif
+[67]          (rawcf disc inf)←(amorttab for msk) at 'RawMemberCF' 'NewDiscount' 'NewInflator'
+[68]          termam←+/(∣rate)<∣amount CDIV v1pc←+/↑+/rawcf×inf×disc
+[69]          :if amortmaxterm≤termam ⋄ :andif 0.001<∣rate
+[70]  ⍝⍝⍝            ⎕wres←('More than ',(⍕amortmaxterm),' years required at current Contribution Amount') ''
+[71]              MDISPLAY 'More than ',(⍕amortmaxterm),' years required at current Contribution Amount'
+[72]              :if 0≠⎕nc 'amortamounts'
+[73]                  1 ⍙WebUpdateControls (parent,'pgFunding.fAmort',(⍕NO),'.edamortamount',⍕NO) 'text' (NO⊃amortamounts)
+[74]              :else
+[75]                  ac←amortconstant ⋄ amortconstant←'R' ⍝ Force the correct calculation
+[76]                  QS_AmortChange 'edTERMAM',⍕NO
+[77]                  amortconstant←ac
+[78]              :endif
+[79]              :return
+[80]          :elseif 0.001>∣rate
+[81]              :return
+[82]          :else
+[83]              termam←↑termam+((rate×v1pc[1+termam])-amount) CDIV DIFF rate×v1pc[2 1+termam]
+[84]          :endif
+[85]          ((-3×0=1∣2 gRound termam)↓DLTB 'M<->F10.2' ⎕fmt termam) ASSIGN∆Dict 'TERMAM',⍕NO
+[86]      :endif
+[87]      :if 0=weighting←1∣termam ⋄ weighting←1 0
+[88]      :else                    ⋄ weighting←(1-weighting),weighting ⍝ Non-integral terms
+[89]      :endif
+[90]  
+[91]      val←((amortmaxterm+1),maxyr)⍴maxyr/(amortmaxterm+1) OVERTAKE ∊((⌊termam) 1 1)/0 (weighting×rate) 0
+[92]      vals←amorttab at 'AccrualLimit'
+[93]      (msk/vals)←⊂val
+[94]      amorttab←amorttab amend 'AccrualLimit' vals
+[95]  
+[96]      amorttab←1 ⍙WebRecalculate amorttab
+[97]      ⍙WebAmortisation 'Update'
+[98]  
+[99]  :caselist 'edTERMAM1' 'edTERMAM2'
+[100]     NO←zwb ¯1↑field
+[101]     :if amortmaxterm<termam←zwb NO⊃TERMAM1 TERMAM2
+[102] ⍝⍝⍝        ⎕wres←('A maximum period of ',(⍕amortmaxterm),' years is allowable') ''
+[103]         MDISPLAY 'A maximum period of ',(⍕amortmaxterm),' years is allowable'
+[104]         :if 0≠⎕nc 'amortamounts'
+[105]             1 ⍙WebUpdateControls (parent,'pgFunding.fAmort',(⍕NO),'.edamortamount',⍕NO) 'text' (NO⊃amortamounts)
+[106]         :else
+[107] ⍝⍝⍝            ac←amortconstant ⋄ amortconstant←'R' ⍝ Force the correct calculation
+[108] ⍝⍝⍝            QS_AmortChange 'edTERMAM',⍕NO
+[109] ⍝⍝⍝            amortconstant←ac
+[110]         :endif
+[111]         :return
+[112]     :elseif termam=0
+[113]         :return
+[114]     :endif
+[115]     ContID←NO⊃10 28
+[116]     msk←(0≠∊amorttab at 'NewLiabilityValue')^(ContID=∊amorttab at 'ContingencyID')^11=∊amorttab at 'BenefitTypeID' ⍝ Amortisation records
+[117]     :if 0=weighting←1∣termam ⋄ weighting←1 0 ⋄ termam←2/termam ⍝ Non-integral terms
+[118]     :else                    ⋄ weighting←(1-weighting),weighting ⋄ termam←amortmaxterm⌊0 1+⌊termam
+[119]     :endif
+[120]     liab←-(0.01×liab=0)+liab←zwb NO⊃amortamount1 amortamount2
+[121]     sals←∨/'Salaries'⍷↑(amorttab for msk) at 'BenefitBasis' ⍝ % of Salaries
+[122]     :if 'A'=↑amortconstant ⍝ Constant Amount
+[123]         (rawcf disc inf)←(amorttab for msk) at 'RawMemberCF' 'NewDiscount' 'NewInflator'
+[124]         mult←liab CDIV +/,weighting×[1]∆←(↑+/rawcf×inf×disc)[termam+1;]
+[125]         :if sals ⋄ (DLTB 'M<->F10.2' ⎕fmt mult) ASSIGN∆Dict 'Ratepc',⍕NO ⍝ % of Salaries
+[126]         :else
+[127]             :if 0=↑termam ⋄ :andif ~sals ⋄ weights←0 1 ⋄ :else ⋄ weights←weighting ⋄ :endif
+[128]             (DLTB 'M<->I15' ⎕fmt liab CDIV +/,weights×[1]∆) ASSIGN∆Dict 'Cont',⍕NO ⍝ Level Amounts and Fixed Amount plus Accrued Interest
+[129]         :endif
+[130]     :else ⍝ Constant Rate
+[131]         :if sals ⋄ mult←(1E¯12×(0=mult)×-×liab+0.001)+mult←zwb NO⊃Ratepc1 Ratepc2
+[132]         :else    ⋄ mult←(1E¯12×(0=mult)×-×liab+0.001)+mult←zwb NO⊃Cont1 Cont2
+[133]         :endif
+[134]     :endif
+[135] 
+[136]     vals←amorttab at 'AccrualLimit'
+[137]     (msk/vals)←⊂((amortmaxterm+1),maxyr)⍴maxyr/(amortmaxterm+1) OVERTAKE ∊((↑termam) 1 1)/0 (weighting×mult) 0
+[138]     amorttab←amorttab amend 'AccrualLimit' vals
+[139] 
+[140]     amorttab←1 ⍙WebRecalculate amorttab
+[141]     ⍙WebAmortisation 'Update'
+[142] 
+[143] :caselist 'edamortamount1' 'edamortamount2'
+[144] 
+[145]     NO←zwb ¯1↑field ⋄ ContID←NO⊃10 28
+[146]     msk←(0≠∊amorttab at 'NewLiabilityValue')^(ContID=∊amorttab at 'ContingencyID')^11=∊amorttab at 'BenefitTypeID' ⍝ Amortisation records
+[147]     :if 'T'=↑amortconstant ⍝ Constant Term
+[148]         ac←amortconstant ⋄ amortconstant←'A' ⍝ Force the correct calculation
+[149]         QS_AmortChange 'edTERMAM',⍕NO
+[150]     :else ⍝ Constant Rate
+[151]         ac←amortconstant ⋄ amortconstant←'A' ⍝ Force the correct calculation
+[152]         :if ∨/'Salaries'⍷↑(amorttab for msk) at 'BenefitBasis' ⍝ % of Salaries
+[153]             QS_AmortChange 'edRatepc',⍕NO
+[154]         :else
+[155]             QS_AmortChange 'edCont',⍕NO
+[156]         :endif
+[157]     :endif
+[158]     amortconstant←ac
+[159] 
+[160] :case 'Solve' ⍝ Called from sub-Module QSM_Solve
+[161]     liab←(↑+/(restab append amorttab append fundind means fundtab else conttab) at 'NewLiabilityValue')-Assets
+[162]     NO←,(∆←1+zwb ¯1↑amortselect)⊃('1' '2') ('1') ('2')
+[163]     ContID←,∆⊃(10 28) (10) (28)
+[164]     share←(∆=1)^('P'=↑amortshare)
+[165]     amount←amount+0.01×0=amount←zwb¨⍎¨(⊂'amortamount'),¨NO
+[166]     :if share ⋄ amount←amount+liab×amount CDIV +/amount
+[167]     :else     ⋄ amount←amount+liab CDIV ⍴,amount
+[168]     :endif
+[169] 
+[170]     amortamounts←amortamount1 amortamount2
+[171]     ac←amortconstant ⋄ amortconstant←'TR'~↑amortmethod
+[172]     :for ∆ :in spin NO amount ⋄ (NO amount)←∆
+[173]         0 ⍙WebUpdateControls ('fmQuickSM.sQuick_Scenario.pgFunding.fAmort',(⍕NO),'.edamortamount',⍕NO) 'text' (DLTB 'M<->I20' ⎕fmt amount)
+[174]     :endfor
+[175]     amortconstant←ac ⋄ 0 0⍴⎕ex 'amortamounts'
+[176] 
+[177] :endselect
+    ∇

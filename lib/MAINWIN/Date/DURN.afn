@@ -1,0 +1,18 @@
+    ∇ res←round DURN A;⎕IO;R
+[1]   ⍝ MAINWIN.sf#7
+[2]   ⍝ Calculates the duration between the two dates in the right argument.
+[3]   ⍝ A is D1 M1 Y1 D2 M2 Y2 (ie a 6-vector). round[1] is 'D', 'M' or 'Y'
+[4]   ⍝ & round[2] is 'D','N' or 'U' for rounding down, nearer or up.
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕IO←1 ⋄ R←(∨/0=A[; 2 5])/⍳1↑⍴A←MATRIX A ⋄ →('TY'^.=2↑round)↑TY
+[8]   A[; 3 6]←A[; 3 6]+1900×A[; 3 6]<1000 ⋄ res←A[; 4 5 6] ⋄ A←A[; 1 2 3]
+[9]   →(round[1]='D')/LAB ⍝ Calculation in Days
+[10]  A[;1]←A[;1]-round[2]='D'
+[11]  res[(res[;1]≥(0 31 28 31 30 31 30 31 31 30 31 30 31)[1+res[;2]])/⍳1↑⍴res;1]←31
+[12]  res←(A←(round[1]='YM')/ 1 12)×+/(res-A)×(⍴A)⍴÷ 365.25 12 1
+[13]  res←⌊res+(round[2]='UND')/ 1 0.5 0 ⋄ res←res÷A ⋄ →END
+[14]  LAB:res←(A YDAYS res)+((round[2]='DNU')/ ¯1 0 1)÷365.25
+[15]  END:res[R]←0 ⋄ →0
+[16]  TY:res←,(1 1 1 0 0 0 /A)TAXYEARS 0 0 0 1 1 1 /A ⋄ →END
+    ∇

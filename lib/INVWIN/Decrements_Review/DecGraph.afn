@@ -1,1 +1,46 @@
-    ∇ PageView←DecGraph;RUNDESC;values;BAGE;EAGE;AGES;GROUP;NN;PS;TABXX;MAT;EX;TABLE;TTABLE;TXX;decrdesc;fDURN;nonzero;data;qx[1]   ⍝ INVWIN.sf#8[2]   ⍝ Graph the Decrements Investigation Results[3]   [4]   :if 0∊⍴PageView←(parent,'picResults') ⎕wi 'self'[5]       :return ⍝ Graph Control doesn't exist yet!![6]   :endif[7]   [8]   :if ~0∊⍴,DecParameters ⋄ PageView←⍳0 ⋄ :return ⋄ :endif[9]   [10]  data←+/[2](NN,GROUP,2)⍴(+/EX),[1.5]+/MAT[11]  nonzero←×data[;2] ⋄ qx←qx+.00000001×0=qx←data[;1] CDIV data[;2][12]  TABLE←(+/qwsel×.000000001⌈MAT) CDIV +/.000000001⌈MAT[13]  [14]  chSet 'HMargin' 60 36[15]  chSet 'Heading' RUNDESC[16]  chSet 'HFont' 'tii,12,blue'[17]  chSet 'Style' 'boxed,xyplot,grid'[18]  chSet 'Grid' 'dotted,fine'[19]  chSet 'XCaption' 'Age'[20]  chSet 'XRange' (BAGE,EAGE)[21]  chSet 'YRange' (⌊/TABLE,nonzero/qx),⌈/qx,TABLE[22]  [23]  chSet 'FStyle' 'right'[24]  chSet 'Footnote' (,'<Durations:  >,ZI2,< to >,ZI2' ⎕fmt MATRIX PS)[25]  [26]  chSet 'Style' 'lines,nomarkers'[27]  :if ^/1=TTABLE ⍝ TXX also in Key!![28]      decrdesc←''[29]  :else[30]      decrdesc←' & ',DecrDescription TXX[31]  :endif[32]  chSet 'Key' (((DecrDescription TABXX),decrdesc)~',')[33]  chSet 'KFont' 'he,7'[34]  chPlot (¯1+BAGE+⍳AGES) (TABLE)[35]  [36]  chSet 'Style' 'nolines,markers,values'[37]  chSet 'Markers' 7[38]  chSet 'ValueTags' (nonzero/data[;2])[39]  chPlot (nonzero/¯0.5+BAGE+GROUP×¯0.5+⍳NN) (nonzero/qx)[40]  [41]  PageView←chClose[42]  [43]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box[44]  ppt←.5+.×(((parent,'picResults') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point    ∇
+    ∇ PageView←DecGraph;RUNDESC;values;BAGE;EAGE;AGES;GROUP;NN;PS;TABXX;MAT;EX;TABLE;TTABLE;TXX;decrdesc;fDURN;nonzero;data;qx
+[1]   ⍝ INVWIN.sf#8
+[2]   ⍝ Graph the Decrements Investigation Results
+[3]   
+[4]   :if 0∊⍴PageView←(parent,'picResults') ⎕wi 'self'
+[5]       :return ⍝ Graph Control doesn't exist yet!!
+[6]   :endif
+[7]   
+[8]   :if ~0∊⍴,DecParameters ⋄ PageView←⍳0 ⋄ :return ⋄ :endif
+[9]   
+[10]  data←+/[2](NN,GROUP,2)⍴(+/EX),[1.5]+/MAT
+[11]  nonzero←×data[;2] ⋄ qx←qx+.00000001×0=qx←data[;1] CDIV data[;2]
+[12]  TABLE←(+/qwsel×.000000001⌈MAT) CDIV +/.000000001⌈MAT
+[13]  
+[14]  chSet 'HMargin' 60 36
+[15]  chSet 'Heading' RUNDESC
+[16]  chSet 'HFont' 'tii,12,blue'
+[17]  chSet 'Style' 'boxed,xyplot,grid'
+[18]  chSet 'Grid' 'dotted,fine'
+[19]  chSet 'XCaption' 'Age'
+[20]  chSet 'XRange' (BAGE,EAGE)
+[21]  chSet 'YRange' (⌊/TABLE,nonzero/qx),⌈/qx,TABLE
+[22]  
+[23]  chSet 'FStyle' 'right'
+[24]  chSet 'Footnote' (,'<Durations:  >,ZI2,< to >,ZI2' ⎕fmt MATRIX PS)
+[25]  
+[26]  chSet 'Style' 'lines,nomarkers'
+[27]  :if ^/1=TTABLE ⍝ TXX also in Key!!
+[28]      decrdesc←''
+[29]  :else
+[30]      decrdesc←' & ',DecrDescription TXX
+[31]  :endif
+[32]  chSet 'Key' (((DecrDescription TABXX),decrdesc)~',')
+[33]  chSet 'KFont' 'he,7'
+[34]  chPlot (¯1+BAGE+⍳AGES) (TABLE)
+[35]  
+[36]  chSet 'Style' 'nolines,markers,values'
+[37]  chSet 'Markers' 7
+[38]  chSet 'ValueTags' (nonzero/data[;2])
+[39]  chPlot (nonzero/¯0.5+BAGE+GROUP×¯0.5+⍳NN) (nonzero/qx)
+[40]  
+[41]  PageView←chClose
+[42]  
+[43]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box
+[44]  ppt←.5+.×(((parent,'picResults') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+    ∇

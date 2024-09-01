@@ -1,0 +1,15 @@
+    ∇ res←Win∆F1SSFilled SSName;Family
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Determine if "SSName" has entries that need validation
+[3]   ⍝ Only process if enabled AND visible
+[4]   ⍝ Is empty if it contains no (non-blank) entries whatsoever
+[5]   ⍝ res of 1 indicates that the SS requires validation
+[6]   
+[7]   Family←((⊂Win∆Parent ⊃Family[1]),Family←(⊂Win∆Parent ⊃Family),Family←⊂SSName)~⊂,'#'
+[8]   :if 0=res←^/Family MultiWI 'enabled'
+[9]   :orif 0=res←^/0<(Family MultiWI 'visible')⌈(Family MultiWI 'class')∊⊂'Page'
+[10]      :return
+[11]  :endif
+[12]  
+[13]  res←∨/×,⊃⍴¨DLTB ¨,SSName Win∆F1SSGetTextArray 1 1 (SSName ⎕wi 'MaxRow') (SSName ⎕wi 'MaxCol')
+    ∇

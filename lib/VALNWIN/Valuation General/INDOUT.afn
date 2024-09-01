@@ -1,0 +1,20 @@
+    ∇ TYPE INDOUT SUMM;SUMMREC
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Fn to write out Results for Individual Member
+[3]   ⍝ Yearly results and totals at bottom
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   →(^/0=SUMM[;13])/0
+[7]   H0[4;66+⍳21]←¯21↑DLTMB BenNames[TYPE;],' Benefits'
+[8]   ⍝ Results for Individual for AGG AAN EAN DIS and NEC
+[9]   SUMMREC←('I2,F8.5,4M<->I8,M<->I7,3CM<->I7,CM<->I8,2M<->I8,M<->I7,3CM<->I7,CM<->I10' ⎕FMT(X;tPx;SALMP;FASMP;SUMM))⍪' '
+[10]  SUMMREC←SUMMREC⍪'<Totals>,36< >,2CM<->I14,CM<->I38,CM<->I14,10< >' ⎕FMT MATRIX+⌿SUMM[; 3 5 10 12]
+[11]  SUMMREC←SUMMREC⍪'CM<->I63,CM<->I15,CM<->I37,CM<->I17' ⎕FMT MATRIX+⌿SUMM[; 4 6 11 13]
+[12]   →END
+[13]  ⍝ Results for Individual for an PUC and UC Methods
+[14]  SUMMREC←('I2,F8.5,2CM<->I8,2M<->I8,M<->I7,3CM<->I6,CM<->I7,2M<->I8,M<->I7,3CM<->I6,CM<->I8,CM<->I9' ⎕FMT(X;tPx;SALMP;FASMP;SUMM))⍪' '
+[15]  SUMMREC←SUMMREC⍪'<Totals>,37< >,2CM<->I12,CM<->I36,CM<->I12,CM<->I17' ⎕FMT MATRIX+⌿SUMM[; 3 5 10 12 14]
+[16]  SUMMREC←SUMMREC⍪'CM<->I61,CM<->I13,CM<->I35,CM<->I14,9< >' ⎕FMT MATRIX+⌿SUMM[; 4 6 11 13]
+[17]  ⍝ Add to native DOS file, TEMP$$.IND, individual's full details
+[18]  END:IPAGE←1↑H0 OUTPUT tpI,IPAGE,pAGE
+    ∇

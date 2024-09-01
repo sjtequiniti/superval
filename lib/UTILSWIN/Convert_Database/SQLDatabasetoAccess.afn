@@ -1,0 +1,113 @@
+    ∇ ID SQLDatabasetoAccess arg;dbfile;type;sqlDatabase;sql;tables;table;vAlUeS;fld;∆;⍙dbopt;xxx;flds;mask;DBID;DatabaseID;DBIDwid;recs;cursor;lock;NN;AgeInterp;keymask;where;order;IDs
+[1]   ⍝ UTILSWIN.sf#14
+[2]   ⍝ Transfer Data from SQL Database to Access Database
+[3]   
+[4]   ('Task:' 'Table:') Win∆ProgressBar 'SetLabels'
+[5]   (1 2 'Opening Databases') Win∆ProgressBar 'FileUpdate'
+[6]   (1 2 'Creating Access Database') Win∆ProgressBar 'MemberUpdate'
+[7]   
+[8]   (dbfile type)←arg
+[9]   0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Database' ⍝ Read Database Output Fns
+[10]  
+[11]  sqlDatabase←0 ⋄ ⍙dbopt←1
+[12]  dbfile←dbfile ⍙DBCreateMainDB -type ⍝ Create new Access database file
+[13]  :if FileExist dbfile
+[14]                   0 0⍴0 ⍙DBadoCONCommand 'DROP TABLE ResultsData_NoIndex'
+[15]                   0 0⍴0 ⍙DBadoCONCommand 'DROP TABLE MemberResults_NoIndex'
+[16]      :if AOSCtl ⋄ 0 0⍴0 ⍙DBadoCONCommand 'DROP TABLE AOSResults_NoIndex'  ⋄ :endif
+[17]                   0 0⍴0 ⍙DBadoCONCommand 'DROP TABLE AltScenData_NoIndex'
+[18]                   0 0⍴0 ⍙DBadoCONCommand 'DROP TABLE AllocatedIDs'
+[19]      0 0⍴'ADOrst' ⎕wi 'Delete'
+[20]      0 0⍴(⊂'ADOcon') ⎕wi¨'XClose' 'Delete'
+[21]  
+[22]      xxx←'ADOconAXS' ⎕WI 'Create' 'ADODB.Connection'
+[23]      'ADOconAXS' ⎕wi 'xConnectionTimeout' sqlTimeout
+[24]      'ADOconAXS' ⎕wi 'xCommandTimeout' sqlTimeout
+[25]      'ADOconAXS' ⎕wi 'XOpen' (dbfile ⍙DBconnectionString '')
+[26]  :else
+[27]      MDISPLAY 'Unable to Open ',dbfile,' Access Database.' ⋄ →end2
+[28]  :endif
+[29]  
+[30]  (2 2 'Connecting to SQL Server Database') Win∆ProgressBar 'MemberUpdate'
+[31]  sqlDatabase←1
+[32]  :if ~2↓ValnResultsDB ⍙DBOpen ¯1
+[33]      MDISPLAY 'Unable to Open ',ValnResultsDB,' SQL Server Database.' ⋄ →end1
+[34]  :endif
+[35]  
+[36]  ⍝⍝  Turn on Ad Hoc exports in SQL Server
+[37]  ⍝⍝ sp_configure 'show advanced options', 1;
+[38]  ⍝⍝ RECONFIGURE;
+[39]  ⍝⍝ sp_configure 'Ad Hoc Distributed Queries', 1;
+[40]  ⍝⍝ RECONFIGURE;
+[41]  ⍝⍝  sql←"INSERT INTO OPENROWSET('",(dbfile ⍙DBconnectionString ''),"',TaBlE) SELECT vAlUeS FROM TaBlE"
+[42]  
+[43]  tables←       'ResultsCategory' 'ResultsData' 'OutputFile' 'AltScenData',AOSCtl/'AOSMember' 'AOSType' 'AOSResults'
+[44]  tables←tables,'BasisItem' 'BasisData' 'CharMemberData' 'NumMemberData' 'MemberFields' 'MemberResults'
+[45]  tables←tables,'FinancialsGroups' 'TableNames' 'CategoryAssumptions' 'BenefitAssumptions'
+[46]  tables←(tables∊⍙DBTableNames 'ADOcon')/tables
+[47]  
+[48]  NN←1+⍴tables
+[49]  (1 1 'Transferring Data') Win∆ProgressBar 'FileUpdate'
+[50]  
+[51]  0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'
+[52]  cursor←'ADOrst' ⎕wi 'adOpenStatic' ⋄ lock←'ADOrst' ⎕wi 'adLockOptimistic'
+[53]  sql←'SELECT vAlUeS FROM TaBlE'
+[54]  AgeInterp←1
+[55]  :for table :in tables
+[56]      ((tables⍳⊂table) NN table) Win∆ProgressBar 'MemberUpdate'
+[57]      sqlDatabase←0 ⋄ (flds keymask mask xxx xxx xxx xxx )←⍙DBTableVars table
+[58]  
+[59]      vAlUeS←mask/flds
+[60]      :if ∨/∆←vAlUeS∊'ResultsCategoryID' 'BasisCategoryID' 'ScenarioID' 'ActResultsID'
+[61]          (∆/vAlUeS)←(∆/vAlUeS),¨⊂' % 10000'
+[62]      :endif
+[63]      vAlUeS←', ' join vAlUeS
+[64]      where←((⊂'DatabaseID')∊flds)/" WHERE DatabaseID=",ID
+[65]      order←(∨/keymask^mask)/" ORDER BY ",', ' join (keymask^mask)/flds
+[66]      sqlDatabase←1
+[67]      recs←1 ⍙DBadoCONCommand ('/vAlUeS/',vAlUeS) TEXTREPL ('/TaBlE/',table) TEXTREPL sql,where,order
+[68]  
+[69]      'ADOrst' ⎕wi 'XOpen' table ('ADOconAXS' ⎕wi 'obj') cursor lock
+[70]      ⍙DBInsertData recs
+[71]      0 0⍴'ADOrst' ⎕WI 'XClose'
+[72]  
+[73]      :select table ⍝ Get IDs for "values" tables
+[74]      :case 'FinancialsGroups'
+[75]          IDs←nub recs[;2] ⍝ Get IDs for "values" tables
+[76]          recs←1 ⍙DBadoCONCommand 'SELECT * FROM FinancialsValues WHERE FinancialsID IN (',(0 ⍙DBNumList IDs),")"
+[77]          'ADOrst' ⎕wi 'XOpen' 'FinancialsValues' ('ADOconAXS' ⎕wi 'obj') cursor lock
+[78]          ⍙DBInsertData recs
+[79]          0 0⍴'ADOrst' ⎕WI 'XClose'
+[80]      :case 'TableNames'
+[81]          IDs←nub recs[;2] ⍝ Get IDs for "values" tables
+[82]          recs←1 ⍙DBadoCONCommand 'SELECT * FROM TableValues WHERE TableID IN (',(0 ⍙DBNumList IDs),")"
+[83]          'ADOrst' ⎕wi 'XOpen' 'TableValues' ('ADOconAXS' ⎕wi 'obj') cursor lock
+[84]          ⍙DBInsertData recs
+[85]          0 0⍴'ADOrst' ⎕WI 'XClose'
+[86]      :endselect
+[87]  :endfor
+[88]  
+[89]  ⍝ Special Cases for BenefitTypes
+[90]  :if ⍙dbopen
+[91]  :andif ~mt IDs←,1 ⍙DBadoCONCommand 'SELECT DISTINCT BenefitTypeID FROM ResultsData WHERE BenefitTypeID >100'
+[92]      sqlDatabase←0 ⋄ (flds keymask mask xxx xxx xxx xxx )←⍙DBTableVars table←'BenefitType'
+[93]      (NN NN table) Win∆ProgressBar 'MemberUpdate'
+[94]  
+[95]      vAlUeS←', ' join mask/flds
+[96]      where←" WHERE BenefitTypeID IN (",(0 ⍙DBNumList IDs),")"
+[97]      order←(∨/keymask^mask)/" ORDER BY ",', ' join (keymask^mask)/flds
+[98]      sqlDatabase←1
+[99]      recs←1 ⍙DBadoCONCommand ('/vAlUeS/',vAlUeS) TEXTREPL ('/TaBlE/',table) TEXTREPL sql,where,order
+[100] 
+[101]     'ADOrst' ⎕wi 'XOpen' table ('ADOconAXS' ⎕wi 'obj') cursor lock
+[102]     ⍙DBInsertData recs
+[103]     0 0⍴'ADOrst' ⎕WI 'XClose'
+[104] :endif
+[105] 
+[106] end: 0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[107]      0 0⍴(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete'
+[108]      0 0⍴(⊂'ADOrst') ⎕WI¨'Close' 'Delete'
+[109] end1:0 0⍴(⊂'ADOconAXS') ⎕WI¨'XClose' 'Close' 'Delete'
+[110] end2:0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Database' ⍝ Delete Database Output Fns
+[111] Win∆ProgressBar 'Close'
+    ∇

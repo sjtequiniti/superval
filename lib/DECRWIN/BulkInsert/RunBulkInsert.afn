@@ -1,1 +1,74 @@
-    ∇ RunBulkInsert XLFile;table;∆;TableType;SexType;Allrates;Ages;coledit;TableNo;TableDesc;ReplaceTab;Error;method;RTrow;tt;st;RTvalues;OldDesc;OldTable;drop;Index;ChangeType;RTselection;RTcode;RTselection3;sCHEME;DECRIndex;report;ident;tab;identnames;cn;identrates;size[1]   ⍝ DECRWIN.sf#25[2]   ⍝ Run the Bulk Insert from Lantern setup files[3]   [4]   :if ~mt table←0 ExcelInsert XLFile[5]       :if ~mt ,Error←DECRFile DecrTied 'Capture' ⋄ MDISPLAY Error ⋄ :return ⋄ :endif[6]   [7]       RTcode←↑(∨/¨(⊂DLTB '!' Win∆Child Range)⍷¨IncludedRanges)/' R' ' I' ' L' ' S' ' H' 'GX' 'HT' 'HX' ⍝ SuperVal Table code[8]       Index←DECRIndex←DECRFile ReadFile 'Index'[9]   [10]      ∆←0≡¨TableType←1↓table[1;]   ⍝ Table Types[11]      (∆/TableType)←(~∆)/TableType ⍝ Same for Male and Female[12]      SexType←1↓table[2;]          ⍝ Sex[13]      :if RTcode≡'HT'[14]          size←60[15]          Allrates←Allrates+0=Allrates←2 1↓table[16]          Allrates←size OVERTAKE¨DTZ¨⎕split ⍉Allrates[17]      :else[18]          size←120[19]          drop←-+/size≤Ages←2↓,1↑[2]table[20]          Allrates←2 1↓(drop,0)↓table[21]          :if RTcode≡' R' ⋄ Allrates←Allrates-0.00001×Allrates=1 ⋄ :endif[22]          Allrates←⎕split ⍉(((⍳size)-⎕io)∊drop↓Ages)⍀Allrates ⍝ Rates from 0 to 119[23]      :endif[24]  [25]      :if ident←zwb checkident[26]          tab←DECRIndex for (⊂RTcode)≡¨2↑¨DECRIndex at '∆_Name'[27]          identnames←(⊂' - ') join¨spin tab at '∆_Name' '∆_Description'[28]          identrates←0⍴⊂0[29]          :for cn :in tab at '∆_CompNo'[30]              identrates←identrates,⊂size↑DECRFile ReadFile cn[31]          :endfor[32]      :endif[33]  [34]      0 0⍴(SystemDir,'DECRWIN') ReadFile 'Rate_Tables'[35]      0 0⍴(SystemDir,'DECRWIN') ReadFile 'Modify_Rates'[36]      RTrow←rtCODE TLU UPPERCASE RTcode[37]      ChangeType←method←'Add'[38]      coledit←0[39]      RTselection←0 2[40]      report←0 0⍴''[41]  [42]      :for ∆ :in spin TableType SexType Allrates ⋄ (tt st RTvalues)←∆[43]          OldDesc←' ' join sCHEME st tt[44]          :if ^/(RTcode≡'HT')=RTvalues[45]              report←report OVER OldDesc,' not added - use Standard Table ',RTcode,'000'[46]              :continue[47]          :endif[48]          :if ident ⋄ :andif ∨/∆←identrates∊⊂RTvalues[49]          :andif 'N'='YN' ASK OldDesc,' rates have already been saved as ',⎕tcnl,⎕tcnl,(⎕tcnl join ∆←∆/identnames),'.',⎕tcnl,⎕tcnl,'Do you want to separately save these rates anyway?'[50]              report←report OVER OldDesc,' not added - use Existing Table ','or ' join '-' StripText¨∆[51]              :continue[52]          :endif[53]          OldTable←RTcode[54]  [55]          'DECRWIN' CallModule 'Rate_Table_Editor'[56]  [57]          :if 2=⍴OldTable[58]              report←report OVER OldDesc,' not added as Rate Table'[59]          :else[60]              report←report OVER OldDesc,' added as Rate Table ',OldTable[61]              :if ident[62]                  identnames←identnames,⊂OldTable,' - ',OldDesc[63]                  identrates←identrates,⊂size↑0 DEC∆CHECK OldTable[64]              :endif[65]          :endif[66]      :endfor[67]  [68]      :if ~0∊⍴,Error←DECRFile DecrTied 'Release' ⋄ MDISPLAY Error ⋄ :endif[69]      0 0⍴(SystemDir,'DECRWIN') DeleteModule 'Rate_Tables'[70]      0 0⍴(SystemDir,'DECRWIN') DeleteModule 'Modify_Rates'[71]      MDISPLAY 1↓,⎕tcnl,report[72]  :endif    ∇
+    ∇ RunBulkInsert XLFile;table;∆;TableType;SexType;Allrates;Ages;coledit;TableNo;TableDesc;ReplaceTab;Error;method;RTrow;tt;st;RTvalues;OldDesc;OldTable;drop;Index;ChangeType;RTselection;RTcode;RTselection3;sCHEME;DECRIndex;report;ident;tab;identnames;cn;identrates;size
+[1]   ⍝ DECRWIN.sf#25
+[2]   ⍝ Run the Bulk Insert from Lantern setup files
+[3]   
+[4]   :if ~mt table←0 ExcelInsert XLFile
+[5]       :if ~mt ,Error←DECRFile DecrTied 'Capture' ⋄ MDISPLAY Error ⋄ :return ⋄ :endif
+[6]   
+[7]       RTcode←↑(∨/¨(⊂DLTB '!' Win∆Child Range)⍷¨IncludedRanges)/' R' ' I' ' L' ' S' ' H' 'GX' 'HT' 'HX' ⍝ SuperVal Table code
+[8]       Index←DECRIndex←DECRFile ReadFile 'Index'
+[9]   
+[10]      ∆←0≡¨TableType←1↓table[1;]   ⍝ Table Types
+[11]      (∆/TableType)←(~∆)/TableType ⍝ Same for Male and Female
+[12]      SexType←1↓table[2;]          ⍝ Sex
+[13]      :if RTcode≡'HT'
+[14]          size←60
+[15]          Allrates←Allrates+0=Allrates←2 1↓table
+[16]          Allrates←size OVERTAKE¨DTZ¨⎕split ⍉Allrates
+[17]      :else
+[18]          size←120
+[19]          drop←-+/size≤Ages←2↓,1↑[2]table
+[20]          Allrates←2 1↓(drop,0)↓table
+[21]          :if RTcode≡' R' ⋄ Allrates←Allrates-0.00001×Allrates=1 ⋄ :endif
+[22]          Allrates←⎕split ⍉(((⍳size)-⎕io)∊drop↓Ages)⍀Allrates ⍝ Rates from 0 to 119
+[23]      :endif
+[24]  
+[25]      :if ident←zwb checkident
+[26]          tab←DECRIndex for (⊂RTcode)≡¨2↑¨DECRIndex at '∆_Name'
+[27]          identnames←(⊂' - ') join¨spin tab at '∆_Name' '∆_Description'
+[28]          identrates←0⍴⊂0
+[29]          :for cn :in tab at '∆_CompNo'
+[30]              identrates←identrates,⊂size↑DECRFile ReadFile cn
+[31]          :endfor
+[32]      :endif
+[33]  
+[34]      0 0⍴(SystemDir,'DECRWIN') ReadFile 'Rate_Tables'
+[35]      0 0⍴(SystemDir,'DECRWIN') ReadFile 'Modify_Rates'
+[36]      RTrow←rtCODE TLU UPPERCASE RTcode
+[37]      ChangeType←method←'Add'
+[38]      coledit←0
+[39]      RTselection←0 2
+[40]      report←0 0⍴''
+[41]  
+[42]      :for ∆ :in spin TableType SexType Allrates ⋄ (tt st RTvalues)←∆
+[43]          OldDesc←' ' join sCHEME st tt
+[44]          :if ^/(RTcode≡'HT')=RTvalues
+[45]              report←report OVER OldDesc,' not added - use Standard Table ',RTcode,'000'
+[46]              :continue
+[47]          :endif
+[48]          :if ident ⋄ :andif ∨/∆←identrates∊⊂RTvalues
+[49]          :andif 'N'='YN' ASK OldDesc,' rates have already been saved as ',⎕tcnl,⎕tcnl,(⎕tcnl join ∆←∆/identnames),'.',⎕tcnl,⎕tcnl,'Do you want to separately save these rates anyway?'
+[50]              report←report OVER OldDesc,' not added - use Existing Table ','or ' join '-' StripText¨∆
+[51]              :continue
+[52]          :endif
+[53]          OldTable←RTcode
+[54]  
+[55]          'DECRWIN' CallModule 'Rate_Table_Editor'
+[56]  
+[57]          :if 2=⍴OldTable
+[58]              report←report OVER OldDesc,' not added as Rate Table'
+[59]          :else
+[60]              report←report OVER OldDesc,' added as Rate Table ',OldTable
+[61]              :if ident
+[62]                  identnames←identnames,⊂OldTable,' - ',OldDesc
+[63]                  identrates←identrates,⊂size↑0 DEC∆CHECK OldTable
+[64]              :endif
+[65]          :endif
+[66]      :endfor
+[67]  
+[68]      :if ~0∊⍴,Error←DECRFile DecrTied 'Release' ⋄ MDISPLAY Error ⋄ :endif
+[69]      0 0⍴(SystemDir,'DECRWIN') DeleteModule 'Rate_Tables'
+[70]      0 0⍴(SystemDir,'DECRWIN') DeleteModule 'Modify_Rates'
+[71]      MDISPLAY 1↓,⎕tcnl,report
+[72]  :endif
+    ∇

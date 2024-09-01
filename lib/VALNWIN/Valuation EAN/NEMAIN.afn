@@ -1,0 +1,40 @@
+    ∇ cocr←NEMAIN;∆;A;N;size;TOTALS;H2;SUMMREC;recn;NUMRECS;focus∆prog
+[1]   ⍝ VALNWIN.sf#6
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   :if COCRind=0 ⋄ cocr←,FixedCOCR ⋄ :return ⋄ :endif
+[8]   focus∆prog←'fmProgressBar'
+[9]   
+[10]  COCRind←¯1↑COCRind,(1=NUMRECS←⌊(⎕NSIZE netie)÷RECL)/1
+[11]  
+[12]  EntryDate←1 0↓⍙POPUPSdict ReadDictFile 'CoCR'
+[13]  EntryDate←DLTMB EntryDate[COCRind;]
+[14]  
+[15]  TOTALS←0 2 ⍴recn←0 ⋄ NoInd←1 ⋄ ValDATE←VDATE
+[16]  
+[17]  READ:→(NUMRECS<recn←recn+1)/FINISH
+[18]  (recn NUMRECS) Win∆ProgressBar 'MemberUpdate'
+[19]  
+[20]  REC←,'ASCII' Read∆DataFile netie,filesize,RECL,1,recn-1
+[21]  ⍝ Sets up vectors of service/membership, salaries, AC's
+[22]  →(PRELIM ∨/ACTIVE[0 3 4 5])/READ
+[23]  TOTALS←TOTALS⍪X0,CR∆CALCS ⍝ Main calculation program
+[24]  →READ ⍝ Interpolate to get Rates not asked for
+[25]  
+[26]  FINISH:⍎(1=1↑⍴TOTALS)/'cocr←TOTALS[0;1] ⋄ →OUT'
+[27]  ∆←,(DIFF TOTALS[;1])÷A←,DIFF TOTALS[;0]
+[28]  cocr←TOTALS[0;1]-(1+⌽⍳TOTALS[0;0]-15)×1↑∆ ⋄ size←⍴∆ ⋄ N←0
+[29]  cocr←cocr,TOTALS[N;1]+∆[N]×⍳A[N] ⋄ →(size>N←N+1)/⎕LC
+[30]  cocr←cocr,TOTALS[N;1]+(⍳NRA-TOTALS[N;0])×¯1↑∆
+[31]  
+[32]  OUT:cocr←0⌈cocr ⋄ H2←0 WRITE∆HEAD 'NEW ENTRANT INPUT DATA FILE'
+[33]  H2←H2 OVER (2,-wIDTH)↑2 13 ⍴'Age   Net Co.    Cont Rate'
+[34]  SUMMREC←((NRA-15),(wIDTH-18))↑0 ¯2↓'ASCII' Read∆DataFile netie,¯1,RECL,(-NUMRECS),0
+[35]  ⍎((COCRind>1)^NUMRECS<NRA-15)/'SUMMREC[(NUMRECS+5)⌊NRA-18;11+⍳91]←''Other Values for Net Co. Contribution Rates have been determined by Inter- or Extrapolation'' ⋄ SUMMREC←SUMMREC,''I6,M<->F12.2'' ⎕FMT(15↓⍳NRA;cocr)'
+[36]  ⍎(COCRind=1)/'SUMMREC←SUMMREC,''BI6,M<->F12.2'' ⎕FMT((NRA-15)↑EANXe;cocr) ⋄ cocr←85 OVERTAKE cocr'
+[37]  cocr←¯100↑85↑cocr ⋄ SPAGE←1↑H2 OUTPUT tpr1,SPAGE,pAGE
+[38]  NERASE netie ⍝ Erase created file of new entrants
+    ∇

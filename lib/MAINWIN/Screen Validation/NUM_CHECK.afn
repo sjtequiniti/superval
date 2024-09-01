@@ -1,1 +1,60 @@
-    ∇ Error←valid NUM∆CHECK parm;⎕elx;elx;limit;range;value;fmt;DecP;multi;z[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Fn to carry out standard numeric validations on the Global variable "text"[3]   ⍝  "valid" contains a list of validation parameters[4]   ⍝  "parm" contains the "limit" (first element) anfd the range (2nd)[5]   ⍝  "limit" contains the field character limit (or 0 if none)[6]   ⍝  "range" contains the acceptable range (inclusive) or scalar 0 if none[7]   ⍝[8]   ⍝ V2.50u RE 3/00 Windowised[9]   Error←0⍴'' ⋄ limit←1⊃parm ⋄ range←2⊃parm ⋄ elx←⎕elx[10]  [11]  :if multi←⎕tcnl∊text ⋄ text←(⎕tcnl,' ') char_replace text ⋄ :endif[12]  [13]  :if ~combo ⋄ :andif ∨/~⎕VI text←'+ ' char_replace text ⋄ Error←'ExpNumber' ⋄ :return ⋄ :endif ⍝ Check Number is valid (if not in combo list)[14]  ⎕elx←((~combo)/'Error←"ExpNumber" ⋄ '),'→0' ⋄ value←⍎'-¯' char_replace '+ ' char_replace text ⋄ ⎕elx←elx ⍝ Value may be unknown if combo[15]  :if 82=⎕dr value ⋄ →0 ⋄ :endif ⍝ Text string containing SV variable name[16]  [17]  :if ~0≡valid                                                ⍝ Other Validation Required[18]      valid←eis valid[19]      :if (⊂'Int')∊valid ⋄ :andif ~value≡⌊value ⋄ Error←'ExpInteger' ⋄ :return ⋄ :endif ⍝ Integers Expected[20]      :if ∨/('Rating' 'Scalar')∊valid ⋄ :andif 1≠⍴,value ⋄ Error←'ExpScalar' ⋄ :return ⋄ :endif ⍝ Scalar Expected[21]      :if (⊂'+')∊valid ⋄ :andif ∨/0≥value ⋄ Error←'ExpPositive' ⋄ :return ⋄ :endif ⍝ Positives Expected[22]      :if (⊂'0+')∊valid ⋄ :andif ∨/0>value ⋄ Error←'ExpPositive' ⋄ :return ⋄ :endif ⍝ Zero or Positives Expected[23]      :if (⊂'A')∊valid ⋄ :andif 1<⍴,value ⋄ :andif ∨/0≥DIFF value ⋄ Error←'ExpAscend' ⋄ :return ⋄ :endif ⍝ Ascending Expected[24]      :if (⊂'Rating')∊valid ⍝ Formatting Rating Field[25]          :if 0=limit ⋄ limit←12 ⋄ :endif[26]          :if value=⌊value ⍝ Find number of decimal places to display[27]              fmt←'I',⍕limit[28]          :else[29]              DecP←0[30]              :repeat[31]                  DecP←DecP+1[32]              :until (value×10*DecP)≡⌊value×10*DecP[33]              :if 0≥DecP←DecP⌊limit-2+⌈0.00001+∣10⍟0.01⌈∣value[34]                  fmt←'I',⍕limit[35]              :else[36]                  fmt←'F',(⍕limit),'.',⍕DecP[37]              :endif[38]          :endif[39]          text←DLTB ('LM<->P<+>',fmt) ⎕FMT value[40]      :endif[41]  :endif[42]  [43]  :if ~0≡range ⍝ Valid Range of Values[44]  :andif ~0∊⍴,DLTMB range[45]      range←2⍴⍎range[46]      :if ∨/value<range[1] ⋄ :orif ∨/value>range[2] ⍝ Check Range[47]          Error←'OutRange' ('¯-' char_replace ⍕range[1]) ('¯-' char_replace ⍕range[2]) ⋄ :return[48]      :endif[49]  :endif[50]  [51]  :if multi ⋄ :orif (⊂'Multi')∊valid[52]      text←SStoMAT ' ',DLTMB text[53]      :if (⊂'Unique')∊valid ⋄ text←0 Uniquelist text ⋄ :endif[54]      :if ∨/z←,⊃⎕vi ¨valid ⋄ :andif (↑⍴text)>z←⎕fi z/valid[55]          Error←'MaxEntries' (⍕z)[56]      :endif[57]      text←¯1↓,text,⎕tcnl ⍝ Reinsert ⎕tcnls[58]  :endif    ∇
+    ∇ Error←valid NUM∆CHECK parm;⎕elx;elx;limit;range;value;fmt;DecP;multi;z
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Fn to carry out standard numeric validations on the Global variable "text"
+[3]   ⍝  "valid" contains a list of validation parameters
+[4]   ⍝  "parm" contains the "limit" (first element) anfd the range (2nd)
+[5]   ⍝  "limit" contains the field character limit (or 0 if none)
+[6]   ⍝  "range" contains the acceptable range (inclusive) or scalar 0 if none
+[7]   ⍝
+[8]   ⍝ V2.50u RE 3/00 Windowised
+[9]   Error←0⍴'' ⋄ limit←1⊃parm ⋄ range←2⊃parm ⋄ elx←⎕elx
+[10]  
+[11]  :if multi←⎕tcnl∊text ⋄ text←(⎕tcnl,' ') char_replace text ⋄ :endif
+[12]  
+[13]  :if ~combo ⋄ :andif ∨/~⎕VI text←'+ ' char_replace text ⋄ Error←'ExpNumber' ⋄ :return ⋄ :endif ⍝ Check Number is valid (if not in combo list)
+[14]  ⎕elx←((~combo)/'Error←"ExpNumber" ⋄ '),'→0' ⋄ value←⍎'-¯' char_replace '+ ' char_replace text ⋄ ⎕elx←elx ⍝ Value may be unknown if combo
+[15]  :if 82=⎕dr value ⋄ →0 ⋄ :endif ⍝ Text string containing SV variable name
+[16]  
+[17]  :if ~0≡valid                                                ⍝ Other Validation Required
+[18]      valid←eis valid
+[19]      :if (⊂'Int')∊valid ⋄ :andif ~value≡⌊value ⋄ Error←'ExpInteger' ⋄ :return ⋄ :endif ⍝ Integers Expected
+[20]      :if ∨/('Rating' 'Scalar')∊valid ⋄ :andif 1≠⍴,value ⋄ Error←'ExpScalar' ⋄ :return ⋄ :endif ⍝ Scalar Expected
+[21]      :if (⊂'+')∊valid ⋄ :andif ∨/0≥value ⋄ Error←'ExpPositive' ⋄ :return ⋄ :endif ⍝ Positives Expected
+[22]      :if (⊂'0+')∊valid ⋄ :andif ∨/0>value ⋄ Error←'ExpPositive' ⋄ :return ⋄ :endif ⍝ Zero or Positives Expected
+[23]      :if (⊂'A')∊valid ⋄ :andif 1<⍴,value ⋄ :andif ∨/0≥DIFF value ⋄ Error←'ExpAscend' ⋄ :return ⋄ :endif ⍝ Ascending Expected
+[24]      :if (⊂'Rating')∊valid ⍝ Formatting Rating Field
+[25]          :if 0=limit ⋄ limit←12 ⋄ :endif
+[26]          :if value=⌊value ⍝ Find number of decimal places to display
+[27]              fmt←'I',⍕limit
+[28]          :else
+[29]              DecP←0
+[30]              :repeat
+[31]                  DecP←DecP+1
+[32]              :until (value×10*DecP)≡⌊value×10*DecP
+[33]              :if 0≥DecP←DecP⌊limit-2+⌈0.00001+∣10⍟0.01⌈∣value
+[34]                  fmt←'I',⍕limit
+[35]              :else
+[36]                  fmt←'F',(⍕limit),'.',⍕DecP
+[37]              :endif
+[38]          :endif
+[39]          text←DLTB ('LM<->P<+>',fmt) ⎕FMT value
+[40]      :endif
+[41]  :endif
+[42]  
+[43]  :if ~0≡range ⍝ Valid Range of Values
+[44]  :andif ~0∊⍴,DLTMB range
+[45]      range←2⍴⍎range
+[46]      :if ∨/value<range[1] ⋄ :orif ∨/value>range[2] ⍝ Check Range
+[47]          Error←'OutRange' ('¯-' char_replace ⍕range[1]) ('¯-' char_replace ⍕range[2]) ⋄ :return
+[48]      :endif
+[49]  :endif
+[50]  
+[51]  :if multi ⋄ :orif (⊂'Multi')∊valid
+[52]      text←SStoMAT ' ',DLTMB text
+[53]      :if (⊂'Unique')∊valid ⋄ text←0 Uniquelist text ⋄ :endif
+[54]      :if ∨/z←,⊃⎕vi ¨valid ⋄ :andif (↑⍴text)>z←⎕fi z/valid
+[55]          Error←'MaxEntries' (⍕z)
+[56]      :endif
+[57]      text←¯1↓,text,⎕tcnl ⍝ Reinsert ⎕tcnls
+[58]  :endif
+    ∇

@@ -1,0 +1,24 @@
+    ∇ res←arg XL_FileLoad XLFile;⎕elx;elx;size;UpdLinks;ReadOnly;n
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Load an Excel spreadsheet
+[3]   ⍝   XLFile is the filepath of the Excel File
+[4]   ⍝   "arg" is optional args [UpdateLinks 0/1] [ReadOnly 0/1] - default 0 0
+[5]   ⍝   "XL" object assumed to exist
+[6]   
+[7]   :if 0=⎕nc 'arg' ⋄ arg←0 0 ⋄ :endif
+[8]   (UpdLinks ReadOnly)←2↑arg,0
+[9]   size←⍴XLFile
+[10]  
+[11]  n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"XL_FileLoad ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry' ⍝ Exponential delays (2 hours for the last delay)
+[12]  
+[13]  retry:
+[14]  :if size>218 ⋄ :orif 11=n←n+1 ⍝ Retry 10 times then fail
+[15]      ⎕elx←'XL_Quit ⋄ →0'
+[16]      res←"Unable to open Excel workbook [",XLFile,"]",(size>218)/⎕tcnl,"Folder Name and File Name exceed limit of 218 characters"
+[17]  :endif
+[18]  
+[19]  0 0⍴('XL' ⎕wi 'Workbooks') ⎕wi 'XOpen >XL.wb' XLFile UpdLinks ReadOnly ⍝ open EXCEL Output workbook
+[20]  
+[21]  ⎕elx←elx
+[22]  res←''
+    ∇

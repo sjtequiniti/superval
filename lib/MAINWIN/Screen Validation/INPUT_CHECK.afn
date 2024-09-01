@@ -1,1 +1,66 @@
-    ∇ Error←FormValid INPUT∆CHECK FullName;text;Family;style;combo;mandatory;valid;code[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Fn to carry out standard validations on the screen input[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 3/00 Windowised[7]   ⎕wself←FullName ⋄ Error←0⍴''[8]   Family←((⊂Win∆Parent ⊃Family[1]),Family←(⊂Win∆Parent ⊃Family),Family←⊂FullName)~⊂,'#'[9]   :if ∨/0=Family MultiWI 'enabled' ⍝ Only process if enabled AND visible[10]  :orif ∨/1>(Family MultiWI 'visible')⌈(Family MultiWI 'class')∊⊂'Page'[11]  :orif (style=4096 BinAdd style←⎕wi 'style')^∨/'Edit'⍷⎕wi 'class' ⍝ Read-Only Edit or RichEdit[12]      :return[13]  :endif[14]  :if combo←'Combo'≡⎕wi 'class'[15]  :andif combo←0≠⎕wi 'value'[16]      text←⎕av[209] StripText (⎕wi 'list')[⎕wi 'value';][17]  :else[18]      text←⎕wi 'text' ⍝ Text of Field[19]  :endif[20]  :if 0∊⍴,text←DLTB text ⍝ Empty Fields[21]      :if 0≠mandatory←⎕wi '∆mandatory' ⍝ Mandatory Fields Entries[22]      :andif FormValid≥mandatory[23]          Error←'Mandatory' ⋄ →Err[24]      :endif[25]      :return[26]  :endif[27]  :select ⎕wi '∆type'[28]  :caselist 'Num' 'CharNum' 'NumChar' 'Fin' ⍝ Check Numeric Fields[29]      :if ~0∊⍴,Error←(⎕wi '∆valid') NUM∆CHECK ((⎕wi 'limit') (⎕wi '∆range'))[30]          →Err[31]      :endif[32]  [33]  :case 'Date' ⍝ Date Checks[34]      :if ~combo ⋄ :andif ~0∊⍴,Error←(⎕wi '∆valid') DATE∆CHECK (⎕wi '∆range')[35]          →Err[36]      :endif[37]  [38]  :caselist 'File' 'FileS' 'FileM' ⍝ Check that File(s) specified exist[39]      :if ~0∊⍴,Error←FILE∆CHECK (⎕wi '∆valid') ⋄ →Err ⋄ :endif[40]  [41]  :case 'Decr'[42]      valid←⎕wi '∆valid'[43]      :if uk=1 ⋄ :andif ~0∊⍴rtCODE TLU code←2↑¯5↑DLTB text ⍝ Allow migrated invalid table types[44]          valid←valid,⊂code[45]      :endif[46]      :if valid CODE∆CHK text ⋄ Error←'InvRate' ⋄ →Err ⋄ :endif ⍝ Invalid Table Code[47]      :if ¯1=1 DEC∆CHECK text ⋄ Error←'NoRateFound' text ⋄ →Err ⋄ :endif ⍝ Invalid Table Number[48]  [49]  :caselist 'Char' 'Upper' 'Format'[50]      :if ~0∊⍴,Error←CHAR∆CHECK (⎕wi '∆valid') ⋄ →Err ⋄ :endif[51]  [52]  :case 'Formula'[53]      :if ~0∊⍴,Error←Formula∆CHECK ⋄ →Err ⋄ :endif[54]  [55]  :case 'Error'[56]  Err:[57]      :if ~FormValid ⋄ Win∆LabelRed FullName ⋄ :endif[58]      :return[59]  [60]  :endselect[61]  [62]  :if ~(⎕wi 'text')≡text ⋄ :andif ~combo ⍝ "text" may have been modified![63]      ⎕wi 'text' text[64]  :endif    ∇
+    ∇ Error←FormValid INPUT∆CHECK FullName;text;Family;style;combo;mandatory;valid;code
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Fn to carry out standard validations on the screen input
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 3/00 Windowised
+[7]   ⎕wself←FullName ⋄ Error←0⍴''
+[8]   Family←((⊂Win∆Parent ⊃Family[1]),Family←(⊂Win∆Parent ⊃Family),Family←⊂FullName)~⊂,'#'
+[9]   :if ∨/0=Family MultiWI 'enabled' ⍝ Only process if enabled AND visible
+[10]  :orif ∨/1>(Family MultiWI 'visible')⌈(Family MultiWI 'class')∊⊂'Page'
+[11]  :orif (style=4096 BinAdd style←⎕wi 'style')^∨/'Edit'⍷⎕wi 'class' ⍝ Read-Only Edit or RichEdit
+[12]      :return
+[13]  :endif
+[14]  :if combo←'Combo'≡⎕wi 'class'
+[15]  :andif combo←0≠⎕wi 'value'
+[16]      text←⎕av[209] StripText (⎕wi 'list')[⎕wi 'value';]
+[17]  :else
+[18]      text←⎕wi 'text' ⍝ Text of Field
+[19]  :endif
+[20]  :if 0∊⍴,text←DLTB text ⍝ Empty Fields
+[21]      :if 0≠mandatory←⎕wi '∆mandatory' ⍝ Mandatory Fields Entries
+[22]      :andif FormValid≥mandatory
+[23]          Error←'Mandatory' ⋄ →Err
+[24]      :endif
+[25]      :return
+[26]  :endif
+[27]  :select ⎕wi '∆type'
+[28]  :caselist 'Num' 'CharNum' 'NumChar' 'Fin' ⍝ Check Numeric Fields
+[29]      :if ~0∊⍴,Error←(⎕wi '∆valid') NUM∆CHECK ((⎕wi 'limit') (⎕wi '∆range'))
+[30]          →Err
+[31]      :endif
+[32]  
+[33]  :case 'Date' ⍝ Date Checks
+[34]      :if ~combo ⋄ :andif ~0∊⍴,Error←(⎕wi '∆valid') DATE∆CHECK (⎕wi '∆range')
+[35]          →Err
+[36]      :endif
+[37]  
+[38]  :caselist 'File' 'FileS' 'FileM' ⍝ Check that File(s) specified exist
+[39]      :if ~0∊⍴,Error←FILE∆CHECK (⎕wi '∆valid') ⋄ →Err ⋄ :endif
+[40]  
+[41]  :case 'Decr'
+[42]      valid←⎕wi '∆valid'
+[43]      :if uk=1 ⋄ :andif ~0∊⍴rtCODE TLU code←2↑¯5↑DLTB text ⍝ Allow migrated invalid table types
+[44]          valid←valid,⊂code
+[45]      :endif
+[46]      :if valid CODE∆CHK text ⋄ Error←'InvRate' ⋄ →Err ⋄ :endif ⍝ Invalid Table Code
+[47]      :if ¯1=1 DEC∆CHECK text ⋄ Error←'NoRateFound' text ⋄ →Err ⋄ :endif ⍝ Invalid Table Number
+[48]  
+[49]  :caselist 'Char' 'Upper' 'Format'
+[50]      :if ~0∊⍴,Error←CHAR∆CHECK (⎕wi '∆valid') ⋄ →Err ⋄ :endif
+[51]  
+[52]  :case 'Formula'
+[53]      :if ~0∊⍴,Error←Formula∆CHECK ⋄ →Err ⋄ :endif
+[54]  
+[55]  :case 'Error'
+[56]  Err:
+[57]      :if ~FormValid ⋄ Win∆LabelRed FullName ⋄ :endif
+[58]      :return
+[59]  
+[60]  :endselect
+[61]  
+[62]  :if ~(⎕wi 'text')≡text ⋄ :andif ~combo ⍝ "text" may have been modified!
+[63]      ⎕wi 'text' text
+[64]  :endif
+    ∇

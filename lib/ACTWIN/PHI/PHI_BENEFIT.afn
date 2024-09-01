@@ -1,1 +1,27 @@
-    ∇ PHI∆BENEFIT;BenType∆pp;IncType∆pp;Inc∆pp;SL∆pp;FSL∆pp;End∆pp;ProRate∆pp;PHISalBen;PHIOffBen;WaitPeriod∆pp[1]   ⍝ ACTWIN.sf#8[2]   ⍝ CLAYBROOK VALUATION SYSTEM[3]   [4]   PHISalBen←   PHImult   ×SALMPvec[;PHISalary][5]   PHIOffBen←0⌈(PHIOffmult×SALMPvec[;PHIOffSalary])-PHIOffSALMP[6]   :select PHICompare[7]   :case 0 ⋄ FSL∆pp←SL∆pp←,NX↑(0⌈PHIEndAge-X0)↑PHISalBen⌈PHIOffBen[8]   :case 1 ⋄ FSL∆pp←SL∆pp←,NX↑(0⌈PHIEndAge-X0)↑PHISalBen⌊PHIOffBen[9]   :endselect[10]  [11]  ⍝ Pension Projector Variables[12]  BenType∆pp←'P' ⋄ ProRate∆pp←ProRate∆SelfIns[13]  :select ⍬⍴PHIBenInc[14]  :case 'M' ⋄ IncType∆pp←'M'  ⋄ Inc∆pp← DYNINC[15]  :case 'S' ⋄ IncType∆pp←'S'  ⋄ Inc∆pp←NDYNINC[16]  :case '3' ⋄ IncType∆pp←'P3' ⋄ Inc∆pp← DYNINC3[17]  :case '4' ⋄ IncType∆pp←'P4' ⋄ Inc∆pp← DYNINC4[18]  :endselect[19]  End∆pp←NX⍴PHIEndAge ⋄ WaitPeriod∆pp←NX⍴PHIWait÷12[20]  [21]  PP∆CreateInterface[22]  [23]  WaitPeriod∆pp←NX⍴0 ⋄ End∆pp←⍬[24]  [25]  :if PHIContsDed ⋄ PHI∆CONTSBen ⋄ :endif    ∇
+    ∇ PHI∆BENEFIT;BenType∆pp;IncType∆pp;Inc∆pp;SL∆pp;FSL∆pp;End∆pp;ProRate∆pp;PHISalBen;PHIOffBen;WaitPeriod∆pp
+[1]   ⍝ ACTWIN.sf#8
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM
+[3]   
+[4]   PHISalBen←   PHImult   ×SALMPvec[;PHISalary]
+[5]   PHIOffBen←0⌈(PHIOffmult×SALMPvec[;PHIOffSalary])-PHIOffSALMP
+[6]   :select PHICompare
+[7]   :case 0 ⋄ FSL∆pp←SL∆pp←,NX↑(0⌈PHIEndAge-X0)↑PHISalBen⌈PHIOffBen
+[8]   :case 1 ⋄ FSL∆pp←SL∆pp←,NX↑(0⌈PHIEndAge-X0)↑PHISalBen⌊PHIOffBen
+[9]   :endselect
+[10]  
+[11]  ⍝ Pension Projector Variables
+[12]  BenType∆pp←'P' ⋄ ProRate∆pp←ProRate∆SelfIns
+[13]  :select ⍬⍴PHIBenInc
+[14]  :case 'M' ⋄ IncType∆pp←'M'  ⋄ Inc∆pp← DYNINC
+[15]  :case 'S' ⋄ IncType∆pp←'S'  ⋄ Inc∆pp←NDYNINC
+[16]  :case '3' ⋄ IncType∆pp←'P3' ⋄ Inc∆pp← DYNINC3
+[17]  :case '4' ⋄ IncType∆pp←'P4' ⋄ Inc∆pp← DYNINC4
+[18]  :endselect
+[19]  End∆pp←NX⍴PHIEndAge ⋄ WaitPeriod∆pp←NX⍴PHIWait÷12
+[20]  
+[21]  PP∆CreateInterface
+[22]  
+[23]  WaitPeriod∆pp←NX⍴0 ⋄ End∆pp←⍬
+[24]  
+[25]  :if PHIContsDed ⋄ PHI∆CONTSBen ⋄ :endif
+    ∇

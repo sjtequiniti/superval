@@ -1,1 +1,13 @@
-    ∇ ⍙_⍙SortListview;o;o1[1]   ⍝ MONITOR.sf#2[2]   ⍝ sort a listview based on which column header was clicked[3]   [4]    o←⎕wi 'sortorder'                   ⍝ current order[5]    :if (⎕wi 'columndisplay')[↑⎕warg;3]≡⊂'right'[6]      o1←⎕av⍋⌽[2]⊃⌽¨,⎕wi 'GetCells' o (↑⎕warg)[7]    :else[8]      o1←⎕av⍋⊃,⎕wi 'GetCells' o (↑⎕warg)  ⍝ get data in cells and sort[9]    :endif[10]   :if o1≡⍳⍴o1 ⋄ o1←⌽o1 ⋄ :endif       ⍝ reverse sort[11]   ⎕wi 'sortorder' (o[o1])             ⍝ reset the sortorder    ∇
+    ∇ ⍙_⍙SortListview;o;o1
+[1]   ⍝ MONITOR.sf#2
+[2]   ⍝ sort a listview based on which column header was clicked
+[3]   
+[4]    o←⎕wi 'sortorder'                   ⍝ current order
+[5]    :if (⎕wi 'columndisplay')[↑⎕warg;3]≡⊂'right'
+[6]      o1←⎕av⍋⌽[2]⊃⌽¨,⎕wi 'GetCells' o (↑⎕warg)
+[7]    :else
+[8]      o1←⎕av⍋⊃,⎕wi 'GetCells' o (↑⎕warg)  ⍝ get data in cells and sort
+[9]    :endif
+[10]   :if o1≡⍳⍴o1 ⋄ o1←⌽o1 ⋄ :endif       ⍝ reverse sort
+[11]   ⎕wi 'sortorder' (o[o1])             ⍝ reset the sortorder
+    ∇

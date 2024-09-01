@@ -1,1 +1,31 @@
-    ∇ res←CHSParameters;⎕io;cn;list;z[1]   ⍝ INVWIN.sf#10[2]   ⍝ Create the variables from the screen parameters as well as[3]   ⍝  AGES (Ages covered by Groups)[4]   ⍝  NN - Number of Groups[5]   ⍝  TABLE - the values of Rate Table TABXX[6]   ⍝  TOTS - the results matrix[7]   ⎕io←1[8]   [9]   :if 0=⎕nc 'ControlName' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif[10]  :if 0∊⍴cn←'fmCohortReview.lvRUNDESC' ⎕wi 'value' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif[11]  :if 0∊⍴DLTMB 'fmCohortReview.fTable.edTABXX1' ⎕wi 'text' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif[12]  :if ~0∊⍴,res←1 Win∆ValidForm ControlName ⋄ :return ⋄ :endif[13]  Win∆AssignVars ControlName[14]  :if ~0∊⍴,res←(⊂'All') Cohort_Review 'Valid' ⍝ Specific (Cross) Validation Module[15]      MDISPLAY res ⋄ :return[16]  :endif[17]  Convert_Vars[18]  [19]  list←'fmCohortReview.lvRUNDESC' ⎕wi 'list'[20]  RUNDESC←(DLTB ⊃list[(list[;1])⍳cn;3])~'#%'[21]  0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' (2 4⍴'TOTSTERM')[22]  [23]  EAGE←BAGE+AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP[24]  TABLE←(AGES+⌈TERM)↑(BAGE-⌈TERM)↓1+100↑DEC∆CHECK TABXX[25]  TABLE←((-1+⌈TERM),0)↓⍉((⌈TERM),1+⍴TABLE)⍴TABLE[26]  TABLE[;1]←TABLE[;1]*(0=z)+z←TERM-⌊TERM ⋄ TABLE←×/TABLE[27]  :if ∨/' '≠lrf ⋄ (f lrf)←2↑FinConvert f lrf  ⋄ :endif[28]  f←ExecuteRates f ''[29]  f←(⌈TERM)OVERTAKE 1+0.01×f ⋄ f←×/((⌊TERM)↑f),(¯1↑f)*TERM-⌊TERM    ∇
+    ∇ res←CHSParameters;⎕io;cn;list;z
+[1]   ⍝ INVWIN.sf#10
+[2]   ⍝ Create the variables from the screen parameters as well as
+[3]   ⍝  AGES (Ages covered by Groups)
+[4]   ⍝  NN - Number of Groups
+[5]   ⍝  TABLE - the values of Rate Table TABXX
+[6]   ⍝  TOTS - the results matrix
+[7]   ⎕io←1
+[8]   
+[9]   :if 0=⎕nc 'ControlName' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif
+[10]  :if 0∊⍴cn←'fmCohortReview.lvRUNDESC' ⎕wi 'value' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif
+[11]  :if 0∊⍴DLTMB 'fmCohortReview.fTable.edTABXX1' ⎕wi 'text' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif
+[12]  :if ~0∊⍴,res←1 Win∆ValidForm ControlName ⋄ :return ⋄ :endif
+[13]  Win∆AssignVars ControlName
+[14]  :if ~0∊⍴,res←(⊂'All') Cohort_Review 'Valid' ⍝ Specific (Cross) Validation Module
+[15]      MDISPLAY res ⋄ :return
+[16]  :endif
+[17]  Convert_Vars
+[18]  
+[19]  list←'fmCohortReview.lvRUNDESC' ⎕wi 'list'
+[20]  RUNDESC←(DLTB ⊃list[(list[;1])⍳cn;3])~'#%'
+[21]  0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' (2 4⍴'TOTSTERM')
+[22]  
+[23]  EAGE←BAGE+AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP
+[24]  TABLE←(AGES+⌈TERM)↑(BAGE-⌈TERM)↓1+100↑DEC∆CHECK TABXX
+[25]  TABLE←((-1+⌈TERM),0)↓⍉((⌈TERM),1+⍴TABLE)⍴TABLE
+[26]  TABLE[;1]←TABLE[;1]*(0=z)+z←TERM-⌊TERM ⋄ TABLE←×/TABLE
+[27]  :if ∨/' '≠lrf ⋄ (f lrf)←2↑FinConvert f lrf  ⋄ :endif
+[28]  f←ExecuteRates f ''
+[29]  f←(⌈TERM)OVERTAKE 1+0.01×f ⋄ f←×/((⌊TERM)↑f),(¯1↑f)*TERM-⌊TERM
+    ∇

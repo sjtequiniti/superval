@@ -1,1 +1,14 @@
-    ∇ MESS←MESS∆TRANS Error;parameters;n[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Translate a Message - note this replaces the "dummy" function in the ws (required to cover errors in booting up)[3]   [4]   parameters←''[5]   :if 1<≡Error ⋄ parameters←1↓Error ⋄ Error←⎕io⊃Error ⋄ :endif[6]   [7]   :if mt MESS←⍙MESSdict ReadDictFile Error ⋄ MESS←Error ⋄ :endif[8]   [9]   ⍝ Replacement of %1, %2, %3 etc[10]  :for n :in (~⎕io)+⍳⍴parameters←(↑+/'%'=MESS)↑parameters[11]      MESS←('⍺%',(⍕n),'⍺',(n-~⎕io)⊃parameters) TEXTREPL MESS[12]  :endfor    ∇
+    ∇ MESS←MESS∆TRANS Error;parameters;n
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Translate a Message - note this replaces the "dummy" function in the ws (required to cover errors in booting up)
+[3]   
+[4]   parameters←''
+[5]   :if 1<≡Error ⋄ parameters←1↓Error ⋄ Error←⎕io⊃Error ⋄ :endif
+[6]   
+[7]   :if mt MESS←⍙MESSdict ReadDictFile Error ⋄ MESS←Error ⋄ :endif
+[8]   
+[9]   ⍝ Replacement of %1, %2, %3 etc
+[10]  :for n :in (~⎕io)+⍳⍴parameters←(↑+/'%'=MESS)↑parameters
+[11]      MESS←('⍺%',(⍕n),'⍺',(n-~⎕io)⊃parameters) TEXTREPL MESS
+[12]  :endfor
+    ∇

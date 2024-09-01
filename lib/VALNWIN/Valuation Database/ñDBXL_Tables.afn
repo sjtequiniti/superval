@@ -1,0 +1,69 @@
+    ∇ ⍙dbname ⍙DBXL_Tables arg;obj;indexed
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Set up Access Tables
+[3]   
+[4]   indexed←×arg ⍝ Tempororay Databases are not indexed
+[5]   
+[6]   0 0⍴'ADOcat' ⎕wi 'Create' 'ADOX.Catalog'
+[7]   0 0⍴'ADOcat' ⎕wi 'XCreate' (⍙dbname ⍙DBconnectionString '')
+[8]   
+[9]   (1 4 'Fixed Data Tables') Win∆ProgressBar2 'MemberUpdate'
+[10]  :if ⍙dbopen ⋄ :orif arg≠1 ⍝ Fixed/Variable Data Tables
+[11]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'BenefitType')
+[12]  :endif
+[13]  :if ⍙dbopen ⋄ :orif bQSM^arg≠1
+[14]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'Contingency')
+[15]  :endif
+[16]  :if ⍙dbopen ⍝ Fixed Data Tables
+[17]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'LiabilityType')
+[18]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'DataItem')
+[19]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'BasisType')
+[20]      :if AOSCtl
+[21]          ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'AOSClass')
+[22]          ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'AOSItem')
+[23]      :endif
+[24]  :endif
+[25]  
+[26]  (2 4 'Variable Data Tables') Win∆ProgressBar2 'MemberUpdate' ⍝ Variable Data Tables
+[27]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (      0 ⍙DBCreateTable 'Version')
+[28]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (      0 ⍙DBCreateTable 'AllocatedIDs')
+[29]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (      0 ⍙DBCreateTable 'Identification')
+[30]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'ResultsCategory')
+[31]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'ResultsData')
+[32]  :if arg∊2 3
+[33]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (  0 ⍙DBCreateTable 'ResultsData' 'ResultsData_NoIndex')
+[34]  :endif
+[35]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'OutputFile')
+[36]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'AltScenData')
+[37]  :if arg∊2 3
+[38]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (  0 ⍙DBCreateTable 'AltScenData' 'AltScenData_NoIndex')
+[39]  :endif
+[40]  :if AOSCtl
+[41]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'AOSType')
+[42]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'AOSResults')
+[43]      :if arg∊2 3
+[44]          ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (  0 ⍙DBCreateTable 'AOSResults' 'AOSResults_NoIndex')
+[45]      :endif
+[46]  :endif
+[47]  
+[48]  (3 4 'Output Data Tables') Win∆ProgressBar2 'MemberUpdate' ⍝ Set up the Excel output tables
+[49]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'BasisItem')
+[50]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (      0 ⍙DBCreateTable 'BasisData')
+[51]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'CharMemberData')
+[52]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'NumMemberData')
+[53]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'MemberFields')
+[54]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'MemberResults')
+[55]  :if arg∊2 3
+[56]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (  0 ⍙DBCreateTable 'MemberResults' 'MemberResults_NoIndex')
+[57]  :endif
+[58]  :if AOSCtl
+[59]      ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'AOSMember')
+[60]  :endif
+[61]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'FinancialsGroups')
+[62]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'FinancialsValues')
+[63]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (indexed ⍙DBCreateTable 'TableNames')
+[64]  ('ADOcat' ⎕wi 'xTables') ⎕wi 'xAppend' (      0 ⍙DBCreateTable 'TableValues')
+[65]  
+[66]  0 0⍴'ADOcat' ⎕wi 'Delete'
+[67]  0 0⍴⍙dbname ⍙DBOpen ¯1⌊-arg
+    ∇

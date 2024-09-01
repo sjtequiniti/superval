@@ -1,1 +1,299 @@
-    ∇ CompilePages helpdir;HelpTable;ht;∆;thispage;topic;missing;txt;pbody;anchor;h2;tbody;css;ali;hfiles;xxx;topicHtm;labels;label;thisentry;url;pu;phid;pgHtm;pm;pagetitles;ZERO;required;MISSINGLINKS;topicHtms;title;DEADWORDS;anchor_table;type_anchors;anch;related∆;h;file;titl;entry;html;related;rdir;adir;seln;toc;page;l1;bkmks;hh;l2;this;tocd;l2url;ok;l1url;TRIVIA;PATH[1]   ⍝ HELPEDIT.sf#4[2]   ⍝ Compile page-level help HTMs from topic-level HTMs[3]   ⍝ also other files used by HTML Help Workbench to compile a CHM[4]   ⍝ Revn: sjt14oct14 removed release notes[5]   ⍝       sjt26feb15 derived HHC, page intros[6]   [7]   ⍝ local vocabulary[8]   DEADWORDS←,¨'and' '/'                                                           ⍝ exclude as headings and index entries[9]   [10]  ⍝ hyperlinks to help type-specific help articles[11]  ∆←  ⊂'rates' 'Selecting rate tables'       'SELECTING_RATE_TABLES.HTM'[12]  ∆←∆,⊂'rows'  'Adding and deleting rows'    'ADDING_DELETING_ROWS.HTM'[13]  ∆←∆,⊂'cols'  'Adding and deleting columns' 'ADDING_DELETING_COLUMNS.HTM'[14]  ∆←∆,⊂'grid'  'Grid editing options'        'GRID_EDITING_OPTIONS.HTM'[15]  anchor_table←'anchor' 'linktext' 'href'⍪ ⊃∆[16]  type_anchors←(↑¨∆)push 1↓¨∆←('Decr' 'rates')('F1SSCol' 'rows' 'grid')('F1SSRow' 'cols' 'grid')[17]  [18]  ⍝ file paths[19]  ∆←'pages' 'solotopics' 'topics' 'pageintros'                                    ⍝ child folders of html\[20]  ∆←∆,'infocus' 'ifsource' 'ifcompiled'                                           ⍝ InFocus folders[21]  ⍝⍝∆←∆,'releasenotes' 'rncompiled'                                                 ⍝ release note folders[22]  rdir←∆ push (⊂        'html\'),¨ ∆ ,¨'\'                                        ⍝ d: relative paths to folders[23]  adir←∆ push (⊂helpdir,'html\'),¨ ∆ ,¨'\'                                        ⍝ d: absolute paths to folders[24]  css←'..\..\css\page.css'                                                        ⍝ in avuncular folder[25]  [26]  ⍝ ht extends HelpTable[27]  xxx←(SystemDir,'HELPEDIT') ReadFile 'UK Help Table' '' 'HelpTable'[28]  ht←⍕¨HelpTable ⋄ ZERO←,'0'                                                      ⍝ avoid numeric keys for dictionaries[29]  [30]  pm←push (ht for unique ht at 'PageHelpID') at 'PageHelpID' 'ModuleField'        ⍝ d: PageHelpID=>ModuleField[31]  pagetitles←pm[1], ↑str_replace1¨/ (⊂,¨'+' ': ') (⊂,¨'_' ' ') (1↓pm)             ⍝ d: PageHelpID=>page title[32]  ht←ht amend 'pageHtm' (UPPERCASE¨(pm at ht at 'PageHelpID'),¨⊂'.HTM')           ⍝ page HTMs[33]  [34]  ht←ht amend 'ctxid'    (↑⎕SPLIT ((⊂ZERO)≡¨↑∆)⊖⊃∆←ht at 'HelpID' 'PageHelpID')   ⍝ CtxIDs: HelpID but PageHelpID if HelpID 0[35]  ht←ht amend 'alias'    ((⊂'IDH_'),¨ht at 'ctxid')                               ⍝ aliases[36]  ⍝ Where a topic is to be repeated on a page, HelpField has a topic index[37]  ⍝ eg Actives_Basis_IHCash+Actives_Basis+ILLTABC[2][38]  ht←ht amend 'bookmark' (∆←(⊂'[_')char_replace¨(∆⍳¨'+')↓¨∆←ht at 'HelpField')    ⍝ replace eg [2] with _2[39]  ht←ht amend 'url'      ((⊂'\/' char_replace rdir at 'pages'),¨(ht at 'pageHtm'),¨ (~mt¨∆) sel¨ '#',¨ ∆)    ⍝ URLs[40]  [41]  ⍝ Watch Out: '+' in ModuleField to be used ONLY as a delimiter[42]  ht←ht amend 'label'    ((⊂'_ ')char_replace¨(1-(⌽¨∆)⍳¨'+')↑¨∆←ht at 'ModuleField')                  ⍝ labels[43]  [44]  ⍝ write page-level help HTMs[45]  xxx←3 ⎕CMD 'DEL ',(adir at 'pages'),'*.HTM'                                     ⍝ clear pages folder[46]  xxx←3 ⎕CMD 'DEL ',(adir at 'solotopics'),'*.HTM'                                ⍝ clear solotopics folder[47]  topicHtms←m2n UPPERCASE ⎕XLIB (adir at 'topics'),'*.HTM'                        ⍝ available topic HTMs[48]  missing←required←MISSINGLINKS←''[49]  toc←'' ''[50]  :for phid :in nub ht at 'PageHelpID' ⋄ thispage←ht for 'PageHelpID' phid        ⍝ help topics on this page[51]      'single entry for page' ASSERT "1=rowsIn thispage for 'HelpID' ZERO"[52]      labels←↑groupValues/thispage at 'HelpID' 'label'[53]      pgHtm←↑thispage at 'pageHtm'[54]      pbody←''[55]      ∆←SelectBody nfile_get_contents (adir at 'pageintros'),pgHtm[56]      pbody←((~mt ∆)/'DIV class="page-intro"' xtag ∆) push pbody                  ⍝ page intro[57]      seln←(~(thispage at 'HelpID')∊⊂ZERO) ^ unique thispage at 'HelpField'       ⍝ unique topics (respecting topic indexes)[58]      ∆←(thispage at 'label') pr¨'#' join¨spin thispage at 'pageHtm' 'bookmark'[59]      toc←toc amend (pagetitles at phid) (seln/∆)[60]      :for topic :in ∆[1] push¨ 1↓∆←⎕SPLIT thispage for seln[61]          ∆←('name' (topic at 'bookmark')) ('class' 'bookmark')[62]          anchor←⊂('A' xattr ∆) xtag ,' '                                         ⍝ HTML anchor to topic[63]          ∆←nub lmt (labels at topic at 'HelpID') ~ DEADWORDS                     ⍝ one topic may serve several fields[64]          'at least one label for this topic' ASSERT "~mt ∆"                      ⍝ but at least one[65]          h2←⊂'H2 class="V9"' xtag '<BR>' join xmlEscape¨ ∆[66]          topicHtm←UPPERCASE¨((¯1+∆⍳'[')↑∆←(∆⍳'+')↓∆←topic at 'HelpField'),'.HTM' ⍝ ignore topic indexes[67]          required←required,⊂topicHtm[68]          :if NoArticle txt←SelectBody nfile_get_contents (adir at 'topics'),topicHtm[69]              :if ^/(labels at topic at 'HelpID')∊'Grid Help' 'Decr Help'[70]                  :continue[71]              :else[72]                  missing←missing,⊂topicHtm[73]                  tbody←⊂('P class="error"')xtag 'Article missing from ',topicHtm[74]              :endif[75]          :else[76]              ⍝ type-specific help hyperlinks[77]              related←''[78]              ∆←type_anchors at topic at 'FieldType'[79]              :for anch :in ∆[1] push¨ 1↓∆←⎕SPLIT anchor_table for 'anchor' push ∆[80]                  related←related,⊂'P' xtag ('A' xattr 'href' (anch at 'href')) xtag anch at 'linktext'[81]              :endfor[82]              :if ~mt related ⋄ related←join ('H2' xtag 'Related') push related ⋄ :endif[83]              ∆←(topicHtms thispage) FixOnPageReferences RearrangeTopic txt, related[84]              ∆←('P class="topic-source"' xtag topicHtm) (∆)                       ⍝ to help editors[85]              tbody←'DIV class="topic"' xtag ∆[86]          :endif[87]          pbody←pbody,anchor,h2,tbody[88]      :endfor[89]      title←pagetitles at phid[90]      pbody←pbody,⊂'P class="page-source"' xtag (adir at 'pages'),pgHtm,' ',,1 DATESPELL ⎕TS    ⍝ to help editors[91]      pbody←('H1 class="page"' xtag title) push 'DIV class="wrapper"' xtag pbody[92]      ∆←writeHtmlDoc (join pbody) title css[93]      ∆ nfile_put_contents (adir at 'pages'),pgHtm[94]  :endfor[95]  [96]  required←required,(~mt MISSINGLINKS)/⊂'deadlink.htm'[97]  [98]  ⍝ dictionary of files[99]  ∆←(⊂'svhelpuk.'),¨ 'ali' 'chm' 'hhc' 'hhk' 'hhp' 'log' 'h'[100] ∆←'html\starthere.htm' push ∆                                                   ⍝ front page[101] hfiles←'about' 'ALI' 'CHM' 'HHC' 'HHK' 'HHP' 'LOG' 'MAP' push ∆[102] [103] ⍝ write LOG file ...............................................................[104] ∆←m2n ⎕XLIB (adir at 'topics'),'*.HTM'[105] ∆←'[IGNORED TOPICS]' push srt nub (~∆∊required)/∆                               ⍝ topic HTMs not used[106] ∆←∆, '' '[MISSING ARTICLES]' , srt nub missing                                  ⍝ HTMs missing with empty bodies[107] ∆←∆, '' '[MISSING LINKS]'    , srt nub MISSINGLINKS                             ⍝ missing href targets[108] (join ∆) nfile_put_contents helpdir,hfiles at 'LOG'[109] [110] ⍝ write new ALI file (alias::URL map) ..........................................[111] ali←ht for unique ht at 'ctxid'[112] ⍝ Help Viewer reports "HH_HELP_CONTEXT called without a [MAP] section" if every[113] ⍝ topic id is aliased to a topic file to which a bookmark has been appended[114] ⍝ http://forums.madcapsoftware.com/viewtopic.php?f=8&t=6815[115] ∆←'IDH_start_here =',hfiles at 'about'                                          ⍝ alias for front page, no CtxID[116] ∆←join ∆ push ⎕SPLIT ↑,/¯1⌽⊃¨'=',⊃¨ali at 'url' 'alias'[117] ∆ nfile_put_contents helpdir,hfiles at 'ALI'[118] [119] ⍝ write new H file (alias::CtxID map) ..........................................[120] ∆←join (⊂'#define '),¨ ' ' join¨ spin ali at 'alias' 'ctxid'[121] ∆ nfile_put_contents helpdir,hfiles at 'MAP'[122] [123] ⍝ Write new HHC file (table of contents) .......................................[124] ⍝ Tabulate InFocus article hrefs and titles[125] ⍝⌿⍝ No, don't do this for V9.0[126] ⍝⌿⍝∆←''[127] ⍝⌿⍝⍝⌿⍝∆←∆,⊂'calpv1sal.htm'    'Calculation of PV 1% salaries'[128] ⍝⌿⍝∆←∆,⊂'contbnrates.htm'  'Setting up contribution rates'[129] ⍝⌿⍝∆←∆,⊂'offsetgmp.htm'    'Offsetting GMPs in pension slices'[130] ⍝⌿⍝∆←∆,⊂'withdrawbens.htm' 'Valuing withdrawal benefits'[131] ⍝⌿⍝∆←∆,⊂'eqrageact.htm'    'Equalisation of retirement ages: Actives'[132] ⍝⌿⍝∆←∆,⊂'salproj.htm'      'Salary projections'[133] ⍝⌿⍝∆←∆,⊂'disbenefits.htm'  'Valuing DIS benefits'[134] ⍝⌿⍝∆←∆,⊂'cashbens.htm'     'Valuing cash benefits'[135] ⍝⌿⍝∆←∆,⊂'capnonppf.htm'    'Capped non-PPF runs'[136] ⍝⌿⍝∆←∆,⊂'deferreds.htm'    'Valuing deferred pensioners'[137] ⍝⌿⍝∆←∆,⊂'pendol.htm'       'Specifying pensions at date of leaving'[138] ⍝⌿⍝∆←∆,⊂'ratetables.htm'   'Using rate tables'[139] ⍝⌿⍝∆←∆,⊂'importdat.htm'    'Importing data'[140] ⍝⌿⍝∆←∆,⊂'ppfs179val.htm'   'Setting up PPF S179 (Levy) valuations'[141] ⍝⌿⍝∆←∆,⊂'mortsetup.htm'    'Mortality set-up'[142] ⍝⌿⍝∆←∆,⊂'yieldcurves.htm'  'Using yield curves'[143] ⍝⌿⍝∆←∆,⊂'problems.htm'     'Problems with valuation runs or Excel output'[144] ⍝⌿⍝∆←∆,⊂'bspoffset.htm'    'BSP offset'[145] ⍝⌿⍝∆←∆,⊂'care.htm'         'CARE'[146] ⍝⌿⍝∆←∆,⊂'cashflow.htm'     'Cashflow'[147] ⍝⌿⍝∆←∆,⊂'contrctout.htm'   'Contracting out'[148] ⍝⌿⍝∆←∆,⊂'svdevelop.htm'    'GN9 SuperVal development'[149] ⍝⌿⍝∆←∆,⊂'irmax.htm'        'IRMAX'[150] ⍝⌿⍝∆←∆,⊂'underpin.htm'     'Underpin'[151] ⍝⌿⍝∆←∆,⊂'prespapen.htm'    'Allowing for pre-SPA pensioners'[152] ⍝⌿⍝∆←∆,⊂'ppfs143val.htm'   'Setting up PPF S143 entry valuations'⍝⌿⍝∆←∆,⊂'propmarried.htm'  'Proportion married'[153] ⍝⌿⍝infocus← 'href' 'title'⍪ ⊃∆[154] ⍝ Write ifcompiled\overview.htm from infocus table[155] ⍝⌿⍝∆←  ⊂'H1' xtag 'InFocus articles'[156] ⍝⌿⍝∆←∆,⊂'P' xtag 'The InFocus articles discuss in depth, with examples, topics in the use of SuperVal.'[157] ⍝⌿⍝∆←∆,'UL' xtag (⊂'LI')xtag¨ ('A' xattr¨ (⊂'href')pr¨ infocus at 'href') xtag¨ infocus at 'title'[158] ⍝⌿⍝((join ∆) 'InFocus articles' '../../css/common.css') writeHtmlFile (adir at 'ifcompiled'),'overview.htm'[159] [160] ⍝ Write HHC SiteMap document[161] h←⊂'<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">'[162] h←h,⊂'<HTML>'[163] h←h,⊂'<HEAD>'[164] h←h,⊂'<meta name="GENERATOR" content="SuperVal CompilePages function">'[165] h←h,⊂'<!-- Sitemap 1.0 -->'[166] h←h,⊂'</HEAD><BODY>'[167] h←h,⊂'<UL>'[168] h←h,HhcEntryFor 'About SuperVal' (hfiles at 'about')[169] ⍝⌿⍝⍝ Include InFocus articles[170] ⍝⌿⍝⍝ While some HTMs await cleanup, derive ToC from cleaned-up HTMs;[171] ⍝⌿⍝⍝   for others just link to title/url[172] ⍝⌿⍝(adir at 'infocus')  CopyImageFolders adir at 'ifcompiled'                      ⍝ FIXME copy images from infocus\[173] ⍝⌿⍝(adir at 'ifsource') CopyImageFolders adir at 'ifcompiled'                      ⍝ copy images from ifsource\[174] ⍝⌿⍝h←h,HhcEntryFor 'InFocus articles' ((rdir at 'ifcompiled'),'overview.htm')[175] ⍝⌿⍝h←h,⊂'  <UL>'[176] ⍝⌿⍝:for ∆ :in 1↓⎕SPLIT infocus ⋄ (file titl)←∆[177] ⍝⌿⍝    :if (adir at 'ifsource') FileExist file[178] ⍝⌿⍝        (entry html)←titl CompileArticle (adir at 'ifsource') (rdir at 'ifcompiled') file[179] ⍝⌿⍝    :else ⍝ FIXME redundant when all IF articles cleaned up and in ifsource\[180] ⍝⌿⍝        entry←HhcEntryFor titl ((rdir at 'infocus'),file)[181] ⍝⌿⍝        html←nfile_get_contents (adir at 'infocus'),file[182] ⍝⌿⍝    :endif[183] ⍝⌿⍝    html nfile_put_contents (adir at 'ifcompiled'),file                         ⍝ write HTM for IF into ifcompiled folder[184] ⍝⌿⍝ h←h,(⊂'    '),¨ entry                                                       ⍝ points to ifcompiled folder[185] ⍝⌿⍝:endfor[186] ⍝⌿⍝h←h,⊂'  </UL>'[187] ⍝ Online user group[188] h←h,1 HhcEntryFor 'SuperVal Users Group online' 'http://groups.google.co.uk/group/superval-users'[189] ⍝ Release notes[190] ⍝⍝(adir at 'releasenotes') CopyImageFolders adir at 'rncompiled'                  ⍝ copy images from releasenotes\[191] ⍝⍝h←h,1 HhcEntryFor 'Release notes' ''[192] ⍝⍝h←h,⊂'  <UL>'[193] ⍝⍝:for ∆ :in '850' '842' '840'[194] ⍝⍝    titl←¯1⌽'.',1⌽∆[195] ⍝⍝    file←'rn',∆,'.htm'[196] ⍝⍝    (entry html)←titl CompileArticle (adir at 'releasenotes') (rdir at 'rncompiled') file[197] ⍝⍝    h←h,(⊂'    '),¨ entry                                                       ⍝ points to rncompiled folder[198] ⍝⍝    html nfile_put_contents (adir at 'rncompiled'),file                         ⍝ write HTM for RN into rncompiled folder[199] ⍝⍝:endfor[200] ⍝⍝h←h,⊂'  </UL>'[201] PATH←'html/pages/'[202] TRIVIA←'Cancel' 'OK' 'Run' 'Save' 'SaveAs' 'Quit'[203] ∆←'l1' 'l2' 'bkmks'⍪(⊃':' partition¨ keysIn toc),valsIn toc[204] tocd←∆ groupby 'l1' ('l2' 'bkmks')[205] :for l1 :in srt keysIn tocd[206]     this←tocd at l1[207]     :if ^/MT¨this at 'l2'                                                       ⍝ no sub pages[208]         bkmks←'title' 'url'⍪ ↑⍪/⎕MIX¨this at 'bkmks'[209]         bkmks←bkmks amend 'url' ((⊂PATH),¨bkmks at 'url')[210]         :if ok←×rowsIn bkmks←bkmks for ~(bkmks at 'title')∊TRIVIA[211]             l1url←¯1↓'#' Win∆Parent ↑bkmks at 'url'                             ⍝ page URL[212]             hh←↑,/HhcEntryFor¨spin bkmks at 'title' 'url'[213]         :endif[214]     :else[215]         l1url←hh←''[216]         :for ∆ :in ⎕SPLIT valsIn this ⋄ (l2 bkmks)←∆[217]             bkmks←'title' 'url'⍪⊃bkmks[218]             bkmks←bkmks amend 'url' ((⊂PATH),¨bkmks at 'url')[219]             :if ok←×rowsIn bkmks←bkmks for ~(bkmks at 'title')∊TRIVIA[220]                 l2url←¯1↓'#' Win∆Parent ↑bkmks at 'url'                         ⍝ page URL[221]                 ∆←↑,/HhcEntryFor¨spin bkmks at 'title' 'url'[222]                 hh←hh,HhcEntryFor l2 l2url ∆[223]             :endif[224]         :endfor[225]     :endif[226]     :if ok ⋄ h←h,HhcEntryFor l1 l1url hh ⋄ :endif[227] :end[228]   h←h,⊂'</UL>'[229]   h←h,⊂'</BODY></HTML>'[230] (join h) nfile_put_contents helpdir,hfiles at 'HHC'[231] [232] ⍝ write new HHK file (index) ...................................................[233] ∆←⊂'<HTML>'[234] ∆←∆,⊂'<!-- Sitemap 1.0 -->'[235] ∆←∆,⊂'<OBJECT type="text/site properties">'[236] ∆←∆,⊂'</OBJECT>'[237] ∆←∆,⊂'<UL>'[238] ⍝ use primitive HTML 'tag soup' instead of xtag, which would close HTML elements[239] :for label :in lmt nub ((ht sortedBy 'label') at 'label') ~ DEADWORDS[240]     thisentry←ht for 'label' label[241]     thisentry←(thisentry for unique thisentry at 'url') sortedBy 'PageHelpID'[242]     ∆←∆,⊂'  <LI> <OBJECT type="text/sitemap">'[243]     ∆←∆,⊂'    <param name="Keyword" value="',('^'=↑label)↓label,'">'            ⍝ drop leading caret[244]     :for  pu :in spin thisentry at 'PageHelpID' 'url' ⋄ (phid url)←pu[245]         ∆←∆,⊂'    <param name="Name" value="',(pagetitles at phid),'">'[246]         ∆←∆,⊂'    <param name="Local" value="',url,'">'[247]     :endfor[248]     ∆←∆,⊂'    </OBJECT>'[249] :endfor[250] ⍝ FIXME index content of solotopics folder[251] ∆←∆,⊂'</UL></HTML>'[252] (join ∆) nfile_put_contents helpdir,hfiles at 'HHK'[253] [254] ⍝ write new HHP file (project) .................................................[255] h←⊂'[OPTIONS]'[256] h←h,⊂'Binary Index=No' ⍝ else Topics Found is rubbish[257] h←h,⊂'Compatibility=1.1 or later'[258] h←h,⊂'Compiled file=',hfiles at 'CHM'[259] h←h,⊂'Contents file=',hfiles at 'HHC'[260] h←h,⊂'Default Window=Basic'[261] h←h,⊂'Default topic=',hfiles at 'about'[262] h←h,⊂'Display compile progress=No'[263] h←h,⊂'Full-text search=Yes'[264] h←h,⊂'Index file=',hfiles at 'HHK'[265] h←h,⊂'Language=0x809 English (United Kingdom)'[266] h←h,⊂'Title=SuperVal Help'[267] h←h,⊂''[268] h←h,⊂'[WINDOWS]'[269] ⍝h←h,⊂'Basic=,"SVHELP.HHC","SVHELP.HHK","html\SVHE1HLW.HTM",,,,,,0x23520,,0x3006,,,,,,,,0'[270] h←h,⊂'Basic=',(↑,/ ',',¨ '"' embrace¨ hfiles at 'HHC' 'HHK' 'about'),',,,,,,0x23520,,0x3006,,,,,,,,0'[271] h←h,⊂''[272] h←h,⊂'[ALIAS]'[273] h←h,⊂'#include ',hfiles at 'ALI'[274] h←h,⊂''[275] h←h,⊂'[MAP]'[276] h←h,⊂'#include ',hfiles at 'MAP'[277] h←h,⊂''[278] h←h,⊂'[FILES]'[279] ⍝ include css\[280] h←h,(⊂∆),¨ m2n srt ⎕XLIB helpdir,∆←'css\'[281] ⍝ no need to list files referred to in HHC[282] h←h,⊂hfiles at 'about'                                                          ⍝ front page[283] h←h,(⊂rdir at 'pages')     ,¨ m2n srt ⎕XLIB adir at 'pages'             ⍝ all page-level help HTMs[284] h←h,(~mt MISSINGLINKS)/⊂(rdir at 'topics'),'deadlink.htm'[285] h←h,(⊂rdir at 'solotopics'),¨ m2n srt ⎕XLIB adir at 'solotopics'        ⍝ topic HTMs for internal hyperlinks[286] (join h) nfile_put_contents helpdir,hfiles at 'HHP'[287] [288] ⍝ datestamp and archive current CHM ............................................[289] ∆←'MOVE '[290] ∆←∆,helpdir,'SVHELPUK.CHM '[291] ∆←∆,helpdir,'archive\svhelpuk.',(⍕100⊥3↑⎕TS),'.chm'[292] 1 ⎕CMD ∆[293] [294] ⍝ recompile CHM -- assumes user has HTML Help Workshop installed in C:\Program Files[295] :if uSERisRSE ⋄ 1 ⎕CMD '"D:\Program Files (x86)\HTML Help Workshop\hhc.exe" ',helpdir,'svhelpuk.hhp'[296] :else         ⋄ 1 ⎕CMD '"C:\Program Files\HTML Help Workshop\hhc.exe" ',helpdir,'svhelpuk.hhp'[297] :endif    ∇
+    ∇ CompilePages helpdir;HelpTable;ht;∆;thispage;topic;missing;txt;pbody;anchor;h2;tbody;css;ali;hfiles;xxx;topicHtm;labels;label;thisentry;url;pu;phid;pgHtm;pm;pagetitles;ZERO;required;MISSINGLINKS;topicHtms;title;DEADWORDS;anchor_table;type_anchors;anch;related∆;h;file;titl;entry;html;related;rdir;adir;seln;toc;page;l1;bkmks;hh;l2;this;tocd;l2url;ok;l1url;TRIVIA;PATH
+[1]   ⍝ HELPEDIT.sf#4
+[2]   ⍝ Compile page-level help HTMs from topic-level HTMs
+[3]   ⍝ also other files used by HTML Help Workbench to compile a CHM
+[4]   ⍝ Revn: sjt14oct14 removed release notes
+[5]   ⍝       sjt26feb15 derived HHC, page intros
+[6]   
+[7]   ⍝ local vocabulary
+[8]   DEADWORDS←,¨'and' '/'                                                           ⍝ exclude as headings and index entries
+[9]   
+[10]  ⍝ hyperlinks to help type-specific help articles
+[11]  ∆←  ⊂'rates' 'Selecting rate tables'       'SELECTING_RATE_TABLES.HTM'
+[12]  ∆←∆,⊂'rows'  'Adding and deleting rows'    'ADDING_DELETING_ROWS.HTM'
+[13]  ∆←∆,⊂'cols'  'Adding and deleting columns' 'ADDING_DELETING_COLUMNS.HTM'
+[14]  ∆←∆,⊂'grid'  'Grid editing options'        'GRID_EDITING_OPTIONS.HTM'
+[15]  anchor_table←'anchor' 'linktext' 'href'⍪ ⊃∆
+[16]  type_anchors←(↑¨∆)push 1↓¨∆←('Decr' 'rates')('F1SSCol' 'rows' 'grid')('F1SSRow' 'cols' 'grid')
+[17]  
+[18]  ⍝ file paths
+[19]  ∆←'pages' 'solotopics' 'topics' 'pageintros'                                    ⍝ child folders of html\
+[20]  ∆←∆,'infocus' 'ifsource' 'ifcompiled'                                           ⍝ InFocus folders
+[21]  ⍝⍝∆←∆,'releasenotes' 'rncompiled'                                                 ⍝ release note folders
+[22]  rdir←∆ push (⊂        'html\'),¨ ∆ ,¨'\'                                        ⍝ d: relative paths to folders
+[23]  adir←∆ push (⊂helpdir,'html\'),¨ ∆ ,¨'\'                                        ⍝ d: absolute paths to folders
+[24]  css←'..\..\css\page.css'                                                        ⍝ in avuncular folder
+[25]  
+[26]  ⍝ ht extends HelpTable
+[27]  xxx←(SystemDir,'HELPEDIT') ReadFile 'UK Help Table' '' 'HelpTable'
+[28]  ht←⍕¨HelpTable ⋄ ZERO←,'0'                                                      ⍝ avoid numeric keys for dictionaries
+[29]  
+[30]  pm←push (ht for unique ht at 'PageHelpID') at 'PageHelpID' 'ModuleField'        ⍝ d: PageHelpID=>ModuleField
+[31]  pagetitles←pm[1], ↑str_replace1¨/ (⊂,¨'+' ': ') (⊂,¨'_' ' ') (1↓pm)             ⍝ d: PageHelpID=>page title
+[32]  ht←ht amend 'pageHtm' (UPPERCASE¨(pm at ht at 'PageHelpID'),¨⊂'.HTM')           ⍝ page HTMs
+[33]  
+[34]  ht←ht amend 'ctxid'    (↑⎕SPLIT ((⊂ZERO)≡¨↑∆)⊖⊃∆←ht at 'HelpID' 'PageHelpID')   ⍝ CtxIDs: HelpID but PageHelpID if HelpID 0
+[35]  ht←ht amend 'alias'    ((⊂'IDH_'),¨ht at 'ctxid')                               ⍝ aliases
+[36]  ⍝ Where a topic is to be repeated on a page, HelpField has a topic index
+[37]  ⍝ eg Actives_Basis_IHCash+Actives_Basis+ILLTABC[2]
+[38]  ht←ht amend 'bookmark' (∆←(⊂'[_')char_replace¨(∆⍳¨'+')↓¨∆←ht at 'HelpField')    ⍝ replace eg [2] with _2
+[39]  ht←ht amend 'url'      ((⊂'\/' char_replace rdir at 'pages'),¨(ht at 'pageHtm'),¨ (~mt¨∆) sel¨ '#',¨ ∆)    ⍝ URLs
+[40]  
+[41]  ⍝ Watch Out: '+' in ModuleField to be used ONLY as a delimiter
+[42]  ht←ht amend 'label'    ((⊂'_ ')char_replace¨(1-(⌽¨∆)⍳¨'+')↑¨∆←ht at 'ModuleField')                  ⍝ labels
+[43]  
+[44]  ⍝ write page-level help HTMs
+[45]  xxx←3 ⎕CMD 'DEL ',(adir at 'pages'),'*.HTM'                                     ⍝ clear pages folder
+[46]  xxx←3 ⎕CMD 'DEL ',(adir at 'solotopics'),'*.HTM'                                ⍝ clear solotopics folder
+[47]  topicHtms←m2n UPPERCASE ⎕XLIB (adir at 'topics'),'*.HTM'                        ⍝ available topic HTMs
+[48]  missing←required←MISSINGLINKS←''
+[49]  toc←'' ''
+[50]  :for phid :in nub ht at 'PageHelpID' ⋄ thispage←ht for 'PageHelpID' phid        ⍝ help topics on this page
+[51]      'single entry for page' ASSERT "1=rowsIn thispage for 'HelpID' ZERO"
+[52]      labels←↑groupValues/thispage at 'HelpID' 'label'
+[53]      pgHtm←↑thispage at 'pageHtm'
+[54]      pbody←''
+[55]      ∆←SelectBody nfile_get_contents (adir at 'pageintros'),pgHtm
+[56]      pbody←((~mt ∆)/'DIV class="page-intro"' xtag ∆) push pbody                  ⍝ page intro
+[57]      seln←(~(thispage at 'HelpID')∊⊂ZERO) ^ unique thispage at 'HelpField'       ⍝ unique topics (respecting topic indexes)
+[58]      ∆←(thispage at 'label') pr¨'#' join¨spin thispage at 'pageHtm' 'bookmark'
+[59]      toc←toc amend (pagetitles at phid) (seln/∆)
+[60]      :for topic :in ∆[1] push¨ 1↓∆←⎕SPLIT thispage for seln
+[61]          ∆←('name' (topic at 'bookmark')) ('class' 'bookmark')
+[62]          anchor←⊂('A' xattr ∆) xtag ,' '                                         ⍝ HTML anchor to topic
+[63]          ∆←nub lmt (labels at topic at 'HelpID') ~ DEADWORDS                     ⍝ one topic may serve several fields
+[64]          'at least one label for this topic' ASSERT "~mt ∆"                      ⍝ but at least one
+[65]          h2←⊂'H2 class="V9"' xtag '<BR>' join xmlEscape¨ ∆
+[66]          topicHtm←UPPERCASE¨((¯1+∆⍳'[')↑∆←(∆⍳'+')↓∆←topic at 'HelpField'),'.HTM' ⍝ ignore topic indexes
+[67]          required←required,⊂topicHtm
+[68]          :if NoArticle txt←SelectBody nfile_get_contents (adir at 'topics'),topicHtm
+[69]              :if ^/(labels at topic at 'HelpID')∊'Grid Help' 'Decr Help'
+[70]                  :continue
+[71]              :else
+[72]                  missing←missing,⊂topicHtm
+[73]                  tbody←⊂('P class="error"')xtag 'Article missing from ',topicHtm
+[74]              :endif
+[75]          :else
+[76]              ⍝ type-specific help hyperlinks
+[77]              related←''
+[78]              ∆←type_anchors at topic at 'FieldType'
+[79]              :for anch :in ∆[1] push¨ 1↓∆←⎕SPLIT anchor_table for 'anchor' push ∆
+[80]                  related←related,⊂'P' xtag ('A' xattr 'href' (anch at 'href')) xtag anch at 'linktext'
+[81]              :endfor
+[82]              :if ~mt related ⋄ related←join ('H2' xtag 'Related') push related ⋄ :endif
+[83]              ∆←(topicHtms thispage) FixOnPageReferences RearrangeTopic txt, related
+[84]              ∆←('P class="topic-source"' xtag topicHtm) (∆)                       ⍝ to help editors
+[85]              tbody←'DIV class="topic"' xtag ∆
+[86]          :endif
+[87]          pbody←pbody,anchor,h2,tbody
+[88]      :endfor
+[89]      title←pagetitles at phid
+[90]      pbody←pbody,⊂'P class="page-source"' xtag (adir at 'pages'),pgHtm,' ',,1 DATESPELL ⎕TS    ⍝ to help editors
+[91]      pbody←('H1 class="page"' xtag title) push 'DIV class="wrapper"' xtag pbody
+[92]      ∆←writeHtmlDoc (join pbody) title css
+[93]      ∆ nfile_put_contents (adir at 'pages'),pgHtm
+[94]  :endfor
+[95]  
+[96]  required←required,(~mt MISSINGLINKS)/⊂'deadlink.htm'
+[97]  
+[98]  ⍝ dictionary of files
+[99]  ∆←(⊂'svhelpuk.'),¨ 'ali' 'chm' 'hhc' 'hhk' 'hhp' 'log' 'h'
+[100] ∆←'html\starthere.htm' push ∆                                                   ⍝ front page
+[101] hfiles←'about' 'ALI' 'CHM' 'HHC' 'HHK' 'HHP' 'LOG' 'MAP' push ∆
+[102] 
+[103] ⍝ write LOG file ...............................................................
+[104] ∆←m2n ⎕XLIB (adir at 'topics'),'*.HTM'
+[105] ∆←'[IGNORED TOPICS]' push srt nub (~∆∊required)/∆                               ⍝ topic HTMs not used
+[106] ∆←∆, '' '[MISSING ARTICLES]' , srt nub missing                                  ⍝ HTMs missing with empty bodies
+[107] ∆←∆, '' '[MISSING LINKS]'    , srt nub MISSINGLINKS                             ⍝ missing href targets
+[108] (join ∆) nfile_put_contents helpdir,hfiles at 'LOG'
+[109] 
+[110] ⍝ write new ALI file (alias::URL map) ..........................................
+[111] ali←ht for unique ht at 'ctxid'
+[112] ⍝ Help Viewer reports "HH_HELP_CONTEXT called without a [MAP] section" if every
+[113] ⍝ topic id is aliased to a topic file to which a bookmark has been appended
+[114] ⍝ http://forums.madcapsoftware.com/viewtopic.php?f=8&t=6815
+[115] ∆←'IDH_start_here =',hfiles at 'about'                                          ⍝ alias for front page, no CtxID
+[116] ∆←join ∆ push ⎕SPLIT ↑,/¯1⌽⊃¨'=',⊃¨ali at 'url' 'alias'
+[117] ∆ nfile_put_contents helpdir,hfiles at 'ALI'
+[118] 
+[119] ⍝ write new H file (alias::CtxID map) ..........................................
+[120] ∆←join (⊂'#define '),¨ ' ' join¨ spin ali at 'alias' 'ctxid'
+[121] ∆ nfile_put_contents helpdir,hfiles at 'MAP'
+[122] 
+[123] ⍝ Write new HHC file (table of contents) .......................................
+[124] ⍝ Tabulate InFocus article hrefs and titles
+[125] ⍝⌿⍝ No, don't do this for V9.0
+[126] ⍝⌿⍝∆←''
+[127] ⍝⌿⍝⍝⌿⍝∆←∆,⊂'calpv1sal.htm'    'Calculation of PV 1% salaries'
+[128] ⍝⌿⍝∆←∆,⊂'contbnrates.htm'  'Setting up contribution rates'
+[129] ⍝⌿⍝∆←∆,⊂'offsetgmp.htm'    'Offsetting GMPs in pension slices'
+[130] ⍝⌿⍝∆←∆,⊂'withdrawbens.htm' 'Valuing withdrawal benefits'
+[131] ⍝⌿⍝∆←∆,⊂'eqrageact.htm'    'Equalisation of retirement ages: Actives'
+[132] ⍝⌿⍝∆←∆,⊂'salproj.htm'      'Salary projections'
+[133] ⍝⌿⍝∆←∆,⊂'disbenefits.htm'  'Valuing DIS benefits'
+[134] ⍝⌿⍝∆←∆,⊂'cashbens.htm'     'Valuing cash benefits'
+[135] ⍝⌿⍝∆←∆,⊂'capnonppf.htm'    'Capped non-PPF runs'
+[136] ⍝⌿⍝∆←∆,⊂'deferreds.htm'    'Valuing deferred pensioners'
+[137] ⍝⌿⍝∆←∆,⊂'pendol.htm'       'Specifying pensions at date of leaving'
+[138] ⍝⌿⍝∆←∆,⊂'ratetables.htm'   'Using rate tables'
+[139] ⍝⌿⍝∆←∆,⊂'importdat.htm'    'Importing data'
+[140] ⍝⌿⍝∆←∆,⊂'ppfs179val.htm'   'Setting up PPF S179 (Levy) valuations'
+[141] ⍝⌿⍝∆←∆,⊂'mortsetup.htm'    'Mortality set-up'
+[142] ⍝⌿⍝∆←∆,⊂'yieldcurves.htm'  'Using yield curves'
+[143] ⍝⌿⍝∆←∆,⊂'problems.htm'     'Problems with valuation runs or Excel output'
+[144] ⍝⌿⍝∆←∆,⊂'bspoffset.htm'    'BSP offset'
+[145] ⍝⌿⍝∆←∆,⊂'care.htm'         'CARE'
+[146] ⍝⌿⍝∆←∆,⊂'cashflow.htm'     'Cashflow'
+[147] ⍝⌿⍝∆←∆,⊂'contrctout.htm'   'Contracting out'
+[148] ⍝⌿⍝∆←∆,⊂'svdevelop.htm'    'GN9 SuperVal development'
+[149] ⍝⌿⍝∆←∆,⊂'irmax.htm'        'IRMAX'
+[150] ⍝⌿⍝∆←∆,⊂'underpin.htm'     'Underpin'
+[151] ⍝⌿⍝∆←∆,⊂'prespapen.htm'    'Allowing for pre-SPA pensioners'
+[152] ⍝⌿⍝∆←∆,⊂'ppfs143val.htm'   'Setting up PPF S143 entry valuations'⍝⌿⍝∆←∆,⊂'propmarried.htm'  'Proportion married'
+[153] ⍝⌿⍝infocus← 'href' 'title'⍪ ⊃∆
+[154] ⍝ Write ifcompiled\overview.htm from infocus table
+[155] ⍝⌿⍝∆←  ⊂'H1' xtag 'InFocus articles'
+[156] ⍝⌿⍝∆←∆,⊂'P' xtag 'The InFocus articles discuss in depth, with examples, topics in the use of SuperVal.'
+[157] ⍝⌿⍝∆←∆,'UL' xtag (⊂'LI')xtag¨ ('A' xattr¨ (⊂'href')pr¨ infocus at 'href') xtag¨ infocus at 'title'
+[158] ⍝⌿⍝((join ∆) 'InFocus articles' '../../css/common.css') writeHtmlFile (adir at 'ifcompiled'),'overview.htm'
+[159] 
+[160] ⍝ Write HHC SiteMap document
+[161] h←⊂'<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">'
+[162] h←h,⊂'<HTML>'
+[163] h←h,⊂'<HEAD>'
+[164] h←h,⊂'<meta name="GENERATOR" content="SuperVal CompilePages function">'
+[165] h←h,⊂'<!-- Sitemap 1.0 -->'
+[166] h←h,⊂'</HEAD><BODY>'
+[167] h←h,⊂'<UL>'
+[168] h←h,HhcEntryFor 'About SuperVal' (hfiles at 'about')
+[169] ⍝⌿⍝⍝ Include InFocus articles
+[170] ⍝⌿⍝⍝ While some HTMs await cleanup, derive ToC from cleaned-up HTMs;
+[171] ⍝⌿⍝⍝   for others just link to title/url
+[172] ⍝⌿⍝(adir at 'infocus')  CopyImageFolders adir at 'ifcompiled'                      ⍝ FIXME copy images from infocus\
+[173] ⍝⌿⍝(adir at 'ifsource') CopyImageFolders adir at 'ifcompiled'                      ⍝ copy images from ifsource\
+[174] ⍝⌿⍝h←h,HhcEntryFor 'InFocus articles' ((rdir at 'ifcompiled'),'overview.htm')
+[175] ⍝⌿⍝h←h,⊂'  <UL>'
+[176] ⍝⌿⍝:for ∆ :in 1↓⎕SPLIT infocus ⋄ (file titl)←∆
+[177] ⍝⌿⍝    :if (adir at 'ifsource') FileExist file
+[178] ⍝⌿⍝        (entry html)←titl CompileArticle (adir at 'ifsource') (rdir at 'ifcompiled') file
+[179] ⍝⌿⍝    :else ⍝ FIXME redundant when all IF articles cleaned up and in ifsource\
+[180] ⍝⌿⍝        entry←HhcEntryFor titl ((rdir at 'infocus'),file)
+[181] ⍝⌿⍝        html←nfile_get_contents (adir at 'infocus'),file
+[182] ⍝⌿⍝    :endif
+[183] ⍝⌿⍝    html nfile_put_contents (adir at 'ifcompiled'),file                         ⍝ write HTM for IF into ifcompiled folder
+[184] ⍝⌿⍝ h←h,(⊂'    '),¨ entry                                                       ⍝ points to ifcompiled folder
+[185] ⍝⌿⍝:endfor
+[186] ⍝⌿⍝h←h,⊂'  </UL>'
+[187] ⍝ Online user group
+[188] h←h,1 HhcEntryFor 'SuperVal Users Group online' 'http://groups.google.co.uk/group/superval-users'
+[189] ⍝ Release notes
+[190] ⍝⍝(adir at 'releasenotes') CopyImageFolders adir at 'rncompiled'                  ⍝ copy images from releasenotes\
+[191] ⍝⍝h←h,1 HhcEntryFor 'Release notes' ''
+[192] ⍝⍝h←h,⊂'  <UL>'
+[193] ⍝⍝:for ∆ :in '850' '842' '840'
+[194] ⍝⍝    titl←¯1⌽'.',1⌽∆
+[195] ⍝⍝    file←'rn',∆,'.htm'
+[196] ⍝⍝    (entry html)←titl CompileArticle (adir at 'releasenotes') (rdir at 'rncompiled') file
+[197] ⍝⍝    h←h,(⊂'    '),¨ entry                                                       ⍝ points to rncompiled folder
+[198] ⍝⍝    html nfile_put_contents (adir at 'rncompiled'),file                         ⍝ write HTM for RN into rncompiled folder
+[199] ⍝⍝:endfor
+[200] ⍝⍝h←h,⊂'  </UL>'
+[201] PATH←'html/pages/'
+[202] TRIVIA←'Cancel' 'OK' 'Run' 'Save' 'SaveAs' 'Quit'
+[203] ∆←'l1' 'l2' 'bkmks'⍪(⊃':' partition¨ keysIn toc),valsIn toc
+[204] tocd←∆ groupby 'l1' ('l2' 'bkmks')
+[205] :for l1 :in srt keysIn tocd
+[206]     this←tocd at l1
+[207]     :if ^/MT¨this at 'l2'                                                       ⍝ no sub pages
+[208]         bkmks←'title' 'url'⍪ ↑⍪/⎕MIX¨this at 'bkmks'
+[209]         bkmks←bkmks amend 'url' ((⊂PATH),¨bkmks at 'url')
+[210]         :if ok←×rowsIn bkmks←bkmks for ~(bkmks at 'title')∊TRIVIA
+[211]             l1url←¯1↓'#' Win∆Parent ↑bkmks at 'url'                             ⍝ page URL
+[212]             hh←↑,/HhcEntryFor¨spin bkmks at 'title' 'url'
+[213]         :endif
+[214]     :else
+[215]         l1url←hh←''
+[216]         :for ∆ :in ⎕SPLIT valsIn this ⋄ (l2 bkmks)←∆
+[217]             bkmks←'title' 'url'⍪⊃bkmks
+[218]             bkmks←bkmks amend 'url' ((⊂PATH),¨bkmks at 'url')
+[219]             :if ok←×rowsIn bkmks←bkmks for ~(bkmks at 'title')∊TRIVIA
+[220]                 l2url←¯1↓'#' Win∆Parent ↑bkmks at 'url'                         ⍝ page URL
+[221]                 ∆←↑,/HhcEntryFor¨spin bkmks at 'title' 'url'
+[222]                 hh←hh,HhcEntryFor l2 l2url ∆
+[223]             :endif
+[224]         :endfor
+[225]     :endif
+[226]     :if ok ⋄ h←h,HhcEntryFor l1 l1url hh ⋄ :endif
+[227] :end
+[228]   h←h,⊂'</UL>'
+[229]   h←h,⊂'</BODY></HTML>'
+[230] (join h) nfile_put_contents helpdir,hfiles at 'HHC'
+[231] 
+[232] ⍝ write new HHK file (index) ...................................................
+[233] ∆←⊂'<HTML>'
+[234] ∆←∆,⊂'<!-- Sitemap 1.0 -->'
+[235] ∆←∆,⊂'<OBJECT type="text/site properties">'
+[236] ∆←∆,⊂'</OBJECT>'
+[237] ∆←∆,⊂'<UL>'
+[238] ⍝ use primitive HTML 'tag soup' instead of xtag, which would close HTML elements
+[239] :for label :in lmt nub ((ht sortedBy 'label') at 'label') ~ DEADWORDS
+[240]     thisentry←ht for 'label' label
+[241]     thisentry←(thisentry for unique thisentry at 'url') sortedBy 'PageHelpID'
+[242]     ∆←∆,⊂'  <LI> <OBJECT type="text/sitemap">'
+[243]     ∆←∆,⊂'    <param name="Keyword" value="',('^'=↑label)↓label,'">'            ⍝ drop leading caret
+[244]     :for  pu :in spin thisentry at 'PageHelpID' 'url' ⋄ (phid url)←pu
+[245]         ∆←∆,⊂'    <param name="Name" value="',(pagetitles at phid),'">'
+[246]         ∆←∆,⊂'    <param name="Local" value="',url,'">'
+[247]     :endfor
+[248]     ∆←∆,⊂'    </OBJECT>'
+[249] :endfor
+[250] ⍝ FIXME index content of solotopics folder
+[251] ∆←∆,⊂'</UL></HTML>'
+[252] (join ∆) nfile_put_contents helpdir,hfiles at 'HHK'
+[253] 
+[254] ⍝ write new HHP file (project) .................................................
+[255] h←⊂'[OPTIONS]'
+[256] h←h,⊂'Binary Index=No' ⍝ else Topics Found is rubbish
+[257] h←h,⊂'Compatibility=1.1 or later'
+[258] h←h,⊂'Compiled file=',hfiles at 'CHM'
+[259] h←h,⊂'Contents file=',hfiles at 'HHC'
+[260] h←h,⊂'Default Window=Basic'
+[261] h←h,⊂'Default topic=',hfiles at 'about'
+[262] h←h,⊂'Display compile progress=No'
+[263] h←h,⊂'Full-text search=Yes'
+[264] h←h,⊂'Index file=',hfiles at 'HHK'
+[265] h←h,⊂'Language=0x809 English (United Kingdom)'
+[266] h←h,⊂'Title=SuperVal Help'
+[267] h←h,⊂''
+[268] h←h,⊂'[WINDOWS]'
+[269] ⍝h←h,⊂'Basic=,"SVHELP.HHC","SVHELP.HHK","html\SVHE1HLW.HTM",,,,,,0x23520,,0x3006,,,,,,,,0'
+[270] h←h,⊂'Basic=',(↑,/ ',',¨ '"' embrace¨ hfiles at 'HHC' 'HHK' 'about'),',,,,,,0x23520,,0x3006,,,,,,,,0'
+[271] h←h,⊂''
+[272] h←h,⊂'[ALIAS]'
+[273] h←h,⊂'#include ',hfiles at 'ALI'
+[274] h←h,⊂''
+[275] h←h,⊂'[MAP]'
+[276] h←h,⊂'#include ',hfiles at 'MAP'
+[277] h←h,⊂''
+[278] h←h,⊂'[FILES]'
+[279] ⍝ include css\
+[280] h←h,(⊂∆),¨ m2n srt ⎕XLIB helpdir,∆←'css\'
+[281] ⍝ no need to list files referred to in HHC
+[282] h←h,⊂hfiles at 'about'                                                          ⍝ front page
+[283] h←h,(⊂rdir at 'pages')     ,¨ m2n srt ⎕XLIB adir at 'pages'             ⍝ all page-level help HTMs
+[284] h←h,(~mt MISSINGLINKS)/⊂(rdir at 'topics'),'deadlink.htm'
+[285] h←h,(⊂rdir at 'solotopics'),¨ m2n srt ⎕XLIB adir at 'solotopics'        ⍝ topic HTMs for internal hyperlinks
+[286] (join h) nfile_put_contents helpdir,hfiles at 'HHP'
+[287] 
+[288] ⍝ datestamp and archive current CHM ............................................
+[289] ∆←'MOVE '
+[290] ∆←∆,helpdir,'SVHELPUK.CHM '
+[291] ∆←∆,helpdir,'archive\svhelpuk.',(⍕100⊥3↑⎕TS),'.chm'
+[292] 1 ⎕CMD ∆
+[293] 
+[294] ⍝ recompile CHM -- assumes user has HTML Help Workshop installed in C:\Program Files
+[295] :if uSERisRSE ⋄ 1 ⎕CMD '"D:\Program Files (x86)\HTML Help Workshop\hhc.exe" ',helpdir,'svhelpuk.hhp'
+[296] :else         ⋄ 1 ⎕CMD '"C:\Program Files\HTML Help Workshop\hhc.exe" ',helpdir,'svhelpuk.hhp'
+[297] :endif
+    ∇

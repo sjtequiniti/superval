@@ -1,1 +1,112 @@
-    ∇ res←field Basis_Migration parm;parent;⎕elx;elx;PFile;list;text[1]   ⍝ PARMWIN.sf#2[2]   ⍝ Function to allow user control on Basis Migration[3]   [4]   elx←⎕elx ⋄ parent←'fmBasis_Migration.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Prepare'  ⍝ Preparatory Routines[9]       InputsType←'BasisFile'[10]  [11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[12]  [13]      :if 0∊⍴,DLTMB MigFolder[14]          :if uk=2 ⋄ :andif 2=⎕nc 'SelectedDir'[15]              MigFolder←SelectedDir[16]          :endif[17]          0 0⍴ClientFile ReadFile 'Client' 'MigFolder'[18]          :if 0∊⍴,DLTMB MigFolder[19]              0 0⍴ClientFile ReadFile 'Migration' 'MigFolder'[20]          :endif[21]          :if 0∊⍴,DLTMB MigFolder ⋄ MigFolder←InputDir ⋄ :endif[22]      :endif[23]      :if 0∊⍴,DLTMB ParmDesc[24]          0 0⍴ClientFile ReadFile 'Migration' 'ParmDesc'[25]      :endif[26]      (ParmFileList ParmFileDesc)←('BasisFile' Win∆CountryCode) GetParmFileList InputDir[27]      basisFileDesc←'Basis Parameters for ',cLIENT[28]  [29]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[30]  [31]      parent ⎕wi '∆parm' 1 ⍝ Indicates Parameter File field[32]      (parent,'bnBasis_MigrationSave') ⎕wi 'tooltip' 'Run DOS Basis Migration'[33]  [34]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[35]  [36]      :repeat[37]          :select ↑field[38]          :case 'edMigFolder'[39]              MigFolder←UPPERCASE FullFolder (parent,'edMigFolder') ⎕wi 'text'[40]              :if ~((parent,'lsDosFILES') ⎕wi 'list')≡list←1 0↓GetDOSBases MigFolder[41]                  (parent,'lsDosFILES') ⎕wi 'list' list[42]                  :if ×1↑⍴list[43]                      0 0⍴((⊂parent),¨"lsDosFILES" "edbasisFile" "edbasisFileDesc" "edParmDesc") MultiWI "enabled" 1[44]  ⍝⍝⍝                    0 0⍴((⊂parent),¨(1+uk=0)↑'ckDefParm2' 'ckDefParm1') MultiWI 'enabled' ((⊂'DEFAULT.SF')∊m2n UPPERCASE ⎕xlib MigFolder,'*.sf')[45]                      0 0⍴((⊂parent),¨(1+uk=0)↑'ckDefParm2' 'ckDefParm1') MultiWI 'enabled' (FileExist MigFolder,'DEFAULT.SF')[46]                      :if 0∊⍴,text←DLTB (parent,'edParmDesc') ⎕wi 'text'[47]                      :orif 'DOS Migration from '≡19↑text[48]                          (parent,'edParmDesc') ⎕wi 'text' ('DOS Migration from ',¯1↓MigFolder)[49]                      :endif[50]                      0 0⍴(⊂'edbasisFile') Basis_Migration 'Change'[51]                  :else[52]                      0 0⍴((⊂parent),¨(5+uk=0)↑"lsDosFILES" "ckDefParm2" "edbasisFile" "edbasisFileDesc" "edParmDesc" "ckDefParm1") MultiWI "enabled" 0[53]                  :endif[54]              :endif[55]  [56]          :case 'edbasisFile'[57]               PFile←UPPERCASE DLTB (parent,'edbasisFile') ⎕wi 'text'[58]               :if (⊂PFile)∊m2n ParmFileList[59]                    (parent,'edbasisFileDesc') ⎕wi 'text' (,((m2n ParmFileList)∊⊂PFile)⌿ParmFileDesc)[60]                    (parent,'edbasisFileDesc') ⎕wi 'enabled' 0[61]               :else[62]                    (parent,'edbasisFileDesc') ⎕wi 'enabled' (×1↑⍴(parent,'lsDosFILES') ⎕wi 'list')[63]               :endif[64]  [65]          :case 'ckDefParm2'[66]               ((⊂parent),¨"edhxx1" "edhxx2" "edhxx3") MultiWI "enabled" ((parent,'ckDefParm2') ⎕wi 'value')[67]  [68]          :endselect[69]      :until mt field←1↓field[70]  [71]  :case 'Valid'[72]  [73]      ⎕elx←'⎕elx←elx ⋄ res←"NotFolder" MigFolder ⋄ Win∆SetFocus parent,"edMigFolder" ⋄ →0'[74]      0 0⍴⎕xlib MigFolder ⋄ MigFolder←UPPERCASE FullFolder MigFolder[75]      ⎕elx←elx[76]  [77]      :if ×1↑⍴SStoMAT DosFILES[78]      :andif (parent,'edbasisFile') ⎕wi 'enabled' ⍝ Make sure new file does not alreay exist[79]          :if ~(⊂UPPERCASE basisFile)∊m2n ParmFileList[80]  ⍝⍝⍝            :if (⊂UPPERCASE (DLTB basisFile),'.SF')∊m2n UPPERCASE ⎕xlib InputDir,'*.sf'[81]              :if FileExist InputDir,(DLTB basisFile),'.SF'[82]                   res←'InvFile' basisFile ⋄ Win∆SetFocus parent,'edbasisFile' ⋄ :return[83]              :else[84]                   :if 0='BasisFile' CreateFile (InputDir,basisFile) basisFileDesc[85]                        res←'InvFileName' basisFile ⋄ Win∆SetFocus parent,'edbasisFile' ⋄ :return[86]                   :endif[87]              :endif[88]          :endif[89]      :endif[90]  [91]  :case 'Run'[92]  [93]      :if 0=⎕nc 'BasisFile' ⋄ :orif 0∊⍴BasisFile[94]          BasisFile←InputDir,basisFile ⍝⍝⍝??[95]  ⍝⍝⍝        (UPPERCASE basisFile) INIString 'SV Parameter Files' 'BasisFile' (InputDir,'svscheme.ini')[96]      :endif[97]      DefParm←(MatrixZWB DefParm)×(parent,'ckDefParm2') ⎕wi 'enabled'[98]      :select uk[99]      :case 0[100]         'AustDOSBasis_Migration' Win∆ProgressBar 'Start'[101]     :case 2[102]         'SADOSBasis_Migration' Win∆ProgressBar 'Start'[103]     :endselect[104]     res←'Quit'[105] [106] :case 'Quit' ⍝ Deleting "other" variables[107] [108]     0 0⍴⎕ex 'InputsType ParmFileList ParmFileDesc'[109] [110] :endselect    ∇
+    ∇ res←field Basis_Migration parm;parent;⎕elx;elx;PFile;list;text
+[1]   ⍝ PARMWIN.sf#2
+[2]   ⍝ Function to allow user control on Basis Migration
+[3]   
+[4]   elx←⎕elx ⋄ parent←'fmBasis_Migration.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Prepare'  ⍝ Preparatory Routines
+[9]       InputsType←'BasisFile'
+[10]  
+[11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[12]  
+[13]      :if 0∊⍴,DLTMB MigFolder
+[14]          :if uk=2 ⋄ :andif 2=⎕nc 'SelectedDir'
+[15]              MigFolder←SelectedDir
+[16]          :endif
+[17]          0 0⍴ClientFile ReadFile 'Client' 'MigFolder'
+[18]          :if 0∊⍴,DLTMB MigFolder
+[19]              0 0⍴ClientFile ReadFile 'Migration' 'MigFolder'
+[20]          :endif
+[21]          :if 0∊⍴,DLTMB MigFolder ⋄ MigFolder←InputDir ⋄ :endif
+[22]      :endif
+[23]      :if 0∊⍴,DLTMB ParmDesc
+[24]          0 0⍴ClientFile ReadFile 'Migration' 'ParmDesc'
+[25]      :endif
+[26]      (ParmFileList ParmFileDesc)←('BasisFile' Win∆CountryCode) GetParmFileList InputDir
+[27]      basisFileDesc←'Basis Parameters for ',cLIENT
+[28]  
+[29]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[30]  
+[31]      parent ⎕wi '∆parm' 1 ⍝ Indicates Parameter File field
+[32]      (parent,'bnBasis_MigrationSave') ⎕wi 'tooltip' 'Run DOS Basis Migration'
+[33]  
+[34]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[35]  
+[36]      :repeat
+[37]          :select ↑field
+[38]          :case 'edMigFolder'
+[39]              MigFolder←UPPERCASE FullFolder (parent,'edMigFolder') ⎕wi 'text'
+[40]              :if ~((parent,'lsDosFILES') ⎕wi 'list')≡list←1 0↓GetDOSBases MigFolder
+[41]                  (parent,'lsDosFILES') ⎕wi 'list' list
+[42]                  :if ×1↑⍴list
+[43]                      0 0⍴((⊂parent),¨"lsDosFILES" "edbasisFile" "edbasisFileDesc" "edParmDesc") MultiWI "enabled" 1
+[44]  ⍝⍝⍝                    0 0⍴((⊂parent),¨(1+uk=0)↑'ckDefParm2' 'ckDefParm1') MultiWI 'enabled' ((⊂'DEFAULT.SF')∊m2n UPPERCASE ⎕xlib MigFolder,'*.sf')
+[45]                      0 0⍴((⊂parent),¨(1+uk=0)↑'ckDefParm2' 'ckDefParm1') MultiWI 'enabled' (FileExist MigFolder,'DEFAULT.SF')
+[46]                      :if 0∊⍴,text←DLTB (parent,'edParmDesc') ⎕wi 'text'
+[47]                      :orif 'DOS Migration from '≡19↑text
+[48]                          (parent,'edParmDesc') ⎕wi 'text' ('DOS Migration from ',¯1↓MigFolder)
+[49]                      :endif
+[50]                      0 0⍴(⊂'edbasisFile') Basis_Migration 'Change'
+[51]                  :else
+[52]                      0 0⍴((⊂parent),¨(5+uk=0)↑"lsDosFILES" "ckDefParm2" "edbasisFile" "edbasisFileDesc" "edParmDesc" "ckDefParm1") MultiWI "enabled" 0
+[53]                  :endif
+[54]              :endif
+[55]  
+[56]          :case 'edbasisFile'
+[57]               PFile←UPPERCASE DLTB (parent,'edbasisFile') ⎕wi 'text'
+[58]               :if (⊂PFile)∊m2n ParmFileList
+[59]                    (parent,'edbasisFileDesc') ⎕wi 'text' (,((m2n ParmFileList)∊⊂PFile)⌿ParmFileDesc)
+[60]                    (parent,'edbasisFileDesc') ⎕wi 'enabled' 0
+[61]               :else
+[62]                    (parent,'edbasisFileDesc') ⎕wi 'enabled' (×1↑⍴(parent,'lsDosFILES') ⎕wi 'list')
+[63]               :endif
+[64]  
+[65]          :case 'ckDefParm2'
+[66]               ((⊂parent),¨"edhxx1" "edhxx2" "edhxx3") MultiWI "enabled" ((parent,'ckDefParm2') ⎕wi 'value')
+[67]  
+[68]          :endselect
+[69]      :until mt field←1↓field
+[70]  
+[71]  :case 'Valid'
+[72]  
+[73]      ⎕elx←'⎕elx←elx ⋄ res←"NotFolder" MigFolder ⋄ Win∆SetFocus parent,"edMigFolder" ⋄ →0'
+[74]      0 0⍴⎕xlib MigFolder ⋄ MigFolder←UPPERCASE FullFolder MigFolder
+[75]      ⎕elx←elx
+[76]  
+[77]      :if ×1↑⍴SStoMAT DosFILES
+[78]      :andif (parent,'edbasisFile') ⎕wi 'enabled' ⍝ Make sure new file does not alreay exist
+[79]          :if ~(⊂UPPERCASE basisFile)∊m2n ParmFileList
+[80]  ⍝⍝⍝            :if (⊂UPPERCASE (DLTB basisFile),'.SF')∊m2n UPPERCASE ⎕xlib InputDir,'*.sf'
+[81]              :if FileExist InputDir,(DLTB basisFile),'.SF'
+[82]                   res←'InvFile' basisFile ⋄ Win∆SetFocus parent,'edbasisFile' ⋄ :return
+[83]              :else
+[84]                   :if 0='BasisFile' CreateFile (InputDir,basisFile) basisFileDesc
+[85]                        res←'InvFileName' basisFile ⋄ Win∆SetFocus parent,'edbasisFile' ⋄ :return
+[86]                   :endif
+[87]              :endif
+[88]          :endif
+[89]      :endif
+[90]  
+[91]  :case 'Run'
+[92]  
+[93]      :if 0=⎕nc 'BasisFile' ⋄ :orif 0∊⍴BasisFile
+[94]          BasisFile←InputDir,basisFile ⍝⍝⍝??
+[95]  ⍝⍝⍝        (UPPERCASE basisFile) INIString 'SV Parameter Files' 'BasisFile' (InputDir,'svscheme.ini')
+[96]      :endif
+[97]      DefParm←(MatrixZWB DefParm)×(parent,'ckDefParm2') ⎕wi 'enabled'
+[98]      :select uk
+[99]      :case 0
+[100]         'AustDOSBasis_Migration' Win∆ProgressBar 'Start'
+[101]     :case 2
+[102]         'SADOSBasis_Migration' Win∆ProgressBar 'Start'
+[103]     :endselect
+[104]     res←'Quit'
+[105] 
+[106] :case 'Quit' ⍝ Deleting "other" variables
+[107] 
+[108]     0 0⍴⎕ex 'InputsType ParmFileList ParmFileDesc'
+[109] 
+[110] :endselect
+    ∇

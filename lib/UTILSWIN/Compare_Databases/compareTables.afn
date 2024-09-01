@@ -1,0 +1,97 @@
+    ∇ Z←cons compareTables tname;xxx;adUseServer;adOpenForwardOnly;adLockReadOnly;rsts;fields;nflds;nrecs;i;j;matched;emsg;MAXROWS;chunks;∆;okuntil;fi;fieldsmatch;raw;fromrow;rows;SAMPLE;common;types;trysums;flds;sums;sql
+[1]   ⍝ UTILSWIN.sf#8
+[2]   ⍝ Compare tables tname from sources connected to cmds
+[3]   ⍝ tname: (str) table name
+[4]   ⍝ cmds: (objs) ADODB.Command objects connected to data sources
+[5]   ⍝ Z: matched & emsg
+[6]   ⍝ matched: (flg) tables match in both sources
+[7]   ⍝ emsg: (str) differences between tables
+[8]   ⍝ Vern: sjt03mar16
+[9]   
+[10]  ⍝ constants
+[11]  (adUseServer adOpenForwardOnly adLockReadOnly)←2 0 1                            ⍝ ADO enumerators
+[12]  (SAMPLE MAXROWS)←5 100                                                          ⍝ # rows to retrieve
+[13]  
+[14]  ⍝ for counting records without using ADODB.Recordset.RecordCount, see
+[15]  ⍝ http://www.slxdeveloper.com/page.aspx?action=viewarticle&articleid=33
+[16]  
+[17]  rsts←'rstL' 'rstR'
+[18]  xxx←rsts ⎕WI¨⊂'Create' 'ADODB.Recordset'
+[19]  rsts ⎕WI¨⊂'xCursorLocation' adUseServer                                         ⍝ http://www.w3schools.com/asp/prop_rs_cursorlocation.asp
+[20]  rsts ⎕WI¨⊂'xCursorType' adOpenForwardOnly                                       ⍝ http://www.w3schools.com/asp/prop_rs_cursortype.asp
+[21]  rsts ⎕WI¨⊂'xLockType' adLockReadOnly                                            ⍝ http://www.w3schools.com/asp/prop_rs_locktype.asp
+[22]  rsts ⎕WI¨(⊂'xActiveConnection') pr¨ cons ⎕WI¨⊂'obj'
+[23]  
+[24]  rsts ⎕WI¨⊂'XOpen' ("SELECT COUNT (*) FROM ",tname)
+[25]  nrecs←↑¨rsts ⎕WI¨⊂'XGetRows'                                                    ⍝ # records
+[26]  
+[27]  rsts ⎕WI¨⊂'XClose'
+[28]  
+[29]  rsts ⎕WI¨⊂'XOpen' ("SELECT * FROM ",tname)
+[30]  
+[31]  nflds←(rsts ⎕WI¨⊂'xFields') ⎕WI¨⊂'xCount'                                       ⍝ # fields
+[32]  ⍝ field names from each table
+[33]  :for ∆ :in ↑,/(⍳2) ,¨¨ ⍳¨tally¨types←fields←nflds ⍴¨ ⊂⊂'' ⋄ (i j)←∆
+[34]      (i j⊃fields)←(((i⊃rsts) ⎕WI 'xFields') ⎕WI 'xItem' (j-⎕IO)) ⎕WI 'xName'
+[35]      (i j⊃types )←(((i⊃rsts) ⎕WI 'xFields') ⎕WI 'xItem' (j-⎕IO)) ⎕WI 'xType'
+[36]  :endfor
+[37]  
+[38]  :if fieldsmatch←≡/fields
+[39]  :andif matched←0 0≡nrecs ⍝ no records
+[40]      (emsg fromrow)←'' 0
+[41]  :else
+[42]      fi←fields⍳¨⊂common←↑intersect/fields                                        ⍝ indices of common fields
+[43]      :if ~matched←~mt common
+[44]          emsg←'No fields in common'
+[45]          okuntil←fromrow←0
+[46]      :elseif ~matched←≡/nrecs
+[47]      :andif 0∊nrecs
+[48]          emsg←'Records differ from 1'
+[49]          (okuntil fromrow)←0 1
+[50]          chunks←nrecs↑[1]¨ 2⍴((×nrecs)/rsts) ⎕WI¨⊂'XGetRows' MAXROWS
+[51]      :else
+[52]          trysums←okuntil←0
+[53]  ⍝⍝      :while ^/∨/0=rsts ∘.⎕WI 'xBOF' 'xEOF' ⍝ WATCH OUT: not as at http://www.w3schools.com/asp/prop_rs_bofeof.asp
+[54]          :while 0∊rsts ⎕WI¨⊂'xEOF'
+[55]              raw←rsts ⎕WI¨⊂'XGetRows' MAXROWS
+[56]              chunks←DLTB¨¨((1⊃raw)[;1⊃fi])((2⊃raw)[;2⊃fi])                       ⍝ compare only common fields
+[57]              matched←≡/chunks                                                    ⍝ suppose order matters
+[58]              okuntil←okuntil+ matched × tally ↑chunks
+[59]          :until ~matched
+[60]          :if matched
+[61]              (emsg fromrow)←'' 0
+[62]          :else
+[63]              emsg←'Records differ from ',⍕okuntil+fromrow←differFrom chunks
+[64]              trysums←1
+[65]          :endif
+[66]          :if trysums
+[67]              :if ~mt flds←((↑types)[1⊃fi]∊20 128 11 6 14 5 3 205 131 4 2 16 21 19 18 17 204 139)/(↑fields)[1⊃fi] ⍝ Numeric Types
+[68]                  sql←"SELECT ",(' ,' join (⊂'SUM'),¨(⊂'()') embrace¨flds)," FROM ",tname
+[69]                           sums←1 adoCONCommand sql (↑cons)
+[70]                  :if ^/∆←,sums=1 adoCONCommand sql (↑1↓cons)
+[71]                      emsg←emsg,' BUT Sum of all Numeric Fields match'
+[72]                  :elseif ∨/∆
+[73]                      emsg←emsg,'  - Sums of ',(', ' join (~∆)/flds),' Fields do not match'
+[74]                  :endif
+[75]              :endif
+[76]          :endif
+[77]      :endif
+[78]  
+[79]  :endif
+[80]  
+[81]  emsg←((~fieldsmatch)/'Fields not in common: ',(', ' join ↑,/ ↑¨~/¨0 1⌽¨⊂fields), '; '),emsg
+[82]  
+[83]  :if fromrow=0
+[84]      rows←(0,↑nflds)⍴⊂''
+[85]  :else
+[86]      ∆←~≡⌿⊂[2]⊃rows←(SAMPLE⌊tally¨rows)↑[1]¨ rows←(fromrow-1)↓[1]¨chunks         ⍝ flag columns that vary
+[87]      rows←(⊂'#' push ∆/common)⍪¨ (okuntil+(fromrow-1)+⍳¨tally¨rows),¨ ∆/¨rows    ⍝ rec numbers; column heads
+[88]      rows←rows ⍪¨ ((SAMPLE<(tally¨chunks)-fromrow+1),¨2⊃¨⍴¨rows) ↑¨ ':'          ⍝ mark continuation
+[89]      rows←(×rowsIn¨rows)/rows                                                    ⍝ drop any empty table
+[90]  :endif
+[91]  
+[92]  xxx←rsts ⎕WI¨⊂'Close' ⋄ xxx←rsts ⎕WI¨⊂'Delete'
+[93]  
+[94]  Z←matched nrecs emsg rows
+[95]  
+    ∇

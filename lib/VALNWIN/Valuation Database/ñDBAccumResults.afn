@@ -1,0 +1,32 @@
+    ∇ ⍙DBAccumResults pp∆cash;⍙dbspouse;cfs
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Accumulate Present Value and Cash Flow results to the Database
+[3]   
+[4]   ⍙dbPSLres←⍙dbPSLres+120↑pp∆PBO ⍝ Past Serv Liab while in force
+[5]   ⍙dbRESres←⍙dbRESres+pp∆ABres ⍝ Past Serv Liab after exit
+[6]   
+[7]   ⍙dbspouse←2×(~×pp∆cash)^ContingencyID∊7 12 13 14 22 27 34 35 36 40 41 42 ⍝ Positioning of DAR Spouse results
+[8]   ⍙dbPVtot←⍙dbPVtot+4↑(⍙dbspouse/0),pp∆PastPV,pp∆FutPV ⍝ Total Results for QSM for all methods
+[9]   :if     dab    ⋄ ⍙dbPVres←⍙dbPVres+4↑(⍙dbspouse/0),pp∆PastPV,(pp∆CP>pp∆year)×pp∆FutPV
+[10]  :elseif NotPUC ⋄ ⍙dbPVres←⍙dbPVtot
+[11]  :else          ⋄ ⍙dbPVres←⍙dbPVres+4↑(⍙dbspouse/0),pp∆PastPV,+/pp∆normc[⍳pp∆CP⌊pp∆year+1]
+[12]  :endif
+[13]  
+[14]  :if pp∆capind ⋄ :andif isTOut
+[15]      :if ×pp∆cash ⋄ ⍙dbCFres[pp∆Texit-term;⍳2]←⍙dbCFres[pp∆Texit-term;⍳2]+pp∆PastCF,pp∆TotCF
+[16]      :else        ⋄ ⍙dbCFres[pp∆year+⍳pp∆size;⍙dbspouse+⍳2]←⍙dbCFres[pp∆benyear+⍳pp∆size;⍙dbspouse+⍳2]+pp∆PastCF,[0.5]pp∆TotCF
+[17]      :endif
+[18]  :else
+[19]      :if ×pp∆cash ⋄ ⍙dbCFres[pp∆Tstart-term;⍳2]←⍙dbCFres[pp∆Tstart-term;⍳2]+pp∆PastCF,pp∆TotCF
+[20]      :else        ⋄ ⍙dbCFres[pp∆benyear+⍳pp∆size;⍙dbspouse+⍳2]←⍙dbCFres[pp∆benyear+⍳pp∆size;⍙dbspouse+⍳2]+pp∆PastCF,[0.5]pp∆TotCF
+[21]      :endif
+[22]  :endif
+[23]  
+[24]  :if fscopt
+[25]      cfs←,⊂-pp∆PastCF×~neIND
+[26]      :if 0≠pp∆FutPV
+[27]          cfs←cfs,+/¨(pp∆NX↑FSbreakdown) ⎕penclose (-pp∆FutCF+neIND×pp∆PastCF)∘.×pp∆PRate
+[28]      :endif
+[29]      8 ⍙DBAddScenData cfs
+[30]  :endif
+    ∇

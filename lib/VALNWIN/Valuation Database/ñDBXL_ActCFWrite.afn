@@ -1,0 +1,63 @@
+    ∇ ⍙DBXL_ActCFWrite;z;tab;capind;sql;sql1;NoCashflows;size
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Write the Cash Flows for the Deferreds
+[3]   
+[4]   1 XL_ActivateWorksheet 'CFbyCat'
+[5]   NoCashflows←XL_Data 'NoCashflows'
+[6]   z←neIND+(2×SelSex='F')+4×BasisCategoryID
+[7]   size←1+120 ⍝??⍝ Determine size (MAX SVYear for run in Database)
+[8]   0 0⍴z XL_Data RCtoA1 (131+NoCashflows) 1 (130+NoCashflows+size) 1
+[9]   0 0⍴(⍉MATRIX ⍳size) XL_Data RCtoA1 (131+NoCashflows) 2 (130+NoCashflows+size) 2
+[10]  
+[11]  capind←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE (BasisItemName=",(1 ⍙DBString 20↑"capind"),") AND (BasisItemID BETWEEN 20000 AND 20999)"
+[12]  capind←⍬⍴"C"=1↑,⊃,1 ⍙DBadoCONCommand "SELECT BasisItemData FROM BasisData WHERE (BasisCategoryID=",(⍕BasisCategoryID),") AND (BasisItemID=",(⍕capind),")"
+[13]  
+[14]  sql← "SELECT SVYear,SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID=%1 AND ContingencyID IN (%2) AND LiabilityTypeID=%3 GROUP BY SVYear"
+[15]  sql1←"SELECT SVYear,SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID=%1 AND BenefitTypeID IN (%2) AND ContingencyID IN (%3) AND LiabilityTypeID=%4 GROUP BY SVYear"
+[16]  
+[17]  tab←121 3⍴0 ⍝ Retirement Cash Flows - All in Column
+[18]  tab[;⎕io+2-1×capind]←                    - 121↑(ResultsCategoryID,1    ,8) ⍙DBSQLRead sql ⍝ All ER
+[19]  tab[;⎕io+2-2×capind]←tab[;⎕io+2-2×capind]-121↑(ResultsCategoryID (2 21) 8) ⍙DBSQLRead sql ⍝ All LR/NR
+[20]  :if ~capind ⍝ Move Cash Benefits to their column
+[21]      tab[;⎕io]  ←-121↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) (2 21) 8) ⍙DBSQLRead sql1 ⍝ LR/NR Cash
+[22]      tab[;⎕io+1]←-121↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57)     1  8) ⍙DBSQLRead sql1 ⍝ ER Cash
+[23]      tab[;⎕io+2]←tab[;⎕io+2]-+/tab[;⎕io+0 1]
+[24]  :endif
+[25]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 3 (130+NoCashflows+size) 5
+[26]  
+[27]  tab←121 3⍴0 ⍝ Death Cash Flows
+[28]  tab[;⎕io+2]←        -121↑(ResultsCategoryID (9 10) (3 23) 8) ⍙DBSQLRead sql1 ⍝ Death Insured Pension and Cash
+[29]  tab[;⎕io+1-capind]←(-121↑(ResultsCategoryID        (3 23) 8) ⍙DBSQLRead sql )-tab[;⎕io+2] ⍝ All Death - Insured
+[30]  :if ~capind
+[31]      tab[;⎕io+1]←tab[;⎕io+1]-tab[;⎕io]←-121↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) (3 23) 8) ⍙DBSQLRead sql1 ⍝ Death Cash
+[32]  :endif
+[33]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 6 (130+NoCashflows+size) 8
+[34]  
+[35]  tab←121 3⍴0 ⍝ Ill-Health Cash Flows
+[36]  tab[;⎕io+2]←        -121↑(ResultsCategoryID (9 10) (4 25) 8) ⍙DBSQLRead sql1 ⍝ Ill-Health/PHI Insured Pension and Cash
+[37]  tab[;⎕io+1-capind]←(-121↑(ResultsCategoryID  (4 24 25 26) 8) ⍙DBSQLRead sql)-tab[;⎕io+2] ⍝ All Ill-Health/PHI - Insured
+[38]  :if ~capind
+[39]      tab[;⎕io+1]←tab[;⎕io+1]-tab[;⎕io]←-121↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) (4 24 25 26 27) 8) ⍙DBSQLRead sql1 ⍝ Ill-Health/PHI Cash
+[40]  :endif
+[41]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 9 (130+NoCashflows+size) 11
+[42]  
+[43]  tab←121 3⍴0 ⍝ Leaving Cash Flows
+[44]  tab[;⎕io+2]←       -121↑(ResultsCategoryID,6,8) ⍙DBSQLRead sql ⍝ Leaving Death in Deferment
+[45]  tab[;⎕io+1-capind]←-121↑(ResultsCategoryID,5,8) ⍙DBSQLRead sql ⍝ All Leaving
+[46]  :if ~capind
+[47]      tab[;⎕io+1]←tab[;⎕io+1]-tab[;⎕io]←-121↑(ResultsCategoryID (1 35 44 45 46 47 36 54 55 56 57) 5 8) ⍙DBSQLRead sql1 ⍝ Leaving Cash
+[48]  :endif
+[49]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 12 (130+NoCashflows+size) 14
+[50]  
+[51]  tab←121 3⍴0 ⍝ Contributions Cash Flows
+[52]  tab[;⎕io]  ←121↑(ResultsCategoryID, 8,8) ⍙DBSQLRead sql ⍝ Member
+[53]  tab[;⎕io+1]←121↑(ResultsCategoryID, 9,8) ⍙DBSQLRead sql ⍝ Employer
+[54]  tab[;⎕io+2]←121↑(ResultsCategoryID,11,8) ⍙DBSQLRead sql ⍝ V1%
+[55]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 15 (130+NoCashflows+size) 17
+[56]  
+[57]  tab←⍉MATRIX 121↑(ResultsCategoryID,16,7) ⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID=%1 AND ContingencyID=%2 AND LiabilityTypeID=%3 AND SVYear>0 GROUP BY SVYear"
+[58]  0 0⍴tab XL_Data RCtoA1 (131+NoCashflows) 18 (130+NoCashflows+size) 18
+[59]  
+[60]  0 0⍴(NoCashflows←NoCashflows+size) XL_Data 'NoCashflows'
+[61]  'CFbyCat' XL_ProtectSheet ¯1
+    ∇

@@ -1,0 +1,28 @@
+    ∇ Z←L tableToHtml args;th;td;thead;tbody;cap;caption;name;class;anch;∆
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ HTML table as vector of lines
+[3]   ⍝ {L}: name + class
+[4]   ⍝ name: (str) bookmark name
+[5]   ⍝ class: (str) CSS class
+[6]   ⍝ args: td + [th + [cap]]
+[7]   ⍝ td: matrix, strs tagged 'TD'
+[8]   ⍝ th: (strs) column heads, tagged 'TH'
+[9]   ⍝ cap: (str) table caption
+[10]  ⍝ Vern: sjt21sep15
+[11]  
+[12]  :if 2=rank args ⋄ (td th cap)←args '' ''
+[13]  :else           ⋄ (td th cap)←3↑args,'' ''
+[14]  :endif
+[15]  
+[16]  :if mt td
+[17]      Z←''
+[18]  :else
+[19]      :if 2=⎕NC 'L' ⋄ (name class)←L ⋄ :else ⋄ (name class)←'' '' ⋄ :endif
+[20]      anch←(mt name) means '' else ('a' xattr 'name' name) xtag,' '
+[21]      caption←eis 'caption' xtag anch,cap
+[22]      thead←eis 'thead' xtag 'tr' xtag th
+[23]      tbody←'tbody' xtag (⊂'tr')xtag¨ ,/ td
+[24]      ∆←(mt class) means 'table' else 'table' xattr 'class' class
+[25]      Z←∆ xtag caption,thead,tbody
+[26]  :endif
+    ∇

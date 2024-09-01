@@ -1,1 +1,65 @@
-    ∇ res←field Conts_Calculator parm;parent;data;tieno;File[1]   ⍝ DATAWIN.sf#7[2]   ⍝ Function to allow user control on Contributions Calculator[3]   [4]   parent←'fmSV.fContsCalc.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   :case 'Prepare'[8]       bar_ok←0[9]   [10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[11]      TotNumVars←CharVars←DateVars←0 0⍴''[12]      Format←HyphenSwap Format[13]      :if '-'∊AdjMeth ⋄ AdjMeth←4↓AdjMeth ⋄ :endif[14]      (EDATE lrEDATE)←'Date' SwapRelFields EDATE lrEDATE[15]  [16]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[17]  [18]      'Actsfile' MemberDisplay_Bar 'Build'[19]  [20]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[21]  [22]      :repeat[23]          :select ↑field[24]          :case 'edfILENAME'[25]              :if ~mt File←DLTB (parent,'fFiles.edfILENAME') ⎕wi 'text'[26]              :andif 0≠(InputDir,File) NTIE tieno←'Native' TieNumber ''[27]                  data←'ASCII' Read∆DataFile tieno,¯1 0 2000 0[28]                  recl←(data⍳⎕av[13+⎕io])-⎕io ⍝ Get Record Length of file[29]                  ⎕nuntie tieno[30]              :endif[31]          :case 'cbFormat'[32]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format[33]          :endselect[34]      :until mt field←1↓field[35]  [36]  :case 'Valid' ⍝ Routine specific validation[37]  [38]      res←Conts∆CHECK[39]  [40]  :case 'Run'[41]  [42]      SaveCN←parent ⎕wi '∆savecn'[43]      'res←Conts∆CALC' Win∆ProgressBar 'Start'[44]      :if ''≡res ⍝ If Successful Run[45]          res←'Quit'[46]      :else[47]          Win∆SetFocus res ⋄ res←''[48]      :endif[49]  [50]  :case 'Quit' ⍝ Deleting "other" variables[51]  [52]      :if bar_ok[53]          (2↑'fmSV.barMemberDisplay' ⎕wi 'floatwhere') INIString uSER 'Disp_floatwhere' PrefINI[54]          0 0⍴'fmSV.barMemberDisplay' ⎕wi 'Delete'[55]      :endif[56]      :if 0≠⎕nc 'DateVars'[57]          0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars[58]          0 0⍴⎕ex 'd','f',DateVars[59]      :endif[60]      0 0⍴DeleteVars 'ActFormat'[61]      0 0⍴⎕ex 'FormatType recl bar_ok'[62]  [63]  :endselect    ∇
+    ∇ res←field Conts_Calculator parm;parent;data;tieno;File
+[1]   ⍝ DATAWIN.sf#7
+[2]   ⍝ Function to allow user control on Contributions Calculator
+[3]   
+[4]   parent←'fmSV.fContsCalc.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]       bar_ok←0
+[9]   
+[10]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[11]      TotNumVars←CharVars←DateVars←0 0⍴''
+[12]      Format←HyphenSwap Format
+[13]      :if '-'∊AdjMeth ⋄ AdjMeth←4↓AdjMeth ⋄ :endif
+[14]      (EDATE lrEDATE)←'Date' SwapRelFields EDATE lrEDATE
+[15]  
+[16]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[17]  
+[18]      'Actsfile' MemberDisplay_Bar 'Build'
+[19]  
+[20]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[21]  
+[22]      :repeat
+[23]          :select ↑field
+[24]          :case 'edfILENAME'
+[25]              :if ~mt File←DLTB (parent,'fFiles.edfILENAME') ⎕wi 'text'
+[26]              :andif 0≠(InputDir,File) NTIE tieno←'Native' TieNumber ''
+[27]                  data←'ASCII' Read∆DataFile tieno,¯1 0 2000 0
+[28]                  recl←(data⍳⎕av[13+⎕io])-⎕io ⍝ Get Record Length of file
+[29]                  ⎕nuntie tieno
+[30]              :endif
+[31]          :case 'cbFormat'
+[32]              ControlName ⎕wi '∆formatcreated' 0 ⍝ Indicate new format
+[33]          :endselect
+[34]      :until mt field←1↓field
+[35]  
+[36]  :case 'Valid' ⍝ Routine specific validation
+[37]  
+[38]      res←Conts∆CHECK
+[39]  
+[40]  :case 'Run'
+[41]  
+[42]      SaveCN←parent ⎕wi '∆savecn'
+[43]      'res←Conts∆CALC' Win∆ProgressBar 'Start'
+[44]      :if ''≡res ⍝ If Successful Run
+[45]          res←'Quit'
+[46]      :else
+[47]          Win∆SetFocus res ⋄ res←''
+[48]      :endif
+[49]  
+[50]  :case 'Quit' ⍝ Deleting "other" variables
+[51]  
+[52]      :if bar_ok
+[53]          (2↑'fmSV.barMemberDisplay' ⎕wi 'floatwhere') INIString uSER 'Disp_floatwhere' PrefINI
+[54]          0 0⍴'fmSV.barMemberDisplay' ⎕wi 'Delete'
+[55]      :endif
+[56]      :if 0≠⎕nc 'DateVars'
+[57]          0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars
+[58]          0 0⍴⎕ex 'd','f',DateVars
+[59]      :endif
+[60]      0 0⍴DeleteVars 'ActFormat'
+[61]      0 0⍴⎕ex 'FormatType recl bar_ok'
+[62]  
+[63]  :endselect
+    ∇

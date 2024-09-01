@@ -1,0 +1,40 @@
+    ∇ Module UpdateParametersIndex arg;⎕wself;PickList;list;z;menu;File;rows;highlight;row;property;auditmenu;cn;file
+[1]   ⍝ MAINWIN.sf#15
+[2]   ⍝ Routine to update the Scheme Details display
+[3]   ⍝ arg indicates whether to update the Scheme Details
+[4]   
+[5]   :if mt (FormName,'.trParameters') ⎕wi 'self' ⋄ :return ⋄ :endif
+[6]   
+[7]   PickList←ParametersIndex
+[8]   file←(⊂''),PickList[;7] ⋄ cn←0,PickList[;6] ⋄ auditmenu←(⊂''),PickList[;5] ⋄ menu←(⊂''),PickList[;4] ⋄ highlight←(⊂'')⍪PickList[;,3]
+[9]   PickList←PickList[;⍳2]
+[10]  
+[11]  ⎕wself←FormName,'.trParameters'
+[12]  
+[13]  :if ~PickList≡1 0↓(list←⎕wi 'list')[;2 3]
+[14]  :orif Module≡'Financials_Display'
+[15]      rows←list[;3]⍳PickList[;2]
+[16]      PickList←(PickList,⊂1 1 0 0),(list OVER 0 0 '' (1 1 0 0) '')[rows;5]
+[17]      Win∆PopulateTree PickList "Parameter Sets"
+[18]      ⎕wi '∆menu' menu
+[19]      ⎕wi '∆auditmenu' auditmenu
+[20]      ⎕wi '∆cn' cn
+[21]      ⎕wi '∆file' file
+[22]      list←⎕wi 'list'
+[23]      0 0⍴⎕wi¨(⊂"Expand" "expand"),¨(2≥list[;2])/list[;1]
+[24]  
+[25]      highlight←'row' 'highlight' OVER list[;1],highlight
+[26]      :for property :in 'highlightbold' 'highlightselect' 'highlightcut'
+[27]          :if ~mt row←(highlight for 'highlight' property) at 'row'
+[28]              ⎕wi property row
+[29]          :endif
+[30]      :endfor
+[31]  :endif
+[32]  ⎕wi 'Show'
+[33]  
+[34]  ⎕wself←FormName,'.webParmDisplay'
+[35]  ⎕wi 'Show'
+[36]  File←InputDir,'scheme_details.htm'
+[37]  :if arg ⋄ :andif (⊂Module)∊'Log_On' 'Client' 'PPF_Details' 'Registration' ⋄ SchemeDetailsAsHtm File ⋄ :endif
+[38]  0 0⍴⎕wi 'XNavigate2' File
+    ∇

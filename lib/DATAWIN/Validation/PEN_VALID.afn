@@ -1,1 +1,91 @@
-    ∇ PEN∆VALID;⎕IO;ALLREC;REC;recn;size;I;recs;N;pos;DOB;dob;DJS;DJF;SUMMREC;RECN;TOTS;GTOTS;CODE;row;rows;A;col;ERR;NOM;NN;H3;NUMRECS;exit;CAT;Z;∆[1]   ⍝ DATAWIN.sf#10[2]   ⍝ Function to validate Pensioner/Termination Data Records[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   GTOTS←(0,2+1↑⍴NUMS)⍴TOTS←2⍴⎕IO←recn←1↑NUMRECS←0 0[8]   rows← 0 19 ⍴ALLREC←'' ⋄ size←⎕NSIZE tieno ⋄ RECN←pAGE[9]   [10]  ⍝ Read only chunks at a time to avoid LIMIT ERROR[11]  N←⍴recs←,((⌊size÷FileChunk)⍴FileChunk),FileChunk∣size ⋄ I←¯1[12]  [13]  LOOP:→(N≤I←I+1)/F0 ⋄ ALLREC←ALLREC,⎕NREAD tieno,82,recs[I][14]  NUMRECS←(1↑NUMRECS++/ALLREC=⎕tclf),0[15]  NUMRECS[1]←(¯1+size÷+/recs[⍳1+I])×NUMRECS[0] ⋄ →TOP[16]  [17]  ⍝ Exit if no Remnants at End of File[18]  F0:→((0=⍴ALLREC)∨(,ALLREC)≡,⎕AV[26])/END ⋄ ALLREC←ALLREC,⎕TCLF[19]  TOP:→((⍴ALLREC)<pos←1+ALLREC⍳⎕TCLF)/LOOP ⍝ Locate a Line Feed[20]  REC←pos↑ALLREC ⋄ ALLREC←pos↓ALLREC[21]  [22]  :if (recn←recn+1)≤+/NUMRECS ⍝ Display record number being processed[23]      (recn (⌊+/NUMRECS)) Win∆ProgressBar 'MemberUpdate'[24]  :endif[25]  [26]  0 0 ⍴⎕EX 'DOB DJS DJF'[27]  [28]  →(RECL=⍴REC)/SEX ⍝ Throw out records with wrong length[29]  MESS[0;] APP∆ERRS (,'LI5' ⎕FMT recn),((RECL-2)↑¯2↓REC)[fPNAME] ⋄ →TOP[30]  SEX:→(0≠⍴,row←(∨/(CODE←(¯2↑A←1↑REC[fPSEX]),(¯9↑CAT←REC[fPCAT]),¯8↑REC[fMS])⍷rows)/⍳1↑⍴rows)/L3[31]  row←¯1+1↑⍴rows←rows⍪CODE ⋄ GTOTS←GTOTS⍪0 ⍝ Check Validity of Sex Field[32]  L3:col←↑¯1+Category TLU CAT[33]  GTOTS[row;0]←GTOTS[row;0]+NOM←1[34]  ERR←(10<⍴CAT)/'⍺ERROR Category Field exceeds 10 Characters'[35]  ERR←ERR,(∨/Z)/'⍺ERROR - Category Field contains illegal characters - ',(Z←∆∊CAT)/∆←illegals,'[]'[36]  ⍝⍝⍝ ERR←ERR,(∨/Z)/'⍺ERROR - Category Field contains illegal characters - ',(Z←'\/:*?<>∣|[]`'∊CAT)/'\/:*?<>∣|[]`'[37]  ERR←ERR,,((~A∊'MF')^0≠⍴fPSEX)/MESS[10;],A[38]  [39]  L0:→(DATECHECK dob←DOB←(dfPDOB (VDATE-0 0 100)) DATEEXP A←REC[fPDOB])/L4 ⍝ Check Date of Birth[40]  ERR←ERR,MESS[1;],A ⋄ 0 0 ⍴⎕EX 'DOB' ⋄ dob←VDATE-0 0 100-50×ind ⋄ →F4[41]  L4:DOB←JUL DOB ⍝ Check Leaving Service Date[42]  F4:→(0=⍴fLD)/L1 ⋄ →(DATECHECK DJS←(dfLD dob) DATEEXP A←REC[fLD])/F1[43]  ERR←ERR,MESS[3;],A ⋄ 0 0 ⍴⎕EX 'DJS' ⋄ →L1[44]  F1:ERR←ERR,,MESS[(EDATE<DJS←JUL DJS)/12;][45]  →(0=⎕NC 'DOB')/L1 ⋄ ERR←ERR,,MESS[(DOB≥DJS)/11;][46]  [47]  L1:→(0=⍴fDPC)/TERM ⍝ Check Date Pension Commence (s/d)[48]  →(DATECHECK DJF←(dfDPC dob) DATEEXP A←REC[fDPC])/F2[49]  ERR←ERR,MESS[4;],A ⋄ 0 0 ⍴⎕EX 'DJF' ⋄ →TERM[50]  F2:ERR←ERR,,MESS[(ind^EDATE<DJF←JUL DJF)/14;][51]  ERR←ERR,,MESS[((~ind)^EDATE≥DJF)/15;][52]  →(0=⎕NC 'DOB')/F3 ⋄ ERR←ERR,,MESS[(DOB≥DJF)/13;][53]  F3:→(0=⎕NC 'DJS')/TERM ⋄ ERR←ERR,,MESS[(DJS>DJF)/16;][54]  [55]  ⍝ Determine whether record is an Pensioner or a Term. - best guess anyway[56]  TERM:exit←0 ⋄ →(^/' '=REC[fMOT,fDOT])/L2[57]  →((~aosenabled)^exit←TERM∆VALID)/L8[58]  L2:NonS∆VALID[59]  ERR←ERR,,(~A∊'MSWU ')/MESS[23;],A←1↑REC[fMS] ⍝ Check Marital Status[60]  [61]  ⍝ Check Spouses Date of Birth and relative to Pensioners Date of Birth[62]  →(^/' '=A←REC[fSDOB])/L8[63]  →(DATECHECK DJF←(dfSDOB (dob-0 0 50)) DATEEXP A)/F7 ⋄ ERR←ERR,MESS[2;],A ⋄ →L8[64]  F7:→(0=⎕NC 'DOB')/L8 ⋄ ERR←ERR,,MESS[(3653<∣DOB-JUL DJF)/24;][65]  [66]  L8:→(PROPT^0∊⍴ERR)/TOP ⍝ Summary Record to be printed out[67]  ERR APP∆ERRS(,'LI5' ⎕FMT recn),(12↑REC[fPNAME]),(¯2↑REC[fPSEX]),(¯4↑REC[fMS]),(¯10↑REC[fPDOB]),(¯10↑REC[fSDOB]),(¯10↑REC[fDPC]),(¯8↑(~exit)/REC[fANP1]),¯4↑REC[fPCAT][68]  →TOP[69]  ⍝ Print Total Number of Records Processed[70]  END:SUMMREC←(fILENAME,,'<: >,CI10,< Records Processed>' ⎕FMT recn)OVER 'CI22,< Errors Found and>,CI10,< Warnings Found.>' ⎕FMT MATRIX TOTS[0 1][71]  (SPAGE RECN)←H1 OUTPUT tpr1,SPAGE,RECN[72]  [73]  ⍝ Remove those not totalled[74]  I←(⍳¯1↑⍴GTOTS)~2+(NUMS ExactTLU '<fRpc>,LI2' ⎕fmt (⍳16)+~⎕io)-~⎕io[75]  I←¯1↑⍴GTOTS←GTOTS[;I][76]  [77]  N←⎕AV⍋rows ⋄ rows←rows[N;]OVER 'Totals' ⋄ GTOTS←GTOTS[N;]⍪+⌿GTOTS[78]  N←1↑⍴rows ⋄ SUMMREC←((2×N),¯1↑⍴H4)⍴' '[79]  SUMMREC[2×⍳N;]←(N,¯1↑⍴SUMMREC)↑rows,'M<->CI12,M<->CI7,99M<->CI20' ⎕FMT GTOTS[;(⍳I)~1↓2×⍳I][80]  SUMMREC[1+2×⍳N;]←(N,¯1↑⍴SUMMREC)↑'M<->CI48,99M<->CI20' ⎕FMT GTOTS[;(⍳I)~0,1+2×⍳I][81]  SUMMREC←(UNSTAGGER ¯2 0↓SUMMREC)⍪' '⍪UNSTAGGER SUMMREC[(2×N-1)+⍳2;][82]  [83]  →(1≠I←⌈(¯38+¯1↑⍴SUMMREC)÷NN←10×⌊0.1×wIDTH-38)/F9[84]  H3←H1 OVER H4⍪' ' ⋄ →OUT ⍝ Rearrange SUMREC to fit on Page[85]  [86]  F9:A←((⍴A)⌈0,38+I×NN)↑A←H4⍪' '⍪SUMMREC ⋄ N←0 ⋄ SUMMREC←(0,38+NN)⍴''[87]  SUMMREC←(SUMMREC⍪' ')⍪A[;⍳38],((0,38+N×NN)↓A)[;⍳NN] ⋄ →(I>N←N+1)/⎕LC[88]  H3←H1[89]  OUT:SPAGE←1↑H3 OUTPUT tpr1,SPAGE,pAGE    ∇
+    ∇ PEN∆VALID;⎕IO;ALLREC;REC;recn;size;I;recs;N;pos;DOB;dob;DJS;DJF;SUMMREC;RECN;TOTS;GTOTS;CODE;row;rows;A;col;ERR;NOM;NN;H3;NUMRECS;exit;CAT;Z;∆
+[1]   ⍝ DATAWIN.sf#10
+[2]   ⍝ Function to validate Pensioner/Termination Data Records
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   GTOTS←(0,2+1↑⍴NUMS)⍴TOTS←2⍴⎕IO←recn←1↑NUMRECS←0 0
+[8]   rows← 0 19 ⍴ALLREC←'' ⋄ size←⎕NSIZE tieno ⋄ RECN←pAGE
+[9]   
+[10]  ⍝ Read only chunks at a time to avoid LIMIT ERROR
+[11]  N←⍴recs←,((⌊size÷FileChunk)⍴FileChunk),FileChunk∣size ⋄ I←¯1
+[12]  
+[13]  LOOP:→(N≤I←I+1)/F0 ⋄ ALLREC←ALLREC,⎕NREAD tieno,82,recs[I]
+[14]  NUMRECS←(1↑NUMRECS++/ALLREC=⎕tclf),0
+[15]  NUMRECS[1]←(¯1+size÷+/recs[⍳1+I])×NUMRECS[0] ⋄ →TOP
+[16]  
+[17]  ⍝ Exit if no Remnants at End of File
+[18]  F0:→((0=⍴ALLREC)∨(,ALLREC)≡,⎕AV[26])/END ⋄ ALLREC←ALLREC,⎕TCLF
+[19]  TOP:→((⍴ALLREC)<pos←1+ALLREC⍳⎕TCLF)/LOOP ⍝ Locate a Line Feed
+[20]  REC←pos↑ALLREC ⋄ ALLREC←pos↓ALLREC
+[21]  
+[22]  :if (recn←recn+1)≤+/NUMRECS ⍝ Display record number being processed
+[23]      (recn (⌊+/NUMRECS)) Win∆ProgressBar 'MemberUpdate'
+[24]  :endif
+[25]  
+[26]  0 0 ⍴⎕EX 'DOB DJS DJF'
+[27]  
+[28]  →(RECL=⍴REC)/SEX ⍝ Throw out records with wrong length
+[29]  MESS[0;] APP∆ERRS (,'LI5' ⎕FMT recn),((RECL-2)↑¯2↓REC)[fPNAME] ⋄ →TOP
+[30]  SEX:→(0≠⍴,row←(∨/(CODE←(¯2↑A←1↑REC[fPSEX]),(¯9↑CAT←REC[fPCAT]),¯8↑REC[fMS])⍷rows)/⍳1↑⍴rows)/L3
+[31]  row←¯1+1↑⍴rows←rows⍪CODE ⋄ GTOTS←GTOTS⍪0 ⍝ Check Validity of Sex Field
+[32]  L3:col←↑¯1+Category TLU CAT
+[33]  GTOTS[row;0]←GTOTS[row;0]+NOM←1
+[34]  ERR←(10<⍴CAT)/'⍺ERROR Category Field exceeds 10 Characters'
+[35]  ERR←ERR,(∨/Z)/'⍺ERROR - Category Field contains illegal characters - ',(Z←∆∊CAT)/∆←illegals,'[]'
+[36]  ⍝⍝⍝ ERR←ERR,(∨/Z)/'⍺ERROR - Category Field contains illegal characters - ',(Z←'\/:*?<>∣|[]`'∊CAT)/'\/:*?<>∣|[]`'
+[37]  ERR←ERR,,((~A∊'MF')^0≠⍴fPSEX)/MESS[10;],A
+[38]  
+[39]  L0:→(DATECHECK dob←DOB←(dfPDOB (VDATE-0 0 100)) DATEEXP A←REC[fPDOB])/L4 ⍝ Check Date of Birth
+[40]  ERR←ERR,MESS[1;],A ⋄ 0 0 ⍴⎕EX 'DOB' ⋄ dob←VDATE-0 0 100-50×ind ⋄ →F4
+[41]  L4:DOB←JUL DOB ⍝ Check Leaving Service Date
+[42]  F4:→(0=⍴fLD)/L1 ⋄ →(DATECHECK DJS←(dfLD dob) DATEEXP A←REC[fLD])/F1
+[43]  ERR←ERR,MESS[3;],A ⋄ 0 0 ⍴⎕EX 'DJS' ⋄ →L1
+[44]  F1:ERR←ERR,,MESS[(EDATE<DJS←JUL DJS)/12;]
+[45]  →(0=⎕NC 'DOB')/L1 ⋄ ERR←ERR,,MESS[(DOB≥DJS)/11;]
+[46]  
+[47]  L1:→(0=⍴fDPC)/TERM ⍝ Check Date Pension Commence (s/d)
+[48]  →(DATECHECK DJF←(dfDPC dob) DATEEXP A←REC[fDPC])/F2
+[49]  ERR←ERR,MESS[4;],A ⋄ 0 0 ⍴⎕EX 'DJF' ⋄ →TERM
+[50]  F2:ERR←ERR,,MESS[(ind^EDATE<DJF←JUL DJF)/14;]
+[51]  ERR←ERR,,MESS[((~ind)^EDATE≥DJF)/15;]
+[52]  →(0=⎕NC 'DOB')/F3 ⋄ ERR←ERR,,MESS[(DOB≥DJF)/13;]
+[53]  F3:→(0=⎕NC 'DJS')/TERM ⋄ ERR←ERR,,MESS[(DJS>DJF)/16;]
+[54]  
+[55]  ⍝ Determine whether record is an Pensioner or a Term. - best guess anyway
+[56]  TERM:exit←0 ⋄ →(^/' '=REC[fMOT,fDOT])/L2
+[57]  →((~aosenabled)^exit←TERM∆VALID)/L8
+[58]  L2:NonS∆VALID
+[59]  ERR←ERR,,(~A∊'MSWU ')/MESS[23;],A←1↑REC[fMS] ⍝ Check Marital Status
+[60]  
+[61]  ⍝ Check Spouses Date of Birth and relative to Pensioners Date of Birth
+[62]  →(^/' '=A←REC[fSDOB])/L8
+[63]  →(DATECHECK DJF←(dfSDOB (dob-0 0 50)) DATEEXP A)/F7 ⋄ ERR←ERR,MESS[2;],A ⋄ →L8
+[64]  F7:→(0=⎕NC 'DOB')/L8 ⋄ ERR←ERR,,MESS[(3653<∣DOB-JUL DJF)/24;]
+[65]  
+[66]  L8:→(PROPT^0∊⍴ERR)/TOP ⍝ Summary Record to be printed out
+[67]  ERR APP∆ERRS(,'LI5' ⎕FMT recn),(12↑REC[fPNAME]),(¯2↑REC[fPSEX]),(¯4↑REC[fMS]),(¯10↑REC[fPDOB]),(¯10↑REC[fSDOB]),(¯10↑REC[fDPC]),(¯8↑(~exit)/REC[fANP1]),¯4↑REC[fPCAT]
+[68]  →TOP
+[69]  ⍝ Print Total Number of Records Processed
+[70]  END:SUMMREC←(fILENAME,,'<: >,CI10,< Records Processed>' ⎕FMT recn)OVER 'CI22,< Errors Found and>,CI10,< Warnings Found.>' ⎕FMT MATRIX TOTS[0 1]
+[71]  (SPAGE RECN)←H1 OUTPUT tpr1,SPAGE,RECN
+[72]  
+[73]  ⍝ Remove those not totalled
+[74]  I←(⍳¯1↑⍴GTOTS)~2+(NUMS ExactTLU '<fRpc>,LI2' ⎕fmt (⍳16)+~⎕io)-~⎕io
+[75]  I←¯1↑⍴GTOTS←GTOTS[;I]
+[76]  
+[77]  N←⎕AV⍋rows ⋄ rows←rows[N;]OVER 'Totals' ⋄ GTOTS←GTOTS[N;]⍪+⌿GTOTS
+[78]  N←1↑⍴rows ⋄ SUMMREC←((2×N),¯1↑⍴H4)⍴' '
+[79]  SUMMREC[2×⍳N;]←(N,¯1↑⍴SUMMREC)↑rows,'M<->CI12,M<->CI7,99M<->CI20' ⎕FMT GTOTS[;(⍳I)~1↓2×⍳I]
+[80]  SUMMREC[1+2×⍳N;]←(N,¯1↑⍴SUMMREC)↑'M<->CI48,99M<->CI20' ⎕FMT GTOTS[;(⍳I)~0,1+2×⍳I]
+[81]  SUMMREC←(UNSTAGGER ¯2 0↓SUMMREC)⍪' '⍪UNSTAGGER SUMMREC[(2×N-1)+⍳2;]
+[82]  
+[83]  →(1≠I←⌈(¯38+¯1↑⍴SUMMREC)÷NN←10×⌊0.1×wIDTH-38)/F9
+[84]  H3←H1 OVER H4⍪' ' ⋄ →OUT ⍝ Rearrange SUMREC to fit on Page
+[85]  
+[86]  F9:A←((⍴A)⌈0,38+I×NN)↑A←H4⍪' '⍪SUMMREC ⋄ N←0 ⋄ SUMMREC←(0,38+NN)⍴''
+[87]  SUMMREC←(SUMMREC⍪' ')⍪A[;⍳38],((0,38+N×NN)↓A)[;⍳NN] ⋄ →(I>N←N+1)/⎕LC
+[88]  H3←H1
+[89]  OUT:SPAGE←1↑H3 OUTPUT tpr1,SPAGE,pAGE
+    ∇

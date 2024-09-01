@@ -1,0 +1,72 @@
+    ∇ res←flag UniqueDataSel field;cols;FileList;tieno;recs;size;FormatType;Entries;Name;i;Format;nonblank;min;file
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Find the unique data items in the specified "cols" of data file(s)
+[3]   ⍝ flag indicates if a blank entry is included at the top (default: not)
+[4]   
+[5]   min←2+8×0≠⎕nc 'flag'
+[6]   :if 0=⎕nc 'flag' ⋄ flag←0 ⋄ :endif
+[7]   
+[8]   res←(1,min)⍴' ' ⍝ Default response
+[9]   
+[10]  :if 0=⎕nc 'ControlName' ⍝ Required Information not yet stored!
+[11]  :orif 0≡ControlName ⎕wi '∆format'
+[12]  :orif mt ,Format←(ControlName ⎕wi '∆format') ⎕wi 'text'
+[13]      :return
+[14]  :endif
+[15]  
+[16]  :if FileSelections
+[17]      FileList←MATRIX DLTB (ControlName ⎕wi '∆singlefile') ⎕wi 'text'
+[18]  :else
+[19]      FileList←SStoMAT ',',DLTB (ControlName ⎕wi '∆multifile') ⎕wi 'text'
+[20]  :endif
+[21]  :if mt FileList ⍝ Check Record Length of Data File
+[22]  :orif ~mt Format Format∆CHECK ((⊃(⊂InputDir),¨⎕split FileList) '')
+[23]      :return
+[24]  :endif
+[25]  
+[26]  CREATEDATADESC Format
+[27]  
+[28]  :if mt field←SStoMAT (('/'≠1↑field)/'/'),field ⋄ :return ⋄ :endif
+[29]  cols←⍳0 ⋄ nonblank←0≠⍴field ExactTLU 2 3⍴'MOEMOT' ⍝ don't allow blanks when MOE
+[30]  
+[31]  :for i :in ⍳1↑⍴field ⍝ Get Columns in records
+[32]      Name←UPPERCASE DLTB field[i;]
+[33]      :if (⊂FormatType)∊'Pen' 'Def'
+[34]          :select Name
+[35]          :case 'TOP' ⍝ Do Nothing!!
+[36]          :case 'MOE' ⍝ Actually MOT for AU/SA
+[37]              :if uk≠1 ⋄ :orif FormatType≡'Pen' ⋄ Name←'MOT' ⋄ :endif
+[38]          :else
+[39]              :if uk≠1 ⋄ Name←'P',Name ⋄ :endif
+[40]          :endselect
+[41]       :endif
+[42]       cols←cols,⍎'f',Name
+[43]  :endfor
+[44]  
+[45]  :if mt cols←⎕io+cols ⋄ :return ⋄ :endif ⍝ No selections available
+[46]  
+[47]  Entries←(0,⍴cols)⍴' '
+[48]  
+[49]  tieno←'Native' TieNumber ''
+[50]  :for file :in m2n FileList
+[51]      :if ~FileExist file←InputDir,file ⍝ Check Existence of File
+[52]      :orif 0=file NTIE tieno
+[53]      :orif ~mt (0⍴'') VALID∆FILE tieno ⍝ Check Validity of Data File
+[54]          ⎕nuntie tieno ⋄ :return
+[55]      :else
+[56]          recs←RECL×⌊FileChunk CDIV RECL ⍝ Take Chunks!!
+[57]          recs←,((⌊size÷recs)⍴recs),recs∣size←⎕nsize tieno
+[58]          0 0⍴⎕nread tieno,82,0,0 ⍝ Get to Start of File
+[59]          :for i :in ⍳⍴,recs
+[60]              Entries←Entries⍪(((⌊recs[i]÷RECL),RECL)⍴⎕NREAD tieno,82,recs[i])[;cols]
+[61]              Entries←0 Uniquelist Entries
+[62]          :endfor
+[63]          ⎕nuntie tieno
+[64]      :endif
+[65]  :endfor
+[66]  
+[67]  :if nonblank ⋄ Entries←(∨/' '≠Entries)⌿Entries ⋄ :endif ⍝ Remove Blank!
+[68]  
+[69]  ⍝ Got here, so success!
+[70]  res←((⍴cols)↑(1↓(,'/',field)~' '),' Selections') OVER (flag 0⍴' ') OVER Entries
+    ∇

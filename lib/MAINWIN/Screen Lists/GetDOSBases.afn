@@ -1,0 +1,30 @@
+    ∇ res←GetDOSBases Folder;elx;⎕elx;list;n;i;File;tieno;size
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a list of DOS Basis files
+[3]   res←0 0⍴'' ⋄ elx←⎕elx ⋄ ⎕elx←'→end'
+[4]   
+[5]   :if ~Folder≡''
+[6]       Folder←FullFolder Folder
+[7]       n←1↑⍴list←⎕xlib Folder,'*.sf' ⋄ ⎕elx←elx
+[8]       :for i:in ⍳n
+[9]           :select uk
+[10]          :case 0
+[11]              :if 0=File FSTIE tieno←TieNumber File←Folder,list[i;]
+[12]              :andif 12≤size←(⎕FSIZE tieno)[2]
+[13]              :andif 17≥size
+[14]              :andif ^/pchk ¨⎕FREAD ¨tieno,¨⍳5
+[15]                  res←res OVER '.' StripText list[i;]
+[16]              :endif
+[17]          :case 2
+[18]              :if 0=File FSTIE tieno←TieNumber File←Folder,list[i;]
+[19]              :andif 31=size←(⎕FSIZE tieno)[2]
+[20]              :andif ^/~pchk ¨⎕FREAD ¨tieno,¨⍳24
+[21]              :andif ^/pchk ¨⎕FREAD ¨tieno,¨24+⍳5
+[22]                  res←res OVER '.' StripText list[i;]
+[23]              :endif
+[24]          :endselect
+[25]          ⎕funtie tieno
+[26]      :endfor
+[27]  :endif
+[28]  end:res←'DOS Bases' OVER res
+    ∇

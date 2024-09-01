@@ -1,1 +1,69 @@
-    ∇ RTAuditDispPrint;Change;SUMMREC;tpr1;File;H1;z;size;tab;H2;DPAGE;n;line[1]   ⍝ DECRWIN.sf#15[2]   ⍝ Print out the changes made to a Rate Table Code[3]   [4]   Change←ChangeType,(('e'=¯1↑ChangeType)↓'ed '),code[5]   [6]   tpr1←OPEN∆TPR∆FILE 'RTAUDIT' ⍝ Open print file[7]   File←DLTB (tpr1=⎕xnnums)⌿⎕xnnames[8]   line←pAGE ⋄ DPAGE←0 ⋄ H1←(wIDTH WRITE∆HEAD 'INDIVIDUAL RATE TABLE AUDIT PRINTOUT') OVER ' '[9]   [10]  :if z←~0∊⍴OldValues[11]      SUMMREC←(code (Change,' - ',OldDesc)) DecrPrint OldValues[12]      :if TwoDTable code ⍝ 2D Tables[13]          (size tab)←SUMMREC ⋄ H2←1 0↓tab[;⍳3] ⋄ tab←0 3↓tab ⋄ H1←H1 OVER 'Original Table' OVER ' '[14]          size←size×⌊(wIDTH-3)÷size ⋄ tab←(size×⌈(¯1↑⍴tab)÷size)↑[2]tab[15]          :for n :in ⍳(¯1↑⍴tab)÷size[16]              H1←(¯1 0↓H1) OVER '   ',,(1,size)↑(0,size×n-1)↓tab[17]              SUMMREC←H2,((1,size×n-1)↓tab)[;⍳size][18]              (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line[19]          :endfor[20]          H1←¯2 0↓H1[21]      :else[22]          (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line[23]      :endif[24]  :endif[25]  [26]  :if ~0∊⍴NewValues[27]      :if z ⋄ SUMMREC←2 1⍴' ' ⋄ (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line ⋄ :endif[28]      SUMMREC←(code (Change,' - ',NewDesc)) DecrPrint NewValues[29]      :if TwoDTable code ⍝ 2D Tables[30]          line←pAGE ⍝ Start on new page[31]          (size tab)←SUMMREC ⋄ H2←1 0↓tab[;⍳3] ⋄ tab←0 3↓tab ⋄ H1←H1 OVER 'Changed Table' OVER ' '[32]          size←size×⌊(wIDTH-3)÷size ⋄ tab←(size×⌈(¯1↑⍴tab)÷size)↑[2]tab[33]          :for n :in ⍳(¯1↑⍴tab)÷size[34]              H1←(¯1 0↓H1) OVER '   ',,(1,size)↑(0,size×n-1)↓tab[35]              SUMMREC←H2,((1,size×n-1)↓tab)[;⍳size][36]              (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line[37]          :endfor[38]          H1←¯2 0↓H1[39]      :else[40]          (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line[41]      :endif[42]      z←z+1[43]  :endif[44]  [45]  :if z=2 ⋄ :andif ~0∊⍴diff[46]      SUMMREC←2 1⍴' ' ⋄ (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line[47]      :if TwoDTable code ⍝ 2D Tables[48]          :if (1↑code)∊'EFGH' ⋄ H1←H1 OVER 'Y-Axis Values/X-Axis Values Changed:  '[49]          :else               ⋄ H1←H1 OVER 'Ages/Durations Changed:  '[50]          :endif[51]          size←⍴SUMMREC←MATRIX ¯1↓DLTMB 'I3,</>,Q<,>LI4' ⎕fmt ¯1+⊃diff[52]          :if size[⎕io+1]>wIDTH[53]              SUMMREC←(size[⎕io],n,wIDTH)⍴(size[⎕io],wIDTH×n←⌈size[⎕io+1]÷wIDTH)↑SUMMREC[54]              SUMMREC←((n×size[⎕io]),wIDTH)⍴SUMMREC[55]          :endif[56]          line←pAGE[57]      :else[58]          SUMMREC←(,⊃('Ages' 'Durations')[1+(1↑1↓code)∊'Tt']),' Changed:  ',⍕diff[59]      :endif[60]      (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line[61]  :endif[62]  [63]  ⎕nuntie tpr1[64]  [65]  MDISPLAY 'OutputFile' File[66]  [67]  ('Individual Rate Table Audit Printout of ',code,' at ',DLTMB 1 DATESPELL ⎕ts) UpdateBrowserHistory File    ∇
+    ∇ RTAuditDispPrint;Change;SUMMREC;tpr1;File;H1;z;size;tab;H2;DPAGE;n;line
+[1]   ⍝ DECRWIN.sf#15
+[2]   ⍝ Print out the changes made to a Rate Table Code
+[3]   
+[4]   Change←ChangeType,(('e'=¯1↑ChangeType)↓'ed '),code
+[5]   
+[6]   tpr1←OPEN∆TPR∆FILE 'RTAUDIT' ⍝ Open print file
+[7]   File←DLTB (tpr1=⎕xnnums)⌿⎕xnnames
+[8]   line←pAGE ⋄ DPAGE←0 ⋄ H1←(wIDTH WRITE∆HEAD 'INDIVIDUAL RATE TABLE AUDIT PRINTOUT') OVER ' '
+[9]   
+[10]  :if z←~0∊⍴OldValues
+[11]      SUMMREC←(code (Change,' - ',OldDesc)) DecrPrint OldValues
+[12]      :if TwoDTable code ⍝ 2D Tables
+[13]          (size tab)←SUMMREC ⋄ H2←1 0↓tab[;⍳3] ⋄ tab←0 3↓tab ⋄ H1←H1 OVER 'Original Table' OVER ' '
+[14]          size←size×⌊(wIDTH-3)÷size ⋄ tab←(size×⌈(¯1↑⍴tab)÷size)↑[2]tab
+[15]          :for n :in ⍳(¯1↑⍴tab)÷size
+[16]              H1←(¯1 0↓H1) OVER '   ',,(1,size)↑(0,size×n-1)↓tab
+[17]              SUMMREC←H2,((1,size×n-1)↓tab)[;⍳size]
+[18]              (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line
+[19]          :endfor
+[20]          H1←¯2 0↓H1
+[21]      :else
+[22]          (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line
+[23]      :endif
+[24]  :endif
+[25]  
+[26]  :if ~0∊⍴NewValues
+[27]      :if z ⋄ SUMMREC←2 1⍴' ' ⋄ (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line ⋄ :endif
+[28]      SUMMREC←(code (Change,' - ',NewDesc)) DecrPrint NewValues
+[29]      :if TwoDTable code ⍝ 2D Tables
+[30]          line←pAGE ⍝ Start on new page
+[31]          (size tab)←SUMMREC ⋄ H2←1 0↓tab[;⍳3] ⋄ tab←0 3↓tab ⋄ H1←H1 OVER 'Changed Table' OVER ' '
+[32]          size←size×⌊(wIDTH-3)÷size ⋄ tab←(size×⌈(¯1↑⍴tab)÷size)↑[2]tab
+[33]          :for n :in ⍳(¯1↑⍴tab)÷size
+[34]              H1←(¯1 0↓H1) OVER '   ',,(1,size)↑(0,size×n-1)↓tab
+[35]              SUMMREC←H2,((1,size×n-1)↓tab)[;⍳size]
+[36]              (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line
+[37]          :endfor
+[38]          H1←¯2 0↓H1
+[39]      :else
+[40]          (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line
+[41]      :endif
+[42]      z←z+1
+[43]  :endif
+[44]  
+[45]  :if z=2 ⋄ :andif ~0∊⍴diff
+[46]      SUMMREC←2 1⍴' ' ⋄ (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line
+[47]      :if TwoDTable code ⍝ 2D Tables
+[48]          :if (1↑code)∊'EFGH' ⋄ H1←H1 OVER 'Y-Axis Values/X-Axis Values Changed:  '
+[49]          :else               ⋄ H1←H1 OVER 'Ages/Durations Changed:  '
+[50]          :endif
+[51]          size←⍴SUMMREC←MATRIX ¯1↓DLTMB 'I3,</>,Q<,>LI4' ⎕fmt ¯1+⊃diff
+[52]          :if size[⎕io+1]>wIDTH
+[53]              SUMMREC←(size[⎕io],n,wIDTH)⍴(size[⎕io],wIDTH×n←⌈size[⎕io+1]÷wIDTH)↑SUMMREC
+[54]              SUMMREC←((n×size[⎕io]),wIDTH)⍴SUMMREC
+[55]          :endif
+[56]          line←pAGE
+[57]      :else
+[58]          SUMMREC←(,⊃('Ages' 'Durations')[1+(1↑1↓code)∊'Tt']),' Changed:  ',⍕diff
+[59]      :endif
+[60]      (DPAGE line)←H1 OUTPUT tpr1,DPAGE,line
+[61]  :endif
+[62]  
+[63]  ⎕nuntie tpr1
+[64]  
+[65]  MDISPLAY 'OutputFile' File
+[66]  
+[67]  ('Individual Rate Table Audit Printout of ',code,' at ',DLTMB 1 DATESPELL ⎕ts) UpdateBrowserHistory File
+    ∇

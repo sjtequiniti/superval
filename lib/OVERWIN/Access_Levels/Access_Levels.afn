@@ -1,1 +1,35 @@
-    ∇ res←field Access_Levels parm[1]   ⍝ OVERWIN.sf#7[2]   ⍝ Function to allow user control on Setting Access Levels[3]   [4]   res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       :if ~10 1≡⍴RTAccess ⋄ RTAccess←10 1↑MATRIX RTAccess ⋄ :endif[10]      :if 4≠↑⍴GenAccess ⋄ GenAccess←4↑[1]GenAccess OVER 2 1⍴'9' ⋄ :endif ⍝ Add Validation Disable Level[11]  [12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[13]  [14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[15]  [16]  :case 'Valid' ⍝ Routine specific validation[17]  [18]  :case 'Run'[19]  [20]      0 0⍴ReadModule 'Access_Levels' 'None' ⍝ Read DEFAULTS for Conversion Purposes[21]      0 0⍴PrefFile ReadFile 'Access_Levels'[22]      genAccess←4↑(MatrixZWB '9',' ',GenAccess),9 9[23]      datAccess←   MatrixZWB '9',' ',DatAccess[24]      rtAccess ←10⍴MatrixZWB '9',' ',RTAccess[25]      basAccess←   MatrixZWB '9',' ',BasAccess[26]      scenAccess←  MatrixZWB '9',' ',ScenAccess[27]      benAccess←zwb '9 ',BenAccess[28]  [29]      res←'Quit'[30]  [31]  :case 'Quit' ⍝ Deleting "other" variables[32]  [33]  :endselect    ∇
+    ∇ res←field Access_Levels parm
+[1]   ⍝ OVERWIN.sf#7
+[2]   ⍝ Function to allow user control on Setting Access Levels
+[3]   
+[4]   res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if ~10 1≡⍴RTAccess ⋄ RTAccess←10 1↑MATRIX RTAccess ⋄ :endif
+[10]      :if 4≠↑⍴GenAccess ⋄ GenAccess←4↑[1]GenAccess OVER 2 1⍴'9' ⋄ :endif ⍝ Add Validation Disable Level
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]  
+[14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[15]  
+[16]  :case 'Valid' ⍝ Routine specific validation
+[17]  
+[18]  :case 'Run'
+[19]  
+[20]      0 0⍴ReadModule 'Access_Levels' 'None' ⍝ Read DEFAULTS for Conversion Purposes
+[21]      0 0⍴PrefFile ReadFile 'Access_Levels'
+[22]      genAccess←4↑(MatrixZWB '9',' ',GenAccess),9 9
+[23]      datAccess←   MatrixZWB '9',' ',DatAccess
+[24]      rtAccess ←10⍴MatrixZWB '9',' ',RTAccess
+[25]      basAccess←   MatrixZWB '9',' ',BasAccess
+[26]      scenAccess←  MatrixZWB '9',' ',ScenAccess
+[27]      benAccess←zwb '9 ',BenAccess
+[28]  
+[29]      res←'Quit'
+[30]  
+[31]  :case 'Quit' ⍝ Deleting "other" variables
+[32]  
+[33]  :endselect
+    ∇

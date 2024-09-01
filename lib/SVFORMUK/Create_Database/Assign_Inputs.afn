@@ -1,1 +1,29 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Create_Database" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Create_Database" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmCreateDB.cbDBFile" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB DBFile[11]  :if mt selection[12]          "fmCreateDB.cbDBFile" ⎕wi "text" (DLTB DBFile)[13]  :else[14]      "fmCreateDB.cbDBFile" ⎕wi "value" selection[15]  :endif[16]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Create_Database[17]      :for var :in spin Comment_Create_Database at "variable" "row" ⋄ (var row)←var[18]          "Create_Database" ParmColor ((FormFields for "variable" var) at "control"),var row 1[19]      :endfor[20]  :endif[21]  :if ~0∊⍴,warnings[22]      MDISPLAY DLTMB warnings,⎕tcnl[23]      Win∆AssignVars "fmCreateDB"[24]  :endif[25]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Create_Database" "" "Names"[26]      "fmCreateDB" ⎕wi "modified" 0[27]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Create_Database" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Create_Database" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmCreateDB.cbDBFile" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB DBFile
+[11]  :if mt selection
+[12]          "fmCreateDB.cbDBFile" ⎕wi "text" (DLTB DBFile)
+[13]  :else
+[14]      "fmCreateDB.cbDBFile" ⎕wi "value" selection
+[15]  :endif
+[16]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Create_Database
+[17]      :for var :in spin Comment_Create_Database at "variable" "row" ⋄ (var row)←var
+[18]          "Create_Database" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[19]      :endfor
+[20]  :endif
+[21]  :if ~0∊⍴,warnings
+[22]      MDISPLAY DLTMB warnings,⎕tcnl
+[23]      Win∆AssignVars "fmCreateDB"
+[24]  :endif
+[25]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Create_Database" "" "Names"
+[26]      "fmCreateDB" ⎕wi "modified" 0
+[27]  :endif
+    ∇

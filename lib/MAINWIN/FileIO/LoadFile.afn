@@ -1,0 +1,9 @@
+    ∇ res←LoadFile file;idx;descs;cnos;comps
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Read all lists from a System file and store in a nested array (for quicker retrieval)
+[3]   
+[4]   idx←↑comps←file_get_cns file,'.sf'
+[5]   (descs cnos)←idx at '∆_Name' '∆_CompNo'
+[6]   descs←(⊂'Index'),1↓descs                ⍝ Name the first component Index
+[7]   res←descs push comps[cnos-~⎕io]         ⍝ dic: description=>content
+    ∇

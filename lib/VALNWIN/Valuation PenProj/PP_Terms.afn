@@ -1,0 +1,26 @@
+    ∇ PP∆Terms pp∆memorsp;pp∆def1;pp∆def2;pp∆def3
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Sets variables (globally) indicating aspects of the benefit
+[3]   
+[4]   ⍝ Flags showing if exit, retirement and benefit commencement are mid-year
+[5]   pp∆xexit ←⌊pp∆Xexit ←pp∆X0⌈pp∆Xatexit ←pp∆Age   [pp∆row;pp∆year   ] ⋄ pp∆midexit ←pp∆Xatexit ≠⌊pp∆Xatexit
+[6]   pp∆xret  ←⌊pp∆Xret  ←pp∆X0⌈pp∆Xatret  ←pp∆RetAge[pp∆row;pp∆benyear] ⋄ pp∆midret  ←pp∆Xatret  ≠⌊pp∆Xatret
+[7]   pp∆xstart←⌊pp∆Xstart←pp∆X0⌈pp∆Xatstart←pp∆Start [pp∆row;pp∆benyear] ⋄ pp∆midstart←pp∆Xatstart≠⌊pp∆Xatstart
+[8]   
+[9]   ⍝ Cope with Retirement Age being after Start Age (UK Public Sector GMPs)
+[10]  pp∆xprestart←⌊pp∆Xprestart←pp∆X0⌈pp∆Xatprestart←pp∆Xatret⌊pp∆Xatstart ⋄ pp∆midprestart←pp∆Xatprestart≠⌊pp∆Xatprestart
+[11]  
+[12]  ⍝ Terms at exit, retirement and benefit commencement
+[13]  pp∆Texit←⍬⍴term+pp∆xexit-pp∆X0 ⋄ pp∆Tret←⍬⍴term+pp∆xret-pp∆X0 ⋄ pp∆Tstart←⍬⍴term+pp∆xstart-pp∆X0
+[14]  pp∆Tprestart←⍬⍴term+pp∆xprestart-pp∆X0
+[15]  
+[16]  ⍝ Retirement and Commencement Deferral Periods - note they may be different from T??-T??
+[17]  pp∆def←(pp∆Xret,pp∆Xstart,pp∆Xstart)-pp∆Xexit,pp∆Xexit,pp∆Xret
+[18]  
+[19]  pp∆size←pp∆RGP⌈(1+⍴pp∆LXexit)-pp∆xexit ⍝ Consistent length of variables
+[20]  
+[21]  pp∆startpad←(pp∆Tstart-pp∆Texit)⍴0 ⍝ Zero padding from exit to start
+[22]  
+[23]  ⍝⍀⍝ (pp∆def1 pp∆def2 pp∆def3)←pp∆def
+[24]  ⍝⍀⍝ '' PP∆TestUpdate 'pp∆Xexit←' 'pp∆Xret←' 'pp∆Xstart←' 'pp∆def1←' 'pp∆def2←' 'pp∆def3←' 'pp∆size'
+    ∇

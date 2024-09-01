@@ -1,1 +1,152 @@
-    ∇ PHIFINPROC;PHIPENSPA;PHIWPENSPA;T;WT;temp;res;idx;escfact1;escfact2;escfact6;escfact8;Wescfact1;Wescfact2;Wescfact6;Wescfact8;PHIGMPR;PHIGMP;PHITOTWGMPR;∆A;∆B;∆C;∆D[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Processing Pensions from NRA and SPA[3]   [4]   ⍝ Retirement pensions from NRA[5]   PHIPENNRA←PHIERACCPEN-PHICOMPEN[6]   :if WARCOMind[7]       :if ClntCode=3 ⋄ PHIWARNRA←PHISERACCPEN[8]       :else          ⋄ PHIWARNRA←WARFRAC∆l×PHIERACCPEN[9]       :endif[10]  :else[11]      :if ClntCode=3 ⋄ PHIWARNRA←PHISERACCPEN×PHIPENNRA CDIV PHIERACCPEN[12]      :else          ⋄ PHIWARNRA←WARFRAC∆l×PHIPENNRA[13]      :endif[14]  :endif[15]  ⍝ Select Retirement Benefits at NRA[16]   PHICASH← PHICASH[;⍬⍴ENX_1][17]  PHIFCASH←PHIFCASH[;⍬⍴ENX_1][18]  PHIGCASH←PHIGCASH[;⍬⍴ENX_1][19]  :if sepComCot[20]      comPHICASH← comPHICASH[;⍬⍴ENX_1] ⋄ comPHIFCASH←comPHIFCASH[;⍬⍴ENX_1] ⋄ comPHIGCASH←comPHIGCASH[;⍬⍴ENX_1][21]      cotPHICASH← cotPHICASH[;⍬⍴ENX_1] ⋄ cotPHIFCASH←cotPHIFCASH[;⍬⍴ENX_1] ⋄ cotPHIGCASH←cotPHIGCASH[;⍬⍴ENX_1][22]      :if splitCombyPI[23]           splitPHICASHN← splitPHICASHN[;⍬⍴ENX_1] ⋄  splitPHICASHD← splitPHICASHD[;⍬⍴ENX_1][24]           splitPHICASHL← splitPHICASHL[;⍬⍴ENX_1] ⋄  splitPHICASH4← splitPHICASH4[;⍬⍴ENX_1][25]          splitPHIFCASHN←splitPHIFCASHN[;⍬⍴ENX_1] ⋄ splitPHIFCASHD←splitPHIFCASHD[;⍬⍴ENX_1][26]          splitPHIFCASHL←splitPHIFCASHL[;⍬⍴ENX_1] ⋄ splitPHIFCASH4←splitPHIFCASH4[;⍬⍴ENX_1][27]          PHIUCASH∆N←PHIUCASH∆N[;⍬⍴ENX_1] ⋄ PHIUCASH∆D←PHIUCASH∆D[;⍬⍴ENX_1] ⋄ PHIUCASH∆L←PHIUCASH∆L[;⍬⍴ENX_1] ⋄ PHIUCASH∆4←PHIUCASH∆4[;⍬⍴ENX_1][28]      :endif[29]  :endif[30]  [31]  PHIPENNRA←PHIPENNRA[;;;;;;;⍬⍴ENX_1][32]  PHIWARNRA←PHIWARNRA[;;;;;;;⍬⍴ENX_1][33]  [34]  ⍝⍝⍝ PHIPENNRA←PHIPreNRA PHISelectRB PHIPENNRA[35]  ⍝⍝⍝ PHIWARNRA←PHIPreNRA PHISelectRB PHIWARNRA[36]  [37]  escfact1←           1⌈DYNRAT1[⎕io+2×term+0⌈XS -↑X]  CDIV DYNRAT1[⎕io+2×term+0⌈NRA-↑X][38]  escfact2←           1⌈DYNRAT2[⎕io+2×term+0⌈XS -↑X]  CDIV DYNRAT2[⎕io+2×term+0⌈NRA-↑X][39]  escfact6←           1⌈DYNRAT3[⎕io+2×term+0⌈XS -↑X]  CDIV DYNRAT3[⎕io+2×term+0⌈NRA-↑X][40]  escfact8←           1⌈DYNRAT4[⎕io+2×term+0⌈XS -↑X]  CDIV DYNRAT4[⎕io+2×term+0⌈NRA-↑X][41]  Wescfact1←PreSPAmat×1⌈DYNRAT1[⎕io+2×term+0⌈XMP-↑X]∘.CDIV DYNRAT1[⎕io+2×term+NX⍴0⌈NRA-↑X][42]  Wescfact2←PreSPAmat×1⌈DYNRAT2[⎕io+2×term+0⌈XMP-↑X]∘.CDIV DYNRAT2[⎕io+2×term+NX⍴0⌈NRA-↑X][43]  Wescfact6←PreSPAmat×1⌈DYNRAT3[⎕io+2×term+0⌈XMP-↑X]∘.CDIV DYNRAT3[⎕io+2×term+NX⍴0⌈NRA-↑X][44]  Wescfact8←PreSPAmat×1⌈DYNRAT4[⎕io+2×term+0⌈XMP-↑X]∘.CDIV DYNRAT4[⎕io+2×term+NX⍴0⌈NRA-↑X][45]  [46]  ⍝ Retirement pension from SPA[47]  PHIPENSPA ←(⍴PHIPENNRA)⍴0 ⍝ Initialise[48]  ⍝ Fill with benefits before franking[49]  PHIPENSPA[⎕io  ;;;;;;]←PHIPENNRA[⎕io  ;;;;;;]×[⎕io+5]escfact2[50]  PHIPENSPA[⎕io+1;;;;;;]←PHIPENNRA[⎕io+1;;;;;;]×[⎕io+5]escfact1[51]  PHIPENSPA[⎕io+2;;;;;;]←PHIPENNRA[⎕io+2;;;;;;]×[⎕io+5]escfact6[52]  PHIPENSPA[⎕io+3;;;;;;]←PHIPENNRA[⎕io+3;;;;;;]×[⎕io+5]escfact8[53]  :if PreSPASplit[54]      PHIWPENSPA←((⍴PHIPENNRA),NX)⍴0[55]      :for idx :in ⍳NX-SNX[56]          PHIWPENSPA[⎕io  ;;;;;;idx;]←PHIWARNRA[⎕io  ;;;;;;idx]∘.×Wescfact2[;idx][57]          PHIWPENSPA[⎕io+1;;;;;;idx;]←PHIWARNRA[⎕io+1;;;;;;idx]∘.×Wescfact1[;idx][58]          PHIWPENSPA[⎕io+2;;;;;;idx;]←PHIWARNRA[⎕io+2;;;;;;idx]∘.×Wescfact6[;idx][59]          PHIWPENSPA[⎕io+3;;;;;;idx;]←PHIWARNRA[⎕io+3;;;;;;idx]∘.×Wescfact8[;idx][60]      :endfor[61]  :else[62]      PHIWPENSPA←(⍴PHIPENNRA)⍴0[63]      PHIWPENSPA[⎕io  ;;;;;;]←PHIWARNRA[⎕io  ;;;;;;]×[⎕io+5]escfact2[64]      PHIWPENSPA[⎕io+1;;;;;;]←PHIWARNRA[⎕io+1;;;;;;]×[⎕io+5]escfact1[65]      PHIWPENSPA[⎕io+2;;;;;;]←PHIWARNRA[⎕io+2;;;;;;]×[⎕io+5]escfact6[66]      PHIWPENSPA[⎕io+3;;;;;;]←PHIWARNRA[⎕io+3;;;;;;]×[⎕io+5]escfact8[67]  :endif[68]  [69]  ⍝ Frank first tranche[70]  T←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIPENNRA[71]  PHIPENNRAN←T[⎕io  ;⎕io;][72]  PHIPENNRAD←T[⎕io+1;⎕io;][73]  PHIPENNRAL←T[⎕io+2;⎕io;][74]  PHIPENNRA4←T[⎕io+3;⎕io;][75]  WT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIWARNRA[76]  PHIWPENNRAN←WT[⎕io  ;⎕io;][77]  PHIWPENNRAD←WT[⎕io+1;⎕io;][78]  PHIWPENNRAL←WT[⎕io+2;⎕io;][79]  PHIWPENNRA4←WT[⎕io+3;⎕io;][80]  ⍝⌿⍝ :if 0 ⍝ test[81]  ⍝⌿⍝    PHICOMPENNDYN←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io  ;;][82]  ⍝⌿⍝    PHICOMPENDYN ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+1;;][83]  ⍝⌿⍝    PHICOMPENLDYN←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+2;;][84]  ⍝⌿⍝    PHICOMPENDYN4←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+3;;][85]  ⍝⌿⍝    PHIFCOMPENNDYN←(+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io  ;⎕io+2;;][86]  ⍝⌿⍝    PHIFCOMPENDYN ←(+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+1;⎕io+2;;][87]  ⍝⌿⍝    PHIFCOMPENLDYN←(+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+2;⎕io+2;;][88]  ⍝⌿⍝    PHIFCOMPENDYN4←(+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+3;⎕io+2;;][89]  ⍝⌿⍝    AUDIT '1600' ⋄ AUDIT '1610' ⋄ AUDIT '1620' ⋄ AUDIT '1625'[90]  ⍝⌿⍝    :if ClntCode=3 ⋄ AUDIT '1630b' ⋄ AUDIT '1631b'[91]  ⍝⌿⍝    :else          ⋄ AUDIT '1630a' ⋄ AUDIT '1631a'[92]  ⍝⌿⍝    :endif[93]  ⍝⌿⍝    AUDIT '1800'[94]  ⍝⌿⍝ :endif[95]  ⍝ Replace first tranch of PENSPA with post-franking figures[96]  ⍝⍝⍝ ∆A←'1810' ⋄ ∆B←'1815' ⋄ ∆C←'1820' ⋄ ∆D←'1821'[97]  [98]  PHIGMPR   ←NX⍴   GMPR[⍬⍴ENX_1] ⋄ PHIGMP     ←NX⍴    GMP [⍬⍴ENX_1][99]  PHIPreGMPR←NX⍴PreGMPR[⍬⍴ENX_1] ⋄ PHIPostGMPR←NX⍴PostGMPR[⍬⍴ENX_1][100] [101] res←0.1 FRANK PHIPENNRAD,PHIPENNRAN,PHIPENNRAL,PHIPENNRA4,PHIGMPR,[0.1]PHIGMP[102] PHIPENSPA[⎕io  ;⎕io;;;;;]←PHIPENNRA[⎕io  ;⎕io;;;;;]×[4]res[;⎕io  ] CDIV PHIPENNRAN[103] PHIPENSPA[⎕io+1;⎕io;;;;;]←PHIPENNRA[⎕io+1;⎕io;;;;;]×[4]res[;⎕io+1] CDIV PHIPENNRAD[104] PHIPENSPA[⎕io+2;⎕io;;;;;]←PHIPENNRA[⎕io+2;⎕io;;;;;]×[4]res[;⎕io+2] CDIV PHIPENNRAL[105] PHIPENSPA[⎕io+3;⎕io;;;;;]←PHIPENNRA[⎕io+3;⎕io;;;;;]×[4]res[;⎕io+3] CDIV PHIPENNRA4[106] ⍝⌿⍝ :if 0 ⍝ test[107] ⍝⌿⍝    PHITPSPA←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIPENSPA[108] ⍝⌿⍝    AUDIT '1822' ⋄ AUDIT '1823'[109] ⍝⌿⍝ :endif[110] ⍝⍝⍝ ∆A←'1830' ⋄ ∆B←'1835' ⋄ ∆C←'1840' ⋄ ∆D←'1841'[111] [112] PHIGMPR←NX⍴WGMPR[⍬⍴ENX_1] ⋄ PHIGMP←NX⍴WGMP[⍬⍴ENX_1][113] PHITOTWGMPR←⍉(NX,NX)⍴TOTWGMPR[;⍬⍴ENX_1][114] [115] :if PreSPASplit[116]     res←0.1 FRANKW PHITOTWGMPR (PHIWPENNRAD,PHIWPENNRAN,PHIWPENNRAL,PHIWPENNRA4,PHIGMPR,[0.1]PHIGMP)[117]     temp←res[;;⎕io  ] CDIV ⍉(NX,NX)⍴PHIWPENNRAN[118]     :for idx :in ⍳NX-SNX[119]         PHIWPENSPA[⎕io  ;⎕io;;;;;idx;]←PHIWARNRA[⎕io  ;⎕io;;;;;idx]∘.×temp[idx;][120]     :endfor[121]     temp←res[;;⎕io+1] CDIV ⍉(NX,NX)⍴PHIWPENNRAD[122]     :for idx :in ⍳NX-SNX[123]         PHIWPENSPA[⎕io+1;⎕io;;;;;idx;]←PHIWARNRA[⎕io+1;⎕io;;;;;idx]∘.×temp[idx;][124]     :endfor[125]     temp←res[;;⎕io+2] CDIV ⍉(NX,NX)⍴PHIWPENNRAL[126]     :for idx :in ⍳NX-SNX[127]         PHIWPENSPA[⎕io+2;⎕io;;;;;idx;]←PHIWARNRA[⎕io+2;⎕io;;;;;idx]∘.×temp[idx;][128]     :endfor[129]     temp←res[;;⎕io+3] CDIV ⍉(NX,NX)⍴PHIWPENNRA4[130]     :for idx :in ⍳NX-SNX[131]         PHIWPENSPA[⎕io+3;⎕io;;;;;idx;]←PHIWARNRA[⎕io+3;⎕io;;;;;idx]∘.×temp[idx;][132]     :endfor[133] ⍝⌿⍝    :if 0 ⍝ test[134] ⍝⌿⍝        PHITWSPA←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]+/[⎕io+7]PHIWPENSPA[135] ⍝⌿⍝        AUDIT '1842' ⋄ AUDIT '1843'[136] ⍝⌿⍝    :endif[137] :else[138]     ∆A←'1810' ⋄ ∆B←'1815' ⋄ ∆C←'1820' ⋄ ∆D←'1821'[139]     res←0 FRANK PHIWPENNRAD,PHIWPENNRAN,PHIWPENNRAL,PHIWPENNRA4,PHIGMPR,[0.1]PHIGMP[140]     PHIWPENSPA[⎕io  ;⎕io;;;;;]←PHIWARNRA[⎕io  ;⎕io;;;;;]×[4]res[;⎕io  ] CDIV PHIWPENNRAN[141]     PHIWPENSPA[⎕io+1;⎕io;;;;;]←PHIWARNRA[⎕io+1;⎕io;;;;;]×[4]res[;⎕io+1] CDIV PHIWPENNRAD[142]     PHIWPENSPA[⎕io+2;⎕io;;;;;]←PHIWARNRA[⎕io+2;⎕io;;;;;]×[4]res[;⎕io+2] CDIV PHIWPENNRAL[143]     PHIWPENSPA[⎕io+3;⎕io;;;;;]←PHIWARNRA[⎕io+3;⎕io;;;;;]×[4]res[;⎕io+3] CDIV PHIWPENNRA4[144] :endif[145] [146] ⍝ Do partial totals[147] PHITPENNRA ← +/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIPENNRA[148] PHITWARNRA ← +/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIWARNRA[149] PHITPENSPA ← +/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIPENSPA[150] PHITWPENSPA←(+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIWPENSPA)⍝ MultiDimMult ~×PHIMYBen    ∇
+    ∇ PHIFINPROC;PHIPENSPA;PHIWPENSPA;T;WT;temp;res;idx;escfact1;escfact2;escfact6;escfact8;Wescfact1;Wescfact2;Wescfact6;Wescfact8;PHIGMPR;PHIGMP;PHITOTWGMPR;∆A;∆B;∆C;∆D
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Processing Pensions from NRA and SPA
+[3]   
+[4]   ⍝ Retirement pensions from NRA
+[5]   PHIPENNRA←PHIERACCPEN-PHICOMPEN
+[6]   :if WARCOMind
+[7]       :if ClntCode=3 ⋄ PHIWARNRA←PHISERACCPEN
+[8]       :else          ⋄ PHIWARNRA←WARFRAC∆l×PHIERACCPEN
+[9]       :endif
+[10]  :else
+[11]      :if ClntCode=3 ⋄ PHIWARNRA←PHISERACCPEN×PHIPENNRA CDIV PHIERACCPEN
+[12]      :else          ⋄ PHIWARNRA←WARFRAC∆l×PHIPENNRA
+[13]      :endif
+[14]  :endif
+[15]  ⍝ Select Retirement Benefits at NRA
+[16]   PHICASH← PHICASH[;⍬⍴ENX_1]
+[17]  PHIFCASH←PHIFCASH[;⍬⍴ENX_1]
+[18]  PHIGCASH←PHIGCASH[;⍬⍴ENX_1]
+[19]  :if sepComCot
+[20]      comPHICASH← comPHICASH[;⍬⍴ENX_1] ⋄ comPHIFCASH←comPHIFCASH[;⍬⍴ENX_1] ⋄ comPHIGCASH←comPHIGCASH[;⍬⍴ENX_1]
+[21]      cotPHICASH← cotPHICASH[;⍬⍴ENX_1] ⋄ cotPHIFCASH←cotPHIFCASH[;⍬⍴ENX_1] ⋄ cotPHIGCASH←cotPHIGCASH[;⍬⍴ENX_1]
+[22]      :if splitCombyPI
+[23]           splitPHICASHN← splitPHICASHN[;⍬⍴ENX_1] ⋄  splitPHICASHD← splitPHICASHD[;⍬⍴ENX_1]
+[24]           splitPHICASHL← splitPHICASHL[;⍬⍴ENX_1] ⋄  splitPHICASH4← splitPHICASH4[;⍬⍴ENX_1]
+[25]          splitPHIFCASHN←splitPHIFCASHN[;⍬⍴ENX_1] ⋄ splitPHIFCASHD←splitPHIFCASHD[;⍬⍴ENX_1]
+[26]          splitPHIFCASHL←splitPHIFCASHL[;⍬⍴ENX_1] ⋄ splitPHIFCASH4←splitPHIFCASH4[;⍬⍴ENX_1]
+[27]          PHIUCASH∆N←PHIUCASH∆N[;⍬⍴ENX_1] ⋄ PHIUCASH∆D←PHIUCASH∆D[;⍬⍴ENX_1] ⋄ PHIUCASH∆L←PHIUCASH∆L[;⍬⍴ENX_1] ⋄ PHIUCASH∆4←PHIUCASH∆4[;⍬⍴ENX_1]
+[28]      :endif
+[29]  :endif
+[30]  
+[31]  PHIPENNRA←PHIPENNRA[;;;;;;;⍬⍴ENX_1]
+[32]  PHIWARNRA←PHIWARNRA[;;;;;;;⍬⍴ENX_1]
+[33]  
+[34]  ⍝⍝⍝ PHIPENNRA←PHIPreNRA PHISelectRB PHIPENNRA
+[35]  ⍝⍝⍝ PHIWARNRA←PHIPreNRA PHISelectRB PHIWARNRA
+[36]  
+[37]  escfact1←           1⌈DYNRAT1[⎕io+2×term+0⌈XS -↑X]  CDIV DYNRAT1[⎕io+2×term+0⌈NRA-↑X]
+[38]  escfact2←           1⌈DYNRAT2[⎕io+2×term+0⌈XS -↑X]  CDIV DYNRAT2[⎕io+2×term+0⌈NRA-↑X]
+[39]  escfact6←           1⌈DYNRAT3[⎕io+2×term+0⌈XS -↑X]  CDIV DYNRAT3[⎕io+2×term+0⌈NRA-↑X]
+[40]  escfact8←           1⌈DYNRAT4[⎕io+2×term+0⌈XS -↑X]  CDIV DYNRAT4[⎕io+2×term+0⌈NRA-↑X]
+[41]  Wescfact1←PreSPAmat×1⌈DYNRAT1[⎕io+2×term+0⌈XMP-↑X]∘.CDIV DYNRAT1[⎕io+2×term+NX⍴0⌈NRA-↑X]
+[42]  Wescfact2←PreSPAmat×1⌈DYNRAT2[⎕io+2×term+0⌈XMP-↑X]∘.CDIV DYNRAT2[⎕io+2×term+NX⍴0⌈NRA-↑X]
+[43]  Wescfact6←PreSPAmat×1⌈DYNRAT3[⎕io+2×term+0⌈XMP-↑X]∘.CDIV DYNRAT3[⎕io+2×term+NX⍴0⌈NRA-↑X]
+[44]  Wescfact8←PreSPAmat×1⌈DYNRAT4[⎕io+2×term+0⌈XMP-↑X]∘.CDIV DYNRAT4[⎕io+2×term+NX⍴0⌈NRA-↑X]
+[45]  
+[46]  ⍝ Retirement pension from SPA
+[47]  PHIPENSPA ←(⍴PHIPENNRA)⍴0 ⍝ Initialise
+[48]  ⍝ Fill with benefits before franking
+[49]  PHIPENSPA[⎕io  ;;;;;;]←PHIPENNRA[⎕io  ;;;;;;]×[⎕io+5]escfact2
+[50]  PHIPENSPA[⎕io+1;;;;;;]←PHIPENNRA[⎕io+1;;;;;;]×[⎕io+5]escfact1
+[51]  PHIPENSPA[⎕io+2;;;;;;]←PHIPENNRA[⎕io+2;;;;;;]×[⎕io+5]escfact6
+[52]  PHIPENSPA[⎕io+3;;;;;;]←PHIPENNRA[⎕io+3;;;;;;]×[⎕io+5]escfact8
+[53]  :if PreSPASplit
+[54]      PHIWPENSPA←((⍴PHIPENNRA),NX)⍴0
+[55]      :for idx :in ⍳NX-SNX
+[56]          PHIWPENSPA[⎕io  ;;;;;;idx;]←PHIWARNRA[⎕io  ;;;;;;idx]∘.×Wescfact2[;idx]
+[57]          PHIWPENSPA[⎕io+1;;;;;;idx;]←PHIWARNRA[⎕io+1;;;;;;idx]∘.×Wescfact1[;idx]
+[58]          PHIWPENSPA[⎕io+2;;;;;;idx;]←PHIWARNRA[⎕io+2;;;;;;idx]∘.×Wescfact6[;idx]
+[59]          PHIWPENSPA[⎕io+3;;;;;;idx;]←PHIWARNRA[⎕io+3;;;;;;idx]∘.×Wescfact8[;idx]
+[60]      :endfor
+[61]  :else
+[62]      PHIWPENSPA←(⍴PHIPENNRA)⍴0
+[63]      PHIWPENSPA[⎕io  ;;;;;;]←PHIWARNRA[⎕io  ;;;;;;]×[⎕io+5]escfact2
+[64]      PHIWPENSPA[⎕io+1;;;;;;]←PHIWARNRA[⎕io+1;;;;;;]×[⎕io+5]escfact1
+[65]      PHIWPENSPA[⎕io+2;;;;;;]←PHIWARNRA[⎕io+2;;;;;;]×[⎕io+5]escfact6
+[66]      PHIWPENSPA[⎕io+3;;;;;;]←PHIWARNRA[⎕io+3;;;;;;]×[⎕io+5]escfact8
+[67]  :endif
+[68]  
+[69]  ⍝ Frank first tranche
+[70]  T←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIPENNRA
+[71]  PHIPENNRAN←T[⎕io  ;⎕io;]
+[72]  PHIPENNRAD←T[⎕io+1;⎕io;]
+[73]  PHIPENNRAL←T[⎕io+2;⎕io;]
+[74]  PHIPENNRA4←T[⎕io+3;⎕io;]
+[75]  WT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIWARNRA
+[76]  PHIWPENNRAN←WT[⎕io  ;⎕io;]
+[77]  PHIWPENNRAD←WT[⎕io+1;⎕io;]
+[78]  PHIWPENNRAL←WT[⎕io+2;⎕io;]
+[79]  PHIWPENNRA4←WT[⎕io+3;⎕io;]
+[80]  ⍝⌿⍝ :if 0 ⍝ test
+[81]  ⍝⌿⍝    PHICOMPENNDYN←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io  ;;]
+[82]  ⍝⌿⍝    PHICOMPENDYN ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+1;;]
+[83]  ⍝⌿⍝    PHICOMPENLDYN←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+2;;]
+[84]  ⍝⌿⍝    PHICOMPENDYN4←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+3;;]
+[85]  ⍝⌿⍝    PHIFCOMPENNDYN←(+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io  ;⎕io+2;;]
+[86]  ⍝⌿⍝    PHIFCOMPENDYN ←(+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+1;⎕io+2;;]
+[87]  ⍝⌿⍝    PHIFCOMPENLDYN←(+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+2;⎕io+2;;]
+[88]  ⍝⌿⍝    PHIFCOMPENDYN4←(+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHICOMPEN)[⎕io+3;⎕io+2;;]
+[89]  ⍝⌿⍝    AUDIT '1600' ⋄ AUDIT '1610' ⋄ AUDIT '1620' ⋄ AUDIT '1625'
+[90]  ⍝⌿⍝    :if ClntCode=3 ⋄ AUDIT '1630b' ⋄ AUDIT '1631b'
+[91]  ⍝⌿⍝    :else          ⋄ AUDIT '1630a' ⋄ AUDIT '1631a'
+[92]  ⍝⌿⍝    :endif
+[93]  ⍝⌿⍝    AUDIT '1800'
+[94]  ⍝⌿⍝ :endif
+[95]  ⍝ Replace first tranch of PENSPA with post-franking figures
+[96]  ⍝⍝⍝ ∆A←'1810' ⋄ ∆B←'1815' ⋄ ∆C←'1820' ⋄ ∆D←'1821'
+[97]  
+[98]  PHIGMPR   ←NX⍴   GMPR[⍬⍴ENX_1] ⋄ PHIGMP     ←NX⍴    GMP [⍬⍴ENX_1]
+[99]  PHIPreGMPR←NX⍴PreGMPR[⍬⍴ENX_1] ⋄ PHIPostGMPR←NX⍴PostGMPR[⍬⍴ENX_1]
+[100] 
+[101] res←0.1 FRANK PHIPENNRAD,PHIPENNRAN,PHIPENNRAL,PHIPENNRA4,PHIGMPR,[0.1]PHIGMP
+[102] PHIPENSPA[⎕io  ;⎕io;;;;;]←PHIPENNRA[⎕io  ;⎕io;;;;;]×[4]res[;⎕io  ] CDIV PHIPENNRAN
+[103] PHIPENSPA[⎕io+1;⎕io;;;;;]←PHIPENNRA[⎕io+1;⎕io;;;;;]×[4]res[;⎕io+1] CDIV PHIPENNRAD
+[104] PHIPENSPA[⎕io+2;⎕io;;;;;]←PHIPENNRA[⎕io+2;⎕io;;;;;]×[4]res[;⎕io+2] CDIV PHIPENNRAL
+[105] PHIPENSPA[⎕io+3;⎕io;;;;;]←PHIPENNRA[⎕io+3;⎕io;;;;;]×[4]res[;⎕io+3] CDIV PHIPENNRA4
+[106] ⍝⌿⍝ :if 0 ⍝ test
+[107] ⍝⌿⍝    PHITPSPA←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIPENSPA
+[108] ⍝⌿⍝    AUDIT '1822' ⋄ AUDIT '1823'
+[109] ⍝⌿⍝ :endif
+[110] ⍝⍝⍝ ∆A←'1830' ⋄ ∆B←'1835' ⋄ ∆C←'1840' ⋄ ∆D←'1841'
+[111] 
+[112] PHIGMPR←NX⍴WGMPR[⍬⍴ENX_1] ⋄ PHIGMP←NX⍴WGMP[⍬⍴ENX_1]
+[113] PHITOTWGMPR←⍉(NX,NX)⍴TOTWGMPR[;⍬⍴ENX_1]
+[114] 
+[115] :if PreSPASplit
+[116]     res←0.1 FRANKW PHITOTWGMPR (PHIWPENNRAD,PHIWPENNRAN,PHIWPENNRAL,PHIWPENNRA4,PHIGMPR,[0.1]PHIGMP)
+[117]     temp←res[;;⎕io  ] CDIV ⍉(NX,NX)⍴PHIWPENNRAN
+[118]     :for idx :in ⍳NX-SNX
+[119]         PHIWPENSPA[⎕io  ;⎕io;;;;;idx;]←PHIWARNRA[⎕io  ;⎕io;;;;;idx]∘.×temp[idx;]
+[120]     :endfor
+[121]     temp←res[;;⎕io+1] CDIV ⍉(NX,NX)⍴PHIWPENNRAD
+[122]     :for idx :in ⍳NX-SNX
+[123]         PHIWPENSPA[⎕io+1;⎕io;;;;;idx;]←PHIWARNRA[⎕io+1;⎕io;;;;;idx]∘.×temp[idx;]
+[124]     :endfor
+[125]     temp←res[;;⎕io+2] CDIV ⍉(NX,NX)⍴PHIWPENNRAL
+[126]     :for idx :in ⍳NX-SNX
+[127]         PHIWPENSPA[⎕io+2;⎕io;;;;;idx;]←PHIWARNRA[⎕io+2;⎕io;;;;;idx]∘.×temp[idx;]
+[128]     :endfor
+[129]     temp←res[;;⎕io+3] CDIV ⍉(NX,NX)⍴PHIWPENNRA4
+[130]     :for idx :in ⍳NX-SNX
+[131]         PHIWPENSPA[⎕io+3;⎕io;;;;;idx;]←PHIWARNRA[⎕io+3;⎕io;;;;;idx]∘.×temp[idx;]
+[132]     :endfor
+[133] ⍝⌿⍝    :if 0 ⍝ test
+[134] ⍝⌿⍝        PHITWSPA←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]+/[⎕io+7]PHIWPENSPA
+[135] ⍝⌿⍝        AUDIT '1842' ⋄ AUDIT '1843'
+[136] ⍝⌿⍝    :endif
+[137] :else
+[138]     ∆A←'1810' ⋄ ∆B←'1815' ⋄ ∆C←'1820' ⋄ ∆D←'1821'
+[139]     res←0 FRANK PHIWPENNRAD,PHIWPENNRAN,PHIWPENNRAL,PHIWPENNRA4,PHIGMPR,[0.1]PHIGMP
+[140]     PHIWPENSPA[⎕io  ;⎕io;;;;;]←PHIWARNRA[⎕io  ;⎕io;;;;;]×[4]res[;⎕io  ] CDIV PHIWPENNRAN
+[141]     PHIWPENSPA[⎕io+1;⎕io;;;;;]←PHIWARNRA[⎕io+1;⎕io;;;;;]×[4]res[;⎕io+1] CDIV PHIWPENNRAD
+[142]     PHIWPENSPA[⎕io+2;⎕io;;;;;]←PHIWARNRA[⎕io+2;⎕io;;;;;]×[4]res[;⎕io+2] CDIV PHIWPENNRAL
+[143]     PHIWPENSPA[⎕io+3;⎕io;;;;;]←PHIWARNRA[⎕io+3;⎕io;;;;;]×[4]res[;⎕io+3] CDIV PHIWPENNRA4
+[144] :endif
+[145] 
+[146] ⍝ Do partial totals
+[147] PHITPENNRA ← +/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIPENNRA
+[148] PHITWARNRA ← +/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIWARNRA
+[149] PHITPENSPA ← +/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIPENSPA
+[150] PHITWPENSPA←(+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHIWPENSPA)⍝ MultiDimMult ~×PHIMYBen
+    ∇

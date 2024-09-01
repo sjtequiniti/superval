@@ -1,1 +1,27 @@
-    ∇ SUMMREC←type FORMAT∆OUT Z;res[1]   ⍝ DEFWIN.sf#3[2]   ⍝ A blend of Aggregate function and LINE∆MEMB from DOS EPROGS #24[3]   ⍝[4]   ⍝[5]   ⍝ V2.50u RE 1/11/93 Standardised[6]   [7]   SUMMREC←2 180 ⍴' '[8]   ⍝ Calculate a few Numbers for Standard Output[9]   res←5↑Z[7;0],(Z[5;0]-+/Z[6 7;0]),Z[6;0] ⍝ ContPer Ret GMP, Pension & Cash[10]  res[3+⍳2]←(Z[5;1]-Z[6;1]),Z[6;1]⍝ ContPer Death Pension & Cash[11]  res←res,+/res ⍝Total[12]  :if aggopt[1] ⍝ Stop crash[13]      NRAPUP←0[14]  :endif[15]      :select type[16]      :case 0  ⍝ Individual Member[17]          SUMMREC[0;]←180↑((5↑NAME),(,'I3' ⎕FMT X0),,'I3' ⎕FMT NOM),,'11CM<->I12,CM<->I51' ⎕FMT res,NRAPUP[18]          TOTNRAPUP←TOTNRAPUP+NRAPUP[19]          PUPBYAGE←PUPBYAGE+X0×NRAPUP ⍝ output in PRINTANAL[20]      :case 2  ⍝ Total[21]          SUMMREC←180↑('TOTS:'),(,'I6' ⎕fmt Z[1;0]),,'11CM<->I12,CM<->I51' ⎕FMT res,TOTNRAPUP[22]      :endselect[23]  :if csvind[24]      EXTRACT∆CSV type[25]  :endif    ∇
+    ∇ SUMMREC←type FORMAT∆OUT Z;res
+[1]   ⍝ DEFWIN.sf#3
+[2]   ⍝ A blend of Aggregate function and LINE∆MEMB from DOS EPROGS #24
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   
+[7]   SUMMREC←2 180 ⍴' '
+[8]   ⍝ Calculate a few Numbers for Standard Output
+[9]   res←5↑Z[7;0],(Z[5;0]-+/Z[6 7;0]),Z[6;0] ⍝ ContPer Ret GMP, Pension & Cash
+[10]  res[3+⍳2]←(Z[5;1]-Z[6;1]),Z[6;1]⍝ ContPer Death Pension & Cash
+[11]  res←res,+/res ⍝Total
+[12]  :if aggopt[1] ⍝ Stop crash
+[13]      NRAPUP←0
+[14]  :endif
+[15]      :select type
+[16]      :case 0  ⍝ Individual Member
+[17]          SUMMREC[0;]←180↑((5↑NAME),(,'I3' ⎕FMT X0),,'I3' ⎕FMT NOM),,'11CM<->I12,CM<->I51' ⎕FMT res,NRAPUP
+[18]          TOTNRAPUP←TOTNRAPUP+NRAPUP
+[19]          PUPBYAGE←PUPBYAGE+X0×NRAPUP ⍝ output in PRINTANAL
+[20]      :case 2  ⍝ Total
+[21]          SUMMREC←180↑('TOTS:'),(,'I6' ⎕fmt Z[1;0]),,'11CM<->I12,CM<->I51' ⎕FMT res,TOTNRAPUP
+[22]      :endselect
+[23]  :if csvind
+[24]      EXTRACT∆CSV type
+[25]  :endif
+    ∇

@@ -1,0 +1,92 @@
+    ∇ PROCESS∆BENS TYPE;Age∆pp;RetAge∆pp;End∆pp;GP∆pp;PPFRatio∆pp;Identifier∆pp;Comment∆pp;ExitProbs∆pp;Start∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;ProRate∆pp;Inc∆pp;ProRate∆l;RevOnly∆pp;IncOnly∆pp;type;IsAccrued;WaitPeriod∆pp;AltABno∆pp;isNPCR;ProRate∆RServ;ProRate∆DServ;ProRate∆IServ;ProRate∆SelfIns;ProRate∆CARE;ProRate∆RNoCap;ProRate∆INoCap
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Process all Benefit Functions (inc user-defined)
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   
+[7]   ⍝ "Default" Pension Projection Variables
+[8]   Upin∆pp←0 ⍝ "Default" to not underpinned
+[9]   SL∆pp←FSL∆pp←Con∆pp←FCon∆pp←⍬ ⍝ "Default" all benefits to "nothing"
+[10]  ProRate∆l←ProRate∆pp←⍬ ⍝ "Default" to no Future Service benefit
+[11]  Inc∆pp←⍬ ⍝ "Default" increase to "nothing"
+[12]  End∆pp←GP∆pp←⍬ ⍝ "Default" to Benefits payable for life and No Guarantee Period on Death
+[13]  PPFRatio∆pp←(1+99×ppf)⍴1 ⍝ "Default" PPF ratio
+[14]  Identifier∆pp←'' ⍝ Only used for Independent Slices
+[15]  WaitPeriod∆pp←RevOnly∆pp←IncOnly∆pp←0 ⍝ Only used by Pensioners
+[16]  Comment∆pp←'' ⍝ "Default" to no comment
+[17]  
+[18]  :select TYPE
+[19]  :case 'Exit'
+[20]      type←'E' ⋄ IsAccrued←isNPCR←0
+[21]  
+[22]      ⍝ "Default" Pension Projection Variables for Exit Benefits
+[23]      :if ~IsDeferred ⍝ Actives Pro-ration vectors
+[24]          ProRate∆l←PM,TM⌈¯1↑PM
+[25]          :if bGAD
+[26]              ProRate∆RServ ←0⌈((   SRVMAXMP+99×CapAccrual)⌊[0]((ENX_1↑MID ProRate∆l                                           ), ¯1     ↓ ENX_1       ↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0] ⍝ New "Default" Service based Proration arrays
+[27]              ProRate∆RNoCap←0⌈(                               ((ENX_1↑MID ProRate∆l                                           ), ¯1     ↓ ENX_1       ↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[28]              ProRate∆IServ ←0⌈(( IHSRVMAXMP+99×CapAccrual)⌊[0] (      MID ProRate∆l                                           )                                  ⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[29]              ProRate∆INoCap←0⌈(                                (      MID ProRate∆l                                           )                                  ⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[30]              ProRate∆DServ ←0⌈((DISSRVMAXMP+99×CapAccrual)⌊[0] (      MID ProRate∆l                                           )                                  ⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[31]          :else
+[32]              ProRate∆RServ ←0⌈((   SRVMAXMP+99×CapAccrual)⌊[0]((ENX_1↑MID ProRate∆l⌊(   SRVMAXMP,¯1↑   SRVMAXMP)+99×CapAccrual),(-ENX≠1)↓(ENX_1+ENX=1)↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0] ⍝ New "Default" Service based Proration arrays
+[33]              ProRate∆RNoCap←0⌈(                               ((ENX_1↑MID ProRate∆l                                           ),(-ENX≠1)↓(ENX_1+ENX=1)↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[34]              ProRate∆IServ ←0⌈(( IHSRVMAXMP+99×CapAccrual)⌊[0]((ENX_1↑MID ProRate∆l⌊( IHSRVMAXMP,¯1↑ IHSRVMAXMP)+99×CapAccrual),(-ENX≠1)↓(ENX_1+ENX=1)↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[35]              ProRate∆INoCap←0⌈(                               ((ENX_1↑MID ProRate∆l                                           ),(-ENX≠1)↓(ENX_1+ENX=1)↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[36]              ProRate∆DServ ←0⌈((DISSRVMAXMP+99×CapAccrual)⌊[0]((ENX_1↑MID ProRate∆l⌊(DISSRVMAXMP,¯1↑DISSRVMAXMP)+99×CapAccrual),(-ENX≠1)↓(ENX_1+ENX=1)↓ProRate∆l)⌊[0](NX,NX+1)⍴ProRate∆l)-ProRate∆l[0]
+[37]          :endif
+[38]          ProRate∆SelfIns←(⍳NX)∘.<⍳NX+1
+[39]          ProRate∆CARE←0
+[40]      :endif
+[41]  
+[42]      RetAge∆pp←Start∆pp←Age∆pp←,X0⌈(ENX_1↑XMP),ENX_1↓X ⍝ Usual age at "exit" (exception is Public Service GMP)
+[43]      ExitProbs∆pp←PROBS[;0] ⍝ Probability of Retirement
+[44]      RET∆BENEFIT
+[45]  
+[46]      :if ~IsDeferred ⋄ :andif uk=1 ⍝ Do IH before Death for PHI
+[47]          ⍝ "Default" Pension Projection Variables for Ill-Health/Disablement Benefits
+[48]          ExitProbs∆pp←PROBS[;2] ⍝ Probability of Ill-Health/Disablement
+[49]          DIS∆BENEFIT
+[50]      :endif
+[51]  
+[52]      ⍝ "Default" Pension Projection Variables for Death Benefits
+[53]      ExitProbs∆pp←PROBS[;1]×(ENX_1,LNX+1)/1 0 ⍝ Probability of Death
+[54]      DEATH∆BENEFIT
+[55]  
+[56]      :if ~IsDeferred
+[57]          :if uk≠1
+[58]              ⍝ "Default" Pension Projection Variables for Ill-Health/Disablement Benefits
+[59]              ExitProbs∆pp←PROBS[;2] ⍝ Probability of Ill-Health/Disablement
+[60]              DIS∆BENEFIT
+[61]          :endif
+[62]  
+[63]          ⍝ "Default" Pension Projection Variables for Leaving/Withdrawal Benefits
+[64]          ExitProbs∆pp←PROBS[;3] ⍝ Probability of Leaving/Withdrawal
+[65]          WITH∆BENEFIT
+[66]      :endif
+[67]  
+[68]      :if transfers
+[69]          TRANS∆BENEFIT
+[70]      :endif
+[71]  
+[72]      ⎕IO←0
+[73]      ⍝ Ensure that Total Serv Benefits have the correct shape
+[74]  ⍝⍝⍝    :if uk≠1 ⋄ ⍝ Ultimately Only required for Australia/SA Pen 5
+[75]          RESHAPE
+[76]  ⍝⍝⍝    :endif
+[77]  :case 'Accrued'
+[78]      →(~PROPT)/0
+[79]      type←'A' ⋄ IsAccrued←1 ⋄ isNPCR←bencap ⋄ AltABno∆pp←''
+[80]  
+[81]      ⍝ "Default" Pension Projection Variables for Accrued Benefits
+[82]      ExitProbs∆pp←NX↑ENX↑tPx ⍝ Probability of Survival
+[83]      RetAge∆pp←NRA⌈Start∆pp←Age∆pp←,X0⌈X ⍝ Usual age at "exit" (exceptions are Public Service GMP/PPF)
+[84]      ACC∆BENEFIT ⋄ ⎕IO←0
+[85]  
+[86]      :if uk=0 ⍝ Ensure Correct shape them if Australia
+[87]          VAB1←NX↑VAB1 ⋄ VAB2←NX↑VAB2 ⋄ VAB3←NX↑VAB3
+[88]          VAB4←NX↑VAB4 ⋄ VAB5←NX↑VAB5 ⋄ VAB6←NX↑VAB6 ⋄ VAB7←NX↑VAB7
+[89]      :endif
+[90]  :endselect
+    ∇

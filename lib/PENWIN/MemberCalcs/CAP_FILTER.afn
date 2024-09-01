@@ -1,1 +1,47 @@
-    ∇ CAP∆FILTER CapNRA;MAXNRA;TOTPEN;TOTCASH;ANP∆l;capcalcidx;capidx;captot;capratio;capidxER;capcalcidxER;TOTPENER;TOTCASHER;ERAGE;captotER;capratioER;adj[1]   ⍝ PENWIN.sf#3[2]   ⍝[3]   ⍝ Extend variables to include GMPs if standalone[4]   [5]   ⍝⍝⍝ ⍝⍀⍝ FIXME[6]   [7]   ANP∆l←ANP,(~PUPRDN)×GMP0,GMPE0[8]   adj←ADJ,preADJ,postADJ[9]   captotER←captot←0[10]  [11]  ⍝ Check which pensions should be included in the calculation[12]  :if 0≠+/capidx←0≠ANP∆l←ANP∆l×∣×adj ⍝ Non zero data items[13]      capidx←(,Xe<CapNRA)^NotSpouse^capidx ⍝ Eliminate where NRA is passed or if Spouse[14]    ⍝ First check ER benefits[15]      ERAGE←⍬⍴⌊Xe[16]      capidxER←capidx^Xe>BAGE,SPA,SPA[17]      capcalcidxER←capidxER^CapInclude[18]      TOTPENER←+/(ANP∆l×adj)×capcalcidxER×penind,1,1[19]      TOTCASHER←+/+/(ANP∆l×adj CDIV (PPFCashFac[ERAGE] (PPFCashFac2[ERAGE]))[(PPFPAYINC∊ 2 3),0,0])×capcalcidxER×(~penind),0,0[20]      captotER←(TOTPENER+TOTCASHER) CDIV ,PPFCAP×PPFCapAdj[ERAGE][21]      capratioER←1⌊1 CDIV captotER[22]      ANP∆l[WHERE capidxER]←ANP∆l[WHERE capidxER]×0.9  ⍝ 90% applied if in capidxER[23]      ANP∆l[WHERE capcalcidxER]←ANP∆l[WHERE capcalcidxER]×capratioER  ⍝ cap applied if in capcalcidx[24]    ⍝ Now do rest[25]      :if 0≠+/capidx←capidx^~capidxER[26]          MAXNRA←⌈/capidx×,CapNRA ⍝ Maximium where there is a benefit[27]          capcalcidx←capidx^CapInclude[28]          :if capratio←(⍬⍴captotER)<1[29]              TOTPEN←+/(ANP∆l×adj)×capcalcidx×penind,1,1[30]              TOTCASH←+/+/(ANP∆l×adj CDIV (PPFCashFac[MAXNRA] (PPFCashFac2[MAXNRA]))[(PPFPAYINC∊2 3),0,0])×capcalcidx×(~penind),0,0[31]              captot←(TOTPEN+TOTCASH) CDIV (1-⍬⍴captotER)×,PPFCAP×PPFCapAdj[MAXNRA][32]              :if captot<0.001 ⍝ Problem with zero total and rounding error[33]                  captot←1[34]              :endif[35]              capratio←1⌊1 CDIV captot[36]          :endif[37]          ANP∆l[WHERE capidx]←ANP∆l[WHERE capidx]×0.9  ⍝ 90% applied if in capidx[38]          ANP∆l[WHERE capcalcidx]←ANP∆l[WHERE capcalcidx]×capratio  ⍝ cap applied if in capcalcidx[39]      :endif[40]  :endif[41]  [42]   ANP        ←¯2↓ANP∆l[43]  (GMP0 GMPE0)←¯2↑ANP∆l[44]  [45]  capflag←((⍬⍴captotER)≥1)∨captot>1    ∇
+    ∇ CAP∆FILTER CapNRA;MAXNRA;TOTPEN;TOTCASH;ANP∆l;capcalcidx;capidx;captot;capratio;capidxER;capcalcidxER;TOTPENER;TOTCASHER;ERAGE;captotER;capratioER;adj
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝
+[3]   ⍝ Extend variables to include GMPs if standalone
+[4]   
+[5]   ⍝⍝⍝ ⍝⍀⍝ FIXME
+[6]   
+[7]   ANP∆l←ANP,(~PUPRDN)×GMP0,GMPE0
+[8]   adj←ADJ,preADJ,postADJ
+[9]   captotER←captot←0
+[10]  
+[11]  ⍝ Check which pensions should be included in the calculation
+[12]  :if 0≠+/capidx←0≠ANP∆l←ANP∆l×∣×adj ⍝ Non zero data items
+[13]      capidx←(,Xe<CapNRA)^NotSpouse^capidx ⍝ Eliminate where NRA is passed or if Spouse
+[14]    ⍝ First check ER benefits
+[15]      ERAGE←⍬⍴⌊Xe
+[16]      capidxER←capidx^Xe>BAGE,SPA,SPA
+[17]      capcalcidxER←capidxER^CapInclude
+[18]      TOTPENER←+/(ANP∆l×adj)×capcalcidxER×penind,1,1
+[19]      TOTCASHER←+/+/(ANP∆l×adj CDIV (PPFCashFac[ERAGE] (PPFCashFac2[ERAGE]))[(PPFPAYINC∊ 2 3),0,0])×capcalcidxER×(~penind),0,0
+[20]      captotER←(TOTPENER+TOTCASHER) CDIV ,PPFCAP×PPFCapAdj[ERAGE]
+[21]      capratioER←1⌊1 CDIV captotER
+[22]      ANP∆l[WHERE capidxER]←ANP∆l[WHERE capidxER]×0.9  ⍝ 90% applied if in capidxER
+[23]      ANP∆l[WHERE capcalcidxER]←ANP∆l[WHERE capcalcidxER]×capratioER  ⍝ cap applied if in capcalcidx
+[24]    ⍝ Now do rest
+[25]      :if 0≠+/capidx←capidx^~capidxER
+[26]          MAXNRA←⌈/capidx×,CapNRA ⍝ Maximium where there is a benefit
+[27]          capcalcidx←capidx^CapInclude
+[28]          :if capratio←(⍬⍴captotER)<1
+[29]              TOTPEN←+/(ANP∆l×adj)×capcalcidx×penind,1,1
+[30]              TOTCASH←+/+/(ANP∆l×adj CDIV (PPFCashFac[MAXNRA] (PPFCashFac2[MAXNRA]))[(PPFPAYINC∊2 3),0,0])×capcalcidx×(~penind),0,0
+[31]              captot←(TOTPEN+TOTCASH) CDIV (1-⍬⍴captotER)×,PPFCAP×PPFCapAdj[MAXNRA]
+[32]              :if captot<0.001 ⍝ Problem with zero total and rounding error
+[33]                  captot←1
+[34]              :endif
+[35]              capratio←1⌊1 CDIV captot
+[36]          :endif
+[37]          ANP∆l[WHERE capidx]←ANP∆l[WHERE capidx]×0.9  ⍝ 90% applied if in capidx
+[38]          ANP∆l[WHERE capcalcidx]←ANP∆l[WHERE capcalcidx]×capratio  ⍝ cap applied if in capcalcidx
+[39]      :endif
+[40]  :endif
+[41]  
+[42]   ANP        ←¯2↓ANP∆l
+[43]  (GMP0 GMPE0)←¯2↑ANP∆l
+[44]  
+[45]  capflag←((⍬⍴captotER)≥1)∨captot>1
+    ∇

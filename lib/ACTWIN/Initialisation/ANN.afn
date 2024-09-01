@@ -1,1 +1,72 @@
-    ∇ ANN;ALLpvm;EAGE∆l;FB;FBase;GP;GPOlap;HXX∆l;MB;MBase;REV;REVdef;TOP;X;∆;def;i∆l;penmult;pi∆l;pvm∆l;pvmdef∆l;pvmind;x;RXX∆l;QYdef;IXX∆l[1]   ⍝ ACTWIN.sf#2[2]   ⍝[3]   ⍝ Set Annuity Variables[4]   [5]   ⍝ Spouse Demographics[6]   QYdef←(0 0 0,⍳120) Rate∆Create SDPRETAB[7]   HXX∆l←120 OVERTAKE HXX ⍝ Proportion Married[8]   :if varyAge∆ ⋄ ∆←AGEDIF[NRA] ⍝ Spouse's Age Diff at NRA[9]   :else        ⋄ ∆←AGEDIF ⍝ Spouse's Age Diff[10]  :endif[11]  [12]  ⍝ Work out starting ages depending on tables used (for speed)[13]  :if 2=⍴⍴RXX ⋄ RXX∆l←120↑+/(-⍳120)⊖(⍳120)⌽120 120↑RXX[14]  :else       ⋄ RXX∆l←120↑RXX[15]  :endif[16]  RXX∆l[NRA⌊SPA]←1 ⋄ x←NRA∆G⌊+/×\0=RXX∆l[17]  EAGE∆l←NRA∆G⌈LRA⌈SPA ⋄ TOP←120[18]  [19]  def←0 ⋄ REVdef←1 ⍝ Spouse's Death in def.[20]  penmult←(FREQ+¯1+2×MODE)÷2×FREQ[21]  [22]  pi∆l←i∆l←↑pi ⍝ Reinvestment and Interest Rate[23]  pvmdef∆l←1 ⍝ Escalation in deferment[24]  ALLpvm←(↑NDYNINC),(↑DYNINC),(↑B88GMPINC),(↑A88GMPINC),(↑DYNINC3),(↑DYNINC4) ⍝ Escalation in pension[25]  [26]  MB←4 1⍴0[27]  :if ~MORTIMPR∊'N2' ⍝ Member Improved Mortality[28]      :if     MORTIMPR='C' ⋄ MB←3 1⍴CMSL,(zwb CSSL),(zwb CSC)[29]      :elseif MORTIMPR='S' ⋄ MB←(,(1900∣MB)-1900∣BASE)∘.+⍳120[30]      :endif[31]  :endif[32]  [33]  FB←4 1⍴0[34]  :if ~(sMORTIMPR←↑sMORTIMPR)∊'N2' ⍝ Spouse Improved Mortality[35]      :if     sMORTIMPR='C' ⋄ FB←3 1⍴(zwb sCMSL),(zwb sCSSL),(zwb sCSC)[36]      :elseif sMORTIMPR='S' ⋄ FB←(,(1900∣FB)-1900∣zwb sBASE)∘.+⍳120[37]      :endif[38]  :endif[39]  ⍝[40]  ⍝ Single Life Annuity[41]  GP←GPeriod[42]  REV←0 ⍝ Set at 0 initially, will be 1 when calculating spouse's pensions[43]  pvmind← 0 0[44]  GPOlap←0[45]  MBase←MB[0;][46]  FBase←0[47]  X←x ⋄ pvm∆l←ALLpvm[0] ⋄ RA1XXA←RA1XX←120↑(x⍴0),P∆CALCS[48]  X←x ⋄ pvm∆l←ALLpvm[1] ⋄ RA2XXA←RA2XX←120↑(x⍴0),P∆CALCS[49]  X←x ⋄ pvm∆l←ALLpvm[2] ⋄ RA3XXA←RA3XX←120↑(x⍴0),P∆CALCS[50]  X←x ⋄ pvm∆l←ALLpvm[3] ⋄ RA4XXA←RA4XX←120↑(x⍴0),P∆CALCS[51]  X←x ⋄ pvm∆l←ALLpvm[4] ⋄ RA6XXA←RA6XX←120↑(x⍴0),P∆CALCS[52]  X←x ⋄ pvm∆l←ALLpvm[5] ⋄ RA7XXA←RA7XX←120↑(x⍴0),P∆CALCS[53]  [54]  ⍝⍝⍝ FIXME - shouldn't this be Leaving decrement??[55]  ⍝ Spouse's Reversionary Annuity on normal retirement/Leaving[56]  :if 2=⍴⍴IXX ⋄ IXX∆l←120↑+/(-⍳120)⊖(⍳120)⌽120 120↑IXX ⍝ Work out starting age for Ill-Health Benefits[57]  :else       ⋄ IXX∆l←120↑IXX[58]  :endif[59]  x←x⌊NRA⌊(×IXX∆l)⍳1[60]  REV←1[61]  pvmind← 1 0 ⍝ 1 0 for spouse's pension only[62]  GPOlap←GPOverlap[63]  MBase←MB[2;][64]  FBase←FB[2;][65]  X←x ⋄ pvm∆l←ALLpvm[0] ⋄ LA1XXA←LA1XX←120↑(x⍴1),P∆CALCS[66]  X←x ⋄ pvm∆l←ALLpvm[1] ⋄ LA2XXA←LA2XX←120↑(x⍴1),P∆CALCS[67]  X←x ⋄ pvm∆l←ALLpvm[2] ⋄ LA3XXA←LA3XX←120↑(x⍴1),P∆CALCS[68]  X←x ⋄ pvm∆l←ALLpvm[3] ⋄ LA4XXA←LA4XX←120↑(x⍴1),P∆CALCS[69]  X←x ⋄ pvm∆l←ALLpvm[4] ⋄ LA10XXA←LA10XX←120↑(x⍴1),P∆CALCS[70]  X←x ⋄ pvm∆l←ALLpvm[5] ⋄ LA12XXA←LA12XX←120↑(x⍴1),P∆CALCS    ∇
+    ∇ ANN;ALLpvm;EAGE∆l;FB;FBase;GP;GPOlap;HXX∆l;MB;MBase;REV;REVdef;TOP;X;∆;def;i∆l;penmult;pi∆l;pvm∆l;pvmdef∆l;pvmind;x;RXX∆l;QYdef;IXX∆l
+[1]   ⍝ ACTWIN.sf#2
+[2]   ⍝
+[3]   ⍝ Set Annuity Variables
+[4]   
+[5]   ⍝ Spouse Demographics
+[6]   QYdef←(0 0 0,⍳120) Rate∆Create SDPRETAB
+[7]   HXX∆l←120 OVERTAKE HXX ⍝ Proportion Married
+[8]   :if varyAge∆ ⋄ ∆←AGEDIF[NRA] ⍝ Spouse's Age Diff at NRA
+[9]   :else        ⋄ ∆←AGEDIF ⍝ Spouse's Age Diff
+[10]  :endif
+[11]  
+[12]  ⍝ Work out starting ages depending on tables used (for speed)
+[13]  :if 2=⍴⍴RXX ⋄ RXX∆l←120↑+/(-⍳120)⊖(⍳120)⌽120 120↑RXX
+[14]  :else       ⋄ RXX∆l←120↑RXX
+[15]  :endif
+[16]  RXX∆l[NRA⌊SPA]←1 ⋄ x←NRA∆G⌊+/×\0=RXX∆l
+[17]  EAGE∆l←NRA∆G⌈LRA⌈SPA ⋄ TOP←120
+[18]  
+[19]  def←0 ⋄ REVdef←1 ⍝ Spouse's Death in def.
+[20]  penmult←(FREQ+¯1+2×MODE)÷2×FREQ
+[21]  
+[22]  pi∆l←i∆l←↑pi ⍝ Reinvestment and Interest Rate
+[23]  pvmdef∆l←1 ⍝ Escalation in deferment
+[24]  ALLpvm←(↑NDYNINC),(↑DYNINC),(↑B88GMPINC),(↑A88GMPINC),(↑DYNINC3),(↑DYNINC4) ⍝ Escalation in pension
+[25]  
+[26]  MB←4 1⍴0
+[27]  :if ~MORTIMPR∊'N2' ⍝ Member Improved Mortality
+[28]      :if     MORTIMPR='C' ⋄ MB←3 1⍴CMSL,(zwb CSSL),(zwb CSC)
+[29]      :elseif MORTIMPR='S' ⋄ MB←(,(1900∣MB)-1900∣BASE)∘.+⍳120
+[30]      :endif
+[31]  :endif
+[32]  
+[33]  FB←4 1⍴0
+[34]  :if ~(sMORTIMPR←↑sMORTIMPR)∊'N2' ⍝ Spouse Improved Mortality
+[35]      :if     sMORTIMPR='C' ⋄ FB←3 1⍴(zwb sCMSL),(zwb sCSSL),(zwb sCSC)
+[36]      :elseif sMORTIMPR='S' ⋄ FB←(,(1900∣FB)-1900∣zwb sBASE)∘.+⍳120
+[37]      :endif
+[38]  :endif
+[39]  ⍝
+[40]  ⍝ Single Life Annuity
+[41]  GP←GPeriod
+[42]  REV←0 ⍝ Set at 0 initially, will be 1 when calculating spouse's pensions
+[43]  pvmind← 0 0
+[44]  GPOlap←0
+[45]  MBase←MB[0;]
+[46]  FBase←0
+[47]  X←x ⋄ pvm∆l←ALLpvm[0] ⋄ RA1XXA←RA1XX←120↑(x⍴0),P∆CALCS
+[48]  X←x ⋄ pvm∆l←ALLpvm[1] ⋄ RA2XXA←RA2XX←120↑(x⍴0),P∆CALCS
+[49]  X←x ⋄ pvm∆l←ALLpvm[2] ⋄ RA3XXA←RA3XX←120↑(x⍴0),P∆CALCS
+[50]  X←x ⋄ pvm∆l←ALLpvm[3] ⋄ RA4XXA←RA4XX←120↑(x⍴0),P∆CALCS
+[51]  X←x ⋄ pvm∆l←ALLpvm[4] ⋄ RA6XXA←RA6XX←120↑(x⍴0),P∆CALCS
+[52]  X←x ⋄ pvm∆l←ALLpvm[5] ⋄ RA7XXA←RA7XX←120↑(x⍴0),P∆CALCS
+[53]  
+[54]  ⍝⍝⍝ FIXME - shouldn't this be Leaving decrement??
+[55]  ⍝ Spouse's Reversionary Annuity on normal retirement/Leaving
+[56]  :if 2=⍴⍴IXX ⋄ IXX∆l←120↑+/(-⍳120)⊖(⍳120)⌽120 120↑IXX ⍝ Work out starting age for Ill-Health Benefits
+[57]  :else       ⋄ IXX∆l←120↑IXX
+[58]  :endif
+[59]  x←x⌊NRA⌊(×IXX∆l)⍳1
+[60]  REV←1
+[61]  pvmind← 1 0 ⍝ 1 0 for spouse's pension only
+[62]  GPOlap←GPOverlap
+[63]  MBase←MB[2;]
+[64]  FBase←FB[2;]
+[65]  X←x ⋄ pvm∆l←ALLpvm[0] ⋄ LA1XXA←LA1XX←120↑(x⍴1),P∆CALCS
+[66]  X←x ⋄ pvm∆l←ALLpvm[1] ⋄ LA2XXA←LA2XX←120↑(x⍴1),P∆CALCS
+[67]  X←x ⋄ pvm∆l←ALLpvm[2] ⋄ LA3XXA←LA3XX←120↑(x⍴1),P∆CALCS
+[68]  X←x ⋄ pvm∆l←ALLpvm[3] ⋄ LA4XXA←LA4XX←120↑(x⍴1),P∆CALCS
+[69]  X←x ⋄ pvm∆l←ALLpvm[4] ⋄ LA10XXA←LA10XX←120↑(x⍴1),P∆CALCS
+[70]  X←x ⋄ pvm∆l←ALLpvm[5] ⋄ LA12XXA←LA12XX←120↑(x⍴1),P∆CALCS
+    ∇

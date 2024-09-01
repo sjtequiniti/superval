@@ -1,1 +1,182 @@
-    ∇ CompileDocs helpdir;∆;ht;pm;ZERO;rdir;adir;phids;i;phid;LB;pagetitles;thispage;pgMd;pbody;seln;DEADWORDS;topic;labels;topicMd;required;missing;bdy;type_anchors;anchor_table;anch;related;tbody;h2;MISSINGLINKS;cu;fn;AllPages;DocsMds;TopicMds;anchor;xxx;b;bkmk;pgHtml;plusdrop;dropext;ImgFiles;shell[1]   ⍝ HELPEDIT.sf#4[2]   ⍝ Compile page-level help MDs from topic-level MDs[3]   ⍝ also other files used by MkDocs[4]   ⍝[5]   ⍝ Requires:[6]   ⍝ - MkDocs installed: see http://mkdocs.org[7]   ⍝ - helpdir\[8]   ⍝   - mkdocs\[9]   ⍝     - index.md[10]  ⍝     - deadlink.md[11]  ⍝     - images\[12]  ⍝     - pageintros\*.md[13]  ⍝     - topics\*.md[14]  ⍝[15]  ⍝ Writes:[16]  ⍝ - helpdir\[17]  ⍝   - mkdocs\[18]  ⍝     - mkdocs.yml[19]  ⍝     - docs\ (compiled Markdown)[20]  ⍝     - docs\img (image files)[21]  ⍝     - site\ (HTML)[22]  ⍝   - svhelpuk.log[23]  ⍝ - CtxidUrl in memory and HELPEDIT#5[24]  ⍝[25]  ⍝ Only helpdir\mkdocs\site\ and CtxidUrl are required by app. See Win∆CHMHelp.[26]  ⍝ Only the MDs in pageintros\ and topics\ are editable.[27]  ⍝ See https://www.mkdocs.org/user-guide/writing-your-docs/#writing-with-markdown[28]  ⍝[29]  ⍝ Revn: sjt14oct14 * removed release notes[30]  ⍝       sjt26feb15 * derived HHC, page intros[31]  ⍝       sjt11jul16 * start from Markdown; progress and error messages[32]  ⍝       sjt11feb19 * source to MD; platform to MkDocs[33]  ⍝       sjt17nov19 * fix labels, headings[34]  ⍝       sjt29nov19 * missing articles; missed imgs; ignored topics[35]  [36]  ⍝ local vocabulary[37]  LB←⎕TCNL ⎕TCLF                                                                  ⍝ line break[38]  ⍝xxx←⎕FX⊃"Z←reline R" "Z←('/',⎕TCNL,'/',LB) TEXTREPL R"                           ⍝ relineate for file[39]  xxx←⎕FX⊃"shell cmd;xxx" "xxx←3 ⎕CMD cmd"                                        ⍝ shell command[40]  xxx←⎕FX⊃"Z←dropext str;i" "i←(⌽str)⍳'.'" "Z←(-i×i<tally str)↓str"               ⍝ drop file extension, if any[41]  xxx←⎕FX⊃"Z←plusdrop str;i" "i←str⍳'+'" "Z←(i×i<tally str)↓str"                  ⍝ drop up to + prefix, if any[42]  DEADWORDS←,¨'and' '/'                                                           ⍝ exclude as headings and index entries[43]  [44]  ⍝ hyperlinks to help type-specific help articles[45]  ∆←  ⊂'rates' 'Selecting rate tables'       'selecting_rate_tables.md'[46]  ∆←∆,⊂'rows'  'Adding and deleting rows'    'adding_deleting_rows.md'[47]  ∆←∆,⊂'cols'  'Adding and deleting columns' 'adding_deleting_columns.md'[48]  ∆←∆,⊂'grid'  'Grid editing options'        'grid_editing_options.md'[49]  anchor_table←'anchor' 'linktext' 'href'⍪ ⊃∆[50]  type_anchors←(↑¨∆)push 1↓¨∆←('Decr' 'rates')('F1SSCol' 'rows' 'grid')('F1SSRow' 'cols' 'grid')[51]  [52]  ⍝ file paths[53]  ∆←'docs' 'pageintros' 'topics'                                         ⍝ child folders of html\[54]  rdir←∆ push (⊂        'mkdocs\'),¨ ∆ ,¨'\'                                      ⍝ d: relative paths to folders[55]  adir←∆ push (⊂helpdir,'mkdocs\'),¨ ∆ ,¨'\'                                      ⍝ d: absolute paths to folders[56]  rdir←rdir amend 'images' 'images\'[57]  adir←adir amend 'images' (helpdir,'images\')[58]  [59]  ⍝ ht extends HelpTable[60]  xxx←(SystemDir,'HELPEDIT') ReadFile 'UK Help Table' '' 'HelpTable'[61]  ht←⍕¨HelpTable ⋄ ZERO←,'0'                                                      ⍝ avoid numeric keys for dictionaries[62]  [63]  pm←push (ht for unique ht at 'PageHelpID') at 'PageHelpID' 'ModuleField'        ⍝ d: PageHelpID=>ModuleField[64]  pagetitles←pm[1], ↑str_replace1¨/ (⊂,¨'+' ': ') (⊂,¨'_' ' ') (1↓pm)             ⍝ d: PageHelpID=>page title[65]  [66]  AllPages←nub ∆←caseDn¨(pm at ht at 'PageHelpID'),¨⊂'.md'                        ⍝ page MDs[67]  ht←ht amend 'pageMd' ∆[68]  [69]  ht←ht amend 'ctxid'    (↑⎕SPLIT ((⊂ZERO)≡¨↑∆)⊖⊃∆←ht at 'HelpID' 'PageHelpID')   ⍝ CtxIDs: HelpID but PageHelpID if HelpID 0[70]  ht←ht amend 'bookmark' (∆←(⊂'[_')char_replace¨(∆⍳¨'+')↓¨∆←ht at 'HelpField')    ⍝ replace eg [2] with _2[71]  ht←ht amend 'url'      ((⊂'\/' char_replace rdir at 'pages'),¨((¯2↓¨ht at 'pageMd'),¨⊂'html'),¨ (~mt¨∆) sel¨ '#',¨ ∆)    ⍝ URLs[72]  [73]  ⍝ Watch Out: '+' in ModuleField to be used ONLY as a delimiter[74]  ⍝ht←ht amend 'label'    ((⊂'_ ')char_replace¨(1-(⌽¨∆)⍳¨'+')↑¨∆←ht at 'HelpField')⍝ labels[75]  ht←ht amend 'label'    ((⊂'_ ')char_replace¨(1-(⌽¨∆)⍳¨'+')↑¨∆←ht at 'ModuleField')⍝ labels[76]  [77]  ⍝ Start processing files -------------------------------------------------------[78]  ⍝ delete and recreate docs\[79]  'Step' 'File' Win∆ProgressBar 'SetLabels'[80]  'Compiling Help subsystem' Win∆ProgressBar 'Open'[81]  0 7 (step 1 7 'Delete previous MDs in docs\') Win∆ProgressBar 'FileUpdate'[82]  shell 'DEL '  ,(adir at 'docs'),'img\*.* /Q'[83]  shell 'DEL '  ,(adir at 'docs'),'*.* /Q'[84]  shell 'DEL '  ,helpdir,'html\mds\*.* /Q'                                        ⍝ html copies of md[85]  shell 'MKDIR ', adir at 'docs'[86]  shell 'MKDIR ',(adir at 'docs'),'img\'[87]  1 7 (step 2 7 'Copy image files') Win∆ProgressBar 'FileUpdate'[88]  shell 'COPY   ',helpdir,'images\*.* ',(adir at 'docs'),'img\'                   ⍝ image files[89]  shell 'COPY   ',helpdir,'mkdocs\index.md '   ,adir at 'docs'                    ⍝ home page[90]  shell 'COPY   ',helpdir,'mkdocs\deadlink.md ',adir at 'docs'                    ⍝ dead link terminator[91]  DocsMds←'index.md' 'deadlink.md'[92]  (1 1 'docs') Win∆ProgressBar 'MemberUpdate'[93]  [94]  :if ~2 7 TranslateMarkDown adir at 'topics' ⋄ 'html Translates succeeded' ⋄ :endif[95]  [96]  ⍝ write page-level help HTMs[97]  3 7 (step 4 7 'Compose MDs') Win∆ProgressBar 'FileUpdate'[98]  TopicMds←m2n caseDn ⎕XLIB (adir at 'topics'),'*.MD'                             ⍝ available topic MDs[99]  ImgFiles←(⊂'img/'),¨m2n ⎕XLIB (adir at 'docs'),'img\*.*'                        ⍝ available image files[100] missing←required←MISSINGLINKS←''[101] phids←nub ht at 'PageHelpID'[102] 0 (tally phids) '' Win∆ProgressBar 'MemberUpdate'[103] cu←''                                                                           ⍝ CtxID::URL pairs[104] :for i :in ⍳tally phids ⋄ phid←i⊃phids[105]     thispage←ht for 'PageHelpID' phid                                           ⍝ help topics on this page[106] ⍝    'stop here' ASSERT "~phid≡'2094'"                                           ⍝ DEBUG[107]     'single entry for page' ASSERT "1=rowsIn thispage for 'HelpID' ZERO"[108]     pbody←'# ',(pagetitles at phid),LB,LB                                       ⍝ H1[109] [110] [111]     labels←↑groupValues/thispage at 'HelpID' 'label'[112]     pgMd←↑thispage at 'pageMd'[113]     pgHtml←pgMd as 'html'[114] [115]     (i (tally phids) pgMd) Win∆ProgressBar 'MemberUpdate'[116]     pbody←pbody,nfile_get_contents (adir at 'pageintros'),pgMd                  ⍝ page intro (if any)[117]     cu←cu,⊂(↑thispage at 'PageHelpID')(pgHtml)                                  ⍝ CtxID::URL for page[118] [119]     seln←(~(thispage at 'HelpID')∊⊂ZERO) ^ unique thispage at 'HelpField'       ⍝ unique topics (respecting topic indexes)[120]     :for topic :in ∆[1] push¨ 1↓∆←⎕SPLIT thispage for seln[121]         ∆←nub lmt (labels at topic at 'HelpID') ~ DEADWORDS                     ⍝   one topic may serve several fields[122]         'at least one label for this topic' ASSERT "~mt ∆"                      ⍝   but at least one[123]         bkmk←↑∆[124]         h2←(LB,LB)join (⊂'## '),¨∆                                              ⍝   H2/s for topic[125] ⍝⍝      topicMd←caseDn¨((¯1+∆⍳'[')↑∆←(∆⍳'+')↓∆←topic at 'HelpField'),'.md'      ⍝   ignore topic indexes[126]         ∆←plusdrop dropext caseDn topic at 'HelpField'                          ⍝   l/c, lose HTM extension, prefix before any +[127]         'non-empty topic filename' ASSERT "~mt ∆"                               ⍝   DEBUG[128]         topicMd←((¯1+∆⍳'[')↑∆),'.md'                                            ⍝   ignore topic indexes[129]         required←required,⊂topicMd[130]         (xxx bdy)←ParseTopic nfile_get_contents (adir at 'topics'),topicMd      ⍝   ignore topic MD H1[131]         :if mt bdy[132]             missing←missing,⊂topicMd[133]             tbody←'Article missing from ',topicMd[134]         :else[135]             ⍝ type-specific help hyperlinks[136]             related←''[137]             ∆←type_anchors at topic at 'FieldType'[138]             :for anch :in ∆[1] push¨ 1↓∆←⎕SPLIT anchor_table for 'anchor' push ∆[139]                 related←related,LB,LB,'-   [',(anch at 'linktext'),'](',(anch at 'href'),')'[140]             :endfor[141]             :if ~mt related ⋄ related←LB,LB,'### Related',LB,LB,related ⋄ :endif[142]             ∆←pgMd FixLinks bdy,related[143] ⍝            ∆←('P class="topic-source"' xtag topicMd) (∆)                       ⍝  to help editors[144]             tbody←∆[145]             cu←cu,⊂(topic at 'ctxid')(pgHtml,hdg2bkmk bkmk)                      ⍝  CtxID::URL for H2[146]         :endif[147]         pbody←pbody,LB,LB,h2,LB,LB,tbody[148]     :endfor[149] ⍝    pbody←pbody,LB,LB,'P class="page-source"' xtag (adir at 'pages'),pgMd,' ',,1 DATESPELL ⎕TS    ⍝ to help editors[150]     pbody←'/£/&#163;' TEXTREPL pbody[151]     pbody nfile_put_contents (adir at 'docs'),pgMd[152]     ⎕WGIVE 0[153] :endfor[154] [155] ⍝ Write MkDocs YAML configuration file .........................................[156] 4 7 (step 5 7 'Write MkDocs configuration file') Win∆ProgressBar 'FileUpdate'[157] helpdir WriteYaml (pagetitles at phids) pr (push ht at 'PageHelpID' 'pageMd') at phids[158] [159] ⍝ Compile static HTML site .....................................................[160] 5 7 (step 6 7 'Compile MkDocs static site') Win∆ProgressBar 'FileUpdate'[161] 1 ⎕CMD 'cd "',helpdir,'mkdocs" && mkdocs build --clean'[162] ⍝ TODO Relocate site\ to helpdir?[163] [164] required←required,(~mt MISSINGLINKS)/⊂'deadlink.htm'[165] [166] ⍝ Write LOG file ...............................................................[167] ∆←m2n caseDn ⎕XLIB (adir at 'topics'),'*.MD'[168] ∆←'[IGNORED TOPICS]' push srt (∆~required) as¨⊂''                               ⍝ topics not read[169] ∆←∆, '' '[MISSING ARTICLES]' , srt nub missing as¨⊂''                           ⍝ topics missing with empty bodies[170] ∆←∆, '' '[MISSING LINKS]'    , srt nub MISSINGLINKS                             ⍝ missing href targets[171] (join ∆) nfile_put_contents helpdir,'svhelpuk.log'[172] (1 6 'svhelpuk.log') Win∆ProgressBar 'MemberUpdate'[173] [174] ⍝ Write new CtxID::URL mapping .................................................[175] 'all numeric' ASSERT "^/↑¨⎕VI¨1⊃¨cu"                                            ⍝ cast CtxIDs to numeric[176] CtxidUrl←(↑¨⎕FI¨1⊃¨cu)(2⊃¨cu)[177] [178] xxx←(fn←SystemDir,'Help\SVHelp',Win∆CountryCode) SaveToFile 'Help Lookup' '' (pack 'CtxidUrl')[179] FDUP fn[180] Win∆ProgressBar 'Close'    ∇
+    ∇ CompileDocs helpdir;∆;ht;pm;ZERO;rdir;adir;phids;i;phid;LB;pagetitles;thispage;pgMd;pbody;seln;DEADWORDS;topic;labels;topicMd;required;missing;bdy;type_anchors;anchor_table;anch;related;tbody;h2;MISSINGLINKS;cu;fn;AllPages;DocsMds;TopicMds;anchor;xxx;b;bkmk;pgHtml;plusdrop;dropext;ImgFiles;shell
+[1]   ⍝ HELPEDIT.sf#4
+[2]   ⍝ Compile page-level help MDs from topic-level MDs
+[3]   ⍝ also other files used by MkDocs
+[4]   ⍝
+[5]   ⍝ Requires:
+[6]   ⍝ - MkDocs installed: see http://mkdocs.org
+[7]   ⍝ - helpdir\
+[8]   ⍝   - mkdocs\
+[9]   ⍝     - index.md
+[10]  ⍝     - deadlink.md
+[11]  ⍝     - images\
+[12]  ⍝     - pageintros\*.md
+[13]  ⍝     - topics\*.md
+[14]  ⍝
+[15]  ⍝ Writes:
+[16]  ⍝ - helpdir\
+[17]  ⍝   - mkdocs\
+[18]  ⍝     - mkdocs.yml
+[19]  ⍝     - docs\ (compiled Markdown)
+[20]  ⍝     - docs\img (image files)
+[21]  ⍝     - site\ (HTML)
+[22]  ⍝   - svhelpuk.log
+[23]  ⍝ - CtxidUrl in memory and HELPEDIT#5
+[24]  ⍝
+[25]  ⍝ Only helpdir\mkdocs\site\ and CtxidUrl are required by app. See Win∆CHMHelp.
+[26]  ⍝ Only the MDs in pageintros\ and topics\ are editable.
+[27]  ⍝ See https://www.mkdocs.org/user-guide/writing-your-docs/#writing-with-markdown
+[28]  ⍝
+[29]  ⍝ Revn: sjt14oct14 * removed release notes
+[30]  ⍝       sjt26feb15 * derived HHC, page intros
+[31]  ⍝       sjt11jul16 * start from Markdown; progress and error messages
+[32]  ⍝       sjt11feb19 * source to MD; platform to MkDocs
+[33]  ⍝       sjt17nov19 * fix labels, headings
+[34]  ⍝       sjt29nov19 * missing articles; missed imgs; ignored topics
+[35]  
+[36]  ⍝ local vocabulary
+[37]  LB←⎕TCNL ⎕TCLF                                                                  ⍝ line break
+[38]  ⍝xxx←⎕FX⊃"Z←reline R" "Z←('/',⎕TCNL,'/',LB) TEXTREPL R"                           ⍝ relineate for file
+[39]  xxx←⎕FX⊃"shell cmd;xxx" "xxx←3 ⎕CMD cmd"                                        ⍝ shell command
+[40]  xxx←⎕FX⊃"Z←dropext str;i" "i←(⌽str)⍳'.'" "Z←(-i×i<tally str)↓str"               ⍝ drop file extension, if any
+[41]  xxx←⎕FX⊃"Z←plusdrop str;i" "i←str⍳'+'" "Z←(i×i<tally str)↓str"                  ⍝ drop up to + prefix, if any
+[42]  DEADWORDS←,¨'and' '/'                                                           ⍝ exclude as headings and index entries
+[43]  
+[44]  ⍝ hyperlinks to help type-specific help articles
+[45]  ∆←  ⊂'rates' 'Selecting rate tables'       'selecting_rate_tables.md'
+[46]  ∆←∆,⊂'rows'  'Adding and deleting rows'    'adding_deleting_rows.md'
+[47]  ∆←∆,⊂'cols'  'Adding and deleting columns' 'adding_deleting_columns.md'
+[48]  ∆←∆,⊂'grid'  'Grid editing options'        'grid_editing_options.md'
+[49]  anchor_table←'anchor' 'linktext' 'href'⍪ ⊃∆
+[50]  type_anchors←(↑¨∆)push 1↓¨∆←('Decr' 'rates')('F1SSCol' 'rows' 'grid')('F1SSRow' 'cols' 'grid')
+[51]  
+[52]  ⍝ file paths
+[53]  ∆←'docs' 'pageintros' 'topics'                                         ⍝ child folders of html\
+[54]  rdir←∆ push (⊂        'mkdocs\'),¨ ∆ ,¨'\'                                      ⍝ d: relative paths to folders
+[55]  adir←∆ push (⊂helpdir,'mkdocs\'),¨ ∆ ,¨'\'                                      ⍝ d: absolute paths to folders
+[56]  rdir←rdir amend 'images' 'images\'
+[57]  adir←adir amend 'images' (helpdir,'images\')
+[58]  
+[59]  ⍝ ht extends HelpTable
+[60]  xxx←(SystemDir,'HELPEDIT') ReadFile 'UK Help Table' '' 'HelpTable'
+[61]  ht←⍕¨HelpTable ⋄ ZERO←,'0'                                                      ⍝ avoid numeric keys for dictionaries
+[62]  
+[63]  pm←push (ht for unique ht at 'PageHelpID') at 'PageHelpID' 'ModuleField'        ⍝ d: PageHelpID=>ModuleField
+[64]  pagetitles←pm[1], ↑str_replace1¨/ (⊂,¨'+' ': ') (⊂,¨'_' ' ') (1↓pm)             ⍝ d: PageHelpID=>page title
+[65]  
+[66]  AllPages←nub ∆←caseDn¨(pm at ht at 'PageHelpID'),¨⊂'.md'                        ⍝ page MDs
+[67]  ht←ht amend 'pageMd' ∆
+[68]  
+[69]  ht←ht amend 'ctxid'    (↑⎕SPLIT ((⊂ZERO)≡¨↑∆)⊖⊃∆←ht at 'HelpID' 'PageHelpID')   ⍝ CtxIDs: HelpID but PageHelpID if HelpID 0
+[70]  ht←ht amend 'bookmark' (∆←(⊂'[_')char_replace¨(∆⍳¨'+')↓¨∆←ht at 'HelpField')    ⍝ replace eg [2] with _2
+[71]  ht←ht amend 'url'      ((⊂'\/' char_replace rdir at 'pages'),¨((¯2↓¨ht at 'pageMd'),¨⊂'html'),¨ (~mt¨∆) sel¨ '#',¨ ∆)    ⍝ URLs
+[72]  
+[73]  ⍝ Watch Out: '+' in ModuleField to be used ONLY as a delimiter
+[74]  ⍝ht←ht amend 'label'    ((⊂'_ ')char_replace¨(1-(⌽¨∆)⍳¨'+')↑¨∆←ht at 'HelpField')⍝ labels
+[75]  ht←ht amend 'label'    ((⊂'_ ')char_replace¨(1-(⌽¨∆)⍳¨'+')↑¨∆←ht at 'ModuleField')⍝ labels
+[76]  
+[77]  ⍝ Start processing files -------------------------------------------------------
+[78]  ⍝ delete and recreate docs\
+[79]  'Step' 'File' Win∆ProgressBar 'SetLabels'
+[80]  'Compiling Help subsystem' Win∆ProgressBar 'Open'
+[81]  0 7 (step 1 7 'Delete previous MDs in docs\') Win∆ProgressBar 'FileUpdate'
+[82]  shell 'DEL '  ,(adir at 'docs'),'img\*.* /Q'
+[83]  shell 'DEL '  ,(adir at 'docs'),'*.* /Q'
+[84]  shell 'DEL '  ,helpdir,'html\mds\*.* /Q'                                        ⍝ html copies of md
+[85]  shell 'MKDIR ', adir at 'docs'
+[86]  shell 'MKDIR ',(adir at 'docs'),'img\'
+[87]  1 7 (step 2 7 'Copy image files') Win∆ProgressBar 'FileUpdate'
+[88]  shell 'COPY   ',helpdir,'images\*.* ',(adir at 'docs'),'img\'                   ⍝ image files
+[89]  shell 'COPY   ',helpdir,'mkdocs\index.md '   ,adir at 'docs'                    ⍝ home page
+[90]  shell 'COPY   ',helpdir,'mkdocs\deadlink.md ',adir at 'docs'                    ⍝ dead link terminator
+[91]  DocsMds←'index.md' 'deadlink.md'
+[92]  (1 1 'docs') Win∆ProgressBar 'MemberUpdate'
+[93]  
+[94]  :if ~2 7 TranslateMarkDown adir at 'topics' ⋄ 'html Translates succeeded' ⋄ :endif
+[95]  
+[96]  ⍝ write page-level help HTMs
+[97]  3 7 (step 4 7 'Compose MDs') Win∆ProgressBar 'FileUpdate'
+[98]  TopicMds←m2n caseDn ⎕XLIB (adir at 'topics'),'*.MD'                             ⍝ available topic MDs
+[99]  ImgFiles←(⊂'img/'),¨m2n ⎕XLIB (adir at 'docs'),'img\*.*'                        ⍝ available image files
+[100] missing←required←MISSINGLINKS←''
+[101] phids←nub ht at 'PageHelpID'
+[102] 0 (tally phids) '' Win∆ProgressBar 'MemberUpdate'
+[103] cu←''                                                                           ⍝ CtxID::URL pairs
+[104] :for i :in ⍳tally phids ⋄ phid←i⊃phids
+[105]     thispage←ht for 'PageHelpID' phid                                           ⍝ help topics on this page
+[106] ⍝    'stop here' ASSERT "~phid≡'2094'"                                           ⍝ DEBUG
+[107]     'single entry for page' ASSERT "1=rowsIn thispage for 'HelpID' ZERO"
+[108]     pbody←'# ',(pagetitles at phid),LB,LB                                       ⍝ H1
+[109] 
+[110] 
+[111]     labels←↑groupValues/thispage at 'HelpID' 'label'
+[112]     pgMd←↑thispage at 'pageMd'
+[113]     pgHtml←pgMd as 'html'
+[114] 
+[115]     (i (tally phids) pgMd) Win∆ProgressBar 'MemberUpdate'
+[116]     pbody←pbody,nfile_get_contents (adir at 'pageintros'),pgMd                  ⍝ page intro (if any)
+[117]     cu←cu,⊂(↑thispage at 'PageHelpID')(pgHtml)                                  ⍝ CtxID::URL for page
+[118] 
+[119]     seln←(~(thispage at 'HelpID')∊⊂ZERO) ^ unique thispage at 'HelpField'       ⍝ unique topics (respecting topic indexes)
+[120]     :for topic :in ∆[1] push¨ 1↓∆←⎕SPLIT thispage for seln
+[121]         ∆←nub lmt (labels at topic at 'HelpID') ~ DEADWORDS                     ⍝   one topic may serve several fields
+[122]         'at least one label for this topic' ASSERT "~mt ∆"                      ⍝   but at least one
+[123]         bkmk←↑∆
+[124]         h2←(LB,LB)join (⊂'## '),¨∆                                              ⍝   H2/s for topic
+[125] ⍝⍝      topicMd←caseDn¨((¯1+∆⍳'[')↑∆←(∆⍳'+')↓∆←topic at 'HelpField'),'.md'      ⍝   ignore topic indexes
+[126]         ∆←plusdrop dropext caseDn topic at 'HelpField'                          ⍝   l/c, lose HTM extension, prefix before any +
+[127]         'non-empty topic filename' ASSERT "~mt ∆"                               ⍝   DEBUG
+[128]         topicMd←((¯1+∆⍳'[')↑∆),'.md'                                            ⍝   ignore topic indexes
+[129]         required←required,⊂topicMd
+[130]         (xxx bdy)←ParseTopic nfile_get_contents (adir at 'topics'),topicMd      ⍝   ignore topic MD H1
+[131]         :if mt bdy
+[132]             missing←missing,⊂topicMd
+[133]             tbody←'Article missing from ',topicMd
+[134]         :else
+[135]             ⍝ type-specific help hyperlinks
+[136]             related←''
+[137]             ∆←type_anchors at topic at 'FieldType'
+[138]             :for anch :in ∆[1] push¨ 1↓∆←⎕SPLIT anchor_table for 'anchor' push ∆
+[139]                 related←related,LB,LB,'-   [',(anch at 'linktext'),'](',(anch at 'href'),')'
+[140]             :endfor
+[141]             :if ~mt related ⋄ related←LB,LB,'### Related',LB,LB,related ⋄ :endif
+[142]             ∆←pgMd FixLinks bdy,related
+[143] ⍝            ∆←('P class="topic-source"' xtag topicMd) (∆)                       ⍝  to help editors
+[144]             tbody←∆
+[145]             cu←cu,⊂(topic at 'ctxid')(pgHtml,hdg2bkmk bkmk)                      ⍝  CtxID::URL for H2
+[146]         :endif
+[147]         pbody←pbody,LB,LB,h2,LB,LB,tbody
+[148]     :endfor
+[149] ⍝    pbody←pbody,LB,LB,'P class="page-source"' xtag (adir at 'pages'),pgMd,' ',,1 DATESPELL ⎕TS    ⍝ to help editors
+[150]     pbody←'/£/&#163;' TEXTREPL pbody
+[151]     pbody nfile_put_contents (adir at 'docs'),pgMd
+[152]     ⎕WGIVE 0
+[153] :endfor
+[154] 
+[155] ⍝ Write MkDocs YAML configuration file .........................................
+[156] 4 7 (step 5 7 'Write MkDocs configuration file') Win∆ProgressBar 'FileUpdate'
+[157] helpdir WriteYaml (pagetitles at phids) pr (push ht at 'PageHelpID' 'pageMd') at phids
+[158] 
+[159] ⍝ Compile static HTML site .....................................................
+[160] 5 7 (step 6 7 'Compile MkDocs static site') Win∆ProgressBar 'FileUpdate'
+[161] 1 ⎕CMD 'cd "',helpdir,'mkdocs" && mkdocs build --clean'
+[162] ⍝ TODO Relocate site\ to helpdir?
+[163] 
+[164] required←required,(~mt MISSINGLINKS)/⊂'deadlink.htm'
+[165] 
+[166] ⍝ Write LOG file ...............................................................
+[167] ∆←m2n caseDn ⎕XLIB (adir at 'topics'),'*.MD'
+[168] ∆←'[IGNORED TOPICS]' push srt (∆~required) as¨⊂''                               ⍝ topics not read
+[169] ∆←∆, '' '[MISSING ARTICLES]' , srt nub missing as¨⊂''                           ⍝ topics missing with empty bodies
+[170] ∆←∆, '' '[MISSING LINKS]'    , srt nub MISSINGLINKS                             ⍝ missing href targets
+[171] (join ∆) nfile_put_contents helpdir,'svhelpuk.log'
+[172] (1 6 'svhelpuk.log') Win∆ProgressBar 'MemberUpdate'
+[173] 
+[174] ⍝ Write new CtxID::URL mapping .................................................
+[175] 'all numeric' ASSERT "^/↑¨⎕VI¨1⊃¨cu"                                            ⍝ cast CtxIDs to numeric
+[176] CtxidUrl←(↑¨⎕FI¨1⊃¨cu)(2⊃¨cu)
+[177] 
+[178] xxx←(fn←SystemDir,'Help\SVHelp',Win∆CountryCode) SaveToFile 'Help Lookup' '' (pack 'CtxidUrl')
+[179] FDUP fn
+[180] Win∆ProgressBar 'Close'
+    ∇

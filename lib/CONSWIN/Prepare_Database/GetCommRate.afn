@@ -1,1 +1,17 @@
-    ∇ commrate←larg GetCommRate arg;benID;ResID;PSind;contID[1]   ⍝ CONSWIN.sf#18[2]   ⍝ Get the proportion of pension taken as Cash Commutation[3]   ⍝   arg is the variable prefix - indicating decrement[4]   ⍝   larg is the ResultsCategoryID, BenefitTypeID, ContingencyID and Past Service Indicator[5]   [6]   (ResID benID contID PSind)←larg[7]   [8]   :if ~mt GetCashType arg,'CTYPE',(benID=36)/'2'[9]       commrate←↑0 ⍙DBRemoveNulls ,1 ⍙DBadoCONCommand "SELECT AVG(MemberValue) FROM MemberResults WHERE ResultsCategoryID=",(⍕ResID)," AND BenefitTypeID=",(⍕benID)," AND ContingencyID IN (",(0 ⍙DBNumList contID),") AND LiabilityTypeID=",(⍕2-PSind)," AND DataItemID=32"[10]      :if benID=36 ⋄ commrate←⍕2 gRound commrate[11]      :else        ⋄ commrate←⍕4 gRound commrate[12]      :endif[13]  :else[14]      commrate←'0'[15]  :endif    ∇
+    ∇ commrate←larg GetCommRate arg;benID;ResID;PSind;contID
+[1]   ⍝ CONSWIN.sf#18
+[2]   ⍝ Get the proportion of pension taken as Cash Commutation
+[3]   ⍝   arg is the variable prefix - indicating decrement
+[4]   ⍝   larg is the ResultsCategoryID, BenefitTypeID, ContingencyID and Past Service Indicator
+[5]   
+[6]   (ResID benID contID PSind)←larg
+[7]   
+[8]   :if ~mt GetCashType arg,'CTYPE',(benID=36)/'2'
+[9]       commrate←↑0 ⍙DBRemoveNulls ,1 ⍙DBadoCONCommand "SELECT AVG(MemberValue) FROM MemberResults WHERE ResultsCategoryID=",(⍕ResID)," AND BenefitTypeID=",(⍕benID)," AND ContingencyID IN (",(0 ⍙DBNumList contID),") AND LiabilityTypeID=",(⍕2-PSind)," AND DataItemID=32"
+[10]      :if benID=36 ⋄ commrate←⍕2 gRound commrate
+[11]      :else        ⋄ commrate←⍕4 gRound commrate
+[12]      :endif
+[13]  :else
+[14]      commrate←'0'
+[15]  :endif
+    ∇

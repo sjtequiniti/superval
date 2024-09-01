@@ -1,1 +1,1821 @@
-    ∇ Form_Make2[1]   [2]   :if 300<fnsize[3]       ((1↑⎕lc) fnsize "FrameV - Transfer Spouse/Partner's Post Retirement Mortality") Win∆ProgressBar "MemberUpdate"[4]   :endif[5]   [6]   ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "New" "Frame"[7]   ⎕wi "scale" 5[8]   ⎕wi "enabled" (bTVs                                      )[9]   ⎕wi "∆where" (4 2⍴0.62 0 0 0 0.31 0 1 0)[10]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality" ⎕wi "size") Win∆Resize (4 2⍴0.62 0 0 0 0.31 0 1 0))[11]  ⎕wi "caption" "Transfer Spouse/Partner's Post Retirement Mortality"[12]  ⎕wi "style" 0[13]  ⎕wi "onResize" "AutoResize"[14]  [15]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.ckTVSDPostSame" ⎕wi "New" "Check"[16]  Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.ckTVSDPostSame"[17]  Fieldcontrol←Fieldcontrol OVER "Check"[18]  ⎕wi "∆name" "TVSDPostSame"[19]  ⎕wi "∆type" "Check"[20]  ⎕wi "enabled" (bTVs)[21]  ⎕wi "∆helpid" 5082[22]  ⎕wi "tooltip" "Check this if Spouse's Transfer Value Mortality is always the same as the Valuation Basis Post Retirement Mortality"[23]  ⎕wi "style" 0[24]  ⎕wi "caption" "Same as Valuation Basis Spouse Post Retirement Mortality"[25]  ⎕wi "∆where" (2 2⍴0.1 0 0.02 0)[26]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.02 0))[27]  ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")[28]  ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"[29]  [30]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "New" "Combo"[31]  Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST"[32]  Fieldcontrol←Fieldcontrol OVER "Combo"[33]  ⎕wi "∆name" "m_TVSDPOST"[34]  ⎕wi "∆type" "Char"[35]  ⎕wi "∆mandatory" 1[36]  ⎕wi "enabled" (bTVs)[37]  ⎕wi "∆helpid" 5087[38]  ⎕wi "tooltip" "Select the Male Transfer Member's Spouse/Partner Post Retirement Mortality Definition"[39]  ⎕wi "style" 16 128 256 2[40]  ⎕wi "∆where" (2 2⍴0.22 0 0.2 0)[41]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.22 0 0.2 0))[42]  PickList←GetMortParms ''[43]  ⎕wi "∆update" "GetMortParms ''"[44]  PickList←⊃m2n 1 0↓PickList[45]  ⎕wi "list" PickList[46]  ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[47]  ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(⊂⍙MortAssdict for 'Type' 'Mortality') at¨'Label' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[48]  ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVSDPOST"[49]  [50]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVSDPOST" ⎕wi "New" "Label"[51]  ⎕wi "scale" 5[52]  ⎕wi "enabled" (bTVs)[53]  ⎕wi "extent" (CharSize×¯2↑1,60)[54]  ⎕wi "style" 32[55]  ⎕wi "caption" " "[56]  where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "∆where"[57]  x←0.5×⍴where←Win∆Calcwhere where+((5+1↑2↓"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "where") CDIV 1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size"),0 0 0[58]  ⎕wi "∆where" ((x,2)⍴where)[59]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[60]  [61]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llm_TVSDPOST" ⎕wi "New" "Label"[62]  ⎕wi "scale" 5[63]  ⎕wi "style" 2[64]  ⎕wi "enabled" (bTVs)[65]  ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Male Transfer Member's Spouse/Partner⍺Mortality Rate Parameters")))[66]  ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Male Transfer Member's Spouse/Partner⍺Mortality Rate Parameters")[67]  where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "∆where"[68]  size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "extent"[69]  size←¯3⌈0.5×(1↑⎕wi "extent")-size[70]  x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[71]  ⎕wi "∆where" ((x,2)⍴where)[72]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[73]  [74]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "New" "Combo"[75]  Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB"[76]  Fieldcontrol←Fieldcontrol OVER "Combo"[77]  ⎕wi "∆name" "m_TVSDPOSTMEMB"[78]  ⎕wi "∆type" "Char"[79]  ⎕wi "enabled" (bTVs)[80]  ⎕wi "∆helpid" 5088[81]  ⎕wi "style" 16 128 256 2[82]  ⎕wi "∆where" (2 2⍴0.5 0 0.2 0)[83]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.5 0 0.2 0))[84]  PickList←GetVarNumList 'Non-Standard'[85]  ⎕wi "∆update" "GetVarNumList 'Non-Standard'"[86]  PickList←⊃m2n 1 0↓PickList[87]  PickList←" " OVER PickList[88]  ⎕wi "list" PickList[89]  ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[90]  ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[91]  ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVSDPOSTMEMB"[92]  [93]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVSDPOSTMEMB" ⎕wi "New" "Label"[94]  ⎕wi "scale" 5[95]  ⎕wi "enabled" (bTVs)[96]  ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))[97]  ⎕wi "caption" "%"[98]  where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "∆where"[99]  x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "extent"[100] ⎕wi "∆where" ((x,2)⍴where)[101] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[102] [103] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llm_TVSDPOSTMEMB" ⎕wi "New" "Label"[104] ⎕wi "scale" 5[105] ⎕wi "style" 2[106] ⎕wi "enabled" (bTVs)[107] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Male Transfer Member's⍺Spouse/Partner Individual % Rating")))[108] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Male Transfer Member's⍺Spouse/Partner Individual % Rating")[109] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "∆where"[110] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "extent"[111] size←¯3⌈0.5×(1↑⎕wi "extent")-size[112] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[113] ⎕wi "∆where" ((x,2)⍴where)[114] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[115] [116] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "New" "Combo"[117] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST"[118] Fieldcontrol←Fieldcontrol OVER "Combo"[119] ⎕wi "∆name" "m_TVmiSDPOST"[120] ⎕wi "∆type" "Char"[121] ⎕wi "∆mandatory" 1[122] ⎕wi "enabled" (bTVs)[123] ⎕wi "∆helpid" 5089[124] ⎕wi "tooltip" "Select the Male Transfer Member's Spouse/Partner Post Retirement Mortality Improvement Definition"[125] ⎕wi "style" 16 128 256 2[126] ⎕wi "∆where" (2 2⍴0.7 0 0.2 0)[127] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.7 0 0.2 0))[128] PickList←'None' GetClientParms 'Mort_Improvement'[129] ⎕wi "∆update" "'None' GetClientParms 'Mort_Improvement'"[130] PickList←⊃m2n 1 0↓PickList[131] ⎕wi "list" PickList[132] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[133] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(⊂⍙MortAssdict for 'Type' 'MortImp') at¨'Label' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[134] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVmiSDPOST"[135] [136] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVmiSDPOST" ⎕wi "New" "Label"[137] ⎕wi "scale" 5[138] ⎕wi "enabled" (bTVs)[139] ⎕wi "extent" (CharSize×¯2↑1,60)[140] ⎕wi "style" 32[141] ⎕wi "caption" " "[142] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "∆where"[143] x←0.5×⍴where←Win∆Calcwhere where+((5+1↑2↓"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "where") CDIV 1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size"),0 0 0[144] ⎕wi "∆where" ((x,2)⍴where)[145] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[146] [147] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llm_TVmiSDPOST" ⎕wi "New" "Label"[148] ⎕wi "scale" 5[149] ⎕wi "style" 2[150] ⎕wi "enabled" (bTVs)[151] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Male Transfer Member's Spouse/Partner⍺Mortality Improvement Parameters")))[152] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Male Transfer Member's Spouse/Partner⍺Mortality Improvement Parameters")[153] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "∆where"[154] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "extent"[155] size←¯3⌈0.5×(1↑⎕wi "extent")-size[156] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[157] ⎕wi "∆where" ((x,2)⍴where)[158] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[159] [160] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "New" "Combo"[161] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST"[162] Fieldcontrol←Fieldcontrol OVER "Combo"[163] ⎕wi "∆name" "f_TVSDPOST"[164] ⎕wi "∆type" "Char"[165] ⎕wi "∆mandatory" 1[166] ⎕wi "enabled" (bTVs)[167] ⎕wi "∆helpid" 5087[168] ⎕wi "tooltip" "Select the Female Transfer Member's Spouse/Partner Post Retirement Mortality Definition"[169] ⎕wi "style" 16 128 256 2[170] ⎕wi "∆where" (2 2⍴0.22 0 0.65 0)[171] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.22 0 0.65 0))[172] PickList←GetMortParms ''[173] ⎕wi "∆update" "GetMortParms ''"[174] PickList←⊃m2n 1 0↓PickList[175] ⎕wi "list" PickList[176] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[177] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(⊂⍙MortAssdict for 'Type' 'Mortality') at¨'Label' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[178] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVSDPOST"[179] [180] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVSDPOST" ⎕wi "New" "Label"[181] ⎕wi "scale" 5[182] ⎕wi "enabled" (bTVs)[183] ⎕wi "extent" (CharSize×¯2↑1,60)[184] ⎕wi "style" 32[185] ⎕wi "caption" " "[186] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "∆where"[187] x←0.5×⍴where←Win∆Calcwhere where+((5+1↑2↓"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "where") CDIV 1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size"),0 0 0[188] ⎕wi "∆where" ((x,2)⍴where)[189] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[190] [191] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llf_TVSDPOST" ⎕wi "New" "Label"[192] ⎕wi "scale" 5[193] ⎕wi "style" 2[194] ⎕wi "enabled" (bTVs)[195] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Female Transfer Member's Spouse/Partner⍺Mortality Rate Parameters")))[196] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Female Transfer Member's Spouse/Partner⍺Mortality Rate Parameters")[197] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "∆where"[198] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "extent"[199] size←¯3⌈0.5×(1↑⎕wi "extent")-size[200] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[201] ⎕wi "∆where" ((x,2)⍴where)[202] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[203] [204] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "New" "Combo"[205] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB"[206] Fieldcontrol←Fieldcontrol OVER "Combo"[207] ⎕wi "∆name" "f_TVSDPOSTMEMB"[208] ⎕wi "∆type" "Char"[209] ⎕wi "enabled" (bTVs)[210] ⎕wi "∆helpid" 5088[211] ⎕wi "style" 16 128 256 2[212] ⎕wi "∆where" (2 2⍴0.5 0 0.65 0)[213] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.5 0 0.65 0))[214] PickList←GetVarNumList 'Non-Standard'[215] ⎕wi "∆update" "GetVarNumList 'Non-Standard'"[216] PickList←⊃m2n 1 0↓PickList[217] PickList←" " OVER PickList[218] ⎕wi "list" PickList[219] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[220] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[221] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVSDPOSTMEMB"[222] [223] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVSDPOSTMEMB" ⎕wi "New" "Label"[224] ⎕wi "scale" 5[225] ⎕wi "enabled" (bTVs)[226] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))[227] ⎕wi "caption" "%"[228] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "∆where"[229] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "extent"[230] ⎕wi "∆where" ((x,2)⍴where)[231] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[232] [233] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llf_TVSDPOSTMEMB" ⎕wi "New" "Label"[234] ⎕wi "scale" 5[235] ⎕wi "style" 2[236] ⎕wi "enabled" (bTVs)[237] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Female Transfer Member's⍺Spouse/Partner Individual % Rating")))[238] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Female Transfer Member's⍺Spouse/Partner Individual % Rating")[239] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "∆where"[240] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "extent"[241] size←¯3⌈0.5×(1↑⎕wi "extent")-size[242] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[243] ⎕wi "∆where" ((x,2)⍴where)[244] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[245] [246] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "New" "Combo"[247] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST"[248] Fieldcontrol←Fieldcontrol OVER "Combo"[249] ⎕wi "∆name" "f_TVmiSDPOST"[250] ⎕wi "∆type" "Char"[251] ⎕wi "∆mandatory" 1[252] ⎕wi "enabled" (bTVs)[253] ⎕wi "∆helpid" 5089[254] ⎕wi "tooltip" "Select the Female Transfer Member's Spouse/Partner Post Retirement Mortality Improvement Definition"[255] ⎕wi "style" 16 128 256 2[256] ⎕wi "∆where" (2 2⍴0.7 0 0.65 0)[257] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.7 0 0.65 0))[258] PickList←'None' GetClientParms 'Mort_Improvement'[259] ⎕wi "∆update" "'None' GetClientParms 'Mort_Improvement'"[260] PickList←⊃m2n 1 0↓PickList[261] ⎕wi "list" PickList[262] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[263] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(⊂⍙MortAssdict for 'Type' 'MortImp') at¨'Label' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[264] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVmiSDPOST"[265] [266] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVmiSDPOST" ⎕wi "New" "Label"[267] ⎕wi "scale" 5[268] ⎕wi "enabled" (bTVs)[269] ⎕wi "extent" (CharSize×¯2↑1,60)[270] ⎕wi "style" 32[271] ⎕wi "caption" " "[272] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "∆where"[273] x←0.5×⍴where←Win∆Calcwhere where+((5+1↑2↓"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "where") CDIV 1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size"),0 0 0[274] ⎕wi "∆where" ((x,2)⍴where)[275] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[276] [277] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llf_TVmiSDPOST" ⎕wi "New" "Label"[278] ⎕wi "scale" 5[279] ⎕wi "style" 2[280] ⎕wi "enabled" (bTVs)[281] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Female Transfer Member's Spouse/Partner⍺Mortality Improvement Parameters")))[282] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Female Transfer Member's Spouse/Partner⍺Mortality Improvement Parameters")[283] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "∆where"[284] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "extent"[285] size←¯3⌈0.5×(1↑⎕wi "extent")-size[286] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[287] ⎕wi "∆where" ((x,2)⍴where)[288] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")[289] [290] :if 300<fnsize[291]     ((1↑⎕lc) fnsize "Frame - Buttons") Win∆ProgressBar "MemberUpdate"[292] :endif[293] [294] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fButtons" ⎕wi "New" "Frame"[295] ⎕wi "scale" 5[296] ⎕wi "enabled" (bTVs                                      )[297] ⎕wi "∆where" (4 2⍴0.93 0 0 0 0.069 0 1 0)[298] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality" ⎕wi "size") Win∆Resize (4 2⍴0.93 0 0 0 0.069 0 1 0))[299] ⎕wi "style" 7[300] ⎕wi "onResize" "AutoResize"[301] list←list OVER "fmSV.sDefBasis.pgTVMortality.fButtons.bnDeferreds_BasisEditD"[302] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fButtons.bnDeferreds_BasisEditD" ⎕wi "New" "Button"[303] ⎕wi "enabled" (bTVs                                      )[304] ⎕wi "deferexit" 1[305] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)[306] ⎕wi "∆where" (2 2⍴0.1 0 0.44 0)[307] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.44 0))[308] ⎕wi "tooltip" "Edit/Add a Mortality Rates Definition"[309] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mEditD"⎕wi "onClick")[310] ⎕wi "∆helpid" 5090[311] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Add/Edit⍺Mortality Rates")[312] list←list OVER "fmSV.sDefBasis.pgTVMortality.fButtons.bnDeferreds_BasisEditMI"[313] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fButtons.bnDeferreds_BasisEditMI" ⎕wi "New" "Button"[314] ⎕wi "enabled" (bTVs                                      )[315] ⎕wi "deferexit" 1[316] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)[317] ⎕wi "∆where" (2 2⍴0.1 0 0.56 0)[318] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.56 0))[319] ⎕wi "tooltip" "Edit/Add a Mortality Improvement Definition"[320] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mEditMI"⎕wi "onClick")[321] ⎕wi "∆helpid" 5091[322] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Add/Edit Mortality⍺Improvement")[323] "fmSV.sDefBasis.pgTVMortality" ⎕wi "∆fieldlist" Fieldlist[324] "fmSV.sDefBasis.pgTVMortality" ⎕wi "∆fieldcontrol" Fieldcontrol[325] [326] Fieldlist←Fieldcontrol←0 0⍴""[327] [328] ⎕wself←"fmSV.sDefBasis.pgUnderpin" ⎕wi "New" "Page"[329] ⎕wi "caption" "Underpin"[330] ⎕wi "scale" 5[331] ⎕wi "imageindex" 1[332] ⎕wi "onResize" "AutoResize"[333] ⎕wi "∆helpid" 2223[334] :if ~0∊⍴"fmSV.mDeferreds_BasisGoTo" ⎕wi "self"[335]     ⎕wself←"fmSV.mDeferreds_BasisGoTo.mUnderpin" ⎕wi "New" "Menu"[336]     ⎕wi "caption" "Underpin"[337]     ⎕wi "prompt" "Go to Underpin Page"[338]     ⎕wi "onClick" "'fmSV.sDefBasis' ⎕wi 'value' (('fmSV.sDefBasis' ⎕wi 'pages')⍳⊂'pgUnderpin')"[339] :endif[340] ⎕wgive 0[341] "fmSV.sDefBasis" ⎕wi "value" (⍴"fmSV.sDefBasis" ⎕wi "pages")[342] [343] :if 300<fnsize[344]     ((1↑⎕lc) fnsize "FrameV - Underpin Parameters") Win∆ProgressBar "MemberUpdate"[345] :endif[346] [347] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "New" "Frame"[348] ⎕wi "scale" 5[349] ⎕wi "∆where" (4 2⍴0 0 0 0 0.9 0 1 0)[350] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin" ⎕wi "size") Win∆Resize (4 2⍴0 0 0 0 0.9 0 1 0))[351] ⎕wi "caption" "Underpin Parameters"[352] ⎕wi "style" 0[353] ⎕wi "onResize" "AutoResize"[354] [355] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.ckmpuflag" ⎕wi "New" "Check"[356] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgUnderpin.fMPUCont.ckmpuflag"[357] Fieldcontrol←Fieldcontrol OVER "Check"[358] ⎕wi "∆name" "mpuflag"[359] ⎕wi "∆type" "Check"[360] ⎕wi "∆helpid" 5092[361] ⎕wi "style" 0[362] ⎕wi "caption" "Benefits Underpinned"[363] ⎕wi "∆where" (2 2⍴0.2 0 0.2 0)[364] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize (2 2⍴0.2 0 0.2 0))[365] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")[366] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"[367] [368] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "New" "Combo"[369] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE"[370] Fieldcontrol←Fieldcontrol OVER "Combo"[371] ⎕wi "∆name" "mpuDATE"[372] ⎕wi "∆type" "Date"[373] ⎕wi "∆mandatory" 1[374] ⎕wi "∆helpid" 5093[375] ⎕wi "tooltip" "Specify the Underpin Commencement Date by selecting from the list of Standard Dates or specifying an alternate Date"[376] ⎕wi "limit" 10[377] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[378] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[379] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊8 32 45 46 47 48 49 50 51 52 53 54 55 56 57"[380] ⎕wi "onKeyDown" "(⎕wi 'self') ChangesDates ⎕warg"[381] ⎕wi "style" 16 128 256 0[382] ⎕wi "∆where" (2 2⍴0.45 0 0.2 0)[383] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize (2 2⍴0.45 0 0.2 0))[384] PickList←0 GetAbsDateList 'Fund'[385] ⎕wi "∆update" "0 GetAbsDateList 'Fund'"[386] PickList←⊃m2n 1 0↓PickList[387] PickList←" " OVER PickList[388] ⎕wi "list" PickList[389] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)[390] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Date'  ) at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[391] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Date'  ) at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[392] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgUnderpin.fMPUCont.lrmpuDATE"[393] [394] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.lrmpuDATE" ⎕wi "New" "Label"[395] ⎕wi "scale" 5[396] ⎕wi "extent" (CharSize×¯2↑1,10)[397] ⎕wi "style" 32[398] ⎕wi "caption" " "[399] where←4↑,"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "∆where"[400] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "extent"[401] ⎕wi "∆where" ((x,2)⍴where)[402] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize ⎕wi "∆where")[403] [404] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.llmpuDATE" ⎕wi "New" "Label"[405] ⎕wi "scale" 5[406] ⎕wi "style" 2[407] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Underpin⍺Commencement Date")))[408] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Underpin⍺Commencement Date")[409] where←4↑,"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "∆where"[410] size←1↑"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "extent"[411] size←¯3⌈0.5×(1↑⎕wi "extent")-size[412] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[413] ⎕wi "∆where" ((x,2)⍴where)[414] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize ⎕wi "∆where")[415] [416] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu" ⎕wi "New" "Combo"[417] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu"[418] Fieldcontrol←Fieldcontrol OVER "Combo"[419] ⎕wi "∆name" "jmpu"[420] ⎕wi "∆type" "Char"[421] ⎕wi "∆helpid" 5094[422] ⎕wi "tooltip" "Select the Underpin Interest Rate (% p.a.)"[423] ⎕wi "style" 16 128 256 2[424] ⎕wi "∆where" (2 2⍴0.7 0 0.2 0)[425] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize (2 2⍴0.7 0 0.2 0))[426] PickList←GetFinList 'Int'[427] ⎕wi "∆update" "GetFinList 'Int'"[428] PickList←⊃m2n 1 0↓PickList[429] PickList←" " OVER PickList[430] ⎕wi "list" PickList[431] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[432] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[433] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgUnderpin.fMPUCont.lrjmpu"[434] [435] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.lrjmpu" ⎕wi "New" "Label"[436] ⎕wi "scale" 5[437] ⎕wi "extent" (CharSize×¯2↑1,2 55)[438] ⎕wi "caption" " "[439] where←4↑,"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu" ⎕wi "∆where"[440] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu" ⎕wi "extent"[441] ⎕wi "∆where" ((x,2)⍴where)[442] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize ⎕wi "∆where")[443] [444] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.lljmpu" ⎕wi "New" "Label"[445] ⎕wi "scale" 5[446] ⎕wi "style" 2[447] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Underpin Interest (% p.a.)"))[448] ⎕wi "caption" "Underpin Interest (% p.a.)"[449] where←4↑,"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu" ⎕wi "∆where"[450] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[451] ⎕wi "∆where" ((x,2)⍴where)[452] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize ⎕wi "∆where")[453] [454] :if 300<fnsize[455]     ((1↑⎕lc) fnsize "Frame - Buttons") Win∆ProgressBar "MemberUpdate"[456] :endif[457] [458] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fButtons" ⎕wi "New" "Frame"[459] ⎕wi "scale" 5[460] ⎕wi "∆where" (4 2⍴0.9 0 0 0 0.099 0 1 0)[461] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin" ⎕wi "size") Win∆Resize (4 2⍴0.9 0 0 0 0.099 0 1 0))[462] ⎕wi "style" 7[463] ⎕wi "onResize" "AutoResize"[464] list←list OVER "fmSV.sDefBasis.pgUnderpin.fButtons.bnDeferreds_BasisEditFin"[465] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fButtons.bnDeferreds_BasisEditFin" ⎕wi "New" "Button"[466] ⎕wi "deferexit" 1[467] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)[468] ⎕wi "∆where" (2 2⍴0.1 0 0.44 0)[469] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.44 0))[470] ⎕wi "tooltip" "Edit/Add the Scheme Financial Assumptions"[471] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mEditFin"⎕wi "onClick")[472] ⎕wi "∆helpid" 5095[473] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Edit Scheme⍺Financials")[474] "fmSV.sDefBasis.pgUnderpin" ⎕wi "∆fieldlist" Fieldlist[475] "fmSV.sDefBasis.pgUnderpin" ⎕wi "∆fieldcontrol" Fieldcontrol[476] [477] Fieldlist←Fieldcontrol←0 0⍴""[478] [479] ⎕wself←"fmSV.sDefBasis.pgIndPUPs" ⎕wi "New" "Page"[480] ⎕wi "caption" "Ind PUPs"[481] ⎕wi "scale" 5[482] ⎕wi "imageindex" 1[483] ⎕wi "onResize" "AutoResize"[484] ⎕wi "∆helpid" 2224[485] :if ~0∊⍴"fmSV.mDeferreds_BasisGoTo" ⎕wi "self"[486]     ⎕wself←"fmSV.mDeferreds_BasisGoTo.mIndPUPs" ⎕wi "New" "Menu"[487]     ⎕wi "caption" "Ind PUPs"[488]     ⎕wi "prompt" "Go to Ind PUPs Page"[489]     ⎕wi "onClick" "'fmSV.sDefBasis' ⎕wi 'value' (('fmSV.sDefBasis' ⎕wi 'pages')⍳⊂'pgIndPUPs')"[490] :endif[491] ⎕wgive 0[492] "fmSV.sDefBasis" ⎕wi "value" (⍴"fmSV.sDefBasis" ⎕wi "pages")[493] [494] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fIndPUPs" ⎕wi "New" "Frame"[495] ⎕wi "scale" 5[496] ⎕wi "∆where" (4 2⍴0 0 0 0 0.9 0 1 0)[497] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs" ⎕wi "size") Win∆Resize (4 2⍴0 0 0 0 0.9 0 1 0))[498] ⎕wi "caption" "Independent PUPs"[499] ⎕wi "style" 0[500] ⎕wi "onResize" "AutoResize"[501] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs" ⎕wi "New" "{13E51003-A52B-11D0-86DA-00608CB9FBFB}6D5ECD55-86B8-11d0-95AD-0020AF1E9EB2"[502] ⎕wi "∆where" (4 2⍴0 15 0 10 0.999 ¯25 1 ¯20)[503] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fIndPUPs" ⎕wi "size") Win∆Resize (4 2⍴0 15 0 10 0.999 ¯25 1 ¯20))[504] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs"[505] Fieldcontrol←Fieldcontrol OVER "F1SS"[506] Win∆F1SSDefaults 0[507] ⎕wi "MaxRow" (MaxRow←1)[508] ⎕wi "MaxCol" (MaxCol←1)[509] ⎕wi "xDoStartEdit" 1[510] ⎕wi "xDoEndEdit" 1[511] ⎕wi "xDoCancelEdit" 1[512] ⎕wi "onClick" "Win∆F1SSClick 'fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs'"[513] ⎕wi "onXStartEdit" "⎕wi 'AllowArrows' 0"[514] NameList←0 0⍴" "[515] ⎕wi "MaxRow" (MaxRow←MaxRow⌈1)[516] ⎕wi "RowHeight" 1 250[517] ⎕wi "RowText" 1 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Independent PUP Description")[518] NameList←NameList OVER "IndPUPDesc[;]"[519] ⎕wi "MaxRow" (MaxRow←MaxRow⌈2)[520] ⎕wi "RowHeight" 2 250[521] ⎕wi "RowText" 2 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "{ Independent PUP Payment Parameters }")[522] NameList←NameList OVER ""[523] ⎕wi "MaxRow" (MaxRow←MaxRow⌈3)[524] ⎕wi "RowHeight" 3 250[525] ⎕wi "RowText" 3 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "PUP Amount")[526] NameList←NameList OVER "IndPUP[;]"[527] ⎕wi "MaxRow" (MaxRow←MaxRow⌈4)[528] ⎕wi "RowHeight" 4 250[529] ⎕wi "RowText" 4 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Revaluation Rate Override")[530] NameList←NameList OVER "IndINDREV[;]"[531] ⎕wi "MaxRow" (MaxRow←MaxRow⌈5)[532] ⎕wi "RowHeight" 5 250[533] ⎕wi "RowText" 5 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Spouses DAR Override")[534] NameList←NameList OVER "IndINDWARFRAC[;]"[535] ⎕wi "MaxRow" (MaxRow←MaxRow⌈6)[536] ⎕wi "RowHeight" 6 250[537] ⎕wi "RowText" 6 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Complete Years Only Override")[538] NameList←NameList OVER "IndINDREVYRS[;]"[539] ⎕wi "MaxRow" (MaxRow←MaxRow⌈7)[540] ⎕wi "RowHeight" 7 250[541] ⎕wi "RowText" 7 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "NRA Exits Rounding Override")[542] NameList←NameList OVER "IndINDNRARND[;]"[543] ⎕wi "MaxRow" (MaxRow←MaxRow⌈8)[544] ⎕wi "RowHeight" 8 250[545] ⎕wi "RowText" 8 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Start Date")[546] NameList←NameList OVER "IndINDSTART[;]"[547] ⎕wi "MaxRow" (MaxRow←MaxRow⌈9)[548] ⎕wi "RowHeight" 9 250[549] ⎕wi "RowText" 9 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Finish Date")[550] NameList←NameList OVER "IndINDFINISH[;]"[551] ⎕wi "MaxRow" (MaxRow←MaxRow⌈10)[552] ⎕wi "RowHeight" 10 250[553] ⎕wi "RowText" 10 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Male Start Age")[554] NameList←NameList OVER "m_IndPayStart[;]"[555] ⎕wi "MaxRow" (MaxRow←MaxRow⌈11)[556] ⎕wi "RowHeight" 11 250[557] ⎕wi "RowText" 11 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Female Start Age")[558] NameList←NameList OVER "f_IndPayStart[;]"[559] ⎕wi "MaxRow" (MaxRow←MaxRow⌈12)[560] ⎕wi "RowHeight" 12 250[561] ⎕wi "RowText" 12 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Male End Age")[562] NameList←NameList OVER "m_IndPayEnd[;]"[563] ⎕wi "MaxRow" (MaxRow←MaxRow⌈13)[564] ⎕wi "RowHeight" 13 250[565] ⎕wi "RowText" 13 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Female End Age")[566] NameList←NameList OVER "f_IndPayEnd[;]"[567] ⎕wi "MaxRow" (MaxRow←MaxRow⌈14)[568] ⎕wi "RowHeight" 14 250[569] ⎕wi "RowText" 14 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "PUP Adjustment Factor")[570] NameList←NameList OVER "IndPUPADJ[;]"[571] ⎕wi "MaxRow" (MaxRow←MaxRow⌈15)[572] ⎕wi "RowHeight" 15 250[573] ⎕wi "RowText" 15 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "{ Independent PUP Indicators }")[574] NameList←NameList OVER ""[575] ⎕wi "MaxRow" (MaxRow←MaxRow⌈16)[576] ⎕wi "RowHeight" 16 250[577] ⎕wi "RowText" 16 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "ERF Indicator")[578] NameList←NameList OVER "IndBARBIND[;]"[579] ⎕wi "MaxRow" (MaxRow←MaxRow⌈17)[580] ⎕wi "RowHeight" 17 500[581] ⎕wi "RowText" 17 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Pension Increases⍺in Payment")[582] NameList←NameList OVER "IndDYNIND[;]"[583] ⎕wi "MaxRow" (MaxRow←MaxRow⌈18)[584] ⎕wi "RowHeight" 18 500[585] ⎕wi "RowText" 18 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Pension Increases⍺Pre Start")[586] NameList←NameList OVER "IndDYNIND2[;]"[587] ⎕wi "MaxRow" (MaxRow←MaxRow⌈19)[588] ⎕wi "RowHeight" 19 250[589] ⎕wi "RowText" 19 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Include In Underpin")[590] NameList←NameList OVER "IndUNDIND[;]"[591] ⎕wi "MaxRow" (MaxRow←MaxRow⌈20)[592] ⎕wi "RowHeight" 20 250[593] ⎕wi "RowText" 20 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "{ Independent PUP PPF Parameters }")[594] NameList←NameList OVER ""[595] ⎕wi "MaxRow" (MaxRow←MaxRow⌈21)[596] ⎕wi "RowHeight" 21 500[597] ⎕wi "RowText" 21 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Male PPF NRA⍺(Levy Valuations)")[598] NameList←NameList OVER "m_IndPPFNRA[;]"[599] ⎕wi "MaxRow" (MaxRow←MaxRow⌈22)[600] ⎕wi "RowHeight" 22 500[601] ⎕wi "RowText" 22 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Female PPF NRA⍺(Levy Valuations)")[602] NameList←NameList OVER "f_IndPPFNRA[;]"[603] ⎕wi "MaxRow" (MaxRow←MaxRow⌈23)[604] ⎕wi "RowHeight" 23 250[605] ⎕wi "RowText" 23 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "PPF Service Period")[606] NameList←NameList OVER "IndPPFPAYINC[;]"[607] ⎕wi "xHdrWidth" (250×34)[608] ⎕wi "onXRClick" "0 Win∆F1SSColMenu ('Deferreds_Basis' 'fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs')"[609] ⎕wi "∆roworcol" "Row"[610] ⎕wi "∆name" NameList[611] ⎕wi "∆limit" (,0 0 0 0 8 3 3 0 0 3 3 3 3 7 0 10 0 0 3 0 3 3 0)[612] ⎕wi "∆mandatory" 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0[613] ⎕wi "∆helpid" 5096 0 5097 5098 5099 5100 5101 5102 5103 5104 5104 5105 5105 5106 0 5107 5108 5109 5110 0 5111 5111 5112[614] ⎕wi "∆type" "⍺Char⍺⍺Char⍺Fin⍺Num⍺Char⍺Char⍺Char⍺Char⍺Num⍺Num⍺Num⍺Num⍺Num⍺⍺Char⍺Char⍺Char⍺Char⍺⍺Num⍺Num⍺Char"[615] ⎕wi "∆valid" "⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''"[616] ⎕wi "∆range" "⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺"[617] ⎕wi "onXEndEdit" "(⎕wi 'xRow') Win∆ValidF1SSCell ⎕wi 'xCol' ⋄ 0 0⍴⎕ex 'F1SSEvent' "[618] ⎕wi "onExit" "Win∆ValidF1SSExit 'Deferreds_Basis'"[619] ⎕wi "onExitError" "MDISPLAY ⎕warg ⋄ ⎕wi 'XStartEdit' 0 1 1"[620] ⎕wi "onXCancelEdit" "⎕wi 'AllowArrows' 1 ⋄ ⎕wi 'SetColWidthAuto' 1 1 (⎕wi 'MaxRow') (⎕wi 'MaxCol') 0"[621] "fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs" Win∆F1SSProtectCells "Unlock"[622] ⎕wi "SetSelection" 1 1 1 1[623] [624] :if 300<fnsize[625]     ((1↑⎕lc) fnsize "Frame - Buttons") Win∆ProgressBar "MemberUpdate"[626] :endif[627] [628] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "New" "Frame"[629] ⎕wi "scale" 5[630] ⎕wi "∆where" (4 2⍴0.9 0 0 0 0.099 0 1 0)[631] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs" ⎕wi "size") Win∆Resize (4 2⍴0.9 0 0 0 0.099 0 1 0))[632] ⎕wi "style" 7[633] ⎕wi "onResize" "AutoResize"[634] list←list OVER "fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisAdd"[635] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisAdd" ⎕wi "New" "Button"[636] ⎕wi "enabled" ((ClntCode=3)^basAccess[2]≤accesslevel)[637] ⎕wi "deferexit" 1[638] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)[639] ⎕wi "∆where" (2 2⍴0.1 0 0.28 0)[640] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.28 0))[641] ⎕wi "tooltip" "Add a New Independent PUP Definition"[642] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mIndPUPAdd"⎕wi "onClick")[643] ⎕wi "∆helpid" 5113[644] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Add⍺PUP")[645] list←list OVER "fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisInsert"[646] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisInsert" ⎕wi "New" "Button"[647] ⎕wi "enabled" ((ClntCode=3)^basAccess[2]≤accesslevel)[648] ⎕wi "deferexit" 1[649] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)[650] ⎕wi "∆where" (2 2⍴0.1 0 0.4 0)[651] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.4 0))[652] ⎕wi "tooltip" "Insert an Independent PUP Definition"[653] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mIndPUPInsert"⎕wi "onClick")[654] ⎕wi "∆helpid" 5114[655] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Insert⍺PUP")[656] list←list OVER "fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisEdit"[657] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisEdit" ⎕wi "New" "Button"[658] ⎕wi "enabled" ((ClntCode=3)^basAccess[2]≤accesslevel)[659] ⎕wi "deferexit" 1[660] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)[661] ⎕wi "∆where" (2 2⍴0.1 0 0.52 0)[662] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.52 0))[663] ⎕wi "tooltip" "Edit an Existing Independent PUP Definition"[664] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mIndPUPEdit"⎕wi "onClick")[665] ⎕wi "∆helpid" 5115[666] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Edit⍺PUP")[667] list←list OVER "fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisDelete"[668] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisDelete" ⎕wi "New" "Button"[669] ⎕wi "enabled" ((ClntCode=3)^basAccess[2]≤accesslevel)[670] ⎕wi "deferexit" 1[671] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)[672] ⎕wi "∆where" (2 2⍴0.1 0 0.64 0)[673] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.64 0))[674] ⎕wi "tooltip" "Delete an Independent PUP Definition"[675] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mIndPUPDel"⎕wi "onClick")[676] ⎕wi "∆helpid" 5116[677] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Delete⍺PUP")[678] :if buttonimage[679]     ⎕wi "imagelist" "fmSV.iStandard"[680]     ⎕wi "imageindex" 6[681] :endif[682] "fmSV.sDefBasis.pgIndPUPs" ⎕wi "∆fieldlist" Fieldlist[683] "fmSV.sDefBasis.pgIndPUPs" ⎕wi "∆fieldcontrol" Fieldcontrol[684] [685] Fieldlist←Fieldcontrol←0 0⍴""[686] [687] ⎕wself←"fmSV.sDefBasis.pgNSPUPs" ⎕wi "New" "Page"[688] ⎕wi "caption" "NSPUPs"[689] ⎕wi "scale" 5[690] ⎕wi "imageindex" 1[691] ⎕wi "onResize" "AutoResize"[692] ⎕wi "∆helpid" 2225[693] :if ~0∊⍴"fmSV.mDeferreds_BasisGoTo" ⎕wi "self"[694]     ⎕wself←"fmSV.mDeferreds_BasisGoTo.mNSPUPs" ⎕wi "New" "Menu"[695]     ⎕wi "caption" "NSPUPs"[696]     ⎕wi "prompt" "Go to NSPUPs Page"[697]     ⎕wi "onClick" "'fmSV.sDefBasis' ⎕wi 'value' (('fmSV.sDefBasis' ⎕wi 'pages')⍳⊂'pgNSPUPs')"[698] :endif[699] ⎕wgive 0[700] "fmSV.sDefBasis" ⎕wi "value" (⍴"fmSV.sDefBasis" ⎕wi "pages")[701] [702] :if 300<fnsize[703]     ((1↑⎕lc) fnsize "FrameV - Death Before Retirement PUP 1") Win∆ProgressBar "MemberUpdate"[704] :endif[705] [706] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "New" "Frame"[707] ⎕wi "scale" 5[708] ⎕wi "∆where" (4 2⍴0 0 0 0 0.41 0 0.5 0)[709] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0 0 0 0 0.41 0 0.5 0))[710] ⎕wi "caption" "Death Before Retirement PUP 1"[711] ⎕wi "style" 0[712] ⎕wi "onResize" "AutoResize"[713] [714] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDATADBR1" ⎕wi "New" "Combo"[715] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDATADBR1"[716] Fieldcontrol←Fieldcontrol OVER "Combo"[717] ⎕wi "∆name" "DATADBR1"[718] ⎕wi "∆type" "Char"[719] ⎕wi "∆helpid" 5117[720] ⎕wi "style" 16 128 256 2[721] ⎕wi "∆where" (2 2⍴0.08 0 0.35 0)[722] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.08 0 0.35 0))[723] PickList←GetVarNumList 'All'[724] ⎕wi "∆update" "GetVarNumList 'All'"[725] PickList←⊃m2n 1 0↓PickList[726] PickList←" " OVER PickList[727] ⎕wi "list" PickList[728] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[729] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[730] [731] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llDATADBR1" ⎕wi "New" "Label"[732] ⎕wi "scale" 5[733] ⎕wi "style" 2[734] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "PUP Amount"))[735] ⎕wi "caption" "PUP Amount"[736] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDATADBR1" ⎕wi "∆where"[737] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[738] ⎕wi "∆where" ((x,2)⍴where)[739] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[740] [741] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1" ⎕wi "New" "Edit"[742] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1"[743] Fieldcontrol←Fieldcontrol OVER "Edit"[744] ⎕wi "∆name" "PERCENTDBR1"[745] ⎕wi "∆type" "Num"[746] ⎕wi "∆mandatory" 1[747] ⎕wi "∆helpid" 5118[748] ⎕wi "limit" 8[749] ⎕wi "∆where" (2 2⍴0.2 0 0.35 0)[750] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.2 0 0.35 0))[751] ⎕wi "onChange" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[752] ⎕wi "onExit" "⍎(0∊⍴,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[753] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[754] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"[755] ⎕wi "extent" (2+CharSize×1 9)[756] [757] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.lrPERCENTDBR1" ⎕wi "New" "Label"[758] ⎕wi "scale" 5[759] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))[760] ⎕wi "caption" "%"[761] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1" ⎕wi "∆where"[762] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1" ⎕wi "extent"[763] ⎕wi "∆where" ((x,2)⍴where)[764] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[765] [766] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llPERCENTDBR1" ⎕wi "New" "Label"[767] ⎕wi "scale" 5[768] ⎕wi "style" 2[769] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "% of PUP Amount"))[770] ⎕wi "caption" "% of PUP Amount"[771] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1" ⎕wi "∆where"[772] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[773] ⎕wi "∆where" ((x,2)⍴where)[774] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[775] [776] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1" ⎕wi "New" "Combo"[777] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1"[778] Fieldcontrol←Fieldcontrol OVER "Combo"[779] ⎕wi "∆name" "REVDBR1"[780] ⎕wi "∆type" "Char"[781] ⎕wi "∆helpid" 5119[782] ⎕wi "style" 16 128 256 2[783] ⎕wi "∆where" (2 2⍴0.32 0 0.35 0)[784] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.32 0 0.35 0))[785] PickList←GetFinList 'Rev'[786] ⎕wi "∆update" "GetFinList 'Rev'"[787] PickList←⊃m2n 1 0↓PickList[788] PickList←" " OVER PickList[789] ⎕wi "list" PickList[790] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[791] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[792] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDBR1.lrREVDBR1"[793] [794] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.lrREVDBR1" ⎕wi "New" "Label"[795] ⎕wi "scale" 5[796] ⎕wi "extent" (CharSize×¯2↑1,2 45)[797] ⎕wi "caption" " "[798] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1" ⎕wi "∆where"[799] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1" ⎕wi "extent"[800] ⎕wi "∆where" ((x,2)⍴where)[801] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[802] [803] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llREVDBR1" ⎕wi "New" "Label"[804] ⎕wi "scale" 5[805] ⎕wi "style" 2[806] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Revaluation Rate Override"))[807] ⎕wi "caption" "Revaluation Rate Override"[808] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1" ⎕wi "∆where"[809] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[810] ⎕wi "∆where" ((x,2)⍴where)[811] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[812] [813] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbPreNRAEXITDBR1" ⎕wi "New" "Combo"[814] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbPreNRAEXITDBR1"[815] Fieldcontrol←Fieldcontrol OVER "Combo"[816] ⎕wi "∆name" "PreNRAEXITDBR1"[817] ⎕wi "∆type" "Char"[818] ⎕wi "∆helpid" 5120[819] ⎕wi "style" 16 128 256 2[820] ⎕wi "∆where" (2 2⍴0.56 0 0.35 0)[821] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.56 0 0.35 0))[822] PickList←⍙POPUPSdict ReadDictFile "YesNo"[823] PickList←⊃m2n 1 0↓PickList[824] PickList←" " OVER PickList[825] ⎕wi "list" PickList[826] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[827] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[828] [829] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llPreNRAEXITDBR1" ⎕wi "New" "Label"[830] ⎕wi "scale" 5[831] ⎕wi "style" 2[832] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Complete Years Only Override"))[833] ⎕wi "caption" "Complete Years Only Override"[834] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbPreNRAEXITDBR1" ⎕wi "∆where"[835] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[836] ⎕wi "∆where" ((x,2)⍴where)[837] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[838] [839] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDYNDBR1" ⎕wi "New" "Combo"[840] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDYNDBR1"[841] Fieldcontrol←Fieldcontrol OVER "Combo"[842] ⎕wi "∆name" "DYNDBR1"[843] ⎕wi "∆type" "Char"[844] ⎕wi "∆mandatory" 1[845] ⎕wi "∆helpid" 5121[846] ⎕wi "tooltip" "Select the Escalation Rate"[847] ⎕wi "style" 16 128 256 2[848] ⎕wi "∆where" (2 2⍴0.68 0 0.35 0)[849] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.68 0 0.35 0))[850] PickList←⍙POPUPSdict ReadDictFile "EscRate"[851] PickList←⊃m2n 1 0↓PickList[852] ⎕wi "list" PickList[853] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[854] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[855] [856] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llDYNDBR1" ⎕wi "New" "Label"[857] ⎕wi "scale" 5[858] ⎕wi "style" 2[859] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")))[860] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")[861] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDYNDBR1" ⎕wi "∆where"[862] size←1↑"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDYNDBR1" ⎕wi "extent"[863] size←¯3⌈0.5×(1↑⎕wi "extent")-size[864] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[865] ⎕wi "∆where" ((x,2)⍴where)[866] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[867] [868] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ" ⎕wi "New" "Combo"[869] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ"[870] Fieldcontrol←Fieldcontrol OVER "Combo"[871] ⎕wi "∆name" "DBR1ADJ"[872] ⎕wi "∆type" "Num"[873] ⎕wi "∆mandatory" 1[874] ⎕wi "∆valid" ('Scalar')[875] ⎕wi "∆helpid" 5122[876] ⎕wi "limit" 8[877] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[878] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[879] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"[880] ⎕wi "style" 16 128 256 0[881] ⎕wi "∆where" (2 2⍴0.8 0 0.35 0)[882] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.8 0 0.35 0))[883] PickList←('Scalar') GetAbsNumList 'Fund'[884] ⎕wi "∆update" "('Scalar') GetAbsNumList 'Fund'"[885] PickList←⊃m2n 1 0↓PickList[886] PickList←" " OVER PickList[887] ⎕wi "list" PickList[888] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)[889] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[890] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[891] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDBR1.lrDBR1ADJ"[892] [893] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.lrDBR1ADJ" ⎕wi "New" "Label"[894] ⎕wi "scale" 5[895] ⎕wi "extent" (CharSize×¯2↑1,15)[896] ⎕wi "style" 32[897] ⎕wi "caption" " "[898] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ" ⎕wi "∆where"[899] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ" ⎕wi "extent"[900] ⎕wi "∆where" ((x,2)⍴where)[901] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[902] [903] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llDBR1ADJ" ⎕wi "New" "Label"[904] ⎕wi "scale" 5[905] ⎕wi "style" 2[906] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Adjustment Factor"))[907] ⎕wi "caption" "Adjustment Factor"[908] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ" ⎕wi "∆where"[909] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[910] ⎕wi "∆where" ((x,2)⍴where)[911] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[912] [913] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.ckPPFPAYINCDBR1" ⎕wi "New" "Check"[914] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.ckPPFPAYINCDBR1"[915] Fieldcontrol←Fieldcontrol OVER "Check"[916] ⎕wi "∆name" "PPFPAYINCDBR1"[917] ⎕wi "∆type" "Check"[918] ⎕wi "enabled" (capenabled)[919] ⎕wi "∆helpid" 5123[920] ⎕wi "style" 0[921] ⎕wi "caption" "Treat as Post 1997 for CAP"[922] ⎕wi "∆where" (2 2⍴0.92 0 0.35 0)[923] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.92 0 0.35 0))[924] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")[925] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"[926] [927] :if 300<fnsize[928]     ((1↑⎕lc) fnsize "FrameV - Death Before Retirement PUP 2") Win∆ProgressBar "MemberUpdate"[929] :endif[930] [931] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "New" "Frame"[932] ⎕wi "scale" 5[933] ⎕wi "∆where" (4 2⍴0 0 0.5 0 0.41 0 0.5 0)[934] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0 0 0.5 0 0.41 0 0.5 0))[935] ⎕wi "caption" "Death Before Retirement PUP 2"[936] ⎕wi "style" 0[937] ⎕wi "onResize" "AutoResize"[938] [939] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDATADBR2" ⎕wi "New" "Combo"[940] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDATADBR2"[941] Fieldcontrol←Fieldcontrol OVER "Combo"[942] ⎕wi "∆name" "DATADBR2"[943] ⎕wi "∆type" "Char"[944] ⎕wi "∆helpid" 5117[945] ⎕wi "style" 16 128 256 2[946] ⎕wi "∆where" (2 2⍴0.08 0 0.35 0)[947] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.08 0 0.35 0))[948] PickList←GetVarNumList 'All'[949] ⎕wi "∆update" "GetVarNumList 'All'"[950] PickList←⊃m2n 1 0↓PickList[951] PickList←" " OVER PickList[952] ⎕wi "list" PickList[953] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[954] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[955] [956] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llDATADBR2" ⎕wi "New" "Label"[957] ⎕wi "scale" 5[958] ⎕wi "style" 2[959] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "PUP Amount"))[960] ⎕wi "caption" "PUP Amount"[961] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDATADBR2" ⎕wi "∆where"[962] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[963] ⎕wi "∆where" ((x,2)⍴where)[964] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[965] [966] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2" ⎕wi "New" "Edit"[967] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2"[968] Fieldcontrol←Fieldcontrol OVER "Edit"[969] ⎕wi "∆name" "PERCENTDBR2"[970] ⎕wi "∆type" "Num"[971] ⎕wi "∆mandatory" 1[972] ⎕wi "∆helpid" 5118[973] ⎕wi "limit" 8[974] ⎕wi "∆where" (2 2⍴0.2 0 0.35 0)[975] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.2 0 0.35 0))[976] ⎕wi "onChange" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[977] ⎕wi "onExit" "⍎(0∊⍴,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[978] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[979] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"[980] ⎕wi "extent" (2+CharSize×1 9)[981] [982] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.lrPERCENTDBR2" ⎕wi "New" "Label"[983] ⎕wi "scale" 5[984] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))[985] ⎕wi "caption" "%"[986] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2" ⎕wi "∆where"[987] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2" ⎕wi "extent"[988] ⎕wi "∆where" ((x,2)⍴where)[989] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[990] [991] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llPERCENTDBR2" ⎕wi "New" "Label"[992] ⎕wi "scale" 5[993] ⎕wi "style" 2[994] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "% of PUP Amount"))[995] ⎕wi "caption" "% of PUP Amount"[996] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2" ⎕wi "∆where"[997] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[998] ⎕wi "∆where" ((x,2)⍴where)[999] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1000] [1001] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2" ⎕wi "New" "Combo"[1002] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2"[1003] Fieldcontrol←Fieldcontrol OVER "Combo"[1004] ⎕wi "∆name" "REVDBR2"[1005] ⎕wi "∆type" "Char"[1006] ⎕wi "∆helpid" 5119[1007] ⎕wi "style" 16 128 256 2[1008] ⎕wi "∆where" (2 2⍴0.32 0 0.35 0)[1009] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.32 0 0.35 0))[1010] PickList←GetFinList 'Rev'[1011] ⎕wi "∆update" "GetFinList 'Rev'"[1012] PickList←⊃m2n 1 0↓PickList[1013] PickList←" " OVER PickList[1014] ⎕wi "list" PickList[1015] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1016] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1017] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDBR2.lrREVDBR2"[1018] [1019] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.lrREVDBR2" ⎕wi "New" "Label"[1020] ⎕wi "scale" 5[1021] ⎕wi "extent" (CharSize×¯2↑1,2 45)[1022] ⎕wi "caption" " "[1023] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2" ⎕wi "∆where"[1024] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2" ⎕wi "extent"[1025] ⎕wi "∆where" ((x,2)⍴where)[1026] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1027] [1028] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llREVDBR2" ⎕wi "New" "Label"[1029] ⎕wi "scale" 5[1030] ⎕wi "style" 2[1031] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Revaluation Rate Override"))[1032] ⎕wi "caption" "Revaluation Rate Override"[1033] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2" ⎕wi "∆where"[1034] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1035] ⎕wi "∆where" ((x,2)⍴where)[1036] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1037] [1038] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbPreNRAEXITDBR2" ⎕wi "New" "Combo"[1039] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbPreNRAEXITDBR2"[1040] Fieldcontrol←Fieldcontrol OVER "Combo"[1041] ⎕wi "∆name" "PreNRAEXITDBR2"[1042] ⎕wi "∆type" "Char"[1043] ⎕wi "∆helpid" 5120[1044] ⎕wi "style" 16 128 256 2[1045] ⎕wi "∆where" (2 2⍴0.56 0 0.35 0)[1046] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.56 0 0.35 0))[1047] PickList←⍙POPUPSdict ReadDictFile "YesNo"[1048] PickList←⊃m2n 1 0↓PickList[1049] PickList←" " OVER PickList[1050] ⎕wi "list" PickList[1051] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1052] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1053] [1054] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llPreNRAEXITDBR2" ⎕wi "New" "Label"[1055] ⎕wi "scale" 5[1056] ⎕wi "style" 2[1057] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Complete Years Only Override"))[1058] ⎕wi "caption" "Complete Years Only Override"[1059] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbPreNRAEXITDBR2" ⎕wi "∆where"[1060] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1061] ⎕wi "∆where" ((x,2)⍴where)[1062] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1063] [1064] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDYNDBR2" ⎕wi "New" "Combo"[1065] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDYNDBR2"[1066] Fieldcontrol←Fieldcontrol OVER "Combo"[1067] ⎕wi "∆name" "DYNDBR2"[1068] ⎕wi "∆type" "Char"[1069] ⎕wi "∆mandatory" 1[1070] ⎕wi "∆helpid" 5121[1071] ⎕wi "tooltip" "Select the Escalation Rate"[1072] ⎕wi "style" 16 128 256 2[1073] ⎕wi "∆where" (2 2⍴0.68 0 0.35 0)[1074] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.68 0 0.35 0))[1075] PickList←⍙POPUPSdict ReadDictFile "EscRate"[1076] PickList←⊃m2n 1 0↓PickList[1077] ⎕wi "list" PickList[1078] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1079] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1080] [1081] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llDYNDBR2" ⎕wi "New" "Label"[1082] ⎕wi "scale" 5[1083] ⎕wi "style" 2[1084] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")))[1085] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")[1086] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDYNDBR2" ⎕wi "∆where"[1087] size←1↑"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDYNDBR2" ⎕wi "extent"[1088] size←¯3⌈0.5×(1↑⎕wi "extent")-size[1089] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[1090] ⎕wi "∆where" ((x,2)⍴where)[1091] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1092] [1093] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ" ⎕wi "New" "Combo"[1094] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ"[1095] Fieldcontrol←Fieldcontrol OVER "Combo"[1096] ⎕wi "∆name" "DBR2ADJ"[1097] ⎕wi "∆type" "Num"[1098] ⎕wi "∆mandatory" 1[1099] ⎕wi "∆valid" ('Scalar')[1100] ⎕wi "∆helpid" 5122[1101] ⎕wi "limit" 8[1102] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[1103] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[1104] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"[1105] ⎕wi "style" 16 128 256 0[1106] ⎕wi "∆where" (2 2⍴0.8 0 0.35 0)[1107] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.8 0 0.35 0))[1108] PickList←('Scalar') GetAbsNumList 'Fund'[1109] ⎕wi "∆update" "('Scalar') GetAbsNumList 'Fund'"[1110] PickList←⊃m2n 1 0↓PickList[1111] PickList←" " OVER PickList[1112] ⎕wi "list" PickList[1113] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)[1114] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1115] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1116] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDBR2.lrDBR2ADJ"[1117] [1118] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.lrDBR2ADJ" ⎕wi "New" "Label"[1119] ⎕wi "scale" 5[1120] ⎕wi "extent" (CharSize×¯2↑1,15)[1121] ⎕wi "style" 32[1122] ⎕wi "caption" " "[1123] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ" ⎕wi "∆where"[1124] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ" ⎕wi "extent"[1125] ⎕wi "∆where" ((x,2)⍴where)[1126] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1127] [1128] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llDBR2ADJ" ⎕wi "New" "Label"[1129] ⎕wi "scale" 5[1130] ⎕wi "style" 2[1131] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Adjustment Factor"))[1132] ⎕wi "caption" "Adjustment Factor"[1133] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ" ⎕wi "∆where"[1134] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1135] ⎕wi "∆where" ((x,2)⍴where)[1136] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1137] [1138] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.ckPPFPAYINCDBR2" ⎕wi "New" "Check"[1139] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.ckPPFPAYINCDBR2"[1140] Fieldcontrol←Fieldcontrol OVER "Check"[1141] ⎕wi "∆name" "PPFPAYINCDBR2"[1142] ⎕wi "∆type" "Check"[1143] ⎕wi "enabled" (capenabled)[1144] ⎕wi "∆helpid" 5123[1145] ⎕wi "style" 0[1146] ⎕wi "caption" "Treat as Post 1997 for CAP"[1147] ⎕wi "∆where" (2 2⍴0.92 0 0.35 0)[1148] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.92 0 0.35 0))[1149] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")[1150] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"[1151] [1152] :if 300<fnsize[1153]     ((1↑⎕lc) fnsize "FrameV - Death After Retirement PUP 1") Win∆ProgressBar "MemberUpdate"[1154] :endif[1155] [1156] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "New" "Frame"[1157] ⎕wi "scale" 5[1158] ⎕wi "∆where" (4 2⍴0.41 0 0 0 0.51 0 0.5 0)[1159] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0.41 0 0 0 0.51 0 0.5 0))[1160] ⎕wi "caption" "Death After Retirement PUP 1"[1161] ⎕wi "style" 0[1162] ⎕wi "onResize" "AutoResize"[1163] [1164] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDATADAR1" ⎕wi "New" "Combo"[1165] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDATADAR1"[1166] Fieldcontrol←Fieldcontrol OVER "Combo"[1167] ⎕wi "∆name" "DATADAR1"[1168] ⎕wi "∆type" "Char"[1169] ⎕wi "∆helpid" 5124[1170] ⎕wi "style" 16 128 256 2[1171] ⎕wi "∆where" (2 2⍴0.09 0 0.35 0)[1172] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.09 0 0.35 0))[1173] PickList←GetVarNumList 'All'[1174] ⎕wi "∆update" "GetVarNumList 'All'"[1175] PickList←⊃m2n 1 0↓PickList[1176] PickList←" " OVER PickList[1177] ⎕wi "list" PickList[1178] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1179] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1180] [1181] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llDATADAR1" ⎕wi "New" "Label"[1182] ⎕wi "scale" 5[1183] ⎕wi "style" 2[1184] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "PUP Amount"))[1185] ⎕wi "caption" "PUP Amount"[1186] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDATADAR1" ⎕wi "∆where"[1187] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1188] ⎕wi "∆where" ((x,2)⍴where)[1189] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1190] [1191] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1" ⎕wi "New" "Edit"[1192] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1"[1193] Fieldcontrol←Fieldcontrol OVER "Edit"[1194] ⎕wi "∆name" "PERCENTDAR1"[1195] ⎕wi "∆type" "Num"[1196] ⎕wi "∆mandatory" 1[1197] ⎕wi "∆helpid" 5125[1198] ⎕wi "limit" 8[1199] ⎕wi "∆where" (2 2⍴0.18 0 0.35 0)[1200] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.18 0 0.35 0))[1201] ⎕wi "onChange" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1202] ⎕wi "onExit" "⍎(0∊⍴,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[1203] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[1204] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"[1205] ⎕wi "extent" (2+CharSize×1 9)[1206] [1207] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.lrPERCENTDAR1" ⎕wi "New" "Label"[1208] ⎕wi "scale" 5[1209] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))[1210] ⎕wi "caption" "%"[1211] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1" ⎕wi "∆where"[1212] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1" ⎕wi "extent"[1213] ⎕wi "∆where" ((x,2)⍴where)[1214] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1215] [1216] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llPERCENTDAR1" ⎕wi "New" "Label"[1217] ⎕wi "scale" 5[1218] ⎕wi "style" 2[1219] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "% of PUP Amount"))[1220] ⎕wi "caption" "% of PUP Amount"[1221] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1" ⎕wi "∆where"[1222] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1223] ⎕wi "∆where" ((x,2)⍴where)[1224] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1225] [1226] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1" ⎕wi "New" "Combo"[1227] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1"[1228] Fieldcontrol←Fieldcontrol OVER "Combo"[1229] ⎕wi "∆name" "REVDAR1"[1230] ⎕wi "∆type" "Char"[1231] ⎕wi "∆helpid" 5126[1232] ⎕wi "style" 16 128 256 2[1233] ⎕wi "∆where" (2 2⍴0.27 0 0.35 0)[1234] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.27 0 0.35 0))[1235] PickList←GetFinList 'Rev'[1236] ⎕wi "∆update" "GetFinList 'Rev'"[1237] PickList←⊃m2n 1 0↓PickList[1238] PickList←" " OVER PickList[1239] ⎕wi "list" PickList[1240] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1241] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1242] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDAR1.lrREVDAR1"[1243] [1244] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.lrREVDAR1" ⎕wi "New" "Label"[1245] ⎕wi "scale" 5[1246] ⎕wi "extent" (CharSize×¯2↑1,2 45)[1247] ⎕wi "caption" " "[1248] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1" ⎕wi "∆where"[1249] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1" ⎕wi "extent"[1250] ⎕wi "∆where" ((x,2)⍴where)[1251] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1252] [1253] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llREVDAR1" ⎕wi "New" "Label"[1254] ⎕wi "scale" 5[1255] ⎕wi "style" 2[1256] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Revaluation Rate Override"))[1257] ⎕wi "caption" "Revaluation Rate Override"[1258] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1" ⎕wi "∆where"[1259] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1260] ⎕wi "∆where" ((x,2)⍴where)[1261] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1262] [1263] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbPreNRAEXITDAR1" ⎕wi "New" "Combo"[1264] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbPreNRAEXITDAR1"[1265] Fieldcontrol←Fieldcontrol OVER "Combo"[1266] ⎕wi "∆name" "PreNRAEXITDAR1"[1267] ⎕wi "∆type" "Char"[1268] ⎕wi "∆helpid" 5127[1269] ⎕wi "style" 16 128 256 2[1270] ⎕wi "∆where" (2 2⍴0.45 0 0.35 0)[1271] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.45 0 0.35 0))[1272] PickList←⍙POPUPSdict ReadDictFile "YesNo"[1273] PickList←⊃m2n 1 0↓PickList[1274] PickList←" " OVER PickList[1275] ⎕wi "list" PickList[1276] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1277] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1278] [1279] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llPreNRAEXITDAR1" ⎕wi "New" "Label"[1280] ⎕wi "scale" 5[1281] ⎕wi "style" 2[1282] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Complete Years Only Override"))[1283] ⎕wi "caption" "Complete Years Only Override"[1284] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbPreNRAEXITDAR1" ⎕wi "∆where"[1285] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1286] ⎕wi "∆where" ((x,2)⍴where)[1287] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1288] [1289] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbNRAEXITDAR1" ⎕wi "New" "Combo"[1290] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbNRAEXITDAR1"[1291] Fieldcontrol←Fieldcontrol OVER "Combo"[1292] ⎕wi "∆name" "NRAEXITDAR1"[1293] ⎕wi "∆type" "Combo"[1294] ⎕wi "∆helpid" 5128[1295] ⎕wi "tooltip" "Select the Service Rounding Override (if any)"[1296] ⎕wi "style" 16 128 256 2[1297] ⎕wi "∆where" (2 2⍴0.54 0 0.35 0)[1298] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.54 0 0.35 0))[1299] PickList←⍙POPUPSdict ReadDictFile "ServRound"[1300] PickList←⊃m2n 1 0↓PickList[1301] PickList←" " OVER PickList[1302] ⎕wi "list" PickList[1303] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1304] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1305] [1306] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llNRAEXITDAR1" ⎕wi "New" "Label"[1307] ⎕wi "scale" 5[1308] ⎕wi "style" 2[1309] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Exit Rounding Override"))[1310] ⎕wi "caption" "Exit Rounding Override"[1311] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbNRAEXITDAR1" ⎕wi "∆where"[1312] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1313] ⎕wi "∆where" ((x,2)⍴where)[1314] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1315] [1316] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbERFDAR1" ⎕wi "New" "Combo"[1317] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbERFDAR1"[1318] Fieldcontrol←Fieldcontrol OVER "Combo"[1319] ⎕wi "∆name" "ERFDAR1"[1320] ⎕wi "∆type" "Char"[1321] ⎕wi "∆mandatory" 1[1322] ⎕wi "∆helpid" 5129[1323] ⎕wi "style" 16 128 256 2[1324] ⎕wi "∆where" (2 2⍴0.63 0 0.35 0)[1325] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.63 0 0.35 0))[1326] PickList←⍙POPUPSdict ReadDictFile "ERF1NDF"[1327] PickList←⊃m2n 1 0↓PickList[1328] ⎕wi "list" PickList[1329] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1330] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1331] [1332] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llERFDAR1" ⎕wi "New" "Label"[1333] ⎕wi "scale" 5[1334] ⎕wi "style" 2[1335] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "ERF Indicator"))[1336] ⎕wi "caption" "ERF Indicator"[1337] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbERFDAR1" ⎕wi "∆where"[1338] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1339] ⎕wi "∆where" ((x,2)⍴where)[1340] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1341] [1342] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDYNDAR1" ⎕wi "New" "Combo"[1343] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDYNDAR1"[1344] Fieldcontrol←Fieldcontrol OVER "Combo"[1345] ⎕wi "∆name" "DYNDAR1"[1346] ⎕wi "∆type" "Char"[1347] ⎕wi "∆mandatory" 1[1348] ⎕wi "∆helpid" 5130[1349] ⎕wi "tooltip" "Select the Escalation Rate"[1350] ⎕wi "style" 16 128 256 2[1351] ⎕wi "∆where" (2 2⍴0.72 0 0.35 0)[1352] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.72 0 0.35 0))[1353] PickList←⍙POPUPSdict ReadDictFile "EscRate"[1354] PickList←⊃m2n 1 0↓PickList[1355] ⎕wi "list" PickList[1356] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1357] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1358] [1359] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llDYNDAR1" ⎕wi "New" "Label"[1360] ⎕wi "scale" 5[1361] ⎕wi "style" 2[1362] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")))[1363] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")[1364] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDYNDAR1" ⎕wi "∆where"[1365] size←1↑"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDYNDAR1" ⎕wi "extent"[1366] size←¯3⌈0.5×(1↑⎕wi "extent")-size[1367] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[1368] ⎕wi "∆where" ((x,2)⍴where)[1369] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1370] [1371] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ" ⎕wi "New" "Combo"[1372] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ"[1373] Fieldcontrol←Fieldcontrol OVER "Combo"[1374] ⎕wi "∆name" "DAR1ADJ"[1375] ⎕wi "∆type" "Num"[1376] ⎕wi "∆mandatory" 1[1377] ⎕wi "∆valid" ('Scalar')[1378] ⎕wi "∆helpid" 5131[1379] ⎕wi "limit" 8[1380] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[1381] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[1382] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"[1383] ⎕wi "style" 16 128 256 0[1384] ⎕wi "∆where" (2 2⍴0.81 0 0.35 0)[1385] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.81 0 0.35 0))[1386] PickList←('Scalar') GetAbsNumList 'Fund'[1387] ⎕wi "∆update" "('Scalar') GetAbsNumList 'Fund'"[1388] PickList←⊃m2n 1 0↓PickList[1389] PickList←" " OVER PickList[1390] ⎕wi "list" PickList[1391] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)[1392] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1393] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1394] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDAR1.lrDAR1ADJ"[1395] [1396] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.lrDAR1ADJ" ⎕wi "New" "Label"[1397] ⎕wi "scale" 5[1398] ⎕wi "extent" (CharSize×¯2↑1,15)[1399] ⎕wi "style" 32[1400] ⎕wi "caption" " "[1401] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ" ⎕wi "∆where"[1402] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ" ⎕wi "extent"[1403] ⎕wi "∆where" ((x,2)⍴where)[1404] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1405] [1406] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llDAR1ADJ" ⎕wi "New" "Label"[1407] ⎕wi "scale" 5[1408] ⎕wi "style" 2[1409] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Adjustment Factor"))[1410] ⎕wi "caption" "Adjustment Factor"[1411] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ" ⎕wi "∆where"[1412] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1413] ⎕wi "∆where" ((x,2)⍴where)[1414] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1415] [1416] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.ckPPFPAYINCDAR1" ⎕wi "New" "Check"[1417] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.ckPPFPAYINCDAR1"[1418] Fieldcontrol←Fieldcontrol OVER "Check"[1419] ⎕wi "∆name" "PPFPAYINCDAR1"[1420] ⎕wi "∆type" "Check"[1421] ⎕wi "enabled" (capenabled)[1422] ⎕wi "∆helpid" 5132[1423] ⎕wi "style" 0[1424] ⎕wi "caption" "Treat as Post 1997 for CAP"[1425] ⎕wi "∆where" (2 2⍴0.9 0 0.35 0)[1426] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.9 0 0.35 0))[1427] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")[1428] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"[1429] [1430] :if 300<fnsize[1431]     ((1↑⎕lc) fnsize "FrameV - Death After Retirement PUP 2") Win∆ProgressBar "MemberUpdate"[1432] :endif[1433] [1434] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "New" "Frame"[1435] ⎕wi "scale" 5[1436] ⎕wi "∆where" (4 2⍴0.41 0 0.5 0 0.51 0 0.5 0)[1437] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0.41 0 0.5 0 0.51 0 0.5 0))[1438] ⎕wi "caption" "Death After Retirement PUP 2"[1439] ⎕wi "style" 0[1440] ⎕wi "onResize" "AutoResize"[1441] [1442] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDATADAR2" ⎕wi "New" "Combo"[1443] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDATADAR2"[1444] Fieldcontrol←Fieldcontrol OVER "Combo"[1445] ⎕wi "∆name" "DATADAR2"[1446] ⎕wi "∆type" "Char"[1447] ⎕wi "∆helpid" 5124[1448] ⎕wi "style" 16 128 256 2[1449] ⎕wi "∆where" (2 2⍴0.09 0 0.35 0)[1450] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.09 0 0.35 0))[1451] PickList←GetVarNumList 'All'[1452] ⎕wi "∆update" "GetVarNumList 'All'"[1453] PickList←⊃m2n 1 0↓PickList[1454] PickList←" " OVER PickList[1455] ⎕wi "list" PickList[1456] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1457] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1458] [1459] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llDATADAR2" ⎕wi "New" "Label"[1460] ⎕wi "scale" 5[1461] ⎕wi "style" 2[1462] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "PUP Amount"))[1463] ⎕wi "caption" "PUP Amount"[1464] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDATADAR2" ⎕wi "∆where"[1465] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1466] ⎕wi "∆where" ((x,2)⍴where)[1467] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1468] [1469] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2" ⎕wi "New" "Edit"[1470] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2"[1471] Fieldcontrol←Fieldcontrol OVER "Edit"[1472] ⎕wi "∆name" "PERCENTDAR2"[1473] ⎕wi "∆type" "Num"[1474] ⎕wi "∆mandatory" 1[1475] ⎕wi "∆helpid" 5125[1476] ⎕wi "limit" 8[1477] ⎕wi "∆where" (2 2⍴0.18 0 0.35 0)[1478] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.18 0 0.35 0))[1479] ⎕wi "onChange" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1480] ⎕wi "onExit" "⍎(0∊⍴,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[1481] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[1482] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"[1483] ⎕wi "extent" (2+CharSize×1 9)[1484] [1485] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.lrPERCENTDAR2" ⎕wi "New" "Label"[1486] ⎕wi "scale" 5[1487] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))[1488] ⎕wi "caption" "%"[1489] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2" ⎕wi "∆where"[1490] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2" ⎕wi "extent"[1491] ⎕wi "∆where" ((x,2)⍴where)[1492] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1493] [1494] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llPERCENTDAR2" ⎕wi "New" "Label"[1495] ⎕wi "scale" 5[1496] ⎕wi "style" 2[1497] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "% of PUP Amount"))[1498] ⎕wi "caption" "% of PUP Amount"[1499] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2" ⎕wi "∆where"[1500] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1501] ⎕wi "∆where" ((x,2)⍴where)[1502] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1503] [1504] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2" ⎕wi "New" "Combo"[1505] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2"[1506] Fieldcontrol←Fieldcontrol OVER "Combo"[1507] ⎕wi "∆name" "REVDAR2"[1508] ⎕wi "∆type" "Char"[1509] ⎕wi "∆helpid" 5126[1510] ⎕wi "style" 16 128 256 2[1511] ⎕wi "∆where" (2 2⍴0.27 0 0.35 0)[1512] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.27 0 0.35 0))[1513] PickList←GetFinList 'Rev'[1514] ⎕wi "∆update" "GetFinList 'Rev'"[1515] PickList←⊃m2n 1 0↓PickList[1516] PickList←" " OVER PickList[1517] ⎕wi "list" PickList[1518] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1519] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1520] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDAR2.lrREVDAR2"[1521] [1522] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.lrREVDAR2" ⎕wi "New" "Label"[1523] ⎕wi "scale" 5[1524] ⎕wi "extent" (CharSize×¯2↑1,2 45)[1525] ⎕wi "caption" " "[1526] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2" ⎕wi "∆where"[1527] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2" ⎕wi "extent"[1528] ⎕wi "∆where" ((x,2)⍴where)[1529] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1530] [1531] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llREVDAR2" ⎕wi "New" "Label"[1532] ⎕wi "scale" 5[1533] ⎕wi "style" 2[1534] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Revaluation Rate Override"))[1535] ⎕wi "caption" "Revaluation Rate Override"[1536] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2" ⎕wi "∆where"[1537] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1538] ⎕wi "∆where" ((x,2)⍴where)[1539] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1540] [1541] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbPreNRAEXITDAR2" ⎕wi "New" "Combo"[1542] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbPreNRAEXITDAR2"[1543] Fieldcontrol←Fieldcontrol OVER "Combo"[1544] ⎕wi "∆name" "PreNRAEXITDAR2"[1545] ⎕wi "∆type" "Char"[1546] ⎕wi "∆helpid" 5127[1547] ⎕wi "style" 16 128 256 2[1548] ⎕wi "∆where" (2 2⍴0.45 0 0.35 0)[1549] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.45 0 0.35 0))[1550] PickList←⍙POPUPSdict ReadDictFile "YesNo"[1551] PickList←⊃m2n 1 0↓PickList[1552] PickList←" " OVER PickList[1553] ⎕wi "list" PickList[1554] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1555] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1556] [1557] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llPreNRAEXITDAR2" ⎕wi "New" "Label"[1558] ⎕wi "scale" 5[1559] ⎕wi "style" 2[1560] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Complete Years Only Override"))[1561] ⎕wi "caption" "Complete Years Only Override"[1562] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbPreNRAEXITDAR2" ⎕wi "∆where"[1563] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1564] ⎕wi "∆where" ((x,2)⍴where)[1565] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1566] [1567] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbNRAEXITDAR2" ⎕wi "New" "Combo"[1568] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbNRAEXITDAR2"[1569] Fieldcontrol←Fieldcontrol OVER "Combo"[1570] ⎕wi "∆name" "NRAEXITDAR2"[1571] ⎕wi "∆type" "Combo"[1572] ⎕wi "∆helpid" 5128[1573] ⎕wi "tooltip" "Select the Service Rounding Override (if any)"[1574] ⎕wi "style" 16 128 256 2[1575] ⎕wi "∆where" (2 2⍴0.54 0 0.35 0)[1576] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.54 0 0.35 0))[1577] PickList←⍙POPUPSdict ReadDictFile "ServRound"[1578] PickList←⊃m2n 1 0↓PickList[1579] PickList←" " OVER PickList[1580] ⎕wi "list" PickList[1581] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1582] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1583] [1584] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llNRAEXITDAR2" ⎕wi "New" "Label"[1585] ⎕wi "scale" 5[1586] ⎕wi "style" 2[1587] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Exit Rounding Override"))[1588] ⎕wi "caption" "Exit Rounding Override"[1589] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbNRAEXITDAR2" ⎕wi "∆where"[1590] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1591] ⎕wi "∆where" ((x,2)⍴where)[1592] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1593] [1594] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbERFDAR2" ⎕wi "New" "Combo"[1595] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbERFDAR2"[1596] Fieldcontrol←Fieldcontrol OVER "Combo"[1597] ⎕wi "∆name" "ERFDAR2"[1598] ⎕wi "∆type" "Char"[1599] ⎕wi "∆mandatory" 1[1600] ⎕wi "∆helpid" 5129[1601] ⎕wi "style" 16 128 256 2[1602] ⎕wi "∆where" (2 2⍴0.63 0 0.35 0)[1603] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.63 0 0.35 0))[1604] PickList←⍙POPUPSdict ReadDictFile "ERF1NDF"[1605] PickList←⊃m2n 1 0↓PickList[1606] ⎕wi "list" PickList[1607] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1608] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1609] [1610] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llERFDAR2" ⎕wi "New" "Label"[1611] ⎕wi "scale" 5[1612] ⎕wi "style" 2[1613] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "ERF Indicator"))[1614] ⎕wi "caption" "ERF Indicator"[1615] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbERFDAR2" ⎕wi "∆where"[1616] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1617] ⎕wi "∆where" ((x,2)⍴where)[1618] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1619] [1620] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDYNDAR2" ⎕wi "New" "Combo"[1621] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDYNDAR2"[1622] Fieldcontrol←Fieldcontrol OVER "Combo"[1623] ⎕wi "∆name" "DYNDAR2"[1624] ⎕wi "∆type" "Char"[1625] ⎕wi "∆mandatory" 1[1626] ⎕wi "∆helpid" 5130[1627] ⎕wi "tooltip" "Select the Escalation Rate"[1628] ⎕wi "style" 16 128 256 2[1629] ⎕wi "∆where" (2 2⍴0.72 0 0.35 0)[1630] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.72 0 0.35 0))[1631] PickList←⍙POPUPSdict ReadDictFile "EscRate"[1632] PickList←⊃m2n 1 0↓PickList[1633] ⎕wi "list" PickList[1634] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)[1635] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1636] [1637] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llDYNDAR2" ⎕wi "New" "Label"[1638] ⎕wi "scale" 5[1639] ⎕wi "style" 2[1640] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")))[1641] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")[1642] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDYNDAR2" ⎕wi "∆where"[1643] size←1↑"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDYNDAR2" ⎕wi "extent"[1644] size←¯3⌈0.5×(1↑⎕wi "extent")-size[1645] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"[1646] ⎕wi "∆where" ((x,2)⍴where)[1647] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1648] [1649] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ" ⎕wi "New" "Combo"[1650] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ"[1651] Fieldcontrol←Fieldcontrol OVER "Combo"[1652] ⎕wi "∆name" "DAR2ADJ"[1653] ⎕wi "∆type" "Num"[1654] ⎕wi "∆mandatory" 1[1655] ⎕wi "∆valid" ('Scalar')[1656] ⎕wi "∆helpid" 5131[1657] ⎕wi "limit" 8[1658] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "[1659] ⎕wi "onExitError" "Win∆ExitError ⎕warg"[1660] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"[1661] ⎕wi "style" 16 128 256 0[1662] ⎕wi "∆where" (2 2⍴0.81 0 0.35 0)[1663] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.81 0 0.35 0))[1664] PickList←('Scalar') GetAbsNumList 'Fund'[1665] ⎕wi "∆update" "('Scalar') GetAbsNumList 'Fund'"[1666] PickList←⊃m2n 1 0↓PickList[1667] PickList←" " OVER PickList[1668] ⎕wi "list" PickList[1669] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)[1670] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1671] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "[1672] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDAR2.lrDAR2ADJ"[1673] [1674] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.lrDAR2ADJ" ⎕wi "New" "Label"[1675] ⎕wi "scale" 5[1676] ⎕wi "extent" (CharSize×¯2↑1,15)[1677] ⎕wi "style" 32[1678] ⎕wi "caption" " "[1679] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ" ⎕wi "∆where"[1680] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ" ⎕wi "extent"[1681] ⎕wi "∆where" ((x,2)⍴where)[1682] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1683] [1684] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llDAR2ADJ" ⎕wi "New" "Label"[1685] ⎕wi "scale" 5[1686] ⎕wi "style" 2[1687] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Adjustment Factor"))[1688] ⎕wi "caption" "Adjustment Factor"[1689] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ" ⎕wi "∆where"[1690] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"[1691] ⎕wi "∆where" ((x,2)⍴where)[1692] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")[1693] [1694] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.ckPPFPAYINCDAR2" ⎕wi "New" "Check"[1695] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.ckPPFPAYINCDAR2"[1696] Fieldcontrol←Fieldcontrol OVER "Check"[1697] ⎕wi "∆name" "PPFPAYINCDAR2"[1698] ⎕wi "∆type" "Check"[1699] ⎕wi "enabled" (capenabled)[1700] ⎕wi "∆helpid" 5132[1701] ⎕wi "style" 0[1702] ⎕wi "caption" "Treat as Post 1997 for CAP"[1703] ⎕wi "∆where" (2 2⍴0.9 0 0.35 0)[1704] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.9 0 0.35 0))[1705] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")[1706] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"[1707] [1708] :if 300<fnsize[1709]     ((1↑⎕lc) fnsize "Frame - Buttons") Win∆ProgressBar "MemberUpdate"[1710] :endif[1711] [1712] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fButtons" ⎕wi "New" "Frame"[1713] ⎕wi "scale" 5[1714] ⎕wi "∆where" (4 2⍴0.92 0 0 0 0.079 0 1 0)[1715] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0.92 0 0 0 0.079 0 1 0))[1716] ⎕wi "style" 7[1717] ⎕wi "onResize" "AutoResize"[1718] list←list OVER "fmSV.sDefBasis.pgNSPUPs.fButtons.bnDeferreds_BasisEditFin"[1719] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fButtons.bnDeferreds_BasisEditFin" ⎕wi "New" "Button"[1720] ⎕wi "deferexit" 1[1721] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)[1722] ⎕wi "∆where" (2 2⍴0.1 0 0.44 0)[1723] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.44 0))[1724] ⎕wi "tooltip" "Edit/Add the Scheme Financial Assumptions"[1725] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mEditFin"⎕wi "onClick")[1726] ⎕wi "∆helpid" 5133[1727] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Edit Scheme⍺Financials")[1728] "fmSV.sDefBasis.pgNSPUPs" ⎕wi "∆fieldlist" Fieldlist[1729] "fmSV.sDefBasis.pgNSPUPs" ⎕wi "∆fieldcontrol" Fieldcontrol[1730] "fmSV.sDefBasis" ⎕wi "value" 1[1731] "fmSV.sDefBasis.pgMain       " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgMain'"[1732] "fmSV.sDefBasis.pgMain       " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1733] "fmSV.sDefBasis.pgMain       " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1734] "fmSV.sDefBasis.pgFinancial  " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgFinancial'"[1735] "fmSV.sDefBasis.pgFinancial  " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1736] "fmSV.sDefBasis.pgFinancial  " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1737] "fmSV.sDefBasis.pgLegislation" ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgLegislation'"[1738] "fmSV.sDefBasis.pgLegislation" ⎕wi "onShow" "⎕wi 'imageindex' 4"[1739] "fmSV.sDefBasis.pgLegislation" ⎕wi "onHide" "⎕wi 'imageindex' 3"[1740] "fmSV.sDefBasis.pgPPFCAP     " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgPPFCAP'"[1741] "fmSV.sDefBasis.pgPPFCAP     " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1742] "fmSV.sDefBasis.pgPPFCAP     " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1743] "fmSV.sDefBasis.pgMortality  " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgMortality'"[1744] "fmSV.sDefBasis.pgMortality  " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1745] "fmSV.sDefBasis.pgMortality  " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1746] "fmSV.sDefBasis.pgDemographic" ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgDemographic'"[1747] "fmSV.sDefBasis.pgDemographic" ⎕wi "onShow" "⎕wi 'imageindex' 4"[1748] "fmSV.sDefBasis.pgDemographic" ⎕wi "onHide" "⎕wi 'imageindex' 3"[1749] "fmSV.sDefBasis.pgSpouse     " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgSpouse'"[1750] "fmSV.sDefBasis.pgSpouse     " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1751] "fmSV.sDefBasis.pgSpouse     " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1752] "fmSV.sDefBasis.pgPUPs       " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgPUPs'"[1753] "fmSV.sDefBasis.pgPUPs       " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1754] "fmSV.sDefBasis.pgPUPs       " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1755] "fmSV.sDefBasis.pgMembership " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgMembership'"[1756] "fmSV.sDefBasis.pgMembership " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1757] "fmSV.sDefBasis.pgMembership " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1758] "fmSV.sDefBasis.pgRetPension " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgRetPension'"[1759] "fmSV.sDefBasis.pgRetPension " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1760] "fmSV.sDefBasis.pgRetPension " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1761] "fmSV.sDefBasis.pgRetCash    " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgRetCash'"[1762] "fmSV.sDefBasis.pgRetCash    " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1763] "fmSV.sDefBasis.pgRetCash    " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1764] "fmSV.sDefBasis.pgRetCOT     " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgRetCOT'"[1765] "fmSV.sDefBasis.pgRetCOT     " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1766] "fmSV.sDefBasis.pgRetCOT     " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1767] "fmSV.sDefBasis.pgDeath      " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgDeath'"[1768] "fmSV.sDefBasis.pgDeath      " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1769] "fmSV.sDefBasis.pgDeath      " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1770] "fmSV.sDefBasis.pgTVBasis    " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgTVBasis'"[1771] "fmSV.sDefBasis.pgTVBasis    " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1772] "fmSV.sDefBasis.pgTVBasis    " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1773] "fmSV.sDefBasis.pgTVMortality" ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgTVMortality'"[1774] "fmSV.sDefBasis.pgTVMortality" ⎕wi "onShow" "⎕wi 'imageindex' 4"[1775] "fmSV.sDefBasis.pgTVMortality" ⎕wi "onHide" "⎕wi 'imageindex' 3"[1776] "fmSV.sDefBasis.pgUnderpin   " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgUnderpin'"[1777] "fmSV.sDefBasis.pgUnderpin   " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1778] "fmSV.sDefBasis.pgUnderpin   " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1779] "fmSV.sDefBasis.pgIndPUPs    " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgIndPUPs'"[1780] "fmSV.sDefBasis.pgIndPUPs    " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1781] "fmSV.sDefBasis.pgIndPUPs    " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1782] "fmSV.sDefBasis.pgNSPUPs     " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgNSPUPs'"[1783] "fmSV.sDefBasis.pgNSPUPs     " ⎕wi "onShow" "⎕wi 'imageindex' 4"[1784] "fmSV.sDefBasis.pgNSPUPs     " ⎕wi "onHide" "⎕wi 'imageindex' 3"[1785] [1786] "fmSV.sDefBasis" ⎕wi "∆multifile" "fmSV.sDefBasis.pgMain.fData.edFILES"[1787] "fmSV.sDefBasis" ⎕wi "∆singlefile" "fmSV.sDefBasis.pgMain.fData.edfILENAME"[1788] "fmSV.sDefBasis" ⎕wi "∆format" "fmSV.sDefBasis.pgMain.fData.cbFormat"[1789] "fmSV.sDefBasis" ⎕wi "∆financial" 1[1790] "fmSV.sDefBasis" ⎕wi "∆relrules" 1[1791] "fmSV.sDefBasis" ⎕wi "∆parm" 0[1792] "fmSV.sDefBasis" ⎕wi "∆decr" 1[1793] "fmSV.sDefBasis" ⎕wi "∆file" 1[1794] "fmSV.sDefBasis" ⎕wi "∆codefile" CodeFile[1795] "fmSV.sDefBasis" ⎕wi "∆inputstype" "BasisFile"[1796] "fmSV.sDefBasis" ⎕wi "∆inputsentry" "Multi"[1797] "fmSV.sDefBasis" ⎕wi "∆savecn" (⍳0)[1798] "fmSV.sDefBasis" ⎕wi "∆savedesc" ""[1799] list←list OVER "fmSV.sDefBasis"[1800] childlist←"fmSV" ⎕wi "∆childlist"[1801] list←(⊃¯1↑childlist) OVER list[1802] childlist[⍴childlist]←⊂list[1803] "fmSV" ⎕wi "∆childlist" childlist[1804] list←,⎕split list[1805] 0 0⍴((∨/¨(⊂".mDeferreds_Basis")⍷¨list)/list) MultiWI "enabled" 1[1806] :if 300<fnsize[1807]     (fnsize fnsize ".") Win∆ProgressBar "MemberUpdate"[1808]     Win∆ProgressBar "Hide"[1809] :endif[1810] "Init" OpenParameters "Deferreds_Basis"[1811] "fmSV.bnDeferreds_BasisHelp" ⎕wi "visible" 1[1812] "fmSV.bnDeferreds_BasisQuit" ⎕wi "visible" 1[1813] "fmSV.bnDeferreds_BasisSave" ⎕wi "visible" 1[1814] "fmSV.bnDeferreds_BasisSaveAs" ⎕wi "visible" 1[1815] "#" ⎕wi "focus" "fmSV.sDefBasis.pgMain.fData.ckFileSelections"[1816] :if bar_open←commandbar^"Multi"≡"Multi"[1817]     bar_open←"fmSV.mDeferreds_BasisFile.m" Win∆CommandBar "SaveAsHelp"[1818] :endif[1819] "fmSV" ⎕wi "pointer" 0    ∇
+    ∇ Form_Make2
+[1]   
+[2]   :if 300<fnsize
+[3]       ((1↑⎕lc) fnsize "FrameV - Transfer Spouse/Partner's Post Retirement Mortality") Win∆ProgressBar "MemberUpdate"
+[4]   :endif
+[5]   
+[6]   ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "New" "Frame"
+[7]   ⎕wi "scale" 5
+[8]   ⎕wi "enabled" (bTVs                                      )
+[9]   ⎕wi "∆where" (4 2⍴0.62 0 0 0 0.31 0 1 0)
+[10]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality" ⎕wi "size") Win∆Resize (4 2⍴0.62 0 0 0 0.31 0 1 0))
+[11]  ⎕wi "caption" "Transfer Spouse/Partner's Post Retirement Mortality"
+[12]  ⎕wi "style" 0
+[13]  ⎕wi "onResize" "AutoResize"
+[14]  
+[15]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.ckTVSDPostSame" ⎕wi "New" "Check"
+[16]  Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.ckTVSDPostSame"
+[17]  Fieldcontrol←Fieldcontrol OVER "Check"
+[18]  ⎕wi "∆name" "TVSDPostSame"
+[19]  ⎕wi "∆type" "Check"
+[20]  ⎕wi "enabled" (bTVs)
+[21]  ⎕wi "∆helpid" 5082
+[22]  ⎕wi "tooltip" "Check this if Spouse's Transfer Value Mortality is always the same as the Valuation Basis Post Retirement Mortality"
+[23]  ⎕wi "style" 0
+[24]  ⎕wi "caption" "Same as Valuation Basis Spouse Post Retirement Mortality"
+[25]  ⎕wi "∆where" (2 2⍴0.1 0 0.02 0)
+[26]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.02 0))
+[27]  ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")
+[28]  ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"
+[29]  
+[30]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "New" "Combo"
+[31]  Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST"
+[32]  Fieldcontrol←Fieldcontrol OVER "Combo"
+[33]  ⎕wi "∆name" "m_TVSDPOST"
+[34]  ⎕wi "∆type" "Char"
+[35]  ⎕wi "∆mandatory" 1
+[36]  ⎕wi "enabled" (bTVs)
+[37]  ⎕wi "∆helpid" 5087
+[38]  ⎕wi "tooltip" "Select the Male Transfer Member's Spouse/Partner Post Retirement Mortality Definition"
+[39]  ⎕wi "style" 16 128 256 2
+[40]  ⎕wi "∆where" (2 2⍴0.22 0 0.2 0)
+[41]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.22 0 0.2 0))
+[42]  PickList←GetMortParms ''
+[43]  ⎕wi "∆update" "GetMortParms ''"
+[44]  PickList←⊃m2n 1 0↓PickList
+[45]  ⎕wi "list" PickList
+[46]  ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[47]  ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(⊂⍙MortAssdict for 'Type' 'Mortality') at¨'Label' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[48]  ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVSDPOST"
+[49]  
+[50]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVSDPOST" ⎕wi "New" "Label"
+[51]  ⎕wi "scale" 5
+[52]  ⎕wi "enabled" (bTVs)
+[53]  ⎕wi "extent" (CharSize×¯2↑1,60)
+[54]  ⎕wi "style" 32
+[55]  ⎕wi "caption" " "
+[56]  where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "∆where"
+[57]  x←0.5×⍴where←Win∆Calcwhere where+((5+1↑2↓"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "where") CDIV 1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size"),0 0 0
+[58]  ⎕wi "∆where" ((x,2)⍴where)
+[59]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[60]  
+[61]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llm_TVSDPOST" ⎕wi "New" "Label"
+[62]  ⎕wi "scale" 5
+[63]  ⎕wi "style" 2
+[64]  ⎕wi "enabled" (bTVs)
+[65]  ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Male Transfer Member's Spouse/Partner⍺Mortality Rate Parameters")))
+[66]  ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Male Transfer Member's Spouse/Partner⍺Mortality Rate Parameters")
+[67]  where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "∆where"
+[68]  size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOST" ⎕wi "extent"
+[69]  size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[70]  x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[71]  ⎕wi "∆where" ((x,2)⍴where)
+[72]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[73]  
+[74]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "New" "Combo"
+[75]  Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB"
+[76]  Fieldcontrol←Fieldcontrol OVER "Combo"
+[77]  ⎕wi "∆name" "m_TVSDPOSTMEMB"
+[78]  ⎕wi "∆type" "Char"
+[79]  ⎕wi "enabled" (bTVs)
+[80]  ⎕wi "∆helpid" 5088
+[81]  ⎕wi "style" 16 128 256 2
+[82]  ⎕wi "∆where" (2 2⍴0.5 0 0.2 0)
+[83]  ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.5 0 0.2 0))
+[84]  PickList←GetVarNumList 'Non-Standard'
+[85]  ⎕wi "∆update" "GetVarNumList 'Non-Standard'"
+[86]  PickList←⊃m2n 1 0↓PickList
+[87]  PickList←" " OVER PickList
+[88]  ⎕wi "list" PickList
+[89]  ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[90]  ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[91]  ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVSDPOSTMEMB"
+[92]  
+[93]  ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVSDPOSTMEMB" ⎕wi "New" "Label"
+[94]  ⎕wi "scale" 5
+[95]  ⎕wi "enabled" (bTVs)
+[96]  ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))
+[97]  ⎕wi "caption" "%"
+[98]  where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "∆where"
+[99]  x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "extent"
+[100] ⎕wi "∆where" ((x,2)⍴where)
+[101] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[102] 
+[103] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llm_TVSDPOSTMEMB" ⎕wi "New" "Label"
+[104] ⎕wi "scale" 5
+[105] ⎕wi "style" 2
+[106] ⎕wi "enabled" (bTVs)
+[107] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Male Transfer Member's⍺Spouse/Partner Individual % Rating")))
+[108] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Male Transfer Member's⍺Spouse/Partner Individual % Rating")
+[109] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "∆where"
+[110] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVSDPOSTMEMB" ⎕wi "extent"
+[111] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[112] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[113] ⎕wi "∆where" ((x,2)⍴where)
+[114] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[115] 
+[116] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "New" "Combo"
+[117] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST"
+[118] Fieldcontrol←Fieldcontrol OVER "Combo"
+[119] ⎕wi "∆name" "m_TVmiSDPOST"
+[120] ⎕wi "∆type" "Char"
+[121] ⎕wi "∆mandatory" 1
+[122] ⎕wi "enabled" (bTVs)
+[123] ⎕wi "∆helpid" 5089
+[124] ⎕wi "tooltip" "Select the Male Transfer Member's Spouse/Partner Post Retirement Mortality Improvement Definition"
+[125] ⎕wi "style" 16 128 256 2
+[126] ⎕wi "∆where" (2 2⍴0.7 0 0.2 0)
+[127] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.7 0 0.2 0))
+[128] PickList←'None' GetClientParms 'Mort_Improvement'
+[129] ⎕wi "∆update" "'None' GetClientParms 'Mort_Improvement'"
+[130] PickList←⊃m2n 1 0↓PickList
+[131] ⎕wi "list" PickList
+[132] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[133] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(⊂⍙MortAssdict for 'Type' 'MortImp') at¨'Label' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[134] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVmiSDPOST"
+[135] 
+[136] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrm_TVmiSDPOST" ⎕wi "New" "Label"
+[137] ⎕wi "scale" 5
+[138] ⎕wi "enabled" (bTVs)
+[139] ⎕wi "extent" (CharSize×¯2↑1,60)
+[140] ⎕wi "style" 32
+[141] ⎕wi "caption" " "
+[142] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "∆where"
+[143] x←0.5×⍴where←Win∆Calcwhere where+((5+1↑2↓"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "where") CDIV 1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size"),0 0 0
+[144] ⎕wi "∆where" ((x,2)⍴where)
+[145] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[146] 
+[147] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llm_TVmiSDPOST" ⎕wi "New" "Label"
+[148] ⎕wi "scale" 5
+[149] ⎕wi "style" 2
+[150] ⎕wi "enabled" (bTVs)
+[151] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Male Transfer Member's Spouse/Partner⍺Mortality Improvement Parameters")))
+[152] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Male Transfer Member's Spouse/Partner⍺Mortality Improvement Parameters")
+[153] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "∆where"
+[154] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbm_TVmiSDPOST" ⎕wi "extent"
+[155] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[156] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[157] ⎕wi "∆where" ((x,2)⍴where)
+[158] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[159] 
+[160] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "New" "Combo"
+[161] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST"
+[162] Fieldcontrol←Fieldcontrol OVER "Combo"
+[163] ⎕wi "∆name" "f_TVSDPOST"
+[164] ⎕wi "∆type" "Char"
+[165] ⎕wi "∆mandatory" 1
+[166] ⎕wi "enabled" (bTVs)
+[167] ⎕wi "∆helpid" 5087
+[168] ⎕wi "tooltip" "Select the Female Transfer Member's Spouse/Partner Post Retirement Mortality Definition"
+[169] ⎕wi "style" 16 128 256 2
+[170] ⎕wi "∆where" (2 2⍴0.22 0 0.65 0)
+[171] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.22 0 0.65 0))
+[172] PickList←GetMortParms ''
+[173] ⎕wi "∆update" "GetMortParms ''"
+[174] PickList←⊃m2n 1 0↓PickList
+[175] ⎕wi "list" PickList
+[176] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[177] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(⊂⍙MortAssdict for 'Type' 'Mortality') at¨'Label' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[178] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVSDPOST"
+[179] 
+[180] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVSDPOST" ⎕wi "New" "Label"
+[181] ⎕wi "scale" 5
+[182] ⎕wi "enabled" (bTVs)
+[183] ⎕wi "extent" (CharSize×¯2↑1,60)
+[184] ⎕wi "style" 32
+[185] ⎕wi "caption" " "
+[186] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "∆where"
+[187] x←0.5×⍴where←Win∆Calcwhere where+((5+1↑2↓"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "where") CDIV 1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size"),0 0 0
+[188] ⎕wi "∆where" ((x,2)⍴where)
+[189] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[190] 
+[191] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llf_TVSDPOST" ⎕wi "New" "Label"
+[192] ⎕wi "scale" 5
+[193] ⎕wi "style" 2
+[194] ⎕wi "enabled" (bTVs)
+[195] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Female Transfer Member's Spouse/Partner⍺Mortality Rate Parameters")))
+[196] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Female Transfer Member's Spouse/Partner⍺Mortality Rate Parameters")
+[197] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "∆where"
+[198] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOST" ⎕wi "extent"
+[199] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[200] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[201] ⎕wi "∆where" ((x,2)⍴where)
+[202] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[203] 
+[204] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "New" "Combo"
+[205] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB"
+[206] Fieldcontrol←Fieldcontrol OVER "Combo"
+[207] ⎕wi "∆name" "f_TVSDPOSTMEMB"
+[208] ⎕wi "∆type" "Char"
+[209] ⎕wi "enabled" (bTVs)
+[210] ⎕wi "∆helpid" 5088
+[211] ⎕wi "style" 16 128 256 2
+[212] ⎕wi "∆where" (2 2⍴0.5 0 0.65 0)
+[213] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.5 0 0.65 0))
+[214] PickList←GetVarNumList 'Non-Standard'
+[215] ⎕wi "∆update" "GetVarNumList 'Non-Standard'"
+[216] PickList←⊃m2n 1 0↓PickList
+[217] PickList←" " OVER PickList
+[218] ⎕wi "list" PickList
+[219] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[220] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[221] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVSDPOSTMEMB"
+[222] 
+[223] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVSDPOSTMEMB" ⎕wi "New" "Label"
+[224] ⎕wi "scale" 5
+[225] ⎕wi "enabled" (bTVs)
+[226] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))
+[227] ⎕wi "caption" "%"
+[228] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "∆where"
+[229] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "extent"
+[230] ⎕wi "∆where" ((x,2)⍴where)
+[231] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[232] 
+[233] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llf_TVSDPOSTMEMB" ⎕wi "New" "Label"
+[234] ⎕wi "scale" 5
+[235] ⎕wi "style" 2
+[236] ⎕wi "enabled" (bTVs)
+[237] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Female Transfer Member's⍺Spouse/Partner Individual % Rating")))
+[238] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Female Transfer Member's⍺Spouse/Partner Individual % Rating")
+[239] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "∆where"
+[240] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVSDPOSTMEMB" ⎕wi "extent"
+[241] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[242] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[243] ⎕wi "∆where" ((x,2)⍴where)
+[244] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[245] 
+[246] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "New" "Combo"
+[247] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST"
+[248] Fieldcontrol←Fieldcontrol OVER "Combo"
+[249] ⎕wi "∆name" "f_TVmiSDPOST"
+[250] ⎕wi "∆type" "Char"
+[251] ⎕wi "∆mandatory" 1
+[252] ⎕wi "enabled" (bTVs)
+[253] ⎕wi "∆helpid" 5089
+[254] ⎕wi "tooltip" "Select the Female Transfer Member's Spouse/Partner Post Retirement Mortality Improvement Definition"
+[255] ⎕wi "style" 16 128 256 2
+[256] ⎕wi "∆where" (2 2⍴0.7 0 0.65 0)
+[257] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize (2 2⍴0.7 0 0.65 0))
+[258] PickList←'None' GetClientParms 'Mort_Improvement'
+[259] ⎕wi "∆update" "'None' GetClientParms 'Mort_Improvement'"
+[260] PickList←⊃m2n 1 0↓PickList
+[261] ⎕wi "list" PickList
+[262] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[263] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(⊂⍙MortAssdict for 'Type' 'MortImp') at¨'Label' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[264] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVmiSDPOST"
+[265] 
+[266] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.lrf_TVmiSDPOST" ⎕wi "New" "Label"
+[267] ⎕wi "scale" 5
+[268] ⎕wi "enabled" (bTVs)
+[269] ⎕wi "extent" (CharSize×¯2↑1,60)
+[270] ⎕wi "style" 32
+[271] ⎕wi "caption" " "
+[272] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "∆where"
+[273] x←0.5×⍴where←Win∆Calcwhere where+((5+1↑2↓"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "where") CDIV 1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size"),0 0 0
+[274] ⎕wi "∆where" ((x,2)⍴where)
+[275] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[276] 
+[277] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fSPostRet.llf_TVmiSDPOST" ⎕wi "New" "Label"
+[278] ⎕wi "scale" 5
+[279] ⎕wi "style" 2
+[280] ⎕wi "enabled" (bTVs)
+[281] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Female Transfer Member's Spouse/Partner⍺Mortality Improvement Parameters")))
+[282] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Female Transfer Member's Spouse/Partner⍺Mortality Improvement Parameters")
+[283] where←4↑,"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "∆where"
+[284] size←1↑"fmSV.sDefBasis.pgTVMortality.fSPostRet.cbf_TVmiSDPOST" ⎕wi "extent"
+[285] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[286] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[287] ⎕wi "∆where" ((x,2)⍴where)
+[288] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fSPostRet" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[289] 
+[290] :if 300<fnsize
+[291]     ((1↑⎕lc) fnsize "Frame - Buttons") Win∆ProgressBar "MemberUpdate"
+[292] :endif
+[293] 
+[294] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fButtons" ⎕wi "New" "Frame"
+[295] ⎕wi "scale" 5
+[296] ⎕wi "enabled" (bTVs                                      )
+[297] ⎕wi "∆where" (4 2⍴0.93 0 0 0 0.069 0 1 0)
+[298] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality" ⎕wi "size") Win∆Resize (4 2⍴0.93 0 0 0 0.069 0 1 0))
+[299] ⎕wi "style" 7
+[300] ⎕wi "onResize" "AutoResize"
+[301] list←list OVER "fmSV.sDefBasis.pgTVMortality.fButtons.bnDeferreds_BasisEditD"
+[302] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fButtons.bnDeferreds_BasisEditD" ⎕wi "New" "Button"
+[303] ⎕wi "enabled" (bTVs                                      )
+[304] ⎕wi "deferexit" 1
+[305] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)
+[306] ⎕wi "∆where" (2 2⍴0.1 0 0.44 0)
+[307] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.44 0))
+[308] ⎕wi "tooltip" "Edit/Add a Mortality Rates Definition"
+[309] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mEditD"⎕wi "onClick")
+[310] ⎕wi "∆helpid" 5090
+[311] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Add/Edit⍺Mortality Rates")
+[312] list←list OVER "fmSV.sDefBasis.pgTVMortality.fButtons.bnDeferreds_BasisEditMI"
+[313] ⎕wself←"fmSV.sDefBasis.pgTVMortality.fButtons.bnDeferreds_BasisEditMI" ⎕wi "New" "Button"
+[314] ⎕wi "enabled" (bTVs                                      )
+[315] ⎕wi "deferexit" 1
+[316] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)
+[317] ⎕wi "∆where" (2 2⍴0.1 0 0.56 0)
+[318] ⎕wi "where" (("fmSV.sDefBasis.pgTVMortality.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.56 0))
+[319] ⎕wi "tooltip" "Edit/Add a Mortality Improvement Definition"
+[320] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mEditMI"⎕wi "onClick")
+[321] ⎕wi "∆helpid" 5091
+[322] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Add/Edit Mortality⍺Improvement")
+[323] "fmSV.sDefBasis.pgTVMortality" ⎕wi "∆fieldlist" Fieldlist
+[324] "fmSV.sDefBasis.pgTVMortality" ⎕wi "∆fieldcontrol" Fieldcontrol
+[325] 
+[326] Fieldlist←Fieldcontrol←0 0⍴""
+[327] 
+[328] ⎕wself←"fmSV.sDefBasis.pgUnderpin" ⎕wi "New" "Page"
+[329] ⎕wi "caption" "Underpin"
+[330] ⎕wi "scale" 5
+[331] ⎕wi "imageindex" 1
+[332] ⎕wi "onResize" "AutoResize"
+[333] ⎕wi "∆helpid" 2223
+[334] :if ~0∊⍴"fmSV.mDeferreds_BasisGoTo" ⎕wi "self"
+[335]     ⎕wself←"fmSV.mDeferreds_BasisGoTo.mUnderpin" ⎕wi "New" "Menu"
+[336]     ⎕wi "caption" "Underpin"
+[337]     ⎕wi "prompt" "Go to Underpin Page"
+[338]     ⎕wi "onClick" "'fmSV.sDefBasis' ⎕wi 'value' (('fmSV.sDefBasis' ⎕wi 'pages')⍳⊂'pgUnderpin')"
+[339] :endif
+[340] ⎕wgive 0
+[341] "fmSV.sDefBasis" ⎕wi "value" (⍴"fmSV.sDefBasis" ⎕wi "pages")
+[342] 
+[343] :if 300<fnsize
+[344]     ((1↑⎕lc) fnsize "FrameV - Underpin Parameters") Win∆ProgressBar "MemberUpdate"
+[345] :endif
+[346] 
+[347] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "New" "Frame"
+[348] ⎕wi "scale" 5
+[349] ⎕wi "∆where" (4 2⍴0 0 0 0 0.9 0 1 0)
+[350] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin" ⎕wi "size") Win∆Resize (4 2⍴0 0 0 0 0.9 0 1 0))
+[351] ⎕wi "caption" "Underpin Parameters"
+[352] ⎕wi "style" 0
+[353] ⎕wi "onResize" "AutoResize"
+[354] 
+[355] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.ckmpuflag" ⎕wi "New" "Check"
+[356] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgUnderpin.fMPUCont.ckmpuflag"
+[357] Fieldcontrol←Fieldcontrol OVER "Check"
+[358] ⎕wi "∆name" "mpuflag"
+[359] ⎕wi "∆type" "Check"
+[360] ⎕wi "∆helpid" 5092
+[361] ⎕wi "style" 0
+[362] ⎕wi "caption" "Benefits Underpinned"
+[363] ⎕wi "∆where" (2 2⍴0.2 0 0.2 0)
+[364] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize (2 2⍴0.2 0 0.2 0))
+[365] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")
+[366] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"
+[367] 
+[368] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "New" "Combo"
+[369] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE"
+[370] Fieldcontrol←Fieldcontrol OVER "Combo"
+[371] ⎕wi "∆name" "mpuDATE"
+[372] ⎕wi "∆type" "Date"
+[373] ⎕wi "∆mandatory" 1
+[374] ⎕wi "∆helpid" 5093
+[375] ⎕wi "tooltip" "Specify the Underpin Commencement Date by selecting from the list of Standard Dates or specifying an alternate Date"
+[376] ⎕wi "limit" 10
+[377] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[378] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[379] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊8 32 45 46 47 48 49 50 51 52 53 54 55 56 57"
+[380] ⎕wi "onKeyDown" "(⎕wi 'self') ChangesDates ⎕warg"
+[381] ⎕wi "style" 16 128 256 0
+[382] ⎕wi "∆where" (2 2⍴0.45 0 0.2 0)
+[383] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize (2 2⍴0.45 0 0.2 0))
+[384] PickList←0 GetAbsDateList 'Fund'
+[385] ⎕wi "∆update" "0 GetAbsDateList 'Fund'"
+[386] PickList←⊃m2n 1 0↓PickList
+[387] PickList←" " OVER PickList
+[388] ⎕wi "list" PickList
+[389] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)
+[390] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Date'  ) at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[391] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Date'  ) at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[392] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgUnderpin.fMPUCont.lrmpuDATE"
+[393] 
+[394] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.lrmpuDATE" ⎕wi "New" "Label"
+[395] ⎕wi "scale" 5
+[396] ⎕wi "extent" (CharSize×¯2↑1,10)
+[397] ⎕wi "style" 32
+[398] ⎕wi "caption" " "
+[399] where←4↑,"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "∆where"
+[400] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "extent"
+[401] ⎕wi "∆where" ((x,2)⍴where)
+[402] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[403] 
+[404] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.llmpuDATE" ⎕wi "New" "Label"
+[405] ⎕wi "scale" 5
+[406] ⎕wi "style" 2
+[407] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Underpin⍺Commencement Date")))
+[408] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Underpin⍺Commencement Date")
+[409] where←4↑,"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "∆where"
+[410] size←1↑"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbmpuDATE" ⎕wi "extent"
+[411] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[412] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[413] ⎕wi "∆where" ((x,2)⍴where)
+[414] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[415] 
+[416] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu" ⎕wi "New" "Combo"
+[417] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu"
+[418] Fieldcontrol←Fieldcontrol OVER "Combo"
+[419] ⎕wi "∆name" "jmpu"
+[420] ⎕wi "∆type" "Char"
+[421] ⎕wi "∆helpid" 5094
+[422] ⎕wi "tooltip" "Select the Underpin Interest Rate (% p.a.)"
+[423] ⎕wi "style" 16 128 256 2
+[424] ⎕wi "∆where" (2 2⍴0.7 0 0.2 0)
+[425] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize (2 2⍴0.7 0 0.2 0))
+[426] PickList←GetFinList 'Int'
+[427] ⎕wi "∆update" "GetFinList 'Int'"
+[428] PickList←⊃m2n 1 0↓PickList
+[429] PickList←" " OVER PickList
+[430] ⎕wi "list" PickList
+[431] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[432] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[433] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgUnderpin.fMPUCont.lrjmpu"
+[434] 
+[435] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.lrjmpu" ⎕wi "New" "Label"
+[436] ⎕wi "scale" 5
+[437] ⎕wi "extent" (CharSize×¯2↑1,2 55)
+[438] ⎕wi "caption" " "
+[439] where←4↑,"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu" ⎕wi "∆where"
+[440] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu" ⎕wi "extent"
+[441] ⎕wi "∆where" ((x,2)⍴where)
+[442] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[443] 
+[444] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fMPUCont.lljmpu" ⎕wi "New" "Label"
+[445] ⎕wi "scale" 5
+[446] ⎕wi "style" 2
+[447] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Underpin Interest (% p.a.)"))
+[448] ⎕wi "caption" "Underpin Interest (% p.a.)"
+[449] where←4↑,"fmSV.sDefBasis.pgUnderpin.fMPUCont.cbjmpu" ⎕wi "∆where"
+[450] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[451] ⎕wi "∆where" ((x,2)⍴where)
+[452] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fMPUCont" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[453] 
+[454] :if 300<fnsize
+[455]     ((1↑⎕lc) fnsize "Frame - Buttons") Win∆ProgressBar "MemberUpdate"
+[456] :endif
+[457] 
+[458] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fButtons" ⎕wi "New" "Frame"
+[459] ⎕wi "scale" 5
+[460] ⎕wi "∆where" (4 2⍴0.9 0 0 0 0.099 0 1 0)
+[461] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin" ⎕wi "size") Win∆Resize (4 2⍴0.9 0 0 0 0.099 0 1 0))
+[462] ⎕wi "style" 7
+[463] ⎕wi "onResize" "AutoResize"
+[464] list←list OVER "fmSV.sDefBasis.pgUnderpin.fButtons.bnDeferreds_BasisEditFin"
+[465] ⎕wself←"fmSV.sDefBasis.pgUnderpin.fButtons.bnDeferreds_BasisEditFin" ⎕wi "New" "Button"
+[466] ⎕wi "deferexit" 1
+[467] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)
+[468] ⎕wi "∆where" (2 2⍴0.1 0 0.44 0)
+[469] ⎕wi "where" (("fmSV.sDefBasis.pgUnderpin.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.44 0))
+[470] ⎕wi "tooltip" "Edit/Add the Scheme Financial Assumptions"
+[471] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mEditFin"⎕wi "onClick")
+[472] ⎕wi "∆helpid" 5095
+[473] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Edit Scheme⍺Financials")
+[474] "fmSV.sDefBasis.pgUnderpin" ⎕wi "∆fieldlist" Fieldlist
+[475] "fmSV.sDefBasis.pgUnderpin" ⎕wi "∆fieldcontrol" Fieldcontrol
+[476] 
+[477] Fieldlist←Fieldcontrol←0 0⍴""
+[478] 
+[479] ⎕wself←"fmSV.sDefBasis.pgIndPUPs" ⎕wi "New" "Page"
+[480] ⎕wi "caption" "Ind PUPs"
+[481] ⎕wi "scale" 5
+[482] ⎕wi "imageindex" 1
+[483] ⎕wi "onResize" "AutoResize"
+[484] ⎕wi "∆helpid" 2224
+[485] :if ~0∊⍴"fmSV.mDeferreds_BasisGoTo" ⎕wi "self"
+[486]     ⎕wself←"fmSV.mDeferreds_BasisGoTo.mIndPUPs" ⎕wi "New" "Menu"
+[487]     ⎕wi "caption" "Ind PUPs"
+[488]     ⎕wi "prompt" "Go to Ind PUPs Page"
+[489]     ⎕wi "onClick" "'fmSV.sDefBasis' ⎕wi 'value' (('fmSV.sDefBasis' ⎕wi 'pages')⍳⊂'pgIndPUPs')"
+[490] :endif
+[491] ⎕wgive 0
+[492] "fmSV.sDefBasis" ⎕wi "value" (⍴"fmSV.sDefBasis" ⎕wi "pages")
+[493] 
+[494] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fIndPUPs" ⎕wi "New" "Frame"
+[495] ⎕wi "scale" 5
+[496] ⎕wi "∆where" (4 2⍴0 0 0 0 0.9 0 1 0)
+[497] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs" ⎕wi "size") Win∆Resize (4 2⍴0 0 0 0 0.9 0 1 0))
+[498] ⎕wi "caption" "Independent PUPs"
+[499] ⎕wi "style" 0
+[500] ⎕wi "onResize" "AutoResize"
+[501] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs" ⎕wi "New" "{13E51003-A52B-11D0-86DA-00608CB9FBFB}6D5ECD55-86B8-11d0-95AD-0020AF1E9EB2"
+[502] ⎕wi "∆where" (4 2⍴0 15 0 10 0.999 ¯25 1 ¯20)
+[503] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fIndPUPs" ⎕wi "size") Win∆Resize (4 2⍴0 15 0 10 0.999 ¯25 1 ¯20))
+[504] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs"
+[505] Fieldcontrol←Fieldcontrol OVER "F1SS"
+[506] Win∆F1SSDefaults 0
+[507] ⎕wi "MaxRow" (MaxRow←1)
+[508] ⎕wi "MaxCol" (MaxCol←1)
+[509] ⎕wi "xDoStartEdit" 1
+[510] ⎕wi "xDoEndEdit" 1
+[511] ⎕wi "xDoCancelEdit" 1
+[512] ⎕wi "onClick" "Win∆F1SSClick 'fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs'"
+[513] ⎕wi "onXStartEdit" "⎕wi 'AllowArrows' 0"
+[514] NameList←0 0⍴" "
+[515] ⎕wi "MaxRow" (MaxRow←MaxRow⌈1)
+[516] ⎕wi "RowHeight" 1 250
+[517] ⎕wi "RowText" 1 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Independent PUP Description")
+[518] NameList←NameList OVER "IndPUPDesc[;]"
+[519] ⎕wi "MaxRow" (MaxRow←MaxRow⌈2)
+[520] ⎕wi "RowHeight" 2 250
+[521] ⎕wi "RowText" 2 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "{ Independent PUP Payment Parameters }")
+[522] NameList←NameList OVER ""
+[523] ⎕wi "MaxRow" (MaxRow←MaxRow⌈3)
+[524] ⎕wi "RowHeight" 3 250
+[525] ⎕wi "RowText" 3 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "PUP Amount")
+[526] NameList←NameList OVER "IndPUP[;]"
+[527] ⎕wi "MaxRow" (MaxRow←MaxRow⌈4)
+[528] ⎕wi "RowHeight" 4 250
+[529] ⎕wi "RowText" 4 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Revaluation Rate Override")
+[530] NameList←NameList OVER "IndINDREV[;]"
+[531] ⎕wi "MaxRow" (MaxRow←MaxRow⌈5)
+[532] ⎕wi "RowHeight" 5 250
+[533] ⎕wi "RowText" 5 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Spouses DAR Override")
+[534] NameList←NameList OVER "IndINDWARFRAC[;]"
+[535] ⎕wi "MaxRow" (MaxRow←MaxRow⌈6)
+[536] ⎕wi "RowHeight" 6 250
+[537] ⎕wi "RowText" 6 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Complete Years Only Override")
+[538] NameList←NameList OVER "IndINDREVYRS[;]"
+[539] ⎕wi "MaxRow" (MaxRow←MaxRow⌈7)
+[540] ⎕wi "RowHeight" 7 250
+[541] ⎕wi "RowText" 7 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "NRA Exits Rounding Override")
+[542] NameList←NameList OVER "IndINDNRARND[;]"
+[543] ⎕wi "MaxRow" (MaxRow←MaxRow⌈8)
+[544] ⎕wi "RowHeight" 8 250
+[545] ⎕wi "RowText" 8 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Start Date")
+[546] NameList←NameList OVER "IndINDSTART[;]"
+[547] ⎕wi "MaxRow" (MaxRow←MaxRow⌈9)
+[548] ⎕wi "RowHeight" 9 250
+[549] ⎕wi "RowText" 9 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Finish Date")
+[550] NameList←NameList OVER "IndINDFINISH[;]"
+[551] ⎕wi "MaxRow" (MaxRow←MaxRow⌈10)
+[552] ⎕wi "RowHeight" 10 250
+[553] ⎕wi "RowText" 10 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Male Start Age")
+[554] NameList←NameList OVER "m_IndPayStart[;]"
+[555] ⎕wi "MaxRow" (MaxRow←MaxRow⌈11)
+[556] ⎕wi "RowHeight" 11 250
+[557] ⎕wi "RowText" 11 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Female Start Age")
+[558] NameList←NameList OVER "f_IndPayStart[;]"
+[559] ⎕wi "MaxRow" (MaxRow←MaxRow⌈12)
+[560] ⎕wi "RowHeight" 12 250
+[561] ⎕wi "RowText" 12 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Male End Age")
+[562] NameList←NameList OVER "m_IndPayEnd[;]"
+[563] ⎕wi "MaxRow" (MaxRow←MaxRow⌈13)
+[564] ⎕wi "RowHeight" 13 250
+[565] ⎕wi "RowText" 13 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Female End Age")
+[566] NameList←NameList OVER "f_IndPayEnd[;]"
+[567] ⎕wi "MaxRow" (MaxRow←MaxRow⌈14)
+[568] ⎕wi "RowHeight" 14 250
+[569] ⎕wi "RowText" 14 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "PUP Adjustment Factor")
+[570] NameList←NameList OVER "IndPUPADJ[;]"
+[571] ⎕wi "MaxRow" (MaxRow←MaxRow⌈15)
+[572] ⎕wi "RowHeight" 15 250
+[573] ⎕wi "RowText" 15 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "{ Independent PUP Indicators }")
+[574] NameList←NameList OVER ""
+[575] ⎕wi "MaxRow" (MaxRow←MaxRow⌈16)
+[576] ⎕wi "RowHeight" 16 250
+[577] ⎕wi "RowText" 16 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "ERF Indicator")
+[578] NameList←NameList OVER "IndBARBIND[;]"
+[579] ⎕wi "MaxRow" (MaxRow←MaxRow⌈17)
+[580] ⎕wi "RowHeight" 17 500
+[581] ⎕wi "RowText" 17 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Pension Increases⍺in Payment")
+[582] NameList←NameList OVER "IndDYNIND[;]"
+[583] ⎕wi "MaxRow" (MaxRow←MaxRow⌈18)
+[584] ⎕wi "RowHeight" 18 500
+[585] ⎕wi "RowText" 18 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Pension Increases⍺Pre Start")
+[586] NameList←NameList OVER "IndDYNIND2[;]"
+[587] ⎕wi "MaxRow" (MaxRow←MaxRow⌈19)
+[588] ⎕wi "RowHeight" 19 250
+[589] ⎕wi "RowText" 19 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Include In Underpin")
+[590] NameList←NameList OVER "IndUNDIND[;]"
+[591] ⎕wi "MaxRow" (MaxRow←MaxRow⌈20)
+[592] ⎕wi "RowHeight" 20 250
+[593] ⎕wi "RowText" 20 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "{ Independent PUP PPF Parameters }")
+[594] NameList←NameList OVER ""
+[595] ⎕wi "MaxRow" (MaxRow←MaxRow⌈21)
+[596] ⎕wi "RowHeight" 21 500
+[597] ⎕wi "RowText" 21 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Male PPF NRA⍺(Levy Valuations)")
+[598] NameList←NameList OVER "m_IndPPFNRA[;]"
+[599] ⎕wi "MaxRow" (MaxRow←MaxRow⌈22)
+[600] ⎕wi "RowHeight" 22 500
+[601] ⎕wi "RowText" 22 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "Female PPF NRA⍺(Levy Valuations)")
+[602] NameList←NameList OVER "f_IndPPFNRA[;]"
+[603] ⎕wi "MaxRow" (MaxRow←MaxRow⌈23)
+[604] ⎕wi "RowHeight" 23 250
+[605] ⎕wi "RowText" 23 (("/⍺/",⎕tcnl,⎕tclf) TEXTREPL "PPF Service Period")
+[606] NameList←NameList OVER "IndPPFPAYINC[;]"
+[607] ⎕wi "xHdrWidth" (250×34)
+[608] ⎕wi "onXRClick" "0 Win∆F1SSColMenu ('Deferreds_Basis' 'fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs')"
+[609] ⎕wi "∆roworcol" "Row"
+[610] ⎕wi "∆name" NameList
+[611] ⎕wi "∆limit" (,0 0 0 0 8 3 3 0 0 3 3 3 3 7 0 10 0 0 3 0 3 3 0)
+[612] ⎕wi "∆mandatory" 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[613] ⎕wi "∆helpid" 5096 0 5097 5098 5099 5100 5101 5102 5103 5104 5104 5105 5105 5106 0 5107 5108 5109 5110 0 5111 5111 5112
+[614] ⎕wi "∆type" "⍺Char⍺⍺Char⍺Fin⍺Num⍺Char⍺Char⍺Char⍺Char⍺Num⍺Num⍺Num⍺Num⍺Num⍺⍺Char⍺Char⍺Char⍺Char⍺⍺Num⍺Num⍺Char"
+[615] ⎕wi "∆valid" "⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''⍺''"
+[616] ⎕wi "∆range" "⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺⍺"
+[617] ⎕wi "onXEndEdit" "(⎕wi 'xRow') Win∆ValidF1SSCell ⎕wi 'xCol' ⋄ 0 0⍴⎕ex 'F1SSEvent' "
+[618] ⎕wi "onExit" "Win∆ValidF1SSExit 'Deferreds_Basis'"
+[619] ⎕wi "onExitError" "MDISPLAY ⎕warg ⋄ ⎕wi 'XStartEdit' 0 1 1"
+[620] ⎕wi "onXCancelEdit" "⎕wi 'AllowArrows' 1 ⋄ ⎕wi 'SetColWidthAuto' 1 1 (⎕wi 'MaxRow') (⎕wi 'MaxCol') 0"
+[621] "fmSV.sDefBasis.pgIndPUPs.fIndPUPs.ssIndPUPs" Win∆F1SSProtectCells "Unlock"
+[622] ⎕wi "SetSelection" 1 1 1 1
+[623] 
+[624] :if 300<fnsize
+[625]     ((1↑⎕lc) fnsize "Frame - Buttons") Win∆ProgressBar "MemberUpdate"
+[626] :endif
+[627] 
+[628] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "New" "Frame"
+[629] ⎕wi "scale" 5
+[630] ⎕wi "∆where" (4 2⍴0.9 0 0 0 0.099 0 1 0)
+[631] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs" ⎕wi "size") Win∆Resize (4 2⍴0.9 0 0 0 0.099 0 1 0))
+[632] ⎕wi "style" 7
+[633] ⎕wi "onResize" "AutoResize"
+[634] list←list OVER "fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisAdd"
+[635] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisAdd" ⎕wi "New" "Button"
+[636] ⎕wi "enabled" ((ClntCode=3)^basAccess[2]≤accesslevel)
+[637] ⎕wi "deferexit" 1
+[638] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)
+[639] ⎕wi "∆where" (2 2⍴0.1 0 0.28 0)
+[640] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.28 0))
+[641] ⎕wi "tooltip" "Add a New Independent PUP Definition"
+[642] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mIndPUPAdd"⎕wi "onClick")
+[643] ⎕wi "∆helpid" 5113
+[644] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Add⍺PUP")
+[645] list←list OVER "fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisInsert"
+[646] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisInsert" ⎕wi "New" "Button"
+[647] ⎕wi "enabled" ((ClntCode=3)^basAccess[2]≤accesslevel)
+[648] ⎕wi "deferexit" 1
+[649] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)
+[650] ⎕wi "∆where" (2 2⍴0.1 0 0.4 0)
+[651] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.4 0))
+[652] ⎕wi "tooltip" "Insert an Independent PUP Definition"
+[653] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mIndPUPInsert"⎕wi "onClick")
+[654] ⎕wi "∆helpid" 5114
+[655] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Insert⍺PUP")
+[656] list←list OVER "fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisEdit"
+[657] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisEdit" ⎕wi "New" "Button"
+[658] ⎕wi "enabled" ((ClntCode=3)^basAccess[2]≤accesslevel)
+[659] ⎕wi "deferexit" 1
+[660] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)
+[661] ⎕wi "∆where" (2 2⍴0.1 0 0.52 0)
+[662] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.52 0))
+[663] ⎕wi "tooltip" "Edit an Existing Independent PUP Definition"
+[664] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mIndPUPEdit"⎕wi "onClick")
+[665] ⎕wi "∆helpid" 5115
+[666] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Edit⍺PUP")
+[667] list←list OVER "fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisDelete"
+[668] ⎕wself←"fmSV.sDefBasis.pgIndPUPs.fButtons.bnDeferreds_BasisDelete" ⎕wi "New" "Button"
+[669] ⎕wi "enabled" ((ClntCode=3)^basAccess[2]≤accesslevel)
+[670] ⎕wi "deferexit" 1
+[671] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)
+[672] ⎕wi "∆where" (2 2⍴0.1 0 0.64 0)
+[673] ⎕wi "where" (("fmSV.sDefBasis.pgIndPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.64 0))
+[674] ⎕wi "tooltip" "Delete an Independent PUP Definition"
+[675] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mIndPUPDel"⎕wi "onClick")
+[676] ⎕wi "∆helpid" 5116
+[677] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Delete⍺PUP")
+[678] :if buttonimage
+[679]     ⎕wi "imagelist" "fmSV.iStandard"
+[680]     ⎕wi "imageindex" 6
+[681] :endif
+[682] "fmSV.sDefBasis.pgIndPUPs" ⎕wi "∆fieldlist" Fieldlist
+[683] "fmSV.sDefBasis.pgIndPUPs" ⎕wi "∆fieldcontrol" Fieldcontrol
+[684] 
+[685] Fieldlist←Fieldcontrol←0 0⍴""
+[686] 
+[687] ⎕wself←"fmSV.sDefBasis.pgNSPUPs" ⎕wi "New" "Page"
+[688] ⎕wi "caption" "NSPUPs"
+[689] ⎕wi "scale" 5
+[690] ⎕wi "imageindex" 1
+[691] ⎕wi "onResize" "AutoResize"
+[692] ⎕wi "∆helpid" 2225
+[693] :if ~0∊⍴"fmSV.mDeferreds_BasisGoTo" ⎕wi "self"
+[694]     ⎕wself←"fmSV.mDeferreds_BasisGoTo.mNSPUPs" ⎕wi "New" "Menu"
+[695]     ⎕wi "caption" "NSPUPs"
+[696]     ⎕wi "prompt" "Go to NSPUPs Page"
+[697]     ⎕wi "onClick" "'fmSV.sDefBasis' ⎕wi 'value' (('fmSV.sDefBasis' ⎕wi 'pages')⍳⊂'pgNSPUPs')"
+[698] :endif
+[699] ⎕wgive 0
+[700] "fmSV.sDefBasis" ⎕wi "value" (⍴"fmSV.sDefBasis" ⎕wi "pages")
+[701] 
+[702] :if 300<fnsize
+[703]     ((1↑⎕lc) fnsize "FrameV - Death Before Retirement PUP 1") Win∆ProgressBar "MemberUpdate"
+[704] :endif
+[705] 
+[706] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "New" "Frame"
+[707] ⎕wi "scale" 5
+[708] ⎕wi "∆where" (4 2⍴0 0 0 0 0.41 0 0.5 0)
+[709] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0 0 0 0 0.41 0 0.5 0))
+[710] ⎕wi "caption" "Death Before Retirement PUP 1"
+[711] ⎕wi "style" 0
+[712] ⎕wi "onResize" "AutoResize"
+[713] 
+[714] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDATADBR1" ⎕wi "New" "Combo"
+[715] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDATADBR1"
+[716] Fieldcontrol←Fieldcontrol OVER "Combo"
+[717] ⎕wi "∆name" "DATADBR1"
+[718] ⎕wi "∆type" "Char"
+[719] ⎕wi "∆helpid" 5117
+[720] ⎕wi "style" 16 128 256 2
+[721] ⎕wi "∆where" (2 2⍴0.08 0 0.35 0)
+[722] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.08 0 0.35 0))
+[723] PickList←GetVarNumList 'All'
+[724] ⎕wi "∆update" "GetVarNumList 'All'"
+[725] PickList←⊃m2n 1 0↓PickList
+[726] PickList←" " OVER PickList
+[727] ⎕wi "list" PickList
+[728] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[729] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[730] 
+[731] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llDATADBR1" ⎕wi "New" "Label"
+[732] ⎕wi "scale" 5
+[733] ⎕wi "style" 2
+[734] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "PUP Amount"))
+[735] ⎕wi "caption" "PUP Amount"
+[736] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDATADBR1" ⎕wi "∆where"
+[737] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[738] ⎕wi "∆where" ((x,2)⍴where)
+[739] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[740] 
+[741] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1" ⎕wi "New" "Edit"
+[742] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1"
+[743] Fieldcontrol←Fieldcontrol OVER "Edit"
+[744] ⎕wi "∆name" "PERCENTDBR1"
+[745] ⎕wi "∆type" "Num"
+[746] ⎕wi "∆mandatory" 1
+[747] ⎕wi "∆helpid" 5118
+[748] ⎕wi "limit" 8
+[749] ⎕wi "∆where" (2 2⍴0.2 0 0.35 0)
+[750] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.2 0 0.35 0))
+[751] ⎕wi "onChange" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[752] ⎕wi "onExit" "⍎(0∊⍴,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[753] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[754] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"
+[755] ⎕wi "extent" (2+CharSize×1 9)
+[756] 
+[757] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.lrPERCENTDBR1" ⎕wi "New" "Label"
+[758] ⎕wi "scale" 5
+[759] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))
+[760] ⎕wi "caption" "%"
+[761] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1" ⎕wi "∆where"
+[762] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1" ⎕wi "extent"
+[763] ⎕wi "∆where" ((x,2)⍴where)
+[764] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[765] 
+[766] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llPERCENTDBR1" ⎕wi "New" "Label"
+[767] ⎕wi "scale" 5
+[768] ⎕wi "style" 2
+[769] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "% of PUP Amount"))
+[770] ⎕wi "caption" "% of PUP Amount"
+[771] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.edPERCENTDBR1" ⎕wi "∆where"
+[772] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[773] ⎕wi "∆where" ((x,2)⍴where)
+[774] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[775] 
+[776] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1" ⎕wi "New" "Combo"
+[777] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1"
+[778] Fieldcontrol←Fieldcontrol OVER "Combo"
+[779] ⎕wi "∆name" "REVDBR1"
+[780] ⎕wi "∆type" "Char"
+[781] ⎕wi "∆helpid" 5119
+[782] ⎕wi "style" 16 128 256 2
+[783] ⎕wi "∆where" (2 2⍴0.32 0 0.35 0)
+[784] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.32 0 0.35 0))
+[785] PickList←GetFinList 'Rev'
+[786] ⎕wi "∆update" "GetFinList 'Rev'"
+[787] PickList←⊃m2n 1 0↓PickList
+[788] PickList←" " OVER PickList
+[789] ⎕wi "list" PickList
+[790] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[791] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[792] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDBR1.lrREVDBR1"
+[793] 
+[794] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.lrREVDBR1" ⎕wi "New" "Label"
+[795] ⎕wi "scale" 5
+[796] ⎕wi "extent" (CharSize×¯2↑1,2 45)
+[797] ⎕wi "caption" " "
+[798] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1" ⎕wi "∆where"
+[799] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1" ⎕wi "extent"
+[800] ⎕wi "∆where" ((x,2)⍴where)
+[801] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[802] 
+[803] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llREVDBR1" ⎕wi "New" "Label"
+[804] ⎕wi "scale" 5
+[805] ⎕wi "style" 2
+[806] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Revaluation Rate Override"))
+[807] ⎕wi "caption" "Revaluation Rate Override"
+[808] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbREVDBR1" ⎕wi "∆where"
+[809] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[810] ⎕wi "∆where" ((x,2)⍴where)
+[811] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[812] 
+[813] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbPreNRAEXITDBR1" ⎕wi "New" "Combo"
+[814] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbPreNRAEXITDBR1"
+[815] Fieldcontrol←Fieldcontrol OVER "Combo"
+[816] ⎕wi "∆name" "PreNRAEXITDBR1"
+[817] ⎕wi "∆type" "Char"
+[818] ⎕wi "∆helpid" 5120
+[819] ⎕wi "style" 16 128 256 2
+[820] ⎕wi "∆where" (2 2⍴0.56 0 0.35 0)
+[821] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.56 0 0.35 0))
+[822] PickList←⍙POPUPSdict ReadDictFile "YesNo"
+[823] PickList←⊃m2n 1 0↓PickList
+[824] PickList←" " OVER PickList
+[825] ⎕wi "list" PickList
+[826] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[827] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[828] 
+[829] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llPreNRAEXITDBR1" ⎕wi "New" "Label"
+[830] ⎕wi "scale" 5
+[831] ⎕wi "style" 2
+[832] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Complete Years Only Override"))
+[833] ⎕wi "caption" "Complete Years Only Override"
+[834] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbPreNRAEXITDBR1" ⎕wi "∆where"
+[835] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[836] ⎕wi "∆where" ((x,2)⍴where)
+[837] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[838] 
+[839] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDYNDBR1" ⎕wi "New" "Combo"
+[840] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDYNDBR1"
+[841] Fieldcontrol←Fieldcontrol OVER "Combo"
+[842] ⎕wi "∆name" "DYNDBR1"
+[843] ⎕wi "∆type" "Char"
+[844] ⎕wi "∆mandatory" 1
+[845] ⎕wi "∆helpid" 5121
+[846] ⎕wi "tooltip" "Select the Escalation Rate"
+[847] ⎕wi "style" 16 128 256 2
+[848] ⎕wi "∆where" (2 2⍴0.68 0 0.35 0)
+[849] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.68 0 0.35 0))
+[850] PickList←⍙POPUPSdict ReadDictFile "EscRate"
+[851] PickList←⊃m2n 1 0↓PickList
+[852] ⎕wi "list" PickList
+[853] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[854] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[855] 
+[856] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llDYNDBR1" ⎕wi "New" "Label"
+[857] ⎕wi "scale" 5
+[858] ⎕wi "style" 2
+[859] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")))
+[860] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")
+[861] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDYNDBR1" ⎕wi "∆where"
+[862] size←1↑"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDYNDBR1" ⎕wi "extent"
+[863] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[864] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[865] ⎕wi "∆where" ((x,2)⍴where)
+[866] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[867] 
+[868] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ" ⎕wi "New" "Combo"
+[869] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ"
+[870] Fieldcontrol←Fieldcontrol OVER "Combo"
+[871] ⎕wi "∆name" "DBR1ADJ"
+[872] ⎕wi "∆type" "Num"
+[873] ⎕wi "∆mandatory" 1
+[874] ⎕wi "∆valid" ('Scalar')
+[875] ⎕wi "∆helpid" 5122
+[876] ⎕wi "limit" 8
+[877] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[878] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[879] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"
+[880] ⎕wi "style" 16 128 256 0
+[881] ⎕wi "∆where" (2 2⍴0.8 0 0.35 0)
+[882] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.8 0 0.35 0))
+[883] PickList←('Scalar') GetAbsNumList 'Fund'
+[884] ⎕wi "∆update" "('Scalar') GetAbsNumList 'Fund'"
+[885] PickList←⊃m2n 1 0↓PickList
+[886] PickList←" " OVER PickList
+[887] ⎕wi "list" PickList
+[888] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)
+[889] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[890] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[891] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDBR1.lrDBR1ADJ"
+[892] 
+[893] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.lrDBR1ADJ" ⎕wi "New" "Label"
+[894] ⎕wi "scale" 5
+[895] ⎕wi "extent" (CharSize×¯2↑1,15)
+[896] ⎕wi "style" 32
+[897] ⎕wi "caption" " "
+[898] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ" ⎕wi "∆where"
+[899] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ" ⎕wi "extent"
+[900] ⎕wi "∆where" ((x,2)⍴where)
+[901] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[902] 
+[903] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.llDBR1ADJ" ⎕wi "New" "Label"
+[904] ⎕wi "scale" 5
+[905] ⎕wi "style" 2
+[906] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Adjustment Factor"))
+[907] ⎕wi "caption" "Adjustment Factor"
+[908] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR1.cbDBR1ADJ" ⎕wi "∆where"
+[909] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[910] ⎕wi "∆where" ((x,2)⍴where)
+[911] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[912] 
+[913] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR1.ckPPFPAYINCDBR1" ⎕wi "New" "Check"
+[914] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR1.ckPPFPAYINCDBR1"
+[915] Fieldcontrol←Fieldcontrol OVER "Check"
+[916] ⎕wi "∆name" "PPFPAYINCDBR1"
+[917] ⎕wi "∆type" "Check"
+[918] ⎕wi "enabled" (capenabled)
+[919] ⎕wi "∆helpid" 5123
+[920] ⎕wi "style" 0
+[921] ⎕wi "caption" "Treat as Post 1997 for CAP"
+[922] ⎕wi "∆where" (2 2⍴0.92 0 0.35 0)
+[923] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR1" ⎕wi "size") Win∆Resize (2 2⍴0.92 0 0.35 0))
+[924] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")
+[925] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"
+[926] 
+[927] :if 300<fnsize
+[928]     ((1↑⎕lc) fnsize "FrameV - Death Before Retirement PUP 2") Win∆ProgressBar "MemberUpdate"
+[929] :endif
+[930] 
+[931] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "New" "Frame"
+[932] ⎕wi "scale" 5
+[933] ⎕wi "∆where" (4 2⍴0 0 0.5 0 0.41 0 0.5 0)
+[934] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0 0 0.5 0 0.41 0 0.5 0))
+[935] ⎕wi "caption" "Death Before Retirement PUP 2"
+[936] ⎕wi "style" 0
+[937] ⎕wi "onResize" "AutoResize"
+[938] 
+[939] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDATADBR2" ⎕wi "New" "Combo"
+[940] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDATADBR2"
+[941] Fieldcontrol←Fieldcontrol OVER "Combo"
+[942] ⎕wi "∆name" "DATADBR2"
+[943] ⎕wi "∆type" "Char"
+[944] ⎕wi "∆helpid" 5117
+[945] ⎕wi "style" 16 128 256 2
+[946] ⎕wi "∆where" (2 2⍴0.08 0 0.35 0)
+[947] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.08 0 0.35 0))
+[948] PickList←GetVarNumList 'All'
+[949] ⎕wi "∆update" "GetVarNumList 'All'"
+[950] PickList←⊃m2n 1 0↓PickList
+[951] PickList←" " OVER PickList
+[952] ⎕wi "list" PickList
+[953] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[954] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[955] 
+[956] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llDATADBR2" ⎕wi "New" "Label"
+[957] ⎕wi "scale" 5
+[958] ⎕wi "style" 2
+[959] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "PUP Amount"))
+[960] ⎕wi "caption" "PUP Amount"
+[961] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDATADBR2" ⎕wi "∆where"
+[962] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[963] ⎕wi "∆where" ((x,2)⍴where)
+[964] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[965] 
+[966] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2" ⎕wi "New" "Edit"
+[967] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2"
+[968] Fieldcontrol←Fieldcontrol OVER "Edit"
+[969] ⎕wi "∆name" "PERCENTDBR2"
+[970] ⎕wi "∆type" "Num"
+[971] ⎕wi "∆mandatory" 1
+[972] ⎕wi "∆helpid" 5118
+[973] ⎕wi "limit" 8
+[974] ⎕wi "∆where" (2 2⍴0.2 0 0.35 0)
+[975] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.2 0 0.35 0))
+[976] ⎕wi "onChange" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[977] ⎕wi "onExit" "⍎(0∊⍴,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[978] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[979] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"
+[980] ⎕wi "extent" (2+CharSize×1 9)
+[981] 
+[982] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.lrPERCENTDBR2" ⎕wi "New" "Label"
+[983] ⎕wi "scale" 5
+[984] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))
+[985] ⎕wi "caption" "%"
+[986] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2" ⎕wi "∆where"
+[987] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2" ⎕wi "extent"
+[988] ⎕wi "∆where" ((x,2)⍴where)
+[989] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[990] 
+[991] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llPERCENTDBR2" ⎕wi "New" "Label"
+[992] ⎕wi "scale" 5
+[993] ⎕wi "style" 2
+[994] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "% of PUP Amount"))
+[995] ⎕wi "caption" "% of PUP Amount"
+[996] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.edPERCENTDBR2" ⎕wi "∆where"
+[997] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[998] ⎕wi "∆where" ((x,2)⍴where)
+[999] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1000] 
+[1001] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2" ⎕wi "New" "Combo"
+[1002] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2"
+[1003] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1004] ⎕wi "∆name" "REVDBR2"
+[1005] ⎕wi "∆type" "Char"
+[1006] ⎕wi "∆helpid" 5119
+[1007] ⎕wi "style" 16 128 256 2
+[1008] ⎕wi "∆where" (2 2⍴0.32 0 0.35 0)
+[1009] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.32 0 0.35 0))
+[1010] PickList←GetFinList 'Rev'
+[1011] ⎕wi "∆update" "GetFinList 'Rev'"
+[1012] PickList←⊃m2n 1 0↓PickList
+[1013] PickList←" " OVER PickList
+[1014] ⎕wi "list" PickList
+[1015] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1016] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1017] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDBR2.lrREVDBR2"
+[1018] 
+[1019] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.lrREVDBR2" ⎕wi "New" "Label"
+[1020] ⎕wi "scale" 5
+[1021] ⎕wi "extent" (CharSize×¯2↑1,2 45)
+[1022] ⎕wi "caption" " "
+[1023] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2" ⎕wi "∆where"
+[1024] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2" ⎕wi "extent"
+[1025] ⎕wi "∆where" ((x,2)⍴where)
+[1026] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1027] 
+[1028] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llREVDBR2" ⎕wi "New" "Label"
+[1029] ⎕wi "scale" 5
+[1030] ⎕wi "style" 2
+[1031] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Revaluation Rate Override"))
+[1032] ⎕wi "caption" "Revaluation Rate Override"
+[1033] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbREVDBR2" ⎕wi "∆where"
+[1034] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1035] ⎕wi "∆where" ((x,2)⍴where)
+[1036] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1037] 
+[1038] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbPreNRAEXITDBR2" ⎕wi "New" "Combo"
+[1039] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbPreNRAEXITDBR2"
+[1040] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1041] ⎕wi "∆name" "PreNRAEXITDBR2"
+[1042] ⎕wi "∆type" "Char"
+[1043] ⎕wi "∆helpid" 5120
+[1044] ⎕wi "style" 16 128 256 2
+[1045] ⎕wi "∆where" (2 2⍴0.56 0 0.35 0)
+[1046] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.56 0 0.35 0))
+[1047] PickList←⍙POPUPSdict ReadDictFile "YesNo"
+[1048] PickList←⊃m2n 1 0↓PickList
+[1049] PickList←" " OVER PickList
+[1050] ⎕wi "list" PickList
+[1051] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1052] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1053] 
+[1054] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llPreNRAEXITDBR2" ⎕wi "New" "Label"
+[1055] ⎕wi "scale" 5
+[1056] ⎕wi "style" 2
+[1057] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Complete Years Only Override"))
+[1058] ⎕wi "caption" "Complete Years Only Override"
+[1059] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbPreNRAEXITDBR2" ⎕wi "∆where"
+[1060] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1061] ⎕wi "∆where" ((x,2)⍴where)
+[1062] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1063] 
+[1064] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDYNDBR2" ⎕wi "New" "Combo"
+[1065] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDYNDBR2"
+[1066] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1067] ⎕wi "∆name" "DYNDBR2"
+[1068] ⎕wi "∆type" "Char"
+[1069] ⎕wi "∆mandatory" 1
+[1070] ⎕wi "∆helpid" 5121
+[1071] ⎕wi "tooltip" "Select the Escalation Rate"
+[1072] ⎕wi "style" 16 128 256 2
+[1073] ⎕wi "∆where" (2 2⍴0.68 0 0.35 0)
+[1074] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.68 0 0.35 0))
+[1075] PickList←⍙POPUPSdict ReadDictFile "EscRate"
+[1076] PickList←⊃m2n 1 0↓PickList
+[1077] ⎕wi "list" PickList
+[1078] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1079] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1080] 
+[1081] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llDYNDBR2" ⎕wi "New" "Label"
+[1082] ⎕wi "scale" 5
+[1083] ⎕wi "style" 2
+[1084] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")))
+[1085] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")
+[1086] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDYNDBR2" ⎕wi "∆where"
+[1087] size←1↑"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDYNDBR2" ⎕wi "extent"
+[1088] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[1089] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[1090] ⎕wi "∆where" ((x,2)⍴where)
+[1091] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1092] 
+[1093] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ" ⎕wi "New" "Combo"
+[1094] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ"
+[1095] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1096] ⎕wi "∆name" "DBR2ADJ"
+[1097] ⎕wi "∆type" "Num"
+[1098] ⎕wi "∆mandatory" 1
+[1099] ⎕wi "∆valid" ('Scalar')
+[1100] ⎕wi "∆helpid" 5122
+[1101] ⎕wi "limit" 8
+[1102] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[1103] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[1104] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"
+[1105] ⎕wi "style" 16 128 256 0
+[1106] ⎕wi "∆where" (2 2⍴0.8 0 0.35 0)
+[1107] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.8 0 0.35 0))
+[1108] PickList←('Scalar') GetAbsNumList 'Fund'
+[1109] ⎕wi "∆update" "('Scalar') GetAbsNumList 'Fund'"
+[1110] PickList←⊃m2n 1 0↓PickList
+[1111] PickList←" " OVER PickList
+[1112] ⎕wi "list" PickList
+[1113] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)
+[1114] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1115] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1116] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDBR2.lrDBR2ADJ"
+[1117] 
+[1118] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.lrDBR2ADJ" ⎕wi "New" "Label"
+[1119] ⎕wi "scale" 5
+[1120] ⎕wi "extent" (CharSize×¯2↑1,15)
+[1121] ⎕wi "style" 32
+[1122] ⎕wi "caption" " "
+[1123] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ" ⎕wi "∆where"
+[1124] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ" ⎕wi "extent"
+[1125] ⎕wi "∆where" ((x,2)⍴where)
+[1126] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1127] 
+[1128] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.llDBR2ADJ" ⎕wi "New" "Label"
+[1129] ⎕wi "scale" 5
+[1130] ⎕wi "style" 2
+[1131] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Adjustment Factor"))
+[1132] ⎕wi "caption" "Adjustment Factor"
+[1133] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDBR2.cbDBR2ADJ" ⎕wi "∆where"
+[1134] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1135] ⎕wi "∆where" ((x,2)⍴where)
+[1136] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1137] 
+[1138] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDBR2.ckPPFPAYINCDBR2" ⎕wi "New" "Check"
+[1139] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDBR2.ckPPFPAYINCDBR2"
+[1140] Fieldcontrol←Fieldcontrol OVER "Check"
+[1141] ⎕wi "∆name" "PPFPAYINCDBR2"
+[1142] ⎕wi "∆type" "Check"
+[1143] ⎕wi "enabled" (capenabled)
+[1144] ⎕wi "∆helpid" 5123
+[1145] ⎕wi "style" 0
+[1146] ⎕wi "caption" "Treat as Post 1997 for CAP"
+[1147] ⎕wi "∆where" (2 2⍴0.92 0 0.35 0)
+[1148] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDBR2" ⎕wi "size") Win∆Resize (2 2⍴0.92 0 0.35 0))
+[1149] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")
+[1150] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"
+[1151] 
+[1152] :if 300<fnsize
+[1153]     ((1↑⎕lc) fnsize "FrameV - Death After Retirement PUP 1") Win∆ProgressBar "MemberUpdate"
+[1154] :endif
+[1155] 
+[1156] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "New" "Frame"
+[1157] ⎕wi "scale" 5
+[1158] ⎕wi "∆where" (4 2⍴0.41 0 0 0 0.51 0 0.5 0)
+[1159] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0.41 0 0 0 0.51 0 0.5 0))
+[1160] ⎕wi "caption" "Death After Retirement PUP 1"
+[1161] ⎕wi "style" 0
+[1162] ⎕wi "onResize" "AutoResize"
+[1163] 
+[1164] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDATADAR1" ⎕wi "New" "Combo"
+[1165] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDATADAR1"
+[1166] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1167] ⎕wi "∆name" "DATADAR1"
+[1168] ⎕wi "∆type" "Char"
+[1169] ⎕wi "∆helpid" 5124
+[1170] ⎕wi "style" 16 128 256 2
+[1171] ⎕wi "∆where" (2 2⍴0.09 0 0.35 0)
+[1172] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.09 0 0.35 0))
+[1173] PickList←GetVarNumList 'All'
+[1174] ⎕wi "∆update" "GetVarNumList 'All'"
+[1175] PickList←⊃m2n 1 0↓PickList
+[1176] PickList←" " OVER PickList
+[1177] ⎕wi "list" PickList
+[1178] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1179] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1180] 
+[1181] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llDATADAR1" ⎕wi "New" "Label"
+[1182] ⎕wi "scale" 5
+[1183] ⎕wi "style" 2
+[1184] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "PUP Amount"))
+[1185] ⎕wi "caption" "PUP Amount"
+[1186] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDATADAR1" ⎕wi "∆where"
+[1187] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1188] ⎕wi "∆where" ((x,2)⍴where)
+[1189] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1190] 
+[1191] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1" ⎕wi "New" "Edit"
+[1192] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1"
+[1193] Fieldcontrol←Fieldcontrol OVER "Edit"
+[1194] ⎕wi "∆name" "PERCENTDAR1"
+[1195] ⎕wi "∆type" "Num"
+[1196] ⎕wi "∆mandatory" 1
+[1197] ⎕wi "∆helpid" 5125
+[1198] ⎕wi "limit" 8
+[1199] ⎕wi "∆where" (2 2⍴0.18 0 0.35 0)
+[1200] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.18 0 0.35 0))
+[1201] ⎕wi "onChange" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1202] ⎕wi "onExit" "⍎(0∊⍴,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[1203] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[1204] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"
+[1205] ⎕wi "extent" (2+CharSize×1 9)
+[1206] 
+[1207] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.lrPERCENTDAR1" ⎕wi "New" "Label"
+[1208] ⎕wi "scale" 5
+[1209] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))
+[1210] ⎕wi "caption" "%"
+[1211] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1" ⎕wi "∆where"
+[1212] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1" ⎕wi "extent"
+[1213] ⎕wi "∆where" ((x,2)⍴where)
+[1214] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1215] 
+[1216] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llPERCENTDAR1" ⎕wi "New" "Label"
+[1217] ⎕wi "scale" 5
+[1218] ⎕wi "style" 2
+[1219] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "% of PUP Amount"))
+[1220] ⎕wi "caption" "% of PUP Amount"
+[1221] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.edPERCENTDAR1" ⎕wi "∆where"
+[1222] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1223] ⎕wi "∆where" ((x,2)⍴where)
+[1224] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1225] 
+[1226] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1" ⎕wi "New" "Combo"
+[1227] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1"
+[1228] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1229] ⎕wi "∆name" "REVDAR1"
+[1230] ⎕wi "∆type" "Char"
+[1231] ⎕wi "∆helpid" 5126
+[1232] ⎕wi "style" 16 128 256 2
+[1233] ⎕wi "∆where" (2 2⍴0.27 0 0.35 0)
+[1234] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.27 0 0.35 0))
+[1235] PickList←GetFinList 'Rev'
+[1236] ⎕wi "∆update" "GetFinList 'Rev'"
+[1237] PickList←⊃m2n 1 0↓PickList
+[1238] PickList←" " OVER PickList
+[1239] ⎕wi "list" PickList
+[1240] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1241] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1242] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDAR1.lrREVDAR1"
+[1243] 
+[1244] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.lrREVDAR1" ⎕wi "New" "Label"
+[1245] ⎕wi "scale" 5
+[1246] ⎕wi "extent" (CharSize×¯2↑1,2 45)
+[1247] ⎕wi "caption" " "
+[1248] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1" ⎕wi "∆where"
+[1249] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1" ⎕wi "extent"
+[1250] ⎕wi "∆where" ((x,2)⍴where)
+[1251] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1252] 
+[1253] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llREVDAR1" ⎕wi "New" "Label"
+[1254] ⎕wi "scale" 5
+[1255] ⎕wi "style" 2
+[1256] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Revaluation Rate Override"))
+[1257] ⎕wi "caption" "Revaluation Rate Override"
+[1258] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbREVDAR1" ⎕wi "∆where"
+[1259] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1260] ⎕wi "∆where" ((x,2)⍴where)
+[1261] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1262] 
+[1263] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbPreNRAEXITDAR1" ⎕wi "New" "Combo"
+[1264] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbPreNRAEXITDAR1"
+[1265] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1266] ⎕wi "∆name" "PreNRAEXITDAR1"
+[1267] ⎕wi "∆type" "Char"
+[1268] ⎕wi "∆helpid" 5127
+[1269] ⎕wi "style" 16 128 256 2
+[1270] ⎕wi "∆where" (2 2⍴0.45 0 0.35 0)
+[1271] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.45 0 0.35 0))
+[1272] PickList←⍙POPUPSdict ReadDictFile "YesNo"
+[1273] PickList←⊃m2n 1 0↓PickList
+[1274] PickList←" " OVER PickList
+[1275] ⎕wi "list" PickList
+[1276] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1277] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1278] 
+[1279] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llPreNRAEXITDAR1" ⎕wi "New" "Label"
+[1280] ⎕wi "scale" 5
+[1281] ⎕wi "style" 2
+[1282] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Complete Years Only Override"))
+[1283] ⎕wi "caption" "Complete Years Only Override"
+[1284] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbPreNRAEXITDAR1" ⎕wi "∆where"
+[1285] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1286] ⎕wi "∆where" ((x,2)⍴where)
+[1287] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1288] 
+[1289] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbNRAEXITDAR1" ⎕wi "New" "Combo"
+[1290] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbNRAEXITDAR1"
+[1291] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1292] ⎕wi "∆name" "NRAEXITDAR1"
+[1293] ⎕wi "∆type" "Combo"
+[1294] ⎕wi "∆helpid" 5128
+[1295] ⎕wi "tooltip" "Select the Service Rounding Override (if any)"
+[1296] ⎕wi "style" 16 128 256 2
+[1297] ⎕wi "∆where" (2 2⍴0.54 0 0.35 0)
+[1298] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.54 0 0.35 0))
+[1299] PickList←⍙POPUPSdict ReadDictFile "ServRound"
+[1300] PickList←⊃m2n 1 0↓PickList
+[1301] PickList←" " OVER PickList
+[1302] ⎕wi "list" PickList
+[1303] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1304] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1305] 
+[1306] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llNRAEXITDAR1" ⎕wi "New" "Label"
+[1307] ⎕wi "scale" 5
+[1308] ⎕wi "style" 2
+[1309] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Exit Rounding Override"))
+[1310] ⎕wi "caption" "Exit Rounding Override"
+[1311] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbNRAEXITDAR1" ⎕wi "∆where"
+[1312] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1313] ⎕wi "∆where" ((x,2)⍴where)
+[1314] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1315] 
+[1316] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbERFDAR1" ⎕wi "New" "Combo"
+[1317] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbERFDAR1"
+[1318] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1319] ⎕wi "∆name" "ERFDAR1"
+[1320] ⎕wi "∆type" "Char"
+[1321] ⎕wi "∆mandatory" 1
+[1322] ⎕wi "∆helpid" 5129
+[1323] ⎕wi "style" 16 128 256 2
+[1324] ⎕wi "∆where" (2 2⍴0.63 0 0.35 0)
+[1325] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.63 0 0.35 0))
+[1326] PickList←⍙POPUPSdict ReadDictFile "ERF1NDF"
+[1327] PickList←⊃m2n 1 0↓PickList
+[1328] ⎕wi "list" PickList
+[1329] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1330] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1331] 
+[1332] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llERFDAR1" ⎕wi "New" "Label"
+[1333] ⎕wi "scale" 5
+[1334] ⎕wi "style" 2
+[1335] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "ERF Indicator"))
+[1336] ⎕wi "caption" "ERF Indicator"
+[1337] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbERFDAR1" ⎕wi "∆where"
+[1338] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1339] ⎕wi "∆where" ((x,2)⍴where)
+[1340] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1341] 
+[1342] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDYNDAR1" ⎕wi "New" "Combo"
+[1343] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDYNDAR1"
+[1344] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1345] ⎕wi "∆name" "DYNDAR1"
+[1346] ⎕wi "∆type" "Char"
+[1347] ⎕wi "∆mandatory" 1
+[1348] ⎕wi "∆helpid" 5130
+[1349] ⎕wi "tooltip" "Select the Escalation Rate"
+[1350] ⎕wi "style" 16 128 256 2
+[1351] ⎕wi "∆where" (2 2⍴0.72 0 0.35 0)
+[1352] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.72 0 0.35 0))
+[1353] PickList←⍙POPUPSdict ReadDictFile "EscRate"
+[1354] PickList←⊃m2n 1 0↓PickList
+[1355] ⎕wi "list" PickList
+[1356] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1357] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1358] 
+[1359] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llDYNDAR1" ⎕wi "New" "Label"
+[1360] ⎕wi "scale" 5
+[1361] ⎕wi "style" 2
+[1362] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")))
+[1363] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")
+[1364] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDYNDAR1" ⎕wi "∆where"
+[1365] size←1↑"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDYNDAR1" ⎕wi "extent"
+[1366] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[1367] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[1368] ⎕wi "∆where" ((x,2)⍴where)
+[1369] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1370] 
+[1371] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ" ⎕wi "New" "Combo"
+[1372] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ"
+[1373] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1374] ⎕wi "∆name" "DAR1ADJ"
+[1375] ⎕wi "∆type" "Num"
+[1376] ⎕wi "∆mandatory" 1
+[1377] ⎕wi "∆valid" ('Scalar')
+[1378] ⎕wi "∆helpid" 5131
+[1379] ⎕wi "limit" 8
+[1380] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[1381] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[1382] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"
+[1383] ⎕wi "style" 16 128 256 0
+[1384] ⎕wi "∆where" (2 2⍴0.81 0 0.35 0)
+[1385] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.81 0 0.35 0))
+[1386] PickList←('Scalar') GetAbsNumList 'Fund'
+[1387] ⎕wi "∆update" "('Scalar') GetAbsNumList 'Fund'"
+[1388] PickList←⊃m2n 1 0↓PickList
+[1389] PickList←" " OVER PickList
+[1390] ⎕wi "list" PickList
+[1391] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)
+[1392] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1393] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1394] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDAR1.lrDAR1ADJ"
+[1395] 
+[1396] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.lrDAR1ADJ" ⎕wi "New" "Label"
+[1397] ⎕wi "scale" 5
+[1398] ⎕wi "extent" (CharSize×¯2↑1,15)
+[1399] ⎕wi "style" 32
+[1400] ⎕wi "caption" " "
+[1401] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ" ⎕wi "∆where"
+[1402] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ" ⎕wi "extent"
+[1403] ⎕wi "∆where" ((x,2)⍴where)
+[1404] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1405] 
+[1406] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.llDAR1ADJ" ⎕wi "New" "Label"
+[1407] ⎕wi "scale" 5
+[1408] ⎕wi "style" 2
+[1409] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Adjustment Factor"))
+[1410] ⎕wi "caption" "Adjustment Factor"
+[1411] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR1.cbDAR1ADJ" ⎕wi "∆where"
+[1412] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1413] ⎕wi "∆where" ((x,2)⍴where)
+[1414] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1415] 
+[1416] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR1.ckPPFPAYINCDAR1" ⎕wi "New" "Check"
+[1417] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR1.ckPPFPAYINCDAR1"
+[1418] Fieldcontrol←Fieldcontrol OVER "Check"
+[1419] ⎕wi "∆name" "PPFPAYINCDAR1"
+[1420] ⎕wi "∆type" "Check"
+[1421] ⎕wi "enabled" (capenabled)
+[1422] ⎕wi "∆helpid" 5132
+[1423] ⎕wi "style" 0
+[1424] ⎕wi "caption" "Treat as Post 1997 for CAP"
+[1425] ⎕wi "∆where" (2 2⍴0.9 0 0.35 0)
+[1426] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR1" ⎕wi "size") Win∆Resize (2 2⍴0.9 0 0.35 0))
+[1427] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")
+[1428] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"
+[1429] 
+[1430] :if 300<fnsize
+[1431]     ((1↑⎕lc) fnsize "FrameV - Death After Retirement PUP 2") Win∆ProgressBar "MemberUpdate"
+[1432] :endif
+[1433] 
+[1434] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "New" "Frame"
+[1435] ⎕wi "scale" 5
+[1436] ⎕wi "∆where" (4 2⍴0.41 0 0.5 0 0.51 0 0.5 0)
+[1437] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0.41 0 0.5 0 0.51 0 0.5 0))
+[1438] ⎕wi "caption" "Death After Retirement PUP 2"
+[1439] ⎕wi "style" 0
+[1440] ⎕wi "onResize" "AutoResize"
+[1441] 
+[1442] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDATADAR2" ⎕wi "New" "Combo"
+[1443] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDATADAR2"
+[1444] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1445] ⎕wi "∆name" "DATADAR2"
+[1446] ⎕wi "∆type" "Char"
+[1447] ⎕wi "∆helpid" 5124
+[1448] ⎕wi "style" 16 128 256 2
+[1449] ⎕wi "∆where" (2 2⍴0.09 0 0.35 0)
+[1450] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.09 0 0.35 0))
+[1451] PickList←GetVarNumList 'All'
+[1452] ⎕wi "∆update" "GetVarNumList 'All'"
+[1453] PickList←⊃m2n 1 0↓PickList
+[1454] PickList←" " OVER PickList
+[1455] ⎕wi "list" PickList
+[1456] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1457] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1458] 
+[1459] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llDATADAR2" ⎕wi "New" "Label"
+[1460] ⎕wi "scale" 5
+[1461] ⎕wi "style" 2
+[1462] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "PUP Amount"))
+[1463] ⎕wi "caption" "PUP Amount"
+[1464] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDATADAR2" ⎕wi "∆where"
+[1465] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1466] ⎕wi "∆where" ((x,2)⍴where)
+[1467] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1468] 
+[1469] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2" ⎕wi "New" "Edit"
+[1470] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2"
+[1471] Fieldcontrol←Fieldcontrol OVER "Edit"
+[1472] ⎕wi "∆name" "PERCENTDAR2"
+[1473] ⎕wi "∆type" "Num"
+[1474] ⎕wi "∆mandatory" 1
+[1475] ⎕wi "∆helpid" 5125
+[1476] ⎕wi "limit" 8
+[1477] ⎕wi "∆where" (2 2⍴0.18 0 0.35 0)
+[1478] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.18 0 0.35 0))
+[1479] ⎕wi "onChange" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1480] ⎕wi "onExit" "⍎(0∊⍴,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[1481] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[1482] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"
+[1483] ⎕wi "extent" (2+CharSize×1 9)
+[1484] 
+[1485] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.lrPERCENTDAR2" ⎕wi "New" "Label"
+[1486] ⎕wi "scale" 5
+[1487] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "%"))
+[1488] ⎕wi "caption" "%"
+[1489] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2" ⎕wi "∆where"
+[1490] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2" ⎕wi "extent"
+[1491] ⎕wi "∆where" ((x,2)⍴where)
+[1492] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1493] 
+[1494] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llPERCENTDAR2" ⎕wi "New" "Label"
+[1495] ⎕wi "scale" 5
+[1496] ⎕wi "style" 2
+[1497] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "% of PUP Amount"))
+[1498] ⎕wi "caption" "% of PUP Amount"
+[1499] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.edPERCENTDAR2" ⎕wi "∆where"
+[1500] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1501] ⎕wi "∆where" ((x,2)⍴where)
+[1502] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1503] 
+[1504] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2" ⎕wi "New" "Combo"
+[1505] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2"
+[1506] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1507] ⎕wi "∆name" "REVDAR2"
+[1508] ⎕wi "∆type" "Char"
+[1509] ⎕wi "∆helpid" 5126
+[1510] ⎕wi "style" 16 128 256 2
+[1511] ⎕wi "∆where" (2 2⍴0.27 0 0.35 0)
+[1512] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.27 0 0.35 0))
+[1513] PickList←GetFinList 'Rev'
+[1514] ⎕wi "∆update" "GetFinList 'Rev'"
+[1515] PickList←⊃m2n 1 0↓PickList
+[1516] PickList←" " OVER PickList
+[1517] ⎕wi "list" PickList
+[1518] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1519] ⎕wi "onClick"  "(⎕wi 'self') Win∆FinLabelUpdate ⊃¨(⊂⍙FinAssdict) at¨'List' 'Label' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1520] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDAR2.lrREVDAR2"
+[1521] 
+[1522] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.lrREVDAR2" ⎕wi "New" "Label"
+[1523] ⎕wi "scale" 5
+[1524] ⎕wi "extent" (CharSize×¯2↑1,2 45)
+[1525] ⎕wi "caption" " "
+[1526] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2" ⎕wi "∆where"
+[1527] x←0.5×⍴where←Win∆Calcwhere where+0,¯3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2" ⎕wi "extent"
+[1528] ⎕wi "∆where" ((x,2)⍴where)
+[1529] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1530] 
+[1531] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llREVDAR2" ⎕wi "New" "Label"
+[1532] ⎕wi "scale" 5
+[1533] ⎕wi "style" 2
+[1534] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Revaluation Rate Override"))
+[1535] ⎕wi "caption" "Revaluation Rate Override"
+[1536] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbREVDAR2" ⎕wi "∆where"
+[1537] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1538] ⎕wi "∆where" ((x,2)⍴where)
+[1539] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1540] 
+[1541] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbPreNRAEXITDAR2" ⎕wi "New" "Combo"
+[1542] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbPreNRAEXITDAR2"
+[1543] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1544] ⎕wi "∆name" "PreNRAEXITDAR2"
+[1545] ⎕wi "∆type" "Char"
+[1546] ⎕wi "∆helpid" 5127
+[1547] ⎕wi "style" 16 128 256 2
+[1548] ⎕wi "∆where" (2 2⍴0.45 0 0.35 0)
+[1549] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.45 0 0.35 0))
+[1550] PickList←⍙POPUPSdict ReadDictFile "YesNo"
+[1551] PickList←⊃m2n 1 0↓PickList
+[1552] PickList←" " OVER PickList
+[1553] ⎕wi "list" PickList
+[1554] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1555] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1556] 
+[1557] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llPreNRAEXITDAR2" ⎕wi "New" "Label"
+[1558] ⎕wi "scale" 5
+[1559] ⎕wi "style" 2
+[1560] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Complete Years Only Override"))
+[1561] ⎕wi "caption" "Complete Years Only Override"
+[1562] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbPreNRAEXITDAR2" ⎕wi "∆where"
+[1563] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1564] ⎕wi "∆where" ((x,2)⍴where)
+[1565] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1566] 
+[1567] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbNRAEXITDAR2" ⎕wi "New" "Combo"
+[1568] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbNRAEXITDAR2"
+[1569] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1570] ⎕wi "∆name" "NRAEXITDAR2"
+[1571] ⎕wi "∆type" "Combo"
+[1572] ⎕wi "∆helpid" 5128
+[1573] ⎕wi "tooltip" "Select the Service Rounding Override (if any)"
+[1574] ⎕wi "style" 16 128 256 2
+[1575] ⎕wi "∆where" (2 2⍴0.54 0 0.35 0)
+[1576] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.54 0 0.35 0))
+[1577] PickList←⍙POPUPSdict ReadDictFile "ServRound"
+[1578] PickList←⊃m2n 1 0↓PickList
+[1579] PickList←" " OVER PickList
+[1580] ⎕wi "list" PickList
+[1581] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1582] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1583] 
+[1584] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llNRAEXITDAR2" ⎕wi "New" "Label"
+[1585] ⎕wi "scale" 5
+[1586] ⎕wi "style" 2
+[1587] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Exit Rounding Override"))
+[1588] ⎕wi "caption" "Exit Rounding Override"
+[1589] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbNRAEXITDAR2" ⎕wi "∆where"
+[1590] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1591] ⎕wi "∆where" ((x,2)⍴where)
+[1592] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1593] 
+[1594] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbERFDAR2" ⎕wi "New" "Combo"
+[1595] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbERFDAR2"
+[1596] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1597] ⎕wi "∆name" "ERFDAR2"
+[1598] ⎕wi "∆type" "Char"
+[1599] ⎕wi "∆mandatory" 1
+[1600] ⎕wi "∆helpid" 5129
+[1601] ⎕wi "style" 16 128 256 2
+[1602] ⎕wi "∆where" (2 2⍴0.63 0 0.35 0)
+[1603] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.63 0 0.35 0))
+[1604] PickList←⍙POPUPSdict ReadDictFile "ERF1NDF"
+[1605] PickList←⊃m2n 1 0↓PickList
+[1606] ⎕wi "list" PickList
+[1607] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1608] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1609] 
+[1610] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llERFDAR2" ⎕wi "New" "Label"
+[1611] ⎕wi "scale" 5
+[1612] ⎕wi "style" 2
+[1613] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "ERF Indicator"))
+[1614] ⎕wi "caption" "ERF Indicator"
+[1615] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbERFDAR2" ⎕wi "∆where"
+[1616] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1617] ⎕wi "∆where" ((x,2)⍴where)
+[1618] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1619] 
+[1620] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDYNDAR2" ⎕wi "New" "Combo"
+[1621] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDYNDAR2"
+[1622] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1623] ⎕wi "∆name" "DYNDAR2"
+[1624] ⎕wi "∆type" "Char"
+[1625] ⎕wi "∆mandatory" 1
+[1626] ⎕wi "∆helpid" 5130
+[1627] ⎕wi "tooltip" "Select the Escalation Rate"
+[1628] ⎕wi "style" 16 128 256 2
+[1629] ⎕wi "∆where" (2 2⍴0.72 0 0.35 0)
+[1630] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.72 0 0.35 0))
+[1631] PickList←⍙POPUPSdict ReadDictFile "EscRate"
+[1632] PickList←⊃m2n 1 0↓PickList
+[1633] ⎕wi "list" PickList
+[1634] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑Win∆TextSize ((0,⎕wi "limit")⌈⍴PickList)↑PickList)
+[1635] ⎕wi "onClick" "0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1636] 
+[1637] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llDYNDAR2" ⎕wi "New" "Label"
+[1638] ⎕wi "scale" 5
+[1639] ⎕wi "style" 2
+[1640] ⎕wi "extent" (↑⎕wi "Draw" ("?text" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")))
+[1641] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Pension Increases⍺in Payment")
+[1642] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDYNDAR2" ⎕wi "∆where"
+[1643] size←1↑"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDYNDAR2" ⎕wi "extent"
+[1644] size←¯3⌈0.5×(1↑⎕wi "extent")-size
+[1645] x←0.5×⍴where←Win∆Calcwhere where-0,size,0,10+¯1↑⎕wi "extent"
+[1646] ⎕wi "∆where" ((x,2)⍴where)
+[1647] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1648] 
+[1649] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ" ⎕wi "New" "Combo"
+[1650] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ"
+[1651] Fieldcontrol←Fieldcontrol OVER "Combo"
+[1652] ⎕wi "∆name" "DAR2ADJ"
+[1653] ⎕wi "∆type" "Num"
+[1654] ⎕wi "∆mandatory" 1
+[1655] ⎕wi "∆valid" ('Scalar')
+[1656] ⎕wi "∆helpid" 5131
+[1657] ⎕wi "limit" 8
+[1658] ⎕wi "onExit" "⍎(mt ,⎕wres←0 INPUT∆CHECK 'fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ')/'0 0⍴(⊂⎕wi ''name'') Deferreds_Basis ''Change'' ' "
+[1659] ⎕wi "onExitError" "Win∆ExitError ⎕warg"
+[1660] ⎕wi "onKeyPress" "⎕wres←¯2×~⎕warg∊45 46 8 32 48 49 50 51 52 53 54 55 56 57"
+[1661] ⎕wi "style" 16 128 256 0
+[1662] ⎕wi "∆where" (2 2⍴0.81 0 0.35 0)
+[1663] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.81 0 0.35 0))
+[1664] PickList←('Scalar') GetAbsNumList 'Fund'
+[1665] ⎕wi "∆update" "('Scalar') GetAbsNumList 'Fund'"
+[1666] PickList←⊃m2n 1 0↓PickList
+[1667] PickList←" " OVER PickList
+[1668] ⎕wi "list" PickList
+[1669] ⎕wi "extent" (150,(¯10+6×¯1↑CharSize)+¯1↑(50×CharSize)⌊Win∆TextSize PickList)
+[1670] ⎕wi "onClick"  "(⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1671] ⎕wi "onChange" "Win∆ComboFudge ⎕wi 'self' ⋄ (⎕wi 'self') Win∆LabelUpdate ⊃¨(AbsDict for 'Type' 'Number') at 'Parameter' 'List' ⋄ 0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' "
+[1672] ⎕wi "∆rightlabel" "fmSV.sDefBasis.pgNSPUPs.fDAR2.lrDAR2ADJ"
+[1673] 
+[1674] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.lrDAR2ADJ" ⎕wi "New" "Label"
+[1675] ⎕wi "scale" 5
+[1676] ⎕wi "extent" (CharSize×¯2↑1,15)
+[1677] ⎕wi "style" 32
+[1678] ⎕wi "caption" " "
+[1679] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ" ⎕wi "∆where"
+[1680] x←0.5×⍴where←Win∆Calcwhere where+0,3,0,10+¯1↑"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ" ⎕wi "extent"
+[1681] ⎕wi "∆where" ((x,2)⍴where)
+[1682] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1683] 
+[1684] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.llDAR2ADJ" ⎕wi "New" "Label"
+[1685] ⎕wi "scale" 5
+[1686] ⎕wi "style" 2
+[1687] ⎕wi "extent" (↑⎕wi "Draw" ("?text" "Adjustment Factor"))
+[1688] ⎕wi "caption" "Adjustment Factor"
+[1689] where←4↑,"fmSV.sDefBasis.pgNSPUPs.fDAR2.cbDAR2ADJ" ⎕wi "∆where"
+[1690] x←0.5×⍴where←Win∆Calcwhere where-0 ¯3 0,10+¯1↑⎕wi "extent"
+[1691] ⎕wi "∆where" ((x,2)⍴where)
+[1692] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize ⎕wi "∆where")
+[1693] 
+[1694] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fDAR2.ckPPFPAYINCDAR2" ⎕wi "New" "Check"
+[1695] Fieldlist←Fieldlist OVER "fmSV.sDefBasis.pgNSPUPs.fDAR2.ckPPFPAYINCDAR2"
+[1696] Fieldcontrol←Fieldcontrol OVER "Check"
+[1697] ⎕wi "∆name" "PPFPAYINCDAR2"
+[1698] ⎕wi "∆type" "Check"
+[1699] ⎕wi "enabled" (capenabled)
+[1700] ⎕wi "∆helpid" 5132
+[1701] ⎕wi "style" 0
+[1702] ⎕wi "caption" "Treat as Post 1997 for CAP"
+[1703] ⎕wi "∆where" (2 2⍴0.9 0 0.35 0)
+[1704] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fDAR2" ⎕wi "size") Win∆Resize (2 2⍴0.9 0 0.35 0))
+[1705] ⎕wi "extent" ((0 5×CharSize)+Win∆TextSize ⎕wi "caption")
+[1706] ⎕wi "onClick" "(0 0⍴(⊂⎕wi 'name') Deferreds_Basis 'Change' )"
+[1707] 
+[1708] :if 300<fnsize
+[1709]     ((1↑⎕lc) fnsize "Frame - Buttons") Win∆ProgressBar "MemberUpdate"
+[1710] :endif
+[1711] 
+[1712] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fButtons" ⎕wi "New" "Frame"
+[1713] ⎕wi "scale" 5
+[1714] ⎕wi "∆where" (4 2⍴0.92 0 0 0 0.079 0 1 0)
+[1715] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs" ⎕wi "size") Win∆Resize (4 2⍴0.92 0 0 0 0.079 0 1 0))
+[1716] ⎕wi "style" 7
+[1717] ⎕wi "onResize" "AutoResize"
+[1718] list←list OVER "fmSV.sDefBasis.pgNSPUPs.fButtons.bnDeferreds_BasisEditFin"
+[1719] ⎕wself←"fmSV.sDefBasis.pgNSPUPs.fButtons.bnDeferreds_BasisEditFin" ⎕wi "New" "Button"
+[1720] ⎕wi "deferexit" 1
+[1721] ⎕wi "extent" (size←1.4 1.384615385×buttonsize×1⌈CharSize÷13 6)
+[1722] ⎕wi "∆where" (2 2⍴0.1 0 0.44 0)
+[1723] ⎕wi "where" (("fmSV.sDefBasis.pgNSPUPs.fButtons" ⎕wi "size") Win∆Resize (2 2⍴0.1 0 0.44 0))
+[1724] ⎕wi "tooltip" "Edit/Add the Scheme Financial Assumptions"
+[1725] ⎕wi "onClick" ("fmSV.mDeferreds_BasisFile.mEditFin"⎕wi "onClick")
+[1726] ⎕wi "∆helpid" 5133
+[1727] ⎕wi "caption" (("⍺",⎕tcnl) char_replace "Edit Scheme⍺Financials")
+[1728] "fmSV.sDefBasis.pgNSPUPs" ⎕wi "∆fieldlist" Fieldlist
+[1729] "fmSV.sDefBasis.pgNSPUPs" ⎕wi "∆fieldcontrol" Fieldcontrol
+[1730] "fmSV.sDefBasis" ⎕wi "value" 1
+[1731] "fmSV.sDefBasis.pgMain       " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgMain'"
+[1732] "fmSV.sDefBasis.pgMain       " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1733] "fmSV.sDefBasis.pgMain       " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1734] "fmSV.sDefBasis.pgFinancial  " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgFinancial'"
+[1735] "fmSV.sDefBasis.pgFinancial  " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1736] "fmSV.sDefBasis.pgFinancial  " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1737] "fmSV.sDefBasis.pgLegislation" ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgLegislation'"
+[1738] "fmSV.sDefBasis.pgLegislation" ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1739] "fmSV.sDefBasis.pgLegislation" ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1740] "fmSV.sDefBasis.pgPPFCAP     " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgPPFCAP'"
+[1741] "fmSV.sDefBasis.pgPPFCAP     " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1742] "fmSV.sDefBasis.pgPPFCAP     " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1743] "fmSV.sDefBasis.pgMortality  " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgMortality'"
+[1744] "fmSV.sDefBasis.pgMortality  " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1745] "fmSV.sDefBasis.pgMortality  " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1746] "fmSV.sDefBasis.pgDemographic" ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgDemographic'"
+[1747] "fmSV.sDefBasis.pgDemographic" ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1748] "fmSV.sDefBasis.pgDemographic" ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1749] "fmSV.sDefBasis.pgSpouse     " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgSpouse'"
+[1750] "fmSV.sDefBasis.pgSpouse     " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1751] "fmSV.sDefBasis.pgSpouse     " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1752] "fmSV.sDefBasis.pgPUPs       " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgPUPs'"
+[1753] "fmSV.sDefBasis.pgPUPs       " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1754] "fmSV.sDefBasis.pgPUPs       " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1755] "fmSV.sDefBasis.pgMembership " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgMembership'"
+[1756] "fmSV.sDefBasis.pgMembership " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1757] "fmSV.sDefBasis.pgMembership " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1758] "fmSV.sDefBasis.pgRetPension " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgRetPension'"
+[1759] "fmSV.sDefBasis.pgRetPension " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1760] "fmSV.sDefBasis.pgRetPension " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1761] "fmSV.sDefBasis.pgRetCash    " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgRetCash'"
+[1762] "fmSV.sDefBasis.pgRetCash    " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1763] "fmSV.sDefBasis.pgRetCash    " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1764] "fmSV.sDefBasis.pgRetCOT     " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgRetCOT'"
+[1765] "fmSV.sDefBasis.pgRetCOT     " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1766] "fmSV.sDefBasis.pgRetCOT     " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1767] "fmSV.sDefBasis.pgDeath      " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgDeath'"
+[1768] "fmSV.sDefBasis.pgDeath      " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1769] "fmSV.sDefBasis.pgDeath      " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1770] "fmSV.sDefBasis.pgTVBasis    " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgTVBasis'"
+[1771] "fmSV.sDefBasis.pgTVBasis    " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1772] "fmSV.sDefBasis.pgTVBasis    " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1773] "fmSV.sDefBasis.pgTVMortality" ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgTVMortality'"
+[1774] "fmSV.sDefBasis.pgTVMortality" ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1775] "fmSV.sDefBasis.pgTVMortality" ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1776] "fmSV.sDefBasis.pgUnderpin   " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgUnderpin'"
+[1777] "fmSV.sDefBasis.pgUnderpin   " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1778] "fmSV.sDefBasis.pgUnderpin   " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1779] "fmSV.sDefBasis.pgIndPUPs    " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgIndPUPs'"
+[1780] "fmSV.sDefBasis.pgIndPUPs    " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1781] "fmSV.sDefBasis.pgIndPUPs    " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1782] "fmSV.sDefBasis.pgNSPUPs     " ⎕wi "onValidate" "⎕wres←(0⍴'')≡'Deferreds_Basis' Win∆ValidPage 'fmSV.sDefBasis.pgNSPUPs'"
+[1783] "fmSV.sDefBasis.pgNSPUPs     " ⎕wi "onShow" "⎕wi 'imageindex' 4"
+[1784] "fmSV.sDefBasis.pgNSPUPs     " ⎕wi "onHide" "⎕wi 'imageindex' 3"
+[1785] 
+[1786] "fmSV.sDefBasis" ⎕wi "∆multifile" "fmSV.sDefBasis.pgMain.fData.edFILES"
+[1787] "fmSV.sDefBasis" ⎕wi "∆singlefile" "fmSV.sDefBasis.pgMain.fData.edfILENAME"
+[1788] "fmSV.sDefBasis" ⎕wi "∆format" "fmSV.sDefBasis.pgMain.fData.cbFormat"
+[1789] "fmSV.sDefBasis" ⎕wi "∆financial" 1
+[1790] "fmSV.sDefBasis" ⎕wi "∆relrules" 1
+[1791] "fmSV.sDefBasis" ⎕wi "∆parm" 0
+[1792] "fmSV.sDefBasis" ⎕wi "∆decr" 1
+[1793] "fmSV.sDefBasis" ⎕wi "∆file" 1
+[1794] "fmSV.sDefBasis" ⎕wi "∆codefile" CodeFile
+[1795] "fmSV.sDefBasis" ⎕wi "∆inputstype" "BasisFile"
+[1796] "fmSV.sDefBasis" ⎕wi "∆inputsentry" "Multi"
+[1797] "fmSV.sDefBasis" ⎕wi "∆savecn" (⍳0)
+[1798] "fmSV.sDefBasis" ⎕wi "∆savedesc" ""
+[1799] list←list OVER "fmSV.sDefBasis"
+[1800] childlist←"fmSV" ⎕wi "∆childlist"
+[1801] list←(⊃¯1↑childlist) OVER list
+[1802] childlist[⍴childlist]←⊂list
+[1803] "fmSV" ⎕wi "∆childlist" childlist
+[1804] list←,⎕split list
+[1805] 0 0⍴((∨/¨(⊂".mDeferreds_Basis")⍷¨list)/list) MultiWI "enabled" 1
+[1806] :if 300<fnsize
+[1807]     (fnsize fnsize ".") Win∆ProgressBar "MemberUpdate"
+[1808]     Win∆ProgressBar "Hide"
+[1809] :endif
+[1810] "Init" OpenParameters "Deferreds_Basis"
+[1811] "fmSV.bnDeferreds_BasisHelp" ⎕wi "visible" 1
+[1812] "fmSV.bnDeferreds_BasisQuit" ⎕wi "visible" 1
+[1813] "fmSV.bnDeferreds_BasisSave" ⎕wi "visible" 1
+[1814] "fmSV.bnDeferreds_BasisSaveAs" ⎕wi "visible" 1
+[1815] "#" ⎕wi "focus" "fmSV.sDefBasis.pgMain.fData.ckFileSelections"
+[1816] :if bar_open←commandbar^"Multi"≡"Multi"
+[1817]     bar_open←"fmSV.mDeferreds_BasisFile.m" Win∆CommandBar "SaveAsHelp"
+[1818] :endif
+[1819] "fmSV" ⎕wi "pointer" 0
+    ∇

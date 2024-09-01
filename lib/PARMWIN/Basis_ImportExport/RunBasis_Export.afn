@@ -1,1 +1,75 @@
-    ∇ RunBasis_Export;list;parms;z;i;var;label;BasisFile;xxx;saveVersion;desc;warnings;no;tab;∆[1]   ⍝ PARMWIN.sf#19[2]   ⍝ Process a Basis Export request[3]   [4]   ⍝ Set some user defined variables to "fool" the Save routine[5]   ControlName ⎕wi '∆modified' 0[6]   ControlName ⎕wi '∆inputstype' 'BasisFile'[7]   ControlName ⎕wi '∆audit' 1[8]   [9]   list←⍙VALUESdict ReadDictFile SavedModule '' 'NAMES'[10]  parms←(parent,'lvSavedParms') ⎕wi 'list'[11]  :for z :in (parent,'lvSavedParms') ⎕wi 'value'[12]      warnings←''[13]      BasisFile←InputDir,⊃parms[parms[;1]⍳z;3][14]      desc←⊃parms[parms[;1]⍳z;4][15]      :if ↑(xxx xxx saveVersion)←BasisFile ReadModule SavedModule (,1000000∣z)[16]          S21Migration ∆←'_' StripText SavedModule[17]          CashMigration ∆[18]          :if 0≠saveVersion[19]              :if 9.03>saveVersion ⋄ FixFinFields SavedModule ⋄ :endif[20]              :if 9.10>saveVersion ⋄ FixRelFields '_' StripText SavedModule ⋄ :endif[21]              :if 9.10>saveVersion ⋄ :andif 'Actives'≡'_' StripText SavedModule[22]                  0 0⍴FixCOMPERFields[23]              :endif[24]          :endif[25]          ControlName ⎕wi '∆savedparms' (pack list)[26]          :for i :in ⍳⍴exportname[27]              :if 3=⎕nc i⊃exportname[28]                  (i⊃exportname) pdef Bens_Package[29]              :else[30]                  no←⍬[31]                  :if ';'∊var←i⊃exportname[32]                      no←zwb ';' StripText '[' Win∆Child var[33]                      var←'[' StripText var[34]                      :if exportbeyond[35]                          ⍎var,'←((⍴',var,')⌈(⍴⍙_',var,'))↑MATRIX ',var[36]                      :elseif no>↑⍴⍎var[37]                          warnings←warnings,'Unable to export "',(DLTB ("/",⎕tcnl,⎕tclf,"/ ") TEXTREPL Header[i;]),'" because that definition is undefined',⎕tcnl[38]                          :continue[39]                      :endif[40]                  :endif[41]                  (execute '⍙_',i⊃exportname) ASSIGN∆Dict i⊃exportname[42]                  :if ~0∊⍴label←i⊃exportlabel[43]                      :if ';'∊label[44]                          var←'[' StripText label[45]                          ⍎var,'←((⍴',var,')⌈(⍴⍙_',var,'))↑MATRIX ',var[46]                      :endif[47]                      (execute '⍙_',label) ASSIGN∆Dict label[48]                  :elseif ~0≡label←(exportfield[i;]) ⎕wi '∆rightlabel'[49]                  :andif 0≠⎕nc '⍙_',label←Win∆Child label[50]                      (execute '⍙_',label) ASSIGN∆Dict label[51]                  :endif[52]                  :if ×rowsIn ⍎commentvar←'Comment_',SavedModule[53]                      ⍎comment_var,'←',comment_var,' for ~↑(^/(⊂',comment_var,' at "variable")∊¨exportname (qtrim¨exportname))^((',comment_var,' at "row")∊⍬,no)'[54]                  :endif[55]                  ⍎'tab←(⍙_',comment_var,' for (⊂"variable"),exportname,qtrim¨exportname) for "row" ⍬,no'[56]                  tab←tab amend 'timestamp' ((rowsIn tab)/⊂,1 DATESPELL ⎕ts)[57]                  ⍎comment_var,'←',comment_var,' append tab'[58]              :endif[59]          :endfor[60]          :if ~mt warnings[61]              MDISPLAY ¯1↓warnings[62]          :endif[63]          ⍝ Set some user defined variables to "fool" the Save routine[64]          ControlName ⎕wi 'modified' 1[65]          ControlName ⎕wi '∆savecn' (1000000∣z)[66]          ControlName ⎕wi '∆savedesc' desc[67]          0 0⍴'Save' SaveRunParms SavedModule ControlName[68]      :endif[69]  :endfor[70]  ControlName ⎕wi '∆savecn' (⍳0)[71]  ControlName ⎕wi '∆savedesc' ''[72]  ControlName ⎕wi '∆modified' 1[73]  ControlName ⎕wi '∆audit' 0    ∇
+    ∇ RunBasis_Export;list;parms;z;i;var;label;BasisFile;xxx;saveVersion;desc;warnings;no;tab;∆
+[1]   ⍝ PARMWIN.sf#19
+[2]   ⍝ Process a Basis Export request
+[3]   
+[4]   ⍝ Set some user defined variables to "fool" the Save routine
+[5]   ControlName ⎕wi '∆modified' 0
+[6]   ControlName ⎕wi '∆inputstype' 'BasisFile'
+[7]   ControlName ⎕wi '∆audit' 1
+[8]   
+[9]   list←⍙VALUESdict ReadDictFile SavedModule '' 'NAMES'
+[10]  parms←(parent,'lvSavedParms') ⎕wi 'list'
+[11]  :for z :in (parent,'lvSavedParms') ⎕wi 'value'
+[12]      warnings←''
+[13]      BasisFile←InputDir,⊃parms[parms[;1]⍳z;3]
+[14]      desc←⊃parms[parms[;1]⍳z;4]
+[15]      :if ↑(xxx xxx saveVersion)←BasisFile ReadModule SavedModule (,1000000∣z)
+[16]          S21Migration ∆←'_' StripText SavedModule
+[17]          CashMigration ∆
+[18]          :if 0≠saveVersion
+[19]              :if 9.03>saveVersion ⋄ FixFinFields SavedModule ⋄ :endif
+[20]              :if 9.10>saveVersion ⋄ FixRelFields '_' StripText SavedModule ⋄ :endif
+[21]              :if 9.10>saveVersion ⋄ :andif 'Actives'≡'_' StripText SavedModule
+[22]                  0 0⍴FixCOMPERFields
+[23]              :endif
+[24]          :endif
+[25]          ControlName ⎕wi '∆savedparms' (pack list)
+[26]          :for i :in ⍳⍴exportname
+[27]              :if 3=⎕nc i⊃exportname
+[28]                  (i⊃exportname) pdef Bens_Package
+[29]              :else
+[30]                  no←⍬
+[31]                  :if ';'∊var←i⊃exportname
+[32]                      no←zwb ';' StripText '[' Win∆Child var
+[33]                      var←'[' StripText var
+[34]                      :if exportbeyond
+[35]                          ⍎var,'←((⍴',var,')⌈(⍴⍙_',var,'))↑MATRIX ',var
+[36]                      :elseif no>↑⍴⍎var
+[37]                          warnings←warnings,'Unable to export "',(DLTB ("/",⎕tcnl,⎕tclf,"/ ") TEXTREPL Header[i;]),'" because that definition is undefined',⎕tcnl
+[38]                          :continue
+[39]                      :endif
+[40]                  :endif
+[41]                  (execute '⍙_',i⊃exportname) ASSIGN∆Dict i⊃exportname
+[42]                  :if ~0∊⍴label←i⊃exportlabel
+[43]                      :if ';'∊label
+[44]                          var←'[' StripText label
+[45]                          ⍎var,'←((⍴',var,')⌈(⍴⍙_',var,'))↑MATRIX ',var
+[46]                      :endif
+[47]                      (execute '⍙_',label) ASSIGN∆Dict label
+[48]                  :elseif ~0≡label←(exportfield[i;]) ⎕wi '∆rightlabel'
+[49]                  :andif 0≠⎕nc '⍙_',label←Win∆Child label
+[50]                      (execute '⍙_',label) ASSIGN∆Dict label
+[51]                  :endif
+[52]                  :if ×rowsIn ⍎commentvar←'Comment_',SavedModule
+[53]                      ⍎comment_var,'←',comment_var,' for ~↑(^/(⊂',comment_var,' at "variable")∊¨exportname (qtrim¨exportname))^((',comment_var,' at "row")∊⍬,no)'
+[54]                  :endif
+[55]                  ⍎'tab←(⍙_',comment_var,' for (⊂"variable"),exportname,qtrim¨exportname) for "row" ⍬,no'
+[56]                  tab←tab amend 'timestamp' ((rowsIn tab)/⊂,1 DATESPELL ⎕ts)
+[57]                  ⍎comment_var,'←',comment_var,' append tab'
+[58]              :endif
+[59]          :endfor
+[60]          :if ~mt warnings
+[61]              MDISPLAY ¯1↓warnings
+[62]          :endif
+[63]          ⍝ Set some user defined variables to "fool" the Save routine
+[64]          ControlName ⎕wi 'modified' 1
+[65]          ControlName ⎕wi '∆savecn' (1000000∣z)
+[66]          ControlName ⎕wi '∆savedesc' desc
+[67]          0 0⍴'Save' SaveRunParms SavedModule ControlName
+[68]      :endif
+[69]  :endfor
+[70]  ControlName ⎕wi '∆savecn' (⍳0)
+[71]  ControlName ⎕wi '∆savedesc' ''
+[72]  ControlName ⎕wi '∆modified' 1
+[73]  ControlName ⎕wi '∆audit' 0
+    ∇

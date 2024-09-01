@@ -1,0 +1,18 @@
+    ∇ res←GetBoxSelections;i;PickList;NameList;sortorder;cn
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get Selections to be displayed in "standard" Dialog Box selector
+[3]   ⍝ Relies on Global Variables:  SelectionsList and SelectionsDesc
+[4]   
+[5]   PickList←0 4⍴''
+[6]   
+[7]   :for i :in cn←⍳↑⍴SelectionsList
+[8]       PickList←PickList⍪i (1 0 ¯2) (SelectionsList[i;]) (DLTB SelectionsDesc[i;])
+[9]   :endfor
+[10]  
+[11]  NameList←         MATRIX 'Field Selection'       (¯1↑Win∆TextSize ⊃PickList[;3]) 'left' 1 1 0 1
+[12]  NameList←NameList⍪MATRIX 'Selection Description' (¯1↑Win∆TextSize ⊃PickList[;4]) 'left' 2 2 0 1
+[13]  
+[14]  sortorder←'⍺RowID⍺Alpha'
+[15]  
+[16]  res←PickList NameList sortorder cn
+    ∇

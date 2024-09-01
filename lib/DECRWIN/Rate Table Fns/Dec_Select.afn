@@ -1,1 +1,14 @@
-    ∇ Z←larg Dec∆Select rates;x;t;AGE;shape;rows[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Decrement rates selected from 2D tables (Select, 2D or Durational)[3]   ⍝ x is integral, t is duration since entry (fractional), AGE is the age that exits become start year[4]   ⍝  Decrement based on Curtate Term at (average) point of exit[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   :if 2=⍴shape←⍴Z←rates ⍝ Use Curtate Term at Exit for 2D Tables[8]       (x t AGE)←3↑larg,1↓shape ⋄ rows←↑shape[9]       Z←rates[rows∣x-⌊t+0.5;][10]      ⍝ Adjust for Start Year Exits if Curtate Term at Start Year does not equal Mid Year[11]      Z←(AGE↑Z),AGE↓rates[rows∣x-⌊t;][12]  :endif    ∇
+    ∇ Z←larg Dec∆Select rates;x;t;AGE;shape;rows
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Decrement rates selected from 2D tables (Select, 2D or Durational)
+[3]   ⍝ x is integral, t is duration since entry (fractional), AGE is the age that exits become start year
+[4]   ⍝  Decrement based on Curtate Term at (average) point of exit
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   :if 2=⍴shape←⍴Z←rates ⍝ Use Curtate Term at Exit for 2D Tables
+[8]       (x t AGE)←3↑larg,1↓shape ⋄ rows←↑shape
+[9]       Z←rates[rows∣x-⌊t+0.5;]
+[10]      ⍝ Adjust for Start Year Exits if Curtate Term at Start Year does not equal Mid Year
+[11]      Z←(AGE↑Z),AGE↓rates[rows∣x-⌊t;]
+[12]  :endif
+    ∇

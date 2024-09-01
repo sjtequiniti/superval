@@ -1,1 +1,96 @@
-    ∇ res←field Edit_Salary parm;parent;z;list[1]   ⍝ PARMWIN.sf#7[2]   ⍝ Function to allow user control on Salaries Details[3]   [4]   parent←'fmSalaries.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       :if SALget≥1 ⋄ SalaryValues ⋄ :endif[10]      Formattrick←HyphenSwap 'fmSV.sActives_Basis.pgMain.fData.cbFormat' ⎕wi 'text' ⍝ Trick to get Format-related variables[11]      :if uk=1 ⋄ ReviseCacheFor FormFields←Win∆GetControlList parent ⋄ :endif       ⍝ Get list of fields[12]      :if SALput≠⌊salput←SALput ⋄ SALput←99.5 ⋄ :endif ⍝ Signal failure[13]  [14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[15]      :if SALget=SALput[16]          (parent,'fButtons.bnEdit_SalaryPrevious') ⎕wi 'enabled' (SALget≠1)[17]          (parent,'fButtons.bnEdit_SalaryNext') ⎕wi 'enabled' (SALget≠↑⍴SALdesc)[18]          parent ⎕wi 'onModified' "ControlName ⎕wi '∆modified' 0"[19]          parent ⎕wi 'modified' 0[20]          parent ⎕wi '∆modified' 1[21]      :endif[22]  [23]      :if uk≠1 ⍝ FIXME ????[24]          (parent,'cbsaldata') ⎕wi 'list' (list←1 0↓GetVarNumList 'Salary')[25]          (parent,'cbsaldata') ⎕wi 'value' (1↑(StripText list) ExactTLU StripText saldata)[26]          (parent,'cbsaldata') ⎕wi 'extent' ((1↑(parent,'cbsaldata') ⎕wi 'extent'),20+¯1↑Win∆TextSize list)[27]          (parent,'cbfasdata') ⎕wi 'list' (list←' ' OVER list)[28]          (parent,'cbfasdata') ⎕wi 'value' (1↑(StripText list) ExactTLU StripText fasdata)[29]          (parent,'cbfasdata') ⎕wi 'extent' ((1↑(parent,'cbfasdata') ⎕wi 'extent'),20+¯1↑Win∆TextSize list)[30]  [31]          0 0⍴('cbsaldedn' 'cbsalmax') Edit_Salary 'Change'[32]      :else[33]          0 0⍴(⊂'cblrsalinc') Edit_Salary 'Change'[34]      :endif[35]  [36]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[37]  [38]      :if mt field ⋄ :return[39]      :elseif uk=1[40]          :repeat[41]              :select ↑field[42]              :case 'cbFormattrick'[43]              :else[44]                  (↑field) Win∆FormValidation 'Change'[45]              :endselect[46]          :until mt field←1↓field[47]      :else[48]          :repeat[49]              :select ↑field[50]              :case 'cbSALIND'[51]                  :if 'C'=1↑(parent,'cbSALIND') ⎕wi 'text'[52]                      (parent,'edrevdate') ⎕wi 'enabled' 0[53]                      (parent,'edrevdate') ⎕wi 'text' ''[54]                  :else[55]                      (parent,'edrevdate') ⎕wi 'enabled' 1[56]                      :if mt DLTMB (parent,'edrevdate') ⎕wi 'text'[57]                          (parent,'edrevdate') ⎕wi 'text' (,'ZI2,</>,ZI2' ⎕fmt MATRIX 2↑vDATE)[58]                      :endif[59]                  :endif[60]              :caselist 'cbsaldedntab' 'cbsaldedn' 'cbsaldednF'[61]                  :if uk=2[62]                      (parent,'fDeduction.cbsaldedntab') Win∆Alternates (parent,'fDeduction.cbsaldedn')[63]                  :endif[64]              :caselist 'cbsalmaxtab' 'cbsalmax' 'cbsalmaxF'[65]                  :if uk=2[66]                      (parent,'fMaximum.cbsalmaxtab') Win∆Alternates (parent,'fMaximum.cbsalmax')[67]                  :endif[68]              :endselect[69]          :until mt field←1↓field[70]      :endif[71]  [72]  :case 'Valid' ⍝ Routine specific validation[73]      :if uk=1 ⋄ res←(FormFields at 'variable') Win∆FormValidation 'Valid' ⋄ :endif ⍝ fields on this form[74]  [75]      :if    ~mt saldesc[76]      :andif ~mt SALdesc[(⍳1↑⍴SALdesc)~SALput;] ExactTLU saldesc[77]           res←'AlreadyDesc' ⋄ Win∆SetFocus parent,'edsaldesc' ⋄ :return[78]      :endif[79]  [80]  :case 'Run'[81]      SALput←salput[82]      SalaryAssign[83]      :if mt res←(SALget≠SALput)/'Quit'[84]          parent ⎕wi 'modified' 0[85]          MDISPLAY 'Salary ',(⍕SALput),' parameters changed'[86]      :endif[87]      parent ⎕wi '∆modified' 1[88]      parent ⎕wi '∆modified' 1[89]      res←'Quit'[90]  [91]  :case 'Quit' ⍝ Deleting "other" variables[92]      0 0⍴⎕ex 'salput'[93]  [94]  :endselect    ∇
+    ∇ res←field Edit_Salary parm;parent;z;list
+[1]   ⍝ PARMWIN.sf#7
+[2]   ⍝ Function to allow user control on Salaries Details
+[3]   
+[4]   parent←'fmSalaries.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if SALget≥1 ⋄ SalaryValues ⋄ :endif
+[10]      Formattrick←HyphenSwap 'fmSV.sActives_Basis.pgMain.fData.cbFormat' ⎕wi 'text' ⍝ Trick to get Format-related variables
+[11]      :if uk=1 ⋄ ReviseCacheFor FormFields←Win∆GetControlList parent ⋄ :endif       ⍝ Get list of fields
+[12]      :if SALput≠⌊salput←SALput ⋄ SALput←99.5 ⋄ :endif ⍝ Signal failure
+[13]  
+[14]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[15]      :if SALget=SALput
+[16]          (parent,'fButtons.bnEdit_SalaryPrevious') ⎕wi 'enabled' (SALget≠1)
+[17]          (parent,'fButtons.bnEdit_SalaryNext') ⎕wi 'enabled' (SALget≠↑⍴SALdesc)
+[18]          parent ⎕wi 'onModified' "ControlName ⎕wi '∆modified' 0"
+[19]          parent ⎕wi 'modified' 0
+[20]          parent ⎕wi '∆modified' 1
+[21]      :endif
+[22]  
+[23]      :if uk≠1 ⍝ FIXME ????
+[24]          (parent,'cbsaldata') ⎕wi 'list' (list←1 0↓GetVarNumList 'Salary')
+[25]          (parent,'cbsaldata') ⎕wi 'value' (1↑(StripText list) ExactTLU StripText saldata)
+[26]          (parent,'cbsaldata') ⎕wi 'extent' ((1↑(parent,'cbsaldata') ⎕wi 'extent'),20+¯1↑Win∆TextSize list)
+[27]          (parent,'cbfasdata') ⎕wi 'list' (list←' ' OVER list)
+[28]          (parent,'cbfasdata') ⎕wi 'value' (1↑(StripText list) ExactTLU StripText fasdata)
+[29]          (parent,'cbfasdata') ⎕wi 'extent' ((1↑(parent,'cbfasdata') ⎕wi 'extent'),20+¯1↑Win∆TextSize list)
+[30]  
+[31]          0 0⍴('cbsaldedn' 'cbsalmax') Edit_Salary 'Change'
+[32]      :else
+[33]          0 0⍴(⊂'cblrsalinc') Edit_Salary 'Change'
+[34]      :endif
+[35]  
+[36]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[37]  
+[38]      :if mt field ⋄ :return
+[39]      :elseif uk=1
+[40]          :repeat
+[41]              :select ↑field
+[42]              :case 'cbFormattrick'
+[43]              :else
+[44]                  (↑field) Win∆FormValidation 'Change'
+[45]              :endselect
+[46]          :until mt field←1↓field
+[47]      :else
+[48]          :repeat
+[49]              :select ↑field
+[50]              :case 'cbSALIND'
+[51]                  :if 'C'=1↑(parent,'cbSALIND') ⎕wi 'text'
+[52]                      (parent,'edrevdate') ⎕wi 'enabled' 0
+[53]                      (parent,'edrevdate') ⎕wi 'text' ''
+[54]                  :else
+[55]                      (parent,'edrevdate') ⎕wi 'enabled' 1
+[56]                      :if mt DLTMB (parent,'edrevdate') ⎕wi 'text'
+[57]                          (parent,'edrevdate') ⎕wi 'text' (,'ZI2,</>,ZI2' ⎕fmt MATRIX 2↑vDATE)
+[58]                      :endif
+[59]                  :endif
+[60]              :caselist 'cbsaldedntab' 'cbsaldedn' 'cbsaldednF'
+[61]                  :if uk=2
+[62]                      (parent,'fDeduction.cbsaldedntab') Win∆Alternates (parent,'fDeduction.cbsaldedn')
+[63]                  :endif
+[64]              :caselist 'cbsalmaxtab' 'cbsalmax' 'cbsalmaxF'
+[65]                  :if uk=2
+[66]                      (parent,'fMaximum.cbsalmaxtab') Win∆Alternates (parent,'fMaximum.cbsalmax')
+[67]                  :endif
+[68]              :endselect
+[69]          :until mt field←1↓field
+[70]      :endif
+[71]  
+[72]  :case 'Valid' ⍝ Routine specific validation
+[73]      :if uk=1 ⋄ res←(FormFields at 'variable') Win∆FormValidation 'Valid' ⋄ :endif ⍝ fields on this form
+[74]  
+[75]      :if    ~mt saldesc
+[76]      :andif ~mt SALdesc[(⍳1↑⍴SALdesc)~SALput;] ExactTLU saldesc
+[77]           res←'AlreadyDesc' ⋄ Win∆SetFocus parent,'edsaldesc' ⋄ :return
+[78]      :endif
+[79]  
+[80]  :case 'Run'
+[81]      SALput←salput
+[82]      SalaryAssign
+[83]      :if mt res←(SALget≠SALput)/'Quit'
+[84]          parent ⎕wi 'modified' 0
+[85]          MDISPLAY 'Salary ',(⍕SALput),' parameters changed'
+[86]      :endif
+[87]      parent ⎕wi '∆modified' 1
+[88]      parent ⎕wi '∆modified' 1
+[89]      res←'Quit'
+[90]  
+[91]  :case 'Quit' ⍝ Deleting "other" variables
+[92]      0 0⍴⎕ex 'salput'
+[93]  
+[94]  :endselect
+    ∇

@@ -1,0 +1,58 @@
+    ∇ Parameters∆Click tree;⎕wself;menu;rc;z;tree;cn;file;desc;vars;ParametersClicked;list;index
+[1]   ⍝ MAINWIN.sf#15
+[2]   ⍝ Select the menu to be executed
+[3]   
+[4]   :if ⎕warg[6]=2 ⍝ Right Click pressed
+[5]       :if ⎕warg[1]=1 ⍝ Topmost node
+[6]       :andif tree≡FormName,'.trParameters'
+[7]           rc←'mParm' ⎕wi 'Delete'
+[8]           rc←'mParm' ⎕wi 'New' 'Menu'
+[9]   
+[10]          ⎕wself←'mParm.mAlpha' ⎕wi 'New' 'Menu'
+[11]          ⎕wi 'caption' 'Alpha'
+[12]          ⎕wi 'value' (ParmsSort≡"Alpha")
+[13]          ⎕wi 'onClick' ('"',tree,'" Parameters∆Sort "Alpha"')
+[14]  
+[15]          ⎕wself←'mParm.mMod' ⎕wi 'New' 'Menu'
+[16]          ⎕wi 'caption' 'Modified'
+[17]          ⎕wi 'value' (ParmsSort≡"Modified")
+[18]          ⎕wi 'onClick' ('"',tree,'" Parameters∆Sort "Modified"')
+[19]  
+[20]          ⎕wself←'mParm.mCreate' ⎕wi 'New' 'Menu'
+[21]          ⎕wi 'caption' 'Created'
+[22]          ⎕wi 'value' (ParmsSort≡"Created")
+[23]          ⎕wi 'onClick' ('"',tree,'" Parameters∆Sort "Created"')
+[24]  
+[25]          FormName ⎕wi 'Popup' 'mParm' 0
+[26]  
+[27]      :elseif ⎕warg[1]=tree ⎕wi 'value' ⍝ current Selected Node
+[28]          list←tree ⎕wi 'list'
+[29]          z←list[;1]⍳⎕warg[1]
+[30]  
+[31]          :if ×⎕warg[3] ⋄ :andif ~mt menu←z⊃tree ⎕wi '∆auditmenu' ⍝ Audit if Shift, Ctrl or Alt
+[32]              :if 5=list[z;2]
+[33]                  menu←'' ⋄ z Parameters∆Audit tree
+[34]              :endif
+[35]          :elseif ~mt menu←z⊃tree ⎕wi '∆menu'
+[36]          :andif      0≠cn←z⊃tree ⎕wi '∆cn'
+[37]              :select file←z⊃tree ⎕wi '∆file'
+[38]              :case 'ClientFile' ⍝ Nothing Required
+[39]              :case 'GlobalsFile' ⍝⍝⍝ ???
+[40]              :else ⋄ BasisFile←file
+[41]              :endselect
+[42]              :if 'Financials'≡↑(ParametersTable  for 'ModuleMenu' menu) at 'Module'
+[43]                  index←ClientFile ReadFile 'Index'
+[44]                  index←index for '∆_Name' 'Financials_Display'
+[45]                  cn←↑index at '∆_CompNo'
+[46]                  desc←↑index at '∆_Description'
+[47]              :else
+[48]                  desc←DLTB '[' StripText z⊃list[;3]
+[49]              :endif
+[50]              vars←'file' 'cn' 'desc'
+[51]              ParametersClicked←vars push ⍎¨vars
+[52]          :endif
+[53]  
+[54]          :if ~mt menu ⋄ menu ⎕wi 'Click' ⋄ :endif
+[55]      :endif
+[56]  :endif
+    ∇

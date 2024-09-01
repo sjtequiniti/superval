@@ -1,0 +1,19 @@
+    ∇ Module Win∆F1SSInsertRow parms;SSName;row
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Insert a Row to the Spreadsheet
+[3]   
+[4]   (SSName row)←parms
+[5]   
+[6]   0 0⍴⍎'(⊂"',SSName,'") ',Module,' "Unlock"'
+[7]   
+[8]   SSName ⎕wi 'xInsertRange' row ¯1 row ¯1 2
+[9]   SSName ⎕wi 'xSetActiveCell' row 1
+[10]  SSName ⎕wi 'MaxRow' (1+SSName ⎕wi 'MaxRow')
+[11]  SSName ⎕wi 'modified' 1
+[12]  
+[13]  :if 0≠⎕nc 'Comment_',Module
+[14]      Module (SSName ⎕wi '∆name') ParmCommAdjust 'Insert' row
+[15]  :endif
+[16]  
+[17]  0 0⍴⍎'(⊂"',SSName,'") ',Module,' "Lock"'
+    ∇

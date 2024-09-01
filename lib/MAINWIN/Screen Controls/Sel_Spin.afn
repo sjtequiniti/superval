@@ -1,0 +1,25 @@
+    ∇ listview Sel∆Spin direction;list;value;rest;rows;order;Label;desc
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Process click of the spinner attached to a Listview
+[3]   
+[4]   (list value)←listview ⎕wi 'Ref' 'list' 'value'
+[5]   rest←2↑((1∊rows)/⊂⍬),((1≠DIFF ¯999,rest) ⎕penclose rest←(⍳↑⍴list)~rows←list[;1]⍳value),⊂⍬
+[6]   
+[7]   :select ×direction
+[8]   :case  1 ⋄ order←((¯1↓1⊃rest),rows,(¯1↑1⊃rest),2⊃rest)~0 ⍝ Move Up
+[9]   :case ¯1 ⋄ order←((   1⊃rest),(↑2⊃rest),rows,1↓2⊃rest)~0 ⍝ Move Down
+[10]  :endselect
+[11]  
+[12]  order←list[order;1]
+[13]  listview ⎕wi 'sortorder' order
+[14]  listview ⎕wi 'value' value
+[15]  
+[16]  ⍝ Remove Previous Sort Order Indicator
+[17]  Label←listview ⎕wi 'columndisplay' ⋄ Label[;1]←Label[;1]~¨⊂'<>'
+[18]  listview ⎕wi 'columndisplay' Label
+[19]  
+[20]  :if 0≡desc←ControlName ⎕wi '∆savedesc' ⋄ desc←''
+[21]  :else                                  ⋄ desc←DLTB desc
+[22]  :endif
+[23]  listviewDict←(listviewDict for (~(spin listviewDict at 'Control' 'Parameters')∊⊂listview desc)) OVER Module listview desc (-order)
+    ∇

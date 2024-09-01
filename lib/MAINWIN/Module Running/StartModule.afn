@@ -1,1 +1,54 @@
-    ∇ CodeFile StartModule Module;⎕io;Menu_Make;FormCode;Form_Make;Form_Make2;childlist;rc;Error;CancelledEntry;bar_open;⍙store;relTests[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Run the Module called "Module"[3]   ⍝ Involves the following steps:[4]   ⍝   Get relevant code from OVERLAY file[5]   ⍝   Get Menu Code from SVMENU?? file & Execute[6]   ⍝   Read "Default" Field Values (from System Directory) - for conversion purposes[7]   ⍝   Read "Last Used" Field Values (from Client Directory)[8]   ⍝   Get Form Code (if any) from SVFORM?? file & Execute[9]   ⍝   Return to Wait on Form[10]  ⎕io←1[11]  [12]  :if tracklocals ⋄ Module CheckLocals 'Start' ⋄ :endif[13]  [14]  :if 0=⎕nc 'CodeFile' ⋄ CodeFile←'OVERWIN' ⋄ :endif[15]  [16]  :if ⍬≡(SystemDir,CodeFile) ReadFile Module ⋄ :return ⋄ :endif ⍝ Code required for Module to run, else abort[17]  :if ⍬≡(SystemDir,'SVMENU',Win∆CountryCode) ReadFile Module ⋄ :return ⋄ :endif ⍝ Menu for Module,else abort[18]  [19]  :if ~0∊⍴,Error←⍎Module,' "Prepare"' ⋄ MDISPLAY Error ⋄ :return ⋄ :endif[20]  [21]  :if 0≠⍴,childlist←⊃¯1↑FormName ⎕wi '∆childlist' ⍝ Disable previous Form[22]      childlist←,⎕split childlist[23]      FormName ⎕wi '∆childvisible' ((FormName ⎕wi '∆childvisible'),⊂childlist MultiWI 'visible')[24]      rc←(((childlist MultiWI 'class')∊⊂'Button')/childlist) MultiWI 'visible' ¯1 ⍝ Hide Buttons[25]      rc←((∨/¨(⊂'.mMain')⍷¨childlist)/childlist) MultiWI 'visible' 0 ⍝ Hide Main Menu[26]  :endif[27]  [28]  CancelledEntry←bar_open←0[29]  :if ~⍬≡(SystemDir,'SVFORM',Win∆CountryCode) ReadFile Module ⍝ Form for Module[30]      ParametersTreeHide[31]      :if 2=⎕nc 'FormCode'[32]          ⍙store←pack (2=⎕nc Validation_Vars)⌿Validation_Vars ⍝ Store Validation Vars in case of overwrite (Dialogs only)[33]          :if (⊂rc←⍎⎕def FormCode)∊'∆Dialog' '∆Wizard'[34]              pdef ⍙store ⍝ Restore previous Validation Vars[35]              :if tracklocals ⋄ Module CheckLocals 'End' ⋄ :endif[36]              :return ⍝ Nothing Else Required for Dialog - all in Form_Make (FormCode)[37]          :else[38]              ControlList←ControlList,⊂ControlName←Container←rc[39]          :endif[40]      :endif[41]  :else[42]      ParametersTreeCreate[43]      basAccess←2/accesslevel←relTests←0[44]      1 Menu_Make FormName ⍝ Create the Main Menu[45]  :endif[46]  [47]  :if ~0∊⍴,Win∆Initialise Module ⍝ Run the Form Initialising Routine[48]      'Quit' EndModule Module[49]      :return[50]  :endif[51]  [52]  :if ~''≡ControlName ⋄ ControlName ⎕wi 'Paint' ⋄ ControlName ⎕wi 'Show' ⋄ :endif    ∇
+    ∇ CodeFile StartModule Module;⎕io;Menu_Make;FormCode;Form_Make;Form_Make2;childlist;rc;Error;CancelledEntry;bar_open;⍙store;relTests
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Run the Module called "Module"
+[3]   ⍝ Involves the following steps:
+[4]   ⍝   Get relevant code from OVERLAY file
+[5]   ⍝   Get Menu Code from SVMENU?? file & Execute
+[6]   ⍝   Read "Default" Field Values (from System Directory) - for conversion purposes
+[7]   ⍝   Read "Last Used" Field Values (from Client Directory)
+[8]   ⍝   Get Form Code (if any) from SVFORM?? file & Execute
+[9]   ⍝   Return to Wait on Form
+[10]  ⎕io←1
+[11]  
+[12]  :if tracklocals ⋄ Module CheckLocals 'Start' ⋄ :endif
+[13]  
+[14]  :if 0=⎕nc 'CodeFile' ⋄ CodeFile←'OVERWIN' ⋄ :endif
+[15]  
+[16]  :if ⍬≡(SystemDir,CodeFile) ReadFile Module ⋄ :return ⋄ :endif ⍝ Code required for Module to run, else abort
+[17]  :if ⍬≡(SystemDir,'SVMENU',Win∆CountryCode) ReadFile Module ⋄ :return ⋄ :endif ⍝ Menu for Module,else abort
+[18]  
+[19]  :if ~0∊⍴,Error←⍎Module,' "Prepare"' ⋄ MDISPLAY Error ⋄ :return ⋄ :endif
+[20]  
+[21]  :if 0≠⍴,childlist←⊃¯1↑FormName ⎕wi '∆childlist' ⍝ Disable previous Form
+[22]      childlist←,⎕split childlist
+[23]      FormName ⎕wi '∆childvisible' ((FormName ⎕wi '∆childvisible'),⊂childlist MultiWI 'visible')
+[24]      rc←(((childlist MultiWI 'class')∊⊂'Button')/childlist) MultiWI 'visible' ¯1 ⍝ Hide Buttons
+[25]      rc←((∨/¨(⊂'.mMain')⍷¨childlist)/childlist) MultiWI 'visible' 0 ⍝ Hide Main Menu
+[26]  :endif
+[27]  
+[28]  CancelledEntry←bar_open←0
+[29]  :if ~⍬≡(SystemDir,'SVFORM',Win∆CountryCode) ReadFile Module ⍝ Form for Module
+[30]      ParametersTreeHide
+[31]      :if 2=⎕nc 'FormCode'
+[32]          ⍙store←pack (2=⎕nc Validation_Vars)⌿Validation_Vars ⍝ Store Validation Vars in case of overwrite (Dialogs only)
+[33]          :if (⊂rc←⍎⎕def FormCode)∊'∆Dialog' '∆Wizard'
+[34]              pdef ⍙store ⍝ Restore previous Validation Vars
+[35]              :if tracklocals ⋄ Module CheckLocals 'End' ⋄ :endif
+[36]              :return ⍝ Nothing Else Required for Dialog - all in Form_Make (FormCode)
+[37]          :else
+[38]              ControlList←ControlList,⊂ControlName←Container←rc
+[39]          :endif
+[40]      :endif
+[41]  :else
+[42]      ParametersTreeCreate
+[43]      basAccess←2/accesslevel←relTests←0
+[44]      1 Menu_Make FormName ⍝ Create the Main Menu
+[45]  :endif
+[46]  
+[47]  :if ~0∊⍴,Win∆Initialise Module ⍝ Run the Form Initialising Routine
+[48]      'Quit' EndModule Module
+[49]      :return
+[50]  :endif
+[51]  
+[52]  :if ~''≡ControlName ⋄ ControlName ⎕wi 'Paint' ⋄ ControlName ⎕wi 'Show' ⋄ :endif
+    ∇

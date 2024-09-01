@@ -1,1 +1,30 @@
-    ∇ MAT DEC∆PRINTS EX;SUMMREC;J;GMAT;GEX;fDURN;TOP;cols;NO;rows;sfac;size[1]   ⍝ INVWIN.sf#2[2]   ⍝ Print results of decrement invest. using MAT (exposure) and EX (exits)[3]   [4]   MAT←SFAC×((⍴MAT)⌈0,(BAGE+AGES),0)↑MAT ⍝ Select & Scale[5]   EX←SFAC×((⍴EX)⌈0,(BAGE+AGES),0)↑EX[6]   [7]   J←0[8]   loop:H1[4;(124+⍳2),130+⍳2]←,'ZI2' ⎕FMT 1 0 +PS[J+ 0 1][9]   [10]  fDURN←,1+PS[J]+⍳(20⌊PS[J+1])-PS[J][11]  GMAT←+⌿MAT[0,i+1;BAGE+⍳AGES;fDURN][12]  GEX←EX[i;BAGE+⍳AGES;fDURN][13]  [14]  SUMMREC←GMAT DEC∆OUTPUT GEX[15]  cols←8+¯1↓(^⌿SUMMREC[;8+⍳11]=' ')/⍳11[16]  cols←cols,28+¯1↓(^⌿SUMMREC[;28+⍳5]=' ')/⍳5[17]  cols←(⍳62)~cols,38+¯1↓(^⌿SUMMREC[;38+⍳5]=' ')/⍳5[18]  TOP←((⍴cols)↑TAB[⎕IO;])⍪(1 0↓TAB)[;cols] ⋄ size←¯1↑⍴SUMMREC←SUMMREC[;cols][19]  [20]  SUMMREC←(SUMMREC⍪' ') OVER '<   Exposure Weighting:  >,CLF20.2' ⎕FMT sfac CDIV SFAC[21]  NO←⌈(1↑⍴SUMMREC)÷rows←(GROUP+3)×1⌈⌊(pAGE-13)÷GROUP+3[22]  [23]  TOP←(5,NO×size)↑TOP,TOP,TOP,TOP,TOP,TOP,TOP,TOP[24]  SUMMREC←' '⍪(rows,NO×size)⍴ 1 0 2 ⍉(NO,rows,size)⍴((NO×rows),size)↑SUMMREC[25]  [26]  DPAGE←1↑(H1 OVER TOP) OUTPUT tpr1,DPAGE[27]  [28]  →((¯1+⍴PS)>J←J+1)/loop    ∇
+    ∇ MAT DEC∆PRINTS EX;SUMMREC;J;GMAT;GEX;fDURN;TOP;cols;NO;rows;sfac;size
+[1]   ⍝ INVWIN.sf#2
+[2]   ⍝ Print results of decrement invest. using MAT (exposure) and EX (exits)
+[3]   
+[4]   MAT←SFAC×((⍴MAT)⌈0,(BAGE+AGES),0)↑MAT ⍝ Select & Scale
+[5]   EX←SFAC×((⍴EX)⌈0,(BAGE+AGES),0)↑EX
+[6]   
+[7]   J←0
+[8]   loop:H1[4;(124+⍳2),130+⍳2]←,'ZI2' ⎕FMT 1 0 +PS[J+ 0 1]
+[9]   
+[10]  fDURN←,1+PS[J]+⍳(20⌊PS[J+1])-PS[J]
+[11]  GMAT←+⌿MAT[0,i+1;BAGE+⍳AGES;fDURN]
+[12]  GEX←EX[i;BAGE+⍳AGES;fDURN]
+[13]  
+[14]  SUMMREC←GMAT DEC∆OUTPUT GEX
+[15]  cols←8+¯1↓(^⌿SUMMREC[;8+⍳11]=' ')/⍳11
+[16]  cols←cols,28+¯1↓(^⌿SUMMREC[;28+⍳5]=' ')/⍳5
+[17]  cols←(⍳62)~cols,38+¯1↓(^⌿SUMMREC[;38+⍳5]=' ')/⍳5
+[18]  TOP←((⍴cols)↑TAB[⎕IO;])⍪(1 0↓TAB)[;cols] ⋄ size←¯1↑⍴SUMMREC←SUMMREC[;cols]
+[19]  
+[20]  SUMMREC←(SUMMREC⍪' ') OVER '<   Exposure Weighting:  >,CLF20.2' ⎕FMT sfac CDIV SFAC
+[21]  NO←⌈(1↑⍴SUMMREC)÷rows←(GROUP+3)×1⌈⌊(pAGE-13)÷GROUP+3
+[22]  
+[23]  TOP←(5,NO×size)↑TOP,TOP,TOP,TOP,TOP,TOP,TOP,TOP
+[24]  SUMMREC←' '⍪(rows,NO×size)⍴ 1 0 2 ⍉(NO,rows,size)⍴((NO×rows),size)↑SUMMREC
+[25]  
+[26]  DPAGE←1↑(H1 OVER TOP) OUTPUT tpr1,DPAGE
+[27]  
+[28]  →((¯1+⍴PS)>J←J+1)/loop
+    ∇

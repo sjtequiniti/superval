@@ -1,1 +1,45 @@
-    ∇ inerror←PREPARE;AgeLimit[1]   ⍝ PENWIN.sf#2[2]   ⍝ Initialises variables and sets up total variables, opens the print[3]   ⍝ file and spools the run description and decrements listing.[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   [8]   jvDATE←JUL EDATE←BDATE←VDATE←¯3↑pvDATE,vDATEind/vDATE ⋄ bDATE←JUL pvDATE[9]   CREATE∆AOS_PEN[10]  [11]  SelectSexParms ~Male←SelSex='M' ⋄ NRA←SPA←60+5×Male[12]  [13]  rUNDESC←1 HyphenSwap PenVal_RunDesc ⍝ Valuation Run Description[14]  [15]  AgeLimit←CREATE∆DEMOGRAPH ⍝ Create the Demographic variables[16]  [17]  CREATE∆Legislation[18]  [19]  CREATE∆PENS[20]  [21]  CREATE∆Financial[22]  [23]  :if inerror←∨/∊('ERROR:' 'WARNING:' 'NOTE:')⍷¨⊂,VALN∆Errors ⋄ :return ⋄ :endif[24]  [25]  :if IFbasischanged ⋄ :andif ×termAdjFin ⋄ ⍙DBInterRateTables ⋄ :endif[26]  [27]  LatestAge←LatestRA←lra←⌈/(zwb ¨⎕split bage),SPA[28]  [29]  ⍝ OVERTAKE i to allow for sliding-scale vectors[30]  vMP←((⍴v)⍴ 0 1)/v←×\1,(÷2/110 OVERTAKE pi)*0.5 ⍝ At t=0.5,1.5,..[31]  v←¯1↓((⍴v)⍴ 1 0)/v ⍝ At t=0, 1, 2,..[32]  [33]  ⍝ Pension Projector variables[34]  Cat∆Output←0 PREPARE_CatAPP (,pi) (,pi) (,pi) 1 (↑INCIND) INCDAT GPOverlap DISC FREQ MODE SPMethod HXX 0 'D'[35]  [36]  WaitPeriod∆pp←Upin∆pp←0 ⍝ Not "underpinned"[37]  FSL∆pp←FCon∆pp←ProRate∆pp←⍬ ⍝ No future service benefit[38]  PPFRatio∆pp←1 ⍝ always 1[39]  :if ppf ⋄ VFYear∆pp←¯1[40]  :else   ⋄ VFYear∆pp←0 ⍝ Annuities at VDate[41]  :endif[42]  VFmissing←0[43]  Comment∆pp←'' ⍝ No comment    ∇
+    ∇ inerror←PREPARE;AgeLimit
+[1]   ⍝ PENWIN.sf#2
+[2]   ⍝ Initialises variables and sets up total variables, opens the print
+[3]   ⍝ file and spools the run description and decrements listing.
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   
+[8]   jvDATE←JUL EDATE←BDATE←VDATE←¯3↑pvDATE,vDATEind/vDATE ⋄ bDATE←JUL pvDATE
+[9]   CREATE∆AOS_PEN
+[10]  
+[11]  SelectSexParms ~Male←SelSex='M' ⋄ NRA←SPA←60+5×Male
+[12]  
+[13]  rUNDESC←1 HyphenSwap PenVal_RunDesc ⍝ Valuation Run Description
+[14]  
+[15]  AgeLimit←CREATE∆DEMOGRAPH ⍝ Create the Demographic variables
+[16]  
+[17]  CREATE∆Legislation
+[18]  
+[19]  CREATE∆PENS
+[20]  
+[21]  CREATE∆Financial
+[22]  
+[23]  :if inerror←∨/∊('ERROR:' 'WARNING:' 'NOTE:')⍷¨⊂,VALN∆Errors ⋄ :return ⋄ :endif
+[24]  
+[25]  :if IFbasischanged ⋄ :andif ×termAdjFin ⋄ ⍙DBInterRateTables ⋄ :endif
+[26]  
+[27]  LatestAge←LatestRA←lra←⌈/(zwb ¨⎕split bage),SPA
+[28]  
+[29]  ⍝ OVERTAKE i to allow for sliding-scale vectors
+[30]  vMP←((⍴v)⍴ 0 1)/v←×\1,(÷2/110 OVERTAKE pi)*0.5 ⍝ At t=0.5,1.5,..
+[31]  v←¯1↓((⍴v)⍴ 1 0)/v ⍝ At t=0, 1, 2,..
+[32]  
+[33]  ⍝ Pension Projector variables
+[34]  Cat∆Output←0 PREPARE_CatAPP (,pi) (,pi) (,pi) 1 (↑INCIND) INCDAT GPOverlap DISC FREQ MODE SPMethod HXX 0 'D'
+[35]  
+[36]  WaitPeriod∆pp←Upin∆pp←0 ⍝ Not "underpinned"
+[37]  FSL∆pp←FCon∆pp←ProRate∆pp←⍬ ⍝ No future service benefit
+[38]  PPFRatio∆pp←1 ⍝ always 1
+[39]  :if ppf ⋄ VFYear∆pp←¯1
+[40]  :else   ⋄ VFYear∆pp←0 ⍝ Annuities at VDate
+[41]  :endif
+[42]  VFmissing←0
+[43]  Comment∆pp←'' ⍝ No comment
+    ∇

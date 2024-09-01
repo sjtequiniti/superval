@@ -1,1 +1,70 @@
-    ∇ res←larg GET∆ImpGlobals varname;list;∆;var;desc;errflag;exlist;tab;MESS;col;isActive;isDeferred;isPensioner;spouse;pre;post;ih;field;rel;success;refs;eps[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Extract the Mortality Improvement Global parameters using the "description" pointer "varname"[3]   ⍝ larg is the description of the Mortality Table and a valuation flag[4]   [5]   (desc errflag)←larg[6]   :if 1≠⍴,errflag ⋄ (isActive isDeferred isPensioner)←errflag ⋄ errflag←1 ⋄ :endif[7]   [8]   exlist←list←⍙VALUESdict ReadDictFile 'Mort_Improvement' '' 'NAMES'[9]   tab←⍙RULESdict ReadDictFile 'Mort_Improvement'[10]  [11]  :if ''≡var←DLTB ⍎varname ⋄ var←'None' ⋄ :endif[12]  (success MESS)←2↑ClientFile ReadModule 'Mort_Improvement' var 'Mortality Improvement' desc errflag varname[13]  MESS←⊃MESS[;⎕io+2] ⍝ Retain matrix errors rather than table[14]  :if ~mt defIMPORIG ⋄ gmiIMPORIG←defIMPORIG ⋄ :endif[15]  [16]  :if uk=1 ⋄ :andif ~'None'≡gmiMORTIMPR ⋄ :andif '2'≠↑gmiMORTIMPR[17]      :if success←errflag×ecflag[18]          MESS←MESS OVER 'Warning:  Only 2D Mortality Improvement Tables are still supported but, as it is a valuation, I will do CMI calculations for you just this time'[19]      :else[20]          MESS←MESS OVER (errflag/'ERROR:  '),'Only 2D Mortality Improvement Tables are still supported - please change your Mortality Improvement parameters'[21]      :endif[22]  :endif[23]  [24]  :if success ⋄ :orif errflag[25]      list RenameVars 'gmi' varname ⋄ list RenameVars 'lrgmi' ('lr',varname) ⍝ VALIDATE∆Basis requires these varibales even if in error[26]  :endif[27]  :if success[28]      :if 0≠⎕nc 'comment_var' ⋄ :andif ×rowsIn Comment_Mort_Improvement ⍝ Add Mortality Improvement comments[29]          Comment_Mort_Improvement←Comment_Mort_Improvement amend 'variable' ((⊂'/gmi/',varname) TEXTREPL¨Comment_Mort_Improvement at 'variable')[30]          ⍎comment_var,'←',comment_var,' append Comment_Mort_Improvement'[31]      :endif[32]  [33]      :if errflag[34]          ∆←(¯1+WHERE 'Mortality'⍷desc)↑desc[35]          tab←tab amend 'Frame' ((⊂∆),¨tab at 'Frame')[36]          ∆←∆,'Mortality '[37]          tab←tab amend 'Desc' ((⊂'\Mortality \',∆) TEXTREPL¨tab at 'Desc')[38]  [39]          ⍝ Adjust Relevance according to type of Mortality[40]          spouse←∨/'_miSD'⍷varname ⋄ pre←∨/'_miDPRE'⍷varname ⋄ post←∨/'_miDPOST'⍷varname ⋄ ih←∨/'_miDILL'⍷varname[41]          (field rel refs eps)←tab at 'Field' 'Relevant' 'Relevant Refs' 'Relevant EPs'[42]  [43]          ∆←   spouse             ^field∊ 'gmiCMSL' 'gmiSMSL'[44]          ∆←∆∨(ih∨pre∨isPensioner)^field∊ 'gmiCSSL' 'gmiSSSL'[45]          ∆←∆∨(ih∨pre^isDeferred) ^field∊⊂'gmiCSC'[46]          ∆←∆∨(ih∨pre)            ^field∊⊂'gmiSSC'[47]          (∆/rel)←⊂'0' ⋄ refs←(~∆)sel¨refs ⋄ eps←(~∆)sel¨eps[48]  [49]          ∆←  (post^~isPensioner) ^field∊ 'gmiCSSL' 'gmiSSSL'[50]          ∆←∆∨ post               ^field∊ 'gmiCSC'  'gmiSSC'[51]  ⍝⍝⍝        (∆/rel)←(⊂'(not bGAD) and '),¨∆/rel[52]          (∆/rel)←(⊂'0 and '),¨∆/rel[53]  [54]          tab←tab amend ('Relevant' rel) ('Relevant Refs' refs) ('Relevant EPs' eps)[55]  [56]          :for col :in 'Field' 'Editable' 'Relevant' 'Required'[57]              tab←tab amend col ((⊂'/gmi/',varname) TEXTREPL¨tab at col)[58]          :endfor[59]          :for col :in 'Editable Refs' 'Editable EPs' 'Relevant Refs' 'Relevant EPs' 'Required Refs' 'Required EPs'[60]              tab←tab amend col ((⊂⊂'/gmi/',varname) TEXTREPL¨¨tab at col)[61]          :endfor[62]      :endif[63]      exlist←⊃(⊂'/gmi/',varname) TEXTREPL¨⎕split list[64]  :endif[65]  [66]  0 0⍴⎕ex list[67]  [68]  res←success MESS tab exlist    ∇
+    ∇ res←larg GET∆ImpGlobals varname;list;∆;var;desc;errflag;exlist;tab;MESS;col;isActive;isDeferred;isPensioner;spouse;pre;post;ih;field;rel;success;refs;eps
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Extract the Mortality Improvement Global parameters using the "description" pointer "varname"
+[3]   ⍝ larg is the description of the Mortality Table and a valuation flag
+[4]   
+[5]   (desc errflag)←larg
+[6]   :if 1≠⍴,errflag ⋄ (isActive isDeferred isPensioner)←errflag ⋄ errflag←1 ⋄ :endif
+[7]   
+[8]   exlist←list←⍙VALUESdict ReadDictFile 'Mort_Improvement' '' 'NAMES'
+[9]   tab←⍙RULESdict ReadDictFile 'Mort_Improvement'
+[10]  
+[11]  :if ''≡var←DLTB ⍎varname ⋄ var←'None' ⋄ :endif
+[12]  (success MESS)←2↑ClientFile ReadModule 'Mort_Improvement' var 'Mortality Improvement' desc errflag varname
+[13]  MESS←⊃MESS[;⎕io+2] ⍝ Retain matrix errors rather than table
+[14]  :if ~mt defIMPORIG ⋄ gmiIMPORIG←defIMPORIG ⋄ :endif
+[15]  
+[16]  :if uk=1 ⋄ :andif ~'None'≡gmiMORTIMPR ⋄ :andif '2'≠↑gmiMORTIMPR
+[17]      :if success←errflag×ecflag
+[18]          MESS←MESS OVER 'Warning:  Only 2D Mortality Improvement Tables are still supported but, as it is a valuation, I will do CMI calculations for you just this time'
+[19]      :else
+[20]          MESS←MESS OVER (errflag/'ERROR:  '),'Only 2D Mortality Improvement Tables are still supported - please change your Mortality Improvement parameters'
+[21]      :endif
+[22]  :endif
+[23]  
+[24]  :if success ⋄ :orif errflag
+[25]      list RenameVars 'gmi' varname ⋄ list RenameVars 'lrgmi' ('lr',varname) ⍝ VALIDATE∆Basis requires these varibales even if in error
+[26]  :endif
+[27]  :if success
+[28]      :if 0≠⎕nc 'comment_var' ⋄ :andif ×rowsIn Comment_Mort_Improvement ⍝ Add Mortality Improvement comments
+[29]          Comment_Mort_Improvement←Comment_Mort_Improvement amend 'variable' ((⊂'/gmi/',varname) TEXTREPL¨Comment_Mort_Improvement at 'variable')
+[30]          ⍎comment_var,'←',comment_var,' append Comment_Mort_Improvement'
+[31]      :endif
+[32]  
+[33]      :if errflag
+[34]          ∆←(¯1+WHERE 'Mortality'⍷desc)↑desc
+[35]          tab←tab amend 'Frame' ((⊂∆),¨tab at 'Frame')
+[36]          ∆←∆,'Mortality '
+[37]          tab←tab amend 'Desc' ((⊂'\Mortality \',∆) TEXTREPL¨tab at 'Desc')
+[38]  
+[39]          ⍝ Adjust Relevance according to type of Mortality
+[40]          spouse←∨/'_miSD'⍷varname ⋄ pre←∨/'_miDPRE'⍷varname ⋄ post←∨/'_miDPOST'⍷varname ⋄ ih←∨/'_miDILL'⍷varname
+[41]          (field rel refs eps)←tab at 'Field' 'Relevant' 'Relevant Refs' 'Relevant EPs'
+[42]  
+[43]          ∆←   spouse             ^field∊ 'gmiCMSL' 'gmiSMSL'
+[44]          ∆←∆∨(ih∨pre∨isPensioner)^field∊ 'gmiCSSL' 'gmiSSSL'
+[45]          ∆←∆∨(ih∨pre^isDeferred) ^field∊⊂'gmiCSC'
+[46]          ∆←∆∨(ih∨pre)            ^field∊⊂'gmiSSC'
+[47]          (∆/rel)←⊂'0' ⋄ refs←(~∆)sel¨refs ⋄ eps←(~∆)sel¨eps
+[48]  
+[49]          ∆←  (post^~isPensioner) ^field∊ 'gmiCSSL' 'gmiSSSL'
+[50]          ∆←∆∨ post               ^field∊ 'gmiCSC'  'gmiSSC'
+[51]  ⍝⍝⍝        (∆/rel)←(⊂'(not bGAD) and '),¨∆/rel
+[52]          (∆/rel)←(⊂'0 and '),¨∆/rel
+[53]  
+[54]          tab←tab amend ('Relevant' rel) ('Relevant Refs' refs) ('Relevant EPs' eps)
+[55]  
+[56]          :for col :in 'Field' 'Editable' 'Relevant' 'Required'
+[57]              tab←tab amend col ((⊂'/gmi/',varname) TEXTREPL¨tab at col)
+[58]          :endfor
+[59]          :for col :in 'Editable Refs' 'Editable EPs' 'Relevant Refs' 'Relevant EPs' 'Required Refs' 'Required EPs'
+[60]              tab←tab amend col ((⊂⊂'/gmi/',varname) TEXTREPL¨¨tab at col)
+[61]          :endfor
+[62]      :endif
+[63]      exlist←⊃(⊂'/gmi/',varname) TEXTREPL¨⎕split list
+[64]  :endif
+[65]  
+[66]  0 0⍴⎕ex list
+[67]  
+[68]  res←success MESS tab exlist
+    ∇

@@ -1,1 +1,88 @@
-    ∇ type ⍙WebCash arg;benID;adjust;msk;vals;newvals;shape;ResIDs;COMpc;IDs;origfact;cashmsk;newfact;ADaypc;comm∆;commtype;cottype;zeromsk;ADayadj[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Adjust Cash Amounts (and Pensions, if requred) for changes in Cash Amounts/Factors[3]   ⍝ arg is BenID and the (vector) adjustment[4]   ⍝ type is either 'factor' or 'amount'[5]   [6]   benID←↑arg ⋄ adjust←MATRIX maxyr OVERTAKE 1↓arg[7]   [8]   COMpc←restab at 'CashRate'                                      ⍝ Commutation Rates[9]   IDs←∊restab at 'ResultsCategoryID'                              ⍝ Results IDs[10]  newvals←(shape←⍴¨restab at 'CashFlow')⍴¨⊂adjust                 ⍝ Adjustment Values[11]  [12]  :select type[13]  :case 'amount'[14]      :if ∨/msk←∣×restab at ↑(benID=35 36)/'Commutation' 'CashOnTop' ⍝ Cash Indicators[15]          vals←restab at 'CashAmtAdjust'[16]          :if benID=36[17]              newvals←newvals⌈¨restab at 'PastService'            ⍝ No reduction of Past Service COT benefit[18]          :endif[19]          (msk/vals)←msk/newvals[20]  [21]          :if benID=35                                            ⍝ Adjust the Pension if Commutation Amount adjusted[22]              ResIDs←msk/IDs[23]              :if ∨/msk←(~msk)^(IDs∊ResIDs)^0≠COMpc[24]                  :if ∨/zeromsk←msk^restab at 'CashZeroPension'[25]                      (zeromsk/vals)←zeromsk/2-newvals[26]                  :endif[27]                  :if ∨/msk←msk^~zeromsk[28]                      (msk/vals)←msk/(1-COMpc×newvals) CDIV 1-COMpc[29]                  :endif[30]              :endif[31]          :endif[32]          restab←restab amend 'CashAmtAdjust' vals[33]      :endif[34]  :case 'factor'[35]      (commtype cottype)←∣restab at 'Commutation' 'CashOnTop'      ⍝ Cash Indicators[36]  [37]      :if ∨/×commtype ⋄ :orif ∨/8 9∊cottype[38]          vals←restab at 'CashFactAdjust'[39]          ResIDs←(MATRIX 'CashType' 'ResIDs') OVER 0 0[40]          :if ∨/msk←(8=commtype)∨(8=cottype)                      ⍝ Only % of Pension[41]              (msk/vals)←msk/newvals[42]              ResIDs←ResIDs OVER ,¨8 (msk/IDs)[43]          :endif[44]          :if ∨/msk←(9=commtype)∨(9=cottype)                      ⍝ Only A-Day Cash[45]              origfact←msk/restab at 'CashFactor'[46]              :if ∨/cashmsk←1=↑¨msk/shape[47]                  (cashmsk/origfact)←MATRIX¨maxyr↑¨cashmsk/origfact[48]              :endif[49]              :if ∨/cashmsk←~cashmsk[50]                  (cashmsk/origfact)←(cashmsk/origfact)×[1]¨⊂penfymsk[51]              :endif[52]              newfact←origfact×msk/newvals[53]              ADayadj←msk\(msk/vals)←(newfact×20+3×origfact) CDIV origfact×20+3×newfact[54]              ResIDs←ResIDs OVER ,¨9 (msk/IDs)[55]          :endif[56]  [57]          :if ∨/×commtype                                         ⍝ Adjust the Pension if Commutation Factor adjusted[58]              :if     ∨/msk←(~×commtype)^(~IDs∊∊ ResIDs                      at 'ResIDs')^0≠COMpc ⍝ All bar % of Pen and A-Day[59]                  :if ∨/zeromsk←msk^restab at 'CashZeroPension'[60]                      (zeromsk/vals)←zeromsk/newvals[61]                  :endif[62]                  :if ∨/msk←msk^~zeromsk[63]                      (msk/vals)←msk/(1-COMpc CDIV newvals) CDIV 1-COMpc[64]                  :endif[65]              :elseif ∨/msk←(~×commtype)^( IDs∊∊(ResIDs for 'CashType' (,9)) at 'ResIDs')^0≠COMpc ⍝ Adjust the Pension if % of A-Day Cash[66]                  comm∆←(msk/shape)⍴¨⊂MATRIX maxyr OVERTAKE 1+0.01×EXECUTE commpc~'+'[67]                  ADaypc←comm∆×¨msk/restab at 'ADay%'[68]                  origfact←msk/restab at 'CashFactor'[69]                  origfact←origfact×[1]¨⊂incmsk[70]                  newfact←origfact×msk/newvals[71]                  newvals←(1-ADaypc×20÷20+3×newfact) CDIV 1-ADaypc×20÷20+3×origfact[72]                  :if ∨/zeromsk←msk^restab at 'CashZeroPension'[73]                      (zeromsk/vals)←zeromsk/ADayadj[74]                  :endif[75]                  :if ∨/msk←msk^~zeromsk[76]                      (msk/vals)←newvals[77]                  :endif[78]  ⍝⍝⍝            :elseif ∨/msk←(~×commtype)^( IDs∊∊(ResIDs for 'CashType' (,8)) at 'ResIDs')^0≠COMpc ⍝ No Adjustment required for % of Pension[79]              :endif[80]          :endif[81]          restab←restab amend 'CashFactAdjust' vals[82]      :endif[83]  :endselect[84]  [85]  restab←0 ⍙WebRecalculate restab[86]  :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif    ∇
+    ∇ type ⍙WebCash arg;benID;adjust;msk;vals;newvals;shape;ResIDs;COMpc;IDs;origfact;cashmsk;newfact;ADaypc;comm∆;commtype;cottype;zeromsk;ADayadj
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Adjust Cash Amounts (and Pensions, if requred) for changes in Cash Amounts/Factors
+[3]   ⍝ arg is BenID and the (vector) adjustment
+[4]   ⍝ type is either 'factor' or 'amount'
+[5]   
+[6]   benID←↑arg ⋄ adjust←MATRIX maxyr OVERTAKE 1↓arg
+[7]   
+[8]   COMpc←restab at 'CashRate'                                      ⍝ Commutation Rates
+[9]   IDs←∊restab at 'ResultsCategoryID'                              ⍝ Results IDs
+[10]  newvals←(shape←⍴¨restab at 'CashFlow')⍴¨⊂adjust                 ⍝ Adjustment Values
+[11]  
+[12]  :select type
+[13]  :case 'amount'
+[14]      :if ∨/msk←∣×restab at ↑(benID=35 36)/'Commutation' 'CashOnTop' ⍝ Cash Indicators
+[15]          vals←restab at 'CashAmtAdjust'
+[16]          :if benID=36
+[17]              newvals←newvals⌈¨restab at 'PastService'            ⍝ No reduction of Past Service COT benefit
+[18]          :endif
+[19]          (msk/vals)←msk/newvals
+[20]  
+[21]          :if benID=35                                            ⍝ Adjust the Pension if Commutation Amount adjusted
+[22]              ResIDs←msk/IDs
+[23]              :if ∨/msk←(~msk)^(IDs∊ResIDs)^0≠COMpc
+[24]                  :if ∨/zeromsk←msk^restab at 'CashZeroPension'
+[25]                      (zeromsk/vals)←zeromsk/2-newvals
+[26]                  :endif
+[27]                  :if ∨/msk←msk^~zeromsk
+[28]                      (msk/vals)←msk/(1-COMpc×newvals) CDIV 1-COMpc
+[29]                  :endif
+[30]              :endif
+[31]          :endif
+[32]          restab←restab amend 'CashAmtAdjust' vals
+[33]      :endif
+[34]  :case 'factor'
+[35]      (commtype cottype)←∣restab at 'Commutation' 'CashOnTop'      ⍝ Cash Indicators
+[36]  
+[37]      :if ∨/×commtype ⋄ :orif ∨/8 9∊cottype
+[38]          vals←restab at 'CashFactAdjust'
+[39]          ResIDs←(MATRIX 'CashType' 'ResIDs') OVER 0 0
+[40]          :if ∨/msk←(8=commtype)∨(8=cottype)                      ⍝ Only % of Pension
+[41]              (msk/vals)←msk/newvals
+[42]              ResIDs←ResIDs OVER ,¨8 (msk/IDs)
+[43]          :endif
+[44]          :if ∨/msk←(9=commtype)∨(9=cottype)                      ⍝ Only A-Day Cash
+[45]              origfact←msk/restab at 'CashFactor'
+[46]              :if ∨/cashmsk←1=↑¨msk/shape
+[47]                  (cashmsk/origfact)←MATRIX¨maxyr↑¨cashmsk/origfact
+[48]              :endif
+[49]              :if ∨/cashmsk←~cashmsk
+[50]                  (cashmsk/origfact)←(cashmsk/origfact)×[1]¨⊂penfymsk
+[51]              :endif
+[52]              newfact←origfact×msk/newvals
+[53]              ADayadj←msk\(msk/vals)←(newfact×20+3×origfact) CDIV origfact×20+3×newfact
+[54]              ResIDs←ResIDs OVER ,¨9 (msk/IDs)
+[55]          :endif
+[56]  
+[57]          :if ∨/×commtype                                         ⍝ Adjust the Pension if Commutation Factor adjusted
+[58]              :if     ∨/msk←(~×commtype)^(~IDs∊∊ ResIDs                      at 'ResIDs')^0≠COMpc ⍝ All bar % of Pen and A-Day
+[59]                  :if ∨/zeromsk←msk^restab at 'CashZeroPension'
+[60]                      (zeromsk/vals)←zeromsk/newvals
+[61]                  :endif
+[62]                  :if ∨/msk←msk^~zeromsk
+[63]                      (msk/vals)←msk/(1-COMpc CDIV newvals) CDIV 1-COMpc
+[64]                  :endif
+[65]              :elseif ∨/msk←(~×commtype)^( IDs∊∊(ResIDs for 'CashType' (,9)) at 'ResIDs')^0≠COMpc ⍝ Adjust the Pension if % of A-Day Cash
+[66]                  comm∆←(msk/shape)⍴¨⊂MATRIX maxyr OVERTAKE 1+0.01×EXECUTE commpc~'+'
+[67]                  ADaypc←comm∆×¨msk/restab at 'ADay%'
+[68]                  origfact←msk/restab at 'CashFactor'
+[69]                  origfact←origfact×[1]¨⊂incmsk
+[70]                  newfact←origfact×msk/newvals
+[71]                  newvals←(1-ADaypc×20÷20+3×newfact) CDIV 1-ADaypc×20÷20+3×origfact
+[72]                  :if ∨/zeromsk←msk^restab at 'CashZeroPension'
+[73]                      (zeromsk/vals)←zeromsk/ADayadj
+[74]                  :endif
+[75]                  :if ∨/msk←msk^~zeromsk
+[76]                      (msk/vals)←newvals
+[77]                  :endif
+[78]  ⍝⍝⍝            :elseif ∨/msk←(~×commtype)^( IDs∊∊(ResIDs for 'CashType' (,8)) at 'ResIDs')^0≠COMpc ⍝ No Adjustment required for % of Pension
+[79]              :endif
+[80]          :endif
+[81]          restab←restab amend 'CashFactAdjust' vals
+[82]      :endif
+[83]  :endselect
+[84]  
+[85]  restab←0 ⍙WebRecalculate restab
+[86]  :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif
+    ∇

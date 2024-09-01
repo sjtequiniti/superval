@@ -1,1 +1,49 @@
-    ∇ IndOUTPUT ProRate;Identifier∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;BenType∆pp;IncType∆pp;Start∆pp;End∆pp;Inc∆pp;Upin∆pp;GP∆pp;ProRate∆pp;VFYear∆pp[1]   ⍝ ACTWIN.sf#4[2]   ⍝[3]   GP∆pp←⍬[4]   Identifier∆pp←'I',¯2↑'0',⍕1+slice[5]   Upin∆pp←~upinslind ⍝ May or may not be "underpinned"[6]   [7]   :if IsAccrued                             ⋄ ProRate∆pp←⍬[8]   :elseif ~bGAD ⋄ :andif 'C'=¯1↑(↑ACCBASIS),(×NoAltSlices)↑,AltACCBASIS ⋄ :andif ∨/0≠,ProRate∆CARE ⋄ :andif ProRate∆RNoCap≡ProRate∆RServ[9]       ProRate∆pp←ProRate∆CARE[10]  :elseif  bGAD∨accind ⋄ :orif ProRate∆RNoCap≡ProRate∆RServ[11]      ProRate∆pp←ProRate ⍝⍝⍝ FIXME[12]  :elseif accind ⋄ :andif ∨/0≠,ProRate∆CARE ⋄ ProRate∆pp←ProRate∆CARE[13]  :else                                     ⋄ ProRate∆pp←ProRate∆RNoCap[14]  :endif[15]  [16]  :if ~IsAccrued[17]      Start∆pp←,X0⌈RetStart[18]      VFYear∆pp←PROBS[;0] PP∆AverageTerm XMP-X0[19]  [20]      BenType∆pp←'P' ⋄ IncType∆pp←((DYNIND∆L∊'34')/'P'),DYNIND∆L ⋄ End∆pp←,RetEnd ⋄ Inc∆pp←DYNINC∆L[21]      SL∆pp←,IndTStart ⋄ FSL∆pp←,IndFStart ⋄ Con∆pp←,IndSTStart ⋄ FCon∆pp←,IndSFStart[22]  [23]      PP∆CreateInterface[24]  [25]      BenType∆pp←IncType∆pp←'L',sepComCot/'T' ⋄ End∆pp←Inc∆pp←⍬[26]      SL∆pp←,IndCASH ⋄ FSL∆pp←,IndFCASH ⋄ Con∆pp←FCon∆pp←⍬[27]  [28]      PP∆CreateInterface[29]  [30]      :if PHI      ⋄ IndPHIOUTPUT ⋄ :endif[31]      :if ILLIND≠0 ⋄ IndILLOUTPUT ⋄ :endif[32]  :endif[33]  :if isNPCR ⋄ :orif ppf[34]      :if X0<PPFNRAALL[dynind][35]          IndPUPStart ←0.9×IndPUPStart[36]          IndFPUPStart←0.9×IndFPUPStart[37]          IndPUWStart ←0.9×IndPUWStart[38]          IndFPUWStart←0.9×IndFPUWStart[39]          IndPUCASH   ←0.9×IndPUCASH[40]          IndFPUCASH  ←0.9×IndFPUCASH[41]      :endif[42]  :endif[43]  [44]  IndPUPOUTPUT[45]  [46]  ⍝⍝⍝ :if test ⋄ AUDIT ' ⍺ß7' ⋄ :endif[47]  ⍝⌿⍝ AUDIT ' ⍺ß7'    ∇
+    ∇ IndOUTPUT ProRate;Identifier∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;BenType∆pp;IncType∆pp;Start∆pp;End∆pp;Inc∆pp;Upin∆pp;GP∆pp;ProRate∆pp;VFYear∆pp
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝
+[3]   GP∆pp←⍬
+[4]   Identifier∆pp←'I',¯2↑'0',⍕1+slice
+[5]   Upin∆pp←~upinslind ⍝ May or may not be "underpinned"
+[6]   
+[7]   :if IsAccrued                             ⋄ ProRate∆pp←⍬
+[8]   :elseif ~bGAD ⋄ :andif 'C'=¯1↑(↑ACCBASIS),(×NoAltSlices)↑,AltACCBASIS ⋄ :andif ∨/0≠,ProRate∆CARE ⋄ :andif ProRate∆RNoCap≡ProRate∆RServ
+[9]       ProRate∆pp←ProRate∆CARE
+[10]  :elseif  bGAD∨accind ⋄ :orif ProRate∆RNoCap≡ProRate∆RServ
+[11]      ProRate∆pp←ProRate ⍝⍝⍝ FIXME
+[12]  :elseif accind ⋄ :andif ∨/0≠,ProRate∆CARE ⋄ ProRate∆pp←ProRate∆CARE
+[13]  :else                                     ⋄ ProRate∆pp←ProRate∆RNoCap
+[14]  :endif
+[15]  
+[16]  :if ~IsAccrued
+[17]      Start∆pp←,X0⌈RetStart
+[18]      VFYear∆pp←PROBS[;0] PP∆AverageTerm XMP-X0
+[19]  
+[20]      BenType∆pp←'P' ⋄ IncType∆pp←((DYNIND∆L∊'34')/'P'),DYNIND∆L ⋄ End∆pp←,RetEnd ⋄ Inc∆pp←DYNINC∆L
+[21]      SL∆pp←,IndTStart ⋄ FSL∆pp←,IndFStart ⋄ Con∆pp←,IndSTStart ⋄ FCon∆pp←,IndSFStart
+[22]  
+[23]      PP∆CreateInterface
+[24]  
+[25]      BenType∆pp←IncType∆pp←'L',sepComCot/'T' ⋄ End∆pp←Inc∆pp←⍬
+[26]      SL∆pp←,IndCASH ⋄ FSL∆pp←,IndFCASH ⋄ Con∆pp←FCon∆pp←⍬
+[27]  
+[28]      PP∆CreateInterface
+[29]  
+[30]      :if PHI      ⋄ IndPHIOUTPUT ⋄ :endif
+[31]      :if ILLIND≠0 ⋄ IndILLOUTPUT ⋄ :endif
+[32]  :endif
+[33]  :if isNPCR ⋄ :orif ppf
+[34]      :if X0<PPFNRAALL[dynind]
+[35]          IndPUPStart ←0.9×IndPUPStart
+[36]          IndFPUPStart←0.9×IndFPUPStart
+[37]          IndPUWStart ←0.9×IndPUWStart
+[38]          IndFPUWStart←0.9×IndFPUWStart
+[39]          IndPUCASH   ←0.9×IndPUCASH
+[40]          IndFPUCASH  ←0.9×IndFPUCASH
+[41]      :endif
+[42]  :endif
+[43]  
+[44]  IndPUPOUTPUT
+[45]  
+[46]  ⍝⍝⍝ :if test ⋄ AUDIT ' ⍺ß7' ⋄ :endif
+[47]  ⍝⌿⍝ AUDIT ' ⍺ß7'
+    ∇

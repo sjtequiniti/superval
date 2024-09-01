@@ -1,0 +1,21 @@
+    ∇ VAL∆RESULTS;I;SUMMREC
+[1]   ⍝ VALNWIN.sf#14
+[2]   ⍝ Spread Pensions, write Results to File and Output
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   TOTALS←⎕FREAD summtie,1 ⋄ CFTOT←⎕FREAD summtie,2 ⋄ PENVALS←⎕FREAD summtie,4
+[8]   →(^/0=,PENAMTS←⎕FREAD summtie,3)/LAB ⍝ Spread Pensions if applicable
+[9]   CFTOT← 3 200 16 ↑CFTOT ⋄ →cssspread/L3
+[10]  PENAMTS←PENAMTS SPREAD PENVALS ⋄ PENVALS←+/PENVALS
+[11]  L3:PENAMTS←+/CFTOT[0;; 2 4 7 10]← 200 4 ↑PENAMTS
+[12]  ⍝ Accrued Benefits for Spread Pensions
+[13]  CFTOT[1;;0]←CFTOT[1;;0]+¯1↓(I ROLLUP 0,200↑PENVALS)-(I←term↓(200+term)OVERTAKE pi)ROLLUP 0,PENAMTS
+[14]  ⍝ Write out Total Results for All Years of NEM
+[15]  LAB:SUMMREC←' ' OVER 4 FORMAT∆OUT TOTALS ⋄ (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN
+[16]  PRINTANAL ⍝ Print Averages and Other Analysis
+[17]  :if KeepResult
+[18]      WRITE∆RES
+[19]  :endif
+    ∇

@@ -1,0 +1,28 @@
+    ∇ res←arg ExecuteRates parm;limits;collar;cap;∆;size
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Execute Financial Rate assumptions ("normal" and "scenario") and apply the Cap/Collar
+[3]   ⍝ Assume only one set of Cap/Collar values (and last will apply if not)
+[4]   ⍝ arg indicates a Deferreds Revaluation cap which is not applied to but is returned in result
+[5]   
+[6]   res←,0 ⋄ arg←×⎕nc 'arg' ⋄ collar←-cap←99999
+[7]   
+[8]   :for parm :in parm
+[9]       size←⌈/⍴¨res (∆←,EXECUTE READTBL '⋄' StripText parm)
+[10]      res←↑+/size OVERTAKE¨res ∆
+[11]      res←0.00001×⌊0.5+100000×res  ⍝ Round to 5dp
+[12]  
+[13]      :if '⋄'∊parm
+[14]          limits←m2n SStoMAT DLTB '/C/:C' TEXTREPL '⋄' Win∆Child parm
+[15]          :repeat
+[16]              :select DLTB ↑limits
+[17]              :case 'Cap'    ⋄ cap   ←zwb '[' StripText ↑1↓limits
+[18]              :case 'Collar' ⋄ collar←zwb '[' StripText ↑1↓limits
+[19]              :endselect
+[20]          :until mt limits←2↓limits
+[21]      :endif
+[22]  :endfor
+[23]  
+[24]  :if arg ⋄ res←res collar cap
+[25]  :else   ⋄ res←collar⌈cap⌊res
+[26]  :endif
+    ∇

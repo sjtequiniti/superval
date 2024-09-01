@@ -1,1 +1,526 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Pensioners_Basis" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Pensioners_Basis" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   :if (⊂"pgMain")∊"fmSV.sPenBasis" ⎕wi "pages"[10]  "fmSV.sPenBasis.pgMain.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)[11]  "fmSV.sPenBasis.pgMain.fData.edFILES" ⎕wi "text" (DLTB FILES)[12]  "fILENAME" Win∆Inherits "Pensfile"[13]  GetAbsFileList "Fund"[14]  warnings←warnings OVER "Pensioner Members Data File" Win∆FileRelative "fILENAME" "lrfILENAME"[15]  "fmSV.sPenBasis.pgMain.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)[16]  "fmSV.sPenBasis.pgMain.fData.ckUseSex" ⎕wi "value" (zwb UseSex)[17]  "fmSV.sPenBasis.pgMain.fData.ckUseCat" ⎕wi "value" (zwb UseCat)[18]  "Format" Win∆Inherits "FormatP"[19]  PickList←"fmSV.sPenBasis.pgMain.fData.cbFormat" ⎕wi "list"[20]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"[21]  selection←(StripText PickList) ExactTLU DLTB StripText Format[22]  :if mt selection[23]      modified←⌈/modified,1[24]  :endif[25]  "fmSV.sPenBasis.pgMain.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)[26]  PickList←"fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "list"[27]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels[28]      "fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴0)[29]      modified←⌈/modified,"fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "value"[30]  :else[31]      "fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "visible" ¯1[32]      "fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "value" selection[33]      "fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "visible" 1[34]  :endif[35]  "fmSV.sPenBasis.pgMain.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)[36]  "fmSV.sPenBasis.pgMain.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)[37]  "fmSV.sPenBasis.pgMain.fPenPayment.edGPeriod" ⎕wi "text" (DLTB GPeriod)[38]  "fmSV.sPenBasis.pgMain.fPenPayment.ckGPOverlap" ⎕wi "value" (zwb GPOverlap)[39]  PickList←"fmSV.sPenBasis.pgMain.fPenPayment.cbFREQ" ⎕wi "list"[40]  selection←PickList ExactTLU DLTB FREQ[41]  :if mt selection[42]      :if ~mt DLTB FREQ[43]          warnings←warnings OVER "Previous Selection for 'Payment Frequency' is no longer available"[44]      :endif[45]      modified←⌈/modified,1[46]  :endif[47]  "fmSV.sPenBasis.pgMain.fPenPayment.cbFREQ" ⎕wi "value" (¯1↑1,selection)[48]  PickList←"fmSV.sPenBasis.pgMain.fPenPayment.cbMODE" ⎕wi "list"[49]  selection←PickList ExactTLU DLTB MODE[50]  :if mt selection[51]      :if ~mt DLTB MODE[52]          warnings←warnings OVER "Previous Selection for 'Mode' is no longer available"[53]      :endif[54]      modified←⌈/modified,1[55]  :endif[56]  "fmSV.sPenBasis.pgMain.fPenPayment.cbMODE" ⎕wi "value" (¯1↑1,selection)[57]  :endif[58]  :if (⊂"pgFinancial")∊"fmSV.sPenBasis" ⎕wi "pages"[59]  PickList←"fmSV.sPenBasis.pgFinancial.fInterestRate.cbpi" ⎕wi "list"[60]  warnings←warnings OVER "Post Retirement Interest Rate" Win∆FinRelative "pi" "lrpi" 0[61]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText pi[62]  :if mt selection[63]      modified←⌈/modified,1[64]  :endif[65]  "fmSV.sPenBasis.pgFinancial.fInterestRate.cbpi" ⎕wi "value" (¯1↑1,selection)[66]  PickList←"fmSV.sPenBasis.pgFinancial.fEscalation.cbB88GMPINC" ⎕wi "list"[67]  warnings←warnings OVER "Pre 1988 GMP" Win∆FinRelative "B88GMPINC" "lrB88GMPINC" 0[68]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText B88GMPINC[69]  :if mt selection[70]      modified←⌈/modified,1[71]  :endif[72]  "fmSV.sPenBasis.pgFinancial.fEscalation.cbB88GMPINC" ⎕wi "value" (¯1↑1,selection)[73]  PickList←"fmSV.sPenBasis.pgFinancial.fEscalation.cbA88GMPINC" ⎕wi "list"[74]  warnings←warnings OVER "Post 1988 GMP" Win∆FinRelative "A88GMPINC" "lrA88GMPINC" 0[75]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText A88GMPINC[76]  :if mt selection[77]      modified←⌈/modified,1[78]  :endif[79]  "fmSV.sPenBasis.pgFinancial.fEscalation.cbA88GMPINC" ⎕wi "value" (¯1↑1,selection)[80]  PickList←"fmSV.sPenBasis.pgFinancial.fEscalation.cbINCIND" ⎕wi "list"[81]  selection←PickList ExactTLU DLTB INCIND[82]  :if mt selection[83]      :if ~mt DLTB INCIND[84]          warnings←warnings OVER "Previous Selection for 'Timing of Pension Increases' is no longer available"[85]      :endif[86]      modified←⌈/modified,1[87]  :endif[88]  "fmSV.sPenBasis.pgFinancial.fEscalation.cbINCIND" ⎕wi "value" (¯1↑1,selection)[89]  "fmSV.sPenBasis.pgFinancial.fEscalation.edINCDAT" ⎕wi "text" (DLTB INCDAT)[90]  :endif[91]  :if (⊂"pgLegislation")∊"fmSV.sPenBasis" ⎕wi "pages"[92]  "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.ckGMPREV2" ⎕wi "value" (zwb GMPREV2)[93]  PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbGMPREV1" ⎕wi "list"[94]  warnings←warnings OVER "Revaluation Rate to SPA" Win∆FinRelative "GMPREV1" "lrGMPREV1" 0[95]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText GMPREV1[96]  :if mt selection[97]      modified←⌈/modified,0[98]  :endif[99]  "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbGMPREV1" ⎕wi "value" (¯1↑0,selection)[100] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbPRESPAREV" ⎕wi "list"[101] warnings←warnings OVER "Revaluation Rate  when BAGE<SPA" Win∆FinRelative "PRESPAREV" "lrPRESPAREV" 0[102] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText PRESPAREV[103] :if mt selection[104]     modified←⌈/modified,0[105] :endif[106] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbPRESPAREV" ⎕wi "value" (¯1↑0,selection)[107] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.ckPUPRDN" ⎕wi "value" (zwb PUPRDN)[108] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.ckGMPSplit" ⎕wi "value" (zwb GMPSplit)[109] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbOFFCOD" ⎕wi "list"[110] selection←PickList ExactTLU DLTB OFFCOD[111] :if mt selection[112]     :if ~mt DLTB OFFCOD[113]         warnings←warnings OVER "Previous Selection for 'Franking Code' is no longer available"[114]     :endif[115]     modified←⌈/modified,1[116] :endif[117] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbOFFCOD" ⎕wi "value" (¯1↑1,selection)[118] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.edm_PPFGMPNRA" ⎕wi "text" (DLTB m_PPFGMPNRA)[119] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.edf_PPFGMPNRA" ⎕wi "text" (DLTB f_PPFGMPNRA)[120] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbTotPreR" ⎕wi "list"[121] selection←(StripText PickList) ExactTLU DLTB StripText TotPreR[122] :if mt selection[123]     :if ~mt DLTB TotPreR[124]         warnings←warnings OVER "Previous Selection for 'Pre 1988 Total Pseudo Amounts at Retirement' is no longer available"[125]     :endif[126]     modified←⌈/modified,0[127] :endif[128] "fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbTotPreR" ⎕wi "value" (¯1↑0,selection)[129] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbTotPreV" ⎕wi "list"[130] selection←(StripText PickList) ExactTLU DLTB StripText TotPreV[131] :if mt selection[132]     :if ~mt DLTB TotPreV[133]         warnings←warnings OVER "Previous Selection for 'Pre 1988 Total Pseudo Amounts at Valuation Date' is no longer available"[134]     :endif[135]     modified←⌈/modified,0[136] :endif[137] "fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbTotPreV" ⎕wi "value" (¯1↑0,selection)[138] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbpreADJ" ⎕wi "list"[139] warnings←warnings OVER "Pre 1988 GMP Adjustment Factor" Win∆NumRelative "preADJ" "lrpreADJ" ('Scalar')[140] selection←(StripText PickList) ExactTLU DLTB StripText preADJ[141] :if mt selection[142]         "fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbpreADJ" ⎕wi "text" (DLTB preADJ)[143] :else[144]     "fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbpreADJ" ⎕wi "value" selection[145] :endif[146] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbTotPostR" ⎕wi "list"[147] selection←(StripText PickList) ExactTLU DLTB StripText TotPostR[148] :if mt selection[149]     :if ~mt DLTB TotPostR[150]         warnings←warnings OVER "Previous Selection for 'Post 1988 Total Pseudo Amounts at Retirement' is no longer available"[151]     :endif[152]     modified←⌈/modified,0[153] :endif[154] "fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbTotPostR" ⎕wi "value" (¯1↑0,selection)[155] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbTotPostV" ⎕wi "list"[156] selection←(StripText PickList) ExactTLU DLTB StripText TotPostV[157] :if mt selection[158]     :if ~mt DLTB TotPostV[159]         warnings←warnings OVER "Previous Selection for 'Post 1988 Total Pseudo Amounts at Valuation Date' is no longer available"[160]     :endif[161]     modified←⌈/modified,0[162] :endif[163] "fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbTotPostV" ⎕wi "value" (¯1↑0,selection)[164] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbpostADJ" ⎕wi "list"[165] warnings←warnings OVER "Post 1988 GMP Adjustment Factor" Win∆NumRelative "postADJ" "lrpostADJ" ('Scalar')[166] selection←(StripText PickList) ExactTLU DLTB StripText postADJ[167] :if mt selection[168]         "fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbpostADJ" ⎕wi "text" (DLTB postADJ)[169] :else[170]     "fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbpostADJ" ⎕wi "value" selection[171] :endif[172] :endif[173] :if (⊂"pgPPFCAP")∊"fmSV.sPenBasis" ⎕wi "pages"[174] PickList←"fmSV.sPenBasis.pgPPFCAP.fServiceCap.cbPPFServCapBDate" ⎕wi "list"[175] selection←(StripText PickList) ExactTLU DLTB StripText PPFServCapBDate[176] :if mt selection[177]     modified←⌈/modified,0[178] :endif[179] "fmSV.sPenBasis.pgPPFCAP.fServiceCap.cbPPFServCapBDate" ⎕wi "value" (¯1↑0,selection)[180] PickList←"fmSV.sPenBasis.pgPPFCAP.fServiceCap.cbPPFServCapEDate" ⎕wi "list"[181] selection←(StripText PickList) ExactTLU DLTB StripText PPFServCapEDate[182] :if mt selection[183]     modified←⌈/modified,0[184] :endif[185] "fmSV.sPenBasis.pgPPFCAP.fServiceCap.cbPPFServCapEDate" ⎕wi "value" (¯1↑0,selection)[186] "fmSV.sPenBasis.pgPPFCAP.fNRA.edm_PPFCapNRA" ⎕wi "text" (DLTB m_PPFCapNRA)[187] "fmSV.sPenBasis.pgPPFCAP.fNRA.edf_PPFCapNRA" ⎕wi "text" (DLTB f_PPFCapNRA)[188] PickList←"fmSV.sPenBasis.pgPPFCAP.fDiscont.cbDYNINCPre" ⎕wi "list"[189] warnings←warnings OVER "Pre 1997 Discontinuance Pension Increases" Win∆FinRelative "DYNINCPre" "lrDYNINCPre" 0[190] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText DYNINCPre[191] :if mt selection[192]     modified←⌈/modified,0[193] :endif[194] "fmSV.sPenBasis.pgPPFCAP.fDiscont.cbDYNINCPre" ⎕wi "value" (¯1↑0,selection)[195] PickList←"fmSV.sPenBasis.pgPPFCAP.fDiscont.cbDYNINCPost" ⎕wi "list"[196] warnings←warnings OVER "Post 1997 Discontinuance Pension Increases" Win∆FinRelative "DYNINCPost" "lrDYNINCPost" 0[197] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText DYNINCPost[198] :if mt selection[199]     modified←⌈/modified,0[200] :endif[201] "fmSV.sPenBasis.pgPPFCAP.fDiscont.cbDYNINCPost" ⎕wi "value" (¯1↑0,selection)[202] :endif[203] :if (⊂"pgMortality")∊"fmSV.sPenBasis" ⎕wi "pages"[204] [205] :if ~bGAD[206] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOST" ⎕wi "list"[207] warnings←warnings OVER "Male Member Mortality Rate Parameters" Win∆MortRelative "m_DPOST" "lrm_DPOST"[208] selection←PickList ExactTLU DLTB m_DPOST[209] :if mt selection[210]     :if ~mt DLTB m_DPOST[211]         warnings←warnings OVER "Previous Selection for 'Male Member Mortality Rate Parameters' is no longer available"[212]     :endif[213]     modified←⌈/modified,1[214] :endif[215] "fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOST" ⎕wi "value" (¯1↑1,selection)[216] :endif[217] [218] :if bGAD[219] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOST" ⎕wi "list"[220] warnings←warnings OVER "Male Member Mortality Rate Parameters" Win∆MortRelative "m_DPOST" "lrm_DPOST"[221] selection←PickList ExactTLU DLTB m_DPOST[222] :if mt selection[223]     :if ~mt DLTB m_DPOST[224]         warnings←warnings OVER "Previous Selection for 'Male Member Mortality Rate Parameters' is no longer available"[225]     :endif[226]     modified←⌈/modified,1[227] :endif[228] "fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOST" ⎕wi "value" (¯1↑1,selection)[229] :endif[230] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOSTMEMB" ⎕wi "list"[231] selection←(StripText PickList) ExactTLU DLTB StripText m_DPOSTMEMB[232] :if mt selection[233]     :if ~mt DLTB m_DPOSTMEMB[234]         warnings←warnings OVER "Previous Selection for 'Male Member Individual % Rating' is no longer available"[235]     :endif[236]     modified←⌈/modified,0[237] :endif[238] "fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOSTMEMB" ⎕wi "value" (¯1↑0,selection)[239] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbm_miDPOST" ⎕wi "list"[240] warnings←warnings OVER "Male Member Mortality Improvement Parameters" Win∆MortImpRelative "m_miDPOST" "lrm_miDPOST"[241] selection←PickList ExactTLU DLTB m_miDPOST[242] :if mt selection[243]     :if ~mt DLTB m_miDPOST[244]         warnings←warnings OVER "Previous Selection for 'Male Member Mortality Improvement Parameters' is no longer available"[245]     :endif[246]     modified←⌈/modified,1[247] :endif[248] "fmSV.sPenBasis.pgMortality.fMPostRet.cbm_miDPOST" ⎕wi "value" (¯1↑1,selection)[249] [250] :if ~bGAD[251] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOST" ⎕wi "list"[252] warnings←warnings OVER "Female Member Mortality Rate Parameters" Win∆MortRelative "f_DPOST" "lrf_DPOST"[253] selection←PickList ExactTLU DLTB f_DPOST[254] :if mt selection[255]     :if ~mt DLTB f_DPOST[256]         warnings←warnings OVER "Previous Selection for 'Female Member Mortality Rate Parameters' is no longer available"[257]     :endif[258]     modified←⌈/modified,1[259] :endif[260] "fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOST" ⎕wi "value" (¯1↑1,selection)[261] :endif[262] [263] :if bGAD[264] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOST" ⎕wi "list"[265] warnings←warnings OVER "Female Member Mortality Rate Parameters" Win∆MortRelative "f_DPOST" "lrf_DPOST"[266] selection←PickList ExactTLU DLTB f_DPOST[267] :if mt selection[268]     :if ~mt DLTB f_DPOST[269]         warnings←warnings OVER "Previous Selection for 'Female Member Mortality Rate Parameters' is no longer available"[270]     :endif[271]     modified←⌈/modified,1[272] :endif[273] "fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOST" ⎕wi "value" (¯1↑1,selection)[274] :endif[275] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOSTMEMB" ⎕wi "list"[276] selection←(StripText PickList) ExactTLU DLTB StripText f_DPOSTMEMB[277] :if mt selection[278]     :if ~mt DLTB f_DPOSTMEMB[279]         warnings←warnings OVER "Previous Selection for 'Female Member Individual % Rating' is no longer available"[280]     :endif[281]     modified←⌈/modified,0[282] :endif[283] "fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOSTMEMB" ⎕wi "value" (¯1↑0,selection)[284] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbf_miDPOST" ⎕wi "list"[285] warnings←warnings OVER "Female Member Mortality Improvement Parameters" Win∆MortImpRelative "f_miDPOST" "lrf_miDPOST"[286] selection←PickList ExactTLU DLTB f_miDPOST[287] :if mt selection[288]     :if ~mt DLTB f_miDPOST[289]         warnings←warnings OVER "Previous Selection for 'Female Member Mortality Improvement Parameters' is no longer available"[290]     :endif[291]     modified←⌈/modified,1[292] :endif[293] "fmSV.sPenBasis.pgMortality.fMPostRet.cbf_miDPOST" ⎕wi "value" (¯1↑1,selection)[294] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbm_SDPOST" ⎕wi "list"[295] warnings←warnings OVER "Male Member's Spouse/Partner Mortality Rate Parameters" Win∆MortRelative "m_SDPOST" "lrm_SDPOST"[296] selection←PickList ExactTLU DLTB m_SDPOST[297] :if mt selection[298]     :if ~mt DLTB m_SDPOST[299]         warnings←warnings OVER "Previous Selection for 'Male Member's Spouse/Partner Mortality Rate Parameters' is no longer available"[300]     :endif[301]     modified←⌈/modified,1[302] :endif[303] "fmSV.sPenBasis.pgMortality.fSPostRet.cbm_SDPOST" ⎕wi "value" (¯1↑1,selection)[304] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbm_SDPOSTMEMB" ⎕wi "list"[305] selection←(StripText PickList) ExactTLU DLTB StripText m_SDPOSTMEMB[306] :if mt selection[307]     :if ~mt DLTB m_SDPOSTMEMB[308]         warnings←warnings OVER "Previous Selection for 'Male Member's Spouse/Partner Individual % Rating' is no longer available"[309]     :endif[310]     modified←⌈/modified,0[311] :endif[312] "fmSV.sPenBasis.pgMortality.fSPostRet.cbm_SDPOSTMEMB" ⎕wi "value" (¯1↑0,selection)[313] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbm_miSDPOST" ⎕wi "list"[314] warnings←warnings OVER "Male Member's Spouse/Partner Mortality Improvement Parameters" Win∆MortImpRelative "m_miSDPOST" "lrm_miSDPOST"[315] selection←PickList ExactTLU DLTB m_miSDPOST[316] :if mt selection[317]     :if ~mt DLTB m_miSDPOST[318]         warnings←warnings OVER "Previous Selection for 'Male Member's Spouse/Partner Mortality Improvement Parameters' is no longer available"[319]     :endif[320]     modified←⌈/modified,1[321] :endif[322] "fmSV.sPenBasis.pgMortality.fSPostRet.cbm_miSDPOST" ⎕wi "value" (¯1↑1,selection)[323] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbf_SDPOST" ⎕wi "list"[324] warnings←warnings OVER "Female Member's Spouse/Partner Mortality Rate Parameters" Win∆MortRelative "f_SDPOST" "lrf_SDPOST"[325] selection←PickList ExactTLU DLTB f_SDPOST[326] :if mt selection[327]     :if ~mt DLTB f_SDPOST[328]         warnings←warnings OVER "Previous Selection for 'Female Member's Spouse/Partner Mortality Rate Parameters' is no longer available"[329]     :endif[330]     modified←⌈/modified,1[331] :endif[332] "fmSV.sPenBasis.pgMortality.fSPostRet.cbf_SDPOST" ⎕wi "value" (¯1↑1,selection)[333] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbf_SDPOSTMEMB" ⎕wi "list"[334] selection←(StripText PickList) ExactTLU DLTB StripText f_SDPOSTMEMB[335] :if mt selection[336]     :if ~mt DLTB f_SDPOSTMEMB[337]         warnings←warnings OVER "Previous Selection for 'Female Member's Spouse/Partner Individual % Rating' is no longer available"[338]     :endif[339]     modified←⌈/modified,0[340] :endif[341] "fmSV.sPenBasis.pgMortality.fSPostRet.cbf_SDPOSTMEMB" ⎕wi "value" (¯1↑0,selection)[342] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbf_miSDPOST" ⎕wi "list"[343] warnings←warnings OVER "Female Member's Spouse/Partner Mortality Improvement Parameters" Win∆MortImpRelative "f_miSDPOST" "lrf_miSDPOST"[344] selection←PickList ExactTLU DLTB f_miSDPOST[345] :if mt selection[346]     :if ~mt DLTB f_miSDPOST[347]         warnings←warnings OVER "Previous Selection for 'Female Member's Spouse/Partner Mortality Improvement Parameters' is no longer available"[348]     :endif[349]     modified←⌈/modified,1[350] :endif[351] "fmSV.sPenBasis.pgMortality.fSPostRet.cbf_miSDPOST" ⎕wi "value" (¯1↑1,selection)[352] :endif[353] :if (⊂"pgSpouse")∊"fmSV.sPenBasis" ⎕wi "pages"[354] PickList←"fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseParm" ⎕wi "list"[355] selection←PickList ExactTLU DLTB SpouseParm[356] :if mt selection[357]     :if ~mt DLTB SpouseParm[358]         warnings←warnings OVER "Previous Selection for 'Spouse Parameter Set' is no longer available"[359]     :endif[360]     modified←⌈/modified,0[361] :endif[362] "fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseParm" ⎕wi "value" (¯1↑0,selection)[363] PickList←"fmSV.sPenBasis.pgSpouse.fSpouse.cbSPMethod" ⎕wi "list"[364] selection←PickList ExactTLU DLTB SPMethod[365] :if mt selection[366]     :if ~mt DLTB SPMethod[367]         warnings←warnings OVER "Previous Selection for 'Spouse Definition' is no longer available"[368]     :endif[369]     modified←⌈/modified,1[370] :endif[371] "fmSV.sPenBasis.pgSpouse.fSpouse.cbSPMethod" ⎕wi "value" (¯1↑1,selection)[372] "fmSV.sPenBasis.pgSpouse.fSpouse.ckIgnoreSpouse" ⎕wi "value" (zwb IgnoreSpouse)[373] 0 0⍴GetDecrList "List"[374] warnings←warnings OVER "Male Proportion Married Table" Win∆CheckDecr (m_HXX[1;]) (lrm_HXX1)[375] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_HXX1" ⎕wi "text" (DLTB m_HXX[1;])[376] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_HXX2" ⎕wi "text" (DLTB m_HXX[2;])[377] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_HXX3" ⎕wi "text" (DLTB m_HXX[3;])[378] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_PropMarr" ⎕wi "text" (DLTB m_PropMarr)[379] 0 0⍴GetDecrList "List"[380] warnings←warnings OVER "Female Proportion Married Table" Win∆CheckDecr (f_HXX[1;]) (lrf_HXX1)[381] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_HXX1" ⎕wi "text" (DLTB f_HXX[1;])[382] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_HXX2" ⎕wi "text" (DLTB f_HXX[2;])[383] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_HXX3" ⎕wi "text" (DLTB f_HXX[3;])[384] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_PropMarr" ⎕wi "text" (DLTB f_PropMarr)[385] 0 0⍴GetDecrList "List"[386] warnings←warnings OVER "Male Age Difference Table (m-f)" Win∆CheckDecr (m_AGEDIFT) (lrm_AGEDIFT)[387] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_AGEDIFT" ⎕wi "text" (DLTB m_AGEDIFT)[388] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_AGEDIF" ⎕wi "text" (DLTB m_AGEDIF)[389] 0 0⍴GetDecrList "List"[390] warnings←warnings OVER "Female Age Difference Table (f-m)" Win∆CheckDecr (f_AGEDIFT) (lrf_AGEDIFT)[391] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_AGEDIFT" ⎕wi "text" (DLTB f_AGEDIFT)[392] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_AGEDIF" ⎕wi "text" (DLTB f_AGEDIF)[393] "fmSV.sPenBasis.pgSpouse.fSpouse.ckSpouseProj" ⎕wi "value" (zwb SpouseProj)[394] PickList←"fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseDate" ⎕wi "list"[395] selection←(StripText PickList) ExactTLU DLTB StripText SpouseDate[396] :if mt selection[397]     modified←⌈/modified,0[398] :endif[399] "fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseDate" ⎕wi "value" (¯1↑0,selection)[400] PickList←"fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseRA" ⎕wi "list"[401] selection←(StripText PickList) ExactTLU DLTB StripText SpouseRA[402] :if mt selection[403]         "fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseRA" ⎕wi "text" (DLTB SpouseRA)[404] :else[405]     "fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseRA" ⎕wi "value" selection[406] :endif[407] :endif[408] :if (⊂"pgPensions")∊"fmSV.sPenBasis" ⎕wi "pages"[409] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "XClearRange" 1 1 ("fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow") ("fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol") 3[410] MaxRow←MaxCol←1[411] value←(1 30⌈⍴value)↑value←MATRIX PenDesc[412] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[413] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[414] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 1∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[415] value←(1 10⌈⍴value)↑value←MATRIX CSORP[416] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[417] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[418] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 4∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[419] value←(1 20⌈⍴value)↑value←MATRIX PENDATA[420] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[421] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[422] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 5∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[423] value←(1 10⌈⍴value)↑value←MATRIX WARFRAC[424] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[425] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[426] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 6∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[427] value←(1 20⌈⍴value)↑value←MATRIX SPENDATA[428] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[429] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[430] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 7∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[431] value←(1 10⌈⍴value)↑value←MATRIX ADJFAC[432] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[433] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[434] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 8∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[435] value←(1 2⌈⍴value)↑value←MATRIX BAGE[436] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[437] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[438] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 10∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[439] value←(1 3⌈⍴value)↑value←MATRIX EAGE[440] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[441] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[442] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 11∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[443] value←(1 3⌈⍴value)↑value←MATRIX DIDIND[444] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[445] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[446] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 12∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[447] value←(1 20⌈⍴value)↑value←MATRIX DEFINC[448] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[449] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[450] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 13∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[451] value←(1 20⌈⍴value)↑value←MATRIX PAYINC[452] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[453] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[454] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 14∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[455] value←(1 3⌈⍴value)↑value←MATRIX PONLY[456] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[457] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[458] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 16∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[459] value←(1 3⌈⍴value)↑value←MATRIX SPONLY[460] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[461] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[462] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 17∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[463] value←(1 10⌈⍴value)↑value←MATRIX GMPADJ[464] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[465] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[466] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 19∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[467] value←(1 20⌈⍴value)↑value←MATRIX RETPUP[468] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[469] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[470] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 20∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[471] value←(1 20⌈⍴value)↑value←MATRIX PreRET[472] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[473] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[474] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 21∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[475] value←(1 20⌈⍴value)↑value←MATRIX PostRET[476] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[477] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[478] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 22∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[479] value←(1 20⌈⍴value)↑value←MATRIX PreVD[480] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[481] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[482] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 23∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[483] value←(1 20⌈⍴value)↑value←MATRIX PostVD[484] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[485] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[486] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 24∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[487] value←(1 3⌈⍴value)↑value←MATRIX m_PPFNRA[488] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[489] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[490] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 26∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[491] value←(1 3⌈⍴value)↑value←MATRIX f_PPFNRA[492] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[493] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[494] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 27∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[495] value←(1 15⌈⍴value)↑value←MATRIX PPFPAYINC[496] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[497] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[498] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 28∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[499] value←(1 20⌈⍴value)↑value←MATRIX PPFDEFINC[500] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[501] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[502] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 29∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[503] value←(1 3⌈⍴value)↑value←MATRIX CapInclude[504] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"[505] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[506] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 30∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[507] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[508] (MaxRow MaxCol)←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xGetActiveCell" 0 0[509] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xSetActiveCell" (MaxRow⌊"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xMaxRow") (MaxCol⌊"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xMaxCol")[510] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xmodified" 0[511] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "onXModified" "('fmSV.sPenBasis' (Win∆Parent 'fmSV.sPenBasis')) MultiWI 'modified' ('fmSV.sPenBasis.pgPensions.fPensions.ssPensions' ⎕wi 'xmodified')"[512] :endif[513] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Pensioners_Basis[514]     :for var :in spin Comment_Pensioners_Basis at "variable" "row" ⋄ (var row)←var[515]         "Pensioners_Basis" ParmColor ((FormFields for "variable" var) at "control"),var row 1[516]     :endfor[517] :endif[518] :if ~0∊⍴,warnings[519]     MDISPLAY DLTMB warnings,⎕tcnl[520]     Win∆AssignVars "fmSV.sPenBasis"[521] :endif[522] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Pensioners_Basis" "" "Names"[523]     "fmSV.sPenBasis" ⎕wi "modified" 0[524] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Pensioners_Basis" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Pensioners_Basis" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   :if (⊂"pgMain")∊"fmSV.sPenBasis" ⎕wi "pages"
+[10]  "fmSV.sPenBasis.pgMain.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)
+[11]  "fmSV.sPenBasis.pgMain.fData.edFILES" ⎕wi "text" (DLTB FILES)
+[12]  "fILENAME" Win∆Inherits "Pensfile"
+[13]  GetAbsFileList "Fund"
+[14]  warnings←warnings OVER "Pensioner Members Data File" Win∆FileRelative "fILENAME" "lrfILENAME"
+[15]  "fmSV.sPenBasis.pgMain.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[16]  "fmSV.sPenBasis.pgMain.fData.ckUseSex" ⎕wi "value" (zwb UseSex)
+[17]  "fmSV.sPenBasis.pgMain.fData.ckUseCat" ⎕wi "value" (zwb UseCat)
+[18]  "Format" Win∆Inherits "FormatP"
+[19]  PickList←"fmSV.sPenBasis.pgMain.fData.cbFormat" ⎕wi "list"
+[20]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"
+[21]  selection←(StripText PickList) ExactTLU DLTB StripText Format
+[22]  :if mt selection
+[23]      modified←⌈/modified,1
+[24]  :endif
+[25]  "fmSV.sPenBasis.pgMain.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)
+[26]  PickList←"fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "list"
+[27]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels
+[28]      "fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[29]      modified←⌈/modified,"fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "value"
+[30]  :else
+[31]      "fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "visible" ¯1
+[32]      "fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "value" selection
+[33]      "fmSV.sPenBasis.pgMain.fData.lsCatSels" ⎕wi "visible" 1
+[34]  :endif
+[35]  "fmSV.sPenBasis.pgMain.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)
+[36]  "fmSV.sPenBasis.pgMain.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)
+[37]  "fmSV.sPenBasis.pgMain.fPenPayment.edGPeriod" ⎕wi "text" (DLTB GPeriod)
+[38]  "fmSV.sPenBasis.pgMain.fPenPayment.ckGPOverlap" ⎕wi "value" (zwb GPOverlap)
+[39]  PickList←"fmSV.sPenBasis.pgMain.fPenPayment.cbFREQ" ⎕wi "list"
+[40]  selection←PickList ExactTLU DLTB FREQ
+[41]  :if mt selection
+[42]      :if ~mt DLTB FREQ
+[43]          warnings←warnings OVER "Previous Selection for 'Payment Frequency' is no longer available"
+[44]      :endif
+[45]      modified←⌈/modified,1
+[46]  :endif
+[47]  "fmSV.sPenBasis.pgMain.fPenPayment.cbFREQ" ⎕wi "value" (¯1↑1,selection)
+[48]  PickList←"fmSV.sPenBasis.pgMain.fPenPayment.cbMODE" ⎕wi "list"
+[49]  selection←PickList ExactTLU DLTB MODE
+[50]  :if mt selection
+[51]      :if ~mt DLTB MODE
+[52]          warnings←warnings OVER "Previous Selection for 'Mode' is no longer available"
+[53]      :endif
+[54]      modified←⌈/modified,1
+[55]  :endif
+[56]  "fmSV.sPenBasis.pgMain.fPenPayment.cbMODE" ⎕wi "value" (¯1↑1,selection)
+[57]  :endif
+[58]  :if (⊂"pgFinancial")∊"fmSV.sPenBasis" ⎕wi "pages"
+[59]  PickList←"fmSV.sPenBasis.pgFinancial.fInterestRate.cbpi" ⎕wi "list"
+[60]  warnings←warnings OVER "Post Retirement Interest Rate" Win∆FinRelative "pi" "lrpi" 0
+[61]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText pi
+[62]  :if mt selection
+[63]      modified←⌈/modified,1
+[64]  :endif
+[65]  "fmSV.sPenBasis.pgFinancial.fInterestRate.cbpi" ⎕wi "value" (¯1↑1,selection)
+[66]  PickList←"fmSV.sPenBasis.pgFinancial.fEscalation.cbB88GMPINC" ⎕wi "list"
+[67]  warnings←warnings OVER "Pre 1988 GMP" Win∆FinRelative "B88GMPINC" "lrB88GMPINC" 0
+[68]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText B88GMPINC
+[69]  :if mt selection
+[70]      modified←⌈/modified,1
+[71]  :endif
+[72]  "fmSV.sPenBasis.pgFinancial.fEscalation.cbB88GMPINC" ⎕wi "value" (¯1↑1,selection)
+[73]  PickList←"fmSV.sPenBasis.pgFinancial.fEscalation.cbA88GMPINC" ⎕wi "list"
+[74]  warnings←warnings OVER "Post 1988 GMP" Win∆FinRelative "A88GMPINC" "lrA88GMPINC" 0
+[75]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText A88GMPINC
+[76]  :if mt selection
+[77]      modified←⌈/modified,1
+[78]  :endif
+[79]  "fmSV.sPenBasis.pgFinancial.fEscalation.cbA88GMPINC" ⎕wi "value" (¯1↑1,selection)
+[80]  PickList←"fmSV.sPenBasis.pgFinancial.fEscalation.cbINCIND" ⎕wi "list"
+[81]  selection←PickList ExactTLU DLTB INCIND
+[82]  :if mt selection
+[83]      :if ~mt DLTB INCIND
+[84]          warnings←warnings OVER "Previous Selection for 'Timing of Pension Increases' is no longer available"
+[85]      :endif
+[86]      modified←⌈/modified,1
+[87]  :endif
+[88]  "fmSV.sPenBasis.pgFinancial.fEscalation.cbINCIND" ⎕wi "value" (¯1↑1,selection)
+[89]  "fmSV.sPenBasis.pgFinancial.fEscalation.edINCDAT" ⎕wi "text" (DLTB INCDAT)
+[90]  :endif
+[91]  :if (⊂"pgLegislation")∊"fmSV.sPenBasis" ⎕wi "pages"
+[92]  "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.ckGMPREV2" ⎕wi "value" (zwb GMPREV2)
+[93]  PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbGMPREV1" ⎕wi "list"
+[94]  warnings←warnings OVER "Revaluation Rate to SPA" Win∆FinRelative "GMPREV1" "lrGMPREV1" 0
+[95]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText GMPREV1
+[96]  :if mt selection
+[97]      modified←⌈/modified,0
+[98]  :endif
+[99]  "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbGMPREV1" ⎕wi "value" (¯1↑0,selection)
+[100] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbPRESPAREV" ⎕wi "list"
+[101] warnings←warnings OVER "Revaluation Rate  when BAGE<SPA" Win∆FinRelative "PRESPAREV" "lrPRESPAREV" 0
+[102] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText PRESPAREV
+[103] :if mt selection
+[104]     modified←⌈/modified,0
+[105] :endif
+[106] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbPRESPAREV" ⎕wi "value" (¯1↑0,selection)
+[107] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.ckPUPRDN" ⎕wi "value" (zwb PUPRDN)
+[108] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.ckGMPSplit" ⎕wi "value" (zwb GMPSplit)
+[109] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbOFFCOD" ⎕wi "list"
+[110] selection←PickList ExactTLU DLTB OFFCOD
+[111] :if mt selection
+[112]     :if ~mt DLTB OFFCOD
+[113]         warnings←warnings OVER "Previous Selection for 'Franking Code' is no longer available"
+[114]     :endif
+[115]     modified←⌈/modified,1
+[116] :endif
+[117] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.cbOFFCOD" ⎕wi "value" (¯1↑1,selection)
+[118] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.edm_PPFGMPNRA" ⎕wi "text" (DLTB m_PPFGMPNRA)
+[119] "fmSV.sPenBasis.pgLegislation.fGMPs.fGeneral.edf_PPFGMPNRA" ⎕wi "text" (DLTB f_PPFGMPNRA)
+[120] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbTotPreR" ⎕wi "list"
+[121] selection←(StripText PickList) ExactTLU DLTB StripText TotPreR
+[122] :if mt selection
+[123]     :if ~mt DLTB TotPreR
+[124]         warnings←warnings OVER "Previous Selection for 'Pre 1988 Total Pseudo Amounts at Retirement' is no longer available"
+[125]     :endif
+[126]     modified←⌈/modified,0
+[127] :endif
+[128] "fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbTotPreR" ⎕wi "value" (¯1↑0,selection)
+[129] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbTotPreV" ⎕wi "list"
+[130] selection←(StripText PickList) ExactTLU DLTB StripText TotPreV
+[131] :if mt selection
+[132]     :if ~mt DLTB TotPreV
+[133]         warnings←warnings OVER "Previous Selection for 'Pre 1988 Total Pseudo Amounts at Valuation Date' is no longer available"
+[134]     :endif
+[135]     modified←⌈/modified,0
+[136] :endif
+[137] "fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbTotPreV" ⎕wi "value" (¯1↑0,selection)
+[138] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbpreADJ" ⎕wi "list"
+[139] warnings←warnings OVER "Pre 1988 GMP Adjustment Factor" Win∆NumRelative "preADJ" "lrpreADJ" ('Scalar')
+[140] selection←(StripText PickList) ExactTLU DLTB StripText preADJ
+[141] :if mt selection
+[142]         "fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbpreADJ" ⎕wi "text" (DLTB preADJ)
+[143] :else
+[144]     "fmSV.sPenBasis.pgLegislation.fGMPs.fPre88.cbpreADJ" ⎕wi "value" selection
+[145] :endif
+[146] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbTotPostR" ⎕wi "list"
+[147] selection←(StripText PickList) ExactTLU DLTB StripText TotPostR
+[148] :if mt selection
+[149]     :if ~mt DLTB TotPostR
+[150]         warnings←warnings OVER "Previous Selection for 'Post 1988 Total Pseudo Amounts at Retirement' is no longer available"
+[151]     :endif
+[152]     modified←⌈/modified,0
+[153] :endif
+[154] "fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbTotPostR" ⎕wi "value" (¯1↑0,selection)
+[155] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbTotPostV" ⎕wi "list"
+[156] selection←(StripText PickList) ExactTLU DLTB StripText TotPostV
+[157] :if mt selection
+[158]     :if ~mt DLTB TotPostV
+[159]         warnings←warnings OVER "Previous Selection for 'Post 1988 Total Pseudo Amounts at Valuation Date' is no longer available"
+[160]     :endif
+[161]     modified←⌈/modified,0
+[162] :endif
+[163] "fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbTotPostV" ⎕wi "value" (¯1↑0,selection)
+[164] PickList←"fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbpostADJ" ⎕wi "list"
+[165] warnings←warnings OVER "Post 1988 GMP Adjustment Factor" Win∆NumRelative "postADJ" "lrpostADJ" ('Scalar')
+[166] selection←(StripText PickList) ExactTLU DLTB StripText postADJ
+[167] :if mt selection
+[168]         "fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbpostADJ" ⎕wi "text" (DLTB postADJ)
+[169] :else
+[170]     "fmSV.sPenBasis.pgLegislation.fGMPs.fPost88.cbpostADJ" ⎕wi "value" selection
+[171] :endif
+[172] :endif
+[173] :if (⊂"pgPPFCAP")∊"fmSV.sPenBasis" ⎕wi "pages"
+[174] PickList←"fmSV.sPenBasis.pgPPFCAP.fServiceCap.cbPPFServCapBDate" ⎕wi "list"
+[175] selection←(StripText PickList) ExactTLU DLTB StripText PPFServCapBDate
+[176] :if mt selection
+[177]     modified←⌈/modified,0
+[178] :endif
+[179] "fmSV.sPenBasis.pgPPFCAP.fServiceCap.cbPPFServCapBDate" ⎕wi "value" (¯1↑0,selection)
+[180] PickList←"fmSV.sPenBasis.pgPPFCAP.fServiceCap.cbPPFServCapEDate" ⎕wi "list"
+[181] selection←(StripText PickList) ExactTLU DLTB StripText PPFServCapEDate
+[182] :if mt selection
+[183]     modified←⌈/modified,0
+[184] :endif
+[185] "fmSV.sPenBasis.pgPPFCAP.fServiceCap.cbPPFServCapEDate" ⎕wi "value" (¯1↑0,selection)
+[186] "fmSV.sPenBasis.pgPPFCAP.fNRA.edm_PPFCapNRA" ⎕wi "text" (DLTB m_PPFCapNRA)
+[187] "fmSV.sPenBasis.pgPPFCAP.fNRA.edf_PPFCapNRA" ⎕wi "text" (DLTB f_PPFCapNRA)
+[188] PickList←"fmSV.sPenBasis.pgPPFCAP.fDiscont.cbDYNINCPre" ⎕wi "list"
+[189] warnings←warnings OVER "Pre 1997 Discontinuance Pension Increases" Win∆FinRelative "DYNINCPre" "lrDYNINCPre" 0
+[190] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText DYNINCPre
+[191] :if mt selection
+[192]     modified←⌈/modified,0
+[193] :endif
+[194] "fmSV.sPenBasis.pgPPFCAP.fDiscont.cbDYNINCPre" ⎕wi "value" (¯1↑0,selection)
+[195] PickList←"fmSV.sPenBasis.pgPPFCAP.fDiscont.cbDYNINCPost" ⎕wi "list"
+[196] warnings←warnings OVER "Post 1997 Discontinuance Pension Increases" Win∆FinRelative "DYNINCPost" "lrDYNINCPost" 0
+[197] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText DYNINCPost
+[198] :if mt selection
+[199]     modified←⌈/modified,0
+[200] :endif
+[201] "fmSV.sPenBasis.pgPPFCAP.fDiscont.cbDYNINCPost" ⎕wi "value" (¯1↑0,selection)
+[202] :endif
+[203] :if (⊂"pgMortality")∊"fmSV.sPenBasis" ⎕wi "pages"
+[204] 
+[205] :if ~bGAD
+[206] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOST" ⎕wi "list"
+[207] warnings←warnings OVER "Male Member Mortality Rate Parameters" Win∆MortRelative "m_DPOST" "lrm_DPOST"
+[208] selection←PickList ExactTLU DLTB m_DPOST
+[209] :if mt selection
+[210]     :if ~mt DLTB m_DPOST
+[211]         warnings←warnings OVER "Previous Selection for 'Male Member Mortality Rate Parameters' is no longer available"
+[212]     :endif
+[213]     modified←⌈/modified,1
+[214] :endif
+[215] "fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOST" ⎕wi "value" (¯1↑1,selection)
+[216] :endif
+[217] 
+[218] :if bGAD
+[219] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOST" ⎕wi "list"
+[220] warnings←warnings OVER "Male Member Mortality Rate Parameters" Win∆MortRelative "m_DPOST" "lrm_DPOST"
+[221] selection←PickList ExactTLU DLTB m_DPOST
+[222] :if mt selection
+[223]     :if ~mt DLTB m_DPOST
+[224]         warnings←warnings OVER "Previous Selection for 'Male Member Mortality Rate Parameters' is no longer available"
+[225]     :endif
+[226]     modified←⌈/modified,1
+[227] :endif
+[228] "fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOST" ⎕wi "value" (¯1↑1,selection)
+[229] :endif
+[230] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOSTMEMB" ⎕wi "list"
+[231] selection←(StripText PickList) ExactTLU DLTB StripText m_DPOSTMEMB
+[232] :if mt selection
+[233]     :if ~mt DLTB m_DPOSTMEMB
+[234]         warnings←warnings OVER "Previous Selection for 'Male Member Individual % Rating' is no longer available"
+[235]     :endif
+[236]     modified←⌈/modified,0
+[237] :endif
+[238] "fmSV.sPenBasis.pgMortality.fMPostRet.cbm_DPOSTMEMB" ⎕wi "value" (¯1↑0,selection)
+[239] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbm_miDPOST" ⎕wi "list"
+[240] warnings←warnings OVER "Male Member Mortality Improvement Parameters" Win∆MortImpRelative "m_miDPOST" "lrm_miDPOST"
+[241] selection←PickList ExactTLU DLTB m_miDPOST
+[242] :if mt selection
+[243]     :if ~mt DLTB m_miDPOST
+[244]         warnings←warnings OVER "Previous Selection for 'Male Member Mortality Improvement Parameters' is no longer available"
+[245]     :endif
+[246]     modified←⌈/modified,1
+[247] :endif
+[248] "fmSV.sPenBasis.pgMortality.fMPostRet.cbm_miDPOST" ⎕wi "value" (¯1↑1,selection)
+[249] 
+[250] :if ~bGAD
+[251] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOST" ⎕wi "list"
+[252] warnings←warnings OVER "Female Member Mortality Rate Parameters" Win∆MortRelative "f_DPOST" "lrf_DPOST"
+[253] selection←PickList ExactTLU DLTB f_DPOST
+[254] :if mt selection
+[255]     :if ~mt DLTB f_DPOST
+[256]         warnings←warnings OVER "Previous Selection for 'Female Member Mortality Rate Parameters' is no longer available"
+[257]     :endif
+[258]     modified←⌈/modified,1
+[259] :endif
+[260] "fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOST" ⎕wi "value" (¯1↑1,selection)
+[261] :endif
+[262] 
+[263] :if bGAD
+[264] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOST" ⎕wi "list"
+[265] warnings←warnings OVER "Female Member Mortality Rate Parameters" Win∆MortRelative "f_DPOST" "lrf_DPOST"
+[266] selection←PickList ExactTLU DLTB f_DPOST
+[267] :if mt selection
+[268]     :if ~mt DLTB f_DPOST
+[269]         warnings←warnings OVER "Previous Selection for 'Female Member Mortality Rate Parameters' is no longer available"
+[270]     :endif
+[271]     modified←⌈/modified,1
+[272] :endif
+[273] "fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOST" ⎕wi "value" (¯1↑1,selection)
+[274] :endif
+[275] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOSTMEMB" ⎕wi "list"
+[276] selection←(StripText PickList) ExactTLU DLTB StripText f_DPOSTMEMB
+[277] :if mt selection
+[278]     :if ~mt DLTB f_DPOSTMEMB
+[279]         warnings←warnings OVER "Previous Selection for 'Female Member Individual % Rating' is no longer available"
+[280]     :endif
+[281]     modified←⌈/modified,0
+[282] :endif
+[283] "fmSV.sPenBasis.pgMortality.fMPostRet.cbf_DPOSTMEMB" ⎕wi "value" (¯1↑0,selection)
+[284] PickList←"fmSV.sPenBasis.pgMortality.fMPostRet.cbf_miDPOST" ⎕wi "list"
+[285] warnings←warnings OVER "Female Member Mortality Improvement Parameters" Win∆MortImpRelative "f_miDPOST" "lrf_miDPOST"
+[286] selection←PickList ExactTLU DLTB f_miDPOST
+[287] :if mt selection
+[288]     :if ~mt DLTB f_miDPOST
+[289]         warnings←warnings OVER "Previous Selection for 'Female Member Mortality Improvement Parameters' is no longer available"
+[290]     :endif
+[291]     modified←⌈/modified,1
+[292] :endif
+[293] "fmSV.sPenBasis.pgMortality.fMPostRet.cbf_miDPOST" ⎕wi "value" (¯1↑1,selection)
+[294] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbm_SDPOST" ⎕wi "list"
+[295] warnings←warnings OVER "Male Member's Spouse/Partner Mortality Rate Parameters" Win∆MortRelative "m_SDPOST" "lrm_SDPOST"
+[296] selection←PickList ExactTLU DLTB m_SDPOST
+[297] :if mt selection
+[298]     :if ~mt DLTB m_SDPOST
+[299]         warnings←warnings OVER "Previous Selection for 'Male Member's Spouse/Partner Mortality Rate Parameters' is no longer available"
+[300]     :endif
+[301]     modified←⌈/modified,1
+[302] :endif
+[303] "fmSV.sPenBasis.pgMortality.fSPostRet.cbm_SDPOST" ⎕wi "value" (¯1↑1,selection)
+[304] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbm_SDPOSTMEMB" ⎕wi "list"
+[305] selection←(StripText PickList) ExactTLU DLTB StripText m_SDPOSTMEMB
+[306] :if mt selection
+[307]     :if ~mt DLTB m_SDPOSTMEMB
+[308]         warnings←warnings OVER "Previous Selection for 'Male Member's Spouse/Partner Individual % Rating' is no longer available"
+[309]     :endif
+[310]     modified←⌈/modified,0
+[311] :endif
+[312] "fmSV.sPenBasis.pgMortality.fSPostRet.cbm_SDPOSTMEMB" ⎕wi "value" (¯1↑0,selection)
+[313] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbm_miSDPOST" ⎕wi "list"
+[314] warnings←warnings OVER "Male Member's Spouse/Partner Mortality Improvement Parameters" Win∆MortImpRelative "m_miSDPOST" "lrm_miSDPOST"
+[315] selection←PickList ExactTLU DLTB m_miSDPOST
+[316] :if mt selection
+[317]     :if ~mt DLTB m_miSDPOST
+[318]         warnings←warnings OVER "Previous Selection for 'Male Member's Spouse/Partner Mortality Improvement Parameters' is no longer available"
+[319]     :endif
+[320]     modified←⌈/modified,1
+[321] :endif
+[322] "fmSV.sPenBasis.pgMortality.fSPostRet.cbm_miSDPOST" ⎕wi "value" (¯1↑1,selection)
+[323] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbf_SDPOST" ⎕wi "list"
+[324] warnings←warnings OVER "Female Member's Spouse/Partner Mortality Rate Parameters" Win∆MortRelative "f_SDPOST" "lrf_SDPOST"
+[325] selection←PickList ExactTLU DLTB f_SDPOST
+[326] :if mt selection
+[327]     :if ~mt DLTB f_SDPOST
+[328]         warnings←warnings OVER "Previous Selection for 'Female Member's Spouse/Partner Mortality Rate Parameters' is no longer available"
+[329]     :endif
+[330]     modified←⌈/modified,1
+[331] :endif
+[332] "fmSV.sPenBasis.pgMortality.fSPostRet.cbf_SDPOST" ⎕wi "value" (¯1↑1,selection)
+[333] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbf_SDPOSTMEMB" ⎕wi "list"
+[334] selection←(StripText PickList) ExactTLU DLTB StripText f_SDPOSTMEMB
+[335] :if mt selection
+[336]     :if ~mt DLTB f_SDPOSTMEMB
+[337]         warnings←warnings OVER "Previous Selection for 'Female Member's Spouse/Partner Individual % Rating' is no longer available"
+[338]     :endif
+[339]     modified←⌈/modified,0
+[340] :endif
+[341] "fmSV.sPenBasis.pgMortality.fSPostRet.cbf_SDPOSTMEMB" ⎕wi "value" (¯1↑0,selection)
+[342] PickList←"fmSV.sPenBasis.pgMortality.fSPostRet.cbf_miSDPOST" ⎕wi "list"
+[343] warnings←warnings OVER "Female Member's Spouse/Partner Mortality Improvement Parameters" Win∆MortImpRelative "f_miSDPOST" "lrf_miSDPOST"
+[344] selection←PickList ExactTLU DLTB f_miSDPOST
+[345] :if mt selection
+[346]     :if ~mt DLTB f_miSDPOST
+[347]         warnings←warnings OVER "Previous Selection for 'Female Member's Spouse/Partner Mortality Improvement Parameters' is no longer available"
+[348]     :endif
+[349]     modified←⌈/modified,1
+[350] :endif
+[351] "fmSV.sPenBasis.pgMortality.fSPostRet.cbf_miSDPOST" ⎕wi "value" (¯1↑1,selection)
+[352] :endif
+[353] :if (⊂"pgSpouse")∊"fmSV.sPenBasis" ⎕wi "pages"
+[354] PickList←"fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseParm" ⎕wi "list"
+[355] selection←PickList ExactTLU DLTB SpouseParm
+[356] :if mt selection
+[357]     :if ~mt DLTB SpouseParm
+[358]         warnings←warnings OVER "Previous Selection for 'Spouse Parameter Set' is no longer available"
+[359]     :endif
+[360]     modified←⌈/modified,0
+[361] :endif
+[362] "fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseParm" ⎕wi "value" (¯1↑0,selection)
+[363] PickList←"fmSV.sPenBasis.pgSpouse.fSpouse.cbSPMethod" ⎕wi "list"
+[364] selection←PickList ExactTLU DLTB SPMethod
+[365] :if mt selection
+[366]     :if ~mt DLTB SPMethod
+[367]         warnings←warnings OVER "Previous Selection for 'Spouse Definition' is no longer available"
+[368]     :endif
+[369]     modified←⌈/modified,1
+[370] :endif
+[371] "fmSV.sPenBasis.pgSpouse.fSpouse.cbSPMethod" ⎕wi "value" (¯1↑1,selection)
+[372] "fmSV.sPenBasis.pgSpouse.fSpouse.ckIgnoreSpouse" ⎕wi "value" (zwb IgnoreSpouse)
+[373] 0 0⍴GetDecrList "List"
+[374] warnings←warnings OVER "Male Proportion Married Table" Win∆CheckDecr (m_HXX[1;]) (lrm_HXX1)
+[375] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_HXX1" ⎕wi "text" (DLTB m_HXX[1;])
+[376] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_HXX2" ⎕wi "text" (DLTB m_HXX[2;])
+[377] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_HXX3" ⎕wi "text" (DLTB m_HXX[3;])
+[378] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_PropMarr" ⎕wi "text" (DLTB m_PropMarr)
+[379] 0 0⍴GetDecrList "List"
+[380] warnings←warnings OVER "Female Proportion Married Table" Win∆CheckDecr (f_HXX[1;]) (lrf_HXX1)
+[381] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_HXX1" ⎕wi "text" (DLTB f_HXX[1;])
+[382] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_HXX2" ⎕wi "text" (DLTB f_HXX[2;])
+[383] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_HXX3" ⎕wi "text" (DLTB f_HXX[3;])
+[384] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_PropMarr" ⎕wi "text" (DLTB f_PropMarr)
+[385] 0 0⍴GetDecrList "List"
+[386] warnings←warnings OVER "Male Age Difference Table (m-f)" Win∆CheckDecr (m_AGEDIFT) (lrm_AGEDIFT)
+[387] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_AGEDIFT" ⎕wi "text" (DLTB m_AGEDIFT)
+[388] "fmSV.sPenBasis.pgSpouse.fSpouse.edm_AGEDIF" ⎕wi "text" (DLTB m_AGEDIF)
+[389] 0 0⍴GetDecrList "List"
+[390] warnings←warnings OVER "Female Age Difference Table (f-m)" Win∆CheckDecr (f_AGEDIFT) (lrf_AGEDIFT)
+[391] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_AGEDIFT" ⎕wi "text" (DLTB f_AGEDIFT)
+[392] "fmSV.sPenBasis.pgSpouse.fSpouse.edf_AGEDIF" ⎕wi "text" (DLTB f_AGEDIF)
+[393] "fmSV.sPenBasis.pgSpouse.fSpouse.ckSpouseProj" ⎕wi "value" (zwb SpouseProj)
+[394] PickList←"fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseDate" ⎕wi "list"
+[395] selection←(StripText PickList) ExactTLU DLTB StripText SpouseDate
+[396] :if mt selection
+[397]     modified←⌈/modified,0
+[398] :endif
+[399] "fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseDate" ⎕wi "value" (¯1↑0,selection)
+[400] PickList←"fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseRA" ⎕wi "list"
+[401] selection←(StripText PickList) ExactTLU DLTB StripText SpouseRA
+[402] :if mt selection
+[403]         "fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseRA" ⎕wi "text" (DLTB SpouseRA)
+[404] :else
+[405]     "fmSV.sPenBasis.pgSpouse.fSpouse.cbSpouseRA" ⎕wi "value" selection
+[406] :endif
+[407] :endif
+[408] :if (⊂"pgPensions")∊"fmSV.sPenBasis" ⎕wi "pages"
+[409] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "XClearRange" 1 1 ("fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow") ("fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol") 3
+[410] MaxRow←MaxCol←1
+[411] value←(1 30⌈⍴value)↑value←MATRIX PenDesc
+[412] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[413] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[414] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 1∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[415] value←(1 10⌈⍴value)↑value←MATRIX CSORP
+[416] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[417] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[418] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 4∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[419] value←(1 20⌈⍴value)↑value←MATRIX PENDATA
+[420] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[421] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[422] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 5∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[423] value←(1 10⌈⍴value)↑value←MATRIX WARFRAC
+[424] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[425] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[426] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 6∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[427] value←(1 20⌈⍴value)↑value←MATRIX SPENDATA
+[428] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[429] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[430] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 7∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[431] value←(1 10⌈⍴value)↑value←MATRIX ADJFAC
+[432] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[433] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[434] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 8∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[435] value←(1 2⌈⍴value)↑value←MATRIX BAGE
+[436] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[437] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[438] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 10∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[439] value←(1 3⌈⍴value)↑value←MATRIX EAGE
+[440] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[441] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[442] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 11∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[443] value←(1 3⌈⍴value)↑value←MATRIX DIDIND
+[444] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[445] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[446] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 12∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[447] value←(1 20⌈⍴value)↑value←MATRIX DEFINC
+[448] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[449] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[450] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 13∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[451] value←(1 20⌈⍴value)↑value←MATRIX PAYINC
+[452] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[453] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[454] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 14∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[455] value←(1 3⌈⍴value)↑value←MATRIX PONLY
+[456] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[457] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[458] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 16∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[459] value←(1 3⌈⍴value)↑value←MATRIX SPONLY
+[460] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[461] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[462] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 17∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[463] value←(1 10⌈⍴value)↑value←MATRIX GMPADJ
+[464] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[465] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[466] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 19∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[467] value←(1 20⌈⍴value)↑value←MATRIX RETPUP
+[468] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[469] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[470] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 20∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[471] value←(1 20⌈⍴value)↑value←MATRIX PreRET
+[472] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[473] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[474] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 21∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[475] value←(1 20⌈⍴value)↑value←MATRIX PostRET
+[476] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[477] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[478] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 22∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[479] value←(1 20⌈⍴value)↑value←MATRIX PreVD
+[480] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[481] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[482] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 23∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[483] value←(1 20⌈⍴value)↑value←MATRIX PostVD
+[484] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[485] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[486] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 24∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[487] value←(1 3⌈⍴value)↑value←MATRIX m_PPFNRA
+[488] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[489] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[490] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 26∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[491] value←(1 3⌈⍴value)↑value←MATRIX f_PPFNRA
+[492] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[493] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[494] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 27∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[495] value←(1 15⌈⍴value)↑value←MATRIX PPFPAYINC
+[496] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[497] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[498] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 28∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[499] value←(1 20⌈⍴value)↑value←MATRIX PPFDEFINC
+[500] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[501] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[502] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 29∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[503] value←(1 3⌈⍴value)↑value←MATRIX CapInclude
+[504] MaxRow←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxRow"
+[505] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[506] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "TextRC[]" (⎕mix 30∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[507] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[508] (MaxRow MaxCol)←"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xGetActiveCell" 0 0
+[509] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xSetActiveCell" (MaxRow⌊"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xMaxRow") (MaxCol⌊"fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xMaxCol")
+[510] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "xmodified" 0
+[511] "fmSV.sPenBasis.pgPensions.fPensions.ssPensions" ⎕wi "onXModified" "('fmSV.sPenBasis' (Win∆Parent 'fmSV.sPenBasis')) MultiWI 'modified' ('fmSV.sPenBasis.pgPensions.fPensions.ssPensions' ⎕wi 'xmodified')"
+[512] :endif
+[513] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Pensioners_Basis
+[514]     :for var :in spin Comment_Pensioners_Basis at "variable" "row" ⋄ (var row)←var
+[515]         "Pensioners_Basis" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[516]     :endfor
+[517] :endif
+[518] :if ~0∊⍴,warnings
+[519]     MDISPLAY DLTMB warnings,⎕tcnl
+[520]     Win∆AssignVars "fmSV.sPenBasis"
+[521] :endif
+[522] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Pensioners_Basis" "" "Names"
+[523]     "fmSV.sPenBasis" ⎕wi "modified" 0
+[524] :endif
+    ∇

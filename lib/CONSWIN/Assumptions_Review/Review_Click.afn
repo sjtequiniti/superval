@@ -1,1 +1,34 @@
-    ∇ Z←larg Review_Click arg;row;col;vars;sort;order;varnames;∆;sortorder;SSName;col1order;sort_column[1]   ⍝ CONSWIN.sf#19[2]   ⍝ Function to sort upon Right Click[3]   [4]   (SSName col1order sort_column)←larg ⋄ Z←⍬[5]   [6]   :if mt arg ⋄ (row col)←⎕warg ⍝ Where the (right) click occurred[7]   :else      ⋄ (row col)←arg   ⍝ Force a re-sort[8]   :endif[9]   :if     (col=0)^(row=0) ⍝ TLC - Cursor Movement Menu[10]      Win∆F1SSTLCMenu SSName[11]      :return[12]  :elseif (col≠0)^(row≠0) ⍝ Clicked on a data cell[13]      ⍝⍝⍝ Show notes for cell[14]      :return[15]  :elseif row=0 ⍝ Menu if clicked on a column heading[16]      :if col≠sort_column[17]          Win∆AssignVars ControlName[18]  [19]          vars←⍎¨varnames←m2n '[' StripText SSName ⎕wi '∆name'[20]          sortorder←col⊃(⊂col1order),1↓vars[21]          sortorder←⎕av⍋sortorder[22]          col1order←col1order[sortorder;][23]          ∆←(⊂sortorder) Sort_Column¨vars[24]          ⍎'(',(' ' join varnames),')←∆'[25]          SSName ⎕wi 'xColText' sort_column (  1↓SSName ⎕wi 'xColText' sort_column)[26]          sort_column←col[27]          SSName ⎕wi 'xColText' sort_column ('>',SSName ⎕wi 'xColText' sort_column)[28]  [29]          Assign_Inputs 1[30]      :endif[31]      Z←col1order sort_column[32]  :endif    ∇
+    ∇ Z←larg Review_Click arg;row;col;vars;sort;order;varnames;∆;sortorder;SSName;col1order;sort_column
+[1]   ⍝ CONSWIN.sf#19
+[2]   ⍝ Function to sort upon Right Click
+[3]   
+[4]   (SSName col1order sort_column)←larg ⋄ Z←⍬
+[5]   
+[6]   :if mt arg ⋄ (row col)←⎕warg ⍝ Where the (right) click occurred
+[7]   :else      ⋄ (row col)←arg   ⍝ Force a re-sort
+[8]   :endif
+[9]   :if     (col=0)^(row=0) ⍝ TLC - Cursor Movement Menu
+[10]      Win∆F1SSTLCMenu SSName
+[11]      :return
+[12]  :elseif (col≠0)^(row≠0) ⍝ Clicked on a data cell
+[13]      ⍝⍝⍝ Show notes for cell
+[14]      :return
+[15]  :elseif row=0 ⍝ Menu if clicked on a column heading
+[16]      :if col≠sort_column
+[17]          Win∆AssignVars ControlName
+[18]  
+[19]          vars←⍎¨varnames←m2n '[' StripText SSName ⎕wi '∆name'
+[20]          sortorder←col⊃(⊂col1order),1↓vars
+[21]          sortorder←⎕av⍋sortorder
+[22]          col1order←col1order[sortorder;]
+[23]          ∆←(⊂sortorder) Sort_Column¨vars
+[24]          ⍎'(',(' ' join varnames),')←∆'
+[25]          SSName ⎕wi 'xColText' sort_column (  1↓SSName ⎕wi 'xColText' sort_column)
+[26]          sort_column←col
+[27]          SSName ⎕wi 'xColText' sort_column ('>',SSName ⎕wi 'xColText' sort_column)
+[28]  
+[29]          Assign_Inputs 1
+[30]      :endif
+[31]      Z←col1order sort_column
+[32]  :endif
+    ∇

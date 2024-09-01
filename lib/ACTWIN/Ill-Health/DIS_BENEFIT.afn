@@ -1,1 +1,63 @@
-    ∇ DIS∆BENEFIT;Dec∆pp;ProRate∆pp;VFYear∆pp[1]   ⍝ ACTWIN.sf#7[2]   ⍝ Function to run all the DISABLEMENT (ILL HEALTH) Functions[3]   [4]   :if ^/0=ExitProbs∆pp ⋄ :return ⋄ :endif[5]   [6]   :if ILLIND≠0 ⋄ :andif ~PHI ⍝ Need to split out Prospective Benefits[7]       :if STYPE[8]            TILLPEN← TILLPEN- TILLPROSPEN[9]           TWILLPEN←TWILLPEN-TWILLPROSPEN[10]           TILLSPA← TILLSPA- TILLPROSSPA[11]          TWILLSPA←TWILLSPA-TWILLPROSSPA[12]      :elseif ~STYPE ⋄ :andif ~IHCARESpread ⋄ :andif CAREFutAcc ⍝ Need to split out "future" Prospective Benefits (to be pro-rated by Service)[13]          TILLPEN← TILLPEN -TILLPROSPEN ×[⎕io+1]0 0 1 0[14]          TWILLPEN←TWILLPEN-TWILLPROSPEN×[⎕io+1]0 0 1 0[15]          TILLSPA← TILLSPA -TILLPROSSPA ×[⎕io+1]0 0 1 0[16]          TWILLSPA←TWILLSPA-TWILLPROSSPA×[⎕io+1]0 0 1 0[17]      :endif[18]      :if STYPEC[19]      :orif CAREFutAcc^~IHCARESpread ⍝ Need to split out "future" Prospective Benefits (to be pro-rated by Service)[20]          :if sepComCot[21]               comILLCASH← comILLCASH-comILLPROSCASH[22]              comFILLCASH←comFILLCASH-comILLPROSCASH[23]              splitcomILLCASH←  splitcomILLCASH-splitcomILLPROSCASH[24]              splitcomFILLCASH←splitcomFILLCASH-splitcomILLPROSCASH[25]               cotILLCASH← cotILLCASH-cotILLPROSCASH[26]              cotFILLCASH←cotFILLCASH-cotILLPROSCASH[27]          :else[28]               ILLCASH← ILLCASH-ILLPROSCASH[29]              FILLCASH←FILLCASH-ILLPROSCASH[30]          :endif[31]      :endif[32]  :endif[33]  [34]  Dec∆pp←'IP'[PHI] ⍝ Decrement "description"[35]  VFYear∆pp←PROBS[;2] PP∆AverageTerm XMP-X0 ⍝⍝⍝ FIXME: different for PHI???[36]  :if PHI[37]      PHI∆BENEFIT[38]  [39]      :if CAREFutAcc ⍝⍝⍝ FIXME:  Allow for Alternate Slices[40]          ProRate∆pp←(¯1⊖+⍀PHICAREProRate) CDIV (NX,NX)⍴+⌿PHICAREProRate[41]          ProRate∆pp[0;]←0 ⋄ ProRate∆pp[NX_1-SNX;NX_1-SNX]←1[42]          ProRate∆pp←MATRIX (⍉ProRate∆pp),1[43]      :endif[44]  [45]      ⍝ DIS Pensions only payable up to NRA, then DAR pension payable[46]      ⍝  Lump Sums on Death are payable whether Death is pre or post NRA[47]  [48]      Dec∆pp←'PD' ⍝ Death in Service benefits post PHI[49]      :if ~CAREFutAcc ⋄ ProRate∆pp←ProRate∆DServ ⋄ :endif[50]      PHIDP1∆BENEFIT ⋄ PHIDTC∆BENEFIT[51]  [52]      Dec∆pp←'PR' ⍝ Decrement "description"[53]      :if ~CAREFutAcc ⋄ ProRate∆pp←ProRate∆RServ ⋄ :endif[54]      PHIRET∆BENEFIT[55]  [56]  :elseif ILLIND≠0[57]      :if CAREFutAcc ⋄ ProRate∆pp←ProRate∆CARE ⍝⍝⍝ FIXME:  Allow for Alternate Slices[58]      :else          ⋄ ProRate∆pp←ProRate∆IServ[59]      :endif[60]      IP1∆BENEFIT ⋄ IP2∆BENEFIT ⋄ IP3∆BENEFIT ⋄ IP6∆BENEFIT ⋄ IP7∆BENEFIT ⋄ ITC∆BENEFIT[61]  :endif    ∇
+    ∇ DIS∆BENEFIT;Dec∆pp;ProRate∆pp;VFYear∆pp
+[1]   ⍝ ACTWIN.sf#7
+[2]   ⍝ Function to run all the DISABLEMENT (ILL HEALTH) Functions
+[3]   
+[4]   :if ^/0=ExitProbs∆pp ⋄ :return ⋄ :endif
+[5]   
+[6]   :if ILLIND≠0 ⋄ :andif ~PHI ⍝ Need to split out Prospective Benefits
+[7]       :if STYPE
+[8]            TILLPEN← TILLPEN- TILLPROSPEN
+[9]           TWILLPEN←TWILLPEN-TWILLPROSPEN
+[10]           TILLSPA← TILLSPA- TILLPROSSPA
+[11]          TWILLSPA←TWILLSPA-TWILLPROSSPA
+[12]      :elseif ~STYPE ⋄ :andif ~IHCARESpread ⋄ :andif CAREFutAcc ⍝ Need to split out "future" Prospective Benefits (to be pro-rated by Service)
+[13]          TILLPEN← TILLPEN -TILLPROSPEN ×[⎕io+1]0 0 1 0
+[14]          TWILLPEN←TWILLPEN-TWILLPROSPEN×[⎕io+1]0 0 1 0
+[15]          TILLSPA← TILLSPA -TILLPROSSPA ×[⎕io+1]0 0 1 0
+[16]          TWILLSPA←TWILLSPA-TWILLPROSSPA×[⎕io+1]0 0 1 0
+[17]      :endif
+[18]      :if STYPEC
+[19]      :orif CAREFutAcc^~IHCARESpread ⍝ Need to split out "future" Prospective Benefits (to be pro-rated by Service)
+[20]          :if sepComCot
+[21]               comILLCASH← comILLCASH-comILLPROSCASH
+[22]              comFILLCASH←comFILLCASH-comILLPROSCASH
+[23]              splitcomILLCASH←  splitcomILLCASH-splitcomILLPROSCASH
+[24]              splitcomFILLCASH←splitcomFILLCASH-splitcomILLPROSCASH
+[25]               cotILLCASH← cotILLCASH-cotILLPROSCASH
+[26]              cotFILLCASH←cotFILLCASH-cotILLPROSCASH
+[27]          :else
+[28]               ILLCASH← ILLCASH-ILLPROSCASH
+[29]              FILLCASH←FILLCASH-ILLPROSCASH
+[30]          :endif
+[31]      :endif
+[32]  :endif
+[33]  
+[34]  Dec∆pp←'IP'[PHI] ⍝ Decrement "description"
+[35]  VFYear∆pp←PROBS[;2] PP∆AverageTerm XMP-X0 ⍝⍝⍝ FIXME: different for PHI???
+[36]  :if PHI
+[37]      PHI∆BENEFIT
+[38]  
+[39]      :if CAREFutAcc ⍝⍝⍝ FIXME:  Allow for Alternate Slices
+[40]          ProRate∆pp←(¯1⊖+⍀PHICAREProRate) CDIV (NX,NX)⍴+⌿PHICAREProRate
+[41]          ProRate∆pp[0;]←0 ⋄ ProRate∆pp[NX_1-SNX;NX_1-SNX]←1
+[42]          ProRate∆pp←MATRIX (⍉ProRate∆pp),1
+[43]      :endif
+[44]  
+[45]      ⍝ DIS Pensions only payable up to NRA, then DAR pension payable
+[46]      ⍝  Lump Sums on Death are payable whether Death is pre or post NRA
+[47]  
+[48]      Dec∆pp←'PD' ⍝ Death in Service benefits post PHI
+[49]      :if ~CAREFutAcc ⋄ ProRate∆pp←ProRate∆DServ ⋄ :endif
+[50]      PHIDP1∆BENEFIT ⋄ PHIDTC∆BENEFIT
+[51]  
+[52]      Dec∆pp←'PR' ⍝ Decrement "description"
+[53]      :if ~CAREFutAcc ⋄ ProRate∆pp←ProRate∆RServ ⋄ :endif
+[54]      PHIRET∆BENEFIT
+[55]  
+[56]  :elseif ILLIND≠0
+[57]      :if CAREFutAcc ⋄ ProRate∆pp←ProRate∆CARE ⍝⍝⍝ FIXME:  Allow for Alternate Slices
+[58]      :else          ⋄ ProRate∆pp←ProRate∆IServ
+[59]      :endif
+[60]      IP1∆BENEFIT ⋄ IP2∆BENEFIT ⋄ IP3∆BENEFIT ⋄ IP6∆BENEFIT ⋄ IP7∆BENEFIT ⋄ ITC∆BENEFIT
+[61]  :endif
+    ∇

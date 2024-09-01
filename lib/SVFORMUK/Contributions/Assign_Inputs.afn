@@ -1,1 +1,108 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Contributions" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Contributions" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   [10]  :if ~bGAD[11]  PickList←"fmContsDef.fContsDef.cbgcdDEF" ⎕wi "list"[12]  selection←PickList ExactTLU DLTB gcdDEF[13]  :if mt selection[14]      :if ~mt DLTB gcdDEF[15]          warnings←warnings OVER "Previous Selection for 'Contributions Method' is no longer available"[16]      :endif[17]      modified←⌈/modified,1[18]  :endif[19]  "fmContsDef.fContsDef.cbgcdDEF" ⎕wi "value" (¯1↑1,selection)[20]  :endif[21]  [22]  :if bGAD[23]  PickList←"fmContsDef.fContsDef.cbgcdDEF" ⎕wi "list"[24]  selection←PickList ExactTLU DLTB gcdDEF[25]  :if mt selection[26]      :if ~mt DLTB gcdDEF[27]          warnings←warnings OVER "Previous Selection for 'Contributions Method' is no longer available"[28]      :endif[29]      modified←⌈/modified,1[30]  :endif[31]  "fmContsDef.fContsDef.cbgcdDEF" ⎕wi "value" (¯1↑1,selection)[32]  :endif[33]  "fmContsDef.fContRates.edgcdCR" ⎕wi "text" (DLTB gcdCR)[34]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "XClearRange" 1 1 ("fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxRow") ("fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxCol") 3[35]  MaxRow←MaxCol←1[36]  value←(1 8⌈⍴value)↑value←MATRIX gcdBand[37]  MaxCol←"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxCol"[38]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[39]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)[40]  value←(1 8⌈⍴value)↑value←MATRIX gcdBandCR[41]  MaxCol←"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxCol"[42]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[43]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)[44]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[45]  (MaxRow MaxCol)←"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xGetActiveCell" 0 0[46]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xSetActiveCell" (MaxRow⌊"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xMaxRow") (MaxCol⌊"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xMaxCol")[47]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xmodified" 0[48]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "onXModified" "('fmContsDef.' (Win∆Parent 'fmContsDef.')) MultiWI 'modified' ('fmContsDef.fBands.fBandCont.ssBandCont' ⎕wi 'xmodified')"[49]  PickList←"fmContsDef.fBands.cbgcdBandmeth" ⎕wi "list"[50]  selection←PickList ExactTLU DLTB gcdBandmeth[51]  :if mt selection[52]      :if ~mt DLTB gcdBandmeth[53]          warnings←warnings OVER "Previous Selection for 'Contributions Band Method' is no longer available"[54]      :endif[55]      modified←⌈/modified,1[56]  :endif[57]  "fmContsDef.fBands.cbgcdBandmeth" ⎕wi "value" (¯1↑1,selection)[58]  "fmContsDef.fBands.edgcdREVDAT" ⎕wi "text" (DLTB gcdREVDAT)[59]  PickList←"fmContsDef.fBands.cbgcdF" ⎕wi "list"[60]  warnings←warnings OVER "Earnings Bands Increase" Win∆FinRelative "gcdF" "lrgcdF" 0[61]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText gcdF[62]  :if mt selection[63]      modified←⌈/modified,1[64]  :endif[65]  "fmContsDef.fBands.cbgcdF" ⎕wi "value" (¯1↑1,selection)[66]  0 0⍴GetDecrList "List"[67]  warnings←warnings OVER "Contribution Rate Salary Bands Table" Win∆CheckDecr (gcdSalTab) (lrgcdSalTab)[68]  "fmContsDef.fBands.edgcdSalTab" ⎕wi "text" (DLTB gcdSalTab)[69]  "fmContsDef.fBands.edgcdSalBase" ⎕wi "text" (DLTB gcdSalBase)[70]  0 0⍴GetDecrList "List"[71]  warnings←warnings OVER "Contribution Rate Age Table" Win∆CheckDecr (gcdAgeTab) (lrgcdAgeTab)[72]  "fmContsDef.fTables.edgcdAgeTab" ⎕wi "text" (DLTB gcdAgeTab)[73]  0 0⍴GetDecrList "List"[74]  warnings←warnings OVER "Contribution Rate Duration Table" Win∆CheckDecr (gcdDurnTab) (lrgcdDurnTab)[75]  "fmContsDef.fTables.edgcdDurnTab" ⎕wi "text" (DLTB gcdDurnTab)[76]  PickList←"fmContsDef.fTables.cbgcdEntryDate" ⎕wi "list"[77]  selection←PickList ExactTLU DLTB gcdEntryDate[78]  :if mt selection[79]      :if ~mt DLTB gcdEntryDate[80]          warnings←warnings OVER "Previous Selection for 'Based on' is no longer available"[81]      :endif[82]      modified←⌈/modified,1[83]  :endif[84]  "fmContsDef.fTables.cbgcdEntryDate" ⎕wi "value" (¯1↑1,selection)[85]  "fmContsDef.fCease.edgcdCease" ⎕wi "text" (DLTB gcdCease)[86]  PickList←"fmContsDef.fCease.cbgcdCeaseDate" ⎕wi "list"[87]  selection←PickList ExactTLU DLTB gcdCeaseDate[88]  :if mt selection[89]      :if ~mt DLTB gcdCeaseDate[90]          warnings←warnings OVER "Previous Selection for 'Based on' is no longer available"[91]      :endif[92]      modified←⌈/modified,1[93]  :endif[94]  "fmContsDef.fCease.cbgcdCeaseDate" ⎕wi "value" (¯1↑1,selection)[95]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Contributions[96]      :for var :in spin Comment_Contributions at "variable" "row" ⋄ (var row)←var[97]          "Contributions" ParmColor ((FormFields for "variable" var) at "control"),var row 1[98]      :endfor[99]  :endif[100] :if ~0∊⍴,warnings[101]     MDISPLAY DLTMB warnings,⎕tcnl[102]     Win∆AssignVars "fmContsDef"[103] :endif[104] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Contributions" "" "Names"[105]     "fmContsDef" ⎕wi "modified" 0[106] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Contributions" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Contributions" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   
+[10]  :if ~bGAD
+[11]  PickList←"fmContsDef.fContsDef.cbgcdDEF" ⎕wi "list"
+[12]  selection←PickList ExactTLU DLTB gcdDEF
+[13]  :if mt selection
+[14]      :if ~mt DLTB gcdDEF
+[15]          warnings←warnings OVER "Previous Selection for 'Contributions Method' is no longer available"
+[16]      :endif
+[17]      modified←⌈/modified,1
+[18]  :endif
+[19]  "fmContsDef.fContsDef.cbgcdDEF" ⎕wi "value" (¯1↑1,selection)
+[20]  :endif
+[21]  
+[22]  :if bGAD
+[23]  PickList←"fmContsDef.fContsDef.cbgcdDEF" ⎕wi "list"
+[24]  selection←PickList ExactTLU DLTB gcdDEF
+[25]  :if mt selection
+[26]      :if ~mt DLTB gcdDEF
+[27]          warnings←warnings OVER "Previous Selection for 'Contributions Method' is no longer available"
+[28]      :endif
+[29]      modified←⌈/modified,1
+[30]  :endif
+[31]  "fmContsDef.fContsDef.cbgcdDEF" ⎕wi "value" (¯1↑1,selection)
+[32]  :endif
+[33]  "fmContsDef.fContRates.edgcdCR" ⎕wi "text" (DLTB gcdCR)
+[34]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "XClearRange" 1 1 ("fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxRow") ("fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxCol") 3
+[35]  MaxRow←MaxCol←1
+[36]  value←(1 8⌈⍴value)↑value←MATRIX gcdBand
+[37]  MaxCol←"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxCol"
+[38]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[39]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)
+[40]  value←(1 8⌈⍴value)↑value←MATRIX gcdBandCR
+[41]  MaxCol←"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxCol"
+[42]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[43]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)
+[44]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[45]  (MaxRow MaxCol)←"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xGetActiveCell" 0 0
+[46]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xSetActiveCell" (MaxRow⌊"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xMaxRow") (MaxCol⌊"fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xMaxCol")
+[47]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "xmodified" 0
+[48]  "fmContsDef.fBands.fBandCont.ssBandCont" ⎕wi "onXModified" "('fmContsDef.' (Win∆Parent 'fmContsDef.')) MultiWI 'modified' ('fmContsDef.fBands.fBandCont.ssBandCont' ⎕wi 'xmodified')"
+[49]  PickList←"fmContsDef.fBands.cbgcdBandmeth" ⎕wi "list"
+[50]  selection←PickList ExactTLU DLTB gcdBandmeth
+[51]  :if mt selection
+[52]      :if ~mt DLTB gcdBandmeth
+[53]          warnings←warnings OVER "Previous Selection for 'Contributions Band Method' is no longer available"
+[54]      :endif
+[55]      modified←⌈/modified,1
+[56]  :endif
+[57]  "fmContsDef.fBands.cbgcdBandmeth" ⎕wi "value" (¯1↑1,selection)
+[58]  "fmContsDef.fBands.edgcdREVDAT" ⎕wi "text" (DLTB gcdREVDAT)
+[59]  PickList←"fmContsDef.fBands.cbgcdF" ⎕wi "list"
+[60]  warnings←warnings OVER "Earnings Bands Increase" Win∆FinRelative "gcdF" "lrgcdF" 0
+[61]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText gcdF
+[62]  :if mt selection
+[63]      modified←⌈/modified,1
+[64]  :endif
+[65]  "fmContsDef.fBands.cbgcdF" ⎕wi "value" (¯1↑1,selection)
+[66]  0 0⍴GetDecrList "List"
+[67]  warnings←warnings OVER "Contribution Rate Salary Bands Table" Win∆CheckDecr (gcdSalTab) (lrgcdSalTab)
+[68]  "fmContsDef.fBands.edgcdSalTab" ⎕wi "text" (DLTB gcdSalTab)
+[69]  "fmContsDef.fBands.edgcdSalBase" ⎕wi "text" (DLTB gcdSalBase)
+[70]  0 0⍴GetDecrList "List"
+[71]  warnings←warnings OVER "Contribution Rate Age Table" Win∆CheckDecr (gcdAgeTab) (lrgcdAgeTab)
+[72]  "fmContsDef.fTables.edgcdAgeTab" ⎕wi "text" (DLTB gcdAgeTab)
+[73]  0 0⍴GetDecrList "List"
+[74]  warnings←warnings OVER "Contribution Rate Duration Table" Win∆CheckDecr (gcdDurnTab) (lrgcdDurnTab)
+[75]  "fmContsDef.fTables.edgcdDurnTab" ⎕wi "text" (DLTB gcdDurnTab)
+[76]  PickList←"fmContsDef.fTables.cbgcdEntryDate" ⎕wi "list"
+[77]  selection←PickList ExactTLU DLTB gcdEntryDate
+[78]  :if mt selection
+[79]      :if ~mt DLTB gcdEntryDate
+[80]          warnings←warnings OVER "Previous Selection for 'Based on' is no longer available"
+[81]      :endif
+[82]      modified←⌈/modified,1
+[83]  :endif
+[84]  "fmContsDef.fTables.cbgcdEntryDate" ⎕wi "value" (¯1↑1,selection)
+[85]  "fmContsDef.fCease.edgcdCease" ⎕wi "text" (DLTB gcdCease)
+[86]  PickList←"fmContsDef.fCease.cbgcdCeaseDate" ⎕wi "list"
+[87]  selection←PickList ExactTLU DLTB gcdCeaseDate
+[88]  :if mt selection
+[89]      :if ~mt DLTB gcdCeaseDate
+[90]          warnings←warnings OVER "Previous Selection for 'Based on' is no longer available"
+[91]      :endif
+[92]      modified←⌈/modified,1
+[93]  :endif
+[94]  "fmContsDef.fCease.cbgcdCeaseDate" ⎕wi "value" (¯1↑1,selection)
+[95]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Contributions
+[96]      :for var :in spin Comment_Contributions at "variable" "row" ⋄ (var row)←var
+[97]          "Contributions" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[98]      :endfor
+[99]  :endif
+[100] :if ~0∊⍴,warnings
+[101]     MDISPLAY DLTMB warnings,⎕tcnl
+[102]     Win∆AssignVars "fmContsDef"
+[103] :endif
+[104] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Contributions" "" "Names"
+[105]     "fmContsDef" ⎕wi "modified" 0
+[106] :endif
+    ∇

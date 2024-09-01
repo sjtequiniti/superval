@@ -1,0 +1,140 @@
+    ∇ PP∆Contributions Conts∆Output;TotCONTS;CONTS;CCONTScf;CCONTS;TargetAB;∆;PSLIAB;TargetLiab;TotLiab;PVConts
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Project Contributions
+[3]   ⍝ The data on contributions is in global Conts∆Output
+[4]   
+[5]   1 PP∆Process∆Output Conts∆Output
+[6]   
+[7]   CONTS←+/pp∆CP↑TotCONTS←pp∆vMP×pp∆PrMembConts ⍝⍝⍝ ++⌿pp∆PrPHIConts
+[8]   ⍝ Calculate the cash flow of a contribution of 1% of salary
+[9]   ⍝ The second half allows for conts from exits
+[10]  :if ~NotPUC ⋄ PVConts←(pp∆vMP×pp∆PrV1pcInForce)+(0.5×       pp∆vMP      ×pp∆PrV1pcExit)
+[11]  :else       ⋄ PVConts←(pp∆vMP×pp∆PrV1pcInForce)+(0.5×((pp∆v×pp∆vMP)*0.5)×pp∆PrV1pcExit)
+[12]  :endif
+[13]  PVContsTot←+/(pp∆CP⌈pp∆NX×~NotPUC)↑PVConts
+[14]  PVCONTS1pccf←PVConts÷pp∆vMP
+[15]  
+[16]  PSLIAB←+/,pp∆AccumPV[1;;;]
+[17]  
+[18]  :select ValMeth ⍝ CCONTS for other methods
+[19]  :case 'AGG' ⍝ Aggregate Conts
+[20]      TotLiab←+/,pp∆AccumPV[0;;;]
+[21]      CCONTS←TotLiab-CONTS
+[22]  :caselist 'PUC' 'UCM' ⍝ PUC & UCM Conts
+[23]      CCONTS←(+/,pp∆AccumNormC)-CONTS
+[24]      CCONTScf←(NORMC÷pp∆vMP)-pp∆PrMembConts
+[25]  :case 'EAN' ⍝ EAN Co Conts
+[26]      CCONTS←+/PVConts×cocr
+[27]  :case 'AAN' ⍝ AAN Co Conts
+[28]      TotLiab←+/,pp∆AccumPV[0;;;]
+[29]      CCONTS←TotLiab-CONTS+PSLIAB
+[30]      CCONTScf←PVCONTS1pccf×CCONTS CDIV PVContsTot
+[31]      :if ~suppressText ⋄ CFTOT[0;⍳pp∆NX;13]←CCONTScf ⋄ :endif
+[32]  :case 'DAB' ⍝ DAB targetting PSL
+[33]      :if abNO=CCONTS←0
+[34]          TargetLiab←+/,pp∆AccumPV[0;⍳pp∆CP;;]-pp∆AccumPV[1;⍳pp∆CP;;]
+[35]          TargetAB←1↑(0⌈contper-term)↓(contper>term)×pp∆VAB
+[36]          CCONTS←TargetAB+TargetLiab-CONTS
+[37]      :endif
+[38]  :else
+[39]      CCONTS←0
+[40]      :if ecflag ⋄ crash ⋄ :endif
+[41]  :endselect
+[42]  
+[43]  :if ~suppressText
+[44]      CFTOT[0;⍳pp∆NX;12]←pp∆PrMembConts ⍝⍝⍝ ++⌿pp∆PrPHIConts
+[45]      CFTOT[0;⍳pp∆NX;14]←pp∆EXPPM ⍝ Per Member Expenses
+[46]      CFTOT[0;⍳pp∆NX;15]←PVCONTS1pccf
+[47]      :if ~NotPUC ⍝ Normal Cost split for PUC
+[48]          CFTOT[0;⍳pp∆NX;13]←CCONTScf
+[49]      :endif
+[50]      CFTOT[1;;1]←(⍴CFTOT)[1]↑pp∆VAB÷pp∆v ⍝ Default Accrued Benefit or PUC PBO or UC ABO
+[51]  :endif
+[52]  
+[53]  :if ⍙dbresults ⍝ Contributions for Actives
+[54]      :if ~ppf
+[55]          :if ClassID=1
+[56]              :if ~NotPUC ⍝ Normal Costs
+[57]                  ⍙dbbenres←⍙dbbenres⍪((11 9 6 13) (⍬⍴dbXe) (1+⍳20)) ⍙DBValnRecords 20↑CCONTScf×pp∆vMP
+[58]              :endif
+[59]              ⍙dbbenres←⍙dbbenres⍪((11 11 6 13) (⍬⍴dbXe) (1+⍳NX)) ⍙DBValnRecords PVConts ⍝ PV1%
+[60]          :else
+[61]              :if ~NotPUC ⋄ :andif term<20 ⍝ Normal Costs
+[62]                  ⍙dbbenproj←⍙dbbenproj⍪((11 9 6 13) (⍬⍴dbXe) (1+term+⍳20-term)) ⍙DBValnRecords (20-term)↑CCONTScf×pp∆vMP
+[63]              :endif
+[64]              ⍙dbbenproj←⍙dbbenproj⍪((11 11 6 13) (⍬⍴dbXe) (1+term+⍳NX)) ⍙DBValnRecords PVConts ⍝ PV1%
+[65]          :endif
+[66]      :endif
+[67]      ⍙dbbenproj←⍙dbbenproj⍪((11  8 2 11) pp∆dbX0 term) ⍙DBValnRecords ↑pp∆MembConts
+[68]      ⍙dbbenproj←⍙dbbenproj⍪((11 11 2 11) pp∆dbX0 term) ⍙DBValnRecords ↑PVCONTS1pccf
+[69]      ⍙dbbenres←⍙dbbenres  ⍪((11  8 6 13) pp∆dbXe term) ⍙DBValnRecords CONTS
+[70]  ⍝⍝⍝    ⍙dbbenres←⍙dbbenres⍪((11 8 6 13) pp∆dbXe term) ⍙DBValnRecords +/pp∆CP↑∆←pp∆vMP×pp∆PrMembConts
+[71]      :if bQSM ⍝ Total FS figures for QSM
+[72]          ⍙dbbenproj←⍙dbbenproj⍪((11 8 6 93) pp∆dbX0 term) ⍙DBValnRecords +/TotCONTS
+[73]      :endif
+[74]  ⍝⍝⍝    ⍙dbbenres←⍙dbbenres⍪((11 (29-×pp∆PHIContsDed) 6 13) pp∆dbXe term) ⍙DBValnRecords +/∆←pp∆vMP×+⌿pp∆PrPHIConts
+[75]      :if IndCashFlow ⍝ Individual (Total) Cash Flows
+[76]          ⍙dbbenres←⍙dbbenres⍪  ((11  8 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords   pp∆PrMembConts
+[77]  ⍝⍝⍝        ⍙dbbenres←⍙dbbenres⍪((11 (29-×pp∆PHIContsDed) 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords +⌿pp∆PrPHIConts
+[78]      :else
+[79]          ⍙dbbenproj←⍙dbbenproj⍪((11  8 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords   pp∆PrMembConts
+[80]  ⍝⍝⍝        ⍙dbbenproj←⍙dbbenproj⍪((11 (29-×pp∆PHIContsDed) 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords +⌿pp∆PrPHIConts
+[81]      :endif
+[82]          ⍙dbbenproj←⍙dbbenproj⍪((11 11 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords PVCONTS1pccf
+[83]      :if ~NotPUC ⍝ Normal Cost for PUC
+[84]          :if IndCashFlow ⍝ Individual (Total) Cash Flows
+[85]              ⍙dbbenres←⍙dbbenres⍪  ((11  9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords CCONTScf
+[86]          :else
+[87]              ⍙dbbenproj←⍙dbbenproj⍪((11  9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords CCONTScf
+[88]          :endif
+[89]              ⍙dbbenres ← ⍙dbbenres⍪((11  9 6 13) pp∆dbXe term) ⍙DBValnRecords CCONTS
+[90]              ⍙dbbenres ← ⍙dbbenres⍪((11 11 6 13) pp∆dbXe term) ⍙DBValnRecords +/pp∆CP↑PVConts
+[91]          :if bQSM
+[92]              ⍙dbbenproj←⍙dbbenproj⍪((11  9 6 93) pp∆dbX0 term) ⍙DBValnRecords +/pp∆vMP×CCONTScf
+[93]              ⍙dbbenproj←⍙dbbenproj⍪((11 11 6 93) pp∆dbX0 term) ⍙DBValnRecords +/PVConts
+[94]          :endif
+[95]      :elseif ValMeth≡'AAN' ⍝ AAN Future Service Conts
+[96]          :if IndCashFlow ⍝ Individual (Total) Cash Flows
+[97]              ⍙dbbenres←⍙dbbenres⍪  ((11  9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords PVCONTS1pccf×CCONTS CDIV PVContsTot
+[98]          :else
+[99]              ⍙dbbenproj←⍙dbbenproj⍪((11  9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords PVCONTS1pccf×CCONTS CDIV PVContsTot
+[100]         :endif
+[101]             ⍙dbbenres ←⍙dbbenres ⍪((11  9 6 13) pp∆dbXe term) ⍙DBValnRecords CCONTS
+[102]             ⍙dbbenres ←⍙dbbenres ⍪((11 11 6 13) pp∆dbXe term) ⍙DBValnRecords PVContsTot
+[103]         :if bQSM
+[104]             ⍙dbbenproj←⍙dbbenproj⍪((11  9 6 93) pp∆dbX0 term) ⍙DBValnRecords CCONTS
+[105]             ⍙dbbenproj←⍙dbbenproj⍪((11 11 6 93) pp∆dbX0 term) ⍙DBValnRecords PVContsTot
+[106]         :endif
+[107]     :elseif dab ⍝ DAB Future Service Conts
+[108]         :if abNO=0
+[109]             ⍙dbbenres ←⍙dbbenres ⍪((0 0 10 13) (neIND⊃pp∆dbXe term) contper) ⍙DBValnRecords -TargetAB
+[110]                 ⍙dbbenres ←⍙dbbenres ⍪((11 9 6 13) pp∆dbXe term) ⍙DBValnRecords CCONTS
+[111]             :if PVContsTot=0
+[112]                 :if IndCashFlow ⍝ Individual (Total) Cash Flows
+[113]                     ⍙dbbenres←⍙dbbenres⍪  ((11 9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords ∆←pp∆NX↑(¯1+pp∆NX-pp∆SNX)⍴CCONTS CDIV +/(¯1+pp∆NX-pp∆SNX)↑pp∆vMP
+[114]                 :else
+[115]                     ⍙dbbenproj←⍙dbbenproj⍪((11 9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords ∆←pp∆NX↑(¯1+pp∆NX-pp∆SNX)⍴CCONTS CDIV +/(¯1+pp∆NX-pp∆SNX)↑pp∆vMP
+[116]                 :endif
+[117]             :else
+[118]                 :if IndCashFlow ⍝ Individual (Total) Cash Flows
+[119]                     ⍙dbbenres←⍙dbbenres⍪  ((11 9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords ∆←PVCONTS1pccf×CCONTS CDIV PVContsTot
+[120]                 :else
+[121]                     ⍙dbbenproj←⍙dbbenproj⍪((11 9 8 12) 0 (1+term+⍳pp∆NX)) ⍙DBValnRecords ∆←PVCONTS1pccf×CCONTS CDIV PVContsTot
+[122]                 :endif
+[123]             :endif
+[124]             :if bQSM ⍝ Total FS figures for QSM
+[125]                 ⍙dbbenproj←⍙dbbenproj⍪((11 9 6 93) pp∆dbX0 term) ⍙DBValnRecords +/∆×pp∆vMP
+[126]             :endif
+[127]         :endif
+[128]                    ⍙dbbenres ←⍙dbbenres ⍪((11 11 6 13) pp∆dbXe term) ⍙DBValnRecords PVContsTot
+[129]         :if bQSM ⋄ ⍙dbbenproj←⍙dbbenproj⍪((11 11 6 93) pp∆dbX0 term) ⍙DBValnRecords +/PVConts ⋄ :endif ⍝ Total FS figures for QSM
+[130]     :endif
+[131]     ⍙DBAddRecords
+[132] :endif
+[133] 
+[134] :if ~suppressText
+[135]     PVC←PVConts ⋄ PVCONTS1pc←PVContsTot
+[136] ⍝⍝⍝    Ind∆Totals[4;⍳8+dab]←(INS×~×term×NotPUC),CONTS,CCONTS,(+/pp∆CP↑PVC),(+/pp∆CP↑pp∆vMP×pp∆EXPPM),dab↑(1↓PSLIAB),(×pp∆CP)×1↑pp∆CP↓CFTOT[1;⍳pp∆NX;(1,4)[×abNO]]×pp∆v
+[137]     Ind∆Totals[4;⍳8+dab]←(INS×~×term×NotPUC),CONTS,CCONTS,(+/pp∆CP↑PVC),(+/pp∆CP↑pp∆vMP×pp∆EXPPM),dab↑(×pp∆CP)×1↑pp∆CP↓CFTOT[1;⍳pp∆NX;(1,4)[×abNO]]×pp∆v
+[138] :endif
+    ∇

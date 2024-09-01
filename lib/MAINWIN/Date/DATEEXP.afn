@@ -1,0 +1,28 @@
+    ∇ DATE←fmt DATEEXP arg;⎕IO;A;ind;size;Y;Z;range
+[1]   ⍝ MAINWIN.sf#7
+[2]   ⍝ Takes a character 'arg' and turns it into a DD MM YYYY date using 'fmt'
+[3]   ⍝ If 'fmt' does not have 4 Y's, then use range to set century
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕IO←1 ⍝ Unnest the left argument, if required
+[8]   :if 2=≡fmt ⋄ (fmt range)←fmt ⋄ :endif
+[9]   size←1↑⍴arg←MATRIX arg ⋄ fmt←(¯1↑⍴arg)↑fmt
+[10]  DATE←(15×~'D'∊fmt)+⎕FI,' ','0',LJUSTIFY arg[;(fmt='D')/ind←⍳⍴fmt]
+[11]  DATE←DATE,[1.5]⎕FI,' ','0',LJUSTIFY arg[;(fmt='M')/ind]
+[12]  DATE←DATE+(⍴DATE)⍴(~'M'∊fmt)× ¯14 7
+[13]  A←(∨/Z≠' ')^^/(Z←arg[;(Y←fmt='Y')/ind])∊'0123456789 '
+[14]  DATE←DATE,⎕FI,' ','0',LJUSTIFY A⍀A⌿Z
+[15]  DATE[;3]←DATE[;3]+A×1900×DATE[;3]<100
+[16]  DATE←DATE+((100×^/arg=' '),[1.5]0),0 ⍝ Invalid Dates
+[17]  
+[18]  :if 0≠⎕nc 'range'
+[19]  :andif 4≠+/Y ⍝ Y2K 2 Y dates
+[20]  :andif ~0∊⍴Z←(DATECHECK DATE)/⍳size
+[21]      :if 3≠¯1↑⍴range←MATRIX range ⋄ range←MATRIX ⌽(3↑range)+3↑⎕ts ⋄ :endif
+[22]      :if size=1↑⍴range ⋄ range←range[Z;] ⋄ :endif
+[23]      DATE[Z;]←range WINDOW∆DATE DATE[Z;]
+[24]  :endif
+[25]  
+[26]  →(size>1)/0 ⋄ DATE←,DATE
+    ∇

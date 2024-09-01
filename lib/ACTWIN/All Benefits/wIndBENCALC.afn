@@ -1,1 +1,32 @@
-    ∇ wIndBENCALC;PROSFRAC;SPREADFRAC;PROSPENADD;FPROSPENADD;SPEN;exitTOnrd[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Benefit accumulators calculator[3]   ⍝ Retirement pension accumulators[4]   [5]        IndTPEN←     IndTPEN+ PEN           ⋄      IndSTPEN←     IndSTPEN+SPEN←WARFRAC∆SL× PEN[6]   IndTPEN∆Post←IndTPEN∆Post+ PEN-PreNRAPEN ⋄ IndSTPEN∆Post←IndSTPEN∆Post+     WARFRAC∆SL× PEN-PreNRAPEN[7]     IndILLTPEN←  IndILLTPEN+IPEN           ⋄   IndILLSTPEN←  IndILLSTPEN+     WARFRAC∆SL×IPEN[8]   :if PHI[9]            IndPHITPEN←     IndPHITPEN+PHIPEN              ⋄      IndPHISTPEN←     IndPHISTPEN+     WARFRAC∆SL×PHIPEN[10]      IndPHITPEN∆Post←IndPHITPEN∆Post+PHIPEN-PHIPreNRAPEN ⋄ IndPHISTPEN∆Post←IndPHISTPEN∆Post+     WARFRAC∆SL×PHIPEN-PHIPreNRAPEN[11]  :endif[12]  [13]  PROSFRAC←NX/0[14]  :if slice=0 ⋄ :andif ~ppf[15]      PROSFRAC←(0⌈(IHSRVMAX[ENX_1]-ITOTSRVM)⌊(EXIHSERV×exitTOnrd≠0)+exitTOnrd←SERVRND∆L DURN LDATE TO NRD) ZDIV 0⌈SERVRND∆L DURN VDATE TO LDATE[16]      :if PHI ⋄ IndPHISFPEN←WARFRAC∆SL×IndPHIFPEN←IndPHITPEN ⋄ :endif[17]          IndSFPEN←WARFRAC∆SL×   IndFPEN←   IndTPEN[18]      IndSFILLTPEN←WARFRAC∆SL×IndFILLTPEN←IndILLTPEN[19]      IndPROSPEN ←IndPROSPEN+PROSPENADD←PROSFRAC×IndFILLTPEN[20]      IndSPROSPEN←IndSPROSPEN          +PROSFRAC×IndSFILLTPEN[21]      :if ~SPREADFRAC←STYPE∨0=(⍴SSDIH)×⍴SFDIH[22]          SPREADFRAC←(0⌈'DN' DURN VDATE TO sfdih) ZDIV 0⌈'DN' DURN ssdih TO sfdih[23]      :endif[24]      IndFPROSPEN ←IndFPROSPEN+FPROSPENADD←SPREADFRAC×PROSFRAC× IndFILLTPEN[25]      IndSFPROSPEN←IndSFPROSPEN           +SPREADFRAC×PROSFRAC×IndSFILLTPEN[26]  :endif[27]  ⍝⍝⍝ :if test[28]  ⍝⌿⍝    AUDIT ' ⍺ß5'[29]  ⍝⌿⍝    :if slice=0 ⋄ :andif ~^/PROSFRAC=0 ⋄ AUDIT ' ⍺ß6' ⋄ :endif[30]  ⍝⍝⍝ :endif    ∇
+    ∇ wIndBENCALC;PROSFRAC;SPREADFRAC;PROSPENADD;FPROSPENADD;SPEN;exitTOnrd
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Benefit accumulators calculator
+[3]   ⍝ Retirement pension accumulators
+[4]   
+[5]        IndTPEN←     IndTPEN+ PEN           ⋄      IndSTPEN←     IndSTPEN+SPEN←WARFRAC∆SL× PEN
+[6]   IndTPEN∆Post←IndTPEN∆Post+ PEN-PreNRAPEN ⋄ IndSTPEN∆Post←IndSTPEN∆Post+     WARFRAC∆SL× PEN-PreNRAPEN
+[7]     IndILLTPEN←  IndILLTPEN+IPEN           ⋄   IndILLSTPEN←  IndILLSTPEN+     WARFRAC∆SL×IPEN
+[8]   :if PHI
+[9]            IndPHITPEN←     IndPHITPEN+PHIPEN              ⋄      IndPHISTPEN←     IndPHISTPEN+     WARFRAC∆SL×PHIPEN
+[10]      IndPHITPEN∆Post←IndPHITPEN∆Post+PHIPEN-PHIPreNRAPEN ⋄ IndPHISTPEN∆Post←IndPHISTPEN∆Post+     WARFRAC∆SL×PHIPEN-PHIPreNRAPEN
+[11]  :endif
+[12]  
+[13]  PROSFRAC←NX/0
+[14]  :if slice=0 ⋄ :andif ~ppf
+[15]      PROSFRAC←(0⌈(IHSRVMAX[ENX_1]-ITOTSRVM)⌊(EXIHSERV×exitTOnrd≠0)+exitTOnrd←SERVRND∆L DURN LDATE TO NRD) ZDIV 0⌈SERVRND∆L DURN VDATE TO LDATE
+[16]      :if PHI ⋄ IndPHISFPEN←WARFRAC∆SL×IndPHIFPEN←IndPHITPEN ⋄ :endif
+[17]          IndSFPEN←WARFRAC∆SL×   IndFPEN←   IndTPEN
+[18]      IndSFILLTPEN←WARFRAC∆SL×IndFILLTPEN←IndILLTPEN
+[19]      IndPROSPEN ←IndPROSPEN+PROSPENADD←PROSFRAC×IndFILLTPEN
+[20]      IndSPROSPEN←IndSPROSPEN          +PROSFRAC×IndSFILLTPEN
+[21]      :if ~SPREADFRAC←STYPE∨0=(⍴SSDIH)×⍴SFDIH
+[22]          SPREADFRAC←(0⌈'DN' DURN VDATE TO sfdih) ZDIV 0⌈'DN' DURN ssdih TO sfdih
+[23]      :endif
+[24]      IndFPROSPEN ←IndFPROSPEN+FPROSPENADD←SPREADFRAC×PROSFRAC× IndFILLTPEN
+[25]      IndSFPROSPEN←IndSFPROSPEN           +SPREADFRAC×PROSFRAC×IndSFILLTPEN
+[26]  :endif
+[27]  ⍝⍝⍝ :if test
+[28]  ⍝⌿⍝    AUDIT ' ⍺ß5'
+[29]  ⍝⌿⍝    :if slice=0 ⋄ :andif ~^/PROSFRAC=0 ⋄ AUDIT ' ⍺ß6' ⋄ :endif
+[30]  ⍝⍝⍝ :endif
+    ∇

@@ -1,1 +1,134 @@
-    ∇ newdata←data Apply_Escalation R;vars;rates;newdata;cn;rn;∆NAMES;M_SXX;F_SXX;rd;durn;∆EDate;∆RFDate;⍙;RevDate;revdurn;Inc;DataField;∆;d;dob;sex;rec;∆i;x;col;∆s;dobs;M_IncAge;F_IncAge;IncAge;rdurn;incrate;∆rev;∆inc;hdr;row2;g0∆inc;g0∆rev;ge0∆rev;ge0∆inc;ge0∆i;g0∆i;salscale;age;fixedrates;idurn;int_date;gmprevrate;gmpincrate;LD;gmpg;tab;msk;prespa;ld;IncType;gmp;inc;rev;revrate;gmprdurn;memb;LRF;spa_date;age_date;weeks;gmpCY;gmpTY;nextTaxDate;nextTaxDate2;gmpidurn[1]   ⍝ DATAWIN.sf#23[2]   ⍝ loses formats row[3]   ⍝ Revn: dnp29dec17 * GMP calc fix - apply LRF to deferreds not pensioners[4]   ⍝ Revn: dnp29dec17 * GMPs get complete increases post SPA[5]   ⍝ Revn: dnp04jan18 * fix for KS - counts the number of 6/4s passed instead of number of complete tax years[6]   ⍝ Revn: dnp09jan18 * fix because it did not accept yield curve char strings![7]   ⍝ Revn: dnp09jan18 * fix for yield curves[8]   ⍝ Revn: dnp16feb18 * fix for KS/FS - for deferreds XS over GMP - calc should be: (Data Field) × Escalation[9]   ⍝ Revn: dnp27feb18 * fix for KS - when considering tax years for gmp increases: counts the number of 6/4s passed instead of number of complete tax years[10]  ⍝ Revn: dnp08mar18 * fix for KS/FS: GMPs always get 6/4 increases: pre and post SPA[11]  [12]  [13]  ⍝ Preamble ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝[14]  (tab gmpg)←R[15]  DataField           ← ↑  tab at 'DataField'[16]  ⍝ msk                 ← ^/¨⎕vi¨ ∆←↑¨tab at 'IncIncreases' 'IncRevaln'             ⍝ Mask prevents execution of char strings[17]  ⍝ (incrate revrate)   ← (msk/∆)←   EXECUTE¨ (msk/∆)[18]  (incrate revrate)   ← ExecuteRates ↑¨tab at 'IncIncreases' 'IncRevaln'       ⍝ dnp09jan18[19]  (M_SXX F_SXX)       ← ↑¨ tab at 'M_SXX' 'F_SXX'[20]  ∆NAMES              ← (⊂'∆idx'), m2n ⊃'(' StripText¨ m2n NAMES[21]  (M_IncAge F_IncAge) ← EXECUTE¨  ↑¨tab at 'M_IncAge' 'F_IncAge'[22]  fixedrates          ← ⊃push/ ('GMPFixed' FACTOR 'All')[23]  [24]  ⍝ Assign Dates and Specify Durations ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝[25]  ∆EDate ← 'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrEDate  EDate[26]  ∆RFDate← 'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrRFDate RFDate[27]  [28]  durn ← ∆EDate YDAYS  ∆RFDate[29]  :if rd←'R'=↑⊃tab at 'IncFreq'[30]      RevDate←(¯1↓ 'DD/MM' DATEEXP ⊃tab at 'IncRevDate'),¯1↑∆EDate[31]      :if 0>∆EDate YDAYS RevDate ⋄ RevDate←RevDate+0 0 1 ⋄ :endif[32]      revdurn←∆EDate YDAYS RevDate[33]  :else[34]      revdurn←0[35]  :endif[36]  [37]  ⍝ Member Loop ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝[38]  newdata     ← hdr ← MATRIX keysIn data[39]  [40]  ⍙stop←1[41]  :for ∆ :in data at '∆idx'                                                       ⍝ Create member loop[42]      rec     ← data for '∆idx' ∆                                                 ⍝ Table for Individual member record[43]      col     ← ↑((∆NAMES)  (keysIn rec)) map ⊂DataField                          ⍝ Name of data item[44]      d       ← EXECUTE ↑ rec at col                                              ⍝ Data Field[45]      dob     ← 'DD/MM/YYYY' DATEEXP ↑rec at 'DOB'[46]      age     ← ⌊.5 + dob YDAYS ∆EDate[47]      sex     ← 'M'≡ ↑ UPPERCASE ↑ rec at 'SEX'[48]      salscale← age↓ ↑sex ⌽ F_SXX M_SXX                                           ⍝ Salary Scale[49]      IncAge  ← ↑ sex ⌽ F_IncAge M_IncAge[50]      Inc     ← rec ParseExcel  ↑ tab at 'IncFormula'[51]      prespa  ←   age < ↑sex ⌽ 60 65[52]      :if 0= +/(keysIn rec) ∊ ⊂'MEMORSP'  ⋄ memb ←1                               ⍝ 31/7/17 - ASP: for member data files which dont have  MEMORSP col[53]      :else                               ⋄ memb ←'M'≡↑↑rec at 'MEMORSP'[54]      :endif[55]  [56]      gmpincrate  ← gmpg at 'GMPIncrease'[57]      gmprevrate  ← gmpg at 'GMPRevaln'[58]      spa_date    ← dob+0 0 ,↑sex ⌽ 60 65                                         ⍝ date member turns spa age[59]      int_date    ←  ,∆RFDate  DATEMIN  ∆EDate DATEMAX spa_date                   ⍝ Interim date for GMP[60]      ⍝ gmprdurn    ←  ∆EDate  TAXYEARS  int_date[61]      nextTaxDate ← 6 4,int_date[3]+(int_date[2]>4)+(int_date[2]=4)×int_date[1]>5[62]      gmprdurn    ← ⌈ ¯1+'DN' DURN   ∆EDate TO nextTaxDate                        ⍝ dnp04jan18  - fix for KS[63]      ⍝ gmpTY       ← ↑∣∆RFDate TAXYEARS  int_date                                ⍝ is gmpidurn the same as idurn????[64]      nextTaxDate2← 6 4,∆RFDate[3]+(∆RFDate[2]>4)+(∆RFDate[2]=4)×∆RFDate[1]>5     ⍝ dnp27feb18  - fix for KS[65]      gmpTY       ← ⌈ ¯1+'DN' DURN   int_date TO nextTaxDate2                     ⍝ dnp27feb18  - fix for KS[66]      gmpCY       ← ↑∣∆RFDate YDAYS  int_date                                     ⍝ complete years[67]      ⍝ gmpidurn    ← ↑ prespa ⌽ gmpCY gmpTY                                      ⍝ dnp29dec17 - fix for KS: GMPs get complete year increases post SPA[68]      gmpidurn    ← gmpTY                                                         ⍝ dnp08mar18 - fix for KS/FS: GMPs always get 6/4 increases: pre and post SPA[69]      weeks       ← ⌊(1÷7)×↑∣∆RFDate DAYS  int_date                               ⍝ weeks for LRF calc[70]  [71]      :if 'Fixed'≡ ↑gmprevrate[72]          ld←↑⎕fi ↑,/⌽¯2 ¯2 ¯4↑¨'0',¨⍕¨'DD/MM/YYYY' DATEEXP (↑rec at 'LD')[73]          gmprevrate←,¨2⍴↑ ((ld<keysIn fixedrates),1) /( 1,valsIn fixedrates )[74]      :endif[75]  [76]      :select IncType←↑tab at 'IncType'[77]      :caselist 'Age Dependent' 'Excess over GMP' 'GMP' 'If Not Fixed'[78]          age_date←  (0 0,IncAge) + dob                                           ⍝ Date member turns Age Dependent age.[79]          int_date←  ,∆RFDate  DATEMIN  ∆EDate DATEMAX age_date                   ⍝ Interim date[80]          rdurn   ←  ∆EDate  YDAYS  int_date[81]          idurn   ← ↑∣∆RFDate YDAYS  int_date[82]          :if 'Fixed'≡ ↑revrate                                                   ⍝⍝ !!Assumes that the record will have a LD if it needs one.[83]              revrate← ↑((0≤↑¨ (⊂'DD/MM/YYYY' DATEEXP ↑ rec at 'LD' ) YDAYS¨ (⊂'YYYYMMDD') DATEEXP¨ ⍕¨↑ keysIn fixedrates)/↑(valsIn fixedrates)) ,¯1↑↑  (valsIn fixedrates)[84]          :endif[85]  [86]          :if memb[87]              :if 'GMP'≡ IncType[88]                  (inc rev)  ← ↑¨ (gmpg for 'GMPField' DataField) at 'GMPIncrease' 'GMPRevaln'[89]                  :if 'Fixed'≡ rev                                                ⍝ Removed first ↑[90]                      ld←↑⎕fi ↑,/⌽¯2 ¯2 ¯4↑¨'0',¨⍕¨'DD/MM/YYYY' DATEEXP (↑rec at 'LD')[91]                      rev←,↑ ((ld<keysIn fixedrates),1) /( 1,valsIn fixedrates )[92]                  :endif[93]  [94]                  ∆inc ← (rd 0) Escalate inc gmpidurn revdurn                     ⍝ Vectors of inc/rev rates or scalar rates[95]                  ∆rev ← (rd 0) Escalate rev gmprdurn revdurn                     ⍝ Vectors of inc/rev rates or scalar rates[96]                  LRF  ←  1+ (datatype ≡ 'Deferreds')×weeks÷700                   ⍝ dnp29dec17 - fix for KS : LRF does not apply to pensioners[97]                  ∆i   ←  ×/∆inc ∆rev LRF                                         ⍝ Escalation (scalar)[98]              :else[99]                  ∆inc ← (rd 0) Escalate incrate idurn revdurn                    ⍝ Vectors of inc/rev rates or scalar rates[100]                 ∆rev ← (rd 0) Escalate revrate rdurn revdurn                    ⍝ Vectors of inc/rev rates or scalar rates[101]                 ∆i      ←  ×/∆inc ∆rev                                          ⍝ Escalation (scalar)[102]             :endif[103]         :else[104]             ∆i← ×/ (rd 0) Escalate incrate durn revdurn                         ⍝ Spouses get incs only. No revals[105]         :endif[106] [107]         :if 'Excess over GMP'≡ IncType[108]         :andif prespa ^ memb                                                    ⍝ prespa ^ memb[109]             gmp             ← EXECUTE¨ ↑¨rec at 'GMP0' 'GMPE0'[110]             (g0∆rev ge0∆rev)← (⊂rd 0) Escalate¨   gmprevrate push¨ ⊂gmprdurn revdurn ⍝ dnp09jan18[111]             (g0∆inc ge0∆inc)← (⊂rd 0) Escalate¨   gmpincrate push¨ ⊂gmpidurn revdurn[112]             (g0∆i ge0∆i)←(g0∆inc ge0∆inc)×(g0∆rev ge0∆rev)[113]             :if datatype ≡ 'Deferreds'[114]                 ⍝d← ((d+ +/gmp) × ∆i) - (+/gmp × g0∆i ge0∆i)                    ⍝ (Data Field + GMP) × Escalation - GMP × GMP Escalation[115]                 d← d × ∆i                                                       ⍝ (Data Field) × Escalation[116]             :elseif datatype ≡ 'Pensioners'[117]                 d← ((d       ) × ∆i) - (+/gmp × g0∆i ge0∆i)                     ⍝ (Data Field      ) × Escalation - GMP × GMP Escalation[118]             :endif[119]         :else[120]             d← d × ∆i                                                           ⍝ (Data Field) × Escalation[121]         :endif[122]     :case 'Inflation'[123]         ∆i←(rd 0) Escalate Inc  durn revdurn                                    ⍝ Escalation[124]         ∆s←(rd 1) Escalate salscale durn revdurn                                ⍝ Salary Increase[125]         d ← ↑ ×/⊃,/ d ∆i ∆s                                                     ⍝ (Data Field) × Escalation × Salary Increase[126]     :caselist 'Interest' 'Increases' 'Revaluation'[127]         ∆i←(rd 0) Escalate Inc  durn revdurn                                    ⍝ Escalation[128]         d ← ↑ ×/⊃,/ d ∆i                                                        ⍝ (Data Field) × Escalation[129]     :endselect[130]     :if mt d ⋄ stop! ⋄ :endif                                                   ⍝ no escalation what happened??[131]     newdata  ← newdata ⍪ valsIn (rec amend col push d) select ,hdr[132] :endfor    ∇
+    ∇ newdata←data Apply_Escalation R;vars;rates;newdata;cn;rn;∆NAMES;M_SXX;F_SXX;rd;durn;∆EDate;∆RFDate;⍙;RevDate;revdurn;Inc;DataField;∆;d;dob;sex;rec;∆i;x;col;∆s;dobs;M_IncAge;F_IncAge;IncAge;rdurn;incrate;∆rev;∆inc;hdr;row2;g0∆inc;g0∆rev;ge0∆rev;ge0∆inc;ge0∆i;g0∆i;salscale;age;fixedrates;idurn;int_date;gmprevrate;gmpincrate;LD;gmpg;tab;msk;prespa;ld;IncType;gmp;inc;rev;revrate;gmprdurn;memb;LRF;spa_date;age_date;weeks;gmpCY;gmpTY;nextTaxDate;nextTaxDate2;gmpidurn
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ loses formats row
+[3]   ⍝ Revn: dnp29dec17 * GMP calc fix - apply LRF to deferreds not pensioners
+[4]   ⍝ Revn: dnp29dec17 * GMPs get complete increases post SPA
+[5]   ⍝ Revn: dnp04jan18 * fix for KS - counts the number of 6/4s passed instead of number of complete tax years
+[6]   ⍝ Revn: dnp09jan18 * fix because it did not accept yield curve char strings!
+[7]   ⍝ Revn: dnp09jan18 * fix for yield curves
+[8]   ⍝ Revn: dnp16feb18 * fix for KS/FS - for deferreds XS over GMP - calc should be: (Data Field) × Escalation
+[9]   ⍝ Revn: dnp27feb18 * fix for KS - when considering tax years for gmp increases: counts the number of 6/4s passed instead of number of complete tax years
+[10]  ⍝ Revn: dnp08mar18 * fix for KS/FS: GMPs always get 6/4 increases: pre and post SPA
+[11]  
+[12]  
+[13]  ⍝ Preamble ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝
+[14]  (tab gmpg)←R
+[15]  DataField           ← ↑  tab at 'DataField'
+[16]  ⍝ msk                 ← ^/¨⎕vi¨ ∆←↑¨tab at 'IncIncreases' 'IncRevaln'             ⍝ Mask prevents execution of char strings
+[17]  ⍝ (incrate revrate)   ← (msk/∆)←   EXECUTE¨ (msk/∆)
+[18]  (incrate revrate)   ← ExecuteRates ↑¨tab at 'IncIncreases' 'IncRevaln'       ⍝ dnp09jan18
+[19]  (M_SXX F_SXX)       ← ↑¨ tab at 'M_SXX' 'F_SXX'
+[20]  ∆NAMES              ← (⊂'∆idx'), m2n ⊃'(' StripText¨ m2n NAMES
+[21]  (M_IncAge F_IncAge) ← EXECUTE¨  ↑¨tab at 'M_IncAge' 'F_IncAge'
+[22]  fixedrates          ← ⊃push/ ('GMPFixed' FACTOR 'All')
+[23]  
+[24]  ⍝ Assign Dates and Specify Durations ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝
+[25]  ∆EDate ← 'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrEDate  EDate
+[26]  ∆RFDate← 'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrRFDate RFDate
+[27]  
+[28]  durn ← ∆EDate YDAYS  ∆RFDate
+[29]  :if rd←'R'=↑⊃tab at 'IncFreq'
+[30]      RevDate←(¯1↓ 'DD/MM' DATEEXP ⊃tab at 'IncRevDate'),¯1↑∆EDate
+[31]      :if 0>∆EDate YDAYS RevDate ⋄ RevDate←RevDate+0 0 1 ⋄ :endif
+[32]      revdurn←∆EDate YDAYS RevDate
+[33]  :else
+[34]      revdurn←0
+[35]  :endif
+[36]  
+[37]  ⍝ Member Loop ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝
+[38]  newdata     ← hdr ← MATRIX keysIn data
+[39]  
+[40]  ⍙stop←1
+[41]  :for ∆ :in data at '∆idx'                                                       ⍝ Create member loop
+[42]      rec     ← data for '∆idx' ∆                                                 ⍝ Table for Individual member record
+[43]      col     ← ↑((∆NAMES)  (keysIn rec)) map ⊂DataField                          ⍝ Name of data item
+[44]      d       ← EXECUTE ↑ rec at col                                              ⍝ Data Field
+[45]      dob     ← 'DD/MM/YYYY' DATEEXP ↑rec at 'DOB'
+[46]      age     ← ⌊.5 + dob YDAYS ∆EDate
+[47]      sex     ← 'M'≡ ↑ UPPERCASE ↑ rec at 'SEX'
+[48]      salscale← age↓ ↑sex ⌽ F_SXX M_SXX                                           ⍝ Salary Scale
+[49]      IncAge  ← ↑ sex ⌽ F_IncAge M_IncAge
+[50]      Inc     ← rec ParseExcel  ↑ tab at 'IncFormula'
+[51]      prespa  ←   age < ↑sex ⌽ 60 65
+[52]      :if 0= +/(keysIn rec) ∊ ⊂'MEMORSP'  ⋄ memb ←1                               ⍝ 31/7/17 - ASP: for member data files which dont have  MEMORSP col
+[53]      :else                               ⋄ memb ←'M'≡↑↑rec at 'MEMORSP'
+[54]      :endif
+[55]  
+[56]      gmpincrate  ← gmpg at 'GMPIncrease'
+[57]      gmprevrate  ← gmpg at 'GMPRevaln'
+[58]      spa_date    ← dob+0 0 ,↑sex ⌽ 60 65                                         ⍝ date member turns spa age
+[59]      int_date    ←  ,∆RFDate  DATEMIN  ∆EDate DATEMAX spa_date                   ⍝ Interim date for GMP
+[60]      ⍝ gmprdurn    ←  ∆EDate  TAXYEARS  int_date
+[61]      nextTaxDate ← 6 4,int_date[3]+(int_date[2]>4)+(int_date[2]=4)×int_date[1]>5
+[62]      gmprdurn    ← ⌈ ¯1+'DN' DURN   ∆EDate TO nextTaxDate                        ⍝ dnp04jan18  - fix for KS
+[63]      ⍝ gmpTY       ← ↑∣∆RFDate TAXYEARS  int_date                                ⍝ is gmpidurn the same as idurn????
+[64]      nextTaxDate2← 6 4,∆RFDate[3]+(∆RFDate[2]>4)+(∆RFDate[2]=4)×∆RFDate[1]>5     ⍝ dnp27feb18  - fix for KS
+[65]      gmpTY       ← ⌈ ¯1+'DN' DURN   int_date TO nextTaxDate2                     ⍝ dnp27feb18  - fix for KS
+[66]      gmpCY       ← ↑∣∆RFDate YDAYS  int_date                                     ⍝ complete years
+[67]      ⍝ gmpidurn    ← ↑ prespa ⌽ gmpCY gmpTY                                      ⍝ dnp29dec17 - fix for KS: GMPs get complete year increases post SPA
+[68]      gmpidurn    ← gmpTY                                                         ⍝ dnp08mar18 - fix for KS/FS: GMPs always get 6/4 increases: pre and post SPA
+[69]      weeks       ← ⌊(1÷7)×↑∣∆RFDate DAYS  int_date                               ⍝ weeks for LRF calc
+[70]  
+[71]      :if 'Fixed'≡ ↑gmprevrate
+[72]          ld←↑⎕fi ↑,/⌽¯2 ¯2 ¯4↑¨'0',¨⍕¨'DD/MM/YYYY' DATEEXP (↑rec at 'LD')
+[73]          gmprevrate←,¨2⍴↑ ((ld<keysIn fixedrates),1) /( 1,valsIn fixedrates )
+[74]      :endif
+[75]  
+[76]      :select IncType←↑tab at 'IncType'
+[77]      :caselist 'Age Dependent' 'Excess over GMP' 'GMP' 'If Not Fixed'
+[78]          age_date←  (0 0,IncAge) + dob                                           ⍝ Date member turns Age Dependent age.
+[79]          int_date←  ,∆RFDate  DATEMIN  ∆EDate DATEMAX age_date                   ⍝ Interim date
+[80]          rdurn   ←  ∆EDate  YDAYS  int_date
+[81]          idurn   ← ↑∣∆RFDate YDAYS  int_date
+[82]          :if 'Fixed'≡ ↑revrate                                                   ⍝⍝ !!Assumes that the record will have a LD if it needs one.
+[83]              revrate← ↑((0≤↑¨ (⊂'DD/MM/YYYY' DATEEXP ↑ rec at 'LD' ) YDAYS¨ (⊂'YYYYMMDD') DATEEXP¨ ⍕¨↑ keysIn fixedrates)/↑(valsIn fixedrates)) ,¯1↑↑  (valsIn fixedrates)
+[84]          :endif
+[85]  
+[86]          :if memb
+[87]              :if 'GMP'≡ IncType
+[88]                  (inc rev)  ← ↑¨ (gmpg for 'GMPField' DataField) at 'GMPIncrease' 'GMPRevaln'
+[89]                  :if 'Fixed'≡ rev                                                ⍝ Removed first ↑
+[90]                      ld←↑⎕fi ↑,/⌽¯2 ¯2 ¯4↑¨'0',¨⍕¨'DD/MM/YYYY' DATEEXP (↑rec at 'LD')
+[91]                      rev←,↑ ((ld<keysIn fixedrates),1) /( 1,valsIn fixedrates )
+[92]                  :endif
+[93]  
+[94]                  ∆inc ← (rd 0) Escalate inc gmpidurn revdurn                     ⍝ Vectors of inc/rev rates or scalar rates
+[95]                  ∆rev ← (rd 0) Escalate rev gmprdurn revdurn                     ⍝ Vectors of inc/rev rates or scalar rates
+[96]                  LRF  ←  1+ (datatype ≡ 'Deferreds')×weeks÷700                   ⍝ dnp29dec17 - fix for KS : LRF does not apply to pensioners
+[97]                  ∆i   ←  ×/∆inc ∆rev LRF                                         ⍝ Escalation (scalar)
+[98]              :else
+[99]                  ∆inc ← (rd 0) Escalate incrate idurn revdurn                    ⍝ Vectors of inc/rev rates or scalar rates
+[100]                 ∆rev ← (rd 0) Escalate revrate rdurn revdurn                    ⍝ Vectors of inc/rev rates or scalar rates
+[101]                 ∆i      ←  ×/∆inc ∆rev                                          ⍝ Escalation (scalar)
+[102]             :endif
+[103]         :else
+[104]             ∆i← ×/ (rd 0) Escalate incrate durn revdurn                         ⍝ Spouses get incs only. No revals
+[105]         :endif
+[106] 
+[107]         :if 'Excess over GMP'≡ IncType
+[108]         :andif prespa ^ memb                                                    ⍝ prespa ^ memb
+[109]             gmp             ← EXECUTE¨ ↑¨rec at 'GMP0' 'GMPE0'
+[110]             (g0∆rev ge0∆rev)← (⊂rd 0) Escalate¨   gmprevrate push¨ ⊂gmprdurn revdurn ⍝ dnp09jan18
+[111]             (g0∆inc ge0∆inc)← (⊂rd 0) Escalate¨   gmpincrate push¨ ⊂gmpidurn revdurn
+[112]             (g0∆i ge0∆i)←(g0∆inc ge0∆inc)×(g0∆rev ge0∆rev)
+[113]             :if datatype ≡ 'Deferreds'
+[114]                 ⍝d← ((d+ +/gmp) × ∆i) - (+/gmp × g0∆i ge0∆i)                    ⍝ (Data Field + GMP) × Escalation - GMP × GMP Escalation
+[115]                 d← d × ∆i                                                       ⍝ (Data Field) × Escalation
+[116]             :elseif datatype ≡ 'Pensioners'
+[117]                 d← ((d       ) × ∆i) - (+/gmp × g0∆i ge0∆i)                     ⍝ (Data Field      ) × Escalation - GMP × GMP Escalation
+[118]             :endif
+[119]         :else
+[120]             d← d × ∆i                                                           ⍝ (Data Field) × Escalation
+[121]         :endif
+[122]     :case 'Inflation'
+[123]         ∆i←(rd 0) Escalate Inc  durn revdurn                                    ⍝ Escalation
+[124]         ∆s←(rd 1) Escalate salscale durn revdurn                                ⍝ Salary Increase
+[125]         d ← ↑ ×/⊃,/ d ∆i ∆s                                                     ⍝ (Data Field) × Escalation × Salary Increase
+[126]     :caselist 'Interest' 'Increases' 'Revaluation'
+[127]         ∆i←(rd 0) Escalate Inc  durn revdurn                                    ⍝ Escalation
+[128]         d ← ↑ ×/⊃,/ d ∆i                                                        ⍝ (Data Field) × Escalation
+[129]     :endselect
+[130]     :if mt d ⋄ stop! ⋄ :endif                                                   ⍝ no escalation what happened??
+[131]     newdata  ← newdata ⍪ valsIn (rec amend col push d) select ,hdr
+[132] :endfor
+    ∇

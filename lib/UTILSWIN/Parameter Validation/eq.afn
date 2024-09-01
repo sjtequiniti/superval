@@ -1,0 +1,16 @@
+    ∇ Z←L eq R;X;Y;∆;rnks;switch
+[1]   ⍝ UTILSWIN.sf#5
+[2]   ⍝ validation microlanguage
+[3]   :if 1 1≡↑¨(⍴∆)(∆←⍴L) ⋄ L←↑L ⋄ :endif
+[4]   :if 1 1≡↑¨(⍴∆)(∆←⍴R) ⋄ R←↑R ⋄ :endif
+[5]   switch←>/rnks←↑¨⍴¨⍴¨L R
+[6]   (X Y)←switch⌽L R
+[7]   :select switch⌽rnks
+[8]   :case 0 0 ⋄ Z←X=Y
+[9]   :case 0 1 ⋄ Z←0
+[10]  :case 0 2 ⋄ Z←X∊m2n Y
+[11]  :case 1 1 ⋄ Z←X≡Y
+[12]  :case 1 2 ⋄ Z←(⊂X)∊m2n Y
+[13]  :case 2 2 ⋄ ⎕ERROR (≠/↑¨⍴¨X Y)/'LENGTH ERROR' ⋄ Z←(m2n X)≡¨m2n Y
+[14]  :endselect
+    ∇

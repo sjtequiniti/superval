@@ -1,1 +1,54 @@
-    ∇ res←ParmFile NEINV_RunDesc SaveCN;⎕io;CHeader;PickList;value;n[1]   ⍝ INVWIN.sf#5[2]   ⎕io←1[3]   res←0 2⍴""[4]   [5]   res←res OVER ('Output File') (,(tpr1=⎕xnnums)⌿⎕xnnames)[6]   res←res OVER ('Run Time') (RunTime)[7]   res←res OVER "" ""[8]   [9]   res←res OVER ('Parameter File') (DLTB ParmFile)[10]  CHeader←ParmFile ReadFile "Index"[11]  res←res OVER ('Parameter File Description') (↑(CHeader for 1=⍳rowsIn CHeader) at '∆_Description')[12]  res←res OVER ('Parameters Description') (desc←↑(CHeader for '∆_CompNo' (↑SaveCN)) at '∆_Description')[13]  res←res OVER ParametersSaved 'New_Entrant_Age' desc[14]  res←res OVER ("Decrements File Name") ((DLTB DECRFile),'.sf')[15]  res←res OVER "" ""[16]  res←res OVER "Membership Data" ""[17]  :if FileSelections[18]      GetAbsFileList "Fund"[19]      :if 0∊⍴n←FilesList ExactTLU fILENAME,' '[20]          res←res OVER ('    ','Investigation Data File') (DLTB fILENAME,' ',0 1 WGetFileTime InputDir,fILENAME)[21]      :else[22]          res←res OVER ('    ','Investigation Data File') (DLTB fILENAME," <",(DLTMB FilesDesc[n;]),">")[23]      :endif[24]      PickList←⎕split SStoMAT ',',FILES[25]      PickList←PickList,¨(WGetFileTime ¨(⊂InputDir),¨PickList)[26]      PickList←(SStoMAT CatSels),(⊃(⊂' <File: '),¨PickList),'>'[27]      :for n :in ⍳1↑⍴PickList[28]          res←res OVER ((n=1)/'    ','Sex/Category Selections') (PickList[n;])[29]      :endfor[30]  :else[31]      PickList←SStoMAT ',',FILES[32]      PickList←PickList,' ',⊃(⊂0 1) WGetFileTime¨(⊂InputDir),¨m2n PickList[33]      :for n :in ⍳1↑⍴PickList[34]          res←res OVER ((n=1)/'    ','Investigation Data File(s)') (PickList[n;])[35]      :endfor[36]  :endif[37]  res←res OVER ('    ','Data Format') ((DLTB Format),' <',(,ClientFile ReadFile (Format[1+⍳3],'Format') (6↓Format) 'TSTAMP'),'>')[38]  res←res OVER "Investigation Parameters" ""[39]  res←res OVER ('    ','Start Date') (BDATE ConcatLabel lrBDATE)[40]  res←res OVER ('    ','End Date') (EDATE ConcatLabel lrEDATE)[41]  res←res OVER ('    ','Start Age') (DLTMB BAGE," years")[42]  res←res OVER ('    ','End Age') (DLTMB EAGE," years")[43]  res←res OVER ('    ','Grouping of Results - Every') (DLTMB GROUP," years")[44]  :if FormatType≡'Act'[45]      res←res OVER ('    ','Based on Date of Joining') (DLTMB ,servind)[46]  :endif[47]  res←res OVER ('    ','Save the Results for Sub Groups') (CheckTranslate save)[48]  res←res OVER "Comparison Table" ""[49]  res←res OVER ('    ','Expected Table') (DecrDescription TABXX)[50]  [51]  CHeader←(CHeader,' '),(∨/' '≠(CHeader←⊃res[;1]),⊃res[;2])\':'[52]  res←CHeader," ",⊃res[;2]    ∇
+    ∇ res←ParmFile NEINV_RunDesc SaveCN;⎕io;CHeader;PickList;value;n
+[1]   ⍝ INVWIN.sf#5
+[2]   ⎕io←1
+[3]   res←0 2⍴""
+[4]   
+[5]   res←res OVER ('Output File') (,(tpr1=⎕xnnums)⌿⎕xnnames)
+[6]   res←res OVER ('Run Time') (RunTime)
+[7]   res←res OVER "" ""
+[8]   
+[9]   res←res OVER ('Parameter File') (DLTB ParmFile)
+[10]  CHeader←ParmFile ReadFile "Index"
+[11]  res←res OVER ('Parameter File Description') (↑(CHeader for 1=⍳rowsIn CHeader) at '∆_Description')
+[12]  res←res OVER ('Parameters Description') (desc←↑(CHeader for '∆_CompNo' (↑SaveCN)) at '∆_Description')
+[13]  res←res OVER ParametersSaved 'New_Entrant_Age' desc
+[14]  res←res OVER ("Decrements File Name") ((DLTB DECRFile),'.sf')
+[15]  res←res OVER "" ""
+[16]  res←res OVER "Membership Data" ""
+[17]  :if FileSelections
+[18]      GetAbsFileList "Fund"
+[19]      :if 0∊⍴n←FilesList ExactTLU fILENAME,' '
+[20]          res←res OVER ('    ','Investigation Data File') (DLTB fILENAME,' ',0 1 WGetFileTime InputDir,fILENAME)
+[21]      :else
+[22]          res←res OVER ('    ','Investigation Data File') (DLTB fILENAME," <",(DLTMB FilesDesc[n;]),">")
+[23]      :endif
+[24]      PickList←⎕split SStoMAT ',',FILES
+[25]      PickList←PickList,¨(WGetFileTime ¨(⊂InputDir),¨PickList)
+[26]      PickList←(SStoMAT CatSels),(⊃(⊂' <File: '),¨PickList),'>'
+[27]      :for n :in ⍳1↑⍴PickList
+[28]          res←res OVER ((n=1)/'    ','Sex/Category Selections') (PickList[n;])
+[29]      :endfor
+[30]  :else
+[31]      PickList←SStoMAT ',',FILES
+[32]      PickList←PickList,' ',⊃(⊂0 1) WGetFileTime¨(⊂InputDir),¨m2n PickList
+[33]      :for n :in ⍳1↑⍴PickList
+[34]          res←res OVER ((n=1)/'    ','Investigation Data File(s)') (PickList[n;])
+[35]      :endfor
+[36]  :endif
+[37]  res←res OVER ('    ','Data Format') ((DLTB Format),' <',(,ClientFile ReadFile (Format[1+⍳3],'Format') (6↓Format) 'TSTAMP'),'>')
+[38]  res←res OVER "Investigation Parameters" ""
+[39]  res←res OVER ('    ','Start Date') (BDATE ConcatLabel lrBDATE)
+[40]  res←res OVER ('    ','End Date') (EDATE ConcatLabel lrEDATE)
+[41]  res←res OVER ('    ','Start Age') (DLTMB BAGE," years")
+[42]  res←res OVER ('    ','End Age') (DLTMB EAGE," years")
+[43]  res←res OVER ('    ','Grouping of Results - Every') (DLTMB GROUP," years")
+[44]  :if FormatType≡'Act'
+[45]      res←res OVER ('    ','Based on Date of Joining') (DLTMB ,servind)
+[46]  :endif
+[47]  res←res OVER ('    ','Save the Results for Sub Groups') (CheckTranslate save)
+[48]  res←res OVER "Comparison Table" ""
+[49]  res←res OVER ('    ','Expected Table') (DecrDescription TABXX)
+[50]  
+[51]  CHeader←(CHeader,' '),(∨/' '≠(CHeader←⊃res[;1]),⊃res[;2])\':'
+[52]  res←CHeader," ",⊃res[;2]
+    ∇

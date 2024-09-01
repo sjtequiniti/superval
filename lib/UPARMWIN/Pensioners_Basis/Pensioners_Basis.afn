@@ -1,0 +1,107 @@
+    ∇ res←field Pensioners_Basis parm;SSName;parent;page;Error
+[1]   ⍝ UPARMWIN.sf#9
+[2]   ⍝ Function to allow user control on Pensioners Basis
+[3]   
+[4]   parent←'fmSV.sPenBasis.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Pre-Audit' ⍝ Adjustments to screen variables (particularly S21 Migration)
+[9]       S21Migration 'Pensioners' ⋄ 0 0⍴⎕ex 'CashCapFlag'
+[10]  ⍝⍝⍝    CashMigration 'Pensioners'
+[11]      FixRelFields 'Pensioners'
+[12]  
+[13]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[14]      changedParm←0
+[15]      0 0⍴Pensioners_Basis 'Lock' ⍝ Lock Spreadsheet Cells
+[16]      Pen_Main 'Vars'
+[17]      Pen_Financial 'Vars'
+[18]      Pen_Legislation 'Vars'
+[19]      Pen_Mortality 'Vars'
+[20]      Pen_Spouse 'Vars'
+[21]      Pen_Pensions 'Vars'
+[22]      comment_var←'Comment_Pensioners_Basis'
+[23]  
+[24]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[25]      Display∆Access basAccess[1 2]
+[26]      Pen_Main 'Init'
+[27]      Pen_Financial 'Init'
+[28]      Pen_Legislation 'Init'
+[29]      Pen_Mortality 'Init'
+[30]      Pen_Spouse 'Init'
+[31]      Pen_Pensions 'Init'
+[32]  
+[33]  :case 'Lock'
+[34]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[35]      :else             ⋄ SSName←⊂parent,'pgPensions.fPensions.ssPensions'
+[36]      :endif
+[37]      :for SSName :in SSName
+[38]          :if ~mt SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1) ⋄ :endif
+[39]      :endfor
+[40]  
+[41]  :case 'Unlock'
+[42]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[43]      :else             ⋄ SSName←⊂parent,'pgPensions.fPensions.ssPensions'
+[44]      :endif
+[45]      :for SSName :in SSName
+[46]          :if ~mt SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells 'Unlock' ⋄ :endif
+[47]      :endfor
+[48]  
+[49]  :case 'PostAssign'
+[50]      0 0⍴(⊂'ssPensions') Pensioners_Basis 'Change'
+[51]  
+[52]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[53]  
+[54]      :repeat
+[55]          :select ↑field
+[56]              :caselist 'edfILENAME' 'cbFormat' 'lsCatSels'
+[57]                  (↑field) Pen_Main 'Change'
+[58]              :case ' '
+[59]                  (↑field) Pen_Financial 'Change'
+[60]              :case ' '
+[61]                  (↑field) Pen_Legislation 'Change'
+[62]              :caselist 'cbm_miDPOST' 'cbm_miSDPOST' 'cbf_miDPOST' 'cbf_miSDPOST'
+[63]                  (↑field) Pen_Mortality 'Change'
+[64]              :case 'cbSpouseParm'
+[65]                  (↑field) Pen_Spouse 'Change'
+[66]              :case 'ssPensions'
+[67]                  (↑field) Pen_Pensions 'Change'
+[68]          :endselect
+[69]          (↑field) Win∆FormValidation 'Change'
+[70]      :until mt field←1↓field
+[71]  
+[72]  :case 'Valid' ⍝ Routine specific validation
+[73]  
+[74]      :repeat
+[75]          :select page←DLTMB ↑field
+[76]          :case 'All'
+[77]              :for page :in 'pgMain' 'pgFinancial' 'pgLegislation' 'pgMortality' 'pgSpouse' 'pgPensionsonSave'
+[78]                  :if ~mt res←(⊂page) Pensioners_Basis 'Valid' ⋄ :leave ⋄ :endif
+[79]              :endfor
+[80]              :if mt res ⋄ :andif ~mt res←valsIn Error←'Pensioners' VALIDATE∆Basis 0 0 ⍝ Returns field names and messages
+[81]                  0 Win∆SetFocus ↑(FormFields for 'variable' (↑Error at 'variable')) at 'control'
+[82]                  res←⊃Error at 'message'
+[83]              :endif
+[84]          :caselist 'pgMain' 'pgFinancial' 'pgLegislation' 'pgMortality' 'pgSpouse'
+[85]              res←((FormFields for ↑¨(⊂parent,page)⍷¨FormFields at 'control') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[86]          :case 'pgPensionsonSave'
+[87]              res←((FormFields for 'shortname' 'ssPensions') at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[88]          :case 'pgPensions'       ⋄ ⍝⍝⍝ Pen_Pensions 'Valid' ⍝ Validation only on Save
+[89]          :endselect
+[90]      :until mt field←1↓field
+[91]  
+[92]  :case 'Run'
+[93]  
+[94]      res←'Quit'
+[95]  
+[96]  :case 'Quit' ⍝ Deleting "other" variables
+[97]  
+[98]      :if 0≠⎕nc 'DateVars'
+[99]          0 0⍴⎕ex 'f',TotNumVars OVER CharVars OVER DateVars
+[100]         0 0⍴⎕ex 'd','f',DateVars
+[101]     :endif
+[102]     0 0⍴DeleteVars 'PenFormat'
+[103]     0 0⍴⎕ex 'FormatType Filesettings ValYear BasisFile changedParm comment_var'
+[104] 
+[105] :endselect
+    ∇

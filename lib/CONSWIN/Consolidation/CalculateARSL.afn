@@ -1,1 +1,56 @@
-    ∇ ARSL←CalculateARSL;index;value;z;TOTALS;data;ID;IDs;weights;sql;pos;runs;tab;dic;fldnos[1]   ⍝ CONSWIN.sf#3[2]   ⍝ Calculate the Average Remaining Service Life[3]   [4]   ARSL←3/0 ⋄ weights←4/0[5]   [6]   :if XLCtl[7]       runs←(parent,'pgSelection.lvrunslist') ⎕wi 'value'[8]       dic←ConsIndex for (⊂'ID'),runs ⋄ dic←dic for 'neActID' 0 ⋄ dic←dic for ~(⊂'PP')≡¨2↑¨dic at 'method' ⋄ dic←dic for ~(dic at 'method')∊'DEF' 'PEN'[9]       :if ~0∊⍴runs←dic at 'ID'[10]          ('Selected Valuation Run:' 'Task:') Win∆ProgressBar 'SetLabels'[11]          'Calculating Average Remaining Service Life' Win∆ProgressBar 'Open'[12]          :if ~↑2↓ValnResultsDB ⍙DBOpen ¯1[13]              MDISPLAY 'Valuation Database not found' ⋄ →end[14]          :endif[15]  [16]          :for ID :in runs[17]              ((runs⍳ID) (⍴runs) (↑(dic for 'ID' ID) at 'desc')) Win∆ProgressBar 'FileUpdate'[18]              IDs←1 ⍙DBadoCONCommand "SELECT DISTINCT MemberID FROM MemberResults WHERE ResultsCategoryID=",(⍕ID)," ORDER BY MemberID"[19]  [20]              sql←↑⍙DBPivot "SUM" "MemberValue" "MemberResults" ("ResultsCategoryID = ",(⍕ID)," AND LiabilityTypeID = 7") "MemberID" "DataItemID" "?"[21]              fldnos←(sqlDatabase/'[]') embrace '?'[22]  [23]              ⍝ Select NOM MC Salary CC Salary ARSL for each Member[24]              (1 2 "Read Database") Win∆ProgressBar "MemberUpdate"[25]              data←0 1↓XL_Pivot (("/",fldnos,"/",⍙DBNumList 1 6 7 17) TEXTREPL sql) 0[26]  [27]              (2 2 'Calculate') Win∆ProgressBar 'MemberUpdate'[28]              weights[⍳3]←weights[⍳3]+3↑+⌿0 ¯1↓data ⍝ Update the weighting sums[29]              ARSL[1]←ARSL[1]++/data[;4] ⍝ Update the ARSL figure[30]  [31]              ⍝ Select CC Sal "grouped statistics" for each Member - If all zero - not grouped[32]              :if ~(⊂'#' ⎕wi 'null')∊,tab←0 1↓1 ⍙DBadoCONCommand ("/",fldnos,"/",⍙DBNumList 61 71) TEXTREPL sql[33]                  ARSL[2 3]←ARSL[2 3]++⌿tab ⍝ Update the ARSL figures[34]              :else[35]                  ARSL[2 3]←ARSL[2 3]++⌿data[;2 3]×[1]data[;4] CDIV data[;1] ⍝ Update the ARSL figure[36]              :endif[37]          :endfor[38]          ARSL←ARSL÷weights[⍳3][39]  end:    0 0⍴'ADOconcmd' ⎕wi 'Delete'[40]          0 0⍴'ADOcon' ⎕wi 'Delete'[41]          Win∆ProgressBar 'Close'[42]      :endif[43]  [44]  :else ⍝ Exclude Pensioners/Deferreds/New Defs/New Entrants Runs[45]      index←(ConsolidDir,'VALRES') ReadFile 'Index'[46]      value←value[index[value;(⍳3),51] TLU (3↑(parent,'pgSelection.fCriteria.cbvalind') ⎕wi 'text'),'N'][47]      ARSL← 2 2 ⍴0[48]      :for z :in value[49]          :if ~0∊⍴(ConsolidDir,'VALRES') ReadFile z 'TOTALS'[50]              ARSL←ARSL+TOTALS[2 4 ;⍳2][51]          :endif[52]      :endfor[53]  :endif[54]  ARSL←'F5.2' ⎕fmt ARSL    ∇
+    ∇ ARSL←CalculateARSL;index;value;z;TOTALS;data;ID;IDs;weights;sql;pos;runs;tab;dic;fldnos
+[1]   ⍝ CONSWIN.sf#3
+[2]   ⍝ Calculate the Average Remaining Service Life
+[3]   
+[4]   ARSL←3/0 ⋄ weights←4/0
+[5]   
+[6]   :if XLCtl
+[7]       runs←(parent,'pgSelection.lvrunslist') ⎕wi 'value'
+[8]       dic←ConsIndex for (⊂'ID'),runs ⋄ dic←dic for 'neActID' 0 ⋄ dic←dic for ~(⊂'PP')≡¨2↑¨dic at 'method' ⋄ dic←dic for ~(dic at 'method')∊'DEF' 'PEN'
+[9]       :if ~0∊⍴runs←dic at 'ID'
+[10]          ('Selected Valuation Run:' 'Task:') Win∆ProgressBar 'SetLabels'
+[11]          'Calculating Average Remaining Service Life' Win∆ProgressBar 'Open'
+[12]          :if ~↑2↓ValnResultsDB ⍙DBOpen ¯1
+[13]              MDISPLAY 'Valuation Database not found' ⋄ →end
+[14]          :endif
+[15]  
+[16]          :for ID :in runs
+[17]              ((runs⍳ID) (⍴runs) (↑(dic for 'ID' ID) at 'desc')) Win∆ProgressBar 'FileUpdate'
+[18]              IDs←1 ⍙DBadoCONCommand "SELECT DISTINCT MemberID FROM MemberResults WHERE ResultsCategoryID=",(⍕ID)," ORDER BY MemberID"
+[19]  
+[20]              sql←↑⍙DBPivot "SUM" "MemberValue" "MemberResults" ("ResultsCategoryID = ",(⍕ID)," AND LiabilityTypeID = 7") "MemberID" "DataItemID" "?"
+[21]              fldnos←(sqlDatabase/'[]') embrace '?'
+[22]  
+[23]              ⍝ Select NOM MC Salary CC Salary ARSL for each Member
+[24]              (1 2 "Read Database") Win∆ProgressBar "MemberUpdate"
+[25]              data←0 1↓XL_Pivot (("/",fldnos,"/",⍙DBNumList 1 6 7 17) TEXTREPL sql) 0
+[26]  
+[27]              (2 2 'Calculate') Win∆ProgressBar 'MemberUpdate'
+[28]              weights[⍳3]←weights[⍳3]+3↑+⌿0 ¯1↓data ⍝ Update the weighting sums
+[29]              ARSL[1]←ARSL[1]++/data[;4] ⍝ Update the ARSL figure
+[30]  
+[31]              ⍝ Select CC Sal "grouped statistics" for each Member - If all zero - not grouped
+[32]              :if ~(⊂'#' ⎕wi 'null')∊,tab←0 1↓1 ⍙DBadoCONCommand ("/",fldnos,"/",⍙DBNumList 61 71) TEXTREPL sql
+[33]                  ARSL[2 3]←ARSL[2 3]++⌿tab ⍝ Update the ARSL figures
+[34]              :else
+[35]                  ARSL[2 3]←ARSL[2 3]++⌿data[;2 3]×[1]data[;4] CDIV data[;1] ⍝ Update the ARSL figure
+[36]              :endif
+[37]          :endfor
+[38]          ARSL←ARSL÷weights[⍳3]
+[39]  end:    0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[40]          0 0⍴'ADOcon' ⎕wi 'Delete'
+[41]          Win∆ProgressBar 'Close'
+[42]      :endif
+[43]  
+[44]  :else ⍝ Exclude Pensioners/Deferreds/New Defs/New Entrants Runs
+[45]      index←(ConsolidDir,'VALRES') ReadFile 'Index'
+[46]      value←value[index[value;(⍳3),51] TLU (3↑(parent,'pgSelection.fCriteria.cbvalind') ⎕wi 'text'),'N']
+[47]      ARSL← 2 2 ⍴0
+[48]      :for z :in value
+[49]          :if ~0∊⍴(ConsolidDir,'VALRES') ReadFile z 'TOTALS'
+[50]              ARSL←ARSL+TOTALS[2 4 ;⍳2]
+[51]          :endif
+[52]      :endfor
+[53]  :endif
+[54]  ARSL←'F5.2' ⎕fmt ARSL
+    ∇

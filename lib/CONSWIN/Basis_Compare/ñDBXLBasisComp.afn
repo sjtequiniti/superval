@@ -1,1 +1,76 @@
-    ∇ IDs ⍙DBXLBasisComp Files;data;ClassID;ClassBase;z;onebasisfile;onevaldate;onevalmeth;col;NoBases;template;⍙dbfilename;XLfile;Cat;xxx;bencap;s143;ppf;aosind;found;scenario[1]   ⍝ CONSWIN.sf#12[2]   ⍝ Create an Excel File with Basis Comparisons[3]   [4]   (⍙dbfilename XLfile)←Files[5]   ('Task:' 'Basis:') Win∆ProgressBar 'SetLabels'[6]   'Creating Basis Comparison Excel Output' Win∆ProgressBar 'Open'[7]   [8]   0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Excel' ⍝ Read Excel Output Fns[9]   0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Database' ⍝ Read Database Output Fns[10]  [11]  data←DBIndex for (⊂'BasisID'),IDs  ⍝ Convert into previous "data" layout[12]  data←data amend 'capped' ('Y'=¨↑¨data at 'capped')[13]  data←data amend 'aosind' ('Y'=¨↑¨data at 'aosind')[14]  data←data amend 'contper' (zwb¨data at 'contper')[15]  data←data amend 'insinc' ('Y'=¨↑¨data at 'insinc')[16]  ⍝⍝⍝ data←data amend 'prev vdate' ((⊂'\00/01/1900\') TEXTREPL¨data at 'prev vdate')[17]  data←⊃spin data at 'classid' 'BasisID' 'method' 'basisfile' 'basisdesc' 'version' 'vdate' 'contper' 'insinc' 'capped' 'aosind' 'prev vdate' 'cat' 'ID' 'timestamp' 'BasisCat' 'scenario' 'scenarioID'[18]  [19]  :select ClassID←data[1;1][20]  :case 1 ⋄ template←'Actives'    ⋄ ClassBase←20000[21]  :case 3 ⋄ template←'Deferreds'  ⋄ ClassBase←10000[22]  :case 4 ⋄ template←'Pensioners' ⋄ ClassBase←0[23]  :endselect[24]  [25]  ppf←∨/data[;3]∊'PPP' 'PPD' 'PPA'[26]  bencap←data[1;10]×^/data[;10]=data[1;10][27]  s143←'3'∊(⊃data[;3])[;3][28]  aosind←data[1;11]×^/data[;11]=data[1;11][29]  scenario←∨/0≠data[;18][30]  [31]  (1 2 'Setting up Excel Output') Win∆ProgressBar 'FileUpdate'[32]  →(XL_Compfilesetup template)/end[33]  [34]  found←¯1↑⍙dbfilename ⍙DBOpen ¯1 ⍝⍝⍝ Exit if not found???[35]  [36]  (2 2 'Processing Basis Details') Win∆ProgressBar 'FileUpdate'[37]  [38]  NoBases←XL_Data 'NoBases'[39]  :for z :in data[;2]⍳IDs[40]      ((¯1+IDs⍳data[z;2]) (↑⍴data) ('/' join data[z;4],scenario/data[z;17])) Win∆ProgressBar 'MemberUpdate'[41]      0 0⍴(2+scenario) XL_RunDetails data[z;14][42]  [43]      Cat←(⍕10000∣data[z;2]),'()' embrace DLTB ⊃data[z;13][44]      0 XL_ActivateWorksheet 'AllBases'[45]      :if ×col←Cat ⍙DBXL_BasisWrite data[z;14] ⋄ NoBases←1+NoBases ⋄ :endif[46]  [47]      :if ~onevalmeth ⋄ 0 0⍴(CompValDesc data[z;3 8 9 10]) XL_Data RCtoA1 4 col ⋄ :endif[48]      :if ~onevaldate   ⋄ 0 0⍴data[z;7] XL_Data RCtoA1 5 col ⋄ :endif[49]      :if ~onebasisfile ⋄ 0 0⍴(⎕tclf join data[z;4],scenario/data[z;17]) XL_Data RCtoA1 6 col[50]      :elseif scenario  ⋄ 0 0⍴data[z;17] XL_Data RCtoA1 6 col[51]      :endif[52]  :endfor[53]  'AllBases' XL_ProtectSheet 1[54]  0 0⍴NoBases XL_Data 'NoBases'[55]  0 XL_ActivateWorksheet 'Contents'[56]  [57]  0 0⍴'ADOconcmd' ⎕wi 'Delete'[58]  'ADOcon' ⎕wi 'XClose'[59]  [60]  :if 0≠'XL.wb' ⎕wi 'interface' ⍝ no Excel[61]      0 0⍴1 XL_Data 'Update' ⍝ Update Hidden results flag[62]      'Header' XL_ProtectSheet ¯1[63]      'XL.wb' ⎕wi 'Save'[64]      XL_Quit[65]  :endif[66]  [67]  end:[68]  0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Excel' ⍝ Delete Excel Output Fns[69]  0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Database' ⍝ Delete Database Output Fns[70]  Win∆ProgressBar 'Close'[71]  [72]  :if 'Y'='YN' ASK 'Open Basis Comparison Excel Output?'[73]      ¯1 Win∆EditFile XLfile[74]  :endif    ∇
+    ∇ IDs ⍙DBXLBasisComp Files;data;ClassID;ClassBase;z;onebasisfile;onevaldate;onevalmeth;col;NoBases;template;⍙dbfilename;XLfile;Cat;xxx;bencap;s143;ppf;aosind;found;scenario
+[1]   ⍝ CONSWIN.sf#12
+[2]   ⍝ Create an Excel File with Basis Comparisons
+[3]   
+[4]   (⍙dbfilename XLfile)←Files
+[5]   ('Task:' 'Basis:') Win∆ProgressBar 'SetLabels'
+[6]   'Creating Basis Comparison Excel Output' Win∆ProgressBar 'Open'
+[7]   
+[8]   0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Excel' ⍝ Read Excel Output Fns
+[9]   0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Database' ⍝ Read Database Output Fns
+[10]  
+[11]  data←DBIndex for (⊂'BasisID'),IDs  ⍝ Convert into previous "data" layout
+[12]  data←data amend 'capped' ('Y'=¨↑¨data at 'capped')
+[13]  data←data amend 'aosind' ('Y'=¨↑¨data at 'aosind')
+[14]  data←data amend 'contper' (zwb¨data at 'contper')
+[15]  data←data amend 'insinc' ('Y'=¨↑¨data at 'insinc')
+[16]  ⍝⍝⍝ data←data amend 'prev vdate' ((⊂'\00/01/1900\') TEXTREPL¨data at 'prev vdate')
+[17]  data←⊃spin data at 'classid' 'BasisID' 'method' 'basisfile' 'basisdesc' 'version' 'vdate' 'contper' 'insinc' 'capped' 'aosind' 'prev vdate' 'cat' 'ID' 'timestamp' 'BasisCat' 'scenario' 'scenarioID'
+[18]  
+[19]  :select ClassID←data[1;1]
+[20]  :case 1 ⋄ template←'Actives'    ⋄ ClassBase←20000
+[21]  :case 3 ⋄ template←'Deferreds'  ⋄ ClassBase←10000
+[22]  :case 4 ⋄ template←'Pensioners' ⋄ ClassBase←0
+[23]  :endselect
+[24]  
+[25]  ppf←∨/data[;3]∊'PPP' 'PPD' 'PPA'
+[26]  bencap←data[1;10]×^/data[;10]=data[1;10]
+[27]  s143←'3'∊(⊃data[;3])[;3]
+[28]  aosind←data[1;11]×^/data[;11]=data[1;11]
+[29]  scenario←∨/0≠data[;18]
+[30]  
+[31]  (1 2 'Setting up Excel Output') Win∆ProgressBar 'FileUpdate'
+[32]  →(XL_Compfilesetup template)/end
+[33]  
+[34]  found←¯1↑⍙dbfilename ⍙DBOpen ¯1 ⍝⍝⍝ Exit if not found???
+[35]  
+[36]  (2 2 'Processing Basis Details') Win∆ProgressBar 'FileUpdate'
+[37]  
+[38]  NoBases←XL_Data 'NoBases'
+[39]  :for z :in data[;2]⍳IDs
+[40]      ((¯1+IDs⍳data[z;2]) (↑⍴data) ('/' join data[z;4],scenario/data[z;17])) Win∆ProgressBar 'MemberUpdate'
+[41]      0 0⍴(2+scenario) XL_RunDetails data[z;14]
+[42]  
+[43]      Cat←(⍕10000∣data[z;2]),'()' embrace DLTB ⊃data[z;13]
+[44]      0 XL_ActivateWorksheet 'AllBases'
+[45]      :if ×col←Cat ⍙DBXL_BasisWrite data[z;14] ⋄ NoBases←1+NoBases ⋄ :endif
+[46]  
+[47]      :if ~onevalmeth ⋄ 0 0⍴(CompValDesc data[z;3 8 9 10]) XL_Data RCtoA1 4 col ⋄ :endif
+[48]      :if ~onevaldate   ⋄ 0 0⍴data[z;7] XL_Data RCtoA1 5 col ⋄ :endif
+[49]      :if ~onebasisfile ⋄ 0 0⍴(⎕tclf join data[z;4],scenario/data[z;17]) XL_Data RCtoA1 6 col
+[50]      :elseif scenario  ⋄ 0 0⍴data[z;17] XL_Data RCtoA1 6 col
+[51]      :endif
+[52]  :endfor
+[53]  'AllBases' XL_ProtectSheet 1
+[54]  0 0⍴NoBases XL_Data 'NoBases'
+[55]  0 XL_ActivateWorksheet 'Contents'
+[56]  
+[57]  0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[58]  'ADOcon' ⎕wi 'XClose'
+[59]  
+[60]  :if 0≠'XL.wb' ⎕wi 'interface' ⍝ no Excel
+[61]      0 0⍴1 XL_Data 'Update' ⍝ Update Hidden results flag
+[62]      'Header' XL_ProtectSheet ¯1
+[63]      'XL.wb' ⎕wi 'Save'
+[64]      XL_Quit
+[65]  :endif
+[66]  
+[67]  end:
+[68]  0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Excel' ⍝ Delete Excel Output Fns
+[69]  0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Database' ⍝ Delete Database Output Fns
+[70]  Win∆ProgressBar 'Close'
+[71]  
+[72]  :if 'Y'='YN' ASK 'Open Basis Comparison Excel Output?'
+[73]      ¯1 Win∆EditFile XLfile
+[74]  :endif
+    ∇

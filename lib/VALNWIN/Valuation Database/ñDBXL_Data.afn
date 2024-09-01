@@ -1,0 +1,90 @@
+    ∇ freqID←⍙DBXL_Data;z;DESC;data;pos;⍙dbXLbasis;prevpos;prevdata;flds;vars;prevvars;type;desc;prevtype;prevdesc;idx;fpenfreq;fsalfreq;fpupfreq;maxfield;basisnos;fY0;str
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Add Excel Fixed Member Fields Data
+[3]   
+[4]   (5 7 'Updating Database Member Details Tables') Win∆ProgressBar2 'FileUpdate'
+[5]   
+[6]   (1 2 'Inserting Basis Details') Win∆ProgressBar2 'MemberUpdate'
+[7]   basisnos←,1 ⍙DBadoCONCommand "SELECT BasisItemID FROM BasisItem WHERE BasisItemID BETWEEN ",(⍕1+ClassBase)," AND ",⍕9999+ClassBase ⍝ Current BasisItem Records
+[8]   ⍙dbXLbasis←'database' XL_BasisDetails ClassID
+[9]   :if 0≠rowsIn ⍙dbXLbasis←⍙dbXLbasis for ~(⍙dbXLbasis at 'ItemID')∊basisnos
+[10]      DESC←(⊂' - ') join¨spin ⍙dbXLbasis at 'Page' 'Frame' 'FieldDesc'
+[11]  
+[12]      ⍝ Put new data in Fixed Basis Items Table
+[13]      'ADOrst' ⎕wi 'XOpen' 'BasisItem' ('ADOcon' ⎕wi 'obj') cursor lock
+[14]      ⍙DBInsertData (⍙dbXLbasis at 'ItemID'),(⍙dbXLbasis at 'Excel'),DESC,[0.5]⍙dbXLbasis at 'Type'
+[15]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[16]  :endif
+[17]  
+[18]  (2 2 'Inserting Member Data Fields') Win∆ProgressBar2 'MemberUpdate'
+[19]  :select ClassID
+[20]  :case 1 ⍝ Actives
+[21]      vars←SStoMAT DateStandVars,CharStandVars,FixNumStandVars,'⍺fsalfreq',VarNumStandVars
+[22]      type←(+/¨'⍺'=¨DateStandVars CharStandVars FixNumStandVars '⍺' VarNumStandVars)/'DCNVN'
+[23]      desc←SStoMAT DateStandNames,CharStandNames,FixNumStandNames,'⍺Salary Frequency',VarNumStandNames
+[24]      str←'fsalfreq' ⋄ fsalfreq←,1 ⍝ Dummy these to pretend they exist
+[25]      maxfield←'ActMemberDataID'
+[26]  :case 3 ⍝ Deferreds
+[27]      vars←SStoMAT DateStandVars,CharStandVars,FixNumStandVars,'⍺fpupfreq',VarNumStandVars
+[28]      type←(+/¨'⍺'=¨DateStandVars CharStandVars FixNumStandVars '⍺'  VarNumStandVars)/'DCNVN'
+[29]      desc←SStoMAT DateStandNames,CharStandNames,FixNumStandNames,'⍺PUP Frequency',VarNumStandNames
+[30]      str←'fpupfreq' ⋄ fpupfreq←,1 ⍝ Dummy these to pretend they exist
+[31]      maxfield←'DefMemberDataID'
+[32]  :case 4 ⍝ Pensioners - Add Spouse Age fields and Frequency (if applicable)
+[33]      vars←SStoMAT DateStandVars,CharStandVars,FixNumStandVars,'⍺fY0⍺fpenfreq',VarNumStandVars
+[34]      type←(+/¨'⍺'=¨DateStandVars CharStandVars FixNumStandVars '⍺' '⍺' VarNumStandVars)/'DCNOVN'
+[35]      desc←SStoMAT DateStandNames,CharStandNames,FixNumStandNames,'⍺Spouse''s Age⍺Pension Frequency',VarNumStandNames
+[36]      str←'fpenfreq' ⋄ fY0←fpenfreq←,1 ⍝ Dummy these to pretend they exist
+[37]      maxfield←'PenMemberDataID'
+[38]  :endselect
+[39]  
+[40]  vars←(50⌊∊⍴¨vars)↑¨vars←(z←(×,⊃⍴¨⍎¨vars)∨vars∊'fNAME' 'fSEX' 'fCAT' 'fNOM')/vars←m2n vars OVER 'f',DateVars OVER CharVars OVER TotNumVars
+[41]  type←z/type,(↑¨⍴¨DateVars CharVars TotNumVars)/'DCN'
+[42]  desc←(50⌊∊⍴¨desc)↑¨desc←m2n z⌿desc OVER DateDesc OVER CharDesc OVER TotNumDesc
+[43]  :if aosind
+[44]      prevvars←(50⌊∊⍴¨prevvars)↑¨prevvars←(z←×,⊃⍴¨⍎¨prevvars)/prevvars←m2n 'p',(SStoMAT VarNumStandVars) OVER 'f',TotNumVars
+[45]      prevtype←z/'N'
+[46]      prevdesc←(50⌊∊⍴¨prevdesc)↑¨prevdesc←(⊂'Previous '),¨m2n z⌿(SStoMAT VarNumStandVars) OVER TotNumDesc
+[47]  :endif
+[48]  
+[49]  ⍝ "⍙dataflds" used to load member data to Database
+[50]  :if mt flds←1 ⍙DBadoCONCommand "SELECT * FROM MemberFields WHERE MemberDataID BETWEEN ",(⍕1+ClassBase)," AND ",⍕9999+ClassBase ⍝ Get Current Member Fields
+[51]      ⍝ No Member Fields Data yet so add defined Data Format details
+[52]      idx←2↓idx,(⍳↑⍴vars)~idx←vars⍳'fSEX' 'fCAT' 'fNAME' 'fNOM'
+[53]      data←⍉MATRIX (⍴idx) ⍙DBNextID maxfield
+[54]      ⍙dataflds←(data,vars[idx]),type[idx]
+[55]      :if aosind ⍝ Previous fields for AOS
+[56]          prevdata←⍉MATRIX (↑⍴prevvars) ⍙DBNextID maxfield
+[57]          ⍙dataflds←⍙dataflds OVER (prevdata,prevvars),prevtype
+[58]      :else
+[59]          prevdata←0 1⍴0
+[60]      :endif
+[61]  :else ⍝ update Member Fields for any extra defined fields for this run
+[62]      vars←(z←~vars∊'fSEX' 'fCAT')/vars
+[63]      pos←(↑⍴flds)=(DLTB¨flds[;2])⍳vars ⍝ Find missing fields
+[64]      data←⍉MATRIX (+/pos) ⍙DBNextID maxfield
+[65]      vars←pos/vars ⋄ type←pos/z/type ⋄ desc←pos/z/desc ⋄ idx←⍳↑⍴vars
+[66]      ⍙dataflds←((~(↑⍴flds)=vars⍳DLTB¨flds[;2])⌿flds[;0 2 3]) OVER (data,vars),type
+[67]      :if aosind ⍝ Previous fields for AOS
+[68]          prevpos←(⍴prevvars)=(DLTB¨flds[;2])⍳prevvars
+[69]          prevdata←⍉MATRIX (+/prevpos) ⍙DBNextID maxfield
+[70]          prevvars←prevpos/prevvars ⋄ prevtype←prevpos/prevtype ⋄ prevdesc←prevpos/prevdesc
+[71]          ⍙dataflds←⍙dataflds OVER (prevdata,prevvars),prevtype
+[72]      :else
+[73]          prevdata←0 1⍴0
+[74]      :endif
+[75]  :endif
+[76]  
+[77]  :if ~mt data⍪prevdata
+[78]      'ADOrst' ⎕wi 'XOpen' 'MemberFields' ('ADOcon' ⎕wi 'obj') cursor lock
+[79]      :if ~mt data
+[80]          ⍙DBInsertData ((data,desc[idx]),vars[idx]),type[idx]
+[81]      :endif
+[82]      :if ~mt prevdata
+[83]          ⍙DBInsertData ((prevdata,prevdesc),prevvars),prevtype
+[84]      :endif
+[85]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[86]  :endif
+[87]  
+[88]  freqID←⍕,1 ⍙DBadoCONCommand "SELECT MemberDataID FROM MemberFields WHERE MemberDataVar=",1 ⍙DBString str
+    ∇

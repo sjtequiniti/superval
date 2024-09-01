@@ -1,0 +1,81 @@
+    ∇ AuditLog←packold Win∆AuditLog packnew;∆;kold;knew;del;ins;dold;dnew;common;changes;IT;key;f;vals;ts;difs;row;z;msk;vars;rules;comments;cold;cnew;var;dics
+[1]   ⍝ UTILSWIN.sf#4
+[2]   ⍝ Audit Log from old and new Parameters sets
+[3]   ⍝ Revn: sjt05feb15
+[4]   
+[5]   rules←⍙RULESdict ReadDictFile SavedModule
+[6]   
+[7]   ⍝ define Implicit Tables
+[8]   :if 0≠rowsIn ∆←rules for ^/~mt¨valsIn rules select 'Page' 'Alternative'
+[9]       ∆←∆ groupby 'Page' ('Field' 'Desc' 'Row')                                   ⍝ d: Page=>table
+[10]      IT←(keysIn ∆) push (valsIn ∆) sortedBy¨⊂'Row'                               ⍝ d: Page=>defn table for implicit tables
+[11]  :else                                                                           ⍝ FIXME
+[12]      IT←'' push ''
+[13]  :endif
+[14]  
+[15]  AuditLog←,[.5] 'Parameter' 'Old Value' 'New Value'
+[16]  
+[17]  dics←p2d¨packold packnew                                                        ⍝ packages => dictionaries
+[18]  
+[19]  ⍝ Check the Comment vars first (not ⎕dr 82 so lost below)
+[20]  :if ~^/mt¨comments←(∨/¨¨(⊂⊂'Comment_')⍷¨¨keysIn¨dics) sel¨valsIn¨dics           ⍝ Are there comment tables?
+[21]      (cold cnew)←↑¨comments
+[22]      :if 0=⍴↑comments ⋄ cold←MATRIX keysIn cnew ⋄ :endif                         ⍝ If no previous comments
+[23]      (cold cnew)←⎕split¨cold cnew
+[24]      :if ∨/×rowsIn¨(cold cnew)←(⊂↑cnew) OVER¨(⊃cold~cnew) (⊃cnew~cold)           ⍝ Retain differences
+[25]          :for ∆ :in nub spin (cold append cnew) at 'variable' 'row' ⋄ (var row)←∆
+[26]              ∆←(⊂'Comment - '),¨↑lmt DLTB¨¨((cold cnew) for¨⊂'variable' var) at¨⊂'desc'
+[27]              :if ~mt row ⋄ ∆←∆,¨⊂'{',(⍕row),'}' ⋄ :endif
+[28]              AuditLog←AuditLog⍪∆,,⊃((cold cnew) for¨⊂'variable' var) at¨⊂'comment'
+[29]          :endfor
+[30]      :endif
+[31]  :endif
+[32]  
+[33]  ∆←dics SavedModule excludeHidden dics                                           ⍝ exclude hidden fields
+[34]  ∆←∆ select¨(82=⎕DR¨¨valsIn¨∆)sel¨keysIn¨∆                                       ⍝ exclude numeric vars
+[35]  ∆←(keysIn¨∆) push¨1 HyphenSwap ¨¨valsIn¨∆                                       ⍝ replace dodgy hyphens
+[36]  (kold knew)←keysIn¨(dold dnew)←∆                                                ⍝ dictionaries: parm=>value; their keys
+[37]  
+[38]  ⍝ Report deleted and inserted parms
+[39]  (del ins)←kold knew~¨⊂common←(kold∊knew)/kold                                   ⍝ parms common, deleted or inserted in New
+[40]  AuditLog←AuditLog⍪ del,(dold at del)       ,[1.5] ⊂'Deleted Parameter'  ⍝ Old keys deleted in New
+[41]  
+[42]  ins←ins~m2n RENAMED_VARS                            ⍝ Renamed Variables (not new)
+[43]  ins←ins~m2n HIDDEN_VARS                             ⍝ Hidden Variables
+[44]  :if ~mt ins
+[45]      msk←(⊂'lr')≡¨2↑¨ins                             ⍝ Identify Label Variables
+[46]      msk←msk^~ins∊(⊂'lr'),¨((~msk)/ins)~¨⊂'[;]'      ⍝ Exclude those linked to a new variable
+[47]      msk←msk^mt¨DLTB¨⍎¨ins                           ⍝ Exclude those empty
+[48]      msk←msk∨(⊂'sCEN_')≡¨5↑¨ins                      ⍝ Exclude new scenario variables
+[49]      :if ~mt ins←(~msk)/ins                          ⍝ the reduced list
+[50]          AuditLog←AuditLog⍪ ins,(⊂'Added Parameter'),[1.5] dnew at ins           ⍝ Added to New
+[51]      :endif
+[52]  :endif
+[53]  
+[54]  ⍝ Report changed parms
+[55]  :if ×↑⍴keysIn IT
+[56]      changes←~ common∊ ((⊂'lr'),¨∆),∆←↑,/(valsIn IT) at¨⊂'Field'                 ⍝ exclude implicit tables
+[57]  :else
+[58]      changes←1
+[59]  :endif
+[60]  changes←changes ^ ~ ↑≡¨/ trimm¨¨dnew dold at¨ ⊂common                           ⍝ flag parms with changed values
+[61]  changes←changes ^ ~common∊(9.02>saveVersion)/⊂'GMPORIGIN'                       ⍝ The (hidden) conversion of GMPORIGIN
+[62]  
+[63]  msk←(⊂'lr')≡¨2↑¨vars←changes/common                                             ⍝ Changed Vars and labels
+[64]  vars←vars,(∆∊common)/∆←((2↓¨msk/vars),((⊂'lr'),¨(~msk)/vars)~¨⊂'[;]')~vars      ⍝ Keep companion Varianble or Label if not already
+[65]  
+[66]  AuditLog←AuditLog⍪ vars, ⍉⎕MIX dold dnew at¨⊂vars
+[67]  
+[68]  ⍝ Report implicit tables
+[69]  :for key :in keysIn IT
+[70]      f←(IT at key) at 'Field'
+[71]      f←(f∊common)/f
+[72]      f←f,(⊂'lr'),¨f                                                              ⍝ Label vars as well
+[73]      :if ∨/difs←~↑≡¨/vals←MATRIX¨¨trimm¨¨dold dnew at¨⊂f                         ⍝ flag differences in values
+[74]      :andif ↑~^/^/¨mt¨¨vals
+[75]          ts←trimm¨¨dold dnew at¨⊂f                                               ⍝ select changed fields but always first (col heads)
+[76]          z←(1,1↓difs)⌿f,((⍴∆)⍴changesIn MATRIX¨⍉¨⊃¨m2n¨¨ts) stretch¨MATRIX¨∆←⍉⊃ts
+[77]          AuditLog←AuditLog⍪z
+[78]      :endif
+[79]  :endfor
+    ∇

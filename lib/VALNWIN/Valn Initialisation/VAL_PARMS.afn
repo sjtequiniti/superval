@@ -1,0 +1,97 @@
+    ∇ res←MembGroup VAL∆PARMS parms;z;MESS;FiLe;xxx;success
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Set Values for Batch Parameters
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   (0 7 'Reading Valuation and Basis Parameters') Win∆ProgressBar2 'FileUpdate'
+[7]   
+[8]   ValMeth←    0⊃parms ⍝ Valuation Method
+[9]   ValName←1 0↓⍙POPUPSdict ReadDictFile 'ValMeth.PPF'
+[10]  ValName←DLTMB DropText ,ValName[¯1+ValName TLU ValMeth;]
+[11]  ClassID←↑¯1↑1,((⊂ValMeth)≡¨'DEF' 'PPD' 'PEN' 'PPP')/3 3 4 4
+[12]  
+[13]  basisFile←   1⊃parms ⍝ Basis File Name
+[14]  basisDesc←   2⊃parms ⍝ Basis Description
+[15]  vDATEind←    3⊃parms ⍝ Valuation Date Indicator
+[16]  test←        4⊃parms ⍝ Test Run Indicator
+[17]  PROPT←       5⊃parms ⍝ Accrued Benefits Indicator
+[18]  contper←     6⊃parms ⍝ PUC/DAB Control period
+[19]  insind←      7⊃parms ⍝ Insured Cost included indicator
+[20]  abNO←        8⊃parms ⍝ Target Accrued Benefit
+[21]  newent←      9⊃parms ⍝ New Entrant Model Replacement indicator
+[22]  NEparms←    10⊃parms ⍝ New Entrant Model Parameters
+[23]  aosind←     11⊃parms ⍝ AOS indicator
+[24]  Surcparms←  12⊃parms ⍝ Surcharge Parameters
+[25]  decopt←     13⊃parms ⍝ Decrements indicator
+[26]  pbens←      14⊃parms ⍝ Print Benefits indicator
+[27]  dataind←    15⊃parms ⍝ Data File indicator
+[28]  summopt←    16⊃parms ⍝ Age summary indicator
+[29]  memsumm←    17⊃parms ⍝ Member summary indicator
+[30]  valout←     18⊃parms ⍝ PUC Valuation Output for Surcharge
+[31]  keepfile←   19⊃parms ⍝ Keep "Notional" Member file
+[32]  csvind←     20⊃parms ⍝ Spreadsheet Export
+[33]  SSexpparms← 21⊃parms ⍝ Spreadsheet Export (SA extended)
+[34]  KeepResult← 22⊃parms ⍝ Store Valuation Results for Consolidatioon
+[35]  fscopt←     23⊃parms ⍝ Store ALM/LDI CashFlows
+[36]  ⍝⍝⍝ OutputStyle←24⊃parms ⍝ Output Style - no longer used
+[37]  aggopt←     25⊃parms ⍝ Aggregated Benefits indicator
+[38]  bencap←     26⊃parms ⍝ Capped Benefits
+[39]  s143←       27⊃parms ⍝ S143 Entry Valuation
+[40]  SelSex←     28⊃parms ⍝ Sex of Run
+[41]  AgeInterp←  29⊃parms ⍝ Exact Age Interpolation
+[42]  IndCashFlow←30⊃parms ⍝ Individual Cash Flows
+[43]  VFtables←   31⊃parms ⍝ Valuation Factors
+[44]  COCRind←0 ⍝⍝⍝
+[45]  
+[46]  ValName←(('Y'=↑bencap)/'Capped '),ValName
+[47]  VALN∆LOG 'Header'
+[48]  
+[49]  (1 2 'Reading Basis Parameters') Win∆ProgressBar2 'MemberUpdate'
+[50]  
+[51]  (success MESS saveVersion)←(InputDir,basisFile) ReadModule (MembGroup,'_Basis') basisDesc (MembGroup,' Basis') '' 1
+[52]  :if ~mt MESS ⋄ (⊃MESS[;2]) VALN∆LOG 'Add' ⋄ :endif
+[53]  →(res←~success)/0 ⍝ Fatal Error if Basis Parameter Set does not exist
+[54]  
+[55]  (2 2 'Setting Valuation Parameters') Win∆ProgressBar2 'MemberUpdate'
+[56]  
+[57]  ValParmdesc←Parm_RunDesc ⍝ Create a Run Description of Batch Parameters
+[58]  ppf←'PP'≡2↑ValMeth ⍝ PPF Indicator
+[59]  dab←'DAB'≡ValMeth
+[60]  NotPUC←~(⊂ValMeth)∊'PUC' 'UCM' 'SUR' 'NOT'
+[61]  IsDeferred←(⊂ValMeth)∊'DEF' 'PPD'
+[62]  
+[63]  :if ~'N'=↑test
+[64]      0 0⍴(SystemDir,'VALNWIN') ReadFile 'FOURDIT Functions'
+[65]      :if ClassID=4 ⍝⍝⍝ FIXME
+[66]          0 0⍴(SystemDir,(uk⊃'' 'U' 'S'),'VALNWIN') ReadFile 'VarPrint Dictionaries'
+[67]          FOURDITopen 'Basis'
+[68]          FOURDITVARDESC←FOURDITVARDESC FOURVARDESCinit 'Dictionary'
+[69]          FOURDITVARDESC←FOURDITVARDESC FOURVARDESCinit 'MembGroup'
+[70]          FOURDITVARDESC←FOURDITVARDESC FOURVARDESCinit 'Batch'
+[71]      :endif
+[72]  :endif
+[73]  
+[74]  CREATE∆PARMS ⍝ Execute all the Batch parameters
+[75]  
+[76]  gROUP←basisDesc,bencap/':  Accrued Benefits are Capped'
+[77]  gROUP←gROUP,ppf/':  PPF ',(s143⊃'Levy' 'Entry'),' Valuation Overrides Apply'
+[78]  
+[79]  :if uk≠1 ⍝ Create MiscTab in case they are needed by Category Variables
+[80]      :for I :in ⍳1↑⍴MiscTab ⍝ Assign Misc Tables
+[81]          :if 0=⍴CODE←DLTMB MiscTab[I;] ⋄ :continue ⋄ :endif
+[82]          CODE←¯5↑CODE
+[83]          :if res←¯1≡⍎CODE,'←¯1 DEC∆CHECK CODE OVER MiscTabAgeRate[I;] OVER MiscTabLoad[I;]'
+[84]              :return
+[85]          :endif
+[86]          :if '0'=CODE[2+⎕io] ⋄ ⍎CODE[⎕io+0 1 3 4],'←',CODE ⋄ :endif
+[87]      :endfor
+[88]      ⍝ Conversion of Variables
+[89]      :if ~'-'∊erSind ⋄ erSind←erSind[0],' -',1↓erSind ⋄ :endif
+[90]      :if ~'-'∊pucind ⋄ pucind←pucind[0],' -',1↓pucind ⋄ :endif
+[91]  :endif
+[92]  
+[93]  AbsDict←AbsDict UpdateAbsDict 'Basis'
+[94]  'Num'  ASSIGN∆Vars ⊃¨(AbsDict for (~(AbsDict at 'Module')∊⊂'Client')^(AbsDict at 'Type')∊⊂'Number') at 'Variable' 'Parameter'
+[95]  'Date' ASSIGN∆Vars ⊃¨(AbsDict for (~(AbsDict at 'Module')∊⊂'Client')^(AbsDict at 'Type')∊⊂'Date'  ) at 'Variable' 'Parameter'
+    ∇

@@ -1,0 +1,113 @@
+    ∇ ⍙DBXL_RateTables CAT;⎕elx;elx;ID;values;desc;tab;row;nextrow;sheet;templaterng;rng;fmt;Rng;after;NoBases;Cats;idx;Ylabel;date;tries;cat;finrows;ages;∆;ts;fmtflg
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Create a sheet of Rate tables used for a Basis
+[3]   
+[4]   Cats←16↓¨⌽m2n XL_SheetNames 'Tables Basis ID' ⋄ Cats←⊃('_'=↑¨Cats)↓¨Cats ⍝ Current Tables tabs
+[5]   
+[6]   :if ~mt Cats TLU CAT ⍝ Already Tables tab
+[7]       :return
+[8]   :elseif ~mt Cats ⍝ Get position of new tab
+[9]       Cats←Cats OVER CAT
+[10]      :if ~mt idx←¯1+(m2n Cats[⎕av⍋Cats;])⍳⊂CAT ⋄ :andif 0≤idx
+[11]          cat←(((UPPERCASE ↑cat)≠↑cat)/'_'),cat←DLTB Cats[idx;]
+[12]          after←'Tables Basis ID ',cat
+[13]      :else
+[14]          after←'RateTables'
+[15]      :endif
+[16]  :else
+[17]      after←'RateTables'
+[18]  :endif
+[19]  
+[20]  'RateTables' XL_ProtectSheet 0
+[21]  tries←0 ⋄ elx←⎕elx
+[22]  retry:
+[23]  :if 3=tries←tries+1 ⋄ ⎕elx←elx ⋄ :else ⋄ ⎕elx←'→retry' ⋄ :endif
+[24]  0 0⍴(('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'RateTables') ⎕wi 'Copy(After)' ((('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' after)  ⎕wi 'obj')
+[25]  ⎕elx←elx
+[26]  'RateTables' XL_ProtectSheet ¯1
+[27]  'XL' ⎕wi 'visible' 0
+[28]  0 0⍴('XL' ⎕wi 'xActiveSheet') ⎕wi 'xName' (sheet←'Tables Basis ID ',(((UPPERCASE ↑CAT)≠↑CAT)/'_'),CAT)
+[29]  'XL' ⎕wi 'visible' 0
+[30]  0 0⍴'' XL_Data 'N1'
+[31]  
+[32]  0 0⍴CAT XL_Data 'C7'
+[33]  0 0⍴(DLTB ∊1 ⍙DBadoCONCommand "SELECT BasisDescription FROM ResultsCategory WHERE ResultsCategoryID=",⍕ResultsCategoryID) XL_Data "C8"
+[34]  nextrow←140+finrows←⍙DBXL_FinAssumptions
+[35]  
+[36]  :for ID :in ,1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE BasisCategoryID=",(⍕BasisCategoryID)," ORDER BY TableID"
+[37]      (desc ts)←DLTB¨,1 ⍙DBadoCONCommand "SELECT TOP 1 TableName,",("TableTimeStamp" ⍙DBDateFormat 'dd/mm/yyyy hh:mm:ss')," FROM TableNames WHERE TableID=",⍕ID
+[38]      :if ~∨/'] - rebased to '⍷desc ⋄ desc←(' [' join desc ts),']' ⋄ :endif
+[39]      tab←XL_Pivot ("SELECT TableAge, TableDuration, TableDate,",("TableDate" ⍙DBDateFormat 'dd/mm/yyyy'),", TableValue FROM TableValues WHERE TableID=",⍕ID) 0
+[40]  ⍝⍝⍝    Xlabel←
+[41]      Ylabel←'' ⋄ fmtflg←0
+[42]  
+[43]      fmt←¯1
+[44]      :repeat
+[45]      :until (tab[;4]×10*fmt)≡⌊tab[;4]×10*fmt←fmt+1
+[46]  
+[47]      :if date←∨/0≠tab[;2] ⍝ Date Factor Table
+[48]          values←,tab[;4]
+[49]          templaterng←12 2 14 (2+↑⍴values) ⋄ rng←nextrow 2 (nextrow+2) (2+↑⍴values)
+[50]          nextrow←nextrow+3
+[51]      :else
+[52]          :select ^⌿0=tab[;0 1 4]
+[53]          :caselist (0 1 0) (1 1 1) ⍝ Age Table
+[54]              values←150⍴0
+[55]              values[⌊tab[;0]]←tab[;4]
+[56]              :if ^/0=values ⋄ values←120↑values
+[57]              :else          ⋄ values←DTZ values
+[58]              :endif
+[59]              templaterng←12 2 14 (2+↑⍴values) ⋄ rng←nextrow 2 (nextrow+2) (2+↑⍴values)
+[60]              nextrow←nextrow+3
+[61]          :caselist (1 0 0) (1 0 1) ⍝ Duration Table
+[62]              values←200⍴0
+[63]              values[tab[;1]]←tab[;4]
+[64]              :if ^/0=values ⋄ values←120↑values
+[65]              :else          ⋄ values←DTZ values
+[66]              :endif
+[67]              templaterng←15 2 17 (2+↑⍴values) ⋄ rng←nextrow 2 (nextrow+2) (2+↑⍴values)
+[68]              nextrow←nextrow+3
+[69]          :else ⍝ 2D Table
+[70]  ⍝⍝⍝            Xlabel←'' ⋄
+[71]              :if (,1)≡⎕vi 3↑2↓desc
+[72]                  Ylabel←(('CM'≡2↑desc)/'Band'),('RR'≡2↑desc)/'Retirement Age'
+[73]              :endif
+[74]              :if ∨/' Commutation Factors'∊desc
+[75]              :orif ∨/' Valuation Factors'∊desc ⋄ fmt←3⌊fmt ⋄ fmtflg←1
+[76]              :else                             ⋄ fmt←6⌊fmt
+[77]              :endif
+[78]              values←120 120⍴0
+[79]              :for row :in ⍳↑⍴tab
+[80]                  values[119⌊⌊tab[row;0];119⌊tab[row;1]]←tab[row;4]
+[81]              :endfor
+[82]              templaterng←18 2 140 122 ⋄ rng←nextrow 2 (nextrow+122) 122
+[83]              nextrow←nextrow+123
+[84]              :if ∨/∆≠⌊∆←nub tab[;0] ⋄ ages←⍳120 ⋄ ages[⌊∆]←∆ ⋄ :endif ⍝ Non-Integral ages
+[85]          :endselect
+[86]      :endif
+[87]  
+[88]      templaterng XL_PasteAll rng
+[89]      :if 0≠⎕nc 'ages'
+[90]          0 0⍴(⍉MATRIX ages) XL_Data RCtoA1 Rng←(3↑rng+3 0 0 0),2
+[91]          Rng XL_NumberFormat '##0.0' ⍝ Reset Formats to 1dp
+[92]          0 0⍴⎕ex 'ages'
+[93]      :endif
+[94]      :if date
+[95]          0 0⍴((⊂'Date'),tab[;3]) XL_Data RCtoA1 rng+1 0 ¯1 0
+[96]      :endif
+[97]      0 0⍴desc XL_Data RCtoA1 2↑rng
+[98]  ⍝⍝⍝    :if ~mt Xlabel ⋄ 0 0⍴Xlabel XL_Data RCtoA1 1 1+2↑rng ⋄ :endif
+[99]      :if ~mt Ylabel ⋄ 0 0⍴Ylabel XL_Data RCtoA1 2 0+2↑rng ⋄ :endif
+[100]     0 0⍴values XL_Data RCtoA1 Rng←rng+(3⌊-/rng[2 0]),1 0 0
+[101]     :if fmtflg ⋄ Rng XL_NumberFormat '_-* #,##0',((×fmt)/'.',fmt/'0'),'_-;-* #,##0',((×fmt)/'.',fmt/'0'),'_-;_-* "-"???_-;_-@_-' ⍝ Zeroes are "blank"
+[102]     :else      ⋄ Rng XL_NumberFormat '#,##0',((×fmt)/'.',fmt/'0'),';[Red]-#,##0',((×fmt)/'.',fmt/'0') ⍝ Reset Formats to show all dp
+[103]     :endif
+[104]     'XL' ⎕wi 'Range>.Rng' (RCtoA1 rng+1 0 0 0) ⋄  0 0⍴('XL.Rng' ⎕wi 'xRows') ⎕wi 'XGroup'
+[105] 
+[106] :endfor
+[107] 'U' XL_RangeDelete 11 ⍬ 140 ⍬
+[108] 
+[109] XL_AutoFit (10+finrows) 3 nextrow 3 ⋄ XL_AutoFit ⍬ 4 ⍬ 122
+[110] 0 0⍴(('XL' ⎕wi 'xActiveSheet') ⎕wi 'xOutline') ⎕wi 'XShowLevels' 1
+[111] sheet XL_ProtectSheet 1
+    ∇

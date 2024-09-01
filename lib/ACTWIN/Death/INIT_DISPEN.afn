@@ -1,1 +1,58 @@
-    ∇ INIT∆DISPEN;WOPEN;FWOPEN;XSWOPEN;SPREADFRAC2;wossd;wosfd[1]   ⍝ ACTWIN.sf#6[2]   ⍝ Initialise DIS Benefits[3]   [4]   SPREADFRAC2←SPREADFRAC←WOPEND←FWOPEND←WOPENN←FWOPENN←WOPENL←FWOPENL←WOPEN4←FWOPEN4←XSWOPEND←XSWOPENN←XSWOPENL←XSWOPEN4←NX⍴0[5]   [6]   :if WOBAS=2 ⋄ WOPEN←WOFRAC∆l×SALMPvec[;wosal][7]   :else       ⋄ XSWOPEN←WOPEN←WOFRAC∆l×((ENX_1,LNX+1)/1 0)×[2]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DTPEN ⍝ Create partial sum[8]   :endif[9]   ⍝[10]  :if ~WINSDIS ⋄ :andif WOBAS∊2 4 5[11]      :if DSTYPE ⋄ :andif WOBAS∊4 5 ⍝ want defaults[12]          SPREADFRAC←1[13]      :elseif DISCARESpread ⋄ :andif CAREFutAcc ⍝ Spread by Accrued Pension[14]          SPREADFRAC ←(+⌿+⌿+⌿+⌿+⌿DTPEN[;⎕io+2;;;;;]) ZDIV +⌿+⌿+⌿+⌿+⌿+⌿DTPEN[15]          SPREADFRAC2←(+⌿+⌿+⌿+⌿+⌿DTPEN[;⎕io  ;;;;;]) ZDIV +⌿+⌿+⌿+⌿+⌿+⌿DTPEN[16]      :else[17]          wossd←⍎WOSSD ⋄ wosfd←⍎WOSFD[18]          SPREADFRAC ←NX⍴0⌈ (servrnd DURN VDATE TO wosfd)                              ZDIV 0⌈ servrnd DURN wossd TO wosfd[19]          SPREADFRAC2←NX⍴0⌈((servrnd DURN DJF   TO COEND)⌊servrnd DURN wossd TO COEND) ZDIV 0⌈(servrnd DURN wossd TO wosfd)⌊servrnd DURN DJF TO wosfd[20]      :endif[21]  :endif[22]  [23]  :select WOBAS[24]  :case 2[25]      FWOPEN←SPREADFRAC×WOPEN[26]      PWOPEN←SPREADFRAC2×WOPEN[27]      XSWOPEN←(WOPEN-PWOPEN)+0⌈PWOPEN-WGMP ⍝ Take WGMP off first tranche[28]      :select WODYN[29]      :case 'M' ⋄ WOPEND←WOPEN ⋄ FWOPEND←FWOPEN ⋄ XSWOPEND←XSWOPEN[30]      :case 'S' ⋄ WOPENN←WOPEN ⋄ FWOPENN←FWOPEN ⋄ XSWOPENN←XSWOPEN[31]      :case '3' ⋄ WOPENL←WOPEN ⋄ FWOPENL←FWOPEN ⋄ XSWOPENL←XSWOPEN[32]      :case '4' ⋄ WOPEN4←WOPEN ⋄ FWOPEN4←FWOPEN ⋄ XSWOPEN4←XSWOPEN[33]      :endselect[34]  [35]      :return[36]  :case 3[37]      PWOPEN←+/[⎕io]WOPEN[;⎕io;][38]  [39]  :caselist 4 5 ⍝ Prospective Service/Table[40]      FWOPEN←WOPEN[;⎕io+2;]+SPREADFRAC ×[⎕io+1]WOFRAC∆l×+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DPROSPEN[41]      PWOPEN←WOPEN[;⎕io  ;]+SPREADFRAC2×[⎕io+1]WOFRAC∆l×+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DPROSPEN[42]      WOPEN[;⎕io+1;]←(+/[⎕io+1]WOPEN          +WOFRAC∆l×         +/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DPROSPEN)-FWOPEN+PWOPEN[43]      WOPEN[;⎕io  ;]←PWOPEN[44]      WOPEN[;⎕io+2;]←FWOPEN[45]      PWOPEN←+/[⎕io]PWOPEN[46]      XSWOPEN←WOPEN[47]  [48]  :else ⋄ :return[49]  :endselect[50]  [51]  ⍝ Final Calcs for WOBAS 3, 4 and 5[52]  XSWOPEN[;⎕io;]←XSWOPEN[;⎕io;]×[⎕io+1]0⌈1-WGMP CDIV PWOPEN ⍝ Take WGMP off first tranche[53]  WOPEND←+/[⎕io]WOPEN[⎕io+1;;] ⋄ FWOPEND←WOPEN[⎕io+1;⎕io+2;] ⋄ XSWOPEND←+/[⎕io]XSWOPEN[⎕io+1;;][54]  WOPENN←+/[⎕io]WOPEN[⎕io  ;;] ⋄ FWOPENN←WOPEN[⎕io  ;⎕io+2;] ⋄ XSWOPENN←+/[⎕io]XSWOPEN[⎕io  ;;][55]  WOPENL←+/[⎕io]WOPEN[⎕io+2;;] ⋄ FWOPENL←WOPEN[⎕io+2;⎕io+2;] ⋄ XSWOPENL←+/[⎕io]XSWOPEN[⎕io+2;;][56]  WOPEN4←+/[⎕io]WOPEN[⎕io+3;;] ⋄ FWOPEN4←WOPEN[⎕io+3;⎕io+2;] ⋄ XSWOPEN4←+/[⎕io]XSWOPEN[⎕io+3;;]    ∇
+    ∇ INIT∆DISPEN;WOPEN;FWOPEN;XSWOPEN;SPREADFRAC2;wossd;wosfd
+[1]   ⍝ ACTWIN.sf#6
+[2]   ⍝ Initialise DIS Benefits
+[3]   
+[4]   SPREADFRAC2←SPREADFRAC←WOPEND←FWOPEND←WOPENN←FWOPENN←WOPENL←FWOPENL←WOPEN4←FWOPEN4←XSWOPEND←XSWOPENN←XSWOPENL←XSWOPEN4←NX⍴0
+[5]   
+[6]   :if WOBAS=2 ⋄ WOPEN←WOFRAC∆l×SALMPvec[;wosal]
+[7]   :else       ⋄ XSWOPEN←WOPEN←WOFRAC∆l×((ENX_1,LNX+1)/1 0)×[2]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DTPEN ⍝ Create partial sum
+[8]   :endif
+[9]   ⍝
+[10]  :if ~WINSDIS ⋄ :andif WOBAS∊2 4 5
+[11]      :if DSTYPE ⋄ :andif WOBAS∊4 5 ⍝ want defaults
+[12]          SPREADFRAC←1
+[13]      :elseif DISCARESpread ⋄ :andif CAREFutAcc ⍝ Spread by Accrued Pension
+[14]          SPREADFRAC ←(+⌿+⌿+⌿+⌿+⌿DTPEN[;⎕io+2;;;;;]) ZDIV +⌿+⌿+⌿+⌿+⌿+⌿DTPEN
+[15]          SPREADFRAC2←(+⌿+⌿+⌿+⌿+⌿DTPEN[;⎕io  ;;;;;]) ZDIV +⌿+⌿+⌿+⌿+⌿+⌿DTPEN
+[16]      :else
+[17]          wossd←⍎WOSSD ⋄ wosfd←⍎WOSFD
+[18]          SPREADFRAC ←NX⍴0⌈ (servrnd DURN VDATE TO wosfd)                              ZDIV 0⌈ servrnd DURN wossd TO wosfd
+[19]          SPREADFRAC2←NX⍴0⌈((servrnd DURN DJF   TO COEND)⌊servrnd DURN wossd TO COEND) ZDIV 0⌈(servrnd DURN wossd TO wosfd)⌊servrnd DURN DJF TO wosfd
+[20]      :endif
+[21]  :endif
+[22]  
+[23]  :select WOBAS
+[24]  :case 2
+[25]      FWOPEN←SPREADFRAC×WOPEN
+[26]      PWOPEN←SPREADFRAC2×WOPEN
+[27]      XSWOPEN←(WOPEN-PWOPEN)+0⌈PWOPEN-WGMP ⍝ Take WGMP off first tranche
+[28]      :select WODYN
+[29]      :case 'M' ⋄ WOPEND←WOPEN ⋄ FWOPEND←FWOPEN ⋄ XSWOPEND←XSWOPEN
+[30]      :case 'S' ⋄ WOPENN←WOPEN ⋄ FWOPENN←FWOPEN ⋄ XSWOPENN←XSWOPEN
+[31]      :case '3' ⋄ WOPENL←WOPEN ⋄ FWOPENL←FWOPEN ⋄ XSWOPENL←XSWOPEN
+[32]      :case '4' ⋄ WOPEN4←WOPEN ⋄ FWOPEN4←FWOPEN ⋄ XSWOPEN4←XSWOPEN
+[33]      :endselect
+[34]  
+[35]      :return
+[36]  :case 3
+[37]      PWOPEN←+/[⎕io]WOPEN[;⎕io;]
+[38]  
+[39]  :caselist 4 5 ⍝ Prospective Service/Table
+[40]      FWOPEN←WOPEN[;⎕io+2;]+SPREADFRAC ×[⎕io+1]WOFRAC∆l×+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DPROSPEN
+[41]      PWOPEN←WOPEN[;⎕io  ;]+SPREADFRAC2×[⎕io+1]WOFRAC∆l×+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DPROSPEN
+[42]      WOPEN[;⎕io+1;]←(+/[⎕io+1]WOPEN          +WOFRAC∆l×         +/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]DPROSPEN)-FWOPEN+PWOPEN
+[43]      WOPEN[;⎕io  ;]←PWOPEN
+[44]      WOPEN[;⎕io+2;]←FWOPEN
+[45]      PWOPEN←+/[⎕io]PWOPEN
+[46]      XSWOPEN←WOPEN
+[47]  
+[48]  :else ⋄ :return
+[49]  :endselect
+[50]  
+[51]  ⍝ Final Calcs for WOBAS 3, 4 and 5
+[52]  XSWOPEN[;⎕io;]←XSWOPEN[;⎕io;]×[⎕io+1]0⌈1-WGMP CDIV PWOPEN ⍝ Take WGMP off first tranche
+[53]  WOPEND←+/[⎕io]WOPEN[⎕io+1;;] ⋄ FWOPEND←WOPEN[⎕io+1;⎕io+2;] ⋄ XSWOPEND←+/[⎕io]XSWOPEN[⎕io+1;;]
+[54]  WOPENN←+/[⎕io]WOPEN[⎕io  ;;] ⋄ FWOPENN←WOPEN[⎕io  ;⎕io+2;] ⋄ XSWOPENN←+/[⎕io]XSWOPEN[⎕io  ;;]
+[55]  WOPENL←+/[⎕io]WOPEN[⎕io+2;;] ⋄ FWOPENL←WOPEN[⎕io+2;⎕io+2;] ⋄ XSWOPENL←+/[⎕io]XSWOPEN[⎕io+2;;]
+[56]  WOPEN4←+/[⎕io]WOPEN[⎕io+3;;] ⋄ FWOPEN4←WOPEN[⎕io+3;⎕io+2;] ⋄ XSWOPEN4←+/[⎕io]XSWOPEN[⎕io+3;;]
+    ∇

@@ -1,1 +1,282 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Consolidation" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Consolidation" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   :if (⊂"pgSelection")∊"fmSV.sConsolidation" ⎕wi "pages"[10]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbvalind" ⎕wi "list"[11]  selection←PickList ExactTLU DLTB valind[12]  :if mt selection[13]      :if ~mt DLTB valind[14]          warnings←warnings OVER "Previous Selection for 'Valuation Method' is no longer available"[15]      :endif[16]      modified←⌈/modified,1[17]  :endif[18]  "fmSV.sConsolidation.pgSelection.fCriteria.cbvalind" ⎕wi "value" (¯1↑1,selection)[19]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbbencap" ⎕wi "list"[20]  selection←PickList ExactTLU DLTB bencap[21]  :if mt selection[22]      :if ~mt DLTB bencap[23]          warnings←warnings OVER "Previous Selection for 'Capped Accrued Benefits' is no longer available"[24]      :endif[25]      modified←⌈/modified,1[26]  :endif[27]  "fmSV.sConsolidation.pgSelection.fCriteria.cbbencap" ⎕wi "value" (¯1↑1,selection)[28]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbcontper" ⎕wi "list"[29]  selection←PickList ExactTLU DLTB contper[30]  :if mt selection[31]      :if ~mt DLTB contper[32]          warnings←warnings OVER "Previous Selection for 'Control Period' is no longer available"[33]      :endif[34]      modified←⌈/modified,1[35]  :endif[36]  "fmSV.sConsolidation.pgSelection.fCriteria.cbcontper" ⎕wi "value" (¯1↑1,selection)[37]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbinsind1" ⎕wi "list"[38]  selection←PickList ExactTLU DLTB insind[1;][39]  :if mt selection[40]      :if ~mt DLTB insind[1;][41]          warnings←warnings OVER "Previous Selection for 'Insured Benefits in Normal Cost' is no longer available"[42]      :endif[43]      modified←⌈/modified,1[44]  :endif[45]  "fmSV.sConsolidation.pgSelection.fCriteria.cbinsind1" ⎕wi "value" (¯1↑1,selection)[46]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbTargetBen" ⎕wi "list"[47]  selection←PickList ExactTLU DLTB TargetBen[48]  :if mt selection[49]      :if ~mt DLTB TargetBen[50]          warnings←warnings OVER "Previous Selection for 'Target Accrued Benefit' is no longer available"[51]      :endif[52]      modified←⌈/modified,1[53]  :endif[54]  "fmSV.sConsolidation.pgSelection.fCriteria.cbTargetBen" ⎕wi "value" (¯1↑1,selection)[55]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbVDATE" ⎕wi "list"[56]  selection←PickList ExactTLU DLTB VDATE[57]  :if mt selection[58]      :if ~mt DLTB VDATE[59]          warnings←warnings OVER "Previous Selection for 'Valuation Date' is no longer available"[60]      :endif[61]      modified←⌈/modified,1[62]  :endif[63]  "fmSV.sConsolidation.pgSelection.fCriteria.cbVDATE" ⎕wi "value" (¯1↑1,selection)[64]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbExactAge" ⎕wi "list"[65]  selection←PickList ExactTLU DLTB ExactAge[66]  :if mt selection[67]      :if ~mt DLTB ExactAge[68]          warnings←warnings OVER "Previous Selection for 'Interpolated Exact Age Runs' is no longer available"[69]      :endif[70]      modified←⌈/modified,1[71]  :endif[72]  "fmSV.sConsolidation.pgSelection.fCriteria.cbExactAge" ⎕wi "value" (¯1↑1,selection)[73]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbfscopt" ⎕wi "list"[74]  selection←PickList ExactTLU DLTB fscopt[75]  :if mt selection[76]      :if ~mt DLTB fscopt[77]          warnings←warnings OVER "Previous Selection for 'ALM/LDI Interface' is no longer available"[78]      :endif[79]      modified←⌈/modified,1[80]  :endif[81]  "fmSV.sConsolidation.pgSelection.fCriteria.cbfscopt" ⎕wi "value" (¯1↑1,selection)[82]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbneIND" ⎕wi "list"[83]  selection←PickList ExactTLU DLTB neIND[84]  :if mt selection[85]      :if ~mt DLTB neIND[86]          warnings←warnings OVER "Previous Selection for 'New Entrant Model Replacement' is no longer available"[87]      :endif[88]      modified←⌈/modified,1[89]  :endif[90]  "fmSV.sConsolidation.pgSelection.fCriteria.cbneIND" ⎕wi "value" (¯1↑1,selection)[91]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbaosind" ⎕wi "list"[92]  selection←PickList ExactTLU DLTB aosind[93]  :if mt selection[94]      :if ~mt DLTB aosind[95]          warnings←warnings OVER "Previous Selection for 'Consolidated Analysis of Surplus' is no longer available"[96]      :endif[97]      modified←⌈/modified,1[98]  :endif[99]  "fmSV.sConsolidation.pgSelection.fCriteria.cbaosind" ⎕wi "value" (¯1↑1,selection)[100] PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbpVDATE" ⎕wi "list"[101] selection←PickList ExactTLU DLTB pVDATE[102] :if mt selection[103]     :if ~mt DLTB pVDATE[104]         warnings←warnings OVER "Previous Selection for 'Previous Valuation Date' is no longer available"[105]     :endif[106]     modified←⌈/modified,1[107] :endif[108] "fmSV.sConsolidation.pgSelection.fCriteria.cbpVDATE" ⎕wi "value" (¯1↑1,selection)[109] PickList←"fmSV.sConsolidation.pgSelection.lvrunslist" ⎕wi "list"[110] :if 0∊⍴PickList[111]     value←⍬[112] :else[113]     list←(1 0×⍴PickList)⍴""[114]     :for n :in 2+⍳1⌈+/"⍺"=((MATRIX runslist) OVER " ")[1;][115]         list←list,"⍺",(⊃PickList[;n])," "[116]     :endfor[117]     list←m2n list[118]     NameList←m2n MATRIX runslist[119]     value←(list∊NameList)/PickList[;1][120] :endif[121] :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[122]     value←PickList[1;1] ⋄ modified←1[123] :endif[124] "fmSV.sConsolidation.pgSelection.lvrunslist" ⎕wi "value" value[125] 0 0⍴"fmSV.sConsolidation.pgSelection.lvrunslist" ⎕wi "EnsureVisible" ((1↑value),1)[126] :endif[127] :if (⊂"pgContributions")∊"fmSV.sConsolidation" ⎕wi "pages"[128] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "XClearRange" 1 1 ("fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxRow") ("fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxCol") 3[129] MaxRow←MaxCol←1[130] value←(1 100⌈⍴value)↑value←MATRIX GROUP[131] MaxCol←"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxCol"[132] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[133] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)[134] value←(1 7⌈⍴value)↑value←MATRIX COCR[135] MaxCol←"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxCol"[136] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[137] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)[138] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[139] (MaxRow MaxCol)←"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xGetActiveCell" 0 0[140] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xSetActiveCell" (MaxRow⌊"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xMaxRow") (MaxCol⌊"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xMaxCol")[141] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xmodified" 0[142] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "onXModified" "('fmSV.sConsolidation' (Win∆Parent 'fmSV.sConsolidation')) MultiWI 'modified' ('fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates' ⎕wi 'xmodified')"[143] "fmSV.sConsolidation.pgContributions.fAddit.edDA" ⎕wi "text" (DLTB DA)[144] "fmSV.sConsolidation.pgContributions.fAddit.edTERMDA" ⎕wi "text" (DLTB TERMDA)[145] "fmSV.sConsolidation.pgContributions.fAddit.edSALPC" ⎕wi "text" (DLTB SALPC)[146] "fmSV.sConsolidation.pgContributions.fAddit.edTERMPC" ⎕wi "text" (DLTB TERMPC)[147] PickList←"fmSV.sConsolidation.pgContributions.fAddit.cbPCsalind" ⎕wi "list"[148] selection←PickList ExactTLU DLTB PCsalind[149] :if mt selection[150]     :if ~mt DLTB PCsalind[151]         warnings←warnings OVER "Previous Selection for 'Contributions Salaries' is no longer available"[152]     :endif[153]     modified←⌈/modified,1[154] :endif[155] "fmSV.sConsolidation.pgContributions.fAddit.cbPCsalind" ⎕wi "value" (¯1↑1,selection)[156] PickList←"fmSV.sConsolidation.pgContributions.fAddit.cbamorti3" ⎕wi "list"[157] warnings←warnings OVER "Amortisation Interest Rate (% p.a.)" Win∆FinRelative "amorti[3;]" "lramorti3" 0[158] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText amorti[3;][159] :if mt selection[160]     modified←⌈/modified,1[161] :endif[162] "fmSV.sConsolidation.pgContributions.fAddit.cbamorti3" ⎕wi "value" (¯1↑1,selection)[163] "fmSV.sConsolidation.pgContributions.fARSL.edARSL1" ⎕wi "text" (DLTB ARSL[1;])[164] "fmSV.sConsolidation.pgContributions.fARSL.edARSL2" ⎕wi "text" (DLTB ARSL[2;])[165] :endif[166] :if (⊂"pgAmortisation")∊"fmSV.sConsolidation" ⎕wi "pages"[167] "fmSV.sConsolidation.pgAmortisation.fAmort1.edamortprop1" ⎕wi "text" (DLTB amortprop[1;])[168] "fmSV.sConsolidation.pgAmortisation.fAmort1.edamortprop2" ⎕wi "text" (DLTB amortprop[2;])[169] no←1↑⍴PickList←SStoMAT ("fmSV.sConsolidation.pgAmortisation.fAmort1.fameth1.opameth1_1" ⎕wi "∆lastoption") ⎕wi "∆options"[170] value←¯1↑1,selection←PickList ExactTLU ameth[1;][171] :if 0∊⍴selection[172]     modified←⌈/modified,×value[173] :endif[174] :for nn :in ⍳no[175]     ("fmSV.sConsolidation.pgAmortisation.fAmort1.fameth1.opameth1_",⍕nn) ⎕wi "value" (value=nn)[176] :endfor[177] "fmSV.sConsolidation.pgAmortisation.fAmort1.edTERMAM1" ⎕wi "text" (DLTB TERMAM[1;])[178] PickList←"fmSV.sConsolidation.pgAmortisation.fAmort1.cbamorti1" ⎕wi "list"[179] warnings←warnings OVER "Amortisation Interest Rate (% p.a.)" Win∆FinRelative "amorti[1;]" "lramorti1" 0[180] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText amorti[1;][181] :if mt selection[182]     modified←⌈/modified,1[183] :endif[184] "fmSV.sConsolidation.pgAmortisation.fAmort1.cbamorti1" ⎕wi "value" (¯1↑1,selection)[185] "fmSV.sConsolidation.pgAmortisation.fAmort2.edamortprop3" ⎕wi "text" (DLTB amortprop[3;])[186] "fmSV.sConsolidation.pgAmortisation.fAmort2.edamortprop4" ⎕wi "text" (DLTB amortprop[4;])[187] no←1↑⍴PickList←SStoMAT ("fmSV.sConsolidation.pgAmortisation.fAmort2.fameth2.opameth2_1" ⎕wi "∆lastoption") ⎕wi "∆options"[188] value←¯1↑1,selection←PickList ExactTLU ameth[2;][189] :if 0∊⍴selection[190]     modified←⌈/modified,×value[191] :endif[192] :for nn :in ⍳no[193]     ("fmSV.sConsolidation.pgAmortisation.fAmort2.fameth2.opameth2_",⍕nn) ⎕wi "value" (value=nn)[194] :endfor[195] "fmSV.sConsolidation.pgAmortisation.fAmort2.edTERMAM2" ⎕wi "text" (DLTB TERMAM[2;])[196] PickList←"fmSV.sConsolidation.pgAmortisation.fAmort2.cbamorti2" ⎕wi "list"[197] warnings←warnings OVER "Amortisation Interest Rate (% p.a.)" Win∆FinRelative "amorti[2;]" "lramorti2" 0[198] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText amorti[2;][199] :if mt selection[200]     modified←⌈/modified,1[201] :endif[202] "fmSV.sConsolidation.pgAmortisation.fAmort2.cbamorti2" ⎕wi "value" (¯1↑1,selection)[203] "fmSV.sConsolidation.pgAmortisation.fARSL.edARSL1" ⎕wi "text" (DLTB ARSL[1;])[204] "fmSV.sConsolidation.pgAmortisation.fARSL.edARSL2" ⎕wi "text" (DLTB ARSL[2;])[205] "fmSV.sConsolidation.pgAmortisation.fARSL.edARSL3" ⎕wi "text" (DLTB ARSL[3;])[206] :endif[207] :if (⊂"pgOther")∊"fmSV.sConsolidation" ⎕wi "pages"[208] "fmSV.sConsolidation.pgOther.fAssets.edASSETS" ⎕wi "text" (DLTB ASSETS)[209] PickList←"fmSV.sConsolidation.pgOther.fAssets.cbIR" ⎕wi "list"[210] warnings←warnings OVER "Asset Rollup Rate (% p.a.)" Win∆FinRelative "IR" "lrIR" 0[211] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText IR[212] :if mt selection[213]     modified←⌈/modified,1[214] :endif[215] "fmSV.sConsolidation.pgOther.fAssets.cbIR" ⎕wi "value" (¯1↑1,selection)[216] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "XClearRange" 1 1 ("fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxRow") ("fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxCol") 3[217] MaxRow←MaxCol←1[218] value←(1 40⌈⍴value)↑value←MATRIX LTAB[219] MaxCol←"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxCol"[220] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[221] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)[222] value←(1 12⌈⍴value)↑value←MATRIX LTOT[223] MaxCol←"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxCol"[224] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)[225] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)[226] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[227] (MaxRow MaxCol)←"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xGetActiveCell" 0 0[228] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xSetActiveCell" (MaxRow⌊"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xMaxRow") (MaxCol⌊"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xMaxCol")[229] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xmodified" 0[230] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "onXModified" "('fmSV.sConsolidation' (Win∆Parent 'fmSV.sConsolidation')) MultiWI 'modified' ('fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab' ⎕wi 'xmodified')"[231] "fmSV.sConsolidation.pgOther.fExpenses.edEXPSF" ⎕wi "text" (DLTB EXPSF)[232] PickList←"fmSV.sConsolidation.pgOther.fExpenses.cbEXPf" ⎕wi "list"[233] warnings←warnings OVER "Scheme Fee Inflation Rate (% p.a.)" Win∆FinRelative "EXPf" "lrEXPf" 0[234] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText EXPf[235] :if mt selection[236]     modified←⌈/modified,1[237] :endif[238] "fmSV.sConsolidation.pgOther.fExpenses.cbEXPf" ⎕wi "value" (¯1↑1,selection)[239] "fmSV.sConsolidation.pgOther.fExpenses.edPMEXP" ⎕wi "text" (DLTB PMEXP)[240] "fmSV.sConsolidation.pgOther.fExpenses.edEXPCC" ⎕wi "text" (DLTB EXPCC)[241] "fmSV.sConsolidation.pgOther.fExpenses.edEXPMC" ⎕wi "text" (DLTB EXPMC)[242] "fmSV.sConsolidation.pgOther.fExpenses.edEXPSAL" ⎕wi "text" (DLTB EXPSAL)[243] "fmSV.sConsolidation.pgOther.fOutput.ckpenind" ⎕wi "value" (zwb penind)[244] "fmSV.sConsolidation.pgOther.fOutput.ckinsind2" ⎕wi "value" (zwb insind[2;])[245] "fmSV.sConsolidation.pgOther.fOutput.ckSKIP" ⎕wi "value" (zwb SKIP)[246] "fmSV.sConsolidation.pgOther.fOutput.cksummopt" ⎕wi "value" (zwb summopt)[247] "fmSV.sConsolidation.pgOther.fOutput.ckretainCat" ⎕wi "value" (zwb retainCat)[248] "fmSV.sConsolidation.pgOther.fOutput.ckignoreCONSDYN" ⎕wi "value" (zwb ignoreCONSDYN)[249] "fmSV.sConsolidation.pgOther.fOutput.edConsDBName" ⎕wi "text" (DLTB ConsDBName)[250] :endif[251] :if (⊂"pgAOS")∊"fmSV.sConsolidation" ⎕wi "pages"[252] "fmSV.sConsolidation.pgAOS.edPrevASSETS" ⎕wi "text" (DLTB PrevASSETS)[253] "fmSV.sConsolidation.pgAOS.edNetCF" ⎕wi "text" (DLTB NetCF)[254] PickList←"fmSV.sConsolidation.pgAOS.cbExpi" ⎕wi "list"[255] warnings←warnings OVER "Expected Interest Rate(s)" Win∆FinRelative "Expi" "lrExpi" 0[256] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText Expi[257] :if mt selection[258]     modified←⌈/modified,1[259] :endif[260] "fmSV.sConsolidation.pgAOS.cbExpi" ⎕wi "value" (¯1↑1,selection)[261] "fmSV.sConsolidation.pgAOS.edMembConts" ⎕wi "text" (DLTB MembConts)[262] "fmSV.sConsolidation.pgAOS.edErConts" ⎕wi "text" (DLTB ErConts)[263] "fmSV.sConsolidation.pgAOS.edInsDIS" ⎕wi "text" (DLTB InsDIS)[264] "fmSV.sConsolidation.pgAOS.edInsIH" ⎕wi "text" (DLTB InsIH)[265] "fmSV.sConsolidation.pgAOS.edPenAmts" ⎕wi "text" (DLTB PenAmts)[266] "fmSV.sConsolidation.pgAOS.edCashAmts" ⎕wi "text" (DLTB CashAmts)[267] "fmSV.sConsolidation.pgAOS.edIntAmts" ⎕wi "text" (DLTB IntAmts)[268] :endif[269] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Consolidation[270]     :for var :in spin Comment_Consolidation at "variable" "row" ⋄ (var row)←var[271]         "Consolidation" ParmColor ((FormFields for "variable" var) at "control"),var row 1[272]     :endfor[273] :endif[274] :if ~0∊⍴,warnings[275]     MDISPLAY DLTMB warnings,⎕tcnl[276]     Win∆AssignVars "fmSV.sConsolidation"[277] :endif[278] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Consolidation" "" "Names"[279]     "fmSV.sConsolidation" ⎕wi "modified" 0[280] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Consolidation" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Consolidation" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   :if (⊂"pgSelection")∊"fmSV.sConsolidation" ⎕wi "pages"
+[10]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbvalind" ⎕wi "list"
+[11]  selection←PickList ExactTLU DLTB valind
+[12]  :if mt selection
+[13]      :if ~mt DLTB valind
+[14]          warnings←warnings OVER "Previous Selection for 'Valuation Method' is no longer available"
+[15]      :endif
+[16]      modified←⌈/modified,1
+[17]  :endif
+[18]  "fmSV.sConsolidation.pgSelection.fCriteria.cbvalind" ⎕wi "value" (¯1↑1,selection)
+[19]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbbencap" ⎕wi "list"
+[20]  selection←PickList ExactTLU DLTB bencap
+[21]  :if mt selection
+[22]      :if ~mt DLTB bencap
+[23]          warnings←warnings OVER "Previous Selection for 'Capped Accrued Benefits' is no longer available"
+[24]      :endif
+[25]      modified←⌈/modified,1
+[26]  :endif
+[27]  "fmSV.sConsolidation.pgSelection.fCriteria.cbbencap" ⎕wi "value" (¯1↑1,selection)
+[28]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbcontper" ⎕wi "list"
+[29]  selection←PickList ExactTLU DLTB contper
+[30]  :if mt selection
+[31]      :if ~mt DLTB contper
+[32]          warnings←warnings OVER "Previous Selection for 'Control Period' is no longer available"
+[33]      :endif
+[34]      modified←⌈/modified,1
+[35]  :endif
+[36]  "fmSV.sConsolidation.pgSelection.fCriteria.cbcontper" ⎕wi "value" (¯1↑1,selection)
+[37]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbinsind1" ⎕wi "list"
+[38]  selection←PickList ExactTLU DLTB insind[1;]
+[39]  :if mt selection
+[40]      :if ~mt DLTB insind[1;]
+[41]          warnings←warnings OVER "Previous Selection for 'Insured Benefits in Normal Cost' is no longer available"
+[42]      :endif
+[43]      modified←⌈/modified,1
+[44]  :endif
+[45]  "fmSV.sConsolidation.pgSelection.fCriteria.cbinsind1" ⎕wi "value" (¯1↑1,selection)
+[46]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbTargetBen" ⎕wi "list"
+[47]  selection←PickList ExactTLU DLTB TargetBen
+[48]  :if mt selection
+[49]      :if ~mt DLTB TargetBen
+[50]          warnings←warnings OVER "Previous Selection for 'Target Accrued Benefit' is no longer available"
+[51]      :endif
+[52]      modified←⌈/modified,1
+[53]  :endif
+[54]  "fmSV.sConsolidation.pgSelection.fCriteria.cbTargetBen" ⎕wi "value" (¯1↑1,selection)
+[55]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbVDATE" ⎕wi "list"
+[56]  selection←PickList ExactTLU DLTB VDATE
+[57]  :if mt selection
+[58]      :if ~mt DLTB VDATE
+[59]          warnings←warnings OVER "Previous Selection for 'Valuation Date' is no longer available"
+[60]      :endif
+[61]      modified←⌈/modified,1
+[62]  :endif
+[63]  "fmSV.sConsolidation.pgSelection.fCriteria.cbVDATE" ⎕wi "value" (¯1↑1,selection)
+[64]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbExactAge" ⎕wi "list"
+[65]  selection←PickList ExactTLU DLTB ExactAge
+[66]  :if mt selection
+[67]      :if ~mt DLTB ExactAge
+[68]          warnings←warnings OVER "Previous Selection for 'Interpolated Exact Age Runs' is no longer available"
+[69]      :endif
+[70]      modified←⌈/modified,1
+[71]  :endif
+[72]  "fmSV.sConsolidation.pgSelection.fCriteria.cbExactAge" ⎕wi "value" (¯1↑1,selection)
+[73]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbfscopt" ⎕wi "list"
+[74]  selection←PickList ExactTLU DLTB fscopt
+[75]  :if mt selection
+[76]      :if ~mt DLTB fscopt
+[77]          warnings←warnings OVER "Previous Selection for 'ALM/LDI Interface' is no longer available"
+[78]      :endif
+[79]      modified←⌈/modified,1
+[80]  :endif
+[81]  "fmSV.sConsolidation.pgSelection.fCriteria.cbfscopt" ⎕wi "value" (¯1↑1,selection)
+[82]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbneIND" ⎕wi "list"
+[83]  selection←PickList ExactTLU DLTB neIND
+[84]  :if mt selection
+[85]      :if ~mt DLTB neIND
+[86]          warnings←warnings OVER "Previous Selection for 'New Entrant Model Replacement' is no longer available"
+[87]      :endif
+[88]      modified←⌈/modified,1
+[89]  :endif
+[90]  "fmSV.sConsolidation.pgSelection.fCriteria.cbneIND" ⎕wi "value" (¯1↑1,selection)
+[91]  PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbaosind" ⎕wi "list"
+[92]  selection←PickList ExactTLU DLTB aosind
+[93]  :if mt selection
+[94]      :if ~mt DLTB aosind
+[95]          warnings←warnings OVER "Previous Selection for 'Consolidated Analysis of Surplus' is no longer available"
+[96]      :endif
+[97]      modified←⌈/modified,1
+[98]  :endif
+[99]  "fmSV.sConsolidation.pgSelection.fCriteria.cbaosind" ⎕wi "value" (¯1↑1,selection)
+[100] PickList←"fmSV.sConsolidation.pgSelection.fCriteria.cbpVDATE" ⎕wi "list"
+[101] selection←PickList ExactTLU DLTB pVDATE
+[102] :if mt selection
+[103]     :if ~mt DLTB pVDATE
+[104]         warnings←warnings OVER "Previous Selection for 'Previous Valuation Date' is no longer available"
+[105]     :endif
+[106]     modified←⌈/modified,1
+[107] :endif
+[108] "fmSV.sConsolidation.pgSelection.fCriteria.cbpVDATE" ⎕wi "value" (¯1↑1,selection)
+[109] PickList←"fmSV.sConsolidation.pgSelection.lvrunslist" ⎕wi "list"
+[110] :if 0∊⍴PickList
+[111]     value←⍬
+[112] :else
+[113]     list←(1 0×⍴PickList)⍴""
+[114]     :for n :in 2+⍳1⌈+/"⍺"=((MATRIX runslist) OVER " ")[1;]
+[115]         list←list,"⍺",(⊃PickList[;n])," "
+[116]     :endfor
+[117]     list←m2n list
+[118]     NameList←m2n MATRIX runslist
+[119]     value←(list∊NameList)/PickList[;1]
+[120] :endif
+[121] :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[122]     value←PickList[1;1] ⋄ modified←1
+[123] :endif
+[124] "fmSV.sConsolidation.pgSelection.lvrunslist" ⎕wi "value" value
+[125] 0 0⍴"fmSV.sConsolidation.pgSelection.lvrunslist" ⎕wi "EnsureVisible" ((1↑value),1)
+[126] :endif
+[127] :if (⊂"pgContributions")∊"fmSV.sConsolidation" ⎕wi "pages"
+[128] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "XClearRange" 1 1 ("fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxRow") ("fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxCol") 3
+[129] MaxRow←MaxCol←1
+[130] value←(1 100⌈⍴value)↑value←MATRIX GROUP
+[131] MaxCol←"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxCol"
+[132] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[133] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)
+[134] value←(1 7⌈⍴value)↑value←MATRIX COCR
+[135] MaxCol←"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxCol"
+[136] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[137] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)
+[138] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[139] (MaxRow MaxCol)←"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xGetActiveCell" 0 0
+[140] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xSetActiveCell" (MaxRow⌊"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xMaxRow") (MaxCol⌊"fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xMaxCol")
+[141] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "xmodified" 0
+[142] "fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates" ⎕wi "onXModified" "('fmSV.sConsolidation' (Win∆Parent 'fmSV.sConsolidation')) MultiWI 'modified' ('fmSV.sConsolidation.pgContributions.fCoCRates.ssCoCRates' ⎕wi 'xmodified')"
+[143] "fmSV.sConsolidation.pgContributions.fAddit.edDA" ⎕wi "text" (DLTB DA)
+[144] "fmSV.sConsolidation.pgContributions.fAddit.edTERMDA" ⎕wi "text" (DLTB TERMDA)
+[145] "fmSV.sConsolidation.pgContributions.fAddit.edSALPC" ⎕wi "text" (DLTB SALPC)
+[146] "fmSV.sConsolidation.pgContributions.fAddit.edTERMPC" ⎕wi "text" (DLTB TERMPC)
+[147] PickList←"fmSV.sConsolidation.pgContributions.fAddit.cbPCsalind" ⎕wi "list"
+[148] selection←PickList ExactTLU DLTB PCsalind
+[149] :if mt selection
+[150]     :if ~mt DLTB PCsalind
+[151]         warnings←warnings OVER "Previous Selection for 'Contributions Salaries' is no longer available"
+[152]     :endif
+[153]     modified←⌈/modified,1
+[154] :endif
+[155] "fmSV.sConsolidation.pgContributions.fAddit.cbPCsalind" ⎕wi "value" (¯1↑1,selection)
+[156] PickList←"fmSV.sConsolidation.pgContributions.fAddit.cbamorti3" ⎕wi "list"
+[157] warnings←warnings OVER "Amortisation Interest Rate (% p.a.)" Win∆FinRelative "amorti[3;]" "lramorti3" 0
+[158] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText amorti[3;]
+[159] :if mt selection
+[160]     modified←⌈/modified,1
+[161] :endif
+[162] "fmSV.sConsolidation.pgContributions.fAddit.cbamorti3" ⎕wi "value" (¯1↑1,selection)
+[163] "fmSV.sConsolidation.pgContributions.fARSL.edARSL1" ⎕wi "text" (DLTB ARSL[1;])
+[164] "fmSV.sConsolidation.pgContributions.fARSL.edARSL2" ⎕wi "text" (DLTB ARSL[2;])
+[165] :endif
+[166] :if (⊂"pgAmortisation")∊"fmSV.sConsolidation" ⎕wi "pages"
+[167] "fmSV.sConsolidation.pgAmortisation.fAmort1.edamortprop1" ⎕wi "text" (DLTB amortprop[1;])
+[168] "fmSV.sConsolidation.pgAmortisation.fAmort1.edamortprop2" ⎕wi "text" (DLTB amortprop[2;])
+[169] no←1↑⍴PickList←SStoMAT ("fmSV.sConsolidation.pgAmortisation.fAmort1.fameth1.opameth1_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[170] value←¯1↑1,selection←PickList ExactTLU ameth[1;]
+[171] :if 0∊⍴selection
+[172]     modified←⌈/modified,×value
+[173] :endif
+[174] :for nn :in ⍳no
+[175]     ("fmSV.sConsolidation.pgAmortisation.fAmort1.fameth1.opameth1_",⍕nn) ⎕wi "value" (value=nn)
+[176] :endfor
+[177] "fmSV.sConsolidation.pgAmortisation.fAmort1.edTERMAM1" ⎕wi "text" (DLTB TERMAM[1;])
+[178] PickList←"fmSV.sConsolidation.pgAmortisation.fAmort1.cbamorti1" ⎕wi "list"
+[179] warnings←warnings OVER "Amortisation Interest Rate (% p.a.)" Win∆FinRelative "amorti[1;]" "lramorti1" 0
+[180] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText amorti[1;]
+[181] :if mt selection
+[182]     modified←⌈/modified,1
+[183] :endif
+[184] "fmSV.sConsolidation.pgAmortisation.fAmort1.cbamorti1" ⎕wi "value" (¯1↑1,selection)
+[185] "fmSV.sConsolidation.pgAmortisation.fAmort2.edamortprop3" ⎕wi "text" (DLTB amortprop[3;])
+[186] "fmSV.sConsolidation.pgAmortisation.fAmort2.edamortprop4" ⎕wi "text" (DLTB amortprop[4;])
+[187] no←1↑⍴PickList←SStoMAT ("fmSV.sConsolidation.pgAmortisation.fAmort2.fameth2.opameth2_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[188] value←¯1↑1,selection←PickList ExactTLU ameth[2;]
+[189] :if 0∊⍴selection
+[190]     modified←⌈/modified,×value
+[191] :endif
+[192] :for nn :in ⍳no
+[193]     ("fmSV.sConsolidation.pgAmortisation.fAmort2.fameth2.opameth2_",⍕nn) ⎕wi "value" (value=nn)
+[194] :endfor
+[195] "fmSV.sConsolidation.pgAmortisation.fAmort2.edTERMAM2" ⎕wi "text" (DLTB TERMAM[2;])
+[196] PickList←"fmSV.sConsolidation.pgAmortisation.fAmort2.cbamorti2" ⎕wi "list"
+[197] warnings←warnings OVER "Amortisation Interest Rate (% p.a.)" Win∆FinRelative "amorti[2;]" "lramorti2" 0
+[198] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText amorti[2;]
+[199] :if mt selection
+[200]     modified←⌈/modified,1
+[201] :endif
+[202] "fmSV.sConsolidation.pgAmortisation.fAmort2.cbamorti2" ⎕wi "value" (¯1↑1,selection)
+[203] "fmSV.sConsolidation.pgAmortisation.fARSL.edARSL1" ⎕wi "text" (DLTB ARSL[1;])
+[204] "fmSV.sConsolidation.pgAmortisation.fARSL.edARSL2" ⎕wi "text" (DLTB ARSL[2;])
+[205] "fmSV.sConsolidation.pgAmortisation.fARSL.edARSL3" ⎕wi "text" (DLTB ARSL[3;])
+[206] :endif
+[207] :if (⊂"pgOther")∊"fmSV.sConsolidation" ⎕wi "pages"
+[208] "fmSV.sConsolidation.pgOther.fAssets.edASSETS" ⎕wi "text" (DLTB ASSETS)
+[209] PickList←"fmSV.sConsolidation.pgOther.fAssets.cbIR" ⎕wi "list"
+[210] warnings←warnings OVER "Asset Rollup Rate (% p.a.)" Win∆FinRelative "IR" "lrIR" 0
+[211] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText IR
+[212] :if mt selection
+[213]     modified←⌈/modified,1
+[214] :endif
+[215] "fmSV.sConsolidation.pgOther.fAssets.cbIR" ⎕wi "value" (¯1↑1,selection)
+[216] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "XClearRange" 1 1 ("fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxRow") ("fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxCol") 3
+[217] MaxRow←MaxCol←1
+[218] value←(1 40⌈⍴value)↑value←MATRIX LTAB
+[219] MaxCol←"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxCol"
+[220] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[221] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,1) (m2n ⎕av[209 151] REPL value)
+[222] value←(1 12⌈⍴value)↑value←MATRIX LTOT
+[223] MaxCol←"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxCol"
+[224] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "MaxRow" (MaxRow←MaxRow⌈1↑⍴value)
+[225] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "TextRC[]" (⎕mix ,(⍳1↑⍴value)∘.,2) (m2n ⎕av[209 151] REPL value)
+[226] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[227] (MaxRow MaxCol)←"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xGetActiveCell" 0 0
+[228] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xSetActiveCell" (MaxRow⌊"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xMaxRow") (MaxCol⌊"fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xMaxCol")
+[229] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "xmodified" 0
+[230] "fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab" ⎕wi "onXModified" "('fmSV.sConsolidation' (Win∆Parent 'fmSV.sConsolidation')) MultiWI 'modified' ('fmSV.sConsolidation.pgOther.fOtherLiab.ssOtherLiab' ⎕wi 'xmodified')"
+[231] "fmSV.sConsolidation.pgOther.fExpenses.edEXPSF" ⎕wi "text" (DLTB EXPSF)
+[232] PickList←"fmSV.sConsolidation.pgOther.fExpenses.cbEXPf" ⎕wi "list"
+[233] warnings←warnings OVER "Scheme Fee Inflation Rate (% p.a.)" Win∆FinRelative "EXPf" "lrEXPf" 0
+[234] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText EXPf
+[235] :if mt selection
+[236]     modified←⌈/modified,1
+[237] :endif
+[238] "fmSV.sConsolidation.pgOther.fExpenses.cbEXPf" ⎕wi "value" (¯1↑1,selection)
+[239] "fmSV.sConsolidation.pgOther.fExpenses.edPMEXP" ⎕wi "text" (DLTB PMEXP)
+[240] "fmSV.sConsolidation.pgOther.fExpenses.edEXPCC" ⎕wi "text" (DLTB EXPCC)
+[241] "fmSV.sConsolidation.pgOther.fExpenses.edEXPMC" ⎕wi "text" (DLTB EXPMC)
+[242] "fmSV.sConsolidation.pgOther.fExpenses.edEXPSAL" ⎕wi "text" (DLTB EXPSAL)
+[243] "fmSV.sConsolidation.pgOther.fOutput.ckpenind" ⎕wi "value" (zwb penind)
+[244] "fmSV.sConsolidation.pgOther.fOutput.ckinsind2" ⎕wi "value" (zwb insind[2;])
+[245] "fmSV.sConsolidation.pgOther.fOutput.ckSKIP" ⎕wi "value" (zwb SKIP)
+[246] "fmSV.sConsolidation.pgOther.fOutput.cksummopt" ⎕wi "value" (zwb summopt)
+[247] "fmSV.sConsolidation.pgOther.fOutput.ckretainCat" ⎕wi "value" (zwb retainCat)
+[248] "fmSV.sConsolidation.pgOther.fOutput.ckignoreCONSDYN" ⎕wi "value" (zwb ignoreCONSDYN)
+[249] "fmSV.sConsolidation.pgOther.fOutput.edConsDBName" ⎕wi "text" (DLTB ConsDBName)
+[250] :endif
+[251] :if (⊂"pgAOS")∊"fmSV.sConsolidation" ⎕wi "pages"
+[252] "fmSV.sConsolidation.pgAOS.edPrevASSETS" ⎕wi "text" (DLTB PrevASSETS)
+[253] "fmSV.sConsolidation.pgAOS.edNetCF" ⎕wi "text" (DLTB NetCF)
+[254] PickList←"fmSV.sConsolidation.pgAOS.cbExpi" ⎕wi "list"
+[255] warnings←warnings OVER "Expected Interest Rate(s)" Win∆FinRelative "Expi" "lrExpi" 0
+[256] selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText Expi
+[257] :if mt selection
+[258]     modified←⌈/modified,1
+[259] :endif
+[260] "fmSV.sConsolidation.pgAOS.cbExpi" ⎕wi "value" (¯1↑1,selection)
+[261] "fmSV.sConsolidation.pgAOS.edMembConts" ⎕wi "text" (DLTB MembConts)
+[262] "fmSV.sConsolidation.pgAOS.edErConts" ⎕wi "text" (DLTB ErConts)
+[263] "fmSV.sConsolidation.pgAOS.edInsDIS" ⎕wi "text" (DLTB InsDIS)
+[264] "fmSV.sConsolidation.pgAOS.edInsIH" ⎕wi "text" (DLTB InsIH)
+[265] "fmSV.sConsolidation.pgAOS.edPenAmts" ⎕wi "text" (DLTB PenAmts)
+[266] "fmSV.sConsolidation.pgAOS.edCashAmts" ⎕wi "text" (DLTB CashAmts)
+[267] "fmSV.sConsolidation.pgAOS.edIntAmts" ⎕wi "text" (DLTB IntAmts)
+[268] :endif
+[269] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Consolidation
+[270]     :for var :in spin Comment_Consolidation at "variable" "row" ⋄ (var row)←var
+[271]         "Consolidation" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[272]     :endfor
+[273] :endif
+[274] :if ~0∊⍴,warnings
+[275]     MDISPLAY DLTMB warnings,⎕tcnl
+[276]     Win∆AssignVars "fmSV.sConsolidation"
+[277] :endif
+[278] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Consolidation" "" "Names"
+[279]     "fmSV.sConsolidation" ⎕wi "modified" 0
+[280] :endif
+    ∇

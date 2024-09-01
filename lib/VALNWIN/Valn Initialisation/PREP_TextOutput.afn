@@ -1,0 +1,43 @@
+    ∇ PREP∆TextOutput ClassID;n
+[1]   ⍝ VALNWIN.sf#2
+[2]   ⍝ Preparatory work for Text Output
+[3]   
+[4]   :if ~suppressText
+[5]       :if ClassID=4
+[6]           :if csvind ⋄ PREPARE∆CSV∆PEN ⋄ :endif
+[7]   
+[8]           CFTOT←125 2⍴GTOTS←((5+14××uk),11)⍴ATOTS←((4+15×bencap),11)⍴0 ⍝ Set up Totals Variables
+[9]       :else
+[10]          :if csvind ⋄ PREPARE∆CSV ⋄ :endif
+[11]  
+[12]          CFTOT←3 120 16⍴0                                ⍝ Cash Flow, Accrued Bens & Demographics
+[13]          TOTALS←((No∆Bens+8),18)⍴0                       ⍝ Present Values
+[14]          :if PROPT  ⋄ ATOTS←1 8⍴0 ⋄ :endif               ⍝ Acc Bens Totals
+[15]          :if aosind ⋄ STOTS←(16-7×IsDeferred)/0 ⋄ :endif ⍝ Analysis of Surplus Totals
+[16]  
+[17]          ⍝ Page and Record Numbers
+[18]          :if ~aggopt[0]
+[19]              SPAGE←APAGE←IPAGE←PPAGE←ARECN←SRECN←0
+[20]              RECN←pAGE ⍝ Output Record Number
+[21]          :endif
+[22]      :endif
+[23]  
+[24]      CREATE∆OutputFILE ⍝ Create Input/Output Files
+[25]      n←(,rUNDESC)⍳':'
+[26]      rUNDESC←((n↑"Valuation Output Filename"),': ',OutPutFile) OVER rUNDESC
+[27]  
+[28]      CREATE∆HEAD
+[29]  
+[30]      ⍝ Run description and Decrement Printout to Listing
+[31]      SUMMREC←rUNDESC
+[32]      SPAGE←1↑(H2[⍳2;] OVER ' ') OUTPUT tpr1,SPAGE,pAGE
+[33]  
+[34]  ⍝⍝⍝    :if ClassID=4
+[35]  ⍝⍝⍝        PRINT∆PRATES decopt ⍝ Details of run on screen
+[36]  ⍝⍝⍝    :else
+[37]  ⍝⍝⍝        PRINT∆DECRATES decopt^~aggopt[0] ⍝ Details of run on screen
+[38]  ⍝⍝⍝    :endif
+[39]  
+[40]      SPAGE←'INPUT' DATA∆FILE dataind dattie tpr1 SPAGE
+[41]  :endif
+    ∇

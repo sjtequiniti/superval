@@ -1,0 +1,88 @@
+    ∇ Ind∆AOS←AOS∆TOTS∆PV;A;Reserve;X;I;ind;NEMult;Mult;Z;LX;CONTS;zeroRes;T
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   T←NX↑⌽×⍳ENX ⍝ 1's at ERAs and 0 at NRA
+[7]   Ind∆AOS←(⍴aos∆TOTS[0;;])⍴0 ⍝ Don't Adjust some items in Entry year
+[8]   A←PerToEnt/0 ⋄ NEMult←ResMult⌈ind←ResMult≠∆ResMult
+[9]   
+[10]  :if ~IsDeferred ⍝ Expected Member and Company Funded Contributions
+[11]      CONTS←CFTOT[0;⍳NX;12]CDIV LX←NX↑MID (-SNX)↓tPx
+[12]      Ind∆AOS[7;]←(ResMult-ExitMult)×ResSize↑A,CONTS⌈1E¯3×(NX-SNX)=1
+[13]      ⍝ Required Co Funded also for AGG
+[14]      Ind∆AOS[6;]←(ValMeth≡'AGG')×Ind∆AOS[8;]←(ResMult-ExitMult)×ResSize↑A,CCONTS
+[15]  :endif
+[16]  
+[17]  →(IsDeferred,dab,(⊂ValMeth)≡¨'EAN' 'AGG')/L0,L0,L3,F0 ⍝ Different Calcs for Different Methods
+[18]  
+[19]  ⍝ Required Co Funded Conts for AAN, PUC and UCM
+[20]  Ind∆AOS[6;]←((NEMult-ExitMult)×ResSize↑A,((NORMC÷vMP)-insind×+/CFTOT[0;⍳NX; 5 8])CDIV LX)-Ind∆AOS[7;]
+[21]  
+[22]  ⍝ Reserve Equal to Past Service Liab or Accrued Benefit for DAB
+[23]  ⍝ Expected Reserves - Assign First Reserve to 0 when applicable
+[24]  L0:Reserve←CFTOT[1;⍳NX;(1,4)[×abNO]]CDIV tPx
+[25]  ⍝ First Reserve is zero, if New Entrant AND EITHER Zero Reserve flag OR Reserve at prev anniversary is less than 0.01
+[26]  zeroRes←(ind[PerToEnt]∨PerToEnt≠0)^ZeroRes∨0.01>∣Reserve[0]
+[27]  Reserve[0]←1↑(zeroRes^×ind[PerToEnt]+PerToEnt)↓+/(2 OVERTAKE Reserve)× 0 1 + 1 ¯1 ×1↑ResMult~0 ⋄ →F1
+[28]  
+[29]  ⍝ Required Co Funded Conts for EAN
+[30]  L3:Ind∆AOS[6;]←(ResMult-ExitMult)×ResSize↑A,CCONTS←CFTOT[0;⍳NX;13]CDIV LX
+[31]  
+[32]  ⍝ Prospective Reserves for AGG and EAN
+[33]  ⍝ Adjust Reserve for New Entrants
+[34]  F0:Reserve←(⌽+\⌽VTB-vMP×LX×CCONTS+CONTS)CDIV v×tPx
+[35]  Reserve[0]←+/(2 OVERTAKE Reserve)× 0 1 + 1 ¯1 ×1↑ResMult~0
+[36]  
+[37]  ⍝ "X" Required for Reserve Release for All Other Exits
+[38]  F1:X←(-SNX)↓1↓Reserve×(vMPRet÷v)*NX↑0,ResMult-ExitMult
+[39]  
+[40]  ⍝ Expected Benefit Payments - Normal Retirement & All Other Exits
+[41]  ⍝⍝⍝ X←(4,ResSize)↑((4,PerToEnt)⍴0),((4⌿MATRIX X)× 0     ¯1 ↓(⍉PROBS)CDIV 4⌿MATRIX tPx)- 0     ¯1 ↓(⍉penvals+          (     ¯1  0 ↓PROBS×VC)⍪0)CDIV 4⌿MATRIX tPx
+[42]      X←(4,ResSize)↑((4,PerToEnt)⍴0),((4⌿MATRIX X)×(0,-SNX+1)↓(⍉PROBS)CDIV 4⌿MATRIX tPx)-(0,-SNX+1)↓(⍉penvals+((NX_1,4)↑((-SNX+1),0)↓PROBS×VC)⍪0)CDIV 4⌿MATRIX tPx
+[43]  ⍝ Reserve Release for All Other Exits
+[44]  Ind∆AOS[2+⍳4;]←X×4⌿MATRIX ResMult-ExitMult
+[45]  ⍝ Reserve Release for Normal Retirement
+[46]  Ind∆AOS[1;]←(ResMult-ExitMult)×ResSize↑A,(NX↑(-SNX)↓Reserve×~T)-(NX↑(-SNX)↓(penvals[;0]+PROBS[;0]×VC[;0])×~T)CDIV tPx
+[47]  
+[48]  ⍝ Release of Foregone Contributions
+[49]  ⍝⍝⍝ Ind∆AOS[2+⍳4;]←Ind∆AOS[2+⍳4;]-(4⌿MATRIX 0.5×ResMult-ExitMult)×(4,ResSize)↑((4,PerToEnt)⍴0),(4⌿MATRIX  NX_1     ↑+⌿Ind∆AOS[6 7 ;])× 0     ¯1 ↓(⍉PROBS)CDIV 4⌿MATRIX tPx
+[50]      Ind∆AOS[2+⍳4;]←Ind∆AOS[2+⍳4;]-(4⌿MATRIX 0.5×ResMult-ExitMult)×(4,ResSize)↑((4,PerToEnt)⍴0),(4⌿MATRIX (NX_1-SNX)↑+⌿Ind∆AOS[6 7 ;])×(0,-SNX+1)↓(⍉PROBS)CDIV 4⌿MATRIX tPx
+[51]  →(ResSize≤⍴X←A,(-SNX)↓Reserve)/F2 ⍝ Project Reserves for Overages
+[52]  X←A,(ResSize OVERTAKE (-SNX)↓Reserve)×1⌈V[NX_1-SNX]CDIV V[⍳ResSize]
+[53]  F2:X←ResSize↑X ⋄ Z←(⍳ResSize)⌊(×ExitMult)⍳1
+[54]  ⍝⍝ This doesn't work for New Ent and Exit in same year
+[55]  Mult←NEMult-0,¯1↓1∣-ExitMult
+[56]  Ind∆AOS[0;]←ResSize OVERTAKE(1++/Z=⍳ResSize)↑(Mult×X[Z])+(1↓X,0)[Z]×1-Mult
+[57]  
+[58]  :if ~IsDeferred
+[59]      Ind∆AOS[11;]←(ResMult-ExitMult)×ResSize↑A,0.01×SALMPvec[;V1pcSAL]×T ⍝ 1% of Expected Salaries
+[60]      Ind∆AOS[36; 0 1]←(+/ 0 ¯1 ↓Ind∆AOS[7 8;])CDIV+/¯1↓Ind∆AOS[11;] ⍝ Weighted Average Member and Company Cont Rates
+[61]      Ind∆AOS[9;]←COCRccd×Ind∆AOS[11;] ⋄ Ind∆AOS[10;]←COCRcci×Ind∆AOS[11;] ⍝ Expected Company Contributions - Insured
+[62]      Ind∆AOS[26 27;0]←ACWO0,EACWO0 ⍝ Actual Member and Company Contributions (Start Point)
+[63]  :endif
+[64]  
+[65]  Ind∆AOS[0;0]←Ind∆AOS[0;PerToEnt] ⍝ Starting Reserve
+[66]  
+[67]  ⍝ Now go onto Calculation of Expected Interest
+[68]  I←ResSize↑(PerToEnt/1),V CDIV 1↓V,0
+[69]  Ind∆AOS[12;]←Ind∆AOS[12;]-0,¯1↓Ind∆AOS[12;]←(1↓(I*ResMult) ROLLUP Ind∆AOS[0;0],0×ResMult)-Ind∆AOS[0;0] ⍝ Interest to VDate
+[70]  Ind∆AOS[13;]←Ind∆AOS[13;]-0,¯1↓Ind∆AOS[13;]←(1↓(I*ExitMult) ROLLUP Ind∆AOS[0;ResSize-1],0×ResMult)-Ind∆AOS[0;ResSize-1] ⍝ Interest from Exit to VDate
+[71]  
+[72]  Ind∆AOS[14;]←Ind∆AOS[14;]-¯1↓0,Ind∆AOS[14;]←(1↓(I*ResMult) ROLLUP 0,Ind∆AOS[1;]×I*0.5×ResMult)-+\Ind∆AOS[1;] ⍝ Start Year NR Releases
+[73]  Ind∆AOS[15+⍳9;]←Ind∆AOS[15+⍳9;]-0 ¯1↓0,Ind∆AOS[15+⍳9;]←(⊃1↓¨(⊂I*ResMult) ROLLUP ¨⎕split 0,(I*0.5×ExitMult)×[1]Ind∆AOS[2+⍳9;])-+\Ind∆AOS[2+⍳9;]
+[74]  
+[75]  :if dab ⍝ Derive Required Contributions for DAB Method
+[76]      Ind∆AOS[19;]←(¯1+I)×Ind∆AOS[6;]←(((1↓Ind∆AOS[0;])-¯1↓+⌿Ind∆AOS[0,(1+⍳5),7 12,(14+⍳5),20;]),0)CDIV I←I*0.5
+[77]  :endif
+[78]  
+[79]  END:→NoInd/0 ⍝ Add Additional Fields for Individual Listing
+[80]  Ind∆AOS←Ind∆AOS⍪ResSize↑A,tPx
+[81]  Ind∆AOS←Ind∆AOS⍪(4,ResSize)↑((4,PerToEnt)⍴0),(⍉PROBS)CDIV 4⌿MATRIX tPx
+[82]  X←⍉penvals+PROBS×VC
+[83]  Ind∆AOS←Ind∆AOS⍪(4,ResSize)↑((4,PerToEnt)⍴0),X CDIV⍉PROBS
+[84]  :if ~IsDeferred
+[85]      Ind∆AOS←Ind∆AOS⍪(2,ResSize)↑((2,PerToEnt)⍴0),⍉SALvec[;contsSAL,V1pcSAL]
+[86]  :endif
+    ∇

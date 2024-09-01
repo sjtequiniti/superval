@@ -1,0 +1,81 @@
+    ∇ pp∆2Dbens←pp∆type PP∆ExtractBens pp∆con;pp∆shape
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Extract the benefits from Interface variables (copes with nested or plain arrays)
+[3]   ⍝  Returns the Exit Probability variable and
+[4]   ⍝          the variables pp∆TotBens and pp∆FutBens (and pp∆TotCons and pp∆FutCons if pp∆con is 1)
+[5]   ⍝  pp∆type can be either 'Benefits' for those with probability applied;
+[6]   ⍝                     or 'Amounts'  for the pre-probability benefits
+[7]   ⍝                     or ''         for Probability only
+[8]   
+[9]   :if     1=≡ pp∆exitprobs←pp∆ExitProbs[pp∆row;]                           ⍝ plain array
+[10]  :elseif 3=⍴⍴pp∆exitprobs←⊃pp∆exitprobs ⋄ pp∆exitprobs← pp∆exitprobs[0;;] ⍝ nested 2D array
+[11]  :elseif 2=⍴⍴pp∆exitprobs               ⋄ pp∆exitprobs←,pp∆exitprobs      ⍝ nested vector
+[12]  :endif
+[13]  ⍝⍝⍝ pp∆2Dbens←2=⍴⍴pp∆shape←⍴pp∆exitprobs ⍝ The shape of ExitProbs determines the shape of all benefit variables
+[14]  ⍝⍝⍝9.1⍝ pp∆2Dbens←2=⍴pp∆shape←⍴pp∆exitprobs ⍝ Should be this - pp∆2Dbens is always 0???
+[15]  pp∆2Dbens←2=⍴pp∆shape←⍴pp∆exitprobs ⍝ The shape of ExitProbs determines the shape of all benefit variables
+[16]  
+[17]  :if ~''≡pp∆type
+[18]      :select pp∆type
+[19]      :case 'Benefits'
+[20]                       pp∆TotBens←pp∆PrSL [pp∆row;] ⋄ pp∆FutBens←pp∆PrFSL [pp∆row;]
+[21]          :if pp∆con ⋄ pp∆TotCons←pp∆PrCon[pp∆row;] ⋄ pp∆FutCons←pp∆PrFCon[pp∆row;] ⋄ :endif
+[22]      :case 'Amounts'
+[23]                       pp∆TotBens←pp∆SL [pp∆row;]   ⋄ pp∆FutBens←pp∆FSL [pp∆row;]
+[24]          :if pp∆con ⋄ pp∆TotCons←pp∆Con[pp∆row;]   ⋄ pp∆FutCons←pp∆FCon[pp∆row;]   ⋄ :endif
+[25]      :endselect
+[26]  
+[27]  ⍝⍝⍝    :if (⊂pp∆exit)∊'DO' 'DT' ⋄ :andif pp∆type≡'Benefits'
+[28]  ⍝⍝⍝        pp∆TotBens←((⍳pp∆NX)⊖↑pp∆TotBens)[1;]
+[29]  ⍝⍝⍝    :endif
+[30]      :if     1=≡ pp∆TotBens                                           ⍝ plain array
+[31]      :elseif 3=⍴⍴pp∆TotBens←⊃pp∆TotBens ⋄ pp∆TotBens← pp∆TotBens[0;;] ⍝ nested 2D array
+[32]      :elseif 2=⍴⍴pp∆TotBens             ⋄ pp∆TotBens←,pp∆TotBens      ⍝ nested vector
+[33]      :endif
+[34]  
+[35]      :if     1=≡ pp∆FutBens                                           ⍝ plain array
+[36]      :elseif 3=⍴⍴pp∆FutBens←⊃pp∆FutBens ⋄ pp∆FutBens← pp∆FutBens[0;;] ⍝ nested 2D array
+[37]      :elseif 2=⍴⍴pp∆FutBens             ⋄ pp∆FutBens←,pp∆FutBens      ⍝ nested vector
+[38]      :endif
+[39]  
+[40]      :if pp∆con
+[41]          :if     1=≡ pp∆TotCons                                           ⍝ plain array
+[42]          :elseif 3=⍴⍴pp∆TotCons←⊃pp∆TotCons ⋄ pp∆TotCons← pp∆TotCons[0;;] ⍝ nested 2D array
+[43]          :elseif 2=⍴⍴pp∆TotCons             ⋄ pp∆TotCons←,pp∆TotCons      ⍝ nested vector
+[44]          :endif
+[45]  
+[46]          :if     1=≡ pp∆FutCons                                           ⍝ plain array
+[47]          :elseif 3=⍴⍴pp∆FutCons←⊃pp∆FutCons ⋄ pp∆FutCons← pp∆FutCons[0;;] ⍝ nested 2D array
+[48]          :elseif 2=⍴⍴pp∆FutCons             ⋄ pp∆FutCons←,pp∆FutCons      ⍝ nested vector
+[49]          :endif
+[50]      :endif
+[51]  
+[52]                   pp∆2Dbens←∨/pp∆2Dbens,2=⍴⍴pp∆TotBens
+[53]      :if pp∆con ⋄ pp∆2Dbens←∨/pp∆2Dbens,2=⍴⍴pp∆TotCons ⋄ :endif
+[54]  
+[55]      :if pp∆type≡'Benefits'
+[56]          :if pp∆2Dbens
+[57]              pp∆shape←2⍴pp∆shape
+[58]              :if mt pp∆TotBens ⋄ pp∆TotBens←pp∆shape⍴0 ⋄ :endif
+[59]              :if mt pp∆FutBens ⋄ pp∆FutBens←pp∆shape⍴0
+[60]  ⍝⍝⍝            :else                ⋄ pp∆FutBens←pp∆shape⍴pp∆FutBens
+[61]              :endif
+[62]              :if pp∆con
+[63]  ⍝⍝⍝                :if ^/0=,pp∆TotCons ⋄ pp∆TotCons←pp∆shape⍴0 ⋄ :endif
+[64]  ⍝⍝⍝                :if ^/0=,pp∆FutCons ⋄ pp∆FutCons←pp∆shape⍴0
+[65]                  :if mt pp∆TotCons ⋄ pp∆TotCons←pp∆shape⍴0 ⋄ :endif
+[66]                  :if mt pp∆FutCons ⋄ pp∆FutCons←pp∆shape⍴0
+[67]  ⍝⍝⍝                :else               ⋄ pp∆FutCons←pp∆shape⍴pp∆FutCons
+[68]                  :endif
+[69]              :endif
+[70]          :else
+[71]              pp∆TotBens←pp∆shape↑pp∆TotBens
+[72]              pp∆FutBens←pp∆shape↑pp∆FutBens
+[73]              :if pp∆con
+[74]                  pp∆TotCons←pp∆shape↑pp∆TotCons
+[75]                  pp∆FutCons←pp∆shape↑pp∆FutCons
+[76]              :endif
+[77]          :endif
+[78]      :endif
+[79]  :endif
+    ∇

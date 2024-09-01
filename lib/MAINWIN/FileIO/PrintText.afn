@@ -1,0 +1,67 @@
+    ∇ fILENAME PrintText text;⎕elx;elx;hdc;orientation;Printer;topmargin;leftmargin;FontStyle;FontSize;PrinterName
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Print some text using current Printer Settings
+[3]   
+[4]   PrinterName←'pr',2↑(SystemName∊⎕av[65+⍳26])/SystemName
+[5]   :if 0∊⍴PrinterName ⎕wi 'self' ⋄ :andif 0∊⍴PrinterName←InitPrinter 1
+[6]       MDISPLAY "Unable to Print as cannot Initialise any Printers" ⋄ :return
+[7]   :endif
+[8]   
+[9]   text←text~⎕tclf ⍝ Remove Line Feeds
+[10]  :if ⎕tcff=1↑text ⋄ text←1↓text ⋄ :endif ⍝ Drop Form Feed at start!
+[11]  :while (¯1↑text)∊⎕tcff,⎕tcnl,⎕av[26+⎕io] ⍝ Remove Garbage on end!
+[12]      text←¯1↓text
+[13]  :endwhile
+[14]  
+[15]  topmargin←0⌈3⌊INIString uSER 'Top Margin%' 1 PrefINI
+[16]  leftmargin←0⌈3⌊INIString uSER 'Left Margin%' 1 PrefINI
+[17]  FontStyle←INIString uSER 'Font Style' 'APL' PrefINI
+[18]  FontSize←INIString uSER 'Font Size' 'Normal' PrefINI
+[19]  
+[20]  PrinterName ⎕wi 'caption' (SystemName,' Print Job - ',fILENAME)
+[21]  
+[22]  :if ~INIString uSER 'PrinterSetup%' 0 PrefINI
+[23]      Printer←INIString uSER 'PrinterName' '' PrefINI
+[24]      Printer←(¯1↑1,(1 0↓PrinterList) ExactTLU Printer)⊃(FormName ⎕wi '∆printerlist')[;1]
+[25]      :if Printer≡'Default Printer' ⋄ PrinterName ⎕wi 'printername' ''
+[26]      :else                         ⋄ PrinterName ⎕wi 'printername' Printer
+[27]      :endif
+[28]  
+[29]      orientation←DLTB INIString uSER 'Orientation' 'Landscape' PrefINI
+[30]      :if INIString uSER 'Printerhdc%' (~×uk) PrefINI
+[31]          ⍝ Create a Device Context (DC) and assign to the printer
+[32]          ⍝ Set ORIENT option to 1 for portrait mode, 2 for landscape mode
+[33]          hdc←(1 2⍴'ORIENT' (1+orientation≡'Landscape')) P_GetDC (⊂PrinterName) ⎕wi ¨'DevMode' 'DevNames'
+[34]  
+[35]          elx←⎕elx ⋄ ⎕elx←'→err' ⍝ Preferred is "hdc" but does not always work
+[36]          PrinterName ⎕wi 'hdc' hdc ⋄ ⎕elx←elx ⋄ →l1
+[37]  
+[38]          err:⎕elx←elx
+[39]      :endif
+[40]      PrinterName ⎕wi 'orientation' ('Pp' REPL 'Ll' REPL orientation) ⍝⍝ Doesn't seem to be reliable!!
+[41]  :else ⍝⍝⍝ if ~PrinterName ⎕wi '∆setup'
+[42]      ControlName ⎕wi 'enabled' 0
+[43]      0 0⍴PrinterName ⎕wi 'Setup'
+[44]      ControlName ⎕wi 'enabled' 1
+[45]      ControlName ⎕wi 'Focus'
+[46]  :endif
+[47]  
+[48]  l1:PrinterName ⎕wi 'margin' (72×leftmargin,0,topmargin,0)
+[49]  
+[50]  :select FontStyle
+[51]  :case 'APL'
+[52]      FontName←APLPrint ⋄ FontCharSet←APLPrCharSet ⋄ FontStyle←2048
+[53]  :else
+[54]      FontName←⍬ ⋄ FontCharSet←'ansi'
+[55]      FontStyle←32+2048+128×(SStoMAT '⍺Roman⍺Swiss⍺Modern⍺Script⍺Decorative') TLU FontStyle
+[56]  :endselect
+[57]  FontSize←(3 5 7 10 12)[(SStoMAT '⍺Fine⍺Small⍺Normal⍺Large⍺Very Large') TLU FontSize]
+[58]  
+[59]  PrinterName ⎕wi 'font' FontName FontSize FontStyle FontCharSet
+[60]  PrinterName ⎕wi 'Print' text
+[61]  
+[62]  0 0⍴PrinterName ⎕wi 'Close' ⍝ Trigger Printing
+[63]  :if 0≠⎕nc 'hdc'
+[64]      0 0⍴⎕wcall 'DeleteDC' hdc ⍝ Clean up by deleting the DC
+[65]  :endif
+    ∇

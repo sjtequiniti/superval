@@ -1,1 +1,18 @@
-    ∇ val←arg ⍙WebRFFinancials val;yearsDn;weight;yearsUp;disc;pen;rfperiod[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Adjust the Discount for Roll Forward period[3]   [4]   (rfperiod pen)←arg[5]   yearsDn←⌊rfperiod ⋄ weight←1∣rfperiod[6]   [7]   :if ↑discRF[8]       yearsUp←⌈rfperiod[9]       val←(-yearsDn)↓[2]val[;,⍳yearsDn],(¯1↓[2]weight×val[;,1],val)+(1-weight)×val←(-yearsUp)↓[1](yearsUp↑[1]val)⍪val[10]  :elseif pen                                 ⍝ Pension benefits[11]      disc←(premsk×maxpay⌿prerate)+(~premsk)×maxpay⌿postrate[12]      val←val×[1]×/(yearsDn↑[2]disc),(1↑[2]yearsDn↓[2]disc)*weight[13]  :else                                       ⍝ Cash Benefits[14]      disc←(premsk×maxpay⌿prerate)+(~premsk)×maxpay⌿postrate[15]      val←val×[2]maxyr OVERTAKE ×/(yearsDn↑[2]disc),(1↑[2]yearsDn↓[2]disc)*weight[16]  :endif    ∇
+    ∇ val←arg ⍙WebRFFinancials val;yearsDn;weight;yearsUp;disc;pen;rfperiod
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Adjust the Discount for Roll Forward period
+[3]   
+[4]   (rfperiod pen)←arg
+[5]   yearsDn←⌊rfperiod ⋄ weight←1∣rfperiod
+[6]   
+[7]   :if ↑discRF
+[8]       yearsUp←⌈rfperiod
+[9]       val←(-yearsDn)↓[2]val[;,⍳yearsDn],(¯1↓[2]weight×val[;,1],val)+(1-weight)×val←(-yearsUp)↓[1](yearsUp↑[1]val)⍪val
+[10]  :elseif pen                                 ⍝ Pension benefits
+[11]      disc←(premsk×maxpay⌿prerate)+(~premsk)×maxpay⌿postrate
+[12]      val←val×[1]×/(yearsDn↑[2]disc),(1↑[2]yearsDn↓[2]disc)*weight
+[13]  :else                                       ⍝ Cash Benefits
+[14]      disc←(premsk×maxpay⌿prerate)+(~premsk)×maxpay⌿postrate
+[15]      val←val×[2]maxyr OVERTAKE ×/(yearsDn↑[2]disc),(1↑[2]yearsDn↓[2]disc)*weight
+[16]  :endif
+    ∇

@@ -1,0 +1,19 @@
+    ∇ XL_StoreScen;filename
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Store the data for Fast Scenarios
+[3]   ⍝ Revn: sjt19aug16 * revised ⍵ for ⍙DBInsertTempDB (inMemory)
+[4]   
+[5]   ⍙dbscendata←⍙dbscenrow↑[0]⍙dbscendata
+[6]   ⍙dbscendata←(⍙dbscenfmt ⎕fmt (⍙dbscenkeymask/⍙dbscenmask)/⍙dbscendata[;⍳⍙dbscennokeys]) (AgeMult×⍙dbscendata[;⍙dbscennokeys])
+[7]   
+[8]   (⍙dbscentie '⍙dbscen') ⍙DBInsertTempData '⍙dbscendata' ⍝ 19aug16
+[9]   
+[10]  ⍙dbscendata←(⍙dbscenmax,1+⍙dbscennokeys)⍴⍙dbscenrow←0
+[11]  
+[12]  :if ~parallel ⋄ :andif 2000000000<⎕nsize ⍙dbscentie ⍝ New File if over 2 Gig
+[13]      filename←InputDir,'SVscenDB {',(⍕1+↑⍴⍙dbscenlist),'}.csv'
+[14]      filename ⎕xnrename ⍙dbscentie ⋄ ⎕nuntie ⍙dbscentie
+[15]      ⍙dbscenlist←⍙dbscenlist OVER filename
+[16]      ⍙dbscentie←⍙DBCreateTempDB ⍙dbscenfile
+[17]  :endif
+    ∇

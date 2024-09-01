@@ -1,0 +1,34 @@
+    ∇ selection PP∆SelectMort pp∆type
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Mortality taken from a Two Dimensional Mortality Table
+[3]   
+[4]   :select pp∆type
+[5]   :case 'Xill2D' ⍝ 2D Post Ill Health Retirement rates
+[6]       :if ^/0=pp∆LXexit←¯1 DTZ pp∆LXill[selection;]
+[7]           pp∆LXexit←selection PP∆CreateLX (selection/0),selection↓pp∆QXill[selection;]
+[8]           pp∆lxill[selection;]←121 OVERTAKE (pp∆lxexit←MID pp∆LXexit,0),¯1
+[9]           pp∆LXill[selection;]←121 OVERTAKE pp∆LXexit,¯1
+[10]      :else
+[11]          pp∆lxexit←¯1 DTZ pp∆lxill[selection;]
+[12]      :endif
+[13]  ⍝⍀⍝     '' PP∆TestUpdate 'pp∆LXexit←' 'pp∆lxexit←'
+[14]  :case 'Ydis2D' ⍝ Death in Service Spouse Rates for Age Diff -29 to +29
+[15]      :if ^/0=pp∆LY←¯1 DTZ pp∆LYdis[selection;]
+[16]          pp∆LY←(pp∆xstart-(selection-29)) PP∆CreateLX pp∆QYdis[selection;]
+[17]          pp∆lydis[selection;]←121 OVERTAKE (pp∆ly←MID pp∆LY,0),¯1
+[18]          pp∆LYdis[selection;]←121 OVERTAKE pp∆LY,¯1
+[19]      :else
+[20]          pp∆ly←¯1 DTZ pp∆lydis[selection;]
+[21]      :endif
+[22]  ⍝⍀⍝     '' PP∆TestUpdate 'pp∆LY←' 'pp∆ly←'
+[23]  :case 'Yret2D' ⍝ Post Retirement Spouse Rates for Age Diff -29 to +29
+[24]      :if ^/0=pp∆LY←¯1 DTZ pp∆LYpost[selection;]
+[25]          pp∆LY←(pp∆xstart-(selection-29)) PP∆CreateLX pp∆QYret[selection;]
+[26]          pp∆lypost[selection;]←121 OVERTAKE (pp∆ly←MID pp∆LY,0),¯1
+[27]          pp∆LYpost[selection;]←121 OVERTAKE pp∆LY,¯1
+[28]      :else
+[29]          pp∆ly←¯1 DTZ pp∆lypost[selection;]
+[30]      :endif
+[31]  ⍝⍀⍝     '' PP∆TestUpdate 'pp∆LY←' 'pp∆ly←'
+[32]  :endselect
+    ∇

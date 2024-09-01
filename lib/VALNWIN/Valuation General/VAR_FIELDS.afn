@@ -1,0 +1,24 @@
+    ∇ VAR∆FIELDS;I
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Creating the data in the variable fields.
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   :for I :in ⍳1↑⍴TotNumVars ⍝ Numeric Fields
+[8]      ⍎TotNumVars[I;],'←(zwb REC[f',TotNumVars[I;],'])',(neIND^~AvNEDs[I])/'×NOM'
+[9]      ⍝⍀⍝ 'Member Data' 'Non-Standard Numerics' FOURDIT ((DLTB TotNumVars[I;]),'←')
+[10]  :endfor
+[11]  
+[12]  :if neIND∨necr ⋄ :return ⋄ :endif
+[13]  
+[14]  :for I :in ⍳1↑⍴CharVars ⍝ Character Fields
+[15]     ⍎CharVars[I;],'←REC[f',CharVars[I;],']'
+[16]     ⍝⍀⍝ '' 'Non-Standard Characters' FOURDIT ((DLTB CharVars[I;]),'←')
+[17]  :endfor
+[18]  
+[19]  :for I :in ⍳1↑⍴DateVars ⍝ Date Fields
+[20]     ⍎DateVars[I;],'←(df',DateVars[I;],' DOB) DATEEXP REC[f',DateVars[I;],']'
+[21]     ⍝⍀⍝ '' 'Non-Standard Dates' FOURDIT ((DLTB DateVars[I;]),'←')
+[22]  :endfor
+    ∇

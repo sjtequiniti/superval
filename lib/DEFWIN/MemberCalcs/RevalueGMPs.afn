@@ -1,1 +1,27 @@
-    ∇ RevalueGMPs revn;No64;Reval;PostSPA;∆;TotNo64;FutNo64;LRF;escfactB88;escfactA88;NextTaxDate[1]   ⍝ DEFWIN.sf#3[2]   ⍝ Revalue GMPs from DOL to VDATE[3]   [4]   :if ppf[5]       TotNo64←No64←0⌈LeaveDate TAXYEARS ,VDATE DATEMIN SRD ⋄ FutNo64←0[6]   :else[7]       No64←0<LeaveDate YDAYS VDATE ⍝ LeaveDate pre Valuation[8]       FutNo64←TotNo64←0⌈LeaveDate TAXYEARS SRD[9]       :if No64 ⍝ Less number of Tax Years in projection (using projection code)[10]          NextTaxDate←6 4,VDATE[2]+(VDATE[1]>4)+(VDATE[1]=4)×VDATE[0]>5[11]          No64←TotNo64-FutNo64←0⌈⌊NextTaxDate YDAYS SRD[12]      :endif[13]  :endif[14]  Reval←revn*No64 ⍝ Use first rate in case it is a vector[15]  [16]  LRF←1+0.0745×PostSPA←0⌈Xe-SPA⌈DOB YDAYS LeaveDate[17]  escfactB88←DYNRATB88[2]*PostSPA ⍝ The second element is the first of a vector[18]  escfactA88←DYNRATA88[2]*PostSPA[19]  [20]  ⍝⍝⍝ :if test[21]  ⍝⌿⍝    GMPrevalue←pack ⊃'GMP0' 'GMPE0' 'TotNo64' 'FutNo64' 'No64' 'revn' 'LRF' 'Reval' 'escfactB88' 'escfactA88'[22]  ⍝⍝⍝ :endif[23]  [24]  GMP0 ←Reval×LRF×escfactB88×GMP0[25]  GMPE0←Reval×LRF×escfactA88×GMPE0    ∇
+    ∇ RevalueGMPs revn;No64;Reval;PostSPA;∆;TotNo64;FutNo64;LRF;escfactB88;escfactA88;NextTaxDate
+[1]   ⍝ DEFWIN.sf#3
+[2]   ⍝ Revalue GMPs from DOL to VDATE
+[3]   
+[4]   :if ppf
+[5]       TotNo64←No64←0⌈LeaveDate TAXYEARS ,VDATE DATEMIN SRD ⋄ FutNo64←0
+[6]   :else
+[7]       No64←0<LeaveDate YDAYS VDATE ⍝ LeaveDate pre Valuation
+[8]       FutNo64←TotNo64←0⌈LeaveDate TAXYEARS SRD
+[9]       :if No64 ⍝ Less number of Tax Years in projection (using projection code)
+[10]          NextTaxDate←6 4,VDATE[2]+(VDATE[1]>4)+(VDATE[1]=4)×VDATE[0]>5
+[11]          No64←TotNo64-FutNo64←0⌈⌊NextTaxDate YDAYS SRD
+[12]      :endif
+[13]  :endif
+[14]  Reval←revn*No64 ⍝ Use first rate in case it is a vector
+[15]  
+[16]  LRF←1+0.0745×PostSPA←0⌈Xe-SPA⌈DOB YDAYS LeaveDate
+[17]  escfactB88←DYNRATB88[2]*PostSPA ⍝ The second element is the first of a vector
+[18]  escfactA88←DYNRATA88[2]*PostSPA
+[19]  
+[20]  ⍝⍝⍝ :if test
+[21]  ⍝⌿⍝    GMPrevalue←pack ⊃'GMP0' 'GMPE0' 'TotNo64' 'FutNo64' 'No64' 'revn' 'LRF' 'Reval' 'escfactB88' 'escfactA88'
+[22]  ⍝⍝⍝ :endif
+[23]  
+[24]  GMP0 ←Reval×LRF×escfactB88×GMP0
+[25]  GMPE0←Reval×LRF×escfactA88×GMPE0
+    ∇

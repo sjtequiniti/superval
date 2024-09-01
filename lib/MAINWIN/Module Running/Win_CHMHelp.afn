@@ -1,1 +1,44 @@
-    ∇ Win∆CHMHelp field;CtxID;CHM;seln[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Run the CHM Help[3]   [4]   :if (⎕dr field)∊11 323 ⋄ CtxID←field ⍝ Direct call (usually index)[5]   :elseif (field~' ')≡(field~' ') ⎕wi 'self'[6]       CtxID←0[7]       :if ~0∊⍴ControlName[8]           :if (⊂field ⎕wi 'class')∊'CommandBar' 'CommandButton' 'Page' 'Selector' 'Label'[9]           :orif 'Help'≡¯4↑field ⍝ Pressed the Help Button - see "global" ∆HelpField variable (FIXME: put in ∆udf)[10]              :if 0≠⎕nc '∆HelpField' ⋄ field←∆HelpField ⋄ :endif[11]              :if (⊂field ⎕wi 'class')∊'CommandBar' 'CommandButton' 'Page' 'Selector' 'Label'[12]              :orif 0≡CtxID←field ⎕wi '∆helpid'[13]                  field←ControlName[14]              :endif[15]          :else[16]              CtxID←field ⎕wi '∆helpid'[17]          :endif[18]          :if 'ActiveControl'≡13↑field ⎕wi 'class'[19]          :andif 1<⍴,CtxID[20]              seln←field ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬ ⍝ Use TLC of first selection[21]              :select field ⎕wi '∆roworcol'[22]              :case 'Row' ⋄ CtxID←CtxID[↑  seln][23]              :case 'Col' ⋄ CtxID←CtxID[↑1↓seln][24]              :endselect[25]              :if 0=CtxID ⋄ field←ControlName ⋄ :endif[26]          :endif[27]          :if 0≡CtxID ⋄ :andif 'Selector'≡field ⎕wi 'class'[28]              field←field,'.',(field ⎕wi 'value')⊃field ⎕wi 'pages'[29]              CtxID←field ⎕wi '∆helpid'[30]          :endif[31]      :endif[32]  :else[33]      →end[34]  :endif[35]  [36]  CHM←HelpFolder,'svhelp',Win∆CountryCode,'.chm'[37]  0 0⍴⎕wcall 'HtmlHelp' 0 CHM 'HH_CLOSE_ALL' (,⎕tcnul)[38]  :if 0=CtxID ⋄ 0 0⍴⎕wcall 'HtmlHelp' 0 CHM 'HH_DISPLAY_TOC' (,⎕tcnul)[39]  :else       ⋄ 0 0⍴⎕wcall 'HtmlHelp' 0 CHM 'HH_HELP_CONTEXT' CtxID[40]  :endif[41]  [42]  end:0 0⍴⎕ex '∆HelpField'    ∇
+    ∇ Win∆CHMHelp field;CtxID;CHM;seln
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Run the CHM Help
+[3]   
+[4]   :if (⎕dr field)∊11 323 ⋄ CtxID←field ⍝ Direct call (usually index)
+[5]   :elseif (field~' ')≡(field~' ') ⎕wi 'self'
+[6]       CtxID←0
+[7]       :if ~0∊⍴ControlName
+[8]           :if (⊂field ⎕wi 'class')∊'CommandBar' 'CommandButton' 'Page' 'Selector' 'Label'
+[9]           :orif 'Help'≡¯4↑field ⍝ Pressed the Help Button - see "global" ∆HelpField variable (FIXME: put in ∆udf)
+[10]              :if 0≠⎕nc '∆HelpField' ⋄ field←∆HelpField ⋄ :endif
+[11]              :if (⊂field ⎕wi 'class')∊'CommandBar' 'CommandButton' 'Page' 'Selector' 'Label'
+[12]              :orif 0≡CtxID←field ⎕wi '∆helpid'
+[13]                  field←ControlName
+[14]              :endif
+[15]          :else
+[16]              CtxID←field ⎕wi '∆helpid'
+[17]          :endif
+[18]          :if 'ActiveControl'≡13↑field ⎕wi 'class'
+[19]          :andif 1<⍴,CtxID
+[20]              seln←field ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬ ⍝ Use TLC of first selection
+[21]              :select field ⎕wi '∆roworcol'
+[22]              :case 'Row' ⋄ CtxID←CtxID[↑  seln]
+[23]              :case 'Col' ⋄ CtxID←CtxID[↑1↓seln]
+[24]              :endselect
+[25]              :if 0=CtxID ⋄ field←ControlName ⋄ :endif
+[26]          :endif
+[27]          :if 0≡CtxID ⋄ :andif 'Selector'≡field ⎕wi 'class'
+[28]              field←field,'.',(field ⎕wi 'value')⊃field ⎕wi 'pages'
+[29]              CtxID←field ⎕wi '∆helpid'
+[30]          :endif
+[31]      :endif
+[32]  :else
+[33]      →end
+[34]  :endif
+[35]  
+[36]  CHM←HelpFolder,'svhelp',Win∆CountryCode,'.chm'
+[37]  0 0⍴⎕wcall 'HtmlHelp' 0 CHM 'HH_CLOSE_ALL' (,⎕tcnul)
+[38]  :if 0=CtxID ⋄ 0 0⍴⎕wcall 'HtmlHelp' 0 CHM 'HH_DISPLAY_TOC' (,⎕tcnul)
+[39]  :else       ⋄ 0 0⍴⎕wcall 'HtmlHelp' 0 CHM 'HH_HELP_CONTEXT' CtxID
+[40]  :endif
+[41]  
+[42]  end:0 0⍴⎕ex '∆HelpField'
+    ∇

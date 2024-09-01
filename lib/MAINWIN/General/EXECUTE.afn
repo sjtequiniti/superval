@@ -1,0 +1,18 @@
+    ∇ Z←EXECUTE A;ROWS;N
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Simulates ⍎ for character matrices or vectors (simple or complex).
+[3]   ⍝ Assumes matrix is "tidy", i.e. no blanks in number columns,
+[4]   ⍝ & each column separated by at least 1 blank.
+[5]   ⍝ Returns 0 if blank.
+[6]   ⍝
+[7]   ⍝ V2.50u RE 1/11/93 Standardised
+[8]   :if ∨/,Z←∨/' '≠A
+[9]       ROWS←1↑¯2↑⍴A
+[10]      :if ^/⎕vi '/ +/ ' TEXTREPL ' ',A,' '
+[11]          Z←⎕fi ,'+ ' REPL A,' '
+[12]      :else
+[13]          Z←⍎A,' '
+[14]      :endif
+[15]      :if 0≠ROWS ⋄ N←⍴Z ⋄ Z←(ROWS,N÷ROWS)⍴Z ⋄ :endif
+[16]  :endif
+    ∇

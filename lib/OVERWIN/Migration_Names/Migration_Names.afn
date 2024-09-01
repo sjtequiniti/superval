@@ -1,1 +1,80 @@
-    ∇ res←field Migration_Names parm;parent;SSName;tab;SSList;types;row;col;list;savecn;index[1]   ⍝ OVERWIN.sf#27[2]   ⍝ Function to allow user control on Migration Names form[3]   [4]   parent←'fmMigNames.sMigration_Names.' ⋄ res←0⍴'' ⍝ Default response[5]   SSList←(⊂parent),¨,'pgActives.ssAct' 'pgDeferreds.ssDef' 'pgPensioners.ssPen' ∘.,'FinTable' 'MortTable' 'MImpTable'[6]   [7]   :select parm[8]   [9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[10]  [11]      :if 1≥↑⍴MigNameTable[12]          tab←(MigDir,'SVMIGT',Win∆CountryCode) ReadFile 'Migration Table'[13]          tab←(1,(∊tab at 'Flag')∊(1,(ClntCode=3),bGAD)/'012')⌿tab[14]          types←spin tab at 'Group' 'Type'[15]          ActFinDesc ←⊃(tab for (⊂'Actives'    'Fin'   )≡¨types) at 'Description'[16]          ActMortDesc←⊃(tab for (⊂'Actives'    'ParmsM')≡¨types) at 'Description'[17]          ActMImpDesc←⊃(tab for (⊂'Actives'    'ParmsI')≡¨types) at 'Description'[18]          DefFinDesc ←⊃(tab for (⊂'Deferreds'  'Fin'   )≡¨types) at 'Description'[19]          DefMortDesc←⊃(tab for (⊂'Deferreds'  'ParmsM')≡¨types) at 'Description'[20]          DefMImpDesc←⊃(tab for (⊂'Deferreds'  'ParmsI')≡¨types) at 'Description'[21]          PenFinDesc ←⊃(tab for (⊂'Pensioners' 'Fin'   )≡¨types) at 'Description'[22]          PenMortDesc←⊃(tab for (⊂'Pensioners' 'ParmsM')≡¨types) at 'Description'[23]          PenMImpDesc←⊃(tab for (⊂'Pensioners' 'ParmsI')≡¨types) at 'Description'[24]          MigNameTable←tab amend 'Name' ((rowsIn tab)⍴⊂' ')[25]      :endif[26]  [27]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[28]  [29]      :for SSName :in SSList[30]          SSName ⎕wi 'xShowRowHeading' 0 ⍝ Hide Row Headings[31]          SSName ⎕wi 'xFixedCols' 1 ⍝ Freeze First Column[32]      :endfor[33]      0 0⍴Migration_Names 'Lock'[34]      'fmMigNames.bnMigration_NamesSave' ⎕wi 'enabled' 1[35]  [36]  :case 'Lock'[37]      :if 0≠⎕nc 'field' ⋄ SSName←field[38]      :else             ⋄ SSName←SSList[39]      :endif[40]      :for SSName :in SSName[41]          :if ~0∊⍴SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells (⊂¯1 1 ¯1 1) ⋄ :endif[42]      :endfor[43]  [44]  :case 'Unlock'[45]      :if 0≠⎕nc 'field' ⋄ SSName←field[46]      :else             ⋄ SSName←SSList[47]      :endif[48]      :for SSName :in SSName[49]          :if ~0∊⍴SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells 'Unlock' ⋄ :endif[50]      :endfor[51]  [52]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[53]  [54]      :repeat[55]          :select ↑field[56]          :caselist Win∆Child ¨SSList[57]              'fmMigNames.bnMigration_NamesSave' ⎕wi 'enabled' 1[58]          :endselect[59]      :until mt field←1↓field[60]  [61]  :case 'Valid'[62]  [63]      list←          ActFinName OVER ActMortName OVER ActMImpName[64]      list←list OVER DefFinName OVER DefMortName OVER DefMImpName[65]      list←list OVER PenFinName OVER PenMortName OVER PenMImpName[66]      MigNameTable←MigNameTable amend 'Name' (⎕split list)[67]  [68]  :case 'Run'[69]  [70]      res←'Quit'[71]  [72]  :case 'Quit' ⍝ Deleting "other" variables[73]  [74]      :if (↑savecn←parent ⎕wi '∆savecn')∊(index←ClientFile ReadFile 'Index') at '∆_CompNo'[75]          migTable←↑(index at '∆_CompNo' '∆_Description') map savecn[76]      :endif[77]  [78]  :endselect    ∇
+    ∇ res←field Migration_Names parm;parent;SSName;tab;SSList;types;row;col;list;savecn;index
+[1]   ⍝ OVERWIN.sf#27
+[2]   ⍝ Function to allow user control on Migration Names form
+[3]   
+[4]   parent←'fmMigNames.sMigration_Names.' ⋄ res←0⍴'' ⍝ Default response
+[5]   SSList←(⊂parent),¨,'pgActives.ssAct' 'pgDeferreds.ssDef' 'pgPensioners.ssPen' ∘.,'FinTable' 'MortTable' 'MImpTable'
+[6]   
+[7]   :select parm
+[8]   
+[9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[10]  
+[11]      :if 1≥↑⍴MigNameTable
+[12]          tab←(MigDir,'SVMIGT',Win∆CountryCode) ReadFile 'Migration Table'
+[13]          tab←(1,(∊tab at 'Flag')∊(1,(ClntCode=3),bGAD)/'012')⌿tab
+[14]          types←spin tab at 'Group' 'Type'
+[15]          ActFinDesc ←⊃(tab for (⊂'Actives'    'Fin'   )≡¨types) at 'Description'
+[16]          ActMortDesc←⊃(tab for (⊂'Actives'    'ParmsM')≡¨types) at 'Description'
+[17]          ActMImpDesc←⊃(tab for (⊂'Actives'    'ParmsI')≡¨types) at 'Description'
+[18]          DefFinDesc ←⊃(tab for (⊂'Deferreds'  'Fin'   )≡¨types) at 'Description'
+[19]          DefMortDesc←⊃(tab for (⊂'Deferreds'  'ParmsM')≡¨types) at 'Description'
+[20]          DefMImpDesc←⊃(tab for (⊂'Deferreds'  'ParmsI')≡¨types) at 'Description'
+[21]          PenFinDesc ←⊃(tab for (⊂'Pensioners' 'Fin'   )≡¨types) at 'Description'
+[22]          PenMortDesc←⊃(tab for (⊂'Pensioners' 'ParmsM')≡¨types) at 'Description'
+[23]          PenMImpDesc←⊃(tab for (⊂'Pensioners' 'ParmsI')≡¨types) at 'Description'
+[24]          MigNameTable←tab amend 'Name' ((rowsIn tab)⍴⊂' ')
+[25]      :endif
+[26]  
+[27]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[28]  
+[29]      :for SSName :in SSList
+[30]          SSName ⎕wi 'xShowRowHeading' 0 ⍝ Hide Row Headings
+[31]          SSName ⎕wi 'xFixedCols' 1 ⍝ Freeze First Column
+[32]      :endfor
+[33]      0 0⍴Migration_Names 'Lock'
+[34]      'fmMigNames.bnMigration_NamesSave' ⎕wi 'enabled' 1
+[35]  
+[36]  :case 'Lock'
+[37]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[38]      :else             ⋄ SSName←SSList
+[39]      :endif
+[40]      :for SSName :in SSName
+[41]          :if ~0∊⍴SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells (⊂¯1 1 ¯1 1) ⋄ :endif
+[42]      :endfor
+[43]  
+[44]  :case 'Unlock'
+[45]      :if 0≠⎕nc 'field' ⋄ SSName←field
+[46]      :else             ⋄ SSName←SSList
+[47]      :endif
+[48]      :for SSName :in SSName
+[49]          :if ~0∊⍴SSName ⎕wi 'self' ⋄ SSName Win∆F1SSProtectCells 'Unlock' ⋄ :endif
+[50]      :endfor
+[51]  
+[52]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[53]  
+[54]      :repeat
+[55]          :select ↑field
+[56]          :caselist Win∆Child ¨SSList
+[57]              'fmMigNames.bnMigration_NamesSave' ⎕wi 'enabled' 1
+[58]          :endselect
+[59]      :until mt field←1↓field
+[60]  
+[61]  :case 'Valid'
+[62]  
+[63]      list←          ActFinName OVER ActMortName OVER ActMImpName
+[64]      list←list OVER DefFinName OVER DefMortName OVER DefMImpName
+[65]      list←list OVER PenFinName OVER PenMortName OVER PenMImpName
+[66]      MigNameTable←MigNameTable amend 'Name' (⎕split list)
+[67]  
+[68]  :case 'Run'
+[69]  
+[70]      res←'Quit'
+[71]  
+[72]  :case 'Quit' ⍝ Deleting "other" variables
+[73]  
+[74]      :if (↑savecn←parent ⎕wi '∆savecn')∊(index←ClientFile ReadFile 'Index') at '∆_CompNo'
+[75]          migTable←↑(index at '∆_CompNo' '∆_Description') map savecn
+[76]      :endif
+[77]  
+[78]  :endselect
+    ∇

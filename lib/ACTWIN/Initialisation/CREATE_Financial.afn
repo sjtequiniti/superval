@@ -1,1 +1,52 @@
-    ∇ CREATE∆Financial[1]   ⍝ ACTWIN.sf#2[2]   ⍝ Assign all the Financial Variables[3]   [4]   FinAdjTable←MATRIX 'variable' 'Field' 'value' ⍝ Dummy Financials Table for AOS term adjustments/Interpolated Rates display[5]   [6]   ⍝ Control PHISelfCheck version by PHIselfcheck variable in the ws[7]   :if PHISelfCheck←2=⎕nc 'PHIselfcheck' ⋄ :andif PHISelfCheck←(,1)≡,PHIselfcheck[8]       PHI←1                   ⍝ Turn PHI on[9]       PHIEndAge←NRA           ⍝ End Age is NRA[10]  :endif[11]  [12]  FinAdjTable←FinAdjTable OVER  'i' 'IR' ( i←termAdjFin BlendRates IR sCEN_IR)[13]  FinAdjTable←FinAdjTable OVER 'pi' 'pi' (pi←termAdjFin BlendRates pi sCEN_pi)[14]  SWindic←∨/'Pre'⍷SWindic ⍝ Interest Rate Switch[15]  FinAdjTable←FinAdjTable OVER 'f' 'SALINC' (f←termAdjFin BlendRates (~ValMeth≡'UCM')/¨SALINC sCEN_SALINC)[16]  [17]  FinAdjTable←FinAdjTable OVER 'SALREV' 'SALREV' (SALREV←termAdjFin BlendRates (~ValMeth≡'UCM')/¨SALREV sCEN_SALREV)[18]  CARERevals←zwb CARERevals[19]  REVIND←↑REVIND[20]  REVDAT←2↑'DD/MM' DATEEXP REVDAT[21]  [22]  FinAdjTable←FinAdjTable OVER    'REVRAT'     'REVRAT'  (   REVRAT ←termAdjFin BlendRates    REVRAT  sCEN_REVRAT   )[23]  FinAdjTable←FinAdjTable OVER 'AUXREVRAT'  'AUXREVRAT'  (AUXREVRAT ←termAdjFin BlendRates AUXREVRAT  sCEN_AUXREVRAT)[24]  FinAdjTable←FinAdjTable OVER    'REVRAT3'    'REVRAT3' (   REVRAT3←termAdjFin BlendRates    REVRAT3 sCEN_REVRAT3  )[25]     REVRAT ←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE    REVRAT )*0.5[26]  AUXREVRAT ←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE AUXREVRAT )*0.5[27]     REVRAT3←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE    REVRAT3)*0.5[28]  RevPeriod←zwb RevPeriod[29]  [30]  MBARBADJ←+/ZWB¨MBARBADJ[31]  SBARBADJ←+/ZWB¨SBARBADJ[32]  LBARBADJ←+/ZWB¨LBARBADJ[33]  BARBADJ4←+/ZWB¨BARBADJ4[34]  [35]  FinAdjTable←FinAdjTable OVER 'B88GMPINC' 'B88GMPINC' (B88GMPINC←termAdjFin BlendRates B88GMPINC sCEN_B88GMPINC)[36]  FinAdjTable←FinAdjTable OVER 'A88GMPINC' 'A88GMPINC' (A88GMPINC←termAdjFin BlendRates A88GMPINC sCEN_A88GMPINC)[37]  DYNRATB88←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE B88GMPINC)*0.5[38]  DYNRATA88←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE A88GMPINC)*0.5[39]  [40]  FinAdjTable←FinAdjTable OVER 'DYNINC'  'DYNINC'  (DYNINC ←termAdjFin BlendRates DYNINC  sCEN_DYNINC )[41]  FinAdjTable←FinAdjTable OVER 'NDYNINC' 'NDYNINC' (NDYNINC←termAdjFin BlendRates NDYNINC sCEN_NDYNINC)[42]  FinAdjTable←FinAdjTable OVER 'DYNINC3' 'DYNINC3' (DYNINC3←termAdjFin BlendRates DYNINC3 sCEN_DYNINC3)[43]  FinAdjTable←FinAdjTable OVER 'DYNINC4' 'DYNINC4' (DYNINC4←termAdjFin BlendRates DYNINC4 sCEN_DYNINC4)[44]  DYNRAT1←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE DYNINC )*0.5[45]  DYNRAT2←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE NDYNINC)*0.5[46]  DYNRAT3←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE DYNINC3)*0.5[47]  DYNRAT4←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE DYNINC4)*0.5[48]  [49]  INCIND←↑INCIND[50]  INCDAT←2↑'DD/MM' DATEEXP INCDAT    ∇
+    ∇ CREATE∆Financial
+[1]   ⍝ ACTWIN.sf#2
+[2]   ⍝ Assign all the Financial Variables
+[3]   
+[4]   FinAdjTable←MATRIX 'variable' 'Field' 'value' ⍝ Dummy Financials Table for AOS term adjustments/Interpolated Rates display
+[5]   
+[6]   ⍝ Control PHISelfCheck version by PHIselfcheck variable in the ws
+[7]   :if PHISelfCheck←2=⎕nc 'PHIselfcheck' ⋄ :andif PHISelfCheck←(,1)≡,PHIselfcheck
+[8]       PHI←1                   ⍝ Turn PHI on
+[9]       PHIEndAge←NRA           ⍝ End Age is NRA
+[10]  :endif
+[11]  
+[12]  FinAdjTable←FinAdjTable OVER  'i' 'IR' ( i←termAdjFin BlendRates IR sCEN_IR)
+[13]  FinAdjTable←FinAdjTable OVER 'pi' 'pi' (pi←termAdjFin BlendRates pi sCEN_pi)
+[14]  SWindic←∨/'Pre'⍷SWindic ⍝ Interest Rate Switch
+[15]  FinAdjTable←FinAdjTable OVER 'f' 'SALINC' (f←termAdjFin BlendRates (~ValMeth≡'UCM')/¨SALINC sCEN_SALINC)
+[16]  
+[17]  FinAdjTable←FinAdjTable OVER 'SALREV' 'SALREV' (SALREV←termAdjFin BlendRates (~ValMeth≡'UCM')/¨SALREV sCEN_SALREV)
+[18]  CARERevals←zwb CARERevals
+[19]  REVIND←↑REVIND
+[20]  REVDAT←2↑'DD/MM' DATEEXP REVDAT
+[21]  
+[22]  FinAdjTable←FinAdjTable OVER    'REVRAT'     'REVRAT'  (   REVRAT ←termAdjFin BlendRates    REVRAT  sCEN_REVRAT   )
+[23]  FinAdjTable←FinAdjTable OVER 'AUXREVRAT'  'AUXREVRAT'  (AUXREVRAT ←termAdjFin BlendRates AUXREVRAT  sCEN_AUXREVRAT)
+[24]  FinAdjTable←FinAdjTable OVER    'REVRAT3'    'REVRAT3' (   REVRAT3←termAdjFin BlendRates    REVRAT3 sCEN_REVRAT3  )
+[25]     REVRAT ←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE    REVRAT )*0.5
+[26]  AUXREVRAT ←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE AUXREVRAT )*0.5
+[27]     REVRAT3←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE    REVRAT3)*0.5
+[28]  RevPeriod←zwb RevPeriod
+[29]  
+[30]  MBARBADJ←+/ZWB¨MBARBADJ
+[31]  SBARBADJ←+/ZWB¨SBARBADJ
+[32]  LBARBADJ←+/ZWB¨LBARBADJ
+[33]  BARBADJ4←+/ZWB¨BARBADJ4
+[34]  
+[35]  FinAdjTable←FinAdjTable OVER 'B88GMPINC' 'B88GMPINC' (B88GMPINC←termAdjFin BlendRates B88GMPINC sCEN_B88GMPINC)
+[36]  FinAdjTable←FinAdjTable OVER 'A88GMPINC' 'A88GMPINC' (A88GMPINC←termAdjFin BlendRates A88GMPINC sCEN_A88GMPINC)
+[37]  DYNRATB88←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE B88GMPINC)*0.5
+[38]  DYNRATA88←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE A88GMPINC)*0.5
+[39]  
+[40]  FinAdjTable←FinAdjTable OVER 'DYNINC'  'DYNINC'  (DYNINC ←termAdjFin BlendRates DYNINC  sCEN_DYNINC )
+[41]  FinAdjTable←FinAdjTable OVER 'NDYNINC' 'NDYNINC' (NDYNINC←termAdjFin BlendRates NDYNINC sCEN_NDYNINC)
+[42]  FinAdjTable←FinAdjTable OVER 'DYNINC3' 'DYNINC3' (DYNINC3←termAdjFin BlendRates DYNINC3 sCEN_DYNINC3)
+[43]  FinAdjTable←FinAdjTable OVER 'DYNINC4' 'DYNINC4' (DYNINC4←termAdjFin BlendRates DYNINC4 sCEN_DYNINC4)
+[44]  DYNRAT1←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE DYNINC )*0.5
+[45]  DYNRAT2←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE NDYNINC)*0.5
+[46]  DYNRAT3←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE DYNINC3)*0.5
+[47]  DYNRAT4←×\1,(2/(LatestAge+newent×projTerm) OVERTAKE DYNINC4)*0.5
+[48]  
+[49]  INCIND←↑INCIND
+[50]  INCDAT←2↑'DD/MM' DATEEXP INCDAT
+    ∇

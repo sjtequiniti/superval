@@ -1,0 +1,25 @@
+    ∇ ⍙type ASSIGN∆Vars ⍙parm;⍙name;⍙value;⍙I;⍙N;⍙X;⎕elx
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Assign Global Constants and/or Category Variables
+[3]   
+[4]   (⍙name ⍙value)←⍙parm
+[5]   
+[6]   :if 0≠⍙N←1↑⍴⍙name←(⍙X←∨/' ' ≠⍙name)⌿⍙name
+[7]       ⍙value←⍙X⌿⍙value
+[8]       :select ⍙type
+[9]       :case 'Num'
+[10]          ⎕elx←'→l1' ⍝ Cope with invalid name or formula
+[11]          :for ⍙I :in ⍳⍙N
+[12]              ⍎⍙name[⍙I;],'←',⍙value[⍙I;]
+[13]  l1:
+[14]          :endfor
+[15]  
+[16]      :case 'Date'
+[17]          ⎕elx←'→l2' ⍝ Cope with invalid name or formula
+[18]          :for ⍙I :in ⍳⍙N
+[19]              ⍎⍙name[⍙I;],'←"DD/MM/YYYY" DATEEXP "',⍙value[⍙I;],'"'
+[20]  l2:
+[21]          :endfor
+[22]      :endselect
+[23]  :endif
+    ∇

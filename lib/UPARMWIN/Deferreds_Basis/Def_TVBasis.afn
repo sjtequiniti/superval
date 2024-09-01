@@ -1,0 +1,38 @@
+    ∇ field Def_TVBasis parm;page;MESS
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of TV Basis
+[3]   
+[4]   page←'pgTVBasis.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]       (parent,page,'fSpouse.edm_TVAGEDIF' ) ⎕wi 'onChange' ((parent,page,'fSpouse.edm_TVAGEDIF' ) ⎕wi 'onExit')
+[9]       (parent,page,'fSpouse.edf_TVAGEDIF' ) ⎕wi 'onChange' ((parent,page,'fSpouse.edf_TVAGEDIF' ) ⎕wi 'onExit')
+[10]  
+[11]  :case 'Init'
+[12]      (parent,page,'fButtons.bnDeferreds_BasisEditSP') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[13]  
+[14]  :case 'Change'
+[15]      :select field
+[16]      :caselist 'ckTVCFSame' 'ckTVIntSame' 'ckTVEscSame' 'ckTVSpouseSame' ⍝⍝⍝ 'ckTVRevSame'
+[17]          TVSameSuppress 1
+[18]          'Deferreds' TVBasisUpdate ⊂2↓field
+[19]          TVSameSuppress 0
+[20]      :case 'cbTVSpouseParm'
+[21]          :if ~mt TVSpouseParm←DLTB (parent,page,'fSpouse.cbTVSpouseParm') ⎕wi 'text'
+[22]              MESS←2⊃('Spouse Parameters Set' 0) GET∆SpouseGlobals 2↓field
+[23]              :if ~openParameters∨changedParm
+[24]                  changedParm←1
+[25]                  (parent,page,'fSpouse.cbTVSpouseParm') ⎕wi 'suppress' 1
+[26]                  Assign_Inputs 1
+[27]                  (parent,page,'fSpouse.cbTVSpouseParm') ⎕wi 'suppress' 0
+[28]                  changedParm←0
+[29]              :endif
+[30]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[31]          :endif
+[32]      :endselect
+[33]  
+[34]  :case 'Valid'
+[35]  
+[36]  :endselect
+    ∇

@@ -1,0 +1,155 @@
+    ∇ new←CAT XL_ClearFile basischanged;data;NoRuns;row;col;Cats;NoBases;NoMembers;rows;NUMRECS;z;XLResID;NEResID;OSResID;NEOSResID;NoCashflows;origdata;table;sheet;XLBasID;ActID;ActIDs;cfdata;∆ResIDs;OSBasID;tries
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Remove  run details from the XL file if they don't macth DB or they need to be re-run
+[3]   ⍝ "data" read from XL Header page is:
+[4]   ⍝  0                  1       2      3     4      5           6       7        8   9        10
+[5]   ⍝  ActID (for NE Run) BasisID ValnTS ResID CAT ID ValnRunTime CatDesc DataFile Sex Category Version
+[6]   
+[7]   tries←0 ⋄ 0 XL_ActivateWorksheet 'Contents'
+[8]   retry:                                                                          ⍝ NoRuns sometimes returning +ve number instead of zero
+[9]   :if ~new←0=NoRuns←XL_Data 'NoRuns'
+[10]      data←0 ⍙DBRemoveNulls XL_Data RCtoA1 11 1 (10+NoRuns) 11                    ⍝ Excel Run History
+[11]      :if 0∊data[;⎕io+3] ⋄ :andif 10>tries←tries+1                                ⍝ If any ResID is zero, then probably NoRuns was incorrect
+[12]          →retry
+[13]      :endif
+[14]      0 0⍴'XL' ⎕wi 'xCalculation'(↑⍙XL at '=xlCalculationManual')                 ⍝ Turn calculation off
+[15]  
+[16]      data[;⎕io+9]←⍕¨data[;⎕io+9]                                                 ⍝ Make sure Categories are Character
+[17]      ActID←10000∣↑ActivesID
+[18]  
+[19]      new←0=↑(data[;⎕io+0 2 4 8]^.≡  ActID  Valnts CAT (,SelSex))/data[;⎕io+3]    ⍝ Determine if exact run exists
+[20]      data[;⎕io]←×ActIDs←data[;⎕io]                                               ⍝ Change ActID (for NE Run) into boolean (for non-NE runs)
+[21]      origdata←data
+[22]      ∆ResIDs←⍳0                                                                  ⍝ List of ResultsCategoryIDs to be deleted
+[23]  
+[24]      :if ∨/z←data[;⎕io+0 6 8 9]^.≡(×ActID) basisDesc (,SelSex) (DLTB Cat)        ⍝ find match even if different timestamp
+[25]          XLResID←↑z/data[;⎕io+3] ⋄ XLBasID←↑z/data[;⎕io+1]
+[26]          :if new
+[27]              'Contents' XL_ProtectSheet 0
+[28]              data←(~z)⌿data ⋄ ActIDs←(~z)/ActIDs
+[29]              ∆ResIDs←∆ResIDs,XLResID
+[30]              row←WHERE z
+[31]              'U' XL_RangeDelete 4⍴(10+row+~⎕io) ⍬                                ⍝ Remove the Run Details row from Excel
+[32]              0 0⍴(NoRuns←¯1+NoRuns) XL_Data 'NoRuns'
+[33]              :if    ~NEResID←×ActID
+[34]              :andif  NEResID←0≠NoRuns
+[35]              :andif ×NEResID←↑(z←XLResID=ActIDs)/data[;⎕io+3]                    ⍝ Determine if NE run
+[36]                  ∆ResIDs←∆ResIDs,NEResID
+[37]                  data←(~z)⌿data ⋄ ActIDs←(~z)/ActIDs
+[38]                  row←WHERE z
+[39]                  'U' XL_RangeDelete 4⍴(10+row+~⎕io) ⍬                            ⍝ Remove the NE Run Details row from Excel
+[40]                  0 0⍴(NoRuns←¯1+NoRuns) XL_Data 'NoRuns'
+[41]              :endif
+[42]          :endif
+[43]      :else
+[44]          XLResID←XLBasID←⍳NEResID←0
+[45]      :endif
+[46]  
+[47]      :if     OSResID←~0=NoRuns                                                   ⍝ Determine if there is a run for the other sex
+[48]      :andif ×OSResID←↑(z←data[;⎕io+0 4 8]^.≡ActID CAT ('MF'~SelSex))/data[;⎕io+3]
+[49]          XLBasID←↑XLBasID,OSBasID←↑z/data[;⎕io+1]
+[50]          :if basischanged                                                        ⍝ If basis has changed, remove the other sex Run Details row also
+[51]              'Contents' XL_ProtectSheet 0
+[52]              ∆ResIDs←∆ResIDs,OSResID
+[53]              data←(~z)⌿data  ⋄ ActIDs←(~z)/ActIDs
+[54]              row←WHERE z
+[55]              'U' XL_RangeDelete 4⍴(10+row+~⎕io) ⍬                                ⍝ Remove the other sex Run Details row from Excel
+[56]              0 0⍴(NoRuns←¯1+NoRuns) XL_Data 'NoRuns'
+[57]              :if     NEOSResID←0≠NoRuns
+[58]              :andif ×NEOSResID←↑(z←OSResID=ActIDs)/data[;⎕io+3]                  ⍝ Determine if other sex NE run
+[59]                  ∆ResIDs←∆ResIDs,NEOSResID
+[60]                  data←(~z)⌿data  ⋄ ActIDs←(~z)/ActIDs
+[61]                  row←WHERE z
+[62]                  'U' XL_RangeDelete 4⍴(10+row+~⎕io) ⍬                            ⍝ Remove the other sex NE Run Details row from Excel
+[63]                  0 0⍴(NoRuns←¯1+NoRuns) XL_Data 'NoRuns'
+[64]              :endif
+[65]          :else
+[66]              NEOSResID←0
+[67]          :endif
+[68]      :else
+[69]          OSBasID←⍳0
+[70]      :endif
+[71]      'Contents' XL_ProtectSheet 1
+[72]  
+[73]      :if ResultsCategoryID≠↑XLResID ⋄ :andif ↑~XLResID∊DBResID
+[74]          :if (ResultsCategoryID←XLResID)>⌈/DBResID
+[75]              ResultsCategoryID←(1 (ResultsCategoryID-1)) ⍙DBNextID 'ResultsCategoryID'
+[76]          :endif
+[77]      :elseif ResultsCategoryID∊new/data[;⎕io+3]
+[78]          DBResID←nub DBResID,data[;⎕io+3] ⍝ Exclude numbers in DB/Excel file
+[79]          ResultsCategoryID←¯1             ⍝ Use Next Available number
+[80]      :endif
+[81]  
+[82]      :if ~neIND
+[83]          :if BasisCategoryID≠↑XLBasID ⋄ :andif ↑~XLBasID∊DBBasisID
+[84]              :if (BasisCategoryID←XLBasID)>⌈/DBBasisID
+[85]                  BasisCategoryID←(1 (BasisCategoryID-1)) ⍙DBNextID 'BasisCategoryID'
+[86]              :endif
+[87]          :elseif ↑~OSBasID∊DBBasisID
+[88]              :if (BasisCategoryID←OSBasID)>⌈/DBBasisID
+[89]                  BasisCategoryID←(1 (BasisCategoryID-1)) ⍙DBNextID 'BasisCategoryID'
+[90]              :endif
+[91]          :elseif BasisCategoryID∊data[;⎕io+1]~XLBasID,OSBasID
+[92]              DBBasisID←nub DBBasisID,data[;⎕io+1] ⍝ Exclude numbers in DB/Excel file
+[93]              BasisCategoryID←¯1                   ⍝ Use Next Available number
+[94]          :endif
+[95]      :endif
+[96]  
+[97]      :if ~mt ∆ResIDs
+[98]          :if 0≠NoMembers←XL_Data 'NoMembers'      ⍝ Remove the Member Details, other sex also if basis has changed
+[99]              :if (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'Members') ⎕wi 'xAutoFilterMode' ⍝ Turn AutoFilter Off, if required
+[100]                 1 XL_ActivateWorksheet 'Members' ⋄ 'XL' ⎕wi 'Range>.Rng' (RCtoA1 13 6)
+[101]                 0 0⍴'XL.Rng' ⎕wi 'XAutoFilter'
+[102]             :endif
+[103]             NUMRECS←∆ResIDs XL_ClearData 'Members'
+[104]             0 0⍴∆ResIDs XL_ClearData 'IndivRes'
+[105]             0 0⍴∆ResIDs XL_ClearData 'StatCalc'
+[106]             :if aosind ⋄ 0 0⍴∆ResIDs XL_ClearData 'IndivAOS' ⋄ :endif
+[107]             0 0⍴(NoMembers←NoMembers-NUMRECS) XL_Data 'NoMembers'
+[108]         :endif
+[109]         :if ClntCode=3 ⋄ :andif ~ppf
+[110]             NoCashflows←XL_Data 'NoCashflows'
+[111]             1 XL_ActivateWorksheet 'CFbyCat'
+[112]             cfdata←XL_Data RCtoA1 130 1 (130+NoCashflows) 1
+[113]             :if 0≠NUMRECS←+/z←,cfdata∊,0 1∘.+,(2×0 1)∘.+4×XLBasID
+[114]                 'CFbyCat' XL_SheetCustomise (130-⎕io)+WHERE z
+[115]                 0 0⍴(NoCashflows←NoCashflows-NUMRECS) XL_Data 'NoCashflows'
+[116]             :endif
+[117]             'CFbyCat' XL_ProtectSheet ¯1
+[118]         :endif
+[119] 
+[120]         ⍝ Remove the Basis Details, if basis has changed OR not new and no other sex run???
+[121]         :if 0≠NoBases←XL_Data 'NoBases' ⋄ :andif basischanged∨(new^×OSResID)
+[122]             0 XL_ActivateWorksheet 'AllBases'
+[123]             col←↑A1toRC 'M'
+[124]             Cats←MATRIX ⊃XL_Data RCtoA1 10 col 10 (col+NoBases-1)
+[125]             :if ~mt Cats←Cats TLU CAT ⍝ Basis needs removing
+[126]                 'AllBases' XL_ProtectSheet 0
+[127]                 'L' XL_RangeDelete 4⍴⍬ (↑col+Cats-1)
+[128]                 0 0⍴(¯1+NoBases) XL_Data 'NoBases'
+[129]                 'AllBases' XL_ProtectSheet 1
+[130]             :endif
+[131]         :endif
+[132] 
+[133] ⍝⍝⍝        ⍝ Remove the Check Details, if basis has changed
+[134] ⍝⍝⍝        :if bAON ⋄ :andif 0≠NoBases ⋄ :andif basischanged ⋄ :andif ClassID=4
+[135] ⍝⍝⍝            0 XL_ActivateWorksheet 'ValnCheck'
+[136] ⍝⍝⍝            col←↑A1toRC 'D'
+[137] ⍝⍝⍝            Cats←MATRIX ⊃XL_Data RCtoA1 8 col 8 (col+NoBases-1)
+[138] ⍝⍝⍝            :if ~mt Cats←Cats TLU CAT,'/',SelSex ⍝ Checks needs removing
+[139] ⍝⍝⍝                'ValnCheck' XL_ProtectSheet 0
+[140] ⍝⍝⍝                'L' XL_RangeDelete 4⍴⍬ (↑col+Cats-1)
+[141] ⍝⍝⍝                'ValnCheck' XL_ProtectSheet 1
+[142] ⍝⍝⍝            :endif
+[143] ⍝⍝⍝        :endif
+[144]     :endif
+[145]     :if basischanged ⋄ :orif VFmissing ⋄ :orif CFmissing ⋄ :orif MItables ⋄ :orif new^(×OSResID)^~mt ∆ResIDs
+[146]         :if (⊂table←'Tables Basis ID ',(((UPPERCASE ↑CAT)≠↑CAT)/'_'),CAT)∊m2n XL_SheetNames 'Tables Basis ID'
+[147]             (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' ('Tables Basis ID ',(((UPPERCASE ↑CAT)≠↑CAT)/'_'),CAT)) ⎕wi 'XDelete'
+[148]         :endif
+[149]     :endif
+[150]     0 0⍴'XL' ⎕wi 'xCalculation'(↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+[151] :endif
+[152] 
+[153] :if 0=NoRuns ⋄ :orif ~origdata≡data ⋄ :orif VFmissing ⋄ :orif CFmissing ⋄ :orif MItables ⋄ 0 0⍴XL_Save XLfile ⋄ :endif
+    ∇

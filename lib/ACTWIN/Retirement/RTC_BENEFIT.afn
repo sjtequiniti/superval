@@ -1,1 +1,60 @@
-    ∇ RTC∆BENEFIT;BenType∆pp;IncType∆pp;SL∆pp;FSL∆pp;Upin∆pp;∆;type;row;com;comF;comG;comFG[1]   ⍝ ACTWIN.sf#5[2]   ⍝ CLAYBROOK VALUATION SYSTEM[3]   [4]   :if sepComCot[5]       :if splitCombyPI[6]           :for ∆ :in ('S' (0) UCASH∆S) ('M' (1) UCASH∆M) ('3' (2) UCASH∆L) ('4' (3) UCASH∆4) ⋄ (type row comG)←∆[7]               com ←splitcomCASH[row;] ⋄ comF←splitcomFCASH[row;] ⋄ comFG←splitcomFGCASH[row;][8]   [9]               BenType∆pp←IncType∆pp←'L',type[10]  [11]              Upin∆pp←0 ⍝ Not "underpinned"[12]              SL∆pp←,com-comG⋄ FSL∆pp←,comF-comFG[13]  [14]              PP∆CreateInterface[15]  [16]              Upin∆pp←1 ⍝ "underpinned"[17]              SL∆pp←,comG ⋄ FSL∆pp←,comFG[18]  [19]              PP∆CreateInterface[20]          :endfor[21]      :else[22]          BenType∆pp←IncType∆pp←'LC'[23]  [24]          Upin∆pp←0 ⍝ Not "underpinned"[25]          SL∆pp←,comCASH-comGCASH ⋄ FSL∆pp←,comFCASH-comFCASH⌊comGCASH[26]  [27]          PP∆CreateInterface[28]  [29]          Upin∆pp←1 ⍝ "underpinned"[30]          SL∆pp←,comGCASH ⋄ FSL∆pp←,comFCASH⌊comGCASH[31]  [32]          PP∆CreateInterface[33]      :endif[34]  [35]      BenType∆pp←IncType∆pp←'LT'[36]  [37]      Upin∆pp←0 ⍝ Not "underpinned"[38]      SL∆pp←,cotCASH-cotGCASH ⋄ FSL∆pp←,cotFCASH-cotFCASH⌊cotGCASH[39]  [40]      PP∆CreateInterface[41]  [42]      Upin∆pp←1 ⍝ "underpinned"[43]      SL∆pp←,cotGCASH ⋄ FSL∆pp←,cotFCASH⌊cotGCASH[44]  [45]      PP∆CreateInterface[46]  :else[47]      BenType∆pp←IncType∆pp←'L'[48]  [49]      Upin∆pp←0 ⍝ Not "underpinned"[50]      SL∆pp←,CASH-GCASH ⋄ FSL∆pp←,FCASH-FCASH⌊GCASH[51]  [52]      PP∆CreateInterface[53]  [54]      Upin∆pp←1 ⍝ "underpinned"[55]      SL∆pp←,GCASH ⋄ FSL∆pp←,FCASH⌊GCASH[56]  [57]      PP∆CreateInterface[58]  :endif    ∇
+    ∇ RTC∆BENEFIT;BenType∆pp;IncType∆pp;SL∆pp;FSL∆pp;Upin∆pp;∆;type;row;com;comF;comG;comFG
+[1]   ⍝ ACTWIN.sf#5
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM
+[3]   
+[4]   :if sepComCot
+[5]       :if splitCombyPI
+[6]           :for ∆ :in ('S' (0) UCASH∆S) ('M' (1) UCASH∆M) ('3' (2) UCASH∆L) ('4' (3) UCASH∆4) ⋄ (type row comG)←∆
+[7]               com ←splitcomCASH[row;] ⋄ comF←splitcomFCASH[row;] ⋄ comFG←splitcomFGCASH[row;]
+[8]   
+[9]               BenType∆pp←IncType∆pp←'L',type
+[10]  
+[11]              Upin∆pp←0 ⍝ Not "underpinned"
+[12]              SL∆pp←,com-comG⋄ FSL∆pp←,comF-comFG
+[13]  
+[14]              PP∆CreateInterface
+[15]  
+[16]              Upin∆pp←1 ⍝ "underpinned"
+[17]              SL∆pp←,comG ⋄ FSL∆pp←,comFG
+[18]  
+[19]              PP∆CreateInterface
+[20]          :endfor
+[21]      :else
+[22]          BenType∆pp←IncType∆pp←'LC'
+[23]  
+[24]          Upin∆pp←0 ⍝ Not "underpinned"
+[25]          SL∆pp←,comCASH-comGCASH ⋄ FSL∆pp←,comFCASH-comFCASH⌊comGCASH
+[26]  
+[27]          PP∆CreateInterface
+[28]  
+[29]          Upin∆pp←1 ⍝ "underpinned"
+[30]          SL∆pp←,comGCASH ⋄ FSL∆pp←,comFCASH⌊comGCASH
+[31]  
+[32]          PP∆CreateInterface
+[33]      :endif
+[34]  
+[35]      BenType∆pp←IncType∆pp←'LT'
+[36]  
+[37]      Upin∆pp←0 ⍝ Not "underpinned"
+[38]      SL∆pp←,cotCASH-cotGCASH ⋄ FSL∆pp←,cotFCASH-cotFCASH⌊cotGCASH
+[39]  
+[40]      PP∆CreateInterface
+[41]  
+[42]      Upin∆pp←1 ⍝ "underpinned"
+[43]      SL∆pp←,cotGCASH ⋄ FSL∆pp←,cotFCASH⌊cotGCASH
+[44]  
+[45]      PP∆CreateInterface
+[46]  :else
+[47]      BenType∆pp←IncType∆pp←'L'
+[48]  
+[49]      Upin∆pp←0 ⍝ Not "underpinned"
+[50]      SL∆pp←,CASH-GCASH ⋄ FSL∆pp←,FCASH-FCASH⌊GCASH
+[51]  
+[52]      PP∆CreateInterface
+[53]  
+[54]      Upin∆pp←1 ⍝ "underpinned"
+[55]      SL∆pp←,GCASH ⋄ FSL∆pp←,FCASH⌊GCASH
+[56]  
+[57]      PP∆CreateInterface
+[58]  :endif
+    ∇

@@ -1,1 +1,58 @@
-    ∇ res←larg WGetFileTime File;⎕io;dbts;braces;hFile;type;tieno;ind;tries;notok;exist;NTRIES[1]   ⍝ MAINWIN.sf#2[2]   ⍝ Returns the last modified date/time of File (full path of file)[3]   ⍝ larg is a 2 element vector with the following values:[4]   ⍝   larg[0]:  0 - (Default) Text (Spelt) Date and 1 - Database Date[5]   ⍝   larg[1]:  1 - surrounded by braces "[" and "]" (Default 0)[6]   ⍝ Note: result of combining WGetFileTime  and XL_WGetFileTime[7]   ⍝ Revn: sjt03dec15 * 100 retries at randomised intervals 5-5000 msec; err msg instead of 1/1/1601[8]   ⎕io←1[9]   :if 0=⎕nc 'larg' ⋄ larg←0 0 ⋄ :endif ⋄ (dbts braces)←2↑larg[10]  [11]  :if ~exist←FileExist File ⋄ :andif 0≠⎕nc 'tpL' ⋄ :andif tpL∊⎕xnnums[12]      ('Note: ',File,' NOT FOUND when Timestamping: ',tsIM ⎕TS) VALN∆LOG 'Add'[13]  :endif[14]  [15]  :if ~exist ⋄ :andif ~dbts[16]      res←'FILE NOT FOUND: ',tsIM ⎕TS[17]  :else[18]      (tries NTRIES)←0,1+99×exist[19]  [20]      :if type←'SF'≡UPPERCASE DLTB Win∆Child File ⍝ Determine if APL or Native and Temporarily untie file[21]          :if ind←(tieno←'APL'    TieNumber File)∊⎕xfnums,⎕fnums ⋄ ⎕funtie tieno ⋄ :endif[22]      :else[23]          :if ind←(tieno←'Native' TieNumber File)∊⎕xnnums,⎕nnums ⋄ ⎕nuntie tieno ⋄ :endif[24]      :endif[25]  [26]      top:[27]      ⍝ Get File Handle[28]      hFile←⎕wcall 'CreateFile' File 'GENERIC_READ' 'FILE_SHARE_READ' 0 'OPEN_EXISTING' 'FILE_ATTRIBUTE_NORMAL' 0[29]      res←4⊃⎕wcall 'GetFileTime' hFile '' '' '' ⍝ Get Modified time only[30]      0 0⍴⎕wcall 'CloseHandle' hFile ⍝ Release Handle[31]  [32]      :if notok←⎕tcnul^.=res ⋄ :andif NTRIES>tries←tries+1 ⋄ ⎕WGIVE 0 ⋄ 0 0⍴⎕dl 0.001×5⌈?5000 ⋄ →top ⋄ :endif[33]  [34]      res←2⊃⎕wcall 'FileTimeToLocalFileTime' res '' ⍝ Convert GMT to local[35]      res←2⊃⎕wcall 'FileTimeToSystemTime' res '' ⍝ Convert to local date format[36]      res←1 1 0 1 1 1 1 1/1⊃163 323 ⎕dr res ⍝ Remove Day of week[37]  [38]      :if ind ⍝ If it was already tied[39]          :if type ⋄ 0 0⍴File FSTIE tieno[40]          :else    ⋄ 0 0⍴File NTIE tieno[41]          :endif[42]      :endif[43]  [44]      :if notok ⋄ :andif ~dbts[45]          :if 0≠⎕nc 'tpL' ⋄ :andif tpL∊⎕xnnums[46]              ('Note: UNABLE TO REACH ',File,' when Timestamping: ',tsIM ⎕TS) VALN∆LOG 'Add'[47]          :endif[48]          res←'UNABLE TO REACH FILE: ',tsIM ⎕ts ⍝ timestamp on err msg prevents consecutive errors matching[49]      :elseif dbts[50]          res←⍙DBTimeStamp res ⍝ Database Date[51]      :else[52]          res←DLTMB 1 DATESPELL res ⍝ Short date Display[53]      :endif[54]  :endif[55]  [56]  :if braces ⋄ res←' [',res,']' ⋄ :endif    ∇
+    ∇ res←larg WGetFileTime File;⎕io;dbts;braces;hFile;type;tieno;ind;tries;notok;exist;NTRIES
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝ Returns the last modified date/time of File (full path of file)
+[3]   ⍝ larg is a 2 element vector with the following values:
+[4]   ⍝   larg[0]:  0 - (Default) Text (Spelt) Date and 1 - Database Date
+[5]   ⍝   larg[1]:  1 - surrounded by braces "[" and "]" (Default 0)
+[6]   ⍝ Note: result of combining WGetFileTime  and XL_WGetFileTime
+[7]   ⍝ Revn: sjt03dec15 * 100 retries at randomised intervals 5-5000 msec; err msg instead of 1/1/1601
+[8]   ⎕io←1
+[9]   :if 0=⎕nc 'larg' ⋄ larg←0 0 ⋄ :endif ⋄ (dbts braces)←2↑larg
+[10]  
+[11]  :if ~exist←FileExist File ⋄ :andif 0≠⎕nc 'tpL' ⋄ :andif tpL∊⎕xnnums
+[12]      ('Note: ',File,' NOT FOUND when Timestamping: ',tsIM ⎕TS) VALN∆LOG 'Add'
+[13]  :endif
+[14]  
+[15]  :if ~exist ⋄ :andif ~dbts
+[16]      res←'FILE NOT FOUND: ',tsIM ⎕TS
+[17]  :else
+[18]      (tries NTRIES)←0,1+99×exist
+[19]  
+[20]      :if type←'SF'≡UPPERCASE DLTB Win∆Child File ⍝ Determine if APL or Native and Temporarily untie file
+[21]          :if ind←(tieno←'APL'    TieNumber File)∊⎕xfnums,⎕fnums ⋄ ⎕funtie tieno ⋄ :endif
+[22]      :else
+[23]          :if ind←(tieno←'Native' TieNumber File)∊⎕xnnums,⎕nnums ⋄ ⎕nuntie tieno ⋄ :endif
+[24]      :endif
+[25]  
+[26]      top:
+[27]      ⍝ Get File Handle
+[28]      hFile←⎕wcall 'CreateFile' File 'GENERIC_READ' 'FILE_SHARE_READ' 0 'OPEN_EXISTING' 'FILE_ATTRIBUTE_NORMAL' 0
+[29]      res←4⊃⎕wcall 'GetFileTime' hFile '' '' '' ⍝ Get Modified time only
+[30]      0 0⍴⎕wcall 'CloseHandle' hFile ⍝ Release Handle
+[31]  
+[32]      :if notok←⎕tcnul^.=res ⋄ :andif NTRIES>tries←tries+1 ⋄ ⎕WGIVE 0 ⋄ 0 0⍴⎕dl 0.001×5⌈?5000 ⋄ →top ⋄ :endif
+[33]  
+[34]      res←2⊃⎕wcall 'FileTimeToLocalFileTime' res '' ⍝ Convert GMT to local
+[35]      res←2⊃⎕wcall 'FileTimeToSystemTime' res '' ⍝ Convert to local date format
+[36]      res←1 1 0 1 1 1 1 1/1⊃163 323 ⎕dr res ⍝ Remove Day of week
+[37]  
+[38]      :if ind ⍝ If it was already tied
+[39]          :if type ⋄ 0 0⍴File FSTIE tieno
+[40]          :else    ⋄ 0 0⍴File NTIE tieno
+[41]          :endif
+[42]      :endif
+[43]  
+[44]      :if notok ⋄ :andif ~dbts
+[45]          :if 0≠⎕nc 'tpL' ⋄ :andif tpL∊⎕xnnums
+[46]              ('Note: UNABLE TO REACH ',File,' when Timestamping: ',tsIM ⎕TS) VALN∆LOG 'Add'
+[47]          :endif
+[48]          res←'UNABLE TO REACH FILE: ',tsIM ⎕ts ⍝ timestamp on err msg prevents consecutive errors matching
+[49]      :elseif dbts
+[50]          res←⍙DBTimeStamp res ⍝ Database Date
+[51]      :else
+[52]          res←DLTMB 1 DATESPELL res ⍝ Short date Display
+[53]      :endif
+[54]  :endif
+[55]  
+[56]  :if braces ⋄ res←' [',res,']' ⋄ :endif
+    ∇

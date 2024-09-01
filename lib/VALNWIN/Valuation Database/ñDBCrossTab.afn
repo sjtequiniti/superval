@@ -1,0 +1,26 @@
+    ∇ result←shape ⍙DBCrossTab data;key;s;keyS;collate;UkeyS;changes
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Function to cross-tabulate data
+[3]   ⍝ G Kilvington 26 August 2001
+[4]   ⍝⍝⍝    MODIFIED BY RSE to assume only one co-ordinate 9 July 2009
+[5]   ⍝   "data" is a matrix with the actual data in the right-hand columns (quantities like salary, benefit ...).
+[6]   ⍝   The Left-hand columns are attributes which have already been coded into groups from 1-N
+[7]   ⍝ (⍴shape) determines the number of coordinates, and hence how many columns of data are coordinates.
+[8]   ⍝ The rest of data will be actual quantities to collate.
+[9]   ⍝   For example:    sex would be encoded to 1 or 2
+[10]  ⍝                   Age might be encoded as 1 =  -30, 2 = 31 - 40 etc.
+[11]  ⍝ The number of attribute determines the shape of the classification
+[12]  ⍝ "shape" describes the output groupings:  for example we might have room for 6 age groups but they
+[13]  ⍝                                          might not all be included in the individual "data".
+[14]  
+[15]  result←shape⍴0 ⍝ Set up our Results receptacle.
+[16]  :if ~0∊⍴data
+[17]      s←⍋key←data[;⎕io]
+[18]      keyS←(¯1+↑keyS),keyS←key[s]             ⍝ s is our sort vector, and keyS are the keys sorted ready for collation
+[19]      collate←(changes←keyS≠1⌽keyS)/⍳⍴keyS    ⍝ Collation sequence
+[20]      UkeyS←(1↓keyS)[¯1↓collate]              ⍝ These are the unique observed keys (sorted)
+[21]  
+[22]      ⍝ We are now ready to sum and insert the results
+[23]      result[UkeyS]←+/¨(¯1↓changes) ⎕penclose data[s;⎕io+1]
+[24]  :endif
+    ∇

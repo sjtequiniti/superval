@@ -1,0 +1,35 @@
+    ∇ res←field Registration parm;parent;SSName;MaxRow;z;key;LicenceString
+[1]   ⍝ REGISTER.sf#2
+[2]   ⍝ Function to allow user control on Registration
+[3]   
+[4]   parent←'fmRegister.' ⋄ res←0⍴'' ⍝ Default response
+[5]   SSName←parent,"ssRegTable"
+[6]   
+[7]   :select parm
+[8]   
+[9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[10]      ALPHA←"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 &()-,;./'"
+[11]      dEVELOPMENT←⍕development
+[12]  
+[13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[14]  
+[15]      MaxCol←SSName ShowRegTable RegistrationTab←(SystemDir,'REGISTER') ReadFile 'RegTable'
+[16]      RowMax←¯1+↑⍴RegistrationTab
+[17]      SSName Win∆F1SSSetSelection 1 2 1 2
+[18]      SSName ⎕wi 'xFixedCols' 1 ⍝ Freeze First Column
+[19]      (parent,'bnRegistrationLicence') ⎕wi 'visible' create ⍝ parameter of calling function
+[20]      (parent,'edLicenceKey') ⎕wi 'limit' 18
+[21]  
+[22]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[23]  
+[24]  :case 'Valid' ⍝ Routine specific validation
+[25]  
+[26]  :case 'Run'
+[27]  
+[28]      res←'Quit'
+[29]  
+[30]  :case 'Quit' ⍝ Deleting "other" variables
+[31]      0 0⍴⎕ex 'RegistrationTab MaxCol ALPHA RowMax'
+[32]  
+[33]  :endselect
+    ∇

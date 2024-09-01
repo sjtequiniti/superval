@@ -1,0 +1,23 @@
+    ∇ res←size TABLE∆NAMES CODE;⎕io;∆decrdesc;∆decrlist;i;z
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Return a list of Rate Table Descriptions
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE Oct 2000 Windowised
+[7]   ⎕io←1 ⋄ 0 0⍴GetDecrList 'List' ⍝ Update Decrement Descriptions
+[8]   ∆decrdesc←FormName ⎕wi '∆decrdesc' ⋄ ∆decrlist←FormName ⎕wi '∆decrlist'
+[9]   
+[10]  res←0 0⍴''
+[11]  :for i :in ⍳1↑⍴CODE←MATRIX CODE
+[12]      :if ^/' '=CODE[i;]
+[13]          res←res OVER ' '
+[14]      :else
+[15]          z←∆decrlist TLU ¯5↑DLTB CODE[i;]
+[16]          res←res OVER (DLTB ∆decrdesc[z;]),' <',(,DECRFile ReadFile (z+1) '' 'TSTAMP'),'>'
+[17]      :endif
+[18]  :endfor
+[19]  
+[20]  :if 0≠⎕nc 'size' ⋄ res←((1↑⍴res),size)↑res ⋄ :endif
+[21]  →(1≠1↑⍴res)/0 ⋄ res←,res
+    ∇

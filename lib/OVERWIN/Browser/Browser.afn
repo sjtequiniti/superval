@@ -1,1 +1,78 @@
-    ∇ res←field Browser parm;where;list;file[1]   ⍝ OVERWIN.sf#15[2]   ⍝ Function to allow user control on Browser[3]   [4]   res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[8]       tieno←0 ⋄ MaxPage←1 ⍝ Default Max Pages[9]       :if 0≠⎕nc 'OutPutFILE'[10]          :if 'ß'=1↑OutPutFILE[11]              OutPutFILE←1↓OutPutFILE[12]              ('fmBrowser.edfILENAME' 'fmBrowser.edPageNo') MultiWI 'enabled' 0[13]          :endif[14]          fILENAME←OutPutFILE ⍝ When called by finishing Module[15]      :endif[16]      assocopen←0[17]  [18]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[19]  [20]      'fmBrowser.edText' ⎕wi 'color' 255 255 255[21]      'fmBrowser.edText' ⎕wi 'font' ⍬ 15 (32+256+2048) 'ansi' ⍝ Font Set[22]      bbar_ok←Browser_Bar ⍝ Create the Browser Bar[23]      'fmBrowser.edfILENAME' ⎕wi 'onExit' '' ⍝ Nobble onExit!![24]      ⍝ Split PageNo onExit between onExit and onChange events[25]      'fmBrowser.edPageNo' ⎕wi 'onExit' '⎕wres←1 INPUT∆CHECK "fmBrowser.edPageNo" '[26]      'fmBrowser.edPageNo' ⎕wi 'onChange' '0 0⍴(⊂"edPageNo") Browser "Change" '[27]      'Change' RunSetFont 'Browser'[28]      tieno←0 CountPages DLTB 'fmBrowser.edfILENAME' ⎕wi 'text'[29]      'fmBrowser.edPageNo' ⎕wi 'text' '1'[30]      res←assocopen/'Abort'[31]  [32]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[33]  [34]      :if 0∊⍴,field ⋄ :return ⋄ :endif[35]      :repeat[36]          :select ↑field[37]          :case 'edfILENAME' ⍝ Change of File[38]  [39]               file←'fmBrowser.edfILENAME' ⎕wi 'text'[40]               :if 'Output Folder\'≡14↑file[41]                   'fmBrowser.edfILENAME' ⎕wi 'text' (('⍺Output Folder\⍺',OutputDir) TEXTREPL file)[42]                   :return[43]               :elseif 'Input Folder\'≡13↑file[44]                   'fmBrowser.edfILENAME' ⎕wi 'text' (('⍺Input Folder\⍺',InputDir) TEXTREPL file)[45]                   :return[46]               :endif[47]  [48]               ⎕nuntie tieno~0[49]               tieno←1 CountPages DLTB 'fmBrowser.edfILENAME' ⎕wi 'text'[50]               'fmBrowser.edPageNo' ⎕wi 'text' '1'[51]          :case 'edPageNo' ⍝ Change of Page[52]               :if 0≠⍴,No∆recs[53]                   DisplayPage[54]               :endif[55]          :endselect[56]       :until mt field←1↓field[57]  [58]  :case 'Valid' ⍝ Routine specific validation[59]  [60]  :case 'Run'[61]      :if bbar_ok[62]          ('fmBrowser.barBrowser' ⎕wi 'dock') INIString uSER 'Bar_dock' PrefINI[63]          ('fmBrowser.barBrowser' ⎕wi 'floatlayout') INIString uSER 'Bar_layout' PrefINI[64]          :if ~0∊⍴,where←'fmBrowser.barBrowser' ⎕wi 'floatwhere'[65]              (2↑where) INIString uSER 'Bar_floatwhere' PrefINI[66]          :endif[67]      :endif[68]  [69]      'fmBrowser' ⎕wi 'modified' 0 ⍝ Indicate Quit regardless[70]      res←'Quit'[71]  [72]  :case 'Quit'[73]      ⎕nuntie tieno~0[74]      0 0⍴⎕ex 'MaxPage tieno No∆recs bbar_ok FilesDesc FilesList assocopen'[75]  [76]  :endselect    ∇
+    ∇ res←field Browser parm;where;list;file
+[1]   ⍝ OVERWIN.sf#15
+[2]   ⍝ Function to allow user control on Browser
+[3]   
+[4]   res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[8]       tieno←0 ⋄ MaxPage←1 ⍝ Default Max Pages
+[9]       :if 0≠⎕nc 'OutPutFILE'
+[10]          :if 'ß'=1↑OutPutFILE
+[11]              OutPutFILE←1↓OutPutFILE
+[12]              ('fmBrowser.edfILENAME' 'fmBrowser.edPageNo') MultiWI 'enabled' 0
+[13]          :endif
+[14]          fILENAME←OutPutFILE ⍝ When called by finishing Module
+[15]      :endif
+[16]      assocopen←0
+[17]  
+[18]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[19]  
+[20]      'fmBrowser.edText' ⎕wi 'color' 255 255 255
+[21]      'fmBrowser.edText' ⎕wi 'font' ⍬ 15 (32+256+2048) 'ansi' ⍝ Font Set
+[22]      bbar_ok←Browser_Bar ⍝ Create the Browser Bar
+[23]      'fmBrowser.edfILENAME' ⎕wi 'onExit' '' ⍝ Nobble onExit!!
+[24]      ⍝ Split PageNo onExit between onExit and onChange events
+[25]      'fmBrowser.edPageNo' ⎕wi 'onExit' '⎕wres←1 INPUT∆CHECK "fmBrowser.edPageNo" '
+[26]      'fmBrowser.edPageNo' ⎕wi 'onChange' '0 0⍴(⊂"edPageNo") Browser "Change" '
+[27]      'Change' RunSetFont 'Browser'
+[28]      tieno←0 CountPages DLTB 'fmBrowser.edfILENAME' ⎕wi 'text'
+[29]      'fmBrowser.edPageNo' ⎕wi 'text' '1'
+[30]      res←assocopen/'Abort'
+[31]  
+[32]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[33]  
+[34]      :if 0∊⍴,field ⋄ :return ⋄ :endif
+[35]      :repeat
+[36]          :select ↑field
+[37]          :case 'edfILENAME' ⍝ Change of File
+[38]  
+[39]               file←'fmBrowser.edfILENAME' ⎕wi 'text'
+[40]               :if 'Output Folder\'≡14↑file
+[41]                   'fmBrowser.edfILENAME' ⎕wi 'text' (('⍺Output Folder\⍺',OutputDir) TEXTREPL file)
+[42]                   :return
+[43]               :elseif 'Input Folder\'≡13↑file
+[44]                   'fmBrowser.edfILENAME' ⎕wi 'text' (('⍺Input Folder\⍺',InputDir) TEXTREPL file)
+[45]                   :return
+[46]               :endif
+[47]  
+[48]               ⎕nuntie tieno~0
+[49]               tieno←1 CountPages DLTB 'fmBrowser.edfILENAME' ⎕wi 'text'
+[50]               'fmBrowser.edPageNo' ⎕wi 'text' '1'
+[51]          :case 'edPageNo' ⍝ Change of Page
+[52]               :if 0≠⍴,No∆recs
+[53]                   DisplayPage
+[54]               :endif
+[55]          :endselect
+[56]       :until mt field←1↓field
+[57]  
+[58]  :case 'Valid' ⍝ Routine specific validation
+[59]  
+[60]  :case 'Run'
+[61]      :if bbar_ok
+[62]          ('fmBrowser.barBrowser' ⎕wi 'dock') INIString uSER 'Bar_dock' PrefINI
+[63]          ('fmBrowser.barBrowser' ⎕wi 'floatlayout') INIString uSER 'Bar_layout' PrefINI
+[64]          :if ~0∊⍴,where←'fmBrowser.barBrowser' ⎕wi 'floatwhere'
+[65]              (2↑where) INIString uSER 'Bar_floatwhere' PrefINI
+[66]          :endif
+[67]      :endif
+[68]  
+[69]      'fmBrowser' ⎕wi 'modified' 0 ⍝ Indicate Quit regardless
+[70]      res←'Quit'
+[71]  
+[72]  :case 'Quit'
+[73]      ⎕nuntie tieno~0
+[74]      0 0⍴⎕ex 'MaxPage tieno No∆recs bbar_ok FilesDesc FilesList assocopen'
+[75]  
+[76]  :endselect
+    ∇

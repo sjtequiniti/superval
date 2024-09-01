@@ -1,1 +1,15 @@
-    ∇ field1 Win∆Alternates field2;enabled[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Cope with onChange for "alternate" fields[3]   ⍝   (those that can only have entry in one or the other)[4]   ⍝ Both enabled if both blank (or both non-blank - should not happen)[5]   ⍝ Non-blank field enabled if only one non-blank[6]   [7]   :if ∨/(field1 field2) MultiWI 'enabled'[8]       :if =/enabled←^/¨' '=¨(field1 field2) MultiWI 'text'[9]           enabled←1 1[10]      :endif[11]      (((Win∆Parent field1),'.') (Win∆Child field1)) Win∆SetRelated 'enabled' (enabled[2])[12]      (((Win∆Parent field2),'.') (Win∆Child field2)) Win∆SetRelated 'enabled' (enabled[1])[13]  :endif    ∇
+    ∇ field1 Win∆Alternates field2;enabled
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Cope with onChange for "alternate" fields
+[3]   ⍝   (those that can only have entry in one or the other)
+[4]   ⍝ Both enabled if both blank (or both non-blank - should not happen)
+[5]   ⍝ Non-blank field enabled if only one non-blank
+[6]   
+[7]   :if ∨/(field1 field2) MultiWI 'enabled'
+[8]       :if =/enabled←^/¨' '=¨(field1 field2) MultiWI 'text'
+[9]           enabled←1 1
+[10]      :endif
+[11]      (((Win∆Parent field1),'.') (Win∆Child field1)) Win∆SetRelated 'enabled' (enabled[2])
+[12]      (((Win∆Parent field2),'.') (Win∆Child field2)) Win∆SetRelated 'enabled' (enabled[1])
+[13]  :endif
+    ∇

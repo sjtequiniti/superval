@@ -1,1 +1,30 @@
-    ∇ StartEdit parm[1]   ⍝ DECRWIN.sf#10[2]   ⍝ Fn to prepare Form for add/edit factors[3]   [4]   ⍝ Disable List & "List" Buttons[5]   'fmFactors.lsTABLE' ⎕wi 'enabled' 0[6]   ((⊂'fmFactors.bnFactors'),¨'Add' 'Edit' 'Delete') MultiWI 'enabled' 0 ⍝⍝⍝ 'Print'[7]   0 0⍴⎕ex 'PageView' ⋄ psWipe 'fmFactors.picPretty' ⍝ Clear Picture[8]   ⍝ Replace Quit with Cancel[9]   'fmFactors.bnFactorsQuit' ⎕wi 'visible' ¯1[10]  'fmFactors.bnFactorsQuit' ⎕wi 'style' 0[11]  'fmFactors' ⎕wi '∆quitbutton' 'fmFactors.bnFactorsCancel'[12]  'fmFactors.bnFactorsCancel' ⎕wi 'visible' 1[13]  'fmFactors.bnFactorsCancel' ⎕wi 'style' 2[14]  'fmFactors.bnFactorsSave' ⎕wi 'style' 1[15]  'fmFactors' ⎕wi 'onModified' '"fmFactors.bnFactorsSave" ⎕wi "enabled" (0≠⎕warg[1])'[16]  [17]  :if parm≡'Add'[18]      ('fmFactors.' 'edTableNo') Win∆SetRelated 'enabled' 1[19]  :endif[20]  (('fmFactors.') ('edTableDesc' 'cbDecP')) Win∆SetRelated 'enabled' 1[21]  [22]  0 0⍴Factors 'unlock'[23]  SSName ⎕wi 'onXEndEdit' onXEndEdit[24]  SSName ⎕wi 'onExit' onExit[25]  SSName ⎕wi 'onXModified' ('"fmFactors.bnFactorsSave" ⎕wi "enabled" (SSName ⎕wi "xmodified")')[26]  [27]  'fmFactors' ⎕wi 'modified' 0[28]  SSName ⎕wi 'xmodified' 0    ∇
+    ∇ StartEdit parm
+[1]   ⍝ DECRWIN.sf#10
+[2]   ⍝ Fn to prepare Form for add/edit factors
+[3]   
+[4]   ⍝ Disable List & "List" Buttons
+[5]   'fmFactors.lsTABLE' ⎕wi 'enabled' 0
+[6]   ((⊂'fmFactors.bnFactors'),¨'Add' 'Edit' 'Delete') MultiWI 'enabled' 0 ⍝⍝⍝ 'Print'
+[7]   0 0⍴⎕ex 'PageView' ⋄ psWipe 'fmFactors.picPretty' ⍝ Clear Picture
+[8]   ⍝ Replace Quit with Cancel
+[9]   'fmFactors.bnFactorsQuit' ⎕wi 'visible' ¯1
+[10]  'fmFactors.bnFactorsQuit' ⎕wi 'style' 0
+[11]  'fmFactors' ⎕wi '∆quitbutton' 'fmFactors.bnFactorsCancel'
+[12]  'fmFactors.bnFactorsCancel' ⎕wi 'visible' 1
+[13]  'fmFactors.bnFactorsCancel' ⎕wi 'style' 2
+[14]  'fmFactors.bnFactorsSave' ⎕wi 'style' 1
+[15]  'fmFactors' ⎕wi 'onModified' '"fmFactors.bnFactorsSave" ⎕wi "enabled" (0≠⎕warg[1])'
+[16]  
+[17]  :if parm≡'Add'
+[18]      ('fmFactors.' 'edTableNo') Win∆SetRelated 'enabled' 1
+[19]  :endif
+[20]  (('fmFactors.') ('edTableDesc' 'cbDecP')) Win∆SetRelated 'enabled' 1
+[21]  
+[22]  0 0⍴Factors 'unlock'
+[23]  SSName ⎕wi 'onXEndEdit' onXEndEdit
+[24]  SSName ⎕wi 'onExit' onExit
+[25]  SSName ⎕wi 'onXModified' ('"fmFactors.bnFactorsSave" ⎕wi "enabled" (SSName ⎕wi "xmodified")')
+[26]  
+[27]  'fmFactors' ⎕wi 'modified' 0
+[28]  SSName ⎕wi 'xmodified' 0
+    ∇

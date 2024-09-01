@@ -1,1 +1,195 @@
-    ∇ Z←NextCheck ReportParmAudit R;∆;index;Comps;cn;AuditLog;xxx;parm;row;px;mx;bx;xsl;xml;htm;DEADLIST;oldrl;newrl;desc;rws;pname;parmOldv;parmNewv;mode;pm;cols;parms;fieldDesc;rowno;hashes;tbl;packold;packnew;saveVersion;SavedModule;fail;File;savecn;relRules;this;IT;z;diff;key;skip[1]   ⍝ PARMWIN.sf#25[2]   ⍝ Function to report on Parameters Audit[3]   ⍝ Revn: sjt/dnp19jun15 sjt22jun15[4]   ⍝       sjt07aug15, dnp17aug15 guard against 'multirow same' params both empty[5]   ⍝ NextCheck indicates to stop Audit at first Audit Check point[6]   [7]   :if fail←(tally R)=1[8]       :if fail←mt 2⊃(File savecn)←↑R[9]       :else[10]          fail←mt Comps←File ReadFile '⊂',(⍕savecn),'⊃'[11]      :endif[12]  :endif[13]  [14]  :if fail[15]      Z←'' ⋄ MDISPLAY 'No Audited Changes to report'[16]  :else[17]      xml←''[18]      :for ∆ :in R ⋄ (File savecn)←∆ ⍝ A loop to cycle through (File cn) pairs. Allows audit for multiple categories simultaneously[19]  [20]          index←File ReadFile 'Index'[21]          :if mt Comps←File ReadFile '⊂',(⍕savecn),'⊃'⋄ :andif 1<tally R  ⍝ If no audit records and multiple (file cn) pairs[22]              bx←⊂'' ⍝ Empty for category with no audit[23]          :else[24]              ⍝ names basis saved as for each modification[25]              ∆←push ⍕¨¨index at '∆_CompNo' '∆_Description'                               ⍝ d:comp#=>desc[26]              ∆←(⍕¨Comps) push ∆ at ⍕¨1↓Comps,savecn                                      ⍝ d:comp#=>next desc[27]              index←index amend 'savedas' (∆ at ⍕¨index at '∆_CompNo')[28]              this←push ⎕SPLIT index for '∆_CompNo' savecn                                ⍝ d:values for this basis[29]  [30]              relRules←⍙RULESdict ReadDictFile this at '∆_Name'[31]              ⍝ Implicit Tables[32]              :if 0≠rowsIn ∆←relRules for ^/~mt¨valsIn relRules select 'Page' 'Alternative'[33]                  ∆←∆ groupby 'Page' ('Field' 'Desc' 'Row')                                   ⍝ d: Page=>table[34]                  IT←(keysIn ∆) push (valsIn ∆) sortedBy¨⊂'Row'                               ⍝ d: Page=>defn table for implicit tables[35]              :else                                                                           ⍝ FIXME[36]                  IT←'' push ''[37]              :endif[38]  [39]              DEADLIST←,'m_' 'f_' ∘., 'AgeRate' 'pcRate' ⍝ exclude these parameters[40]  [41]              bx←'' ⍝ basis xml[42]              skip←0[43]              :for cn :in ⌽Comps[44]  [45]                  xxx←File ReadFile cn ⍝ AuditLog[46]  [47]                  :if 2=⍴⍴AuditLog ⍝ A Table of Parameter Changes[48]                      :if 2=⍴⍴↑AuditLog at 'Parameter' ⍝ Convert original format (now Dictionary format)[49]                          AuditLog←AuditLog[,1;]⍪(⎕split ↑AuditLog[2;1]),(⎕split ↑AuditLog[2;2]),[1.5]⎕split ↑AuditLog[2;3][50]                      :endif[51]  [52]                      ⍝ Fixes audit records created in V9.03 and earlier - SV904025[53]                      :if 9.04>saveVersion← ⍎5↑,⊃(index for '∆_CompNo' cn) at '∆_VersModified'⍝ Checks if version of the audit record is 9.03 or earlier[54]                          SavedModule     ← this at '∆_Name'                                  ⍝ Prevents VALUE ERROR in Win∆AuditLog[55]                          packold         ← ↑makePkg / AuditLog at 'Parameter' 'Old Value'[56]                          packnew         ← ↑makePkg / AuditLog at 'Parameter' 'New Value'[57]                          AuditLog        ← packold Win∆AuditLogold packnew[58]                      :endif[59]  [60]                      ⍝ get parameter descriptions from relevance rules[61]                      fieldDesc←push relRules at 'Field' 'Desc'                               ⍝ d: field=>description[62]  [63]                      AuditLog←AuditLog for ~(AuditLog at 'Parameter') ∊ DEADLIST             ⍝ exclude params[64]  [65]                      AuditLog←AuditLog amend 'Old Value' (⊃¨(⎕split¨AuditLog at 'Old Value')~¨¨'⍺') ⍝ Remove ⍺ from List fields[66]                      AuditLog←AuditLog amend 'New Value' (⊃¨(⎕split¨AuditLog at 'New Value')~¨¨'⍺')[67]  [68]                      parmOldv←push AuditLog at 'Parameter' 'Old Value'[69]                      parmNewv←push AuditLog at 'Parameter' 'New Value'[70]  [71]                      mx←⊂'' ⍝ modification xml[72]                      :for parm :in ∆[1] push¨ 1↓∆←⎕SPLIT AuditLog for (⊃2↑¨AuditLog at 'Parameter')∨.≠'lr'[73]  [74]                          pname←parm at 'Parameter'[75]                          rws←⍕¨⍳↑⍴parm at 'Old Value'[76]  [77]                          :if ~mt desc←⊃fieldDesc at (⊂pname,'['),¨rws,¨⊂';]'                 ⍝ eg m_RXX[1;][78]                              mode←'multirow related'[79]                              oldrl←⊃ parmOldv at (⊂'lr',pname),¨rws                          ⍝ eg lrm_RXX1[80]                              newrl←⊃ parmNewv at (⊂'lr',pname),¨rws[81]                          :else[82]                              desc←(mt ∆) means pname else ∆←fieldDesc at pname[83]                              mode←(∨/2=↑¨⍴¨⍴¨parm at 'Old Value' 'New Value') means 'multirow same' else 'single value'[84]                              :if ×rowsIn ∆←AuditLog for 'Parameter' ('lr',pname)[85]                                  (oldrl newrl)←↑¨ ∆ at 'Old Value' 'New Value'[86]                              :else[87]                                  (oldrl newrl)←'' ''[88]                              :endif[89]                          :endif[90]  [91]                          parm←parm amend 'Description' 'Old RLabel' 'New RLabel' pr¨ desc oldrl newrl[92]  [93]                          cols←'Parameter' 'Description' 'Old Value' 'New Value' 'Old RLabel' 'New RLabel'[94]                          :select mode[95]                          :caselist 'single value' 'multirow related'[96]                              :select mode[97]                              :case 'single value'[98]                                  parms←cols⍪ 2 rnk parm at cols[99]                              :case 'multirow related'[100]                                 parms←cols⍪ ((⊂pname,'['),¨ rws ,¨ ⊂';]'), DLTB¨⍉⊃⎕SPLIT¨parm at 1↓cols[101]                             :endselect[102]                             :for pm :in ∆[1] push¨ 1↓∆←⎕SPLIT parms[103]                                 :if 0∊≡/pm at ⊃('Old Value' 'New Value')('Old RLabel' 'New RLabel' )[104]                                     ∆←(~mt¨pm at cols)/('name' push 1↓(⊂' -')char_replace¨ caseDn¨cols) pr¨ pm at cols[105]                                     ∆←∆ , (↑≡/pm at 'Old Value' 'New Value') means (⊂'from-globals' 'yes') else ''[106]                                     mx←mx,⊂('parameter' xattr ∆) xtag ''[107]                                 :endif[108]                             :endfor[109]                         :case 'multirow same'[110]                             :if ~1 1≡mt¨parm at 'Old Value'  'New Value' ⍝ sjt07aug15 ⍝dnp17aug15[111]                                 key←⊂''[112]                                 :if ~mt ↑IT[113]                                     :if   ∨/∨/¨z←((1↓IT) at¨⊂'Desc' )∊¨⊂⊂parm at 'Description'[114]                                     :orif ∨/∨/¨z←((1↓IT) at¨⊂'Field')∊¨⊂⊂parm at 'Description'[115]                                          :if ~∨/↑¨z[116]                                             :if   0≠rowsIn tbl←AuditLog for 'Parameter' (↑(↑IT at (∨/¨z)/keysIn IT) at 'Desc')[117]                                             :orif 0≠rowsIn tbl←AuditLog for 'Parameter' (↑(↑IT at (∨/¨z)/keysIn IT) at 'Field')[118]                                                 key←(⊂' {'),¨(m2n '# ' REPL ↑tbl at 'Old Value'),¨'}'[119]                                                 :if (↑⍴key)<z←↑⍴MATRIX ↑tbl at 'New Value'[120]                                                     key←z↑key[121]                                                 :endif[122]                                             :endif[123]                                          :endif[124]                                     :endif[125]                                 :endif[126] [127]                                 diff←         ~≡⌿DLTB¨(⊃⎕SPLIT¨parm at 'Old Value'  'New Value' )~¨'#'   ⍝ flag value changes[128]                                 :if 2=↑⍴⍴parm at 'Old RLabel'[129]                                     diff←diff∨~≡⌿DLTB¨(⊃⎕SPLIT¨parm at 'Old RLabel' 'New RLabel')~¨'#'   ⍝ flag label changes[130]                                 :endif[131] [132]                                 cols←'Old Value' 'New Value' 'Old RLabel' 'New RLabel'[133]                                 rowno←(⍕¨⍳↑⌈/⍴¨,¨⎕split ¨parm at 'Old Value' 'New Value'),¨key[134]                                 :if =/↑¨⍴¨parm at 'New Value' 'Old Value' ⍝ Special bit for 9.04 Audit records[135]                                     (((~mt ∆)^^/∆←'#'=parm at 'New Value')/rowno)←⊂'Deleted'[136]                                     (((~mt ∆)^^/∆←'#'=parm at 'Old Value')/rowno)←⊂'Added'[137]                                     hashes←~^/¨'#'=¨parm at cols[138]                                     tbl←('row-no' push cols)⍪ diff⌿rowno,⍉⊃⎕SPLIT¨hashes exp1¨hashes sel1¨parm at cols[139]                                 :else[140]                                     tbl←('row-no' push cols)⍪ diff⌿rowno,⍉⊃⎕SPLIT¨ parm at cols[141]                                 :endif[142] [143]                                 px←'' ⍝ parameter xml[144]                                 :for row :in ∆[1] push¨ 1↓∆←⎕SPLIT DLTB¨tbl[145]                                     cols←'row-no' 'Old Value' 'New Value' 'Old RLabel' 'New RLabel'[146]                                     ∆←(~mt¨row at cols)/((⊂' -')char_replace¨ caseDn¨cols) pr¨ row at cols[147]                                     ∆←∆ , (↑≡/row at 'Old Value' 'New Value') means (⊂'from-globals' 'yes') else ''[148]                                     px←px,⊂('row' xattr ∆) xtag ''[149]                                 :endfor[150]                                 :if ~mt px[151]                                     ∆←'name' 'description' pr¨ parm at 'Parameter' 'Description'[152]                                     mx←mx,('parameter' xattr ∆) xtag px[153]                                 :endif[154]                             :endif[155]                         :endselect[156]                     :endfor[157]                 :else ⍝ Audit Check Point[158]                     mx←⊂'checkpoint' xtag ''[159]                     skip←NextCheck[160]                 :endif[161] [162]                 ∆←↑¨(index for '∆_CompNo' cn) at '∆_UserModified' '∆_TSModified' '∆_Description' 'savedas'[163]                 ∆←'modification' xattr 'by' 'ts' 'last-saved-as' 'saved-as' pr¨ DLTB¨ ∆[164]                 bx←bx, ∆ xtag mx[165] [166]                 :if skip ⋄ :leave ⋄ :endif ⍝ Exit when Check Point hit[167]             :endfor[168]         :endif[169] [170]       ⍝ basis attributes[171]         ∆←push ⎕SPLIT index for '∆_CompNo' savecn[172]         ∆←∆ at '∆_Description' '∆_UserCreated' '∆_TSCreated' '∆_UserModified' '∆_TSModified'[173]         ∆←'description' 'created-by' 'ts-created' 'modified-by' 'ts-modified' pr¨ DLTB¨∆[174]         ∆←('basis' xattr ∆) xtag bx[175]         :if (UPPERCASE InputDir)≡UPPERCASE (↑⍴InputDir)↑File[176]             ∆←('basisfile' xattr 'name' ((↑⍴InputDir)↓File)) xtag ∆[177]         :else[178]             ∆←('basisfile' xattr 'name' File) xtag ∆                    ⍝ Retain Folder if not in InputDir[179]         :endif[180]         xml←xml,∆[181] [182]     :endfor ⍝ Here endeth the main FOR loop[183] [184]     :if 'SVPPFFile'≡↑index[2;2][185]         htm←LibraryDir,'ppfsettingsaudit',(⍕100⊥100∣5↑⎕TS),'.htm'[186]     :else[187]         htm←InputDir,'parametersaudit',(⍕100⊥100∣5↑⎕TS),'.htm'[188]     :endif[189]     xsl←StyleDir,'parametersaudit.xsl'[190]     (htm xsl) writeHtmReport xml[191] [192]     Z←htm[193] :endif    ∇
+    ∇ Z←NextCheck ReportParmAudit R;∆;index;Comps;cn;AuditLog;xxx;parm;row;px;mx;bx;xsl;xml;htm;DEADLIST;oldrl;newrl;desc;rws;pname;parmOldv;parmNewv;mode;pm;cols;parms;fieldDesc;rowno;hashes;tbl;packold;packnew;saveVersion;SavedModule;fail;File;savecn;relRules;this;IT;z;diff;key;skip
+[1]   ⍝ PARMWIN.sf#25
+[2]   ⍝ Function to report on Parameters Audit
+[3]   ⍝ Revn: sjt/dnp19jun15 sjt22jun15
+[4]   ⍝       sjt07aug15, dnp17aug15 guard against 'multirow same' params both empty
+[5]   ⍝ NextCheck indicates to stop Audit at first Audit Check point
+[6]   
+[7]   :if fail←(tally R)=1
+[8]       :if fail←mt 2⊃(File savecn)←↑R
+[9]       :else
+[10]          fail←mt Comps←File ReadFile '⊂',(⍕savecn),'⊃'
+[11]      :endif
+[12]  :endif
+[13]  
+[14]  :if fail
+[15]      Z←'' ⋄ MDISPLAY 'No Audited Changes to report'
+[16]  :else
+[17]      xml←''
+[18]      :for ∆ :in R ⋄ (File savecn)←∆ ⍝ A loop to cycle through (File cn) pairs. Allows audit for multiple categories simultaneously
+[19]  
+[20]          index←File ReadFile 'Index'
+[21]          :if mt Comps←File ReadFile '⊂',(⍕savecn),'⊃'⋄ :andif 1<tally R  ⍝ If no audit records and multiple (file cn) pairs
+[22]              bx←⊂'' ⍝ Empty for category with no audit
+[23]          :else
+[24]              ⍝ names basis saved as for each modification
+[25]              ∆←push ⍕¨¨index at '∆_CompNo' '∆_Description'                               ⍝ d:comp#=>desc
+[26]              ∆←(⍕¨Comps) push ∆ at ⍕¨1↓Comps,savecn                                      ⍝ d:comp#=>next desc
+[27]              index←index amend 'savedas' (∆ at ⍕¨index at '∆_CompNo')
+[28]              this←push ⎕SPLIT index for '∆_CompNo' savecn                                ⍝ d:values for this basis
+[29]  
+[30]              relRules←⍙RULESdict ReadDictFile this at '∆_Name'
+[31]              ⍝ Implicit Tables
+[32]              :if 0≠rowsIn ∆←relRules for ^/~mt¨valsIn relRules select 'Page' 'Alternative'
+[33]                  ∆←∆ groupby 'Page' ('Field' 'Desc' 'Row')                                   ⍝ d: Page=>table
+[34]                  IT←(keysIn ∆) push (valsIn ∆) sortedBy¨⊂'Row'                               ⍝ d: Page=>defn table for implicit tables
+[35]              :else                                                                           ⍝ FIXME
+[36]                  IT←'' push ''
+[37]              :endif
+[38]  
+[39]              DEADLIST←,'m_' 'f_' ∘., 'AgeRate' 'pcRate' ⍝ exclude these parameters
+[40]  
+[41]              bx←'' ⍝ basis xml
+[42]              skip←0
+[43]              :for cn :in ⌽Comps
+[44]  
+[45]                  xxx←File ReadFile cn ⍝ AuditLog
+[46]  
+[47]                  :if 2=⍴⍴AuditLog ⍝ A Table of Parameter Changes
+[48]                      :if 2=⍴⍴↑AuditLog at 'Parameter' ⍝ Convert original format (now Dictionary format)
+[49]                          AuditLog←AuditLog[,1;]⍪(⎕split ↑AuditLog[2;1]),(⎕split ↑AuditLog[2;2]),[1.5]⎕split ↑AuditLog[2;3]
+[50]                      :endif
+[51]  
+[52]                      ⍝ Fixes audit records created in V9.03 and earlier - SV904025
+[53]                      :if 9.04>saveVersion← ⍎5↑,⊃(index for '∆_CompNo' cn) at '∆_VersModified'⍝ Checks if version of the audit record is 9.03 or earlier
+[54]                          SavedModule     ← this at '∆_Name'                                  ⍝ Prevents VALUE ERROR in Win∆AuditLog
+[55]                          packold         ← ↑makePkg / AuditLog at 'Parameter' 'Old Value'
+[56]                          packnew         ← ↑makePkg / AuditLog at 'Parameter' 'New Value'
+[57]                          AuditLog        ← packold Win∆AuditLogold packnew
+[58]                      :endif
+[59]  
+[60]                      ⍝ get parameter descriptions from relevance rules
+[61]                      fieldDesc←push relRules at 'Field' 'Desc'                               ⍝ d: field=>description
+[62]  
+[63]                      AuditLog←AuditLog for ~(AuditLog at 'Parameter') ∊ DEADLIST             ⍝ exclude params
+[64]  
+[65]                      AuditLog←AuditLog amend 'Old Value' (⊃¨(⎕split¨AuditLog at 'Old Value')~¨¨'⍺') ⍝ Remove ⍺ from List fields
+[66]                      AuditLog←AuditLog amend 'New Value' (⊃¨(⎕split¨AuditLog at 'New Value')~¨¨'⍺')
+[67]  
+[68]                      parmOldv←push AuditLog at 'Parameter' 'Old Value'
+[69]                      parmNewv←push AuditLog at 'Parameter' 'New Value'
+[70]  
+[71]                      mx←⊂'' ⍝ modification xml
+[72]                      :for parm :in ∆[1] push¨ 1↓∆←⎕SPLIT AuditLog for (⊃2↑¨AuditLog at 'Parameter')∨.≠'lr'
+[73]  
+[74]                          pname←parm at 'Parameter'
+[75]                          rws←⍕¨⍳↑⍴parm at 'Old Value'
+[76]  
+[77]                          :if ~mt desc←⊃fieldDesc at (⊂pname,'['),¨rws,¨⊂';]'                 ⍝ eg m_RXX[1;]
+[78]                              mode←'multirow related'
+[79]                              oldrl←⊃ parmOldv at (⊂'lr',pname),¨rws                          ⍝ eg lrm_RXX1
+[80]                              newrl←⊃ parmNewv at (⊂'lr',pname),¨rws
+[81]                          :else
+[82]                              desc←(mt ∆) means pname else ∆←fieldDesc at pname
+[83]                              mode←(∨/2=↑¨⍴¨⍴¨parm at 'Old Value' 'New Value') means 'multirow same' else 'single value'
+[84]                              :if ×rowsIn ∆←AuditLog for 'Parameter' ('lr',pname)
+[85]                                  (oldrl newrl)←↑¨ ∆ at 'Old Value' 'New Value'
+[86]                              :else
+[87]                                  (oldrl newrl)←'' ''
+[88]                              :endif
+[89]                          :endif
+[90]  
+[91]                          parm←parm amend 'Description' 'Old RLabel' 'New RLabel' pr¨ desc oldrl newrl
+[92]  
+[93]                          cols←'Parameter' 'Description' 'Old Value' 'New Value' 'Old RLabel' 'New RLabel'
+[94]                          :select mode
+[95]                          :caselist 'single value' 'multirow related'
+[96]                              :select mode
+[97]                              :case 'single value'
+[98]                                  parms←cols⍪ 2 rnk parm at cols
+[99]                              :case 'multirow related'
+[100]                                 parms←cols⍪ ((⊂pname,'['),¨ rws ,¨ ⊂';]'), DLTB¨⍉⊃⎕SPLIT¨parm at 1↓cols
+[101]                             :endselect
+[102]                             :for pm :in ∆[1] push¨ 1↓∆←⎕SPLIT parms
+[103]                                 :if 0∊≡/pm at ⊃('Old Value' 'New Value')('Old RLabel' 'New RLabel' )
+[104]                                     ∆←(~mt¨pm at cols)/('name' push 1↓(⊂' -')char_replace¨ caseDn¨cols) pr¨ pm at cols
+[105]                                     ∆←∆ , (↑≡/pm at 'Old Value' 'New Value') means (⊂'from-globals' 'yes') else ''
+[106]                                     mx←mx,⊂('parameter' xattr ∆) xtag ''
+[107]                                 :endif
+[108]                             :endfor
+[109]                         :case 'multirow same'
+[110]                             :if ~1 1≡mt¨parm at 'Old Value'  'New Value' ⍝ sjt07aug15 ⍝dnp17aug15
+[111]                                 key←⊂''
+[112]                                 :if ~mt ↑IT
+[113]                                     :if   ∨/∨/¨z←((1↓IT) at¨⊂'Desc' )∊¨⊂⊂parm at 'Description'
+[114]                                     :orif ∨/∨/¨z←((1↓IT) at¨⊂'Field')∊¨⊂⊂parm at 'Description'
+[115]                                          :if ~∨/↑¨z
+[116]                                             :if   0≠rowsIn tbl←AuditLog for 'Parameter' (↑(↑IT at (∨/¨z)/keysIn IT) at 'Desc')
+[117]                                             :orif 0≠rowsIn tbl←AuditLog for 'Parameter' (↑(↑IT at (∨/¨z)/keysIn IT) at 'Field')
+[118]                                                 key←(⊂' {'),¨(m2n '# ' REPL ↑tbl at 'Old Value'),¨'}'
+[119]                                                 :if (↑⍴key)<z←↑⍴MATRIX ↑tbl at 'New Value'
+[120]                                                     key←z↑key
+[121]                                                 :endif
+[122]                                             :endif
+[123]                                          :endif
+[124]                                     :endif
+[125]                                 :endif
+[126] 
+[127]                                 diff←         ~≡⌿DLTB¨(⊃⎕SPLIT¨parm at 'Old Value'  'New Value' )~¨'#'   ⍝ flag value changes
+[128]                                 :if 2=↑⍴⍴parm at 'Old RLabel'
+[129]                                     diff←diff∨~≡⌿DLTB¨(⊃⎕SPLIT¨parm at 'Old RLabel' 'New RLabel')~¨'#'   ⍝ flag label changes
+[130]                                 :endif
+[131] 
+[132]                                 cols←'Old Value' 'New Value' 'Old RLabel' 'New RLabel'
+[133]                                 rowno←(⍕¨⍳↑⌈/⍴¨,¨⎕split ¨parm at 'Old Value' 'New Value'),¨key
+[134]                                 :if =/↑¨⍴¨parm at 'New Value' 'Old Value' ⍝ Special bit for 9.04 Audit records
+[135]                                     (((~mt ∆)^^/∆←'#'=parm at 'New Value')/rowno)←⊂'Deleted'
+[136]                                     (((~mt ∆)^^/∆←'#'=parm at 'Old Value')/rowno)←⊂'Added'
+[137]                                     hashes←~^/¨'#'=¨parm at cols
+[138]                                     tbl←('row-no' push cols)⍪ diff⌿rowno,⍉⊃⎕SPLIT¨hashes exp1¨hashes sel1¨parm at cols
+[139]                                 :else
+[140]                                     tbl←('row-no' push cols)⍪ diff⌿rowno,⍉⊃⎕SPLIT¨ parm at cols
+[141]                                 :endif
+[142] 
+[143]                                 px←'' ⍝ parameter xml
+[144]                                 :for row :in ∆[1] push¨ 1↓∆←⎕SPLIT DLTB¨tbl
+[145]                                     cols←'row-no' 'Old Value' 'New Value' 'Old RLabel' 'New RLabel'
+[146]                                     ∆←(~mt¨row at cols)/((⊂' -')char_replace¨ caseDn¨cols) pr¨ row at cols
+[147]                                     ∆←∆ , (↑≡/row at 'Old Value' 'New Value') means (⊂'from-globals' 'yes') else ''
+[148]                                     px←px,⊂('row' xattr ∆) xtag ''
+[149]                                 :endfor
+[150]                                 :if ~mt px
+[151]                                     ∆←'name' 'description' pr¨ parm at 'Parameter' 'Description'
+[152]                                     mx←mx,('parameter' xattr ∆) xtag px
+[153]                                 :endif
+[154]                             :endif
+[155]                         :endselect
+[156]                     :endfor
+[157]                 :else ⍝ Audit Check Point
+[158]                     mx←⊂'checkpoint' xtag ''
+[159]                     skip←NextCheck
+[160]                 :endif
+[161] 
+[162]                 ∆←↑¨(index for '∆_CompNo' cn) at '∆_UserModified' '∆_TSModified' '∆_Description' 'savedas'
+[163]                 ∆←'modification' xattr 'by' 'ts' 'last-saved-as' 'saved-as' pr¨ DLTB¨ ∆
+[164]                 bx←bx, ∆ xtag mx
+[165] 
+[166]                 :if skip ⋄ :leave ⋄ :endif ⍝ Exit when Check Point hit
+[167]             :endfor
+[168]         :endif
+[169] 
+[170]       ⍝ basis attributes
+[171]         ∆←push ⎕SPLIT index for '∆_CompNo' savecn
+[172]         ∆←∆ at '∆_Description' '∆_UserCreated' '∆_TSCreated' '∆_UserModified' '∆_TSModified'
+[173]         ∆←'description' 'created-by' 'ts-created' 'modified-by' 'ts-modified' pr¨ DLTB¨∆
+[174]         ∆←('basis' xattr ∆) xtag bx
+[175]         :if (UPPERCASE InputDir)≡UPPERCASE (↑⍴InputDir)↑File
+[176]             ∆←('basisfile' xattr 'name' ((↑⍴InputDir)↓File)) xtag ∆
+[177]         :else
+[178]             ∆←('basisfile' xattr 'name' File) xtag ∆                    ⍝ Retain Folder if not in InputDir
+[179]         :endif
+[180]         xml←xml,∆
+[181] 
+[182]     :endfor ⍝ Here endeth the main FOR loop
+[183] 
+[184]     :if 'SVPPFFile'≡↑index[2;2]
+[185]         htm←LibraryDir,'ppfsettingsaudit',(⍕100⊥100∣5↑⎕TS),'.htm'
+[186]     :else
+[187]         htm←InputDir,'parametersaudit',(⍕100⊥100∣5↑⎕TS),'.htm'
+[188]     :endif
+[189]     xsl←StyleDir,'parametersaudit.xsl'
+[190]     (htm xsl) writeHtmReport xml
+[191] 
+[192]     Z←htm
+[193] :endif
+    ∇

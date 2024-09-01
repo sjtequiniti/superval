@@ -1,1 +1,42 @@
-    ∇ PageView←SalGraph;RUNDESC;values;BAGE;EAGE;AGES;GROUP;NN;TABXX;TOTS;TABLE;AVAGE;AVSAL;nonzero;data[1]   ⍝ INVWIN.sf#9[2]   ⍝ Graph the Salary Investigation Results[3]   [4]   :if 0∊⍴PageView←(parent,'picResults') ⎕wi 'self'[5]       :return ⍝ Graph Control doesn't exist yet!![6]   :endif[7]   [8]   :if ~0∊⍴,SalParameters ⋄ PageView←⍳0 ⋄ :return ⋄ :endif[9]   [10]  data←+/[2](NN,GROUP,2)⍴TOTS←(AGES,2)↑(BAGE,0)↓TOTS[11]  nonzero←×data←data[;2] CDIV data[;1][12]  ⍝ Calculate an average age and salary for relative point[13]  AVAGE←⌊0.5+(+/TOTS[;1]×BAGE+⍳AGES) CDIV +/TOTS[;1][14]  AVSAL←(+/TOTS[;2]) CDIV +/TOTS[;1][15]  TABLE←AGES↑BAGE↓TABLE ⋄ TABLE←AVSAL×TABLE CDIV TABLE[1⌈AVAGE-BAGE][16]  [17]  chSet 'HMargin' 60 36[18]  chSet 'Heading' RUNDESC[19]  chSet 'HFont' 'tii,12,blue'[20]  chSet 'Style' 'boxed,xyplot,grid'[21]  chSet 'Grid' 'dotted,fine'[22]  chSet 'Missval' 0[23]  chSet 'XCaption' 'Age'[24]  chSet 'XRange' (BAGE,EAGE)[25]  chSet 'YRange' (⌊/TABLE,nonzero/data),⌈/data,TABLE[26]  [27]  chSet 'Style' 'lines,nomarkers'[28]  chSet 'Key' ((DecrDescription TABXX)~',')[29]  chSet 'KFont' 'he,8'[30]  chPlot (¯1+BAGE+⍳AGES) (TABLE)[31]  [32]  chSet 'Style' 'nolines,markers,values'[33]  chSet 'Markers' 7[34]  chSet 'ValueTags' (nonzero/+/(NN,GROUP)⍴TOTS[;1])[35]  chPlot (nonzero/¯0.5+BAGE+GROUP×¯0.5+⍳NN) (nonzero/data)[36]  [37]  PageView←chClose[38]  [39]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box[40]  ppt←.5+.×(((parent,'picResults') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point    ∇
+    ∇ PageView←SalGraph;RUNDESC;values;BAGE;EAGE;AGES;GROUP;NN;TABXX;TOTS;TABLE;AVAGE;AVSAL;nonzero;data
+[1]   ⍝ INVWIN.sf#9
+[2]   ⍝ Graph the Salary Investigation Results
+[3]   
+[4]   :if 0∊⍴PageView←(parent,'picResults') ⎕wi 'self'
+[5]       :return ⍝ Graph Control doesn't exist yet!!
+[6]   :endif
+[7]   
+[8]   :if ~0∊⍴,SalParameters ⋄ PageView←⍳0 ⋄ :return ⋄ :endif
+[9]   
+[10]  data←+/[2](NN,GROUP,2)⍴TOTS←(AGES,2)↑(BAGE,0)↓TOTS
+[11]  nonzero←×data←data[;2] CDIV data[;1]
+[12]  ⍝ Calculate an average age and salary for relative point
+[13]  AVAGE←⌊0.5+(+/TOTS[;1]×BAGE+⍳AGES) CDIV +/TOTS[;1]
+[14]  AVSAL←(+/TOTS[;2]) CDIV +/TOTS[;1]
+[15]  TABLE←AGES↑BAGE↓TABLE ⋄ TABLE←AVSAL×TABLE CDIV TABLE[1⌈AVAGE-BAGE]
+[16]  
+[17]  chSet 'HMargin' 60 36
+[18]  chSet 'Heading' RUNDESC
+[19]  chSet 'HFont' 'tii,12,blue'
+[20]  chSet 'Style' 'boxed,xyplot,grid'
+[21]  chSet 'Grid' 'dotted,fine'
+[22]  chSet 'Missval' 0
+[23]  chSet 'XCaption' 'Age'
+[24]  chSet 'XRange' (BAGE,EAGE)
+[25]  chSet 'YRange' (⌊/TABLE,nonzero/data),⌈/data,TABLE
+[26]  
+[27]  chSet 'Style' 'lines,nomarkers'
+[28]  chSet 'Key' ((DecrDescription TABXX)~',')
+[29]  chSet 'KFont' 'he,8'
+[30]  chPlot (¯1+BAGE+⍳AGES) (TABLE)
+[31]  
+[32]  chSet 'Style' 'nolines,markers,values'
+[33]  chSet 'Markers' 7
+[34]  chSet 'ValueTags' (nonzero/+/(NN,GROUP)⍴TOTS[;1])
+[35]  chPlot (nonzero/¯0.5+BAGE+GROUP×¯0.5+⍳NN) (nonzero/data)
+[36]  
+[37]  PageView←chClose
+[38]  
+[39]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box
+[40]  ppt←.5+.×(((parent,'picResults') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+    ∇

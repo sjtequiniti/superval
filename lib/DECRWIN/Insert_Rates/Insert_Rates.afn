@@ -1,1 +1,47 @@
-    ∇ res←field Insert_Rates parm;parent;accepted;new;moved;values;InsertAGES[1]   ⍝ DECRWIN.sf#5[2]   ⍝ Function to allow user control on Insert rates into Rate Tables[3]   [4]   parent←'fmInsertRates.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       insertpkg←pack 'SSName colEdit'[10]      SSName←'/.fCol/.f' TEXTREPL '/.ssCol/.ss' TEXTREPL SSName ⋄ colEdit←0[11]  [12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[13]       (parent,'bnInsert_RatesSave') ⎕wi 'tooltip' 'Perform Rate Insertion'[14]       (parent,'edrates') ⎕wi '∆range' ((SStoMAT SSName ⎕wi '∆range')[2;])[15]  [16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[17]  [18]  :case 'Valid' ⍝ Routine specific validation[19]     :if (zwb BAGE[1;])>zwb BAGE[2;] ⍝ Check ages are in order[20]         Win∆SetFocus parent,'edBAGE1'[21]         res←'AgeOrder' ⋄ :return[22]     :endif[23]  [24]  :case 'Run'[25]      values←(1+-/⌽InsertAGES←MatrixZWB BAGE)⍴EXECUTE rates[26]  [27]      :select zwb replace[28]      :case 0[29]          values←(max+1)↑((1↑InsertAGES)↑TABLE),values,(1↑InsertAGES)↓TABLE[30]          moved←(¯1↑InsertAGES)+⍳max-¯1↑InsertAGES[31]      :case 1[32]          values←(max+1)↑((1↑InsertAGES)↑TABLE),values,(1+¯1↑InsertAGES)↓TABLE[33]      :endselect[34]      new←(1↑InsertAGES)+0,⍳∣DIFF InsertAGES[35]  [36]      accepted←0[37]      :if ~0∊⍴res←OldTable RatesDisplay values[38]          TABLE←values[39]          parent ⎕wi '∆modified' 1[40]      :endif[41]  [42]  :case 'Quit'[43]      pdef insertpkg ⋄ 0 0⍴⎕ex 'insertpkg'[44]  [45]  :endselect    ∇
+    ∇ res←field Insert_Rates parm;parent;accepted;new;moved;values;InsertAGES
+[1]   ⍝ DECRWIN.sf#5
+[2]   ⍝ Function to allow user control on Insert rates into Rate Tables
+[3]   
+[4]   parent←'fmInsertRates.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       insertpkg←pack 'SSName colEdit'
+[10]      SSName←'/.fCol/.f' TEXTREPL '/.ssCol/.ss' TEXTREPL SSName ⋄ colEdit←0
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]       (parent,'bnInsert_RatesSave') ⎕wi 'tooltip' 'Perform Rate Insertion'
+[14]       (parent,'edrates') ⎕wi '∆range' ((SStoMAT SSName ⎕wi '∆range')[2;])
+[15]  
+[16]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[17]  
+[18]  :case 'Valid' ⍝ Routine specific validation
+[19]     :if (zwb BAGE[1;])>zwb BAGE[2;] ⍝ Check ages are in order
+[20]         Win∆SetFocus parent,'edBAGE1'
+[21]         res←'AgeOrder' ⋄ :return
+[22]     :endif
+[23]  
+[24]  :case 'Run'
+[25]      values←(1+-/⌽InsertAGES←MatrixZWB BAGE)⍴EXECUTE rates
+[26]  
+[27]      :select zwb replace
+[28]      :case 0
+[29]          values←(max+1)↑((1↑InsertAGES)↑TABLE),values,(1↑InsertAGES)↓TABLE
+[30]          moved←(¯1↑InsertAGES)+⍳max-¯1↑InsertAGES
+[31]      :case 1
+[32]          values←(max+1)↑((1↑InsertAGES)↑TABLE),values,(1+¯1↑InsertAGES)↓TABLE
+[33]      :endselect
+[34]      new←(1↑InsertAGES)+0,⍳∣DIFF InsertAGES
+[35]  
+[36]      accepted←0
+[37]      :if ~0∊⍴res←OldTable RatesDisplay values
+[38]          TABLE←values
+[39]          parent ⎕wi '∆modified' 1
+[40]      :endif
+[41]  
+[42]  :case 'Quit'
+[43]      pdef insertpkg ⋄ 0 0⍴⎕ex 'insertpkg'
+[44]  
+[45]  :endselect
+    ∇

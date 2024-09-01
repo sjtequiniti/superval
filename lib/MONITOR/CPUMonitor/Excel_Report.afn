@@ -1,1 +1,35 @@
-    ∇ file←Excel_Report;no;data;size;fn;sheet;MESS[1]   ⍝ MONITOR.sf#2[2]   ⍝ Create a report of Excel Timings[3]   [4]   :if ~mt MESS←XL_Create ExcelRunButton[5]       MDISPLAY MESS ⋄ file←''[6]       :return[7]   :endif[8]   [9]   :if mt no←'fmWSTIME.lvFns' ⎕wi 'value'[10]      no←('fmWSTIME.lvFns' ⎕wi 'list')[;1][11]  :endif[12]  XL_AddWorkbook 1+⍴,no[13]  [14]  0 XL_ActivateWorksheet sheet←1[15]  ('XL' ⎕wi 'xActiveSheet') ⎕wi 'xName' 'All Functions'[16]  size←⍴data←('fmWSTIME.lvFns' ⎕wi 'columndisplay')[;1] OVER 0 2↓'fmWSTIME.lvFns' ⎕wi 'list'[17]  [18]  0 0⍴data XL_Data RCtoA1 1 1,size[19]  XL_AutoFit ⍬ 1 ⍬,(↑1↓size)[20]  [21]  :for fn :in data[1+no;1][22]      0 XL_ActivateWorksheet sheet←sheet+1[23]      ('XL' ⎕wi 'xActiveSheet') ⎕wi 'xName' fn[24]      size←⍴data←'Line' 'All' 'Here' 'Iteration' 'Instruction' OVER ↑1↓⍙_⍙LTIME fn[25]      0 0⍴data XL_Data RCtoA1 1 1,size[26]      XL_AutoFit ⍬ 1 ⍬,(↑¯1+1↓size)[27]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 4⍴⍬,¯1↑size) ⋄ ('XL.Rng' ⎕wi 'xEntireColumn') ⎕wi 'xHidden' 1 ⋄ 0 0⍴'XL.Rng' ⎕wi 'Delete' ⍝ Hide the Code column[28]  :endfor[29]  [30]  0 XL_ActivateWorksheet 1[31]  'XL.wb' ⎕wi 'SaveAs' (file←OutputDir,'Excel Report ',((-1 2 3 4 5 6 7) tsIM ⎕ts),'.xls',(12≤ExcelVersion)/'x')[32]  [33]  XL_Quit    ∇
+    ∇ file←Excel_Report;no;data;size;fn;sheet;MESS
+[1]   ⍝ MONITOR.sf#2
+[2]   ⍝ Create a report of Excel Timings
+[3]   
+[4]   :if ~mt MESS←XL_Create ExcelRunButton
+[5]       MDISPLAY MESS ⋄ file←''
+[6]       :return
+[7]   :endif
+[8]   
+[9]   :if mt no←'fmWSTIME.lvFns' ⎕wi 'value'
+[10]      no←('fmWSTIME.lvFns' ⎕wi 'list')[;1]
+[11]  :endif
+[12]  XL_AddWorkbook 1+⍴,no
+[13]  
+[14]  0 XL_ActivateWorksheet sheet←1
+[15]  ('XL' ⎕wi 'xActiveSheet') ⎕wi 'xName' 'All Functions'
+[16]  size←⍴data←('fmWSTIME.lvFns' ⎕wi 'columndisplay')[;1] OVER 0 2↓'fmWSTIME.lvFns' ⎕wi 'list'
+[17]  
+[18]  0 0⍴data XL_Data RCtoA1 1 1,size
+[19]  XL_AutoFit ⍬ 1 ⍬,(↑1↓size)
+[20]  
+[21]  :for fn :in data[1+no;1]
+[22]      0 XL_ActivateWorksheet sheet←sheet+1
+[23]      ('XL' ⎕wi 'xActiveSheet') ⎕wi 'xName' fn
+[24]      size←⍴data←'Line' 'All' 'Here' 'Iteration' 'Instruction' OVER ↑1↓⍙_⍙LTIME fn
+[25]      0 0⍴data XL_Data RCtoA1 1 1,size
+[26]      XL_AutoFit ⍬ 1 ⍬,(↑¯1+1↓size)
+[27]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 4⍴⍬,¯1↑size) ⋄ ('XL.Rng' ⎕wi 'xEntireColumn') ⎕wi 'xHidden' 1 ⋄ 0 0⍴'XL.Rng' ⎕wi 'Delete' ⍝ Hide the Code column
+[28]  :endfor
+[29]  
+[30]  0 XL_ActivateWorksheet 1
+[31]  'XL.wb' ⎕wi 'SaveAs' (file←OutputDir,'Excel Report ',((-1 2 3 4 5 6 7) tsIM ⎕ts),'.xls',(12≤ExcelVersion)/'x')
+[32]  
+[33]  XL_Quit
+    ∇

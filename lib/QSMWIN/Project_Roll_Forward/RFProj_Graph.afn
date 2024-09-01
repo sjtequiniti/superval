@@ -1,0 +1,40 @@
+    ∇ SolView←RFProj_Graph;bb;ppt;∆;aaa;periods
+[1]   ⍝ QSMWIN.sf#6
+[2]   ⍝ Graph the Solvency Results
+[3]   
+[4]   :if mt SolView←(parent,'pgResults.picGraph') ⎕wi 'self'
+[5]       :return ⍝ Graph Control doesn't exist yet!!
+[6]   :endif
+[7]   psWipe parent,'pgResults.picGraph'
+[8]   
+[9]    chSet 'HMargin' 60 36
+[10]   chSet ('STYLE' 'BOXED') ('Key' 'Liabilties,Assets,Solvency') ('VMAR' 36)
+[11]   chSet 'KFont' 'he,8'
+[12]   chSet ('Head' 'Solvency Projection')
+[13]   chSet 'HFont' 'tii,12,blue'
+[14]   chSet ('XCAPTION' 'Date') ('XLAB' (',' join m2n rfDate)) ('XS' 'Angled') ('XA' 25) ('XSTYLE' 'GRID,FORCEZERO')
+[15]   :if 2<⍴periods←1+0,+\DIFF ,JUL 'DD/MM/YYYY' DATEEXP rfDate
+[16]      chSet ('XTICK' periods)
+[17]   :else
+[18]      chSet ('XTICK' (↑DIFF periods,2))
+[19]   :endif
+[20]   ∆←MatrixZWB liabilities OVER assets
+[21]   chSet('YSTYLE' 'centered') ('YRange' ((0.9×⌊/∆) (1.1×⌈/∆))) ⍝⍝⍝ ('YCAP' 'Amounts')
+[22]   chSet 'QFmt' ("<",pound,">,CLI20")
+[23]   chSet 'colour' 'RE,BL,ne'
+[24]   chSet 'XYPLOT,BOXED'
+[25]   chPlot periods,[1.5]MatrixZWB liabilities
+[26]   chPlot periods,[1.5]MatrixZWB assets
+[27]  ⍝================= SECOND Y AXIS =================
+[28]   chYsec
+[29]   ∆←MatrixZWB '% ' REPL solvency
+[30]   chSet('STYLE' 'VALUES') ('YSTYLE' 'FORCEZERO,centered') ('YRange' 0 (1.1×⌈/∆)) ⍝⍝⍝ ('YCAPTION' '%')
+[31]   chSet 'QFmt' ("F6.1,<%>")
+[32]   chPlot periods,[1.5]∆
+[33]  
+[34]  :if ~mt SolView←chClose
+[35]      bb←psReadHeader SolView '%%BoundingBox:' ⍝ Bounding Box
+[36]      ppt←.5+.×(((parent,'pgResults.picGraph') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+[37]      ps_exec SolView (parent,'pgResults.picGraph') ppt ps∆cmap 1
+[38]  :endif
+    ∇

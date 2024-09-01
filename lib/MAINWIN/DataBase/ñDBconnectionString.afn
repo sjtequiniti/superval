@@ -1,0 +1,31 @@
+    ∇ Z←source ⍙DBconnectionString args;∆;k;v;SQLSID
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Return a connection string for SQL or Access - source file must be specified for Access
+[3]   ⍝   SQL source must be preceded by '[SQL Server] '
+[4]   ⍝   args contains any "non-standard" arguments required
+[5]   ⍝ Reads "progid" - the Access provider returned by ⍙DBAccessProvider 0/1
+[6]   ⍝ For SQL, Z←'Provider=SQLNCLI11;Server=.\SQLEXPRESS;Trusted_Connection=yes;'
+[7]   ⍝ See https://msdn.microsoft.com/en-us/library/ms130822.aspx
+[8]   ⍝ Tests:
+[9]   ⍝?⍝ 'Provider=SQLNCLI11;Server=.\SQLEXPRESS;Trusted_Connection=yes;' ≡ ⍙DBconnectionString ''
+[10]  ⍝?⍝ 'Provider=SQLNCLI11;Server=(localhost)\SQLEXPRESS;Trusted_Connection=yes;' ≡ ⍙DBconnectionString 'Server' '(localhost)\SQLEXPRESS'
+[11]  ⍝?⍝ 'Provider=SQLNCLI11;Server=(localhost)\SQLEXPRESS;foo=bar;Trusted_Connection=yes;' ≡ ⍙DBconnectionString ('foo' 'bar')('Server' '(localhost)\SQLEXPRESS')
+[12]  ⍝ Vern: sjt23sep15
+[13]  
+[14]  SQLSID←'[SQL Server] '
+[15]  :if (∆←args)≡'' ⋄ ∆←0 2⍴⊂'' ⋄ :endif
+[16]  
+[17]  :if 0≠⎕nc 'source'
+[18]      :if (⊂caseUp Win∆Child source)∊'MDB' 'ACCDB'
+[19]          ∆←∆⍪'Provider' progid
+[20]          ∆←∆⍪'Data Source' source
+[21]          ∆←∆⍪'Jet OLEDB:Database Password' ⍙DBPassword
+[22]      :elseif SQLSID ≡ (⍴SQLSID)↑source
+[23]          ∆←∆⍪'Initial Catalog' ((⍴SQLSID)↓source)
+[24]      :endif
+[25]  :endif
+[26]  
+[27]  (k v)←(⊂unique k)⎕REPL¨(k v)←⎕SPLIT[⎕IO] ∆
+[28]  ∆←k⍳(k intersect ∆),k~∆←'Provider' 'Server'         ⍝ specify these first
+[29]  Z←∊('=' join¨(spin k v)[∆]),¨';'
+    ∇

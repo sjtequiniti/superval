@@ -1,0 +1,122 @@
+    ∇ Z←d_t GpReadFromGM f_m_n_b_v;∆;dDesc;var;table;des;pkg;typ;template;ctgy;file;match;cls;dTemplates;sex;bvs;gvs;b900;g;f;v;dic;renamed;special;⍙;others;gflags;bflags;list;lrgvs;GMTABLE;mtyp;vernos;unblank;empty;membtype;fieldtype;dectype;sextype
+[1]   ⍝ UPARMWIN.sf#13
+[2]   ⍝ Read Global Parameters sets of types from V900 basis
+[3]   ⍝ Vern dnp20mar16
+[4]   ⍝ Revn dnp11apr16 - copes with variables which cannot be left blank
+[5]   ⍝ Revn dnp14apr16 - allows differentiation of Global Param Sets via GlobParm[;]
+[6]   ⍝ Revn dnp18apr16 - fixed bugs on cases 4 & 5
+[7]   ⍝ Revn dnp28apr16 - fixes description table
+[8]   ⍝ Revn dnp03may16 - excludes fields which do not apply to current client
+[9]   ⍝ Revn dnp09may16 - fixes bug: "% Pension" → "% of Pension"
+[10]  
+[11]  (dTemplates types)←d_t ⋄ (file mtyp ctgy b900 vernos)←f_m_n_b_v
+[12]  ∆ ← (MigDir,'SVMIGT',Win∆CountryCode) ReadFile 'Globals Migration'
+[13]  GMTABLE←∆ amend 'Membership' ((∆ at 'Membership'),¨⊂'_Basis')
+[14]  match←MigGpMatch[1;'Actives_Basis' 'Deferreds_Basis' 'Pensioners_Basis'⍳⊂mtyp]                          ⍝ Read only 1st flag
+[15]  
+[16]  membtype ←GlobParm[1]/('_' StripText mtyp),' '
+[17]  (dectype fieldtype sextype)←1↓GlobParm
+[18]  
+[19]  Z←''
+[20]  ∆←  (sextype/¨'Male ' 'Female '),¨ ⊂'Decrement Rates Parameter Set'                                     ⍝ Prepare list of parameter set descriptions for dDesc
+[21]  ∆←∆,⊂'Spouse Parameter Set'
+[22]  ∆←∆,(sextype/¨'Male ' 'Female '),¨ ⊂'Retirement Age Parameter Set'
+[23]  ∆←∆,⊃,/¨,⍉⊃∘.,/ (sextype/¨'Male ' 'Female ')  (fieldtype/¨'' 'COT ') (fieldtype/¨'Early ' 'Late ') (⊂'Retirement Factors Parameter Set')
+[24]  ∆←∆,⊃,/¨,⍉⊃∘.,/ (⊂¨sextype/¨'Male ' 'Female ') (dectype/¨'Retirement ' 'Ill-Health ') (⊂ 'Commutation Tables Parameter Set')
+[25]  ∆←∆,,(dectype/¨'Retirement ' 'Ill-Health ')∘.,'Cash Parameter Set' ('Cash ',(fieldtype/'on Top '),'Parameter Set')
+[26]  ∆←∆,,((dectype/¨'Death ' 'Ill-Health ')∘.,fieldtype/¨'Pension ' 'Cash '), ¨⊂'Spreading Dates'
+[27]  ∆←(⊂membtype),¨∆
+[28]  
+[29]  dDesc←(nub GMTABLE at 'Parameter') push ∆                                                               ⍝ A dictionary of descriptions for the parms
+[30]  
+[31]  :for ∆ :in spin pop (GMTABLE for (⊂'Module'),types) groupby 'Parameter' ⋄ (var table)←∆                 ⍝ Variables grouped into their global parm sets
+[32]      table← table for 'Membership' mtyp
+[33]      table← table for (table at 'ClntCode')∊'' (⍕ClntCode) ((⎕io+bBuck∨ClntCode=3)⊃'AB') (bGAD/'bGAD')   ⍝ Excludes fields which do not apply to client
+[34]      :if 0≠rowsIn table ⋄ :andif mt b900 at var
+[35]      :andif  ~ (mt b900 at 'COTDATA')^ (var≡'CashParm2')^'Deferreds_Basis'≡(↑table at 'Membership')      ⍝ The Deferreds Retirement Cash on Top Global Parameter Set is only needed if the field COTDATA is empty.
+[36]          typ←↑ table at 'Module'                                                                         ⍝ Assume one type per variable
+[37]          cls←des←dDesc at var
+[38]          sex←⊃('' 'F' 'M')[⎕io+2⊥('m_' 'f_')≡¨⊂2↑var]                                                    ⍝ Disclose absolutely needed.
+[39]          dic←p2d template←dTemplates at typ                                                              ⍝ Define all variables according to values file
+[40]  
+[41]          table←table for (⊂'Basis Variable'), (table at 'Basis Variable')~⊂'n/a'                         ⍝ Removes the n/a's
+[42]          unblank←(↑¨(table at 'Blank'))∊'N'                                                              ⍝ Flag variables which cannot be left blank- so use template variable.
+[43]          special←(table at 'Old Basis Variable')∊⊂'See Rule'                                             ⍝ Flag variables which have special cases
+[44]          others←~special                                                                                 ⍝ Flag all the others
+[45]          empty←mt¨b900 at table at 'Basis Variable'                                                      ⍝ Flag variables which are mt in V9 basis
+[46]          (special others)←(⊂~unblank ^ empty)×special others                                             ⍝ Removes variables which are mt (blank) and cannot be left blank.
+[47]  
+[48]          :if ∨/others                                                                                    ⍝ method 1 take values from the basis file
+[49]              (gvs bvs)←(table for others) at 'Global Variable' 'Basis Variable'
+[50]              (gvs bvs)←nub¨qtrim¨¨gvs bvs                                                                ⍝ Remove any [;] and duplicates
+[51]              dic←dic amend spin pop gvs push b900 at bvs                                                 ⍝ Create dic of gv names and bv values
+[52]          :endif
+[53]  
+[54]          ⍝ labels
+[55]          :if ^/~ mt¨(g f)←(table for (table at 'Label')∊⊂'Yes') at 'Global Variable' 'Basis Variable'    ⍝ Labels. **** Doesn't cope w/ labels not existing.
+[56]              v←DropText¨b900 lrExtend f (v←b900 deIndex f)
+[57]              g←(⊂'lr'),¨g~¨⊂'[;]'                                                                        ⍝ Remove [;] and append 'lr'
+[58]              dic←dic amend spin g v
+[59]          :endif
+[60]  
+[61]          :if ∨/special ⍝ method 3 - assign special cases
+[62]              (gvs bvs)←(table for special) at 'Global Variable' 'Basis Variable'
+[63]              (gvs bvs)←nub¨qtrim¨¨gvs bvs                                                                ⍝ Remove any [;] and duplicates
+[64]              dic←dic amend spin pop gvs push b900 at bvs                                                 ⍝ Create dic of gv names and bv values
+[65]                                                                                                          ⍝ Overwrite globals values with those from the basis.
+[66]              ⍝ case 1
+[67]              :if 'Retirement_Age'≡(↑table at 'Module')
+[68]                  :if 'Deferreds_Basis' ≡(↑table at 'Membership')                                         ⍝ graLRA variables do not exist in Deferreds and their value should be set equal to graNRA.
+[69]                  :orif mt dic at 'graLRA'                                                                ⍝ graLRA variables which are blank/unpopulated in Actives: their value should be set equal to graNRA.
+[70]                      (gvs bvs)← 'graLRA' (dic at 'graNRA')
+[71]                      dic←dic amend pop gvs push bvs
+[72]                  :endif
+[73]              :endif
+[74]  
+[75]              ⍝ case 2
+[76]              :if 'Actives_Basis' 'Retirement_Cash'≡(↑¨table at 'Membership' 'Module')
+[77]              :andif ∨/⍙←'25% Pension' '2.25 x Pension' '3 x Pension'∊ ⊂dic at 'grcCTYPE'
+[78]                  ∆←  ⊂(('grcCTYPE' 'grcCOMPER' ) ("% of Pension" "25"))
+[79]                  ∆←∆,⊂(('grcCTYPE' 'grcCOMMULT') ("Multiple of Pension" "2.25"))
+[80]                  ∆←∆,⊂(('grcCTYPE' 'grcCOMMULT') ("Multiple of Pension" "3"))
+[81]                  (gvs bvs)← ,⊃⍙/∆
+[82]                  dic←dic amend spin pop gvs push bvs
+[83]              :endif
+[84]  
+[85]              ⍝ case 4
+[86]              :if 'Deferreds_Basis' 'Retirement_Cash'≡(↑¨table at 'Membership' 'Module')
+[87]                  :if var≡'CashParm1'
+[88]                      ∆←↑(('None'≡4↑(b900 at 'CASHIND'))/⊂'Neutral or Nil'),((∊(×⍴¨,¨(b900 at 'COMMULT'  'COMPER') )∨((⊂'0')≡¨,¨(b900 at 'COMMULT'  'COMPER') ))/'Multiple of Pension' '% of Pension'),⊂'Neutral or Nil'
+[89]                      dic←dic amend 'grcCTYPE'  ∆
+[90]                  :elseif var≡'CashParm2'
+[91]                      ∆←↑(      (×⍴,(b900 at 'COTDATA'))/⊂''              ),((∊(×⍴¨,¨(b900 at 'COMMULT2' 'COMPER2'))∨((⊂'0')≡¨,¨(b900 at 'COMMULT2' 'COMPER2')))/'Multiple of Pension' '% of Pension'),⊂'Neutral or Nil'
+[92]                      dic←dic amend 'grcCTYPE'  ∆
+[93]                  :endif
+[94]              :endif
+[95]  
+[96]             ⍝ case 5
+[97]              :if 'Retirement_Cash'≡(↑table at 'Module')
+[98]                  gflags← 'grcCOMMULTmt' 'grcCOMPERmt'
+[99]                  gvs←'grcCOMMULT' 'grcCOMPER'
+[100]                 bflags←⍕¨~∆←^/¨⎕vi¨ dic at gvs
+[101]                 bvs← ∆ sel ¨dic at gvs
+[102]                 dic←dic amend spin pop (gflags,gvs) push bflags,bvs
+[103]             :endif
+[104] 
+[105]             ⍝ case 6
+[106]             :if 'Spreading_Dates'≡(↑table at 'Module')
+[107]                 list←GetStandDateList 3
+[108]                 gflags←'gsdSSDmt' 'gsdSFDmt'
+[109]                 gvs←'gsdSSD' 'gsdSFD'
+[110]                 lrgvs←'lrgsdSSD' 'lrgsdSFD'
+[111]                 bflags←⍕¨∆←mt¨ (⊂list) ExactTLU¨ dic at gvs
+[112]                 bvs←(⊂~∆)↑¨¨⊂¨¨(⊂dic) at¨ gvs lrgvs
+[113]                 dic←dic amend spin pop ( ⊃,/ gflags  gvs lrgvs) push bflags, ↑¨,⊃ bvs
+[114]             :endif
+[115]         :endif
+[116] 
+[117]         pkg← d2p dic
+[118]         Z←Z,⊂typ des sex pkg var ctgy file match cls
+[119]     :endif
+[120] :endfor
+    ∇

@@ -1,1 +1,45 @@
-    ∇ Z←fmts DBW_excel_data arg;data;row;col;fmt;i;∆;header;nofmtrow;dates[1]   ⍝ DATAWIN.sf#21[2]   ⍝ Read some Excel data and determine fmts if not given[3]   [4]   data←' ' ⍙DBRemoveNulls XL_Data RCtoA1 arg[5]   [6]   :if nofmtrow←mt fmts[7]       :if nofmtrow←∨/82≠⎕dr¨∆←data[2;] ⍝ Check 2nd row for Format row (and use this if provided)[8]           row←arg[3]⌊1+arg[1][9]           :for col :in ⍳arg[4][10]              'XL' ⎕wi 'Range>.Rng' (RCtoA1 4⍴row col)[11]              fmts←fmts,⊂UPPERCASE 'XL.Rng' ⎕wi 'xNumberFormat'[12]          :endfor[13]          :for i :in ⍳⍴fmts←(fmts∊¨⊂'DMY-/')sel¨fmts[14]              :if ~mt fmt←i⊃fmts[15]                  :if ^/'DMY'∊fmt[16]                      fmt←('-'=↑fmt)↓fmt ⋄ fmt←('/'=↑fmt)↓fmt[17]                      :if 2≠+/∆←'D'=fmt ⋄ fmt←(1+∆)/fmt ⋄ :endif[18]                      :if 2≠+/∆←'M'=fmt ⋄ fmt←((∆×+\∆)∊0 1 2)/fmt ⋄ :endif[19]                      fmts[i]←⊂fmt[20]                  :else[21]                      fmts[i]←⊂''[22]                  :endif[23]              :endif[24]          :endfor[25]          ∆←(mt¨fmts)^^⌿82=⎕dr¨data ⋄ (∆/fmts)←⊂,'C'[26]          ∆← mt¨fmts                ⋄ (∆/fmts)←⊂,'N'[27]      :else[28]          fmts←∆[29]      :endif[30]  :endif[31]  [32]  :for i :in WHERE ∨/¨fmts∊¨⊂'DMY'[33]      :if ∨/∆←82≠⎕dr¨dates←data[;i][34]      :andif ∨/∆←∆\100000>∆/dates ⍝ Check for numeric DDMMYYYY dates[35]          (∆/dates)←m2n (i⊃fmts) DATE∆FMT ⌽DATEREP ⌊¯2+∆/dates[36]          data[;i]←dates[37]      :endif[38]  :endfor[39]  [40]  data←⍕¨data[41]  :if ∨/,'¯'∊¨data ⋄ data←(⊂'¯-') REPL¨data ⋄ :endif ⍝ Fix Negative numbers[42]  [43]  Z←data fmts nofmtrow    ∇
+    ∇ Z←fmts DBW_excel_data arg;data;row;col;fmt;i;∆;header;nofmtrow;dates
+[1]   ⍝ DATAWIN.sf#21
+[2]   ⍝ Read some Excel data and determine fmts if not given
+[3]   
+[4]   data←' ' ⍙DBRemoveNulls XL_Data RCtoA1 arg
+[5]   
+[6]   :if nofmtrow←mt fmts
+[7]       :if nofmtrow←∨/82≠⎕dr¨∆←data[2;] ⍝ Check 2nd row for Format row (and use this if provided)
+[8]           row←arg[3]⌊1+arg[1]
+[9]           :for col :in ⍳arg[4]
+[10]              'XL' ⎕wi 'Range>.Rng' (RCtoA1 4⍴row col)
+[11]              fmts←fmts,⊂UPPERCASE 'XL.Rng' ⎕wi 'xNumberFormat'
+[12]          :endfor
+[13]          :for i :in ⍳⍴fmts←(fmts∊¨⊂'DMY-/')sel¨fmts
+[14]              :if ~mt fmt←i⊃fmts
+[15]                  :if ^/'DMY'∊fmt
+[16]                      fmt←('-'=↑fmt)↓fmt ⋄ fmt←('/'=↑fmt)↓fmt
+[17]                      :if 2≠+/∆←'D'=fmt ⋄ fmt←(1+∆)/fmt ⋄ :endif
+[18]                      :if 2≠+/∆←'M'=fmt ⋄ fmt←((∆×+\∆)∊0 1 2)/fmt ⋄ :endif
+[19]                      fmts[i]←⊂fmt
+[20]                  :else
+[21]                      fmts[i]←⊂''
+[22]                  :endif
+[23]              :endif
+[24]          :endfor
+[25]          ∆←(mt¨fmts)^^⌿82=⎕dr¨data ⋄ (∆/fmts)←⊂,'C'
+[26]          ∆← mt¨fmts                ⋄ (∆/fmts)←⊂,'N'
+[27]      :else
+[28]          fmts←∆
+[29]      :endif
+[30]  :endif
+[31]  
+[32]  :for i :in WHERE ∨/¨fmts∊¨⊂'DMY'
+[33]      :if ∨/∆←82≠⎕dr¨dates←data[;i]
+[34]      :andif ∨/∆←∆\100000>∆/dates ⍝ Check for numeric DDMMYYYY dates
+[35]          (∆/dates)←m2n (i⊃fmts) DATE∆FMT ⌽DATEREP ⌊¯2+∆/dates
+[36]          data[;i]←dates
+[37]      :endif
+[38]  :endfor
+[39]  
+[40]  data←⍕¨data
+[41]  :if ∨/,'¯'∊¨data ⋄ data←(⊂'¯-') REPL¨data ⋄ :endif ⍝ Fix Negative numbers
+[42]  
+[43]  Z←data fmts nofmtrow
+    ∇

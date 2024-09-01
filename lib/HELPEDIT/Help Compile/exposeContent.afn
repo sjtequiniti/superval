@@ -1,1 +1,26 @@
-    ∇ Z←elm exposeContent html;opn;str;dep;∆;o;cls;end;bgn[1]   ⍝ HELPEDIT.sf#4[2]   ⍝ in html strip the elm tags off their content[3]   ⍝ works for nested tags[4]   ⍝ 'abcdef' ≡[5]   ⍝ 'span' exposeContent '<span>abc</span><span>def</span>'[6]   ⍝ 'span' exposeContent '<span>abc<span>def</span></span>'[7]   ⍝ 'span' exposeContent '<span>abcdef<span></span></span>'[8]   ⍝ 'span' exposeContent 'abcdef<span><span></span></span>'[9]   ⍝ 'span' exposeContent 'abc<span>def<span></span></span>'[10]  ⍝ 'span' exposeContent 'ab<span>cd<span></span></span>ef'[11]  (Z str dep)←'' html 0[12]  (opn cls)←('<',elm) ('</',elm,'>')[13]  :while ~mt str[14]      :if ↑o←opn⍷str                              ⍝ starts with opening tag[15]          str←(str⍳'>')↓str[16]          dep←dep+1[17]      :elseif </(end bgn)←¯1+(cls⍷str)(o)⍳¨1      ⍝ closing tag next[18]          (Z str)←(Z,end↑str)((end+↑⍴cls)↓str)[19]          dep←dep-1[20]      :else                                       ⍝ opening tag next[21]          (Z str)←(Z,bgn↑str)(bgn↓str)[22]      :endif[23]      'balanced tags' ASSERT "dep≥0"[24]  :endwhile    ∇
+    ∇ Z←elm exposeContent html;opn;str;dep;∆;o;cls;end;bgn
+[1]   ⍝ HELPEDIT.sf#4
+[2]   ⍝ in html strip the elm tags off their content
+[3]   ⍝ works for nested tags
+[4]   ⍝ 'abcdef' ≡
+[5]   ⍝ 'span' exposeContent '<span>abc</span><span>def</span>'
+[6]   ⍝ 'span' exposeContent '<span>abc<span>def</span></span>'
+[7]   ⍝ 'span' exposeContent '<span>abcdef<span></span></span>'
+[8]   ⍝ 'span' exposeContent 'abcdef<span><span></span></span>'
+[9]   ⍝ 'span' exposeContent 'abc<span>def<span></span></span>'
+[10]  ⍝ 'span' exposeContent 'ab<span>cd<span></span></span>ef'
+[11]  (Z str dep)←'' html 0
+[12]  (opn cls)←('<',elm) ('</',elm,'>')
+[13]  :while ~mt str
+[14]      :if ↑o←opn⍷str                              ⍝ starts with opening tag
+[15]          str←(str⍳'>')↓str
+[16]          dep←dep+1
+[17]      :elseif </(end bgn)←¯1+(cls⍷str)(o)⍳¨1      ⍝ closing tag next
+[18]          (Z str)←(Z,end↑str)((end+↑⍴cls)↓str)
+[19]          dep←dep-1
+[20]      :else                                       ⍝ opening tag next
+[21]          (Z str)←(Z,bgn↑str)(bgn↓str)
+[22]      :endif
+[23]      'balanced tags' ASSERT "dep≥0"
+[24]  :endwhile
+    ∇

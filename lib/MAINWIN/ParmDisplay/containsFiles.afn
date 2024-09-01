@@ -1,0 +1,11 @@
+    ∇ flag←folder containsFiles R;∆;files;f
+[1]   ⍝ MAINWIN.sf#15
+[2]   :if 2≠⎕NC 'folder'
+[3]       ∆←1-(⌽R)⍳'\' ⋄ (folder f)←(∆↓R) (,⊂∆↑R)             ⍝ eg R: C:\this\that\file
+[4]   :else
+[5]       f←(2=≡R) means R else ,⊂R                           ⍝ accept single filename
+[6]   :endif
+[7]   files←f,¨(~(⊂'.SF')≡¨UPPERCASE¨¯3↑¨DLTB¨f) sel¨ ⊂'.sf'  ⍝ default extension
+[8]   ⎕ERROR (mt folder)/'DOMAIN ERROR'
+[9]   flag←folder FileExist files
+    ∇

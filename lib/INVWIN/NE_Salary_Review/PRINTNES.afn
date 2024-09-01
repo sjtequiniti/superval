@@ -1,1 +1,29 @@
-    ∇ PRINTNES;RUNDESC;TABXX;tpr1;AGES;BAGE;EAGE;NN;GROUP;MAT;TABLE;SUMMREC;H1;TAB;SPAGE;eage;desc;RunTime;Desc[1]   ⍝ INVWIN.sf#12[2]   ⍝ is called when a file of data points versus a Standard Table is required[3]   ⍝ Prints the results from the salary investigation using TOTS[4]   ⍝[5]   ⍝ V3 RE 1/11/93 Windowised[6]   :if ~0∊⍴,NESParameters ⋄ :return ⋄ :endif[7]   [8]   tpr1←OPEN∆TPR∆FILE 'NESINV' ⍝ Open Output File[9]   0 0⍴(SystemDir,'HEADERS') ReadFile 'New_Entrant_Salary' ⍝ Info in header[10]  H1←((¯1↑⍴H1) WRITE∆HEAD 'NEW ENTRANT SALARY INVESTIGATION') OVER H1[11]  H1[4;5+⍳127]←127↑RUNDESC ⋄ H1[5;]←' '[12]  H1[6;22+⍳110]←110↑Desc←DecrDescription TABXX ⋄ TAB[1;11+⍳32]←32↑'All Data'[13]  [14]  eage←'fmNESalaryReview.fParms.edEAGE' ⎕wi 'text'[15]  SUMMREC←ClientFile NESREV_RunDesc ControlName ⎕wi '∆savecn'[16]  SPAGE←1↑(¯4 0↓H1) OUTPUT tpr1,0[17]  RunTime←DLTMB 1 DATESPELL ⎕ts[18]  [19]  SUMMREC←(TABXX Desc) DecrPrint DEC∆CHECK TABXX[20]  SPAGE←1↑(¯4 0↓H1) OUTPUT tpr1,SPAGE[21]  [22]  SUMMREC←NES∆OUTPUT MAT[23]  0 0⍴(H1 OVER TAB) OUTPUT tpr1,SPAGE[24]  [25]  (desc,' at ',RunTime) BROWSE tpr1[26]  [27]  0 0⍴(⊂'lvRUNDESC') NE_Salary_Review 'Change'    ∇
+    ∇ PRINTNES;RUNDESC;TABXX;tpr1;AGES;BAGE;EAGE;NN;GROUP;MAT;TABLE;SUMMREC;H1;TAB;SPAGE;eage;desc;RunTime;Desc
+[1]   ⍝ INVWIN.sf#12
+[2]   ⍝ is called when a file of data points versus a Standard Table is required
+[3]   ⍝ Prints the results from the salary investigation using TOTS
+[4]   ⍝
+[5]   ⍝ V3 RE 1/11/93 Windowised
+[6]   :if ~0∊⍴,NESParameters ⋄ :return ⋄ :endif
+[7]   
+[8]   tpr1←OPEN∆TPR∆FILE 'NESINV' ⍝ Open Output File
+[9]   0 0⍴(SystemDir,'HEADERS') ReadFile 'New_Entrant_Salary' ⍝ Info in header
+[10]  H1←((¯1↑⍴H1) WRITE∆HEAD 'NEW ENTRANT SALARY INVESTIGATION') OVER H1
+[11]  H1[4;5+⍳127]←127↑RUNDESC ⋄ H1[5;]←' '
+[12]  H1[6;22+⍳110]←110↑Desc←DecrDescription TABXX ⋄ TAB[1;11+⍳32]←32↑'All Data'
+[13]  
+[14]  eage←'fmNESalaryReview.fParms.edEAGE' ⎕wi 'text'
+[15]  SUMMREC←ClientFile NESREV_RunDesc ControlName ⎕wi '∆savecn'
+[16]  SPAGE←1↑(¯4 0↓H1) OUTPUT tpr1,0
+[17]  RunTime←DLTMB 1 DATESPELL ⎕ts
+[18]  
+[19]  SUMMREC←(TABXX Desc) DecrPrint DEC∆CHECK TABXX
+[20]  SPAGE←1↑(¯4 0↓H1) OUTPUT tpr1,SPAGE
+[21]  
+[22]  SUMMREC←NES∆OUTPUT MAT
+[23]  0 0⍴(H1 OVER TAB) OUTPUT tpr1,SPAGE
+[24]  
+[25]  (desc,' at ',RunTime) BROWSE tpr1
+[26]  
+[27]  0 0⍴(⊂'lvRUNDESC') NE_Salary_Review 'Change'
+    ∇

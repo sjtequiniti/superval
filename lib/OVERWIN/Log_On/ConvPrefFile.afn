@@ -1,1 +1,30 @@
-    ∇ res←ConvPrefFile;ParmFileList;index;names;∆;tieno[1]   ⍝ OVERWIN.sf#2[2]   ⍝ Check the Preferences File (always called "SVPreferences.sf")[3]   [4]   res←'' ⋄ ParmFileList←↑('PrefFile' '') GetParmFileList LibraryDir[5]   [6]   :if mt ,ParmFileList ExactTLU 'SVPREFERENCES' ⍝ Valid PrefFile[7]       res←'Unable to locate valid SuperVal Preferences file'[8]       :return[9]   :endif[10]  [11]  index←PrefFile ReadFile 'Index' ⍝ Move SQL Configuration to new ConfigFile[12]  :if mt ConfigFile ReadFile 'Configure_SQL' 'Test SQL Server Connection' 'Names'[13]  :andif (⊂'Configure_SQL')∊index at '∆_Name'[14]      names←⍙VALUESdict ReadDictFile 'Configure_SQL' '' 'Names'[15]      0 0⍴⍙VALUESdict ReadDictFile 'Configure_SQL'[16]      0 0⍴PrefFile ReadFile 'Configure_SQL'[17]      0 0⍴ConfigFile SaveToFile 'Configure_SQL' 'Test SQL Server Connection' (pack names)[18]  :endif[19]  [20]  index←PrefFile ReadFile 1 ⍝ Change from MultiProc to LoadShare[21]  names←index[;2][22]  :if ∨/∆←names∊⊂'Config_MultiProc'[23]      (∆/names)←⊂'Config_LoadShare'[24]      index[;2]←names[25]      :if 0=PrefFile FSTIE tieno←TieNumber PrefFile[26]          index ⎕freplace tieno,1 ⋄ ⎕funtie tieno[27]      :endif[28]  :endif    ∇
+    ∇ res←ConvPrefFile;ParmFileList;index;names;∆;tieno
+[1]   ⍝ OVERWIN.sf#2
+[2]   ⍝ Check the Preferences File (always called "SVPreferences.sf")
+[3]   
+[4]   res←'' ⋄ ParmFileList←↑('PrefFile' '') GetParmFileList LibraryDir
+[5]   
+[6]   :if mt ,ParmFileList ExactTLU 'SVPREFERENCES' ⍝ Valid PrefFile
+[7]       res←'Unable to locate valid SuperVal Preferences file'
+[8]       :return
+[9]   :endif
+[10]  
+[11]  index←PrefFile ReadFile 'Index' ⍝ Move SQL Configuration to new ConfigFile
+[12]  :if mt ConfigFile ReadFile 'Configure_SQL' 'Test SQL Server Connection' 'Names'
+[13]  :andif (⊂'Configure_SQL')∊index at '∆_Name'
+[14]      names←⍙VALUESdict ReadDictFile 'Configure_SQL' '' 'Names'
+[15]      0 0⍴⍙VALUESdict ReadDictFile 'Configure_SQL'
+[16]      0 0⍴PrefFile ReadFile 'Configure_SQL'
+[17]      0 0⍴ConfigFile SaveToFile 'Configure_SQL' 'Test SQL Server Connection' (pack names)
+[18]  :endif
+[19]  
+[20]  index←PrefFile ReadFile 1 ⍝ Change from MultiProc to LoadShare
+[21]  names←index[;2]
+[22]  :if ∨/∆←names∊⊂'Config_MultiProc'
+[23]      (∆/names)←⊂'Config_LoadShare'
+[24]      index[;2]←names
+[25]      :if 0=PrefFile FSTIE tieno←TieNumber PrefFile
+[26]          index ⎕freplace tieno,1 ⋄ ⎕funtie tieno
+[27]      :endif
+[28]  :endif
+    ∇

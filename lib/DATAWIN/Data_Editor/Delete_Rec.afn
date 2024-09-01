@@ -1,1 +1,40 @@
-    ∇ Delete_Rec recnos;File;deltie;KEY;i;data;z;Total[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Delete records[3]   [4]   :if 'N'=ASK DLTMB '<Delete records >,CI10,< to >,CI10,<?>' ⎕fmt MATRIX recnos←2⍴recnos~0[5]       →end[6]   :endif[7]   [8]   Data_SavePage ⍝ Save Changes[9]   [10]  ⍝ Otherwise delete as requested[11]  :if 0=deltie←NCREATE File←InputDir,'TEMP$$.DEL' ⍝ Force a new file[12]      ⍝ File must exist and be in use by another program[13]      MDISPLAY 'Unable to create or access TEMP$$.DEL' ⋄ →end[14]  :endif[15]  [16]  ⍝ Write the new file, using the keys of records not deleted[17]  :if 0=⍴KEY←(⍳MaxRec)~recnos[1]+0,⍳recnos[2]-recnos[1][18]      ((-RECL)↑⎕tcnl,⎕tclf) ⎕nappend deltie[19]  :else[20]      ('Writing File:' 'Current Record Number:') Win∆ProgressBar 'SetLabels'[21]      'Deleting Records' Win∆ProgressBar 'Open'[22]      (1 1 File) Win∆ProgressBar 'FileUpdate'[23]      Total←0 ⋄ 0 0⍴⎕NREAD edttie,82,0,0 ⍝ Reset File Pointer[24]      :for i :in ⍳⍴RecsPerChunk[25]          data←(RecsPerChunk[i],RECL)⍴⎕NREAD edttie,82,RECL×RecsPerChunk[i][26]          :if 0=+/z←((+/(i-1)↑RecsPerChunk)+⍳RecsPerChunk[i])∊KEY[27]              :continue[28]          :endif[29]          (,z⌿data) ⎕nappend deltie[30]          ((Total←Total++/z) (⍴KEY)) Win∆ProgressBar 'MemberUpdate'[31]      :endfor[32]      Win∆ProgressBar 'Close'[33]  :endif[34]  (InputDir,'TEMP$$.EDT') NERASE edttie[35]  (InputDir,'TEMP$$.EDT') ⎕xnrename edttie←deltie[36]  [37]  Reset_File 1,MDEpage,xrow,xcol[38]  end:0 Win∆SetFocus hSS    ∇
+    ∇ Delete_Rec recnos;File;deltie;KEY;i;data;z;Total
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Delete records
+[3]   
+[4]   :if 'N'=ASK DLTMB '<Delete records >,CI10,< to >,CI10,<?>' ⎕fmt MATRIX recnos←2⍴recnos~0
+[5]       →end
+[6]   :endif
+[7]   
+[8]   Data_SavePage ⍝ Save Changes
+[9]   
+[10]  ⍝ Otherwise delete as requested
+[11]  :if 0=deltie←NCREATE File←InputDir,'TEMP$$.DEL' ⍝ Force a new file
+[12]      ⍝ File must exist and be in use by another program
+[13]      MDISPLAY 'Unable to create or access TEMP$$.DEL' ⋄ →end
+[14]  :endif
+[15]  
+[16]  ⍝ Write the new file, using the keys of records not deleted
+[17]  :if 0=⍴KEY←(⍳MaxRec)~recnos[1]+0,⍳recnos[2]-recnos[1]
+[18]      ((-RECL)↑⎕tcnl,⎕tclf) ⎕nappend deltie
+[19]  :else
+[20]      ('Writing File:' 'Current Record Number:') Win∆ProgressBar 'SetLabels'
+[21]      'Deleting Records' Win∆ProgressBar 'Open'
+[22]      (1 1 File) Win∆ProgressBar 'FileUpdate'
+[23]      Total←0 ⋄ 0 0⍴⎕NREAD edttie,82,0,0 ⍝ Reset File Pointer
+[24]      :for i :in ⍳⍴RecsPerChunk
+[25]          data←(RecsPerChunk[i],RECL)⍴⎕NREAD edttie,82,RECL×RecsPerChunk[i]
+[26]          :if 0=+/z←((+/(i-1)↑RecsPerChunk)+⍳RecsPerChunk[i])∊KEY
+[27]              :continue
+[28]          :endif
+[29]          (,z⌿data) ⎕nappend deltie
+[30]          ((Total←Total++/z) (⍴KEY)) Win∆ProgressBar 'MemberUpdate'
+[31]      :endfor
+[32]      Win∆ProgressBar 'Close'
+[33]  :endif
+[34]  (InputDir,'TEMP$$.EDT') NERASE edttie
+[35]  (InputDir,'TEMP$$.EDT') ⎕xnrename edttie←deltie
+[36]  
+[37]  Reset_File 1,MDEpage,xrow,xcol
+[38]  end:0 Win∆SetFocus hSS
+    ∇

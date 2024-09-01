@@ -1,0 +1,11 @@
+    ∇ Z←keys KeySum vals;o;ok;u;s;X
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Key sum: unique values of (numeric) keys k with sums of their corresponding values v
+[3]   ⍝ Revn: sjt21aug15
+[4]   o←⍋keys                                     ⍝ ascending order of keys
+[5]   ok←keys[o]                                  ⍝ keys in ascending order
+[6]   u←1,(1↓ok)≠¯1↓ok                            ⍝ flag unique keys
+[7]   ⍝⍝⍝ :RETURN (u/ok) (s-0,¯1↓s←(1⌽u)/+\vals[o])   ⍝ 3× faster than ⎕PENCLOSE for (⍴v)←→1E6 and (+/u)←→2E5
+[8]   ⍝⍝⍝ :RETURN (u/ok) (+/¨u ⎕PENCLOSE vals[o])     ⍝ bit faster for lower +/u
+[9]   Z←(u/ok) (s-0,¯1↓s←(1⌽u)/+\vals[o])   ⍝ 3× faster than ⎕PENCLOSE for (⍴v)←→1E6 and (+/u)←→2E5
+    ∇

@@ -1,1 +1,43 @@
-    ∇ field PenBens_Change NO;enabled[1]   ⍝ PARMWIN.sf#15[2]   ⍝ Process onChange events[3]   [4]   :select field[5]   :case 'cbpenind'[6]       :if 'P'=1↑(parent,'pgBenefit',NO,'.fParms.cbpenind',NO) ⎕wi 'text'[7]           ((⊂parent,'pgBenefit',NO,'.fParms.'),¨('cbEAGE',NO) ('cbGP',NO)) MultiWI 'enabled' 1[8]           (parent,'pgBenefit',NO,'.fReversion.cbREV',NO) ⎕wi 'enabled' 1[9]           (parent,'pgBenefit',NO,'.fIncrease.edpvm',NO) ⎕wi 'enabled' 1[10]          0 0⍴(('cbGP',NO) ('cbREV',NO)) Deferreds_Basis 'Change'[11]      :else[12]          ((⊂parent,'pgBenefit',NO,'.fParms.'),¨('cbEAGE',NO) ('cbGP',NO) ('ckGPOlap',NO)) MultiWI 'enabled' 0[13]          ((⊂parent,'pgBenefit',NO,'.fReversion.'),¨('cbREV',NO) ('ckREVdef',NO)('cbREVterm',NO) ('ckREVind',NO)) MultiWI 'enabled' 0[14]          (parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'enabled' 1[15]          (parent,'pgBenefit',NO,'.fIncrease.edpvm',NO) ⎕wi 'enabled' 0[16]      :endif[17]  :case 'cbBAGE'[18]      enabled←0≠zwb (parent,'pgBenefit',NO,'.fParms.cbBAGE',NO) ⎕wi 'text'[19]      (parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'enabled' enabled[20]      (parent,'pgBenefit',NO,'.fReversion.ckREVdef',NO) ⎕wi 'enabled' (enabled^(0≠zwb (parent,'pgBenefit',NO,'.fReversion.cbREV',NO) ⎕wi 'text'))[21]      0 0⍴(⊂'edpvmdef',NO) Deferreds_Basis 'Change'[22]  [23]  :case 'cbEAGE'[24]      (parent,'pgBenefit',NO,'.fReversion.cbREVterm',NO) ⎕wi 'enabled' ((120>zwb (parent,'pgBenefit',NO,'.fParms.cbEAGE',NO) ⎕wi 'text')^(0≠zwb (parent,'pgBenefit',NO,'.fReversion.cbREV',NO) ⎕wi 'text'))[25]  [26]  :case 'cbGP'[27]      ((⊂parent,'pgBenefit',NO,'.fParms.'),¨('edgpage',NO) ('ckGPOlap',NO)) MultiWI 'enabled' (0≠zwb (parent,'pgBenefit',NO,'.fParms.cbGP',NO) ⎕wi 'text')[28]  [29]  :case 'cbREV'[30]      (parent,'pgBenefit',NO,'.fReversion.ckREVind',NO) ⎕wi 'enabled' (0≠zwb (parent,'pgBenefit',NO,'.fReversion.cbREV',NO) ⎕wi 'text')[31]      0 0⍴(('cbBAGE',NO) ('cbEAGE',NO)) Deferreds_Basis 'Change'[32]  [33]  :caselist 'edpvmdef' 'edpvm'[34]      :if (parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'enabled'[35]          enabled←0≠⍴(((parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'text'),(parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'text')~'0. '[36]      :else[37]          enabled←0≠⍴((parent,'pgBenefit',NO,'.fIncrease.edpvm',NO) ⎕wi 'text')~' 0.'[38]      :endif[39]      (parent,'pgBenefit',NO,'.fIncrease.ckpvmind',NO) ⎕wi 'enabled' enabled[40]  [41]  :endselect    ∇
+    ∇ field PenBens_Change NO;enabled
+[1]   ⍝ PARMWIN.sf#15
+[2]   ⍝ Process onChange events
+[3]   
+[4]   :select field
+[5]   :case 'cbpenind'
+[6]       :if 'P'=1↑(parent,'pgBenefit',NO,'.fParms.cbpenind',NO) ⎕wi 'text'
+[7]           ((⊂parent,'pgBenefit',NO,'.fParms.'),¨('cbEAGE',NO) ('cbGP',NO)) MultiWI 'enabled' 1
+[8]           (parent,'pgBenefit',NO,'.fReversion.cbREV',NO) ⎕wi 'enabled' 1
+[9]           (parent,'pgBenefit',NO,'.fIncrease.edpvm',NO) ⎕wi 'enabled' 1
+[10]          0 0⍴(('cbGP',NO) ('cbREV',NO)) Deferreds_Basis 'Change'
+[11]      :else
+[12]          ((⊂parent,'pgBenefit',NO,'.fParms.'),¨('cbEAGE',NO) ('cbGP',NO) ('ckGPOlap',NO)) MultiWI 'enabled' 0
+[13]          ((⊂parent,'pgBenefit',NO,'.fReversion.'),¨('cbREV',NO) ('ckREVdef',NO)('cbREVterm',NO) ('ckREVind',NO)) MultiWI 'enabled' 0
+[14]          (parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'enabled' 1
+[15]          (parent,'pgBenefit',NO,'.fIncrease.edpvm',NO) ⎕wi 'enabled' 0
+[16]      :endif
+[17]  :case 'cbBAGE'
+[18]      enabled←0≠zwb (parent,'pgBenefit',NO,'.fParms.cbBAGE',NO) ⎕wi 'text'
+[19]      (parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'enabled' enabled
+[20]      (parent,'pgBenefit',NO,'.fReversion.ckREVdef',NO) ⎕wi 'enabled' (enabled^(0≠zwb (parent,'pgBenefit',NO,'.fReversion.cbREV',NO) ⎕wi 'text'))
+[21]      0 0⍴(⊂'edpvmdef',NO) Deferreds_Basis 'Change'
+[22]  
+[23]  :case 'cbEAGE'
+[24]      (parent,'pgBenefit',NO,'.fReversion.cbREVterm',NO) ⎕wi 'enabled' ((120>zwb (parent,'pgBenefit',NO,'.fParms.cbEAGE',NO) ⎕wi 'text')^(0≠zwb (parent,'pgBenefit',NO,'.fReversion.cbREV',NO) ⎕wi 'text'))
+[25]  
+[26]  :case 'cbGP'
+[27]      ((⊂parent,'pgBenefit',NO,'.fParms.'),¨('edgpage',NO) ('ckGPOlap',NO)) MultiWI 'enabled' (0≠zwb (parent,'pgBenefit',NO,'.fParms.cbGP',NO) ⎕wi 'text')
+[28]  
+[29]  :case 'cbREV'
+[30]      (parent,'pgBenefit',NO,'.fReversion.ckREVind',NO) ⎕wi 'enabled' (0≠zwb (parent,'pgBenefit',NO,'.fReversion.cbREV',NO) ⎕wi 'text')
+[31]      0 0⍴(('cbBAGE',NO) ('cbEAGE',NO)) Deferreds_Basis 'Change'
+[32]  
+[33]  :caselist 'edpvmdef' 'edpvm'
+[34]      :if (parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'enabled'
+[35]          enabled←0≠⍴(((parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'text'),(parent,'pgBenefit',NO,'.fIncrease.edpvmdef',NO) ⎕wi 'text')~'0. '
+[36]      :else
+[37]          enabled←0≠⍴((parent,'pgBenefit',NO,'.fIncrease.edpvm',NO) ⎕wi 'text')~' 0.'
+[38]      :endif
+[39]      (parent,'pgBenefit',NO,'.fIncrease.ckpvmind',NO) ⎕wi 'enabled' enabled
+[40]  
+[41]  :endselect
+    ∇

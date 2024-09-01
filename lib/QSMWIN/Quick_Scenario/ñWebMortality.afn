@@ -1,1 +1,50 @@
-    ∇ perannum ⍙WebMortality rate∆;adj;msk;memmort;spmort;memadjust;tPx;adjust;freqadj;spadjust;AvtPxqx;SumtPxqx;midyear;qx;qy;∆[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Apply a change in Mortality[3]   [4]   ⍝⍝⍝ adj←maxpay⌿MATRIX rate∆*(1×~perannum)⌈perannum×¯0.5+⍳maxyr ⍝⍝⍝ scalar[5]   :if perannum ⋄ adj←maxpay⌿MATRIX (×\rate∆)÷rate∆*0.5[6]   :else        ⋄ adj←maxpay⌿MATRIX rate∆[7]   :endif[8]   [9]   msk←0=restab at 'CashBenefit'[10]  freqadj←msk/restab at 'FreqAdj'[11]  midyear←msk/restab at 'MidYear'[12]  [13]  memmort←restab at 'MemberMortality'[14]  qx←(msk/memmort)←1⌊(⊂adj)×¨msk/memmort[15]  restab←restab amend 'NewMemberMortality' memmort[16]  [17]  spmort←restab at 'SpouseMortality'[18]  qy←(msk/spmort)←1⌊(⊂adj)×¨msk/spmort[19]  restab←restab amend 'NewSpouseMortality' spmort[20]  [21]  memadjust←restab at 'NewMemberMortAdjust'[22]  tPx←¯1↓[2]¨×\¨1-0,¨qx[23]  adjust←⊃¨freqadj PP∆FreqAdjust¨¨⎕split¨tPx,¨0[24]  (msk/memadjust)←adjust[25]  restab←restab amend 'NewMemberMortAdjust' memadjust[26]  [27]  ⍝⍝⍝:if ∨/spmsk←msk^'R'=↑¨restab at 'SpouseDefinition'                  ⍝ Spouse at Retirement[28]  ⍝⍝⍝    ∆←msk/spmsk[29]  ⍝⍝⍝    SumtPxqx←+\¨(∆/memmort)×∆/tPx[30]  ⍝⍝⍝    AvtPxqx←SumtPxqx CDIV (⊂maxpay,maxyr)⍴¨((midyear×¯0.5)+¨freqadj PP∆FreqAdjust¨⊂0.0000001,⍳maxyr),¨0[31]  ⍝⍝⍝    (spmsk/spadjust)←AvtPxqx××\¨1-spmort[32]  ⍝⍝⍝:endif[33]  ⍝⍝⍝:if ∨/spmsk←msk^'D'=↑¨restab at 'SpouseDefinition'                  ⍝ Spouse at Death[34]  ⍝⍝⍝    ∆←msk/spmsk[35]  ⍝⍝⍝    propmarr←∆/restab at 'PropMarrTable'[36]  ⍝⍝⍝    SumtPxqx←+\¨(∆/memmort)×(∆/tPx)×[2]¨propmarr[37]  ⍝⍝⍝    AvtPxqx←SumtPxqx CDIV (⊂maxpay,maxyr)⍴¨((midyear×¯0.5)+¨freqadj PP∆FreqAdjust¨⊂0.0000001,⍳maxyr),¨0[38]  ⍝⍝⍝    (spmsk/spadjust)←AvtPxqx××\¨1-spmort[39]  ⍝⍝⍝:endif[40]  [41]  spadjust←restab at 'SpouseMortAdjust'[42]  SumtPxqx←+\¨qx×tPx×[2]¨msk/restab at 'PropMarrTable'[43]  AvtPxqx←SumtPxqx CDIV (⊂maxpay,maxyr)⍴¨((midyear×¯0.5)+¨freqadj PP∆FreqAdjust¨⊂0.0000001,⍳maxyr),¨0[44]  (msk/spadjust)←AvtPxqx××\¨1-qy[45]  restab←restab amend 'NewSpouseMortAdjust' spadjust[46]  [47]  restab←0 ⍙WebRecalculate restab[48]  :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif    ∇
+    ∇ perannum ⍙WebMortality rate∆;adj;msk;memmort;spmort;memadjust;tPx;adjust;freqadj;spadjust;AvtPxqx;SumtPxqx;midyear;qx;qy;∆
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Apply a change in Mortality
+[3]   
+[4]   ⍝⍝⍝ adj←maxpay⌿MATRIX rate∆*(1×~perannum)⌈perannum×¯0.5+⍳maxyr ⍝⍝⍝ scalar
+[5]   :if perannum ⋄ adj←maxpay⌿MATRIX (×\rate∆)÷rate∆*0.5
+[6]   :else        ⋄ adj←maxpay⌿MATRIX rate∆
+[7]   :endif
+[8]   
+[9]   msk←0=restab at 'CashBenefit'
+[10]  freqadj←msk/restab at 'FreqAdj'
+[11]  midyear←msk/restab at 'MidYear'
+[12]  
+[13]  memmort←restab at 'MemberMortality'
+[14]  qx←(msk/memmort)←1⌊(⊂adj)×¨msk/memmort
+[15]  restab←restab amend 'NewMemberMortality' memmort
+[16]  
+[17]  spmort←restab at 'SpouseMortality'
+[18]  qy←(msk/spmort)←1⌊(⊂adj)×¨msk/spmort
+[19]  restab←restab amend 'NewSpouseMortality' spmort
+[20]  
+[21]  memadjust←restab at 'NewMemberMortAdjust'
+[22]  tPx←¯1↓[2]¨×\¨1-0,¨qx
+[23]  adjust←⊃¨freqadj PP∆FreqAdjust¨¨⎕split¨tPx,¨0
+[24]  (msk/memadjust)←adjust
+[25]  restab←restab amend 'NewMemberMortAdjust' memadjust
+[26]  
+[27]  ⍝⍝⍝:if ∨/spmsk←msk^'R'=↑¨restab at 'SpouseDefinition'                  ⍝ Spouse at Retirement
+[28]  ⍝⍝⍝    ∆←msk/spmsk
+[29]  ⍝⍝⍝    SumtPxqx←+\¨(∆/memmort)×∆/tPx
+[30]  ⍝⍝⍝    AvtPxqx←SumtPxqx CDIV (⊂maxpay,maxyr)⍴¨((midyear×¯0.5)+¨freqadj PP∆FreqAdjust¨⊂0.0000001,⍳maxyr),¨0
+[31]  ⍝⍝⍝    (spmsk/spadjust)←AvtPxqx××\¨1-spmort
+[32]  ⍝⍝⍝:endif
+[33]  ⍝⍝⍝:if ∨/spmsk←msk^'D'=↑¨restab at 'SpouseDefinition'                  ⍝ Spouse at Death
+[34]  ⍝⍝⍝    ∆←msk/spmsk
+[35]  ⍝⍝⍝    propmarr←∆/restab at 'PropMarrTable'
+[36]  ⍝⍝⍝    SumtPxqx←+\¨(∆/memmort)×(∆/tPx)×[2]¨propmarr
+[37]  ⍝⍝⍝    AvtPxqx←SumtPxqx CDIV (⊂maxpay,maxyr)⍴¨((midyear×¯0.5)+¨freqadj PP∆FreqAdjust¨⊂0.0000001,⍳maxyr),¨0
+[38]  ⍝⍝⍝    (spmsk/spadjust)←AvtPxqx××\¨1-spmort
+[39]  ⍝⍝⍝:endif
+[40]  
+[41]  spadjust←restab at 'SpouseMortAdjust'
+[42]  SumtPxqx←+\¨qx×tPx×[2]¨msk/restab at 'PropMarrTable'
+[43]  AvtPxqx←SumtPxqx CDIV (⊂maxpay,maxyr)⍴¨((midyear×¯0.5)+¨freqadj PP∆FreqAdjust¨⊂0.0000001,⍳maxyr),¨0
+[44]  (msk/spadjust)←AvtPxqx××\¨1-qy
+[45]  restab←restab amend 'NewSpouseMortAdjust' spadjust
+[46]  
+[47]  restab←0 ⍙WebRecalculate restab
+[48]  :if fundind ⋄ fundtab←⍙WebFunding fundtab ⋄ :endif
+    ∇

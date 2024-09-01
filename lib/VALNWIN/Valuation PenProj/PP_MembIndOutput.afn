@@ -1,0 +1,27 @@
+    ∇ PP∆MembIndOutput;z
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Store the "static" valuation factors for Pensioners VarPrint
+[3]   
+[4]   :if 2=⍴⍴pp∆LYpost
+[5]       :if (↑⍴pp∆LYpost)≠z←(∨/0≠pp∆LYpost)⍳1
+[6]           ⍙indmembres←⍙indmembres⍪0,16,(⍳¯1↑⍴pp∆LYpost),[0.5]pp∆LYpost[z;]
+[7]           ⍙indmembres←⍙indmembres⍪0,18,(⍳¯1↑⍴pp∆lypost),[0.5]pp∆lypost[z;]
+[8]       :endif
+[9]   :else
+[10]      ⍙indmembres←⍙indmembres⍪0,16,(⍳⍴pp∆LYpost),[0.5]pp∆LYpost
+[11]      ⍙indmembres←⍙indmembres⍪0,18,(⍳⍴pp∆lypost),[0.5]pp∆lypost
+[12]  :endif
+[13]  
+[14]  ⍝ Discounter in Deferment
+[15]  ⍙indmembres←⍙indmembres⍪0,11,(⍳120),[0.5]120↑pp∆vPre
+[16]  ⍙indmembres←⍙indmembres⍪0,12,(⍳120),[0.5]120↑pp∆vMPPre
+[17]  
+[18]  ⍝ Discounter in Payment
+[19]  ⍙indmembres←⍙indmembres⍪0,13,(⍳120),[0.5]120↑pp∆vPost
+[20]  ⍙indmembres←⍙indmembres⍪0,14,(⍳120),[0.5]120↑pp∆vMPPostAdj
+[21]  
+[22]  ⍙indmembres←⍙indmembres⍪0,15,(⍳(⍴pp∆LXpost)-pp∆X0),[0.5]pp∆X0↓pp∆LXpost
+[23]  ⍙indmembres←⍙indmembres⍪0,17,(⍳(⍴pp∆LXpost)-pp∆X0),[0.5]pp∆X0↓(pp∆FreqAdj PP∆FreqAdjust pp∆LXpost),0
+[24]  ⍙indmembres←⍙indmembres⍪0,19,(⍳(⍴pp∆hMP)-pp∆X0)   ,[0.5]pp∆X0↓pp∆hMP
+[25]  ⍙indmembres←⍙indmembres⍪0,20,(⍳(⍴pp∆AGEDIF)-pp∆X0),[0.5]pp∆X0↓pp∆AGEDIF
+    ∇

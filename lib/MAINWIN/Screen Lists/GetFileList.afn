@@ -1,0 +1,51 @@
+    ∇ valid GetFileList parm;flag;FILES;input;caption;Folder;FilePath;library;filter;consolid;MIcsv
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a list of files using "standard" Windows dialog box
+[3]   
+[4]   flag←⍬ ⋄ :if parm≡'Multi' ⋄ flag←512 ⋄ :endif
+[5]   
+[6]   input←∨/('Data' 'Datanew' 'Input' 'New')∊valid←m2n SStoMAT ' ',valid
+[7]   library←(⊂'Library')∊valid
+[8]   MIcsv←(⊂'MIcsv')∊valid
+[9]   consolid←(⊂'Consolid')∊valid
+[10]  
+[11]  filter←''
+[12]  :if (⊂'Basis')∊valid
+[13]      Folder←¯1↓InputDir ⋄ filter←'APL Component Files (*.sf)∣*.SF∣∣' ⋄ caption←'Select Basis' ⋄ input←0
+[14]  :elseif (⊂'Excel')∊valid
+[15]      Folder←¯1↓InputDir ⋄ filter←'Excel Files (*.xls*)∣*.xls*∣∣' ⋄ caption←'Select Excel'
+[16]  :elseif input ⍝ Search in Input Dir for Data, Input and New Files
+[17]      Folder←¯1↓InputDir
+[18]      :if (⊂'New')∊valid ⋄ caption←'Specify Output'
+[19]      :else              ⋄ caption←'Select Input'
+[20]      :endif
+[21]  :elseif library
+[22]      Folder←¯1↓LibraryDir ⋄ caption←'Select Table'
+[23]  :elseif MIcsv
+[24]      Folder←¯1↓MIcsvDir ⋄ caption←'Select Mortality Improvement Table'
+[25]  :elseif consolid
+[26]      Folder←¯1↓ConsolidDir ⋄ caption←'Select Database'
+[27]  :else
+[28]      Folder←¯1↓OutputDir ⋄ caption←'Select Input/Output'
+[29]  :endif
+[30]  
+[31]  select:FILES←(flag,4 8 4096) WGetOpenLongFileName Folder '' '' (caption,' File',(parm≡'Multi')/'s') filter 0 0
+[32]  
+[33]  :if 0=≡FILES ⋄ →end ⋄ :endif ⍝ Nothing Selected
+[34]  
+[35]  :if ~Folder≡FilePath←UPPERCASE 1⊃FILES
+[36]      :if input
+[37]          MDISPLAY 'InputDir' ⋄ →select ⍝ Selected outside specified directory
+[38]      :elseif library
+[39]          MDISPLAY 'LibraryDir' ⋄ →select ⍝ Selected outside specified directory
+[40]  ⍝⍝⍝    :elseif consolid
+[41]  ⍝⍝⍝        MDISPLAY 'ConsolidDir' ⋄ →select ⍝ Selected outside specified directory
+[42]      :endif
+[43]  :endif
+[44]  
+[45]  :if 2=≡FILES←2⊃FILES ⋄ FILES←⊃FILES ⋄ :endif
+[46]  
+[47]  ⎕wi 'text' (((~input∨library)/FilePath,'\'),¯1↓DLTB FILES,',')
+[48]  
+[49]  end:⎕wres←¯1 ⍝ Bypass Windows processing of Double Click
+    ∇

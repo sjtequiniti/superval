@@ -1,0 +1,40 @@
+    ∇ Z←test_ApplyLicence;⎕ELX;∆;key;clientList;licenceRecord;errs;cases;test;result;QTS;ALPHA
+[1]   ⍝ REGISTER.sf#2
+[2]   ⍝ Usage:
+[3]   ⍝      ↑test_ApplyLicence           ⍝ flag: passes all tests
+[4]   ⍝      2⊃test_ApplyLicence          ⍝ tabulate failed tests
+[5]   ⍝      rowsIn 2⊃test_ApplyLicence   ⍝ count failed tests
+[6]   
+[7]   ALPHA←"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 &()-,;./'"
+[8]   key←(key[⌽⎕av⍋key←⊃↑⌽¨⊂'SuperValUK']) ALPHA
+[9]   QTS←2011 1 1 0 0 0 0 ⍝ local system clock
+[10]  
+[11]  clientList←key encrypt ⊃'Julian' 'George' 'Dick' 'Anne' 'Timmy'
+[12]  licenceRecord←(⊂key)encrypt¨'  4' 'Anne' '10   ' (16/'0') ⍝ clientIndex clientName version sysFlags
+[13]  
+[14]  ⍝ define test cases
+[15]  ∆←,[.5] 'answer' 'left' 'right'
+[16]  ⍝                                                   clientIndex flags  version key expiry
+[17]  ∆←∆⍪(1 ((⊂key)encrypt¨'  4' 'Anne' '10   ' (16/'0')))   (clientList)    ('  4' '0000' '10   ' '110228') ⍝ install
+[18]  ∆←∆⍪(1 ((⊂key)encrypt¨'  4' 'Anne' '11   ' (16/'0')))   (licenceRecord) ('  4' '0000' '11   ' '110228') ⍝ upgrade
+[19]  
+[20]  ∆←∆⍪(0 'Invalid licence key')                           (clientList)    ( ' 4' '0000' '10   ' '110228') ⍝ wrong length
+[21]  ∆←∆⍪(0 'Invalid client')                                (clientList)    (' 14' '0000' '10   ' '110228')
+[22]  ⍝ see test_Validate for all key tests
+[23]  cases←∆
+[24]  
+[25]  ⍝ evaluate test results
+[26]  errs←,[.5] 'left' 'right' 'answer' 'result'
+[27]  
+[28]  :for test :in ∆[1] push¨ 1↓∆←⎕SPLIT cases
+[29]      :try
+[30]          ⎕ELX←cutBackHere ⋄ result←(test at 'left') ApplyLicence key encrypt ↑,/test at 'right' ⋄ ⎕ELX←"⎕DM"
+[31]      :catch
+[32]          result←'broke'
+[33]      :end
+[34]      :if ~result ≡ test at 'answer'
+[35]          errs←errs⍪ (test at 'left' 'right' 'answer'), ⊂result
+[36]      :endif
+[37]  :endfor
+[38]  Z←(0=rowsIn errs) (errs)
+    ∇

@@ -1,1 +1,91 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Conts_Calculator" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Conts_Calculator" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fILENAME" Win∆Inherits "Actsfile"[10]  "fmSV.fContsCalc.fFiles.edfILENAME" ⎕wi "text" (DLTB fILENAME)[11]  "Format" Win∆Inherits "FormatA"[12]  PickList←"fmSV.fContsCalc.fFiles.cbFormat" ⎕wi "list"[13]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"[14]  selection←(StripText PickList) ExactTLU DLTB StripText Format[15]  :if mt selection[16]      modified←⌈/modified,1[17]  :endif[18]  "fmSV.fContsCalc.fFiles.cbFormat" ⎕wi "value" (¯1↑1,selection)[19]  "fmSV.fContsCalc.fFiles.edFILE" ⎕wi "text" (DLTB FILE)[20]  PickList←"fmSV.fContsCalc.fInputs.cbAdjMeth" ⎕wi "list"[21]  selection←PickList ExactTLU DLTB AdjMeth[22]  :if mt selection[23]      :if ~mt DLTB AdjMeth[24]          warnings←warnings OVER "Previous Selection for 'Contributions Adjustment' is no longer available"[25]      :endif[26]      modified←⌈/modified,1[27]  :endif[28]  "fmSV.fContsCalc.fInputs.cbAdjMeth" ⎕wi "value" (¯1↑1,selection)[29]  "fmSV.fContsCalc.fInputs.edfV11" ⎕wi "text" (DLTB fV1[1;])[30]  "fmSV.fContsCalc.fInputs.edfV12" ⎕wi "text" (DLTB fV1[2;])[31]  "fmSV.fContsCalc.fInputs.edfV51" ⎕wi "text" (DLTB fV5[1;])[32]  "fmSV.fContsCalc.fInputs.edfV52" ⎕wi "text" (DLTB fV5[2;])[33]  "fmSV.fContsCalc.fInputs.eddfV5" ⎕wi "text" (DLTB dfV5)[34]  "fmSV.fContsCalc.fInputs.edfV61" ⎕wi "text" (DLTB fV6[1;])[35]  "fmSV.fContsCalc.fInputs.edfV62" ⎕wi "text" (DLTB fV6[2;])[36]  "fmSV.fContsCalc.fInputs.eddfV6" ⎕wi "text" (DLTB dfV6)[37]  PickList←"fmSV.fContsCalc.fInputs.cbEDATE" ⎕wi "list"[38]  warnings←warnings OVER "Calculation Date" Win∆DateRelative "EDATE" "lrEDATE"[39]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE[40]  :if mt selection[41]          "fmSV.fContsCalc.fInputs.cbEDATE" ⎕wi "text" (DLTB EDATE)[42]  :else[43]      "fmSV.fContsCalc.fInputs.cbEDATE" ⎕wi "value" selection[44]  :endif[45]  PickList←"fmSV.fContsCalc.fInputs.cbservrnd1" ⎕wi "list"[46]  selection←PickList ExactTLU DLTB servrnd[1;][47]  :if mt selection[48]      :if ~mt DLTB servrnd[1;][49]          warnings←warnings OVER "Previous Selection for 'Service Calculation - Period' is no longer available"[50]      :endif[51]      modified←⌈/modified,1[52]  :endif[53]  "fmSV.fContsCalc.fInputs.cbservrnd1" ⎕wi "value" (¯1↑1,selection)[54]  PickList←"fmSV.fContsCalc.fInputs.cbservrnd2" ⎕wi "list"[55]  selection←PickList ExactTLU DLTB servrnd[2;][56]  :if mt selection[57]      :if ~mt DLTB servrnd[2;][58]          warnings←warnings OVER "Previous Selection for 'Rounding' is no longer available"[59]      :endif[60]      modified←⌈/modified,1[61]  :endif[62]  "fmSV.fContsCalc.fInputs.cbservrnd2" ⎕wi "value" (¯1↑1,selection)[63]  PickList←"fmSV.fContsCalc.fInputs.cbj" ⎕wi "list"[64]  warnings←warnings OVER "Simple Interest Rate" Win∆FinRelative "j" "lrj" 1[65]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText j[66]  :if mt selection[67]      :if ~mt DLTB j ⋄ :andif ~^/⎕vi j[68]          warnings←warnings OVER "Previous Selection for 'Simple Interest Rate' is no longer available"[69]      :else[70]          "fmSV.fContsCalc.fInputs.cbj" ⎕wi "text" (DLTB j)[71]      :endif[72]  :else[73]      "fmSV.fContsCalc.fInputs.cbj" ⎕wi "value" selection[74]  :endif[75]  "fmSV.fContsCalc.fOutput.edFV1" ⎕wi "text" (DLTB FV[1;])[76]  "fmSV.fContsCalc.fOutput.edFV2" ⎕wi "text" (DLTB FV[2;])[77]  "fmSV.fContsCalc.fOutput.edDecP" ⎕wi "text" (DLTB DecP)[78]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Conts_Calculator[79]      :for var :in spin Comment_Conts_Calculator at "variable" "row" ⋄ (var row)←var[80]          "Conts_Calculator" ParmColor ((FormFields for "variable" var) at "control"),var row 1[81]      :endfor[82]  :endif[83]  :if ~0∊⍴,warnings[84]      MDISPLAY DLTMB warnings,⎕tcnl[85]      Win∆AssignVars "fmSV.fContsCalc"[86]  :endif[87]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Conts_Calculator" "" "Names"[88]      "fmSV.fContsCalc" ⎕wi "modified" 0[89]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Conts_Calculator" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Conts_Calculator" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fILENAME" Win∆Inherits "Actsfile"
+[10]  "fmSV.fContsCalc.fFiles.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[11]  "Format" Win∆Inherits "FormatA"
+[12]  PickList←"fmSV.fContsCalc.fFiles.cbFormat" ⎕wi "list"
+[13]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"
+[14]  selection←(StripText PickList) ExactTLU DLTB StripText Format
+[15]  :if mt selection
+[16]      modified←⌈/modified,1
+[17]  :endif
+[18]  "fmSV.fContsCalc.fFiles.cbFormat" ⎕wi "value" (¯1↑1,selection)
+[19]  "fmSV.fContsCalc.fFiles.edFILE" ⎕wi "text" (DLTB FILE)
+[20]  PickList←"fmSV.fContsCalc.fInputs.cbAdjMeth" ⎕wi "list"
+[21]  selection←PickList ExactTLU DLTB AdjMeth
+[22]  :if mt selection
+[23]      :if ~mt DLTB AdjMeth
+[24]          warnings←warnings OVER "Previous Selection for 'Contributions Adjustment' is no longer available"
+[25]      :endif
+[26]      modified←⌈/modified,1
+[27]  :endif
+[28]  "fmSV.fContsCalc.fInputs.cbAdjMeth" ⎕wi "value" (¯1↑1,selection)
+[29]  "fmSV.fContsCalc.fInputs.edfV11" ⎕wi "text" (DLTB fV1[1;])
+[30]  "fmSV.fContsCalc.fInputs.edfV12" ⎕wi "text" (DLTB fV1[2;])
+[31]  "fmSV.fContsCalc.fInputs.edfV51" ⎕wi "text" (DLTB fV5[1;])
+[32]  "fmSV.fContsCalc.fInputs.edfV52" ⎕wi "text" (DLTB fV5[2;])
+[33]  "fmSV.fContsCalc.fInputs.eddfV5" ⎕wi "text" (DLTB dfV5)
+[34]  "fmSV.fContsCalc.fInputs.edfV61" ⎕wi "text" (DLTB fV6[1;])
+[35]  "fmSV.fContsCalc.fInputs.edfV62" ⎕wi "text" (DLTB fV6[2;])
+[36]  "fmSV.fContsCalc.fInputs.eddfV6" ⎕wi "text" (DLTB dfV6)
+[37]  PickList←"fmSV.fContsCalc.fInputs.cbEDATE" ⎕wi "list"
+[38]  warnings←warnings OVER "Calculation Date" Win∆DateRelative "EDATE" "lrEDATE"
+[39]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE
+[40]  :if mt selection
+[41]          "fmSV.fContsCalc.fInputs.cbEDATE" ⎕wi "text" (DLTB EDATE)
+[42]  :else
+[43]      "fmSV.fContsCalc.fInputs.cbEDATE" ⎕wi "value" selection
+[44]  :endif
+[45]  PickList←"fmSV.fContsCalc.fInputs.cbservrnd1" ⎕wi "list"
+[46]  selection←PickList ExactTLU DLTB servrnd[1;]
+[47]  :if mt selection
+[48]      :if ~mt DLTB servrnd[1;]
+[49]          warnings←warnings OVER "Previous Selection for 'Service Calculation - Period' is no longer available"
+[50]      :endif
+[51]      modified←⌈/modified,1
+[52]  :endif
+[53]  "fmSV.fContsCalc.fInputs.cbservrnd1" ⎕wi "value" (¯1↑1,selection)
+[54]  PickList←"fmSV.fContsCalc.fInputs.cbservrnd2" ⎕wi "list"
+[55]  selection←PickList ExactTLU DLTB servrnd[2;]
+[56]  :if mt selection
+[57]      :if ~mt DLTB servrnd[2;]
+[58]          warnings←warnings OVER "Previous Selection for 'Rounding' is no longer available"
+[59]      :endif
+[60]      modified←⌈/modified,1
+[61]  :endif
+[62]  "fmSV.fContsCalc.fInputs.cbservrnd2" ⎕wi "value" (¯1↑1,selection)
+[63]  PickList←"fmSV.fContsCalc.fInputs.cbj" ⎕wi "list"
+[64]  warnings←warnings OVER "Simple Interest Rate" Win∆FinRelative "j" "lrj" 1
+[65]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText j
+[66]  :if mt selection
+[67]      :if ~mt DLTB j ⋄ :andif ~^/⎕vi j
+[68]          warnings←warnings OVER "Previous Selection for 'Simple Interest Rate' is no longer available"
+[69]      :else
+[70]          "fmSV.fContsCalc.fInputs.cbj" ⎕wi "text" (DLTB j)
+[71]      :endif
+[72]  :else
+[73]      "fmSV.fContsCalc.fInputs.cbj" ⎕wi "value" selection
+[74]  :endif
+[75]  "fmSV.fContsCalc.fOutput.edFV1" ⎕wi "text" (DLTB FV[1;])
+[76]  "fmSV.fContsCalc.fOutput.edFV2" ⎕wi "text" (DLTB FV[2;])
+[77]  "fmSV.fContsCalc.fOutput.edDecP" ⎕wi "text" (DLTB DecP)
+[78]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Conts_Calculator
+[79]      :for var :in spin Comment_Conts_Calculator at "variable" "row" ⋄ (var row)←var
+[80]          "Conts_Calculator" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[81]      :endfor
+[82]  :endif
+[83]  :if ~0∊⍴,warnings
+[84]      MDISPLAY DLTMB warnings,⎕tcnl
+[85]      Win∆AssignVars "fmSV.fContsCalc"
+[86]  :endif
+[87]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Conts_Calculator" "" "Names"
+[88]      "fmSV.fContsCalc" ⎕wi "modified" 0
+[89]  :endif
+    ∇

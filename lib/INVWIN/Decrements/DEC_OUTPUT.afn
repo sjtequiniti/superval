@@ -1,1 +1,23 @@
-    ∇ res←MAT DEC∆OUTPUT EX;⎕io;GTOTS;NO;SUMM;TOTS;EXP[1]   ⍝ INVWIN.sf#2[2]   ⍝ Create the Decrement Investigation Output[3]   ⎕io←0[4]   [5]   ⍝ Make Expecteds, Crude Rates, Grand Totals and add ages to LHS[6]   EXP←+/MAT×qwsel ⋄ MAT←+/MAT ⋄ EX←+/EX[7]   sfac←10*⌈/0,⌈10⍟(1⌈(+/MAT),(+/EX),+/EXP)÷10* 13 7 5[8]   MAT←MAT÷sfac ⋄ EX←EX÷sfac ⋄ EXP←EXP÷sfac[9]   [10]  MAT←(BAGE+⍳AGES),MAT,EX,EXP,(EX ZDIV EXP),[0.5]EX CDIV MAT[11]  [12]  GTOTS←1↓4↑+⌿MAT ⍝ Grand Totals[13]  [14]  res←0 62⍴'' ⋄ NO←1 ⍝ Loop to write out results for each group[15]  LOOP:res←res⍪('I6,<  >,CF20.1,CI10,CF10.1,CF7.3,CF7.4' ⎕FMT SUMM←(GROUP,6)↑MAT)⍪' '[16]  TOTS←1↓4↑+⌿SUMM[17]  res←res⍪'I4,<->,LI3,CF20.1,CI10,CF10.1,CF7.3,CF7.4' ⎕FMT MATRIX(, 1 1 ↑SUMM),(, ¯1 1 ↑SUMM),TOTS,(TOTS[1]ZDIV TOTS[2]),TOTS[1]CDIV TOTS[0][18]  res←res⍪' ' ⋄ MAT←(GROUP,0)↓MAT ⋄ →(NN≥NO←NO+1)/LOOP[19]  [20]  ⍝ Write Totals at the Bottom[21]  res←res⍪'< Totals >,CF20.1,CI10,CF10.1,CF7.3,7< >' ⎕FMT MATRIX GTOTS,GTOTS[1]ZDIV GTOTS[2]    ∇
+    ∇ res←MAT DEC∆OUTPUT EX;⎕io;GTOTS;NO;SUMM;TOTS;EXP
+[1]   ⍝ INVWIN.sf#2
+[2]   ⍝ Create the Decrement Investigation Output
+[3]   ⎕io←0
+[4]   
+[5]   ⍝ Make Expecteds, Crude Rates, Grand Totals and add ages to LHS
+[6]   EXP←+/MAT×qwsel ⋄ MAT←+/MAT ⋄ EX←+/EX
+[7]   sfac←10*⌈/0,⌈10⍟(1⌈(+/MAT),(+/EX),+/EXP)÷10* 13 7 5
+[8]   MAT←MAT÷sfac ⋄ EX←EX÷sfac ⋄ EXP←EXP÷sfac
+[9]   
+[10]  MAT←(BAGE+⍳AGES),MAT,EX,EXP,(EX ZDIV EXP),[0.5]EX CDIV MAT
+[11]  
+[12]  GTOTS←1↓4↑+⌿MAT ⍝ Grand Totals
+[13]  
+[14]  res←0 62⍴'' ⋄ NO←1 ⍝ Loop to write out results for each group
+[15]  LOOP:res←res⍪('I6,<  >,CF20.1,CI10,CF10.1,CF7.3,CF7.4' ⎕FMT SUMM←(GROUP,6)↑MAT)⍪' '
+[16]  TOTS←1↓4↑+⌿SUMM
+[17]  res←res⍪'I4,<->,LI3,CF20.1,CI10,CF10.1,CF7.3,CF7.4' ⎕FMT MATRIX(, 1 1 ↑SUMM),(, ¯1 1 ↑SUMM),TOTS,(TOTS[1]ZDIV TOTS[2]),TOTS[1]CDIV TOTS[0]
+[18]  res←res⍪' ' ⋄ MAT←(GROUP,0)↓MAT ⋄ →(NN≥NO←NO+1)/LOOP
+[19]  
+[20]  ⍝ Write Totals at the Bottom
+[21]  res←res⍪'< Totals >,CF20.1,CI10,CF10.1,CF7.3,7< >' ⎕FMT MATRIX GTOTS,GTOTS[1]ZDIV GTOTS[2]
+    ∇

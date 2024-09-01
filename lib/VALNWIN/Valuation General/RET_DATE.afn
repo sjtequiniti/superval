@@ -1,0 +1,33 @@
+    ∇ RET∆DATE
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Calculate Normal Retirement Date
+[3]   ⍝ using Various Definitions of NRD
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   NRD←DOB+0,0,NRA
+[7]   :select nrdind
+[8]   :case 1 ⋄ NRD[0]←(0 31 29 31 30 31 30 31 31 30 31 30 31)[NRD[1]] ⍝ End of Month
+[9]   :case 2 ⋄ NRD←nrDATE,NRD[2]+0>'DN' DURN DOB,nrDATE,DOB[2] ⍝ End of Year
+[10]  :endselect
+[11]  ⍎(~DATECHECK NRD)/'NRD←NRD+¯1 0 0 ⋄ →⎕LC'
+[12]  
+[13]  :if uk=0 ⋄ :andif 0>VDATE DAYS NRD ⋄ NRD←VDATE ⋄ :endif
+[14]  :if uk≠1 ⋄ nra←¯1↑NRA,(nrdind=2)/⍬⍴DOB YDAYS NRD
+[15]  :else    ⋄ nra←NRA
+[16]  :endif
+[17]  
+[18]  LRD←NRD+0 0,0⌈LRA-NRA⌈X0×uk=0
+[19]  ⍎(~DATECHECK LRD)/'LRD←LRD+¯1 0 0 ⋄ →⎕LC'
+[20]  :if 0>VDATE DAYS LRD ⋄ :andif servind ⋄ LRD←VDATE ⋄ :endif
+[21]  lra←nra⌈LatestRA ⍝ Just in case something different is required!
+[22]  
+[23]  :if uk=1
+[24]      NRD∆G←DOB+0,0,NRA∆G
+[25]      :select nrdind
+[26]      :case 1 ⋄ NRD∆G[0]←(0 31 29 31 30 31 30 31 31 30 31 30 31)[NRD∆G[1]]
+[27]      :case 2 ⋄ NRD∆G←nrDATE,NRD∆G[2]+0>'DN' DURN DOB,nrDATE,DOB[2]
+[28]      :endselect
+[29]      ⍎(~DATECHECK NRD∆G)/'NRD∆G←NRD∆G+¯1 0 0 ⋄ →⎕LC'
+[30]      ⍎(0>ValDATE DAYS NRD∆G)/'NRD∆G←ValDATE'
+[31]  :endif
+    ∇

@@ -1,1 +1,33 @@
-    ∇ RF←X MIRedFact prefix;miType;miCMIBase;miCMICalYr;miCMIYOB;miCMIalpha;miCMIbeta;miCMIyears;miCMIAgeRate;mi2DBase;mi2DCalYr;mi2DTable;mi2DAgeRate;list[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Copes with None, CMI (three types) and 2D (two types).[3]   ⍝ Assumes list of global variables commencing with "prefix".[4]   ⍝ Any age rating has already been taken care of.[5]   [6]   list←('/?/',prefix) TEXTREPL '\?Type\?CMIBase\?CMICalYr\?CMIYOB\?CMIalpha\?CMIbeta\?CMIyears\?CMIAgeRate\?2DBase\?2DCalYr\?2DTable\?2DAgeRate'[7]   [8]   (SStoMAT list) RenameVars  prefix 'mi'[9]   [10]  :select miType[11]  :caselist '' 'None'[12]      RF←AgeLimit⍴1[13]  [14]  :case 'CMI Calendar Year'[15]      RF←(X↓miCMIalpha)+(1-X↓miCMIalpha)×(X↓miCMIbeta)*(miCMICalYr-miCMIBase)÷miCMIyears[16]  [17]  :case 'CMI Specified Year' ⍝ (Generational) Year of Birth[18]      RF←(X↓miCMIalpha)+(1-X↓miCMIalpha)×(X↓miCMIbeta)*((miCMIYOB-miCMIBase)+X↓⍳AgeLimit)÷miCMIyears[19]  [20]  :case 'CMI Member Specific'[21]      RF←(X↓miCMIalpha)+(1-X↓miCMIalpha)×(X↓miCMIbeta)*(X↓((¯1↑VDATE)-X+miCMIBase)+⍳AgeLimit)÷miCMIyears[22]  [23]  :case '2D Table Calendar Year'[24]      RF←X↓mi2DTable[;mi2DCalYr-mi2DBase][25]  [26]  :case '2D Table Member Specific'[27]      RF←AgeLimit OVERTAKE ¯120↑mi2DTable[⎕split X↓[⎕io](⍳120),[⎕io+0.5]((¯1↑VDATE)-mi2DBase+X)+⍳120][28]  [29]  :endselect[30]  [31]  RF←(-AgeLimit)↑RF    ∇
+    ∇ RF←X MIRedFact prefix;miType;miCMIBase;miCMICalYr;miCMIYOB;miCMIalpha;miCMIbeta;miCMIyears;miCMIAgeRate;mi2DBase;mi2DCalYr;mi2DTable;mi2DAgeRate;list
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Copes with None, CMI (three types) and 2D (two types).
+[3]   ⍝ Assumes list of global variables commencing with "prefix".
+[4]   ⍝ Any age rating has already been taken care of.
+[5]   
+[6]   list←('/?/',prefix) TEXTREPL '\?Type\?CMIBase\?CMICalYr\?CMIYOB\?CMIalpha\?CMIbeta\?CMIyears\?CMIAgeRate\?2DBase\?2DCalYr\?2DTable\?2DAgeRate'
+[7]   
+[8]   (SStoMAT list) RenameVars  prefix 'mi'
+[9]   
+[10]  :select miType
+[11]  :caselist '' 'None'
+[12]      RF←AgeLimit⍴1
+[13]  
+[14]  :case 'CMI Calendar Year'
+[15]      RF←(X↓miCMIalpha)+(1-X↓miCMIalpha)×(X↓miCMIbeta)*(miCMICalYr-miCMIBase)÷miCMIyears
+[16]  
+[17]  :case 'CMI Specified Year' ⍝ (Generational) Year of Birth
+[18]      RF←(X↓miCMIalpha)+(1-X↓miCMIalpha)×(X↓miCMIbeta)*((miCMIYOB-miCMIBase)+X↓⍳AgeLimit)÷miCMIyears
+[19]  
+[20]  :case 'CMI Member Specific'
+[21]      RF←(X↓miCMIalpha)+(1-X↓miCMIalpha)×(X↓miCMIbeta)*(X↓((¯1↑VDATE)-X+miCMIBase)+⍳AgeLimit)÷miCMIyears
+[22]  
+[23]  :case '2D Table Calendar Year'
+[24]      RF←X↓mi2DTable[;mi2DCalYr-mi2DBase]
+[25]  
+[26]  :case '2D Table Member Specific'
+[27]      RF←AgeLimit OVERTAKE ¯120↑mi2DTable[⎕split X↓[⎕io](⍳120),[⎕io+0.5]((¯1↑VDATE)-mi2DBase+X)+⍳120]
+[28]  
+[29]  :endselect
+[30]  
+[31]  RF←(-AgeLimit)↑RF
+    ∇

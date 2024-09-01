@@ -1,1 +1,24 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Compare_Databases" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Compare_Databases" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmDBCompare.edFile1" ⎕wi "text" (DLTB File1)[10]  "fmDBCompare.edFile2" ⎕wi "text" (DLTB File2)[11]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Compare_Databases[12]      :for var :in spin Comment_Compare_Databases at "variable" "row" ⋄ (var row)←var[13]          "Compare_Databases" ParmColor ((FormFields for "variable" var) at "control"),var row 1[14]      :endfor[15]  :endif[16]  :if ~0∊⍴,warnings[17]      MDISPLAY DLTMB warnings,⎕tcnl[18]      Win∆AssignVars "fmDBCompare"[19]  :endif[20]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Compare_Databases" "" "Names"[21]      "fmDBCompare" ⎕wi "modified" 0[22]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Compare_Databases" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Compare_Databases" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmDBCompare.edFile1" ⎕wi "text" (DLTB File1)
+[10]  "fmDBCompare.edFile2" ⎕wi "text" (DLTB File2)
+[11]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Compare_Databases
+[12]      :for var :in spin Comment_Compare_Databases at "variable" "row" ⋄ (var row)←var
+[13]          "Compare_Databases" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[14]      :endfor
+[15]  :endif
+[16]  :if ~0∊⍴,warnings
+[17]      MDISPLAY DLTMB warnings,⎕tcnl
+[18]      Win∆AssignVars "fmDBCompare"
+[19]  :endif
+[20]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Compare_Databases" "" "Names"
+[21]      "fmDBCompare" ⎕wi "modified" 0
+[22]  :endif
+    ∇

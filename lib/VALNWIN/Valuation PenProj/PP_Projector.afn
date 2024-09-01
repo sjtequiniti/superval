@@ -1,0 +1,41 @@
+    ∇ PP∆Projector comflag;pp∆accrued;pp∆exit;pp∆row;pp∆lxexit;pp∆LXexit;pp∆ly;pp∆LY;n;pp∆ppfRatio;pp∆Underpinned;BenefitTypeID;CCONTS;TargetAB;pp∆bentype;pp∆inctype;pp∆rows;⍙dbCFres;⍙dbABres;pp∆AltABno;pp∆UFUND;pp∆TestTab;VARIABLE_ALIASES;PVCONTS1pccf;pp∆VAB;pp∆AccumPV;pp∆AccumNormC;PVContsTot;∆
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Call the Pension Projection Functions
+[3]   ⍝ comflag indictaes if only commutation factor calculations are required
+[4]   
+[5]   :if ClassID=4 ⋄ :andif test
+[6]   ⍝⍀⍝ VARIABLE_ALIASES←push ⊂¨'' ''
+[7]       PP∆MembCalculations
+[8]   :else
+[9]       :if transfers ⍝⍝⍝ 0≠⎕nc 'Cat∆Transfers'
+[10]          pdef Cat∆Transfers
+[11]          pdef Memb∆Transfers
+[12]          ∆←(Ind∆Ongoing at 'Dec')∊↑,/pp∆ExitCodes
+[13]          (1 pp∆ExitCodes pp∆ExitContID pp∆SpouseContID pp∆ExitCol) PP∆Benefits Ind∆Ongoing for ∆
+[14]          Ind∆Ongoing←Ind∆Ongoing for ~∆
+[15]      :endif
+[16]      pdef Memb∆Output
+[17]  :endif
+[18]  pdef Cat∆Output
+[19]  ⍝⍀⍝ pp∆TestTab←MATRIX 'Ident' 'part' 'memorsp' 'exit' 'year' 'benyear' 'var' 'value'
+[20]  :if 0≠⎕nc 'Ind∆Ongoing'
+[21]      (0 pp∆ExitCodes pp∆ExitContID pp∆SpouseContID pp∆ExitCol) PP∆Benefits Ind∆Ongoing
+[22]  ⍝⍀⍝    0 PP∆TestReport pp∆TestTab
+[23]  ⍝⍀⍝    pp∆TestTab←MATRIX 'Ident' 'part' 'memorsp' 'exit' 'year' 'benyear' 'var' 'value'
+[24]  :endif
+[25]  
+[26]  :if ~comflag ⋄ :andif 0≠⎕nc 'Conts∆Output'
+[27]      PP∆Contributions Conts∆Output
+[28]  :endif
+[29]  
+[30]  :if 0≠⎕nc 'Ind∆Accrued'
+[31]      PP∆Accrued Ind∆Accrued
+[32]  ⍝⍀⍝    1 PP∆TestReport pp∆TestTab
+[33]  :endif
+[34]  
+[35]  ⍝⍀⍝ :if test ⋄ :andif ClassID=4 ⋄ PP∆MembIndOutput ⋄ :endif
+[36]  
+[37]  0 0⍴⎕ex 'Ind∆Ongoing',(~comflag)/' Memb∆Transfers Memb∆Output Conts∆Output Ind∆Accrued'
+[38]  0 0⍴⎕ex 'pp∆AGEDIF pp∆DISC pp∆FREQ pp∆FreqAdj pp∆GPOverlap pp∆HXX pp∆INCDAT pp∆INCIND pp∆IncTiming pp∆MODE pp∆SPMethod pp∆SWindic pp∆capind pp∆h pp∆hMP pp∆i pp∆incprop pp∆pi pp∆vMPPost pp∆vMPPostAdj pp∆vMPTVPre pp∆vMPPre pp∆vPost pp∆vTVPre pp∆vPre pp∆incadj pp∆incadjMP pp∆v pp∆vMP'
+[39]  0 0⍴⎕ex 'pp∆Comment pp∆ENX pp∆LNX pp∆LXill pp∆LXpost pp∆LXpre pp∆LYdis pp∆LYpost pp∆LYpre pp∆MS pp∆NX pp∆QXdef pp∆QXill pp∆QXret pp∆QYdef pp∆QYdis pp∆QYret pp∆SNX pp∆SpAge pp∆WRetAge pp∆X0 pp∆Xill2D pp∆Ydis2D pp∆Yret2D pp∆dbX0 pp∆dbXe pp∆lxill pp∆lxpost pp∆lxpre pp∆lydis pp∆lypost pp∆lypre'
+    ∇

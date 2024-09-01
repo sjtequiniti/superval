@@ -1,0 +1,22 @@
+    ∇ SelectFolder;Folder;∆
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ Select (or deselect) a Folder for use in comparison
+[3]   ⍝   foldertab←MATRIX 'InUse' 'Folder' 'PickList' 'NameList' 'sortorder' 'SortList'
+[4]   
+[5]   :if mt Folder←'Select Comparison Folder' GetFolder ''
+[6]       :return
+[7]   :elseif ~InputDir≡Folder
+[8]       :if ∨/∆←(foldertab at 'Folder')∊⊂Folder
+[9]           :if 'Y'='YN' ASK 'Do you want to de-select folder ',(¯1↓Folder),'?'
+[10]              foldertab←foldertab for ~∆
+[11]          :else
+[12]              :return
+[13]          :endif
+[14]      :elseif ∨/mt¨∆←('Actives_Basis' 'Deferreds_Basis' 'Pensioners_Basis') GetParmDesc 'OtherBases' Folder
+[15]          MDISPLAY 'No Saved Bases found in ',¯1↓Folder
+[16]      :else
+[17]          foldertab←foldertab append folderhead OVER 1 Folder,Folder FixListViewVars ∆
+[18]      :endif
+[19]      ('fmDispBases.lvSavedParms' 'Basis_Display') Win∆UpdateListview GetBases
+[20]  :endif
+    ∇

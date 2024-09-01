@@ -1,0 +1,29 @@
+    ∇ ID←arg ⍙DBNextID field;table;where;no;MaxID
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Return the next available ID number (updating the MaxID field)
+[3]   ⍝  Reads: sqlDatabase, DBID
+[4]   
+[5]   :if 0=↑(no MaxID)←2↑arg ⋄ ID←⍳0 ⋄ :return ⋄ :endif
+[6]   
+[7]   :select field
+[8]   :caselist 'ResultsCategoryID' 'BasisCategoryID' 'ScenarioID'
+[9]       table←'Identification'
+[10]      where←sqlDatabase/" WHERE DatabaseID=",⍕DBID
+[11]  :else
+[12]      table←'AllocatedIDs'
+[13]      where←""
+[14]  :endselect
+[15]  
+[16]  field←'Max',field
+[17]  
+[18]  next:
+[19]  ID←↑∊1↓(0 1) ⍙DBadoCONCommand¨("UPDATE ",table," SET ",field,"=",field,"+1",where) ("SELECT ",field," FROM ",table,where)
+[20]  
+[21]  :if MaxID≥ID
+[22]      0 0⍴0 ⍙DBadoCONCommand "UPDATE ",table," SET ",field,"=",(⍕MaxID),where
+[23]      →next
+[24]  :elseif no>1
+[25]      0 0⍴0 ⍙DBadoCONCommand "UPDATE ",table," SET ",field,"=",(⍕ID+no-1),where
+[26]      ID←ID+(⍳no)-⎕io
+[27]  :endif
+    ∇

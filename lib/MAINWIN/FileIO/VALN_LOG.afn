@@ -1,0 +1,53 @@
+    ∇ MESS VALN∆LOG parm;z;pfx
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Create or Add to the Valuation Log File
+[3]   
+[4]   :select parm
+[5]   :case 'Create'
+[6]       →(0=tpL←NCREATE InputDir,'VALN.$LOG')/⎕lc ⍝ Keep trying until success
+[7]       VALN∆LOG 'VarReset'
+[8]   
+[9]   :case 'VarReset'
+[10]      VALN∆Errors←0 0⍴''
+[11]  
+[12]  :case 'TempCreate'
+[13]      →(0=tpT←NCREATE InputDir,'VALN$LOG.tmp')/⎕lc ⍝ Keep trying until success
+[14]      z←∨/VALN∆Errors⍷'Warning:'
+[15]      (((~z)⌿VALN∆Errors)⍪z⌿VALN∆Errors) APPEND tpT
+[16]  
+[17]  :case 'TempDelete'
+[18]      NERASE tpT
+[19]  
+[20]  :case 'Header'
+[21]      VALN∆Errors←VALN∆Errors OVER (MATRIX 'Valuation Error Report')⍪'='
+[22]      VALN∆Errors←VALN∆Errors OVER 'Valuation Method:      ',ValName
+[23]      VALN∆Errors←VALN∆Errors OVER 'Valuation File:        ',basisFile
+[24]      VALN∆Errors←VALN∆Errors OVER 'Valuation Group:       ',basisDesc
+[25]      :if scenario
+[26]          VALN∆Errors←VALN∆Errors OVER 'Scenario Description:  ',ScenarioDesc
+[27]      :endif
+[28]      VALN∆Errors←VALN∆Errors OVER 'Valuation Sex:         ',SelSex
+[29]      VALN∆Errors←VALN∆Errors OVER 'Valuation Run Time:    ',RunTime
+[30]      VALN∆Errors←VALN∆Errors⍪' '
+[31]  
+[32]  :case 'Write'
+[33]      :if ~mt VALN∆Errors
+[34]          z←∨/VALN∆Errors⍷'Warning:'
+[35]          ((((~z)⌿VALN∆Errors)⍪z⌿VALN∆Errors)⍪' ') APPEND tpL
+[36]          VALN∆LOG 'VarReset'
+[37]      :endif
+[38]  
+[39]  :case 'Error'
+[40]      pfx←⊂'ERROR:  ' ⋄ →lab
+[41]  
+[42]  :case 'Warning'
+[43]      pfx←⊂'Warning:  ' ⋄ →lab
+[44]  
+[45]  :case 'Add'
+[46]      pfx←⊂''
+[47]  lab:
+[48]      :if 2≠⍴⍴MESS ⋄ MESS←DLTB MESS∆TRANS MESS ⋄ :endif ⍝ Translate message - not simple matrices
+[49]      VALN∆Errors←VALN∆Errors OVER ⊃pfx,¨⎕split SStoMAT ,⎕tcnl,MESS
+[50]  
+[51]  :endselect
+    ∇

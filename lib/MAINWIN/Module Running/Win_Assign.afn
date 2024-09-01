@@ -1,1 +1,66 @@
-    ∇ Fieldlist Win∆Assign Fieldcontrol;row;PickList;parent;No;value;Names;MaxRow;MaxCol;ctr;text;list;z;fIeLd[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Assign specified Controls on the Form to variables[3]   [4]   :for row :in ⍳↑⍴Fieldlist[5]       fIeLd←Fieldlist[row;][6]       :select DLTMB Fieldcontrol[row;]         ⍝ Assignment according to Field type[7]       :caselist 'APL' 'Date' 'Decr' 'Edit' 'LEdit' 'File' 'FileS' 'FileM' 'Multi' 'LMulti'[8]           (DLTB fIeLd ⎕wi 'text') ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable[9]       :case 'Combo'[10]          :if 0=z←fIeLd ⎕wi 'value' ⋄ text←DLTB fIeLd ⎕wi 'text'[11]          :else                     ⋄ text←DLTB (fIeLd ⎕wi 'list')[z;][12]          :endif[13]          (DLTB text) ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable[14]      :caselist 'Option' 'Radar'[15]          PickList←SStoMAT fIeLd ⎕wi '∆options'[16]          No←zwb '_' Win∆Child fIeLd ⋄ parent←'_' Win∆Parent fIeLd[17]          value←(m2n ('<',parent,'>,LI10') ⎕fmt ⍳No) MultiWI 'value'[18]          value←value,~∨/value[19]          (value⌿PickList⍪' ') ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable[20]      :case 'Check'[21]          (⍕fIeLd ⎕wi 'value') ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable[22]      :caselist 'List' 'ListS' 'ListM' 'ListD'[23]          value←,'⍺',(fIeLd ⎕wi 'list')[fIeLd ⎕wi 'value';] ⍝ Make into Segmented String List[24]          value ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable[25]      :caselist 'Listview' 'ListviewS' 'ListviewM' 'ListviewD'[26]          :if ~(0 0⍴'')≡list←(1 0×⍴PickList←fIeLd ⎕wi 'list')⍴''[27]              :for ctr :in 2↓⍳¯1↑⍴PickList[28]                  list←list,'⍺',(⊃PickList[;ctr]),' '[29]              :endfor[30]          :endif[31]          list←m2n list[32]          :if mt value←⊃(PickList[;1]∊fIeLd ⎕wi 'value')⌿list ⋄ value←,value[33]          :else                                               ⋄ value←MATRIX value[34]          :endif[35]          value ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable[36]      :case 'F1SS'[37]          :if ~fIeLd ⎕wi '∆VarsInWS'[38]              Names←fIeLd ⎕wi '∆name'[39]              :select fIeLd ⎕wi '∆roworcol'[40]              :case 'Col'[41]                  :if ~mt MaxRow←fIeLd ⎕wi 'MaxRow'[42]                      :for ctr :in ⍳1↑⍴Names[43]                          value←⊃,fIeLd Win∆F1SSGetTextArray 1 ctr MaxRow 1[44]                          value ASSIGN∆Dict Names[ctr;][45]                      :endfor[46]                  :endif[47]              :case 'Row'[48]                  :if ~mt MaxCol←fIeLd ⎕wi 'MaxCol'[49]                      :for ctr :in ⍳1↑⍴Names[50]                          :if 0∊⍴DLTMB Names[ctr;] ⋄ :continue ⋄ :endif ⍝ Comment[51]                          value←⊃,fIeLd Win∆F1SSGetTextArray ctr 1 1 MaxCol[52]                          value ASSIGN∆Dict Names[ctr;][53]                      :endfor[54]                  :endif[55]              :ELSE                                         ⍝⍝⍝[56]                  Fieldcontrol[row;],' not catered for!!!'  ⍝⍝⍝[57]              :endselect[58]          :endif[59]      :caselist 'Tree' 'Picture' 'Microsoft Web Browser'[60]          ⍝ Nothing !![61]      :ELSE                                         ⍝⍝⍝[62]          Fieldcontrol[row;],' not catered for!!!'  ⍝⍝⍝[63]      :endselect[64]  :endfor    ∇
+    ∇ Fieldlist Win∆Assign Fieldcontrol;row;PickList;parent;No;value;Names;MaxRow;MaxCol;ctr;text;list;z;fIeLd
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Assign specified Controls on the Form to variables
+[3]   
+[4]   :for row :in ⍳↑⍴Fieldlist
+[5]       fIeLd←Fieldlist[row;]
+[6]       :select DLTMB Fieldcontrol[row;]         ⍝ Assignment according to Field type
+[7]       :caselist 'APL' 'Date' 'Decr' 'Edit' 'LEdit' 'File' 'FileS' 'FileM' 'Multi' 'LMulti'
+[8]           (DLTB fIeLd ⎕wi 'text') ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable
+[9]       :case 'Combo'
+[10]          :if 0=z←fIeLd ⎕wi 'value' ⋄ text←DLTB fIeLd ⎕wi 'text'
+[11]          :else                     ⋄ text←DLTB (fIeLd ⎕wi 'list')[z;]
+[12]          :endif
+[13]          (DLTB text) ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable
+[14]      :caselist 'Option' 'Radar'
+[15]          PickList←SStoMAT fIeLd ⎕wi '∆options'
+[16]          No←zwb '_' Win∆Child fIeLd ⋄ parent←'_' Win∆Parent fIeLd
+[17]          value←(m2n ('<',parent,'>,LI10') ⎕fmt ⍳No) MultiWI 'value'
+[18]          value←value,~∨/value
+[19]          (value⌿PickList⍪' ') ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable
+[20]      :case 'Check'
+[21]          (⍕fIeLd ⎕wi 'value') ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable
+[22]      :caselist 'List' 'ListS' 'ListM' 'ListD'
+[23]          value←,'⍺',(fIeLd ⎕wi 'list')[fIeLd ⎕wi 'value';] ⍝ Make into Segmented String List
+[24]          value ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable
+[25]      :caselist 'Listview' 'ListviewS' 'ListviewM' 'ListviewD'
+[26]          :if ~(0 0⍴'')≡list←(1 0×⍴PickList←fIeLd ⎕wi 'list')⍴''
+[27]              :for ctr :in 2↓⍳¯1↑⍴PickList
+[28]                  list←list,'⍺',(⊃PickList[;ctr]),' '
+[29]              :endfor
+[30]          :endif
+[31]          list←m2n list
+[32]          :if mt value←⊃(PickList[;1]∊fIeLd ⎕wi 'value')⌿list ⋄ value←,value
+[33]          :else                                               ⋄ value←MATRIX value
+[34]          :endif
+[35]          value ASSIGN∆Dict (DLTMB fIeLd ⎕wi '∆name') ⍝ Assign Variable
+[36]      :case 'F1SS'
+[37]          :if ~fIeLd ⎕wi '∆VarsInWS'
+[38]              Names←fIeLd ⎕wi '∆name'
+[39]              :select fIeLd ⎕wi '∆roworcol'
+[40]              :case 'Col'
+[41]                  :if ~mt MaxRow←fIeLd ⎕wi 'MaxRow'
+[42]                      :for ctr :in ⍳1↑⍴Names
+[43]                          value←⊃,fIeLd Win∆F1SSGetTextArray 1 ctr MaxRow 1
+[44]                          value ASSIGN∆Dict Names[ctr;]
+[45]                      :endfor
+[46]                  :endif
+[47]              :case 'Row'
+[48]                  :if ~mt MaxCol←fIeLd ⎕wi 'MaxCol'
+[49]                      :for ctr :in ⍳1↑⍴Names
+[50]                          :if 0∊⍴DLTMB Names[ctr;] ⋄ :continue ⋄ :endif ⍝ Comment
+[51]                          value←⊃,fIeLd Win∆F1SSGetTextArray ctr 1 1 MaxCol
+[52]                          value ASSIGN∆Dict Names[ctr;]
+[53]                      :endfor
+[54]                  :endif
+[55]              :ELSE                                         ⍝⍝⍝
+[56]                  Fieldcontrol[row;],' not catered for!!!'  ⍝⍝⍝
+[57]              :endselect
+[58]          :endif
+[59]      :caselist 'Tree' 'Picture' 'Microsoft Web Browser'
+[60]          ⍝ Nothing !!
+[61]      :ELSE                                         ⍝⍝⍝
+[62]          Fieldcontrol[row;],' not catered for!!!'  ⍝⍝⍝
+[63]      :endselect
+[64]  :endfor
+    ∇

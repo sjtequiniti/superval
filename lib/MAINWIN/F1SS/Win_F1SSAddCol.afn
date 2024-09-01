@@ -1,0 +1,17 @@
+    ∇ NO Win∆F1SSAddCol SSName;MaxCol;size;i;cols
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Add a Column to the Spreadsheet
+[3]   
+[4]   SSName ⎕wi 'MaxCol' (MaxCol←NO+SSName ⎕wi 'MaxCol')
+[5]   SSName ⎕wi 'xSetActiveCell' 1 MaxCol
+[6]   
+[7]   ⍝ Determine columns width
+[8]   size←¯1↑SSName ⎕wi 'size' ⋄ cols←SSName ⎕wi 'HdrWidth'
+[9]   :for i :in ⌽⍳MaxCol
+[10]      cols←cols,SSName ⎕wi 'ColWidth' i
+[11]  :endfor
+[12]  
+[13]  SSName ⎕wi 'xTopRow' 1
+[14]  SSName ⎕wi 'xLeftCol' (1⌈+/size<+\cols)
+[15]  SSName ⎕wi 'modified' 1
+    ∇

@@ -1,0 +1,25 @@
+    ∇ inerror HPC_TransferRuns ⍙⍙arg;⍙⍙file;⍙⍙tie;⍙⍙nattie;⍙⍙otherdir;⍙⍙otherfile
+[1]   ⍝ WLSWIN.sf#5
+[2]   ⍝ Transfer the contents of secondary results file to main results file
+[3]   ⍝ "InputDir" and "⍙⍙otherdir" are global with the primary and secondary folders
+[4]   
+[5]   (⍙⍙file ⍙⍙tie ⍙⍙otherdir)←⍙⍙arg
+[6]   
+[7]   ⍙⍙nattie←⍙⍙nattie-⍙⍙tie=⍙⍙nattie←'Native' TieNumber '' ⍝ Next available tie (allowing for ⍙⍙tie)
+[8]   :if (⍙⍙otherfile←('/',InputDir,'/',⍙⍙otherdir) TEXTREPL ⍙⍙file) NTIE ⍙⍙nattie
+[9]       :if inerror
+[10]          ⍙⍙otherfile NERASE ⍙⍙nattie
+[11]      :else
+[12]          :if ⍙⍙file NSTIE ⍙⍙tie
+[13]              :if ecflag ⋄ 'Transferring ',⍙⍙otherfile ⋄ :endif
+[14]              ⍙⍙tie HPC_NTransfer ⍙⍙nattie
+[15]          :else
+[16]              →err
+[17]          :endif
+[18]      :endif
+[19]  :else
+[20]  err:
+[21]      MDISPLAY 'Unable to transfer results in ',⍙⍙otherfile,' to ',⍙⍙file
+[22]      :if ecflag ⋄ crash ⋄ :endif
+[23]  :endif
+    ∇

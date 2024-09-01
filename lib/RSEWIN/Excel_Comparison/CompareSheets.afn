@@ -1,1 +1,47 @@
-    ∇ sheet1 CompareSheets sheet2;detail1;detail2;rows;cols;var1;var2;i;j;r;ctr;sink;N;∆;coords[1]   ⍝ RSEWIN.sf#2[2]   ⍝ Compare the sheets in Workbook1 and Workbook2[3]   ⍝ These are open (SuperVal) workbooks with 16 sheets (called the same name).[4]   ⍝ HOWEVER they may not be in the same order.[5]   ⍝ Example: 14 CompareSheets 13[6]   ⍝ will compare Sheet14 in Workbook1 with Sheet13 in Workbook2[7]   [8]   ⍝ Get the data from the maximum "lastcell" in each sheet (wb1 and wb2 have been set up as Globals)[9]   detail1←wb1 ⎕wi '∆detail' ⋄ detail2←wb2 ⎕wi '∆detail'[10]  [11]  ⍝⍝⍝ A1toLastcell←('A1:'),RCtoA1 detail1[sheet1;5 6]⌈detail2[sheet2;5 6][12]  [13]  wb1 ⎕wi 'XActivate' ⋄ sink←XLComp_ActivateWorksheet sheet1 ⋄ var1←DLTB¨'' ⍙DBRemoveNulls XLComp_Data ('A1:'),RCtoA1 detail1[sheet1;5 6][14]  wb2 ⎕wi 'XActivate' ⋄ sink←XLComp_ActivateWorksheet sheet2 ⋄ var2←DLTB¨'' ⍙DBRemoveNulls XLComp_Data ('A1:'),RCtoA1 detail2[sheet2;5 6][15]  ⍝⍝⍝ ∆←(⍴var1)⌈⍴var2 ⋄ var1←∆↑var1 ⋄ var2←∆↑var2[16]  [17]  XLComp_SheetChanges ↑detail1[sheet1;2][18]  [19]  '' APPEND tpr1[20]  ((3↓wb1),' Sheet ',(⍕sheet1),':  ',↑detail1[sheet1;2]) APPEND tpr1[21]  ((3↓wb2),' Sheet ',(⍕sheet2),':  ',↑detail2[sheet2;2]) APPEND tpr1[22]  ('===========================================') APPEND tpr1[23]  r←var1≡¨var2[24]  ⍝⍝⍝:for i :in ⍳rows[25]  ⍝⍝⍝  :for j :in ⍳cols[26]  ⍝⍝⍝      r[i;j]←var1[i;j]≡var2[i;j][27]  ⍝⍝⍝  :endfor[28]  ⍝⍝⍝:endfor[29]  [30]  N←+/,r←~r ⍝ 1 now flags different cells[31]  ('Number of different Cells: ',(DLTB 'LCI10' ⎕fmt N),(×N)/' - any Expected Differences not shown') APPEND tpr1[32]  [33]  (rows cols)←⍴var1[34]  :if MAX<⍴coords←(,(∆×[1]⍳rows),¨(∆←~var1≡¨var2)×[2]⍳cols)~⊂0 0[35]      coords←MAX↑coords[36]  :endif[37]  [38]  :for ∆ :in coords ⋄ (i j)←∆[39]      :if XLComp_SheetExpected DLTB ↑detail1[sheet1;2] ⋄ :continue ⋄ :endif[40]      'xl' ⎕wi 'Range>.Rng' (RCtoA1 i j)[41]      ('xl.Rng' ⎕wi 'xInterior') ⎕wi 'xColorIndex' 27[42]      '' APPEND tpr1[43]      ('<',(3↓wb1),'[',(RCtoA1 i,j),']>  ','¯-' REPL ⍕↑var1[i;j]) APPEND tpr1[44]      ('<',(3↓wb2),'[',(RCtoA1 i,j),']>  ','¯-' REPL ⍕↑var2[i;j]) APPEND tpr1[45]  :endfor    ∇
+    ∇ sheet1 CompareSheets sheet2;detail1;detail2;rows;cols;var1;var2;i;j;r;ctr;sink;N;∆;coords
+[1]   ⍝ RSEWIN.sf#2
+[2]   ⍝ Compare the sheets in Workbook1 and Workbook2
+[3]   ⍝ These are open (SuperVal) workbooks with 16 sheets (called the same name).
+[4]   ⍝ HOWEVER they may not be in the same order.
+[5]   ⍝ Example: 14 CompareSheets 13
+[6]   ⍝ will compare Sheet14 in Workbook1 with Sheet13 in Workbook2
+[7]   
+[8]   ⍝ Get the data from the maximum "lastcell" in each sheet (wb1 and wb2 have been set up as Globals)
+[9]   detail1←wb1 ⎕wi '∆detail' ⋄ detail2←wb2 ⎕wi '∆detail'
+[10]  
+[11]  ⍝⍝⍝ A1toLastcell←('A1:'),RCtoA1 detail1[sheet1;5 6]⌈detail2[sheet2;5 6]
+[12]  
+[13]  wb1 ⎕wi 'XActivate' ⋄ sink←XLComp_ActivateWorksheet sheet1 ⋄ var1←DLTB¨'' ⍙DBRemoveNulls XLComp_Data ('A1:'),RCtoA1 detail1[sheet1;5 6]
+[14]  wb2 ⎕wi 'XActivate' ⋄ sink←XLComp_ActivateWorksheet sheet2 ⋄ var2←DLTB¨'' ⍙DBRemoveNulls XLComp_Data ('A1:'),RCtoA1 detail2[sheet2;5 6]
+[15]  ⍝⍝⍝ ∆←(⍴var1)⌈⍴var2 ⋄ var1←∆↑var1 ⋄ var2←∆↑var2
+[16]  
+[17]  XLComp_SheetChanges ↑detail1[sheet1;2]
+[18]  
+[19]  '' APPEND tpr1
+[20]  ((3↓wb1),' Sheet ',(⍕sheet1),':  ',↑detail1[sheet1;2]) APPEND tpr1
+[21]  ((3↓wb2),' Sheet ',(⍕sheet2),':  ',↑detail2[sheet2;2]) APPEND tpr1
+[22]  ('===========================================') APPEND tpr1
+[23]  r←var1≡¨var2
+[24]  ⍝⍝⍝:for i :in ⍳rows
+[25]  ⍝⍝⍝  :for j :in ⍳cols
+[26]  ⍝⍝⍝      r[i;j]←var1[i;j]≡var2[i;j]
+[27]  ⍝⍝⍝  :endfor
+[28]  ⍝⍝⍝:endfor
+[29]  
+[30]  N←+/,r←~r ⍝ 1 now flags different cells
+[31]  ('Number of different Cells: ',(DLTB 'LCI10' ⎕fmt N),(×N)/' - any Expected Differences not shown') APPEND tpr1
+[32]  
+[33]  (rows cols)←⍴var1
+[34]  :if MAX<⍴coords←(,(∆×[1]⍳rows),¨(∆←~var1≡¨var2)×[2]⍳cols)~⊂0 0
+[35]      coords←MAX↑coords
+[36]  :endif
+[37]  
+[38]  :for ∆ :in coords ⋄ (i j)←∆
+[39]      :if XLComp_SheetExpected DLTB ↑detail1[sheet1;2] ⋄ :continue ⋄ :endif
+[40]      'xl' ⎕wi 'Range>.Rng' (RCtoA1 i j)
+[41]      ('xl.Rng' ⎕wi 'xInterior') ⎕wi 'xColorIndex' 27
+[42]      '' APPEND tpr1
+[43]      ('<',(3↓wb1),'[',(RCtoA1 i,j),']>  ','¯-' REPL ⍕↑var1[i;j]) APPEND tpr1
+[44]      ('<',(3↓wb2),'[',(RCtoA1 i,j),']>  ','¯-' REPL ⍕↑var2[i;j]) APPEND tpr1
+[45]  :endfor
+    ∇

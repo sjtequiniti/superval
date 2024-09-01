@@ -1,0 +1,39 @@
+    ∇ res←GetVarNumList level;z;field;Format;Vars;Labs
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a list of "Member" specific Numeric Variable Names and descriptions
+[3]   ⍝ based on the currently defined "format" (in udp "∆format")
+[4]   ⍝ level can indicate if any of the "Standards" are included
+[5]   ⍝   "Non-Standard" - include only all "Non-Standard" Numeric Variables
+[6]   ⍝   "Salary" - include Total Non-Standards & Previous and Current Salary
+[7]   ⍝   "Standard" - only all "Standard" Numeric Variables
+[8]   ⍝   "All" - to include all defined for Valuations
+[9]   
+[10]  res←0 0⍴'' ⍝ Default response
+[11]  
+[12]  :if 1<⍴,field←ControlName ⎕wi '∆format'
+[13]  :andif ~0∊⍴DLTMB Format←field ⎕wi 'text'
+[14]      CREATEDATADESC Format
+[15]  
+[16]      ⍝ Non-Standard Variables
+[17]      Vars←(z←∨/MATRIX TotNumVars≠' ')⌿LJUSTIFY MATRIX TotNumVars
+[18]      z←∨/' '≠Labs←z⌿MATRIX TotNumDesc
+[19]      z←z^~(m2n Vars)≡¨m2n Labs
+[20]      Labs←⊃z\(⊂' - '),¨z/⎕split Labs
+[21]      res←⊃DLTMB ¨⎕split Vars,Labs
+[22]  
+[23]      :select level
+[24]      :case 'Salary'
+[25]          z←×(⍴,fSAL),(⍴,fPSAL)
+[26]          res←(z⌿SStoMAT '⍺Current Salary⍺Previous Salary') OVER (~AvNEDs)⌿res
+[27]      :case 'Standard'
+[28]          z←×,⊃⍴¨⍎¨⎕split SStoMAT FixNumStandVars,VarNumStandVars
+[29]          res←z⌿SStoMAT FixNumStandNames,VarNumStandNames
+[30]      :case 'All' ⍝ All "standard" & "non-standard" numeric variables
+[31]          z←×,⊃⍴¨⍎¨⎕split SStoMAT FixNumStandVars,VarNumStandVars
+[32]          res←(z⌿SStoMAT FixNumStandNames,VarNumStandNames) OVER res
+[33]      :endselect
+[34]  
+[35]  :endif
+[36]  
+[37]  res←'Numeric Variables' OVER res
+    ∇

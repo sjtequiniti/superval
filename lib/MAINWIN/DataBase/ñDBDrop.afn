@@ -1,0 +1,25 @@
+    ∇ res←⍙DBDrop ⍙dbname;tie;xxx;elx;n
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Drop/Delete a Database
+[3]   ⍝ Reads: sqlDatabase
+[4]   
+[5]   res←0
+[6]   :if sqlDatabase                                             ⍝ Database found on SQL Server instance
+[7]       xxx←'ADOcon' 'ADOrst' ⎕WI¨(⊂'Create') pr¨'ADODB.Connection' 'ADODB.Recordset' ⍝ Create ADO Connection and Record Set Objects
+[8]       'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[9]       'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[10]      ⍙DBSQLOpen 'Database' 'Master'
+[11]      'ADOrst' ⎕WI 'XOpen' 'sys.databases' ('ADOcon' ⎕wi 'obj') ('ADOrst' ⎕wi 'adOpenStatic') ('ADOrst' ⎕wi 'adLockOptimistic')
+[12]      'ADOrst' ⎕WI 'Filter' ("name=",1 ⍙DBString ⍙dbname)
+[13]      :if ×'ADOrst' ⎕WI 'xRecordCount'
+[14]          n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"⍙DBDrop ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5 ⋄ →retry'
+[15]  retry:
+[16]          :if 11=n←n+1 ⋄ ⎕elx←'⎕elx←elx ⋄ →out' ⋄ :endif ⍝ Retry 10 times then give up
+[17]          xxx←'ADOcon' ⎕WI 'XExecute' ('DROP DATABASE [',⍙dbname,']')
+[18]          ⎕elx←elx ⋄ res←1
+[19]      :endif
+[20]  out:xxx←'ADOrst' 'ADOcon' ∘.⎕WI 'XClose' 'Close' 'Delete'   ⍝ avoid XOpen after XClose of Connection object
+[21]  :elseif ⍙dbname NTIE tie←'Native' TieNumber ⍙dbname
+[22]      ⍙dbname NERASE tie ⋄ res←1
+[23]  :endif
+    ∇

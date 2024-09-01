@@ -1,0 +1,25 @@
+    ∇ res←XL_filecheck;cc;SchemeID;DBID
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Check that Excel File has correct Version, Client Code and Scheme ID
+[3]   
+[4]   :if res←~(DLTB Win∆Parent version)≡XL_Data 'Version' ⋄ :return ⋄ :endif ⍝ Versions don't match
+[5]   
+[6]   :if ~mt cc←,XL_Data 'ClntCode' ⍝ Client Code not blank
+[7]   :andif ∨/res←res,~(↑ClntCode×1+bGAD)≡↑cc ⍝ Invalid Client Code
+[8]       :return
+[9]   :endif
+[10]  
+[11]  :if ∨/res←res,~((sqlDatabase×SchemeID←↑,XL_Data 'SchemeID')∊0,sqlschemeID)^sqlDatabase=×sqlschemeID ⋄ :return ⋄ :endif ⍝ Invalid Scheme ID
+[12]  
+[13]  :if ∨/res←res,~sepComCot=XL_Data 'CashSplit' ⋄ :return ⋄ :endif ⍝ Change in Cash Split
+[14]  
+[15]  :if SchemeID≠sqlschemeID                    ⍝ File changed from Access to SQL (or vice-versa)
+[16]      0 0⍴sqlschemeID XL_Data 'SchemeID'
+[17]      0 0⍴(DBID←100∣⌊0.0001×DatabaseID) XL_Data 'DatabaseID'
+[18]      :if sqlDatabase
+[19]          0 0⍴(cLIENT,' (SchemeID ',(⍕sqlschemeID),' DatabaseID ',(⍕DBID),')') XL_Data 'Client'
+[20]      :endif
+[21]  :endif
+[22]  
+[23]  0 0⍴0 XL_Data 'Update' ⍝ Update Hidden results flag
+    ∇

@@ -1,1 +1,41 @@
-    ∇ RF_GMPFields Module[1]   ⍝ DATAWIN.sf#24[2]   ⍝ Revn dnp23feb18 * added rules for what to pick for GMP Revaluation rates[3]   ⍝ Renv dnp22mar18 * if  GMP as at leaving date is checked should uncheck the GMP Fixed Revaln Rate[4]   [5]   :if ~'Actives'≡Module[6]       ⍎'GMPFixed_'  ,(⍕PageNO),'←dic at "GMPREV2"'[7]       ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "GMPREV1"'[8]   :else[9]       ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "s148"'[10]  ⍝   :if 'S148'≡ UPPERCASE dic at 'GREV'                      ⍝ If the Revaln Type to SPA is S148[11]  ⍝        ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "s148"'       ⍝ Use the value of S148[12]  ⍝   :endif[13]  [14]  :endif[15]  [16]  :if 'Deferreds'≡Module[17]      :if  zwb dic at 'GMPORIGIN'[18]          ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂"None"'[19]          ⍎'GMPFixed_'  ,(⍕PageNO),'←"0"'                      ⍝ dnp22mar18[20]      :endif[21]  [22]  ⍝    :if  (dic at 'PASTREV') starts 'Fixed'                  ⍝ dnp23feb18[23]  ⍝        ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "PASTREVN"'[24]  ⍝    :endif[25]  [26]  ⍝    :if  (dic at 'PASTREV') starts 's52'                    ⍝ dnp23feb18[27]  ⍝        ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "REVSet"'[28]  ⍝    :endif[29]  [30]  :endif[31]  [32]  :if ~'Pensioners'≡Module[33]      ⍎'GMPLRinc_',(⍕PageNO),'←dic at "GMPLRInc"'[34]  :endif[35]  [36]  ⍝⍝⍝ GMPRevaln_#[;][37]  ⍎'GMPIncrease_',(⍕PageNO),'←⊃dic at "B88GMPINC" "A88GMPINC"'[38]  ⍎'GMPINCIND_',(⍕PageNO),'←dic at "INCIND"'[39]  ⍎'GMPINCDAT_',(⍕PageNO),'←dic at "INCDAT"'    ∇
+    ∇ RF_GMPFields Module
+[1]   ⍝ DATAWIN.sf#24
+[2]   ⍝ Revn dnp23feb18 * added rules for what to pick for GMP Revaluation rates
+[3]   ⍝ Renv dnp22mar18 * if  GMP as at leaving date is checked should uncheck the GMP Fixed Revaln Rate
+[4]   
+[5]   :if ~'Actives'≡Module
+[6]       ⍎'GMPFixed_'  ,(⍕PageNO),'←dic at "GMPREV2"'
+[7]       ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "GMPREV1"'
+[8]   :else
+[9]       ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "s148"'
+[10]  ⍝   :if 'S148'≡ UPPERCASE dic at 'GREV'                      ⍝ If the Revaln Type to SPA is S148
+[11]  ⍝        ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "s148"'       ⍝ Use the value of S148
+[12]  ⍝   :endif
+[13]  
+[14]  :endif
+[15]  
+[16]  :if 'Deferreds'≡Module
+[17]      :if  zwb dic at 'GMPORIGIN'
+[18]          ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂"None"'
+[19]          ⍎'GMPFixed_'  ,(⍕PageNO),'←"0"'                      ⍝ dnp22mar18
+[20]      :endif
+[21]  
+[22]  ⍝    :if  (dic at 'PASTREV') starts 'Fixed'                  ⍝ dnp23feb18
+[23]  ⍝        ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "PASTREVN"'
+[24]  ⍝    :endif
+[25]  
+[26]  ⍝    :if  (dic at 'PASTREV') starts 's52'                    ⍝ dnp23feb18
+[27]  ⍝        ⍎'GMPRevaln_' ,(⍕PageNO),'←⊃2⍴⊂dic at "REVSet"'
+[28]  ⍝    :endif
+[29]  
+[30]  :endif
+[31]  
+[32]  :if ~'Pensioners'≡Module
+[33]      ⍎'GMPLRinc_',(⍕PageNO),'←dic at "GMPLRInc"'
+[34]  :endif
+[35]  
+[36]  ⍝⍝⍝ GMPRevaln_#[;]
+[37]  ⍎'GMPIncrease_',(⍕PageNO),'←⊃dic at "B88GMPINC" "A88GMPINC"'
+[38]  ⍎'GMPINCIND_',(⍕PageNO),'←dic at "INCIND"'
+[39]  ⍎'GMPINCDAT_',(⍕PageNO),'←dic at "INCDAT"'
+    ∇

@@ -1,0 +1,35 @@
+    ∇ TrackUser action;tno;elx;∆;tried;xxx;delay
+[1]   ⍝ UTILSWIN.sf#3
+[2]   ⍝ Log user's system usage
+[3]   ⍝ Create log file if necessary
+[4]   ⍝ Revn: sjt26feb2015
+[5]   elx←⎕ELX
+[6]   tno←TieNumber UsageLog
+[7]   (tried delay)←0 1
+[8]   →Try
+[9]   
+[10]  Catch:
+[11]      ⎕ELX←elx
+[12]      :if ~FileExist UsageLog
+[13]          elx←⎕ELX ⋄ ⎕ELX←"→End"                                                  ⍝ Abort if can't create log
+[14]          UsageLog ⎕XFCREATE tno                                                  ⍝ User may lack write permission.
+[15]          ⎕FUNTIE tno                                                             ⍝ Release exclusive tie (for other users)
+[16]          ⎕ELX←elx
+[17]      :elseif 4>tried←tried+1
+[18]          xxx←⎕DL delay
+[19]          →Try
+[20]      :else
+[21]          →End
+[22]      :endif
+[23]  
+[24]  Try:
+[25]      ⎕ELX←"→Catch"
+[26]      UsageLog ⎕XFSTIE tno
+[27]      ⎕ELX←elx
+[28]     ⍝ ⎕FAPPEND works even under race condition
+[29]     ⍝ or while another user holds the file for archiving.
+[30]      xxx←(uSER action) ⎕FAPPEND tno                                              ⍝ Filesys timestamps all components
+[31]      ⎕FUNTIE tno
+[32]  
+[33]  End:
+    ∇

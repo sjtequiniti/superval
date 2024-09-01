@@ -1,0 +1,88 @@
+    ∇ XL_filesetup;basis;DBID
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ General Modifications to Excel file to suit Valn Method, Client Code, etc etc
+[3]   
+[4]   (2 9 'Header') Win∆ProgressBar2 'MemberUpdate'
+[5]   
+[6]   0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[7]   
+[8]   0 0⍴(ClntCode×1+bGAD) XL_Data 'ClntCode'
+[9]   0 0⍴sqlschemeID XL_Data 'SchemeID'
+[10]  0 0⍴(DBID←100∣⌊0.0001×DatabaseID) XL_Data 'DatabaseID'
+[11]  0 0⍴(cLIENT,sqlDatabase/' (SchemeID ',(⍕sqlschemeID),' DatabaseID ',(⍕DBID),')') XL_Data 'Client'
+[12]  0 0⍴(,'ZI4,</>,ZI2,</>,ZI2' ⎕fmt MATRIX ⌽¯3↑pvDATE,vDATEind/vDATE) XL_Data 'VDate'
+[13]  0 0⍴basisFile XL_Data 'BasisFile'
+[14]  
+[15]  0 0⍴⍙dbopen XL_Data 'DBOpen'
+[16]  0 0⍴0 XL_Data 'CompOnly'
+[17]  0 0⍴(ValMeth,' ',ValMethdesc) XL_Data 'ValMeth'
+[18]  0 0⍴ppf XL_Data 'PPF'
+[19]  0 0⍴(~NotPUC) XL_Data 'PUC'
+[20]  0 0⍴dab XL_Data 'DAB'
+[21]  0 0⍴bencap XL_Data 'BenCap'
+[22]  0 0⍴aosind XL_Data 'AOS'
+[23]  0 0⍴sepComCot XL_Data 'CashSplit'
+[24]  0 0⍴bAON XL_Data 'Check'
+[25]  :if aosind ⋄ 0 0⍴(,'ZI4,</>,ZI2,</>,ZI2' ⎕fmt MATRIX ⌽pvDATE) XL_Data 'PVDate'⋄ :endif
+[26]  :if ClassID=1 ⋄ 0 0⍴abNO XL_Data 'ABno' ⋄ 0 0⍴(insind×~NotPUC) XL_Data 'InsInd' ⋄ :endif
+[27]  
+[28]  1 XL_ActivateWorksheet 'Contents'
+[29]  'L' XL_RangeDelete ⍬ (16+ClassID∊1 2) ⍬ 19 ⍝ Delete Class (Pen and Def), BasisFile column, Scenario ID and Description
+[30]  :if ~⍙dbopen
+[31]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 4⍴⍬ 4) ⋄ ('XL.Rng' ⎕wi 'xEntireColumn') ⎕wi 'xHidden' 1 ⍝ Hide the "DB ID" column
+[32]  :endif
+[33]  :if s143 ⋄ :andif 0>vDATE YDAYS 30 4 2021
+[34]      0 0⍴'*** Post 1 May 2021 s143 Mortality Assumptions (B9 Valuation Guidance) have not been implemented ***' XL_Data 'H5'
+[35]  :endif
+[36]  'Contents' XL_ProtectSheet 1
+[37]  
+[38]  1 XL_ActivateWorksheet 'AllBases'
+[39]  'BasisPages' XL_specsetup ClassID
+[40]  
+[41]  'XL' ⎕wi 'XCalculate' ⍝ Recalculate Indexes
+[42]  
+[43]  'FixIndexes' XL_specsetup ClassID
+[44]  
+[45]  ⍝ Adjust/Delete the Results Pages for various methods
+[46]  :if ppf ⍝ Delete Total and Statistics Sheets
+[47]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ValnTot') ⎕wi 'XDelete'
+[48]      'Capped' XL_specsetup ClassID
+[49]      'StatCap' XL_specsetup ClassID
+[50]  :else
+[51]      'Normal' XL_specsetup ClassID
+[52]      'StatNorm' XL_specsetup ClassID
+[53]  
+[54]      (9 9 'Total Results') Win∆ProgressBar2 'MemberUpdate'
+[55]      1 XL_ActivateWorksheet 'ValnTot' ⋄ basis←XL_Data 'TotDetails'
+[56]      0 0⍴(('XL' ⎕wi 'Names') ⎕wi 'xItem' 'TotDetails') ⎕wi 'Delete'
+[57]      basis←,(,⊃basis[;⎕io])∊' ',⍕~NotPUC
+[58]      '' XL_SheetCustomise (10-⎕io)+WHERE ~basis
+[59]      :if ClassID=3 ⍝ Delete ROC rows
+[60]          'U' XL_RangeDelete 42 ⍬ 42 ⍬
+[61]          'U' XL_RangeDelete 23 ⍬ 23 ⍬
+[62]      :elseif ClassID=4 ⋄ :andif ~bencap
+[63]          'U' XL_RangeDelete 35 ⍬ 58 ⍬
+[64]      :endif
+[65]      'ValnTot' XL_ProtectSheet 1
+[66]  :endif
+[67]  
+[68]  ⍝⍝⍝:if ecflag ⋄ :andif ~bAON ⋄ :andif ClassID=4
+[69]  ⍝⍝⍝    (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'ValnCheck') ⎕wi 'XDelete'
+[70]  ⍝⍝⍝:endif
+[71]  
+[72]  :if ClntCode≠3 ⋄ :orif ppf
+[73]      'CFbyCat' XL_ProtectSheet 0
+[74]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'CFbyCat') ⎕wi 'XDelete'
+[75]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'CashFlow') ⎕wi 'XDelete'
+[76]  :endif
+[77]  
+[78]  0 XL_ActivateWorksheet 'Members'
+[79]  :if basisIdentifier ⋄ (7 7) XL_HAlign '=xlHAlignLeft' ⋄ :endif
+[80]  :if ~aosind
+[81]      'XL' ⎕wi 'Range>.Rng' (RCtoA1 4⍴⍬ 12) ⋄ ('XL.Rng' ⎕wi 'xEntireColumn') ⎕wi 'xHidden' 1 ⍝ Hide the "Actives" column
+[82]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'IndivAOS') ⎕wi 'XDelete'
+[83]      (('XL.wb' ⎕wi 'xWorksheets') ⎕wi 'XItem' 'AOSTot') ⎕wi 'XDelete'
+[84]  :endif
+[85]  
+[86]  0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+    ∇

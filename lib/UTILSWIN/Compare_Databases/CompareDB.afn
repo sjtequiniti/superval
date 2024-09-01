@@ -1,0 +1,89 @@
+    ∇ Z←hasGui CompareDB sources;∆;xxx;fldr;cstrs;cons;tnames;rpt;t;f;common;tname;emsg;nrecs;matching;matched;ok;rows;msk;progid;mess;props
+[1]   ⍝ UTILSWIN.sf#8
+[2]   ⍝ Report differences between two database sources
+[3]   ⍝ sources: [ filepath ∣ databasename ]{2}
+[4]   ⍝ databasename: (str) name of database in local SQL Server instance
+[5]   ⍝ filepath: (str) full filepath of MDB
+[6]   ⍝ {hasGui}: (flg) GUI objects available
+[7]   ⍝ Z: ok & rpt
+[8]   ⍝ ok: (flg) databases match (¯1 for fail)
+[9]   ⍝ rpt: (txt) report of differences
+[10]  ⍝ Reads: BROWSER PB SB UI_COLOR_LTRED UI_COLOR_LTGREEN
+[11]  ⍝ Vern: sjt12mar16
+[12]  ⎕IO←1
+[13]  
+[14]  :if 0=⎕NC 'hasGui' ⋄ hasGui←0 ⋄ :endif
+[15]  
+[16]  (ok rpt)←1 ''
+[17]  :if   ((⊂'.MDB')∊caseUp¨¯4↑¨sources)∨(⊂'.ACCDB')∊caseUp¨¯6↑¨sources
+[18]  :andif mt progid←⍙DBAccessProvider 0
+[19]      (ok rpt)←¯1 'Microsoft Access not installed'
+[20]  :endif
+[21]  :if (⊂'[SQL Server] ')∊13↑¨sources
+[22]      :if 0=⎕nc 'sql_properties'
+[23]          :if mt sqlConName ⋄ :orif mt ConfigFile ReadFile 'Configure_SQL' sqlConName ⋄ :orif accesslevel<zwb SQLAccess
+[24]              mess←'SQL Server Connection properties not specified.',⎕tcnl
+[25]              mess←mess,'Refer to your Site Administrator to update your User details (Tools/Administration/Manage Users)'
+[26]              (ok rpt)←¯1 (rpt mess)
+[27]          :endif
+[28]          sql_properties←⊃spin m2n¨property propvalue
+[29]          sqlTimeout←zwb SQLTimeout
+[30]          0 0⍴DeleteVars 'Configure_SQL'
+[31]      :endif
+[32]  :endif
+[33]  :if 1=ok
+[34]      :if ∨/msk←(13↑¨sources)∊⊂'[SQL Server] ' ⋄ props←(1+msk)⊃¨⊂'' sql_properties
+[35]      :else                                    ⋄ props←'' ''
+[36]      :endif
+[37]  
+[38]      cstrs←((↑sources) ⍙DBconnectionString ↑props) ((↑1↓sources) ⍙DBconnectionString ↑1↓props)
+[39]  
+[40]      cons←newRootChild¨2/⊂'ADOcon'
+[41]      xxx←cons ⎕WI¨ ⊂'Create' 'ADODB.Connection'
+[42]      cons ⎕wi¨⊂'xConnectionTimeout' sqlTimeout
+[43]      cons ⎕wi¨⊂'xCommandTimeout' sqlTimeout
+[44]      xxx←cons ⎕WI¨ (⊂'XOpen') pr¨ cstrs
+[45]  
+[46]      :if ≡/tnames←⍙DBTableNames¨cons
+[47]      :orif ≡/srt¨tnames
+[48]          rpt←⊂'Same tables in both databases'
+[49]      :else
+[50]          :if ~mt ∆←(~↑∊/ tnames)/↑ tnames ⋄ rpt←rpt,⊂'Tables only in ',(↑ sources),': ',⍕∆ ⋄ :endif
+[51]          :if ~mt ∆←(~↑∊/⌽tnames)/↑⌽tnames ⋄ rpt←rpt,⊂'Tables only in ',(↑⌽sources),': ',⍕∆ ⋄ :endif
+[52]      :endif
+[53]  
+[54]      :if mt common←(↑∊/tnames)/1⊃tnames
+[55]          rpt←rpt,⊂'No tables in common'
+[56]          ok←0
+[57]      :else
+[58]          (ok matching)←1 (0 2⍴0)
+[59]          :if hasGui ⋄ PB ⎕WI 'value' 0 (tally common) 1 0 ⋄ :endif
+[60]          :for tname :in common
+[61]              :if hasGui
+[62]                  SB ⎕WI 'SetStatus' ('Comparing ',tname)
+[63]                  PB ⎕WI 'Stepit'
+[64]              :endif
+[65]              (matched nrecs emsg rows)←cons compareTables tname
+[66]              rpt←rpt,(~mt emsg)/'' (tname,(' ','()' embrace ⍕nrecs),': ',emsg) ⍝ error message
+[67]              rpt←rpt,⎕SPLIT ⍕rows
+[68]              matching←matching⍪ matched⌿1 2⍴tname (↑nrecs)
+[69]              ok←ok ^ matched
+[70]              :if hasGui
+[71]                  BROWSER ⎕WI 'text' (⎕TCNL join rpt)
+[72]                  BROWSER ⎕WI 'color' ((ok+1)⊃UI_COLOR_LTRED UI_COLOR_LTGREEN) ⍬
+[73]              :endif
+[74]              ⎕WGIVE 0
+[75]          :endfor
+[76]          :if ×tally matching
+[77]              rpt←rpt, ⎕SPLIT ' '⍪⍕(∆,[.5](tally¨∆←'Matching tables' 'recs')⎕REPL¨'-')⍪ matching
+[78]          :endif
+[79]      :endif
+[80]  
+[81]      :if hasGui ⋄ SB ⎕WI 'SetStatus' 'Done' ⋄ PB ⎕WI 'value' 0 100 10 0 ⋄ :endif
+[82]  
+[83]      xxx←cons ∘.⎕WI 'Close' 'Delete'
+[84]  
+[85]  :endif
+[86]  
+[87]  Z←ok ((⎕TCNL,⎕tclf) join rpt)
+    ∇

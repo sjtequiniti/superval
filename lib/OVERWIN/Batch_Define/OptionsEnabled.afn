@@ -1,1 +1,87 @@
-    ∇ OptionsEnabled text;z;frame[1]   ⍝ OVERWIN.sf#20[2]   ⍝ Control the enabling of the Run/Output Parameters[3]   [4]   frame←parent,'fRunOpt.'[5]   [6]   (frame 'cbvDATEind') Win∆SetRelated 'enabled' (z←aosenabled^~text∊'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP')[7]   (frame,'cbvDATEind') ⎕wi 'value' (1↑z↓1,(frame,'cbvDATEind') ⎕wi 'value')[8]   [9]   :if uk=1[10]      (frame 'cbtest') Win∆SetRelated 'enabled' (z←~text∊'PPA' 'PPD')[11]      (frame,'cbtest') ⎕wi 'value' (1⌈z×(frame,'cbtest') ⎕wi 'value')[12]  :else[13]      (frame,'cktest') ⎕wi 'enabled' (z←~text∊'NOT' 'NEC' 'PEN' 'DEF')[14]      (frame,'cktest') ⎕wi 'value' (z⌊(frame,'cktest') ⎕wi 'value')[15]  :endif[16]  [17]  (frame,'ckPROPT') ⎕wi 'enabled' (z←~text∊'DAB' 'ABC' 'SUR' 'NOT' 'NEC' 'PEN' 'DEF' 'PPA' 'PPD' 'PPP')[18]  (frame,'ckPROPT') ⎕wi 'value' ((text∊'DAB' 'ABC' 'PEN' 'DEF' 'PPA' 'PPD' 'PPP')⌈z⌊(frame,'ckPROPT') ⎕wi 'value')[19]  [20]  (frame 'edcontper') Win∆SetRelated 'enabled' (text∊'PUC' 'UCM' 'DAB')[21]  (frame,'ckinsind') ⎕wi 'enabled' (text∊'PUC' 'UCM')[22]  (frame 'cbabNO') Win∆SetRelated 'enabled' (text∊⊂'DAB')[23]  [24]  (frame,'cknewent') ⎕wi 'enabled' (z←~text∊'ABC' 'SUR' 'NOT' 'NEC' 'PEN' 'DEF' 'PPA' 'PPD' 'PPP')[25]  (frame,'cknewent') ⎕wi 'value' (z⌊(frame,'cknewent') ⎕wi 'value')[26]  [27]  (frame,'ckAgeInterp') ⎕wi 'enabled' 1[28]  [29]  (frame,'ckaosind') ⎕wi 'enabled' (z←aosenabled^~text∊'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP')[30]  (frame,'ckaosind') ⎕wi 'value' (z⌊(frame,'ckaosind') ⎕wi 'value')[31]  [32]  (frame,'ckaggopt') ⎕wi 'enabled' (z←bAggBen^~text∊'ABC' 'SUR' 'NOT' 'PEN' 'PPA' 'PPD' 'PPP' 'DEF')[33]  (frame,'ckaggopt') ⎕wi 'value' (z⌊(frame,'ckaggopt') ⎕wi 'value')[34]  [35]  (frame 'cbSurcparms') Win∆SetRelated 'enabled' (text∊'SUR' 'NOT')[36]  [37]  (frame,'ckbencap') ⎕wi 'enabled' (z←capenabled^~text∊'PPA' 'PPD' 'PPP')[38]  (frame,'ckbencap') ⎕wi 'value' (z⌊(frame,'ckbencap') ⎕wi 'value')[39]  [40]  (frame,'cks143') ⎕wi 'enabled' (z←text∊⊂'PPD')[41]  (frame,'cks143') ⎕wi 'value' (z⌊(frame,'cks143') ⎕wi 'value')[42]  [43]  frame←parent,'fOutOpt.'[44]  [45]  (frame,'ckdecopt') ⎕wi 'enabled' (z←~text∊'ABC' 'PPA' 'PPD' 'PPP')[46]  (frame,'ckdecopt') ⎕wi 'value' (z⌊(frame,'ckdecopt') ⎕wi 'value')[47]  [48]  (frame,'ckpbens') ⎕wi 'enabled' (z←~text∊'PEN' 'DEF' 'PPA' 'PPD' 'PPP')[49]  (frame,'ckpbens') ⎕wi 'value' ((uk≠1)⌊z⌊(frame,'ckpbens') ⎕wi 'value')[50]  [51]  :if uk=1[52]      (frame,'cbdataind') ⎕wi 'enabled' (z←~text∊'NEC' 'NOT')[53]      (frame,'cbdataind') ⎕wi 'value' (1⌈z×(frame,'cbdataind') ⎕wi 'value')[54]  :else[55]      (frame,'ckdataind') ⎕wi 'enabled' (z←~text∊'NEC' 'NOT')[56]      (frame,'ckdataind') ⎕wi 'value' ((text∊⊂'NEC')⌈z⌊(frame,'ckdataind') ⎕wi 'value')[57]  :endif[58]  [59]  (frame,'cksummopt') ⎕wi 'enabled' (z←~text∊'NEC' 'PEN' 'PPA' 'PPD' 'PPP',(uk≠1)/'DEF')[60]  (frame,'cksummopt') ⎕wi 'value' (z⌊(frame,'cksummopt') ⎕wi 'value')[61]  [62]  (frame,'ckmemsumm') ⎕wi 'enabled' (z←text∊(⊂'PEN'),(uk≠1)/⊂'DEF')[63]  (frame,'ckmemsumm') ⎕wi 'value' (z⌊(frame,'ckmemsumm') ⎕wi 'value')[64]  [65]  (frame,'ckKeepResult') ⎕wi 'enabled' (z←~text∊'ABC' 'SUR' 'NOT' 'NEC')[66]  (frame,'ckKeepResult') ⎕wi 'value' (z⌊(frame,'ckKeepResult') ⎕wi 'value')[67]  [68]  (frame,'ckIndCashFlow') ⎕wi 'enabled' (z←~text∊'PPA' 'PPD' 'PPP' 'ABC' 'SUR' 'NOT' 'NEC')[69]  (frame,'ckIndCashFlow') ⎕wi 'value' (z⌊(frame,'ckIndCashFlow') ⎕wi 'value')[70]  [71]  (frame,'ckVFtables') ⎕wi 'enabled' (z←~text∊'PEN' 'PPA' 'PPD' 'PPP' 'ABC' 'SUR' 'NOT' 'NEC')[72]  (frame,'ckVFtables') ⎕wi 'value' (z⌊(frame,'ckVFtables') ⎕wi 'value')[73]  [74]  ((⊂frame),¨'ckvalout' 'ckkeepfile') MultiWI 'enabled' (z←text∊⊂'NOT')[75]  (frame,'ckvalout') ⎕wi 'value' (z⌊(frame,'ckvalout') ⎕wi 'value')[76]  (frame,'ckkeepfile') ⎕wi 'value' (z⌊(frame,'ckkeepfile') ⎕wi 'value')[77]  [78]  (frame,'ckSSexport') ⎕wi 'enabled' (z←~text∊'SUR' 'NOT' 'NEC')[79]  (frame,'ckSSexport') ⎕wi 'value' ((text∊'SUR' 'NOT')⌈z⌊(frame,'ckSSexport') ⎕wi 'value')[80]  [81]  (frame,'ckSSexpparms') ⎕wi 'enabled' (z←(frame,'ckSSexport') ⎕wi 'value')[82]  (frame,'ckSSexpparms') ⎕wi 'value' (z⌊(frame,'ckSSexpparms') ⎕wi 'value')[83]  [84]  (frame,'ckfscopt') ⎕wi 'enabled' (z←bALMLDI^~text∊'PPA' 'PPD' 'PPP' 'ABC' 'SUR' 'NOT' 'NEC')[85]  (frame,'ckfscopt') ⎕wi 'value' (z⌊(frame,'ckfscopt') ⎕wi 'value')    ∇
+    ∇ OptionsEnabled text;z;frame
+[1]   ⍝ OVERWIN.sf#20
+[2]   ⍝ Control the enabling of the Run/Output Parameters
+[3]   
+[4]   frame←parent,'fRunOpt.'
+[5]   
+[6]   (frame 'cbvDATEind') Win∆SetRelated 'enabled' (z←aosenabled^~text∊'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP')
+[7]   (frame,'cbvDATEind') ⎕wi 'value' (1↑z↓1,(frame,'cbvDATEind') ⎕wi 'value')
+[8]   
+[9]   :if uk=1
+[10]      (frame 'cbtest') Win∆SetRelated 'enabled' (z←~text∊'PPA' 'PPD')
+[11]      (frame,'cbtest') ⎕wi 'value' (1⌈z×(frame,'cbtest') ⎕wi 'value')
+[12]  :else
+[13]      (frame,'cktest') ⎕wi 'enabled' (z←~text∊'NOT' 'NEC' 'PEN' 'DEF')
+[14]      (frame,'cktest') ⎕wi 'value' (z⌊(frame,'cktest') ⎕wi 'value')
+[15]  :endif
+[16]  
+[17]  (frame,'ckPROPT') ⎕wi 'enabled' (z←~text∊'DAB' 'ABC' 'SUR' 'NOT' 'NEC' 'PEN' 'DEF' 'PPA' 'PPD' 'PPP')
+[18]  (frame,'ckPROPT') ⎕wi 'value' ((text∊'DAB' 'ABC' 'PEN' 'DEF' 'PPA' 'PPD' 'PPP')⌈z⌊(frame,'ckPROPT') ⎕wi 'value')
+[19]  
+[20]  (frame 'edcontper') Win∆SetRelated 'enabled' (text∊'PUC' 'UCM' 'DAB')
+[21]  (frame,'ckinsind') ⎕wi 'enabled' (text∊'PUC' 'UCM')
+[22]  (frame 'cbabNO') Win∆SetRelated 'enabled' (text∊⊂'DAB')
+[23]  
+[24]  (frame,'cknewent') ⎕wi 'enabled' (z←~text∊'ABC' 'SUR' 'NOT' 'NEC' 'PEN' 'DEF' 'PPA' 'PPD' 'PPP')
+[25]  (frame,'cknewent') ⎕wi 'value' (z⌊(frame,'cknewent') ⎕wi 'value')
+[26]  
+[27]  (frame,'ckAgeInterp') ⎕wi 'enabled' 1
+[28]  
+[29]  (frame,'ckaosind') ⎕wi 'enabled' (z←aosenabled^~text∊'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP')
+[30]  (frame,'ckaosind') ⎕wi 'value' (z⌊(frame,'ckaosind') ⎕wi 'value')
+[31]  
+[32]  (frame,'ckaggopt') ⎕wi 'enabled' (z←bAggBen^~text∊'ABC' 'SUR' 'NOT' 'PEN' 'PPA' 'PPD' 'PPP' 'DEF')
+[33]  (frame,'ckaggopt') ⎕wi 'value' (z⌊(frame,'ckaggopt') ⎕wi 'value')
+[34]  
+[35]  (frame 'cbSurcparms') Win∆SetRelated 'enabled' (text∊'SUR' 'NOT')
+[36]  
+[37]  (frame,'ckbencap') ⎕wi 'enabled' (z←capenabled^~text∊'PPA' 'PPD' 'PPP')
+[38]  (frame,'ckbencap') ⎕wi 'value' (z⌊(frame,'ckbencap') ⎕wi 'value')
+[39]  
+[40]  (frame,'cks143') ⎕wi 'enabled' (z←text∊⊂'PPD')
+[41]  (frame,'cks143') ⎕wi 'value' (z⌊(frame,'cks143') ⎕wi 'value')
+[42]  
+[43]  frame←parent,'fOutOpt.'
+[44]  
+[45]  (frame,'ckdecopt') ⎕wi 'enabled' (z←~text∊'ABC' 'PPA' 'PPD' 'PPP')
+[46]  (frame,'ckdecopt') ⎕wi 'value' (z⌊(frame,'ckdecopt') ⎕wi 'value')
+[47]  
+[48]  (frame,'ckpbens') ⎕wi 'enabled' (z←~text∊'PEN' 'DEF' 'PPA' 'PPD' 'PPP')
+[49]  (frame,'ckpbens') ⎕wi 'value' ((uk≠1)⌊z⌊(frame,'ckpbens') ⎕wi 'value')
+[50]  
+[51]  :if uk=1
+[52]      (frame,'cbdataind') ⎕wi 'enabled' (z←~text∊'NEC' 'NOT')
+[53]      (frame,'cbdataind') ⎕wi 'value' (1⌈z×(frame,'cbdataind') ⎕wi 'value')
+[54]  :else
+[55]      (frame,'ckdataind') ⎕wi 'enabled' (z←~text∊'NEC' 'NOT')
+[56]      (frame,'ckdataind') ⎕wi 'value' ((text∊⊂'NEC')⌈z⌊(frame,'ckdataind') ⎕wi 'value')
+[57]  :endif
+[58]  
+[59]  (frame,'cksummopt') ⎕wi 'enabled' (z←~text∊'NEC' 'PEN' 'PPA' 'PPD' 'PPP',(uk≠1)/'DEF')
+[60]  (frame,'cksummopt') ⎕wi 'value' (z⌊(frame,'cksummopt') ⎕wi 'value')
+[61]  
+[62]  (frame,'ckmemsumm') ⎕wi 'enabled' (z←text∊(⊂'PEN'),(uk≠1)/⊂'DEF')
+[63]  (frame,'ckmemsumm') ⎕wi 'value' (z⌊(frame,'ckmemsumm') ⎕wi 'value')
+[64]  
+[65]  (frame,'ckKeepResult') ⎕wi 'enabled' (z←~text∊'ABC' 'SUR' 'NOT' 'NEC')
+[66]  (frame,'ckKeepResult') ⎕wi 'value' (z⌊(frame,'ckKeepResult') ⎕wi 'value')
+[67]  
+[68]  (frame,'ckIndCashFlow') ⎕wi 'enabled' (z←~text∊'PPA' 'PPD' 'PPP' 'ABC' 'SUR' 'NOT' 'NEC')
+[69]  (frame,'ckIndCashFlow') ⎕wi 'value' (z⌊(frame,'ckIndCashFlow') ⎕wi 'value')
+[70]  
+[71]  (frame,'ckVFtables') ⎕wi 'enabled' (z←~text∊'PEN' 'PPA' 'PPD' 'PPP' 'ABC' 'SUR' 'NOT' 'NEC')
+[72]  (frame,'ckVFtables') ⎕wi 'value' (z⌊(frame,'ckVFtables') ⎕wi 'value')
+[73]  
+[74]  ((⊂frame),¨'ckvalout' 'ckkeepfile') MultiWI 'enabled' (z←text∊⊂'NOT')
+[75]  (frame,'ckvalout') ⎕wi 'value' (z⌊(frame,'ckvalout') ⎕wi 'value')
+[76]  (frame,'ckkeepfile') ⎕wi 'value' (z⌊(frame,'ckkeepfile') ⎕wi 'value')
+[77]  
+[78]  (frame,'ckSSexport') ⎕wi 'enabled' (z←~text∊'SUR' 'NOT' 'NEC')
+[79]  (frame,'ckSSexport') ⎕wi 'value' ((text∊'SUR' 'NOT')⌈z⌊(frame,'ckSSexport') ⎕wi 'value')
+[80]  
+[81]  (frame,'ckSSexpparms') ⎕wi 'enabled' (z←(frame,'ckSSexport') ⎕wi 'value')
+[82]  (frame,'ckSSexpparms') ⎕wi 'value' (z⌊(frame,'ckSSexpparms') ⎕wi 'value')
+[83]  
+[84]  (frame,'ckfscopt') ⎕wi 'enabled' (z←bALMLDI^~text∊'PPA' 'PPD' 'PPP' 'ABC' 'SUR' 'NOT' 'NEC')
+[85]  (frame,'ckfscopt') ⎕wi 'value' (z⌊(frame,'ckfscopt') ⎕wi 'value')
+    ∇

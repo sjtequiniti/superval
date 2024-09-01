@@ -1,1 +1,26 @@
-    ∇ PRINTANAL;⎕IO;v;vMP;SUMMREC;term;N;LAB;A[1]   ⍝ CONSWIN.sf#4[2]   ⍝ Analysis Summary for a Consolidation - Write averages out to files[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   ⎕IO←0 ⋄ A←AVTOT CDIV AVTOT[0;0],⍉ 9 3 ⍴AVTOT[;0][8]   SUMMREC←' '⍪MATRIX 119↑'Overall Group Averages'[9]   SUMMREC←SUMMREC⍪(¯21↑'Age'),'  Salary     Past Serv  Memb    Total Serv  Memb     Future Memb    Age at Entry to Company ',6↑((×uk)/'Scheme'),'  Fund'[10]  LAB←(3 7 ⍴' Number MC Sal CC Sal'), 3 10 ⍴' Weighted:' ⋄ N←0[11]  LOOP:SUMMREC←SUMMREC⍪LAB[N;],(,'I4,BCI8' ⎕FMT MATRIX A[N;2],(N=0)×A[2;0]),(¯20↑DECTOYYMM A[N; 3 4]),(¯20↑DECTOYYMM A[N; 5 6]),(¯16↑DECTOYYMM A[N;7]),¯34↑DECTOYYMM A[N; 8 9][12]  →(3>N←N+1)/LOOP ⋄ (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[13]  SUMMREC←' '⍪'<Average Remaining Service Life weighted by Number: >,F5.2,< years, Member Cont Salary: >,F5.2,< years and Company Cont Salary: >,F5.2,< years>' ⎕FMT MATRIX term←A[;1][14]  ⍝ Discounter at t=0.5, 1.5, 2.5,......,49.5 and vMP is V1%[15]  v←((⍴v)⍴ 0 1)/v←×\1,(÷2/50 OVERTAKE i)*0.5[16]  vMP←0,+\v×50↑(GTOTS[;16]×10*3×sfac)÷SFAC ⋄ v←0,+\v[17]  ⍝ Print the Present Value of 1% over various Terms[18]  SUMMREC←(SUMMREC⍪' ')⍪'Present Value - Years:',,'I11' ⎕FMT 1+⍳10[19]  SUMMREC←(SUMMREC⍪' ')⍪'Present Value  £1 p.a.',,'F11.4' ⎕FMT v[1+⍳10][20]  SUMMREC←SUMMREC⍪'Pres Value  1% of Sals',,'CI11' ⎕FMT vMP[1+⍳10][21]  SUMMREC←SUMMREC⍪' '⍪'<Present Value - Years:>,7I11,3F11.2' ⎕FMT MATRIX 15 20 25 30 35 40 50 ,term[22]  SUMMREC←SUMMREC⍪' '⍪'<Present Value  £1 p.a.>,10F11.4' ⎕FMT MATRIX v[15 20 25 30 35 40 50],(v[⌊term]×1-1∣term)+v[⌈term]×1∣term[23]  SUMMREC←SUMMREC⍪'<Pres Value  1% of Sals>,10CI11' ⎕FMT MATRIX vMP[15 20 25 30 35 40 50],(vMP[⌊term]×1-1∣term)+vMP[⌈term]×1∣term[24]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line    ∇
+    ∇ PRINTANAL;⎕IO;v;vMP;SUMMREC;term;N;LAB;A
+[1]   ⍝ CONSWIN.sf#4
+[2]   ⍝ Analysis Summary for a Consolidation - Write averages out to files
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⎕IO←0 ⋄ A←AVTOT CDIV AVTOT[0;0],⍉ 9 3 ⍴AVTOT[;0]
+[8]   SUMMREC←' '⍪MATRIX 119↑'Overall Group Averages'
+[9]   SUMMREC←SUMMREC⍪(¯21↑'Age'),'  Salary     Past Serv  Memb    Total Serv  Memb     Future Memb    Age at Entry to Company ',6↑((×uk)/'Scheme'),'  Fund'
+[10]  LAB←(3 7 ⍴' Number MC Sal CC Sal'), 3 10 ⍴' Weighted:' ⋄ N←0
+[11]  LOOP:SUMMREC←SUMMREC⍪LAB[N;],(,'I4,BCI8' ⎕FMT MATRIX A[N;2],(N=0)×A[2;0]),(¯20↑DECTOYYMM A[N; 3 4]),(¯20↑DECTOYYMM A[N; 5 6]),(¯16↑DECTOYYMM A[N;7]),¯34↑DECTOYYMM A[N; 8 9]
+[12]  →(3>N←N+1)/LOOP ⋄ (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[13]  SUMMREC←' '⍪'<Average Remaining Service Life weighted by Number: >,F5.2,< years, Member Cont Salary: >,F5.2,< years and Company Cont Salary: >,F5.2,< years>' ⎕FMT MATRIX term←A[;1]
+[14]  ⍝ Discounter at t=0.5, 1.5, 2.5,......,49.5 and vMP is V1%
+[15]  v←((⍴v)⍴ 0 1)/v←×\1,(÷2/50 OVERTAKE i)*0.5
+[16]  vMP←0,+\v×50↑(GTOTS[;16]×10*3×sfac)÷SFAC ⋄ v←0,+\v
+[17]  ⍝ Print the Present Value of 1% over various Terms
+[18]  SUMMREC←(SUMMREC⍪' ')⍪'Present Value - Years:',,'I11' ⎕FMT 1+⍳10
+[19]  SUMMREC←(SUMMREC⍪' ')⍪'Present Value  £1 p.a.',,'F11.4' ⎕FMT v[1+⍳10]
+[20]  SUMMREC←SUMMREC⍪'Pres Value  1% of Sals',,'CI11' ⎕FMT vMP[1+⍳10]
+[21]  SUMMREC←SUMMREC⍪' '⍪'<Present Value - Years:>,7I11,3F11.2' ⎕FMT MATRIX 15 20 25 30 35 40 50 ,term
+[22]  SUMMREC←SUMMREC⍪' '⍪'<Present Value  £1 p.a.>,10F11.4' ⎕FMT MATRIX v[15 20 25 30 35 40 50],(v[⌊term]×1-1∣term)+v[⌈term]×1∣term
+[23]  SUMMREC←SUMMREC⍪'<Pres Value  1% of Sals>,10CI11' ⎕FMT MATRIX vMP[15 20 25 30 35 40 50],(vMP[⌊term]×1-1∣term)+vMP[⌈term]×1∣term
+[24]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+    ∇

@@ -1,1 +1,17 @@
-    ∇ src CopyImageFolders tgt;∆;folder;ext;xxx;source;destn;files[1]   ⍝ HELPEDIT.sf#4[2]   ⍝ Destructively copy all child folders from full filepaths src to tgt[3]   ⍝ and include their child GIFs, JPGs and PNGs[4]   'src and tgt end with \' ASSERT "'\\'≡↑¨⌽¨src tgt"[5]   :for folder :in ('\'=↑¨⌽¨∆)/∆←m2n ⎕XLIB src                             ⍝ source child folders[6]       (destn files)←'"' embrace¨ (tgt,folder) (tgt,folder,'*.*')                  ⍝ target child folder and files[7]       xxx←3 ⎕CMD 'ERASE ', files,' /Q'                                            ⍝ remove files[8]       xxx←3 ⎕CMD 'RMDIR ', destn                                                  ⍝ remove target child folder[9]       xxx←3 ⎕CMD 'MKDIR ', destn                                                  ⍝ replace target child folder[10]      :for ext :in 'GIF' 'JPG' 'PNG'[11]          source←'"' embrace src,folder,'*.',ext[12]          xxx←3 ⎕CMD 'COPY ',source,' ',destn,' /Y'                               ⍝ copy images[13]      :endfor[14]  :endfor[15]      ∇
+    ∇ src CopyImageFolders tgt;∆;folder;ext;xxx;source;destn;files
+[1]   ⍝ HELPEDIT.sf#4
+[2]   ⍝ Destructively copy all child folders from full filepaths src to tgt
+[3]   ⍝ and include their child GIFs, JPGs and PNGs
+[4]   'src and tgt end with \' ASSERT "'\\'≡↑¨⌽¨src tgt"
+[5]   :for folder :in ('\'=↑¨⌽¨∆)/∆←m2n ⎕XLIB src                             ⍝ source child folders
+[6]       (destn files)←'"' embrace¨ (tgt,folder) (tgt,folder,'*.*')                  ⍝ target child folder and files
+[7]       xxx←3 ⎕CMD 'ERASE ', files,' /Q'                                            ⍝ remove files
+[8]       xxx←3 ⎕CMD 'RMDIR ', destn                                                  ⍝ remove target child folder
+[9]       xxx←3 ⎕CMD 'MKDIR ', destn                                                  ⍝ replace target child folder
+[10]      :for ext :in 'GIF' 'JPG' 'PNG'
+[11]          source←'"' embrace src,folder,'*.',ext
+[12]          xxx←3 ⎕CMD 'COPY ',source,' ',destn,' /Y'                               ⍝ copy images
+[13]      :endfor
+[14]  :endfor
+[15]  
+    ∇

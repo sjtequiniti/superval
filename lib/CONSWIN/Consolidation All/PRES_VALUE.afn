@@ -1,1 +1,80 @@
-    ∇ PRES∆VALUE;SUMMREC[1]   ⍝ CONSWIN.sf#4[2]   ⍝[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   PSLIAB←0 ⋄ HEAD∆BASES[8]   mfr∆exp←0 ⋄ PRINT∆MFR0 ⋄ →(csh∨MFR)/0 ⍝ MVA Adjusted MFR at Time 0[9]   0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' ValBal'[10]  H1←((¯1↑⍴H1) WRITE∆HEAD 'VALUATION BALANCE SHEET') OVER H1[11]  :if valind>3[12]      H1[4;22+⍳2]←'I2' ⎕FMT contper[13]      :if valind=6 ⋄ H1[6;79+⍳2]←'I2' ⎕FMT contper ⋄ →F2 ⋄ :endif[14]      H1[4;123+⍳9]←'PUC (PBO)'[15]      :if valind=5 ⋄ H1[4;123+⍳6]←' UC (A' ⋄ :endif[16]  :endif[17]  PVTOT←((8+No∆Bens),18)⍴0[18]  F2:SFAC←10*3×SCALE runsA,runsNE ⍝ Determine a Scaling Factor[19]  LTOT←LTOT÷SFAC ⋄ PTOT←0[20]  SUMMREC← 0 132 ⍴' ' ⍝ Loop to write out results for each Actives run[21]  (0,COCR)P∆CALCS runsA ⋄ gROUP←((⍴runsA),0)↓gROUP[22]  :if valind=6[23]      AVTOT←(+⌿PVTOT[⍳⍴runsA;;])[1+⍳3;⍳10][24]  :else[25]      AVTOT←PVTOT[1+⍳3;⍳10][26]  :endif[27]  EXP←(⍴runsA)↓EXP ⋄ GMAT←(⍴runsA)↓GMAT ⋄ TAX←(⍴runsA)↓TAX[28]  (1,COCRN)P∆CALCS runsNE ⋄ LINE∆TOT[29]  PENVAL runsP,runsD ⋄ →(valind>3)/L2[30]  ⍝ Past Service Liability[31]  PSLIAB←SFAC×((+/PVTOT[6;6],PVTOT[5; 10 11],PTOT,LTOT)-+/PVTOT[5; 5 6],ASSETS÷SFAC)CDIV 1-EXPCC ⋄ →L3[32]  L2:PSLIAB←((+/ABTOT[1;1,2+abNO])-ASSETS)CDIV 1-EXPCC[33]  L3:→SKIP/0 ⋄ (PPAGE line)←H1 OUTPUT tpr1,PPAGE[34]  H1←¯4 0 ↓H1 ⋄ →(0=1↑⍴LTAB)/L1[35]  SUMMREC←' '⍪(((1↑⍴LTAB),off)↑LTAB),'CM<->I12' ⎕FMT LTOT[36]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[37]  L1:SUMMREC←' ' OVER(off↑'Invested Assets at Valuation Date'),,'CI12' ⎕FMT ASSETS÷SFAC[38]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[39]  [40]  →0[41]  [42]  PRES∆VALUE;SUMMREC[43]  ⍝ 18 CONSOVL.SF#3[44]  ⍝[45]  ⍝[46]  ⍝[47]  ⍝ V2.50u RE 1/11/93 Standardised[48]  H1←1 WRITE∆HEAD 'CONSOLIDATION OF VALUATION RESULTS'[49]  PPAGE←PSLIAB←0 ⋄ HEAD∆BASES[50]  :if ppf ⍝  PPF at Time 0[51]      PRINT∆PPF0[52]  :endif[53]  →ppf/0[54]  0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' ValBal'[55]  H1←(1 WRITE∆HEAD 'CONSOLIDATION OF VALUATION RESULTS') OVER H1[56]  →(valind≤3)/F1[57]  H1[4+2×valind=6;(56×valind=6)+22+⍳2]←'I2' ⎕FMT contper ⋄ →(valind=6)/F2[58]  H1[4;123+⍳9]←'PUC (PBO)' ⋄ →(valind=4)/F1 ⋄ H1[4;123+⍳6]←' UC (A'[59]  ⍝ Determine a Scaling Factor[60]  F1:PVTOT←((8+No∆Pens),18)⍴0[61]  F2:SFAC←10*3×SCALE runsA,runsNE[62]  LTOT←LTOT÷SFAC ⋄ PTOT←0[63]  SUMMREC← 0 132 ⍴' ' ⍝ Loop to write out results for each Actives run[64]  (0,COCR)P∆CALCS runsA ⋄ gROUP←((⍴runsA),0)↓gROUP[65]  EXP←(⍴runsA)↓EXP ⋄ GMAT←(⍴runsA)↓GMAT ⋄ TAX←(⍴runsA)↓TAX[66]  (1,COCRN)P∆CALCS runsNE ⋄ gROUP←((⍴runsNE),0)↓gROUP ⋄ LINE∆TOT[67]  [68]  NewDefVAL runsND ⋄ gROUP←((⍴runsND),0)↓gROUP[69]  PENVAL runsP,runsD ⋄ →(valind>3)/L2[70]  ⍝ Past Service Liability[71]  PSLIAB←SFAC×(1+EXPCC)×(+/PVTOT[6;6],PVTOT[5; 10 11],PTOT,LTOT)-+/PVTOT[5; 5 6],ASSETS÷SFAC ⋄ →L3[72]  L2:PSLIAB←(1+EXPCC)×(+/ABTOT[1;1,2+3×abNO])-ASSETS[73]  L3:→SKIP/0 ⋄ RECN←page ⋄ PPAGE←H1 OUTPUT tpr1,PPAGE[74]  H1←¯4 0 ↓H1 ⋄ →(0=1↑⍴LTAB)/L1[75]  SUMMREC←' '⍪(((1↑⍴LTAB),off)↑LTAB),'CI12' ⎕FMT LTOT[76]  RECN←RECN+4 ⋄ PPAGE←H1 OUTPUT tpr1,PPAGE[77]  L1:SUMMREC←' ' OVER(off↑'Invested Assets at Valuation Date'),,'CI12' ⎕FMT ASSETS÷SFAC[78]  PPAGE←H1 OUTPUT tpr1,PPAGE    ∇
+    ∇ PRES∆VALUE;SUMMREC
+[1]   ⍝ CONSWIN.sf#4
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   PSLIAB←0 ⋄ HEAD∆BASES
+[8]   mfr∆exp←0 ⋄ PRINT∆MFR0 ⋄ →(csh∨MFR)/0 ⍝ MVA Adjusted MFR at Time 0
+[9]   0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' ValBal'
+[10]  H1←((¯1↑⍴H1) WRITE∆HEAD 'VALUATION BALANCE SHEET') OVER H1
+[11]  :if valind>3
+[12]      H1[4;22+⍳2]←'I2' ⎕FMT contper
+[13]      :if valind=6 ⋄ H1[6;79+⍳2]←'I2' ⎕FMT contper ⋄ →F2 ⋄ :endif
+[14]      H1[4;123+⍳9]←'PUC (PBO)'
+[15]      :if valind=5 ⋄ H1[4;123+⍳6]←' UC (A' ⋄ :endif
+[16]  :endif
+[17]  PVTOT←((8+No∆Bens),18)⍴0
+[18]  F2:SFAC←10*3×SCALE runsA,runsNE ⍝ Determine a Scaling Factor
+[19]  LTOT←LTOT÷SFAC ⋄ PTOT←0
+[20]  SUMMREC← 0 132 ⍴' ' ⍝ Loop to write out results for each Actives run
+[21]  (0,COCR)P∆CALCS runsA ⋄ gROUP←((⍴runsA),0)↓gROUP
+[22]  :if valind=6
+[23]      AVTOT←(+⌿PVTOT[⍳⍴runsA;;])[1+⍳3;⍳10]
+[24]  :else
+[25]      AVTOT←PVTOT[1+⍳3;⍳10]
+[26]  :endif
+[27]  EXP←(⍴runsA)↓EXP ⋄ GMAT←(⍴runsA)↓GMAT ⋄ TAX←(⍴runsA)↓TAX
+[28]  (1,COCRN)P∆CALCS runsNE ⋄ LINE∆TOT
+[29]  PENVAL runsP,runsD ⋄ →(valind>3)/L2
+[30]  ⍝ Past Service Liability
+[31]  PSLIAB←SFAC×((+/PVTOT[6;6],PVTOT[5; 10 11],PTOT,LTOT)-+/PVTOT[5; 5 6],ASSETS÷SFAC)CDIV 1-EXPCC ⋄ →L3
+[32]  L2:PSLIAB←((+/ABTOT[1;1,2+abNO])-ASSETS)CDIV 1-EXPCC
+[33]  L3:→SKIP/0 ⋄ (PPAGE line)←H1 OUTPUT tpr1,PPAGE
+[34]  H1←¯4 0 ↓H1 ⋄ →(0=1↑⍴LTAB)/L1
+[35]  SUMMREC←' '⍪(((1↑⍴LTAB),off)↑LTAB),'CM<->I12' ⎕FMT LTOT
+[36]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[37]  L1:SUMMREC←' ' OVER(off↑'Invested Assets at Valuation Date'),,'CI12' ⎕FMT ASSETS÷SFAC
+[38]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[39]  
+[40]  →0
+[41]  
+[42]  PRES∆VALUE;SUMMREC
+[43]  ⍝ 18 CONSOVL.SF#3
+[44]  ⍝
+[45]  ⍝
+[46]  ⍝
+[47]  ⍝ V2.50u RE 1/11/93 Standardised
+[48]  H1←1 WRITE∆HEAD 'CONSOLIDATION OF VALUATION RESULTS'
+[49]  PPAGE←PSLIAB←0 ⋄ HEAD∆BASES
+[50]  :if ppf ⍝  PPF at Time 0
+[51]      PRINT∆PPF0
+[52]  :endif
+[53]  →ppf/0
+[54]  0 0⍴(SystemDir,'HEADERS') ReadFile ValMeth,' ValBal'
+[55]  H1←(1 WRITE∆HEAD 'CONSOLIDATION OF VALUATION RESULTS') OVER H1
+[56]  →(valind≤3)/F1
+[57]  H1[4+2×valind=6;(56×valind=6)+22+⍳2]←'I2' ⎕FMT contper ⋄ →(valind=6)/F2
+[58]  H1[4;123+⍳9]←'PUC (PBO)' ⋄ →(valind=4)/F1 ⋄ H1[4;123+⍳6]←' UC (A'
+[59]  ⍝ Determine a Scaling Factor
+[60]  F1:PVTOT←((8+No∆Pens),18)⍴0
+[61]  F2:SFAC←10*3×SCALE runsA,runsNE
+[62]  LTOT←LTOT÷SFAC ⋄ PTOT←0
+[63]  SUMMREC← 0 132 ⍴' ' ⍝ Loop to write out results for each Actives run
+[64]  (0,COCR)P∆CALCS runsA ⋄ gROUP←((⍴runsA),0)↓gROUP
+[65]  EXP←(⍴runsA)↓EXP ⋄ GMAT←(⍴runsA)↓GMAT ⋄ TAX←(⍴runsA)↓TAX
+[66]  (1,COCRN)P∆CALCS runsNE ⋄ gROUP←((⍴runsNE),0)↓gROUP ⋄ LINE∆TOT
+[67]  
+[68]  NewDefVAL runsND ⋄ gROUP←((⍴runsND),0)↓gROUP
+[69]  PENVAL runsP,runsD ⋄ →(valind>3)/L2
+[70]  ⍝ Past Service Liability
+[71]  PSLIAB←SFAC×(1+EXPCC)×(+/PVTOT[6;6],PVTOT[5; 10 11],PTOT,LTOT)-+/PVTOT[5; 5 6],ASSETS÷SFAC ⋄ →L3
+[72]  L2:PSLIAB←(1+EXPCC)×(+/ABTOT[1;1,2+3×abNO])-ASSETS
+[73]  L3:→SKIP/0 ⋄ RECN←page ⋄ PPAGE←H1 OUTPUT tpr1,PPAGE
+[74]  H1←¯4 0 ↓H1 ⋄ →(0=1↑⍴LTAB)/L1
+[75]  SUMMREC←' '⍪(((1↑⍴LTAB),off)↑LTAB),'CI12' ⎕FMT LTOT
+[76]  RECN←RECN+4 ⋄ PPAGE←H1 OUTPUT tpr1,PPAGE
+[77]  L1:SUMMREC←' ' OVER(off↑'Invested Assets at Valuation Date'),,'CI12' ⎕FMT ASSETS÷SFAC
+[78]  PPAGE←H1 OUTPUT tpr1,PPAGE
+    ∇

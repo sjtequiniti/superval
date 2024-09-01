@@ -1,1 +1,86 @@
-    ∇ PRINT∆TOTALS;SUMMREC;heading;COSThead[1]   ⍝ CONSWIN.sf#4[2]   ⍝[3]   ⍝ Summary of Expenses and Tax[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   SUMMREC←' ' OVER DLTMB '<* Expenses - Scheme Fee of £>,LF15.2,< inflated at >,F15.2,<% per annum, plus>' ⎕FMT MATRIX (↑EXPSF),EXPf[8]   SUMMREC←SUMMREC OVER DLTMB '<£>,LF15.2,< (inflated) per member, >,F15.2,<% of Members'' Contributions, >,F15.2,<% of Company Contributions and >,F15.2,<% of Salaries.>' ⎕FMT MATRIX PMEXP,(100×EXPMC,EXPCC),EXPSAL[9]   SUMMREC←SUMMREC OVER(uk=0)/DLTMB '** Company Contribution Tax Rate(s) (%) - ',⍕COCTax[10]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[11]  PRINTANAL ⍝ Averages and Present Value of 1pc of Salary[12]  →(valind∊ 4 5)/L1 ⍝ Different Printout for PUC and UCM[13]  heading←(⍕contper),' Year Pres Value'[14]  ⍝ Past Service Totals for each of the benefits separately[15]  SUMMREC←'Past Service Values' PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;12+⍳6][16]  ⍎(valind=6)/'SUMMREC←SUMMREC OVER ''on Original Assumptions!'''[17]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line ⋄ →(valind=6)/L0[18]  ⍝ Future Service Totals for each of the benefits separately[19]  SUMMREC←'Future Service Values' PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;6+⍳6][20]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line ⋄ heading←'Present Value'[21]  ⍝ Totals for each of the benefits separately[22]  L0:SUMMREC←heading PRINT∆SPLIT TOTind×1⊖ 5 0 ↓PVTOT[;⍳6][23]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line ⋄ →END[24]  L1:SUMMREC←((valind=5)↓'PUC Accrued Benefit')PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;12+⍳6][25]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[26]  SUMMREC←((⍕contper),' Year Normal Cost')PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;⍳6][27]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[28]  ⍝ Co Norm Cost as a % of Salaries[29]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Consolid NormCost'[30]  COSThead[1;]←132 CENTRE DLTMB COSThead[1;],' (including Expenses (*))'[31]  SUMMREC←' '⍪COSThead⍪(12⍴' '),,'20M<->F6.1' ⎕FMT 20↑NORMC[32]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[33]  ⍝ Co Cont Rate as a % of Salaries[34]  END:0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation CoCR'[35]  SUMMREC←' '⍪COCRhead⍪(12⍴' '),,'20BM<->F6.1' ⎕FMT 20↑GTOTS[;13]CDIV GTOTS[;17][36]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line[37]  →(0=⍴runsP,runsD)/0 ⋄ PRINT∆PRATES ⍝ Write pensioner sub-totals[38]  [39]  →0[40]  [41]  PRINT∆TOTALS;SUMMREC;heading;IsDeferred[42]  ⍝ 18 CONSOVL.SF#3[43]  ⍝ Summary of Expenses and Tax[44]  ⍝[45]  ⍝[46]  ⍝ V2.50u RE 1/11/93 Standardised[47]  IsDeferred←0[48]  SUMMREC←' ' OVER DLTMB '<* Expenses - Scheme Fee of £>,LF15.2,< inflated at >,F15.2,<% per annum, plus>' ⎕FMT MATRIX(1↑EXPSF),f[49]  SUMMREC←SUMMREC OVER DLTMB '<£>,LF15.2,< (inflated) per member, >,F15.2,<% of Members'' Contributions, >,F15.2,<% of Company Contributions and >,F15.2,<% of Salaries.>' ⎕FMT MATRIX EXPPM,(100×EXPMC,EXPCC),EXPSAL[50]  SUMMREC←SUMMREC OVER(uk=0)/DLTMB '** Company Contribution Tax Rate(s) (%) - ',⍕100×COCTax[51]  PPAGE←H1 OUTPUT tpr1,PPAGE[52]  PRINTANAL ⍝ Averages and Present Value of 1pc of Salary[53]  →(~NotPUC)/L1 ⍝ Different Printout for PUC and UCM[54]  heading←(⍕contper),' Year Pres Value'[55]  ⍝ Past Service Totals for each of the benefits separately[56]  SUMMREC←'Past Service Values' PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;12+⍳6][57]  ⍎(valind=6)/'SUMMREC←SUMMREC OVER ''on Original Assumptions!'''[58]  PPAGE←H1 OUTPUT tpr1,PPAGE ⋄ →(valind=6)/L0[59]  ⍝ Future Service Totals for each of the benefits separately[60]  SUMMREC←'Future Service Values' PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;6+⍳6][61]  PPAGE←H1 OUTPUT tpr1,PPAGE ⋄ heading←'Present Value'[62]  ⍝ Totals for each of the benefits separately[63]  L0:SUMMREC←heading PRINT∆SPLIT TOTind×1⊖ 5 0 ↓PVTOT[;⍳6][64]  PPAGE←H1 OUTPUT tpr1,PPAGE ⋄ →END[65]  [66]  L1:SUMMREC←((valind=5)↓'PUC Accrued Benefit')PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;12+⍳6][67]  PPAGE←H1 OUTPUT tpr1,PPAGE[68]  SUMMREC←((⍕contper),' Year Normal Cost')PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;⍳6][69]  PPAGE←H1 OUTPUT tpr1,PPAGE[70]  [71]  ⍝ Co Norm Cost as a % of Salaries[72]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation NormCost'[73]  CONThead[1;]←132 CENTRE DLTMB CONThead[1;],' (including Expenses (*))'[74]  SUMMREC←' '⍪CONThead⍪(12⍴' '),,'20M<->F6.1' ⎕FMT 20↑NORMC[75]  PPAGE←H1 OUTPUT tpr1,PPAGE[76]  [77]  ⍝ Co Cont Rate as a % of Salaries[78]  END:0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation CoCR'[79]  SUMMREC←' '⍪COCRhead⍪(12⍴' '),,'20BM<->F6.1' ⎕FMT 20↑GTOTS[;13]CDIV GTOTS[;17][80]  PPAGE←H1 OUTPUT tpr1,PPAGE[81]  IsDeferred←1[82]  SUMMREC←'Deferreds Liability' PRINT∆SPLIT NewDefMAT[83]  PPAGE←H1 OUTPUT tpr1,PPAGE[84]  →(0=⍴runsP,runsD)/0 ⋄ PRINT∆PRATES ⍝ Write pensioner sub-totals    ∇
+    ∇ PRINT∆TOTALS;SUMMREC;heading;COSThead
+[1]   ⍝ CONSWIN.sf#4
+[2]   ⍝
+[3]   ⍝ Summary of Expenses and Tax
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   SUMMREC←' ' OVER DLTMB '<* Expenses - Scheme Fee of £>,LF15.2,< inflated at >,F15.2,<% per annum, plus>' ⎕FMT MATRIX (↑EXPSF),EXPf
+[8]   SUMMREC←SUMMREC OVER DLTMB '<£>,LF15.2,< (inflated) per member, >,F15.2,<% of Members'' Contributions, >,F15.2,<% of Company Contributions and >,F15.2,<% of Salaries.>' ⎕FMT MATRIX PMEXP,(100×EXPMC,EXPCC),EXPSAL
+[9]   SUMMREC←SUMMREC OVER(uk=0)/DLTMB '** Company Contribution Tax Rate(s) (%) - ',⍕COCTax
+[10]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[11]  PRINTANAL ⍝ Averages and Present Value of 1pc of Salary
+[12]  →(valind∊ 4 5)/L1 ⍝ Different Printout for PUC and UCM
+[13]  heading←(⍕contper),' Year Pres Value'
+[14]  ⍝ Past Service Totals for each of the benefits separately
+[15]  SUMMREC←'Past Service Values' PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;12+⍳6]
+[16]  ⍎(valind=6)/'SUMMREC←SUMMREC OVER ''on Original Assumptions!'''
+[17]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line ⋄ →(valind=6)/L0
+[18]  ⍝ Future Service Totals for each of the benefits separately
+[19]  SUMMREC←'Future Service Values' PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;6+⍳6]
+[20]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line ⋄ heading←'Present Value'
+[21]  ⍝ Totals for each of the benefits separately
+[22]  L0:SUMMREC←heading PRINT∆SPLIT TOTind×1⊖ 5 0 ↓PVTOT[;⍳6]
+[23]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line ⋄ →END
+[24]  L1:SUMMREC←((valind=5)↓'PUC Accrued Benefit')PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;12+⍳6]
+[25]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[26]  SUMMREC←((⍕contper),' Year Normal Cost')PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;⍳6]
+[27]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[28]  ⍝ Co Norm Cost as a % of Salaries
+[29]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Consolid NormCost'
+[30]  COSThead[1;]←132 CENTRE DLTMB COSThead[1;],' (including Expenses (*))'
+[31]  SUMMREC←' '⍪COSThead⍪(12⍴' '),,'20M<->F6.1' ⎕FMT 20↑NORMC
+[32]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[33]  ⍝ Co Cont Rate as a % of Salaries
+[34]  END:0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation CoCR'
+[35]  SUMMREC←' '⍪COCRhead⍪(12⍴' '),,'20BM<->F6.1' ⎕FMT 20↑GTOTS[;13]CDIV GTOTS[;17]
+[36]  (PPAGE line)←H1 OUTPUT tpr1,PPAGE,line
+[37]  →(0=⍴runsP,runsD)/0 ⋄ PRINT∆PRATES ⍝ Write pensioner sub-totals
+[38]  
+[39]  →0
+[40]  
+[41]  PRINT∆TOTALS;SUMMREC;heading;IsDeferred
+[42]  ⍝ 18 CONSOVL.SF#3
+[43]  ⍝ Summary of Expenses and Tax
+[44]  ⍝
+[45]  ⍝
+[46]  ⍝ V2.50u RE 1/11/93 Standardised
+[47]  IsDeferred←0
+[48]  SUMMREC←' ' OVER DLTMB '<* Expenses - Scheme Fee of £>,LF15.2,< inflated at >,F15.2,<% per annum, plus>' ⎕FMT MATRIX(1↑EXPSF),f
+[49]  SUMMREC←SUMMREC OVER DLTMB '<£>,LF15.2,< (inflated) per member, >,F15.2,<% of Members'' Contributions, >,F15.2,<% of Company Contributions and >,F15.2,<% of Salaries.>' ⎕FMT MATRIX EXPPM,(100×EXPMC,EXPCC),EXPSAL
+[50]  SUMMREC←SUMMREC OVER(uk=0)/DLTMB '** Company Contribution Tax Rate(s) (%) - ',⍕100×COCTax
+[51]  PPAGE←H1 OUTPUT tpr1,PPAGE
+[52]  PRINTANAL ⍝ Averages and Present Value of 1pc of Salary
+[53]  →(~NotPUC)/L1 ⍝ Different Printout for PUC and UCM
+[54]  heading←(⍕contper),' Year Pres Value'
+[55]  ⍝ Past Service Totals for each of the benefits separately
+[56]  SUMMREC←'Past Service Values' PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;12+⍳6]
+[57]  ⍎(valind=6)/'SUMMREC←SUMMREC OVER ''on Original Assumptions!'''
+[58]  PPAGE←H1 OUTPUT tpr1,PPAGE ⋄ →(valind=6)/L0
+[59]  ⍝ Future Service Totals for each of the benefits separately
+[60]  SUMMREC←'Future Service Values' PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;6+⍳6]
+[61]  PPAGE←H1 OUTPUT tpr1,PPAGE ⋄ heading←'Present Value'
+[62]  ⍝ Totals for each of the benefits separately
+[63]  L0:SUMMREC←heading PRINT∆SPLIT TOTind×1⊖ 5 0 ↓PVTOT[;⍳6]
+[64]  PPAGE←H1 OUTPUT tpr1,PPAGE ⋄ →END
+[65]  
+[66]  L1:SUMMREC←((valind=5)↓'PUC Accrued Benefit')PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;12+⍳6]
+[67]  PPAGE←H1 OUTPUT tpr1,PPAGE
+[68]  SUMMREC←((⍕contper),' Year Normal Cost')PRINT∆SPLIT 1⊖ 5 0 ↓PVTOT[;⍳6]
+[69]  PPAGE←H1 OUTPUT tpr1,PPAGE
+[70]  
+[71]  ⍝ Co Norm Cost as a % of Salaries
+[72]  0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation NormCost'
+[73]  CONThead[1;]←132 CENTRE DLTMB CONThead[1;],' (including Expenses (*))'
+[74]  SUMMREC←' '⍪CONThead⍪(12⍴' '),,'20M<->F6.1' ⎕FMT 20↑NORMC
+[75]  PPAGE←H1 OUTPUT tpr1,PPAGE
+[76]  
+[77]  ⍝ Co Cont Rate as a % of Salaries
+[78]  END:0 0⍴(SystemDir,'HEADERS') ReadFile 'Valuation CoCR'
+[79]  SUMMREC←' '⍪COCRhead⍪(12⍴' '),,'20BM<->F6.1' ⎕FMT 20↑GTOTS[;13]CDIV GTOTS[;17]
+[80]  PPAGE←H1 OUTPUT tpr1,PPAGE
+[81]  IsDeferred←1
+[82]  SUMMREC←'Deferreds Liability' PRINT∆SPLIT NewDefMAT
+[83]  PPAGE←H1 OUTPUT tpr1,PPAGE
+[84]  →(0=⍴runsP,runsD)/0 ⋄ PRINT∆PRATES ⍝ Write pensioner sub-totals
+    ∇

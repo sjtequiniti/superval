@@ -1,1 +1,18 @@
-    ∇ res←WCreateDirectory folder;⎕elx;folders[1]   ⍝ MAINWIN.sf#2[2]   ⍝ Creates a folder[3]   [4]   ⎕elx←'→res←0'[5]   :if ~res←Win∆IsDirectory folder←FullFolder folder[6]       folders←⊂folder[7]       :while ~Win∆IsDirectory folder←'\' Win∆Parent ¯1↓folder[8]           folders←folders,⊂folder[9]       :endwhile[10]  [11]      :for folder :in ⌽folders[12]          :if 0=res←↑⎕wcall 'CreateDirectory' folder ⍬[13]              :leave[14]          :endif[15]      :endfor[16]  :endif    ∇
+    ∇ res←WCreateDirectory folder;⎕elx;folders
+[1]   ⍝ MAINWIN.sf#2
+[2]   ⍝ Creates a folder
+[3]   
+[4]   ⎕elx←'→res←0'
+[5]   :if ~res←Win∆IsDirectory folder←FullFolder folder
+[6]       folders←⊂folder
+[7]       :while ~Win∆IsDirectory folder←'\' Win∆Parent ¯1↓folder
+[8]           folders←folders,⊂folder
+[9]       :endwhile
+[10]  
+[11]      :for folder :in ⌽folders
+[12]          :if 0=res←↑⎕wcall 'CreateDirectory' folder ⍬
+[13]              :leave
+[14]          :endif
+[15]      :endfor
+[16]  :endif
+    ∇

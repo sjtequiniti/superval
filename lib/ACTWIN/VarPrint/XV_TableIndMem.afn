@@ -1,1 +1,89 @@
-    ∇ Z←section XV_TableIndMem lines;∆;pts;hds;fnd;chds;next;dep;bdy;nc;nr;tgs;mrg;thd;tbd;rws;cnt;dist;xxx;hds∆;wid;gspn;ghds;ghds∆;sty;cmmt[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag an Individual Member table in lines, if there. SJT 25jan10[3]   ⍝ Return number of lines read and rws of an HTML table.[4]   ⍝ Cols contain R-aligned numbers[5]   ⍝ Reads ext vars: MAX_DEPTH STYLE_THG STYLE_THR[6]   ⍝ col hds eg[7]   ⍝                       FINAL           Retirement Future Service Benefits                               PRESENT VALUE OF BENEFITS ON[8]   ⍝AGE    tPx    SALARY  AVERAGE    (AC)j  ------------------------------------------------------ -----------------------------------------------------------------[9]   ⍝                       SALARY             Cash     GMP    Main Special PenInc3  PenInc4 U'pin     Cash      GMP    Main Special PenInc3 PenInc4 U'pin       TOTAL[10]  ⍝ or[11]  ⍝                       FINAL            FUTURE STERLING VALUES OF BENEFITS ON   PRESENT VALUE OF BENEFITS ON     CONTS[12]  ⍝AGE    tPx    SALARY  AVERAGE    (AC)j  -------------------------------------- -------------------------------   DEATH  MEMB.  P.V.[13]  ⍝                       SALARY              RET      DEATH    ILL H.    LEAVING    RET    DEATH  ILL H. LEAVING  IN DEF  CONTS 1% SAL[14]  [15]  ⍝:If 1∊(↑lines)⎕SS 'PRESENT VALUE OF BENEFITS ON'[16]  :If 5<⍴lines[17]  :AndIf ^/∨/⊃lines[2] ⎕SS¨'AGE' 'tPx' 'SALARY' 'AVERAGE' '(AC)j'[18]  :AndIf ' '^.=4⊃lines[19]  [20]      cmmt←⊂'<!-- XV_TableIndMem -->'[21]  [22]      wid←⌈/↑¨⍴¨5↑lines                                                           ⍝ header and data line lengths might differ[23]      hds←3 wid↑⊃3↑lines[24]      hds[2;]←↑⊂[2](1 0 0^.=1⌽0,0 ¯1↓0 1 1⌽'-- '∘.=hds[2;])⊖hds[2;],[.5]' '       ⍝ ensure blanks follow ---[25]      fnd←'-'=hds                                                                 ⍝ find group col heads[26]      (hds∆ ghds∆)←⊂[2 3] (⊖∨⍀⊖∨⌿⊃¯1 0 1⌽¨⊂fnd)⊖hds,[0.5] ' '                     ⍝ separate colhds from grp colhds (allow for slight misalignments)[27]  [28]      ∆←↑⊂[2] (1 0 0^.=0 ¯1 ¯1⌽'** '∘.=5⊃lines)⊖(5⊃lines),[.5] ' '                ⍝ ensure blanks precede ***[29]      pts←(~∆)^¯1⌽∆←' '≠¯1⌽wid↑∆                                                  ⍝ find cols from R-edges of colhds & 1st data row[30]      pts←1 0 0 1,4↓pts                                                           ⍝ special-case 1st col (hdr wider than data)[31]      pts[↑⌽pts/⍳⍴pts]←0                                                          ⍝ lose partition after last column[32]  [33]      chds←DLTB¨,⌿' ',¨(+\pts)⊂[2] hds∆                                           ⍝ col heads[34]      ∆←((∆⍳∆)=⍳⍴∆)/∆←fnd[2;]/+\pts[35]      gspn←((↑∆-1)⍴1),(+/0 1∘.=(⍳⍴∆)>0.5×⍴∆),((+/pts)-⌈/∆)⍴1                      ⍝ ASSUME colgrp widths are either (n n) or (n n+1)[36]  ⍝   ghds←DLTB¨(+\⊃1 0^.=⊃0 ¯1⌽¨⊂∨⌿' '≠hds[⍳2;])⊂hds[1;]                         ⍝ line 1 partitions from lines 1 2[37]      ∆←hds[1 2;]≠' '[38]      ∆←(^⌿⊃(¯1⌽~∆[1;])(1 0^.=⊃0 ¯1⌽¨⊂∆[2;])) ∨ ^⌿⊃(∆[1;])(1⌽1 0^.=⊃0 ¯1⌽¨⊂∆[2;]) ⍝ partition from line 2 allowing for misaligns in 1[39]      ghds←DLTB¨(+\∆)⊂ghds∆[1;]                                                   ⍝ line 1 partitions[40]  [41]      ∆←((gspn>1)×⍴¨∆)⍴¨∆←(⊂STYLE_THG),¨(⊂' colspan="'),¨(⍕¨gspn),¨'"'            ⍝ colgrp hds attributes[42]      ∆←(⊂'tr') xtag¨ (((⊂'th'),¨∆) xtag¨ghds) ((⊂'th',STYLE_THR)xtag¨chds)[43]      thd←'thead' xtag ↑,/∆[44]  [45]      next←MAX_DEPTH↑4↓lines                                                      ⍝ candidate data rows[46]      dep←3+((⊃next)^.=' ')⍳1                                                     ⍝ 2 total lines follow blank line[47]  [48]      bdy←(+\pts)⊂[2]⊃dep wid↑⊃next[49]      (nr nc)←⍴bdy[50]      tgs←nr nc⍴⊂'td style="text-align: right"'[51]  [52]     ⍝ special cases[53]      xxx←⎕FX⊃'Z←L dist R' 'Z←(1,(⍴L)-1)/R ""'                                    ⍝ dist←{(1,(⍴⍺)-1)/⍵ ''}[54]      mrg←⍳4[55]      tgs[nr-2;mrg]←mrg dist 'td colspan="',(⍕⍴mrg),'"'[56]      bdy[nr-2;mrg]←mrg dist 'Totals'[57]  [58]      :Select section                                                             ⍝ special cases...[59]  [60]      :Case 'INDIVIDUAL MEMBER LISTING'[61]  [62]          mrg←5↓⍳nc[63]          bdy[nr-2;mrg]←,⌿bdy[nr-2 0;mrg]                                         ⍝  merge the total rows[64]          dep←dep-2                                                               ⍝  skip 2nd total row[65]  [66]      :Case 'TOTAL INDIVIDUAL MEMBER LISTING'[67]          sty←' style="text-align: right"'[68]          mrg←(+/^\gspn=1)+⍳↑(gspn>1)/gspn                                        ⍝  1st col group[69]          tgs[nr-2;mrg]←mrg dist 'td colspan="',(⍕⍴mrg),'"',sty[70]          bdy[nr-2;mrg]←mrg dist (↑,/bdy[nr-2;mrg])~' '                           ⍝  sum of 2nd col-group totals[71]  [72]          mrg←⍳nc-1[73]          tgs[nr;mrg]←mrg dist 'td colspan="',(⍕⍴mrg),'" ',sty[74]          bdy[nr;mrg]←mrg dist ↑,/bdy[nr;mrg]                                     ⍝  Present Value of a Contribution of 1% of Salary[75]  [76]      :EndSelect[77]  [78]      tbd←'tbody' xtag ↑,/(⊂'tr')xtag¨⊂[2] tgs[⍳dep;] xtag¨DLTB¨bdy[⍳dep;][79]  [80]      rws←'table' xtag cmmt,thd,tbd[81]      cnt←4+↑⍴bdy[82]  [83]  :Else[84]      (cnt rws)←0 ''                                                              ⍝ no table found[85]  :EndIf[86]  [87]  Z←cnt rws    ∇
+    ∇ Z←section XV_TableIndMem lines;∆;pts;hds;fnd;chds;next;dep;bdy;nc;nr;tgs;mrg;thd;tbd;rws;cnt;dist;xxx;hds∆;wid;gspn;ghds;ghds∆;sty;cmmt
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag an Individual Member table in lines, if there. SJT 25jan10
+[3]   ⍝ Return number of lines read and rws of an HTML table.
+[4]   ⍝ Cols contain R-aligned numbers
+[5]   ⍝ Reads ext vars: MAX_DEPTH STYLE_THG STYLE_THR
+[6]   ⍝ col hds eg
+[7]   ⍝                       FINAL           Retirement Future Service Benefits                               PRESENT VALUE OF BENEFITS ON
+[8]   ⍝AGE    tPx    SALARY  AVERAGE    (AC)j  ------------------------------------------------------ -----------------------------------------------------------------
+[9]   ⍝                       SALARY             Cash     GMP    Main Special PenInc3  PenInc4 U'pin     Cash      GMP    Main Special PenInc3 PenInc4 U'pin       TOTAL
+[10]  ⍝ or
+[11]  ⍝                       FINAL            FUTURE STERLING VALUES OF BENEFITS ON   PRESENT VALUE OF BENEFITS ON     CONTS
+[12]  ⍝AGE    tPx    SALARY  AVERAGE    (AC)j  -------------------------------------- -------------------------------   DEATH  MEMB.  P.V.
+[13]  ⍝                       SALARY              RET      DEATH    ILL H.    LEAVING    RET    DEATH  ILL H. LEAVING  IN DEF  CONTS 1% SAL
+[14]  
+[15]  ⍝:If 1∊(↑lines)⎕SS 'PRESENT VALUE OF BENEFITS ON'
+[16]  :If 5<⍴lines
+[17]  :AndIf ^/∨/⊃lines[2] ⎕SS¨'AGE' 'tPx' 'SALARY' 'AVERAGE' '(AC)j'
+[18]  :AndIf ' '^.=4⊃lines
+[19]  
+[20]      cmmt←⊂'<!-- XV_TableIndMem -->'
+[21]  
+[22]      wid←⌈/↑¨⍴¨5↑lines                                                           ⍝ header and data line lengths might differ
+[23]      hds←3 wid↑⊃3↑lines
+[24]      hds[2;]←↑⊂[2](1 0 0^.=1⌽0,0 ¯1↓0 1 1⌽'-- '∘.=hds[2;])⊖hds[2;],[.5]' '       ⍝ ensure blanks follow ---
+[25]      fnd←'-'=hds                                                                 ⍝ find group col heads
+[26]      (hds∆ ghds∆)←⊂[2 3] (⊖∨⍀⊖∨⌿⊃¯1 0 1⌽¨⊂fnd)⊖hds,[0.5] ' '                     ⍝ separate colhds from grp colhds (allow for slight misalignments)
+[27]  
+[28]      ∆←↑⊂[2] (1 0 0^.=0 ¯1 ¯1⌽'** '∘.=5⊃lines)⊖(5⊃lines),[.5] ' '                ⍝ ensure blanks precede ***
+[29]      pts←(~∆)^¯1⌽∆←' '≠¯1⌽wid↑∆                                                  ⍝ find cols from R-edges of colhds & 1st data row
+[30]      pts←1 0 0 1,4↓pts                                                           ⍝ special-case 1st col (hdr wider than data)
+[31]      pts[↑⌽pts/⍳⍴pts]←0                                                          ⍝ lose partition after last column
+[32]  
+[33]      chds←DLTB¨,⌿' ',¨(+\pts)⊂[2] hds∆                                           ⍝ col heads
+[34]      ∆←((∆⍳∆)=⍳⍴∆)/∆←fnd[2;]/+\pts
+[35]      gspn←((↑∆-1)⍴1),(+/0 1∘.=(⍳⍴∆)>0.5×⍴∆),((+/pts)-⌈/∆)⍴1                      ⍝ ASSUME colgrp widths are either (n n) or (n n+1)
+[36]  ⍝   ghds←DLTB¨(+\⊃1 0^.=⊃0 ¯1⌽¨⊂∨⌿' '≠hds[⍳2;])⊂hds[1;]                         ⍝ line 1 partitions from lines 1 2
+[37]      ∆←hds[1 2;]≠' '
+[38]      ∆←(^⌿⊃(¯1⌽~∆[1;])(1 0^.=⊃0 ¯1⌽¨⊂∆[2;])) ∨ ^⌿⊃(∆[1;])(1⌽1 0^.=⊃0 ¯1⌽¨⊂∆[2;]) ⍝ partition from line 2 allowing for misaligns in 1
+[39]      ghds←DLTB¨(+\∆)⊂ghds∆[1;]                                                   ⍝ line 1 partitions
+[40]  
+[41]      ∆←((gspn>1)×⍴¨∆)⍴¨∆←(⊂STYLE_THG),¨(⊂' colspan="'),¨(⍕¨gspn),¨'"'            ⍝ colgrp hds attributes
+[42]      ∆←(⊂'tr') xtag¨ (((⊂'th'),¨∆) xtag¨ghds) ((⊂'th',STYLE_THR)xtag¨chds)
+[43]      thd←'thead' xtag ↑,/∆
+[44]  
+[45]      next←MAX_DEPTH↑4↓lines                                                      ⍝ candidate data rows
+[46]      dep←3+((⊃next)^.=' ')⍳1                                                     ⍝ 2 total lines follow blank line
+[47]  
+[48]      bdy←(+\pts)⊂[2]⊃dep wid↑⊃next
+[49]      (nr nc)←⍴bdy
+[50]      tgs←nr nc⍴⊂'td style="text-align: right"'
+[51]  
+[52]     ⍝ special cases
+[53]      xxx←⎕FX⊃'Z←L dist R' 'Z←(1,(⍴L)-1)/R ""'                                    ⍝ dist←{(1,(⍴⍺)-1)/⍵ ''}
+[54]      mrg←⍳4
+[55]      tgs[nr-2;mrg]←mrg dist 'td colspan="',(⍕⍴mrg),'"'
+[56]      bdy[nr-2;mrg]←mrg dist 'Totals'
+[57]  
+[58]      :Select section                                                             ⍝ special cases...
+[59]  
+[60]      :Case 'INDIVIDUAL MEMBER LISTING'
+[61]  
+[62]          mrg←5↓⍳nc
+[63]          bdy[nr-2;mrg]←,⌿bdy[nr-2 0;mrg]                                         ⍝  merge the total rows
+[64]          dep←dep-2                                                               ⍝  skip 2nd total row
+[65]  
+[66]      :Case 'TOTAL INDIVIDUAL MEMBER LISTING'
+[67]          sty←' style="text-align: right"'
+[68]          mrg←(+/^\gspn=1)+⍳↑(gspn>1)/gspn                                        ⍝  1st col group
+[69]          tgs[nr-2;mrg]←mrg dist 'td colspan="',(⍕⍴mrg),'"',sty
+[70]          bdy[nr-2;mrg]←mrg dist (↑,/bdy[nr-2;mrg])~' '                           ⍝  sum of 2nd col-group totals
+[71]  
+[72]          mrg←⍳nc-1
+[73]          tgs[nr;mrg]←mrg dist 'td colspan="',(⍕⍴mrg),'" ',sty
+[74]          bdy[nr;mrg]←mrg dist ↑,/bdy[nr;mrg]                                     ⍝  Present Value of a Contribution of 1% of Salary
+[75]  
+[76]      :EndSelect
+[77]  
+[78]      tbd←'tbody' xtag ↑,/(⊂'tr')xtag¨⊂[2] tgs[⍳dep;] xtag¨DLTB¨bdy[⍳dep;]
+[79]  
+[80]      rws←'table' xtag cmmt,thd,tbd
+[81]      cnt←4+↑⍴bdy
+[82]  
+[83]  :Else
+[84]      (cnt rws)←0 ''                                                              ⍝ no table found
+[85]  :EndIf
+[86]  
+[87]  Z←cnt rws
+    ∇

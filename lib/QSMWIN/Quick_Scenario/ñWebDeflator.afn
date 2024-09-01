@@ -1,1 +1,77 @@
-    ∇ res←arg ⍙WebDeflator restab;pen;inf;pre;IntSw;midyear;tab;∆;val;msk;inds;prerate;postrate;postMY;postSY;freqadj;revrate;PSind;rev;care;carepre;limit;act;fas;pastinf;RoC;xxx;cont;ne;preratecap;postratecap;preratecol;postratecol;revratecap;revratecol;pastinfcap;pastinfcol;rfperiod[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Create a deflator array (discount or inflation) for the values in tab[3]   ⍝ arg indicates which is required (inflator of discount) and whether cash or pension (allowable values 0 1 2 3)[4]   [5]   res←0⍴⊂0[6]   rfperiod←↑arg ⋄ arg←1↓arg[7]   [8]   :for ∆ :in spin (⎕split ∆∘.=∆←⍳rowsIn restab) (spin ,¨arg) ⋄ (msk inds)←∆[9]       tab←restab for msk ⋄ (pen inf cont)←inds[10]  [11]      midyear←↑tab at 'MidYear' ⋄ PSind←↑tab at 'PastService'[12]      :if inf[13]          :if ∨/(act ne xxx xxx)←'Active' 'Active New Entrant' 'Contributions' 'Expenses'∊tab at 'ClassName'[14]              act←act∨ne[15]              (prerate postrate revrate preratecap postratecap revratecap preratecol postratecol revratecol)←↑¨tab at 'NewInflationValue' 'NewIncreaseValue' 'NewRevaluationValue' 'InflationCap' 'IncreaseCap' 'RevaluationCap' 'InflationCollar' 'IncreaseCollar' 'RevaluationCollar'[16]              prerate←preratecap⌊preratecol⌈prerate ⋄ postrate←postratecap⌊postratecol⌈postrate ⋄ revrate←revratecap⌊revratecol⌈revrate[17]              care←∨/'CARE'⍷↑tab at 'BenefitBasis' ⋄ RoC←∨/'RoC'⍷↑tab at 'BenefitBasis'[18]              :if ∨/care RoC ⋄ :andif PSind ⋄ prerate←revrate ⋄ :endif ⍝ RoC is processed like CARE[19]          :else[20]              (prerate postrate preratecap postratecap preratecol postratecol)←↑¨tab at 'NewRevaluationValue' 'NewIncreaseValue' 'RevaluationCap' 'IncreaseCap' 'RevaluationCollar' 'IncreaseCollar'[21]              prerate←preratecap⌊preratecol⌈prerate ⋄ postrate←postratecap⌊postratecol⌈postrate[22]          :endif[23]          IntSw←1[24]      :else[25]          (prerate postrate preratecap postratecap preratecol postratecol)←↑¨tab at 'NewPreInterestValue' 'NewPostInterestValue' 'PreInterestCap' 'PostInterestCap' 'PreInterestCollar' 'PostInterestCollar'[26]          prerate←preratecap⌊preratecol⌈prerate ⋄ postrate←postratecap⌊postratecol⌈postrate[27]          IntSw←↑tab at 'InterestSwitch'[28]      :endif[29]  [30]      carepre←,pre←1,×\0 ¯1↓prerate←IntSw means prerate else postrate ⍝ Discount up to start of year of exit (at rate that applies pre-retirement)[31]      :if midyear ⋄ pre←pre×prerate*0.5 ⋄ :endif                      ⍝ Discount up to exit if midyear[32]  [33]      :if pen[34]          freqadj←↑↑tab at 'FreqAdj'[35]          :if inf[36]              :if ~PSind ⋄ :andif care∨RoC ⍝ Future Benefit is CARE or Return of Conts[37]                  rev←1,×\1↓revrate←,revrate[38]                  val←maxpay↑[1](1↓carepre,0)×[2]rev∘.÷rev[39]                  :if midyear[40]                      val←val×(~penfymsk)+penfymsk×[2](,prerate)*¯0.5[41]                      val←val×incmsk+(~incmsk)×[1](maxpay↑1,1↓revrate)*¯0.5[42]                  :endif[43]                  val←(+\val) ZDIV +\×val←(¯1+2×midyear)↓[2]0,val[44]                  :if accruallimit<maxpay[45]                      limit←DIFF (accruallimit+~midyear)⌊¯1+⍳maxyr+1                 ⍝ Effect of limited accrual[46]                      val←⊃maxyr OVERTAKE¨⎕split (⌈accruallimit+~midyear)↑[2]limit×[2]val[47]                  :endif[48]              :elseif act ⋄ :andif ~care∨RoC ⋄ :andif 0≠fas←↑tab at 'FASPeriod'[49]                  (pastinf pastinfcap pastinfcol)←↑¨tab at 'InflationValue' 'InflationCap' 'InflationCollar'[50]                  pastinf←(1,fas)↑pastinfcap⌊pastinfcol⌈pastinf[51]                  val←(fas+1)↑[2](maxpay,maxyr+fas+1)⍴(pre[1;1]÷⌽×\pastinf),pre[52]                  val←maxyr↑[2]maxpay⌿MATRIX (+/((1,(fas-1),1)/1 2 1)×[2]val)÷2×fas[53]              :else[54]                  val←maxpay⌿pre                                      ⍝ Deflator up to point of exit (only)[55]              :endif[56]              val←(val×~incmsk)+(+/penfymsk×val)×[1]⍙WebIncreases[57]  ⍝⍝⍝            val←val+(~premsk)×∆×[1]maxpay↑,pre÷midyear means postMY else postSY ⍝ Adjust for Pre/Post change[58]          :else[59]              val←premsk×maxpay⌿pre                               ⍝ Discount up to point of exit (only)[60]              postMY←(postrate*0.5)×postSY←1,×\0 ¯1↓postrate      ⍝ Start and Mid Year post retirement[61]              ∆←maxpay⌿postSY×postrate*1-freqadj                    ⍝ Discount at point of Payment[62]              val←val+(~premsk)×∆×[1]maxpay↑,pre÷midyear means postMY else postSY ⍝ Adjust for Pre/Post change[63]              val←val×(,postrate)*[2]penfymsk×(1-midyear×0.5)-freqadj÷1+midyear ⍝ Discount in Year Into Payment[64]          :endif[65]      :elseif cont[66]          val←(amortmaxterm+1)⌿pre ⍝ 0 to amortmaxterm[67]      :else[68]          val←pre[69]      :endif[70]      :if ~inf[71]          val←÷val[72]          :if rfperiod≠0 ⋄ val←rfperiod pen ⍙WebRFFinancials val ⋄ :endif[73]      :endif[74]      res←res,⊂val[75]  :endfor    ∇
+    ∇ res←arg ⍙WebDeflator restab;pen;inf;pre;IntSw;midyear;tab;∆;val;msk;inds;prerate;postrate;postMY;postSY;freqadj;revrate;PSind;rev;care;carepre;limit;act;fas;pastinf;RoC;xxx;cont;ne;preratecap;postratecap;preratecol;postratecol;revratecap;revratecol;pastinfcap;pastinfcol;rfperiod
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Create a deflator array (discount or inflation) for the values in tab
+[3]   ⍝ arg indicates which is required (inflator of discount) and whether cash or pension (allowable values 0 1 2 3)
+[4]   
+[5]   res←0⍴⊂0
+[6]   rfperiod←↑arg ⋄ arg←1↓arg
+[7]   
+[8]   :for ∆ :in spin (⎕split ∆∘.=∆←⍳rowsIn restab) (spin ,¨arg) ⋄ (msk inds)←∆
+[9]       tab←restab for msk ⋄ (pen inf cont)←inds
+[10]  
+[11]      midyear←↑tab at 'MidYear' ⋄ PSind←↑tab at 'PastService'
+[12]      :if inf
+[13]          :if ∨/(act ne xxx xxx)←'Active' 'Active New Entrant' 'Contributions' 'Expenses'∊tab at 'ClassName'
+[14]              act←act∨ne
+[15]              (prerate postrate revrate preratecap postratecap revratecap preratecol postratecol revratecol)←↑¨tab at 'NewInflationValue' 'NewIncreaseValue' 'NewRevaluationValue' 'InflationCap' 'IncreaseCap' 'RevaluationCap' 'InflationCollar' 'IncreaseCollar' 'RevaluationCollar'
+[16]              prerate←preratecap⌊preratecol⌈prerate ⋄ postrate←postratecap⌊postratecol⌈postrate ⋄ revrate←revratecap⌊revratecol⌈revrate
+[17]              care←∨/'CARE'⍷↑tab at 'BenefitBasis' ⋄ RoC←∨/'RoC'⍷↑tab at 'BenefitBasis'
+[18]              :if ∨/care RoC ⋄ :andif PSind ⋄ prerate←revrate ⋄ :endif ⍝ RoC is processed like CARE
+[19]          :else
+[20]              (prerate postrate preratecap postratecap preratecol postratecol)←↑¨tab at 'NewRevaluationValue' 'NewIncreaseValue' 'RevaluationCap' 'IncreaseCap' 'RevaluationCollar' 'IncreaseCollar'
+[21]              prerate←preratecap⌊preratecol⌈prerate ⋄ postrate←postratecap⌊postratecol⌈postrate
+[22]          :endif
+[23]          IntSw←1
+[24]      :else
+[25]          (prerate postrate preratecap postratecap preratecol postratecol)←↑¨tab at 'NewPreInterestValue' 'NewPostInterestValue' 'PreInterestCap' 'PostInterestCap' 'PreInterestCollar' 'PostInterestCollar'
+[26]          prerate←preratecap⌊preratecol⌈prerate ⋄ postrate←postratecap⌊postratecol⌈postrate
+[27]          IntSw←↑tab at 'InterestSwitch'
+[28]      :endif
+[29]  
+[30]      carepre←,pre←1,×\0 ¯1↓prerate←IntSw means prerate else postrate ⍝ Discount up to start of year of exit (at rate that applies pre-retirement)
+[31]      :if midyear ⋄ pre←pre×prerate*0.5 ⋄ :endif                      ⍝ Discount up to exit if midyear
+[32]  
+[33]      :if pen
+[34]          freqadj←↑↑tab at 'FreqAdj'
+[35]          :if inf
+[36]              :if ~PSind ⋄ :andif care∨RoC ⍝ Future Benefit is CARE or Return of Conts
+[37]                  rev←1,×\1↓revrate←,revrate
+[38]                  val←maxpay↑[1](1↓carepre,0)×[2]rev∘.÷rev
+[39]                  :if midyear
+[40]                      val←val×(~penfymsk)+penfymsk×[2](,prerate)*¯0.5
+[41]                      val←val×incmsk+(~incmsk)×[1](maxpay↑1,1↓revrate)*¯0.5
+[42]                  :endif
+[43]                  val←(+\val) ZDIV +\×val←(¯1+2×midyear)↓[2]0,val
+[44]                  :if accruallimit<maxpay
+[45]                      limit←DIFF (accruallimit+~midyear)⌊¯1+⍳maxyr+1                 ⍝ Effect of limited accrual
+[46]                      val←⊃maxyr OVERTAKE¨⎕split (⌈accruallimit+~midyear)↑[2]limit×[2]val
+[47]                  :endif
+[48]              :elseif act ⋄ :andif ~care∨RoC ⋄ :andif 0≠fas←↑tab at 'FASPeriod'
+[49]                  (pastinf pastinfcap pastinfcol)←↑¨tab at 'InflationValue' 'InflationCap' 'InflationCollar'
+[50]                  pastinf←(1,fas)↑pastinfcap⌊pastinfcol⌈pastinf
+[51]                  val←(fas+1)↑[2](maxpay,maxyr+fas+1)⍴(pre[1;1]÷⌽×\pastinf),pre
+[52]                  val←maxyr↑[2]maxpay⌿MATRIX (+/((1,(fas-1),1)/1 2 1)×[2]val)÷2×fas
+[53]              :else
+[54]                  val←maxpay⌿pre                                      ⍝ Deflator up to point of exit (only)
+[55]              :endif
+[56]              val←(val×~incmsk)+(+/penfymsk×val)×[1]⍙WebIncreases
+[57]  ⍝⍝⍝            val←val+(~premsk)×∆×[1]maxpay↑,pre÷midyear means postMY else postSY ⍝ Adjust for Pre/Post change
+[58]          :else
+[59]              val←premsk×maxpay⌿pre                               ⍝ Discount up to point of exit (only)
+[60]              postMY←(postrate*0.5)×postSY←1,×\0 ¯1↓postrate      ⍝ Start and Mid Year post retirement
+[61]              ∆←maxpay⌿postSY×postrate*1-freqadj                    ⍝ Discount at point of Payment
+[62]              val←val+(~premsk)×∆×[1]maxpay↑,pre÷midyear means postMY else postSY ⍝ Adjust for Pre/Post change
+[63]              val←val×(,postrate)*[2]penfymsk×(1-midyear×0.5)-freqadj÷1+midyear ⍝ Discount in Year Into Payment
+[64]          :endif
+[65]      :elseif cont
+[66]          val←(amortmaxterm+1)⌿pre ⍝ 0 to amortmaxterm
+[67]      :else
+[68]          val←pre
+[69]      :endif
+[70]      :if ~inf
+[71]          val←÷val
+[72]          :if rfperiod≠0 ⋄ val←rfperiod pen ⍙WebRFFinancials val ⋄ :endif
+[73]      :endif
+[74]      res←res,⊂val
+[75]  :endfor
+    ∇

@@ -1,0 +1,41 @@
+    ∇ PP∆StoreValnFactors VFtab;vftab;msk;tab;NStab;∆;recs;rec;keys
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Output the Valuation Factors to Database
+[3]   
+[4]   :if ×rowsIn VFtab
+[5]       :if ×rowsIn vftab←VFtab for ∣VFtab at 'Indiv'
+[6]           tab←vftab for ~msk←mt¨DLTB¨vftab at 'Ident'
+[7]           vftab←vftab for msk                                     ⍝ Keep all "normal" tranches
+[8]           :if ×rowsIn NStab←tab for (msk←'D'=↑¨tab at 'Ident')    ⍝ Keep one NS PUP
+[9]               NStab←NStab sortedBy 'Ident'
+[10]              :if pp∆accrued ⋄ NStab←NStab for (rowsIn NStab)↑1   ⍝ Only one for Accrued
+[11]              :else          ⋄ NStab←NStab for unique 3↑¨NStab at 'Ident' ⍝ One of each for On-going
+[12]              :endif
+[13]          :endif
+[14]          tab←tab for ~msk
+[15]          tab←tab for ~(tab at 'BenID')∊vftab at 'BenID'          ⍝ Keep Independent tranches that have a different BenID to normals
+[16]          vftab←vftab append NStab append tab
+[17]          vftab←vftab amend 'Value' ((vftab at 'Value') CDIV AgeMult)
+[18]          ⍙dbbenres←⍙dbbenres⍪valsIn vftab select 'BenID' 'ContID' 'LiabID' 'DataID' 'Age' 'Year' 'Value'
+[19]      :endif
+[20]  
+[21]      :if VFtables
+[22]      :andif ×rowsIn VFtab←VFtab for ¯1≠VFtab at 'Indiv'                                                  ⍝ Remove ¯1 Indiv (inc a mort loading)
+[23]          VFtab←VFtab for unique spin VFtab at 'BenID' 'ContID' 'DataID' 'Age' 'Year' 'Ident'             ⍝ Find unique entries
+[24]          tab←VFDBtab for 'X0' (↑VFtab at 'X0')
+[25]          :if ∨/∆←~(spin VFtab at 'BenID' 'ContID' 'DataID'  'Age' 'Year' 'Ident')∊nub spin tab at 'BenID' 'ContID' 'DataID'  'Age' 'Year' 'Ident'
+[26]              VFDBtab←VFDBtab append (VFtab for ∆) select 'X0' 'BenID' 'ContID' 'DataID' 'Age' 'Year' 'Ident' 'ValueNoRev'
+[27]          :endif
+[28]          :if uSERisRSE ⋄ :andif ∨/∆←~∆ ⍝ Check duplicates have the same factor
+[29]              keys←¯1↓¨recs←split valsIn tab
+[30]              :for rec :in split valsIn (VFtab for ∆) select keysIn tab
+[31]                  :if ∨/∆←keys∊⊂¯1↓rec
+[32]                  :andif (¯1↑rec)≠¯1↑↑∆/recs
+[33]                  :andif ~(pp∆exit)∊'EO' 'ET'
+[34]                      'Factor Difference:  ',rec,↑∆/recs
+[35]                  :endif
+[36]              :endfor
+[37]          :endif
+[38]      :endif
+[39]  :endif
+    ∇

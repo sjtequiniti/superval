@@ -1,1 +1,25 @@
-    ∇ Module Win∆SaveEnabled enabled;ControlName[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Enable/Disable Save Buttons and Menu Options[3]   ⍝ ControlName is the name of the Button[4]   ⍝ Module is the name of the Module[5]   [6]   (Module ControlName)←Module[7]   [8]   ControlName ⎕wi 'enabled' enabled ⍝ First the Button[9]   ⍝ Remove Enter Action, if any[10]  ControlName ⎕wi '∆enter' ((ControlName ⎕wi '∆enter')⌈ ControlName ⎕wi 'style')[11]  ControlName ⎕wi 'style' (enabled×ControlName ⎕wi '∆enter')[12]  [13]  :repeat[14]      ControlName←Win∆Parent ControlName[15]  :until 'Form'≡ControlName ⎕wi 'class'[16]  [17]  ⍝ Then the corresponding Menu Items[18]  :if ~0∊⍴(ControlName←ControlName,'.m',Module,'File.mSave') ⎕wi 'self'[19]      ControlName ⎕wi 'enabled' enabled[20]  :endif[21]  :if ~0∊⍴(ControlName←ControlName,'NoValid') ⎕wi 'self'[22]      ControlName ⎕wi 'enabled' enabled[23]  :endif    ∇
+    ∇ Module Win∆SaveEnabled enabled;ControlName
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Enable/Disable Save Buttons and Menu Options
+[3]   ⍝ ControlName is the name of the Button
+[4]   ⍝ Module is the name of the Module
+[5]   
+[6]   (Module ControlName)←Module
+[7]   
+[8]   ControlName ⎕wi 'enabled' enabled ⍝ First the Button
+[9]   ⍝ Remove Enter Action, if any
+[10]  ControlName ⎕wi '∆enter' ((ControlName ⎕wi '∆enter')⌈ ControlName ⎕wi 'style')
+[11]  ControlName ⎕wi 'style' (enabled×ControlName ⎕wi '∆enter')
+[12]  
+[13]  :repeat
+[14]      ControlName←Win∆Parent ControlName
+[15]  :until 'Form'≡ControlName ⎕wi 'class'
+[16]  
+[17]  ⍝ Then the corresponding Menu Items
+[18]  :if ~0∊⍴(ControlName←ControlName,'.m',Module,'File.mSave') ⎕wi 'self'
+[19]      ControlName ⎕wi 'enabled' enabled
+[20]  :endif
+[21]  :if ~0∊⍴(ControlName←ControlName,'NoValid') ⎕wi 'self'
+[22]      ControlName ⎕wi 'enabled' enabled
+[23]  :endif
+    ∇

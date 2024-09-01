@@ -1,0 +1,20 @@
+    ∇ ReviseCacheFor FormFields;∆;a;f;expns;stdxs;xxx;props
+[1]   ⍝ UTILSWIN.sf#5
+[2]   ⍝ Cache and map derived from FormFields
+[3]   ⍝ Reads: n∆A∆F
+[4]   ⍝ Revn: sjt10apr15
+[5]   
+[6]   :if 0=⎕NC '⍙CACHE' ⋄ ⍙CACHE←'' push '' ⋄ :endif                                 ⍝ initalise cache if necessary
+[7]   
+[8]   ⍝ Cache values of FormFields expns, under std names if different
+[9]   (a f)←(⊂×⎕NC⊃↑n∆A∆F)sel¨n∆A∆F[2 3]                                              ⍝ expressions map: defined alt::std
+[10]  expns←nub FormFields at 'variable'                                              ⍝ variable names, possibly indexed
+[11]  stdxs←a f mapp expns                                                            ⍝ using standard names if different
+[12]  ⍙CACHE←⍙CACHE update stdxs push ⍎¨expns
+[13]  
+[14]  ⍝ Recalculate evaluated properties dependent on the changed values
+[15]  ∆←qtrimo¨stdxs
+[16]  props←, (nub ∆,fieldsOf clientsOf ∆) ∘., '.',¨PROPERTIES
+[17]  ⍙CACHE←⍙CACHE remove props
+[18]  evaluateProperties props                                                        ⍝ sets ⍙CACHE
+    ∇

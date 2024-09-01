@@ -1,0 +1,18 @@
+    ∇ values←dict atindexed iks;k;i;vi;xxx;∆
+[1]   ⍝ UTILSWIN.sf#6
+[2]   ⍝ values:   [ charvec ]+
+[3]   ⍝ charvec:  character vector
+[4]   ⍝ dict:     dictionary
+[5]   ⍝ iks:      (depth 2) [ key + index ]+
+[6]   ⍝ key:      ∊ keysIn dict
+[7]   ⍝ index:    bracketed index expression eg [1;]
+[8]   ⍝ ≡/⍴¨values indexedkeys
+[9]   ⍝ eg (⍙CACHE atindexed 'f_HXX[1;]') ←→  (⍙CACHE at 'f_HXX')[1;]
+[10]  ⍝ eg  ⍙CACHE atindexed 'foo' 'bar' ∘., '[1;]' '[2;]' '[3;]'
+[11]  ⍝ Revn: sjt08may15
+[12]  ∆←¯1+iks⍳¨'['
+[13]  ⍝values←(dict at ∆↑¨iks) {⍎'⍺',⍵}¨ ∆↓¨iks)  ⍝ keys and indexes (Dyalog)
+[14]  (k i)←(∆↑¨iks)(∆↓¨iks)                      ⍝ keys and indexes
+[15]  xxx←⎕FX⊃"Z←L vi R" "Z←⍎'L',R"               ⍝ value, indexed
+[16]  values←DLTB¨(dict at k) vi¨ i               ⍝ (dict at k) {⍎'⍺',⍵}¨ i
+    ∇

@@ -1,0 +1,17 @@
+    ∇ IND∆AOS SUMM;SUMMREC;A
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Fn to write out Analysis of Surplus Results for Individual
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   A←¯1↑⍴SUMMREC←'CM<->I18' ⎕FMT SUMM[(⍳50-4×IsDeferred)~36;]
+[7]   SUMMREC[36+⍳5;]←'M<->F18.5' ⎕FMT SUMM[37+⍳5;]
+[8]   :if IsDeferred
+[9]       SUMMREC←AOSdesc,(3 1 2 1 2 1 3 1 2 1 3 1 3/13⍴ 1 0)⍀SUMMREC[0 12 13 24 30 25 31,(36+⍳3),41 42,(1+⍳3),(14+⍳3);]
+[10]  :else
+[11]      SUMMREC←(3 1 2 1 2 1 5 1 4 1 5 1 5 1 2 1 5 1 5 1 2 1 4 1 4 1 1/27⍴ 1 0)⍀SUMMREC[0 12 13 24 30 25 31,(36+⍳5),(41+⍳4),(1+⍳5),(14+⍳5),45 46,(6+⍳5),(19+⍳5),47 48,(26+⍳4),(32+⍳4),11;]
+[12]      SUMMREC←AOSdesc,SUMMREC⍪(¯3,A)↑'M<->F17.3,<%>' ⎕FMT SUMM[36;0 1]
+[13]  :endif
+[14]  ⍝ Add to native DOS file, TEMP$$.IND, individual's full details
+[15]  IPAGE←1↑H7 OUTPUT tpI,IPAGE,pAGE
+    ∇

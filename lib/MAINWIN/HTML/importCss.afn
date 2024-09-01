@@ -1,0 +1,40 @@
+    ∇ Z←importCss html;⎕io;fnd;len;b4;link;LINK;href;∆;css;styledir;import;imported;style
+[1]   ⍝ MAINWIN.sf#13
+[2]   ⍝ replace links to single external CSS stylesheet with style rules
+[3]   ⍝ processes @import rules but does not cascade (recurse on) them
+[4]   ⍝ Revn: sjt17nov15 * ⎕IO
+[5]   ⍝ Revn: sjt30sep17 * filepath from URL
+[6]   ⎕IO←1
+[7]   Z←''
+[8]   fnd←'<LINK '⍷UPPERCASE html
+[9]   :while (tally html) > b4←(fnd⍳1)-1
+[10]      len←(b4↓html)⍳'>'
+[11]      (Z link fnd html)←(Z,b4↑html) (len↑b4↓html) , (b4+len)↓¨fnd html
+[12]      :if    1∊'REL="STYLESHEET"' ⍷ LINK←UPPERCASE link
+[13]      :andif 1∊'TYPE="TEXT/CSS"' ⍷ LINK
+[14]      :andif 1∊∆←'HREF="' ⍷ LINK
+[15]          b4←(∆⍳1)+5
+[16]          len←(b4↓link)⍳'"'
+[17]          href←(len-1)↑b4↓link
+[18]          ⍝ Watch Out: assumes href is absolute filepath, not URL
+[19]          :if mt css←nfile_get_contents '/\' char_replace href ⍝ 30sep17
+[20]              Z←Z,link
+[21]          :else
+[22]              styledir←(1-(⌽∆)⍳'\')↓∆←'/\' char_replace href
+[23]              style←''
+[24]              :while (tally css) > b4←(('@import'⍷css)⍳1)-1
+[25]                  len←(b4↓css)⍳';'
+[26]                  (style import css)←(style,b4↑css) (len↑b4↓css) ((len+b4)↓css)
+[27]                  ⍝ Watch Out: assumes @import stylesheet is a sibling
+[28]                  imported←nfile_get_contents styledir,1↓(≠\import∊'"''')/import
+[29]                  ⍝ Watch Out: does not process further @import rules
+[30]                  style←style,imported
+[31]              :endwhile
+[32]              Z←Z,'STYLE' xtag style,css
+[33]          :endif
+[34]      :else
+[35]          Z←Z,link
+[36]      :endif
+[37]  :endwhile
+[38]  Z←Z,html
+    ∇

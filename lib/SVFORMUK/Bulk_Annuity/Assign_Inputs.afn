@@ -1,1 +1,201 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Bulk_Annuity" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Bulk_Annuity" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   :if (⊂"pgPayment")∊"fmBulkAnn.sBulk_Annuity" ⎕wi "pages"[10]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)[11]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)[12]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.edgp" ⎕wi "text" (DLTB gp)[13]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.ckgpOlap" ⎕wi "value" (zwb gpOlap)[14]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.ckDISC" ⎕wi "value" (zwb DISC)[15]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.eddefage" ⎕wi "text" (DLTB defage)[16]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.edtop" ⎕wi "text" (DLTB top)[17]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fParms.cbPenFreq1" ⎕wi "list"[18]  selection←PickList ExactTLU DLTB PenFreq[1;][19]  :if mt selection[20]      :if ~mt DLTB PenFreq[1;][21]          warnings←warnings OVER "Previous Selection for 'Payment Frequency' is no longer available"[22]      :endif[23]      modified←⌈/modified,1[24]  :endif[25]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.cbPenFreq1" ⎕wi "value" (¯1↑1,selection)[26]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fParms.cbPenFreq2" ⎕wi "list"[27]  selection←PickList ExactTLU DLTB PenFreq[2;][28]  :if mt selection[29]      :if ~mt DLTB PenFreq[2;][30]          warnings←warnings OVER "Previous Selection for 'Payment Mode' is no longer available"[31]      :endif[32]      modified←⌈/modified,1[33]  :endif[34]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.cbPenFreq2" ⎕wi "value" (¯1↑1,selection)[35]  0 0⍴GetDecrList "List"[36]  warnings←warnings OVER "Proportions Married Table" Win∆CheckDecr (H[1;]) (lrH1)[37]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edH1" ⎕wi "text" (DLTB H[1;])[38]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edH2" ⎕wi "text" (DLTB H[2;])[39]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edH3" ⎕wi "text" (DLTB H[3;])[40]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edPropMarr" ⎕wi "text" (DLTB PropMarr)[41]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edSAgeDiff" ⎕wi "text" (DLTB SAgeDiff)[42]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edrev" ⎕wi "text" (DLTB rev)[43]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.ckrevdef" ⎕wi "value" (zwb revdef)[44]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.cbrevterm" ⎕wi "list"[45]  selection←PickList ExactTLU DLTB revterm[46]  :if mt selection[47]      :if ~mt DLTB revterm[48]          warnings←warnings OVER "Previous Selection for 'Term of Reversion' is no longer available"[49]      :endif[50]      modified←⌈/modified,1[51]  :endif[52]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.cbrevterm" ⎕wi "value" (¯1↑1,selection)[53]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.ckrevind" ⎕wi "value" (zwb revind)[54]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbIR" ⎕wi "list"[55]  warnings←warnings OVER "Interest Rate (% p.a.)" Win∆FinRelative "IR" "lrIR" 1[56]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText IR[57]  :if mt selection[58]      :if ~mt DLTB IR ⋄ :andif ~^/⎕vi IR[59]          warnings←warnings OVER "Previous Selection for 'Interest Rate (% p.a.)' is no longer available"[60]      :else[61]          "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbIR" ⎕wi "text" (DLTB IR)[62]      :endif[63]  :else[64]      "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbIR" ⎕wi "value" selection[65]  :endif[66]  "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.ckpiind" ⎕wi "value" (zwb piind)[67]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbdefi" ⎕wi "list"[68]  warnings←warnings OVER "Reinvestment Rate in Deferment (% p.a.)" Win∆FinRelative "defi" "lrdefi" 1[69]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText defi[70]  :if mt selection[71]      :if ~mt DLTB defi ⋄ :andif ~^/⎕vi defi[72]          warnings←warnings OVER "Previous Selection for 'Reinvestment Rate in Deferment (% p.a.)' is no longer available"[73]      :else[74]          "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbdefi" ⎕wi "text" (DLTB defi)[75]      :endif[76]  :else[77]      "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbdefi" ⎕wi "value" selection[78]  :endif[79]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVMdef" ⎕wi "list"[80]  warnings←warnings OVER "Revaluation in Deferment (% p.a.)" Win∆FinRelative "PVMdef" "lrPVMdef" 1[81]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText PVMdef[82]  :if mt selection[83]      :if ~mt DLTB PVMdef ⋄ :andif ~^/⎕vi PVMdef[84]          warnings←warnings OVER "Previous Selection for 'Revaluation in Deferment (% p.a.)' is no longer available"[85]      :else[86]          "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVMdef" ⎕wi "text" (DLTB PVMdef)[87]      :endif[88]  :else[89]      "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVMdef" ⎕wi "value" selection[90]  :endif[91]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVM" ⎕wi "list"[92]  warnings←warnings OVER "Pension Increases in Payment (% p.a.)" Win∆FinRelative "PVM" "lrPVM" 1[93]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText PVM[94]  :if mt selection[95]      :if ~mt DLTB PVM ⋄ :andif ~^/⎕vi PVM[96]          warnings←warnings OVER "Previous Selection for 'Pension Increases in Payment (% p.a.)' is no longer available"[97]      :else[98]          "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVM" ⎕wi "text" (DLTB PVM)[99]      :endif[100] :else[101]     "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVM" ⎕wi "value" selection[102] :endif[103] "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.ckPVMind" ⎕wi "value" (zwb PVMind)[104] :endif[105] :if (⊂"pgMortality")∊"fmBulkAnn.sBulk_Annuity" ⎕wi "pages"[106] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbP_DDEF" ⎕wi "list"[107] warnings←warnings OVER "Primary Annuitant Mortality in Deferment Parameters" Win∆MortRelative "P_DDEF" "lrP_DDEF"[108] selection←PickList ExactTLU DLTB P_DDEF[109] :if mt selection[110]     :if ~mt DLTB P_DDEF[111]         warnings←warnings OVER "Previous Selection for 'Primary Annuitant Mortality in Deferment Parameters' is no longer available"[112]     :endif[113]     modified←⌈/modified,1[114] :endif[115] "fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbP_DDEF" ⎕wi "value" (¯1↑1,selection)[116] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbP_miDDEF" ⎕wi "list"[117] warnings←warnings OVER "Primary Annuitant Mortality Improvement Parameters" Win∆MortImpRelative "P_miDDEF" "lrP_miDDEF"[118] selection←PickList ExactTLU DLTB P_miDDEF[119] :if mt selection[120]     :if ~mt DLTB P_miDDEF[121]         warnings←warnings OVER "Previous Selection for 'Primary Annuitant Mortality Improvement Parameters' is no longer available"[122]     :endif[123]     modified←⌈/modified,1[124] :endif[125] "fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbP_miDDEF" ⎕wi "value" (¯1↑1,selection)[126] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbS_DDEF" ⎕wi "list"[127] warnings←warnings OVER "Spouse Mortality in Deferment Parameters" Win∆MortRelative "S_DDEF" "lrS_DDEF"[128] selection←PickList ExactTLU DLTB S_DDEF[129] :if mt selection[130]     :if ~mt DLTB S_DDEF[131]         warnings←warnings OVER "Previous Selection for 'Spouse Mortality in Deferment Parameters' is no longer available"[132]     :endif[133]     modified←⌈/modified,1[134] :endif[135] "fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbS_DDEF" ⎕wi "value" (¯1↑1,selection)[136] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbS_miDDEF" ⎕wi "list"[137] warnings←warnings OVER "Spouse Mortality Improvement Parameters" Win∆MortImpRelative "S_miDDEF" "lrS_miDDEF"[138] selection←PickList ExactTLU DLTB S_miDDEF[139] :if mt selection[140]     :if ~mt DLTB S_miDDEF[141]         warnings←warnings OVER "Previous Selection for 'Spouse Mortality Improvement Parameters' is no longer available"[142]     :endif[143]     modified←⌈/modified,1[144] :endif[145] "fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbS_miDDEF" ⎕wi "value" (¯1↑1,selection)[146] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbP_DPEN" ⎕wi "list"[147] warnings←warnings OVER "Primary Annuitant Mortality on Pension Parameters" Win∆MortRelative "P_DPEN" "lrP_DPEN"[148] selection←PickList ExactTLU DLTB P_DPEN[149] :if mt selection[150]     :if ~mt DLTB P_DPEN[151]         warnings←warnings OVER "Previous Selection for 'Primary Annuitant Mortality on Pension Parameters' is no longer available"[152]     :endif[153]     modified←⌈/modified,1[154] :endif[155] "fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbP_DPEN" ⎕wi "value" (¯1↑1,selection)[156] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbP_miDPEN" ⎕wi "list"[157] warnings←warnings OVER "Primary Annuitant Mortality Improvement Parameters" Win∆MortImpRelative "P_miDPEN" "lrP_miDPEN"[158] selection←PickList ExactTLU DLTB P_miDPEN[159] :if mt selection[160]     :if ~mt DLTB P_miDPEN[161]         warnings←warnings OVER "Previous Selection for 'Primary Annuitant Mortality Improvement Parameters' is no longer available"[162]     :endif[163]     modified←⌈/modified,1[164] :endif[165] "fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbP_miDPEN" ⎕wi "value" (¯1↑1,selection)[166] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbS_DPEN" ⎕wi "list"[167] warnings←warnings OVER "Spouse Mortality on Pension Parameters" Win∆MortRelative "S_DPEN" "lrS_DPEN"[168] selection←PickList ExactTLU DLTB S_DPEN[169] :if mt selection[170]     :if ~mt DLTB S_DPEN[171]         warnings←warnings OVER "Previous Selection for 'Spouse Mortality on Pension Parameters' is no longer available"[172]     :endif[173]     modified←⌈/modified,1[174] :endif[175] "fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbS_DPEN" ⎕wi "value" (¯1↑1,selection)[176] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbS_miDPEN" ⎕wi "list"[177] warnings←warnings OVER "Spouse Mortality Improvement Parameters" Win∆MortImpRelative "S_miDPEN" "lrS_miDPEN"[178] selection←PickList ExactTLU DLTB S_miDPEN[179] :if mt selection[180]     :if ~mt DLTB S_miDPEN[181]         warnings←warnings OVER "Previous Selection for 'Spouse Mortality Improvement Parameters' is no longer available"[182]     :endif[183]     modified←⌈/modified,1[184] :endif[185] "fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbS_miDPEN" ⎕wi "value" (¯1↑1,selection)[186] "fmBulkAnn.sBulk_Annuity.pgMortality.fYear.edCalcYr" ⎕wi "text" (DLTB CalcYr)[187] :endif[188] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Bulk_Annuity[189]     :for var :in spin Comment_Bulk_Annuity at "variable" "row" ⋄ (var row)←var[190]         "Bulk_Annuity" ParmColor ((FormFields for "variable" var) at "control"),var row 1[191]     :endfor[192] :endif[193] :if ~0∊⍴,warnings[194]     MDISPLAY DLTMB warnings,⎕tcnl[195]     Win∆AssignVars "fmBulkAnn.sBulk_Annuity"[196] :endif[197] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Bulk_Annuity" "" "Names"[198]     "fmBulkAnn.sBulk_Annuity" ⎕wi "modified" 0[199] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Bulk_Annuity" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Bulk_Annuity" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   :if (⊂"pgPayment")∊"fmBulkAnn.sBulk_Annuity" ⎕wi "pages"
+[10]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.edBAGE" ⎕wi "text" (DLTB BAGE)
+[11]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.edEAGE" ⎕wi "text" (DLTB EAGE)
+[12]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.edgp" ⎕wi "text" (DLTB gp)
+[13]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.ckgpOlap" ⎕wi "value" (zwb gpOlap)
+[14]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.ckDISC" ⎕wi "value" (zwb DISC)
+[15]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.eddefage" ⎕wi "text" (DLTB defage)
+[16]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.edtop" ⎕wi "text" (DLTB top)
+[17]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fParms.cbPenFreq1" ⎕wi "list"
+[18]  selection←PickList ExactTLU DLTB PenFreq[1;]
+[19]  :if mt selection
+[20]      :if ~mt DLTB PenFreq[1;]
+[21]          warnings←warnings OVER "Previous Selection for 'Payment Frequency' is no longer available"
+[22]      :endif
+[23]      modified←⌈/modified,1
+[24]  :endif
+[25]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.cbPenFreq1" ⎕wi "value" (¯1↑1,selection)
+[26]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fParms.cbPenFreq2" ⎕wi "list"
+[27]  selection←PickList ExactTLU DLTB PenFreq[2;]
+[28]  :if mt selection
+[29]      :if ~mt DLTB PenFreq[2;]
+[30]          warnings←warnings OVER "Previous Selection for 'Payment Mode' is no longer available"
+[31]      :endif
+[32]      modified←⌈/modified,1
+[33]  :endif
+[34]  "fmBulkAnn.sBulk_Annuity.pgPayment.fParms.cbPenFreq2" ⎕wi "value" (¯1↑1,selection)
+[35]  0 0⍴GetDecrList "List"
+[36]  warnings←warnings OVER "Proportions Married Table" Win∆CheckDecr (H[1;]) (lrH1)
+[37]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edH1" ⎕wi "text" (DLTB H[1;])
+[38]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edH2" ⎕wi "text" (DLTB H[2;])
+[39]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edH3" ⎕wi "text" (DLTB H[3;])
+[40]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edPropMarr" ⎕wi "text" (DLTB PropMarr)
+[41]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edSAgeDiff" ⎕wi "text" (DLTB SAgeDiff)
+[42]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.edrev" ⎕wi "text" (DLTB rev)
+[43]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.ckrevdef" ⎕wi "value" (zwb revdef)
+[44]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.cbrevterm" ⎕wi "list"
+[45]  selection←PickList ExactTLU DLTB revterm
+[46]  :if mt selection
+[47]      :if ~mt DLTB revterm
+[48]          warnings←warnings OVER "Previous Selection for 'Term of Reversion' is no longer available"
+[49]      :endif
+[50]      modified←⌈/modified,1
+[51]  :endif
+[52]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.cbrevterm" ⎕wi "value" (¯1↑1,selection)
+[53]  "fmBulkAnn.sBulk_Annuity.pgPayment.fReversion.ckrevind" ⎕wi "value" (zwb revind)
+[54]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbIR" ⎕wi "list"
+[55]  warnings←warnings OVER "Interest Rate (% p.a.)" Win∆FinRelative "IR" "lrIR" 1
+[56]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText IR
+[57]  :if mt selection
+[58]      :if ~mt DLTB IR ⋄ :andif ~^/⎕vi IR
+[59]          warnings←warnings OVER "Previous Selection for 'Interest Rate (% p.a.)' is no longer available"
+[60]      :else
+[61]          "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbIR" ⎕wi "text" (DLTB IR)
+[62]      :endif
+[63]  :else
+[64]      "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbIR" ⎕wi "value" selection
+[65]  :endif
+[66]  "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.ckpiind" ⎕wi "value" (zwb piind)
+[67]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbdefi" ⎕wi "list"
+[68]  warnings←warnings OVER "Reinvestment Rate in Deferment (% p.a.)" Win∆FinRelative "defi" "lrdefi" 1
+[69]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText defi
+[70]  :if mt selection
+[71]      :if ~mt DLTB defi ⋄ :andif ~^/⎕vi defi
+[72]          warnings←warnings OVER "Previous Selection for 'Reinvestment Rate in Deferment (% p.a.)' is no longer available"
+[73]      :else
+[74]          "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbdefi" ⎕wi "text" (DLTB defi)
+[75]      :endif
+[76]  :else
+[77]      "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbdefi" ⎕wi "value" selection
+[78]  :endif
+[79]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVMdef" ⎕wi "list"
+[80]  warnings←warnings OVER "Revaluation in Deferment (% p.a.)" Win∆FinRelative "PVMdef" "lrPVMdef" 1
+[81]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText PVMdef
+[82]  :if mt selection
+[83]      :if ~mt DLTB PVMdef ⋄ :andif ~^/⎕vi PVMdef
+[84]          warnings←warnings OVER "Previous Selection for 'Revaluation in Deferment (% p.a.)' is no longer available"
+[85]      :else
+[86]          "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVMdef" ⎕wi "text" (DLTB PVMdef)
+[87]      :endif
+[88]  :else
+[89]      "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVMdef" ⎕wi "value" selection
+[90]  :endif
+[91]  PickList←"fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVM" ⎕wi "list"
+[92]  warnings←warnings OVER "Pension Increases in Payment (% p.a.)" Win∆FinRelative "PVM" "lrPVM" 1
+[93]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText PVM
+[94]  :if mt selection
+[95]      :if ~mt DLTB PVM ⋄ :andif ~^/⎕vi PVM
+[96]          warnings←warnings OVER "Previous Selection for 'Pension Increases in Payment (% p.a.)' is no longer available"
+[97]      :else
+[98]          "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVM" ⎕wi "text" (DLTB PVM)
+[99]      :endif
+[100] :else
+[101]     "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.cbPVM" ⎕wi "value" selection
+[102] :endif
+[103] "fmBulkAnn.sBulk_Annuity.pgPayment.fFinancial.ckPVMind" ⎕wi "value" (zwb PVMind)
+[104] :endif
+[105] :if (⊂"pgMortality")∊"fmBulkAnn.sBulk_Annuity" ⎕wi "pages"
+[106] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbP_DDEF" ⎕wi "list"
+[107] warnings←warnings OVER "Primary Annuitant Mortality in Deferment Parameters" Win∆MortRelative "P_DDEF" "lrP_DDEF"
+[108] selection←PickList ExactTLU DLTB P_DDEF
+[109] :if mt selection
+[110]     :if ~mt DLTB P_DDEF
+[111]         warnings←warnings OVER "Previous Selection for 'Primary Annuitant Mortality in Deferment Parameters' is no longer available"
+[112]     :endif
+[113]     modified←⌈/modified,1
+[114] :endif
+[115] "fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbP_DDEF" ⎕wi "value" (¯1↑1,selection)
+[116] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbP_miDDEF" ⎕wi "list"
+[117] warnings←warnings OVER "Primary Annuitant Mortality Improvement Parameters" Win∆MortImpRelative "P_miDDEF" "lrP_miDDEF"
+[118] selection←PickList ExactTLU DLTB P_miDDEF
+[119] :if mt selection
+[120]     :if ~mt DLTB P_miDDEF
+[121]         warnings←warnings OVER "Previous Selection for 'Primary Annuitant Mortality Improvement Parameters' is no longer available"
+[122]     :endif
+[123]     modified←⌈/modified,1
+[124] :endif
+[125] "fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbP_miDDEF" ⎕wi "value" (¯1↑1,selection)
+[126] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbS_DDEF" ⎕wi "list"
+[127] warnings←warnings OVER "Spouse Mortality in Deferment Parameters" Win∆MortRelative "S_DDEF" "lrS_DDEF"
+[128] selection←PickList ExactTLU DLTB S_DDEF
+[129] :if mt selection
+[130]     :if ~mt DLTB S_DDEF
+[131]         warnings←warnings OVER "Previous Selection for 'Spouse Mortality in Deferment Parameters' is no longer available"
+[132]     :endif
+[133]     modified←⌈/modified,1
+[134] :endif
+[135] "fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbS_DDEF" ⎕wi "value" (¯1↑1,selection)
+[136] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbS_miDDEF" ⎕wi "list"
+[137] warnings←warnings OVER "Spouse Mortality Improvement Parameters" Win∆MortImpRelative "S_miDDEF" "lrS_miDDEF"
+[138] selection←PickList ExactTLU DLTB S_miDDEF
+[139] :if mt selection
+[140]     :if ~mt DLTB S_miDDEF
+[141]         warnings←warnings OVER "Previous Selection for 'Spouse Mortality Improvement Parameters' is no longer available"
+[142]     :endif
+[143]     modified←⌈/modified,1
+[144] :endif
+[145] "fmBulkAnn.sBulk_Annuity.pgMortality.fDefer.cbS_miDDEF" ⎕wi "value" (¯1↑1,selection)
+[146] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbP_DPEN" ⎕wi "list"
+[147] warnings←warnings OVER "Primary Annuitant Mortality on Pension Parameters" Win∆MortRelative "P_DPEN" "lrP_DPEN"
+[148] selection←PickList ExactTLU DLTB P_DPEN
+[149] :if mt selection
+[150]     :if ~mt DLTB P_DPEN
+[151]         warnings←warnings OVER "Previous Selection for 'Primary Annuitant Mortality on Pension Parameters' is no longer available"
+[152]     :endif
+[153]     modified←⌈/modified,1
+[154] :endif
+[155] "fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbP_DPEN" ⎕wi "value" (¯1↑1,selection)
+[156] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbP_miDPEN" ⎕wi "list"
+[157] warnings←warnings OVER "Primary Annuitant Mortality Improvement Parameters" Win∆MortImpRelative "P_miDPEN" "lrP_miDPEN"
+[158] selection←PickList ExactTLU DLTB P_miDPEN
+[159] :if mt selection
+[160]     :if ~mt DLTB P_miDPEN
+[161]         warnings←warnings OVER "Previous Selection for 'Primary Annuitant Mortality Improvement Parameters' is no longer available"
+[162]     :endif
+[163]     modified←⌈/modified,1
+[164] :endif
+[165] "fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbP_miDPEN" ⎕wi "value" (¯1↑1,selection)
+[166] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbS_DPEN" ⎕wi "list"
+[167] warnings←warnings OVER "Spouse Mortality on Pension Parameters" Win∆MortRelative "S_DPEN" "lrS_DPEN"
+[168] selection←PickList ExactTLU DLTB S_DPEN
+[169] :if mt selection
+[170]     :if ~mt DLTB S_DPEN
+[171]         warnings←warnings OVER "Previous Selection for 'Spouse Mortality on Pension Parameters' is no longer available"
+[172]     :endif
+[173]     modified←⌈/modified,1
+[174] :endif
+[175] "fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbS_DPEN" ⎕wi "value" (¯1↑1,selection)
+[176] PickList←"fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbS_miDPEN" ⎕wi "list"
+[177] warnings←warnings OVER "Spouse Mortality Improvement Parameters" Win∆MortImpRelative "S_miDPEN" "lrS_miDPEN"
+[178] selection←PickList ExactTLU DLTB S_miDPEN
+[179] :if mt selection
+[180]     :if ~mt DLTB S_miDPEN
+[181]         warnings←warnings OVER "Previous Selection for 'Spouse Mortality Improvement Parameters' is no longer available"
+[182]     :endif
+[183]     modified←⌈/modified,1
+[184] :endif
+[185] "fmBulkAnn.sBulk_Annuity.pgMortality.fPension.cbS_miDPEN" ⎕wi "value" (¯1↑1,selection)
+[186] "fmBulkAnn.sBulk_Annuity.pgMortality.fYear.edCalcYr" ⎕wi "text" (DLTB CalcYr)
+[187] :endif
+[188] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Bulk_Annuity
+[189]     :for var :in spin Comment_Bulk_Annuity at "variable" "row" ⋄ (var row)←var
+[190]         "Bulk_Annuity" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[191]     :endfor
+[192] :endif
+[193] :if ~0∊⍴,warnings
+[194]     MDISPLAY DLTMB warnings,⎕tcnl
+[195]     Win∆AssignVars "fmBulkAnn.sBulk_Annuity"
+[196] :endif
+[197] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Bulk_Annuity" "" "Names"
+[198]     "fmBulkAnn.sBulk_Annuity" ⎕wi "modified" 0
+[199] :endif
+    ∇

@@ -1,1 +1,29 @@
-    ∇ DTC∆Insured;BenType∆pp;IncType∆pp;SL∆pp;FSL∆pp;ExitProbs∆pp;Dec∆pp;idcash[1]   ⍝ ACTWIN.sf#6[2]   ⍝ The Insured Lump Sum[3]   ⍝[4]   :if bGAD[5]       GLTAB←((GLOCCL×NX_1↑X0↓prIDC)+GLADD),0[6]       GLAVPER←1⌈(NX_1-SNX)⌊glavper[7]       IDCASH←GLBEN×GLTAB[8]       ∆4300F←(+/⍉(GLAVPER,NX)↑((-⎕IO)+⍳GLAVPER)⌽((GLAVPER,NX)⍴IDCASH),(GLAVPER,NX)⍴¯1↑IDCASH) CDIV GLAVPER[9]   :else[10]      GLTAB←NX↑(GLOCCL×ENX_1↑X0↓prIDC)+GLADD[11]      GLAVPER←ENX_1⌊glavper[12]      idcash←ENX↑IDCASH←GLBEN×GLTAB[13]      ∆4300F←NX↑(+/⍉(GLAVPER,ENX)↑((-⎕IO)+⍳GLAVPER)⌽((GLAVPER,ENX)⍴idcash),(GLAVPER,ENX)⍴¯1↑idcash) CDIV GLAVPER[14]  :endif[15]  [16]  ⍝⍝⍝ FIXME Suggested fix for "averaging period"[17]  ⍝⍝⍝ GLTAB←NX↑(GLOCCL×ENX_1↑X0↓prIDC)+GLADD[18]  ⍝⍝⍝ IDCASH←GLBEN×GLTAB[19]  ⍝⍝⍝ ∆4300F←(+/∆4300F) CDIV +/×∆4300F←(GLAVPER←ENX_1⌊glavper)↑[1](⍳NX)⌽NX⌿MATRIX IDCASH,NX/0[20]  [21]  ⍝ Pension Projector Variables[22]  BenType∆pp←'I' ⋄ IncType∆pp←'C' ⋄ SL∆pp←NX↑ENX_1↑,∆4300F ⋄ FSL∆pp←⍬[23]  [24]  ⍝ The benefit includes the Premium Rate so the exit probability is just "survival"[25]  Dec∆pp←'D'  ⋄ ExitProbs∆pp←tPx×(ENX_1,LNX+1)/1 0 ⍝ Probability of Death pre NRA[26]  [27]  PP∆CreateInterface    ∇
+    ∇ DTC∆Insured;BenType∆pp;IncType∆pp;SL∆pp;FSL∆pp;ExitProbs∆pp;Dec∆pp;idcash
+[1]   ⍝ ACTWIN.sf#6
+[2]   ⍝ The Insured Lump Sum
+[3]   ⍝
+[4]   :if bGAD
+[5]       GLTAB←((GLOCCL×NX_1↑X0↓prIDC)+GLADD),0
+[6]       GLAVPER←1⌈(NX_1-SNX)⌊glavper
+[7]       IDCASH←GLBEN×GLTAB
+[8]       ∆4300F←(+/⍉(GLAVPER,NX)↑((-⎕IO)+⍳GLAVPER)⌽((GLAVPER,NX)⍴IDCASH),(GLAVPER,NX)⍴¯1↑IDCASH) CDIV GLAVPER
+[9]   :else
+[10]      GLTAB←NX↑(GLOCCL×ENX_1↑X0↓prIDC)+GLADD
+[11]      GLAVPER←ENX_1⌊glavper
+[12]      idcash←ENX↑IDCASH←GLBEN×GLTAB
+[13]      ∆4300F←NX↑(+/⍉(GLAVPER,ENX)↑((-⎕IO)+⍳GLAVPER)⌽((GLAVPER,ENX)⍴idcash),(GLAVPER,ENX)⍴¯1↑idcash) CDIV GLAVPER
+[14]  :endif
+[15]  
+[16]  ⍝⍝⍝ FIXME Suggested fix for "averaging period"
+[17]  ⍝⍝⍝ GLTAB←NX↑(GLOCCL×ENX_1↑X0↓prIDC)+GLADD
+[18]  ⍝⍝⍝ IDCASH←GLBEN×GLTAB
+[19]  ⍝⍝⍝ ∆4300F←(+/∆4300F) CDIV +/×∆4300F←(GLAVPER←ENX_1⌊glavper)↑[1](⍳NX)⌽NX⌿MATRIX IDCASH,NX/0
+[20]  
+[21]  ⍝ Pension Projector Variables
+[22]  BenType∆pp←'I' ⋄ IncType∆pp←'C' ⋄ SL∆pp←NX↑ENX_1↑,∆4300F ⋄ FSL∆pp←⍬
+[23]  
+[24]  ⍝ The benefit includes the Premium Rate so the exit probability is just "survival"
+[25]  Dec∆pp←'D'  ⋄ ExitProbs∆pp←tPx×(ENX_1,LNX+1)/1 0 ⍝ Probability of Death pre NRA
+[26]  
+[27]  PP∆CreateInterface
+    ∇

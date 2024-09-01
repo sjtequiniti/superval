@@ -1,1 +1,40 @@
-    ∇ PageView←GRAPHASS∆AC;CP;values;data;abNO[1]   ⍝ CONSWIN.sf#10[2]   ⍝ Graph Assets versus Accrued Benefits[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝[7]   ⍝ V2.50u RE 1/11/93 Standardised[8]   ⍝⍝⍝⍝ VABMAT[abNO;]⎕GWRITE 360,920,3[9]   [10]  :if 0∊⍴PageView←(parent,'picResults') ⎕wi 'self'[11]      :return ⍝ Graph Control doesn't exist yet!![12]  :endif[13]  [14]  CP←1⌈(SIZE-1)⌊zwb (parent,'edProjPer') ⎕wi 'text'[15]  abNO←zwb 16↓(parent,'cbabNO') ⎕wi 'text'[16]  data←GTOTS[⍳CP+1;16]-ABTOT[⍳CP+1;1]×~penind  ⋄ values←ABTOT[⍳CP+1;2+abNO][17]  [18]  chSet 'HMargin' 60 36[19]  chSet 'Heading' ('Assets versus Accrued Benefit No. ',⍕abNO)[20]  chSet 'Sub' (DLTMB 'over ',(⍕CP),' years')[21]  chSet 'HFont' 'tii,12,blue'[22]  chSet 'Style' 'boxed,xyplot,grid'[23]  chSet 'Grid' 'dotted,fine'[24]  chSet 'XCaption' 'Year'[25]  chSet 'YCaption' pound[26]  chSet 'XRange' (VDATE[3]+0,CP)[27]  chSet 'YRange' (⌊/0,data,values),⌈/0,data,values[28]  [29]  chSet 'Style' 'lines,nomarkers'[30]  chSet 'Key' ('Assets,Accrued Benefit No. ',⍕abNO)[31]  chSet 'KFont' 'he,8'[32]  chPlot (VDATE[3]+0,⍳CP) (data)[33]  chPlot (VDATE[3]+0,⍳CP) (values)[34]  [35]  PageView←chClose[36]  [37]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box[38]  ppt←.5+.×(((parent,'picResults') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point    ∇
+    ∇ PageView←GRAPHASS∆AC;CP;values;data;abNO
+[1]   ⍝ CONSWIN.sf#10
+[2]   ⍝ Graph Assets versus Accrued Benefits
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝
+[7]   ⍝ V2.50u RE 1/11/93 Standardised
+[8]   ⍝⍝⍝⍝ VABMAT[abNO;]⎕GWRITE 360,920,3
+[9]   
+[10]  :if 0∊⍴PageView←(parent,'picResults') ⎕wi 'self'
+[11]      :return ⍝ Graph Control doesn't exist yet!!
+[12]  :endif
+[13]  
+[14]  CP←1⌈(SIZE-1)⌊zwb (parent,'edProjPer') ⎕wi 'text'
+[15]  abNO←zwb 16↓(parent,'cbabNO') ⎕wi 'text'
+[16]  data←GTOTS[⍳CP+1;16]-ABTOT[⍳CP+1;1]×~penind  ⋄ values←ABTOT[⍳CP+1;2+abNO]
+[17]  
+[18]  chSet 'HMargin' 60 36
+[19]  chSet 'Heading' ('Assets versus Accrued Benefit No. ',⍕abNO)
+[20]  chSet 'Sub' (DLTMB 'over ',(⍕CP),' years')
+[21]  chSet 'HFont' 'tii,12,blue'
+[22]  chSet 'Style' 'boxed,xyplot,grid'
+[23]  chSet 'Grid' 'dotted,fine'
+[24]  chSet 'XCaption' 'Year'
+[25]  chSet 'YCaption' pound
+[26]  chSet 'XRange' (VDATE[3]+0,CP)
+[27]  chSet 'YRange' (⌊/0,data,values),⌈/0,data,values
+[28]  
+[29]  chSet 'Style' 'lines,nomarkers'
+[30]  chSet 'Key' ('Assets,Accrued Benefit No. ',⍕abNO)
+[31]  chSet 'KFont' 'he,8'
+[32]  chPlot (VDATE[3]+0,⍳CP) (data)
+[33]  chPlot (VDATE[3]+0,⍳CP) (values)
+[34]  
+[35]  PageView←chClose
+[36]  
+[37]  bb←psReadHeader PageView '%%BoundingBox:' ⍝ Bounding Box
+[38]  ppt←.5+.×(((parent,'picResults') ⎕wi 'scale')[1+4 3])÷-⌿2 2⍴bb ⍝ Pixels per point
+    ∇

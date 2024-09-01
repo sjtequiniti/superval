@@ -1,1 +1,63 @@
-    ∇ res←field RTAudit parm;parent;list[1]   ⍝ DECRWIN.sf#14[2]   ⍝ Function to allow user control on Rate Table Audit[3]   [4]   parent←'fmRTAudit.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Prepare' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]      :if ~∨/LibraryDir FileExist 'SVRTAudit.sf' 'RTAudit.sf'[11]          res←'FileNotFound' (LibraryDir,'SVRTAudit')[12]      :elseif ~FileExist LibraryDir,'SVRTAudit.sf'[13]      :andif 1≠MigrateAudit[14]          res←'FileNotFound' (LibraryDir,'SVRTAudit')[15]      :endif[16]      DecrFile←('\' Win∆Child DECRFile),'.SF' ⋄ postdate←0[17]      colEdit←0[18]  [19]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[20]      DecrFile←('\' Win∆Child DECRFile),'.SF' ⋄ postdate←0[21]  [22]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[23]  [24]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[25]  [26]      :repeat[27]          :select ↑field[28]          :case 'cbDecrFile'[29]              DecrFile←DLTB (parent,'cbDecrFile') ⎕wi 'text'[30]              TableNo←¯5↑DLTB (parent,'cbTableNo') ⎕wi 'text'[31]              (parent,'cbTableNo') ⎕wi 'list' (list←1 0↓DecrFile GetDecrList 'Audit')[32]              (parent,'cbTableNo') ⎕wi 'value' (1⌈↑list ExactTLU TableNo)[33]              →update[34]          :case 'cbTableNo'[35]              :if '  All'≡TableNo←¯5↑DLTB (parent,'cbTableNo') ⎕wi 'text'[36]                  TableNo←''[37]              :endif[38]              →update[39]          :case 'edBDATE'[40]              :if 0∊⍴BDATE←DLTB (parent,'edBDATE') ⎕wi 'text'[41]                  postdate←0[42]              :else[43]                  postdate←86400000000×¯2415021+JUL 'DD/MM/YYYY' DATEEXP BDATE[44]              :endif[45]              →update[46]          :endselect[47]      :until mt field←1↓field[48]      :return[49]  [50]  update:    ⍝ Update the list of Audits[51]      ((parent,'lvRTChanges') 'RTAudit') Win∆UpdateListview AuditDetails DecrFile TableNo postdate[52]  [53]  :case 'Valid' ⍝ Routine specific validation[54]  [55]  :case 'Run'[56]       res←'Quit'[57]  [58]  :case 'Quit' ⍝ Deleting "other" variables[59]       0 0⍴⎕ex 'postdate colEdit'[60]  [61]  :endselect    ∇
+    ∇ res←field RTAudit parm;parent;list
+[1]   ⍝ DECRWIN.sf#14
+[2]   ⍝ Function to allow user control on Rate Table Audit
+[3]   
+[4]   parent←'fmRTAudit.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Prepare' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]      :if ~∨/LibraryDir FileExist 'SVRTAudit.sf' 'RTAudit.sf'
+[11]          res←'FileNotFound' (LibraryDir,'SVRTAudit')
+[12]      :elseif ~FileExist LibraryDir,'SVRTAudit.sf'
+[13]      :andif 1≠MigrateAudit
+[14]          res←'FileNotFound' (LibraryDir,'SVRTAudit')
+[15]      :endif
+[16]      DecrFile←('\' Win∆Child DECRFile),'.SF' ⋄ postdate←0
+[17]      colEdit←0
+[18]  
+[19]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[20]      DecrFile←('\' Win∆Child DECRFile),'.SF' ⋄ postdate←0
+[21]  
+[22]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[23]  
+[24]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[25]  
+[26]      :repeat
+[27]          :select ↑field
+[28]          :case 'cbDecrFile'
+[29]              DecrFile←DLTB (parent,'cbDecrFile') ⎕wi 'text'
+[30]              TableNo←¯5↑DLTB (parent,'cbTableNo') ⎕wi 'text'
+[31]              (parent,'cbTableNo') ⎕wi 'list' (list←1 0↓DecrFile GetDecrList 'Audit')
+[32]              (parent,'cbTableNo') ⎕wi 'value' (1⌈↑list ExactTLU TableNo)
+[33]              →update
+[34]          :case 'cbTableNo'
+[35]              :if '  All'≡TableNo←¯5↑DLTB (parent,'cbTableNo') ⎕wi 'text'
+[36]                  TableNo←''
+[37]              :endif
+[38]              →update
+[39]          :case 'edBDATE'
+[40]              :if 0∊⍴BDATE←DLTB (parent,'edBDATE') ⎕wi 'text'
+[41]                  postdate←0
+[42]              :else
+[43]                  postdate←86400000000×¯2415021+JUL 'DD/MM/YYYY' DATEEXP BDATE
+[44]              :endif
+[45]              →update
+[46]          :endselect
+[47]      :until mt field←1↓field
+[48]      :return
+[49]  
+[50]  update:    ⍝ Update the list of Audits
+[51]      ((parent,'lvRTChanges') 'RTAudit') Win∆UpdateListview AuditDetails DecrFile TableNo postdate
+[52]  
+[53]  :case 'Valid' ⍝ Routine specific validation
+[54]  
+[55]  :case 'Run'
+[56]       res←'Quit'
+[57]  
+[58]  :case 'Quit' ⍝ Deleting "other" variables
+[59]       0 0⍴⎕ex 'postdate colEdit'
+[60]  
+[61]  :endselect
+    ∇

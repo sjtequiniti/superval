@@ -1,1 +1,105 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "PPF_Details" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "PPF_Details" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmPPFDetails.fParams.cbppfFile" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB ppfFile[11]  :if mt selection[12]      :if ~mt DLTB ppfFile[13]          warnings←warnings OVER "Previous Selection for 'PPF Parameters File' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmPPFDetails.fParams.cbppfFile" ⎕wi "value" (¯1↑1,selection)[18]  PickList←"fmPPFDetails.fParams.cbPPFDate" ⎕wi "list"[19]  selection←PickList ExactTLU DLTB PPFDate[20]  :if mt selection[21]      :if ~mt DLTB PPFDate[22]          warnings←warnings OVER "Previous Selection for 'PPF Yields Date' is no longer available"[23]      :endif[24]      modified←⌈/modified,1[25]  :endif[26]  "fmPPFDetails.fParams.cbPPFDate" ⎕wi "value" (¯1↑1,selection)[27]  PickList←"fmPPFDetails.fParams.cbPPFCapDate" ⎕wi "list"[28]  selection←PickList ExactTLU DLTB PPFCapDate[29]  :if mt selection[30]      :if ~mt DLTB PPFCapDate[31]          warnings←warnings OVER "Previous Selection for 'PPF Cap Date' is no longer available"[32]      :endif[33]      modified←⌈/modified,1[34]  :endif[35]  "fmPPFDetails.fParams.cbPPFCapDate" ⎕wi "value" (¯1↑1,selection)[36]  PickList←"fmPPFDetails.fParams.cbPPFServiceCap" ⎕wi "list"[37]  selection←PickList ExactTLU DLTB PPFServiceCap[38]  :if mt selection[39]      :if ~mt DLTB PPFServiceCap[40]          warnings←warnings OVER "Previous Selection for 'Service Adjusted Cap' is no longer available"[41]      :endif[42]      modified←⌈/modified,1[43]  :endif[44]  "fmPPFDetails.fParams.cbPPFServiceCap" ⎕wi "value" (¯1↑1,selection)[45]  PickList←"fmPPFDetails.fParams.cbPPFOverrides" ⎕wi "list"[46]  selection←PickList ExactTLU DLTB PPFOverrides[47]  :if mt selection[48]      :if ~mt DLTB PPFOverrides[49]          warnings←warnings OVER "Previous Selection for 'PPF Overrides Parameters' is no longer available"[50]      :endif[51]      modified←⌈/modified,1[52]  :endif[53]  "fmPPFDetails.fParams.cbPPFOverrides" ⎕wi "value" (¯1↑1,selection)[54]  "fmPPFDetails.fMarried.ckm_HTABind" ⎕wi "value" (zwb m_HTABind)[55]  "fmPPFDetails.fMarried.ckf_HTABind" ⎕wi "value" (zwb f_HTABind)[56]  PickList←"fmPPFDetails.fActs.cba_CAPincPre" ⎕wi "list"[57]  warnings←warnings OVER "Cap Increases Before Discontinuance" Win∆FinRelative "a_CAPincPre" "lra_CAPincPre" 0[58]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText a_CAPincPre[59]  :if mt selection[60]      modified←⌈/modified,1[61]  :endif[62]  "fmPPFDetails.fActs.cba_CAPincPre" ⎕wi "value" (¯1↑1,selection)[63]  PickList←"fmPPFDetails.fActs.cba_CAPinc" ⎕wi "list"[64]  warnings←warnings OVER "Cap Increases After Discontinuance" Win∆FinRelative "a_CAPinc" "lra_CAPinc" 0[65]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText a_CAPinc[66]  :if mt selection[67]      modified←⌈/modified,1[68]  :endif[69]  "fmPPFDetails.fActs.cba_CAPinc" ⎕wi "value" (¯1↑1,selection)[70]  PickList←"fmPPFDetails.fDefs.cbd_CAPincPre" ⎕wi "list"[71]  warnings←warnings OVER "Cap Increases Before Discontinuance" Win∆FinRelative "d_CAPincPre" "lrd_CAPincPre" 0[72]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText d_CAPincPre[73]  :if mt selection[74]      modified←⌈/modified,1[75]  :endif[76]  "fmPPFDetails.fDefs.cbd_CAPincPre" ⎕wi "value" (¯1↑1,selection)[77]  PickList←"fmPPFDetails.fDefs.cbd_CAPinc" ⎕wi "list"[78]  warnings←warnings OVER "Cap Increases After Discontinuance" Win∆FinRelative "d_CAPinc" "lrd_CAPinc" 0[79]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText d_CAPinc[80]  :if mt selection[81]      modified←⌈/modified,1[82]  :endif[83]  "fmPPFDetails.fDefs.cbd_CAPinc" ⎕wi "value" (¯1↑1,selection)[84]  "fmPPFDetails.fDefs.ckMOOOverride" ⎕wi "value" (zwb MOOOverride)[85]  PickList←"fmPPFDetails.fPens.cbp_PPFGMPREV1" ⎕wi "list"[86]  warnings←warnings OVER "PPF GMP Revaluation to SPA" Win∆FinRelative "p_PPFGMPREV1" "lrp_PPFGMPREV1" 0[87]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText p_PPFGMPREV1[88]  :if mt selection[89]      modified←⌈/modified,1[90]  :endif[91]  "fmPPFDetails.fPens.cbp_PPFGMPREV1" ⎕wi "value" (¯1↑1,selection)[92]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_PPF_Details[93]      :for var :in spin Comment_PPF_Details at "variable" "row" ⋄ (var row)←var[94]          "PPF_Details" ParmColor ((FormFields for "variable" var) at "control"),var row 1[95]      :endfor[96]  :endif[97]  :if ~0∊⍴,warnings[98]      MDISPLAY DLTMB warnings,⎕tcnl[99]      Win∆AssignVars "fmPPFDetails"[100] :endif[101] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "PPF_Details" "" "Names"[102]     "fmPPFDetails" ⎕wi "modified" 0[103] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "PPF_Details" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "PPF_Details" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmPPFDetails.fParams.cbppfFile" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB ppfFile
+[11]  :if mt selection
+[12]      :if ~mt DLTB ppfFile
+[13]          warnings←warnings OVER "Previous Selection for 'PPF Parameters File' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmPPFDetails.fParams.cbppfFile" ⎕wi "value" (¯1↑1,selection)
+[18]  PickList←"fmPPFDetails.fParams.cbPPFDate" ⎕wi "list"
+[19]  selection←PickList ExactTLU DLTB PPFDate
+[20]  :if mt selection
+[21]      :if ~mt DLTB PPFDate
+[22]          warnings←warnings OVER "Previous Selection for 'PPF Yields Date' is no longer available"
+[23]      :endif
+[24]      modified←⌈/modified,1
+[25]  :endif
+[26]  "fmPPFDetails.fParams.cbPPFDate" ⎕wi "value" (¯1↑1,selection)
+[27]  PickList←"fmPPFDetails.fParams.cbPPFCapDate" ⎕wi "list"
+[28]  selection←PickList ExactTLU DLTB PPFCapDate
+[29]  :if mt selection
+[30]      :if ~mt DLTB PPFCapDate
+[31]          warnings←warnings OVER "Previous Selection for 'PPF Cap Date' is no longer available"
+[32]      :endif
+[33]      modified←⌈/modified,1
+[34]  :endif
+[35]  "fmPPFDetails.fParams.cbPPFCapDate" ⎕wi "value" (¯1↑1,selection)
+[36]  PickList←"fmPPFDetails.fParams.cbPPFServiceCap" ⎕wi "list"
+[37]  selection←PickList ExactTLU DLTB PPFServiceCap
+[38]  :if mt selection
+[39]      :if ~mt DLTB PPFServiceCap
+[40]          warnings←warnings OVER "Previous Selection for 'Service Adjusted Cap' is no longer available"
+[41]      :endif
+[42]      modified←⌈/modified,1
+[43]  :endif
+[44]  "fmPPFDetails.fParams.cbPPFServiceCap" ⎕wi "value" (¯1↑1,selection)
+[45]  PickList←"fmPPFDetails.fParams.cbPPFOverrides" ⎕wi "list"
+[46]  selection←PickList ExactTLU DLTB PPFOverrides
+[47]  :if mt selection
+[48]      :if ~mt DLTB PPFOverrides
+[49]          warnings←warnings OVER "Previous Selection for 'PPF Overrides Parameters' is no longer available"
+[50]      :endif
+[51]      modified←⌈/modified,1
+[52]  :endif
+[53]  "fmPPFDetails.fParams.cbPPFOverrides" ⎕wi "value" (¯1↑1,selection)
+[54]  "fmPPFDetails.fMarried.ckm_HTABind" ⎕wi "value" (zwb m_HTABind)
+[55]  "fmPPFDetails.fMarried.ckf_HTABind" ⎕wi "value" (zwb f_HTABind)
+[56]  PickList←"fmPPFDetails.fActs.cba_CAPincPre" ⎕wi "list"
+[57]  warnings←warnings OVER "Cap Increases Before Discontinuance" Win∆FinRelative "a_CAPincPre" "lra_CAPincPre" 0
+[58]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText a_CAPincPre
+[59]  :if mt selection
+[60]      modified←⌈/modified,1
+[61]  :endif
+[62]  "fmPPFDetails.fActs.cba_CAPincPre" ⎕wi "value" (¯1↑1,selection)
+[63]  PickList←"fmPPFDetails.fActs.cba_CAPinc" ⎕wi "list"
+[64]  warnings←warnings OVER "Cap Increases After Discontinuance" Win∆FinRelative "a_CAPinc" "lra_CAPinc" 0
+[65]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText a_CAPinc
+[66]  :if mt selection
+[67]      modified←⌈/modified,1
+[68]  :endif
+[69]  "fmPPFDetails.fActs.cba_CAPinc" ⎕wi "value" (¯1↑1,selection)
+[70]  PickList←"fmPPFDetails.fDefs.cbd_CAPincPre" ⎕wi "list"
+[71]  warnings←warnings OVER "Cap Increases Before Discontinuance" Win∆FinRelative "d_CAPincPre" "lrd_CAPincPre" 0
+[72]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText d_CAPincPre
+[73]  :if mt selection
+[74]      modified←⌈/modified,1
+[75]  :endif
+[76]  "fmPPFDetails.fDefs.cbd_CAPincPre" ⎕wi "value" (¯1↑1,selection)
+[77]  PickList←"fmPPFDetails.fDefs.cbd_CAPinc" ⎕wi "list"
+[78]  warnings←warnings OVER "Cap Increases After Discontinuance" Win∆FinRelative "d_CAPinc" "lrd_CAPinc" 0
+[79]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText d_CAPinc
+[80]  :if mt selection
+[81]      modified←⌈/modified,1
+[82]  :endif
+[83]  "fmPPFDetails.fDefs.cbd_CAPinc" ⎕wi "value" (¯1↑1,selection)
+[84]  "fmPPFDetails.fDefs.ckMOOOverride" ⎕wi "value" (zwb MOOOverride)
+[85]  PickList←"fmPPFDetails.fPens.cbp_PPFGMPREV1" ⎕wi "list"
+[86]  warnings←warnings OVER "PPF GMP Revaluation to SPA" Win∆FinRelative "p_PPFGMPREV1" "lrp_PPFGMPREV1" 0
+[87]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText p_PPFGMPREV1
+[88]  :if mt selection
+[89]      modified←⌈/modified,1
+[90]  :endif
+[91]  "fmPPFDetails.fPens.cbp_PPFGMPREV1" ⎕wi "value" (¯1↑1,selection)
+[92]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_PPF_Details
+[93]      :for var :in spin Comment_PPF_Details at "variable" "row" ⋄ (var row)←var
+[94]          "PPF_Details" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[95]      :endfor
+[96]  :endif
+[97]  :if ~0∊⍴,warnings
+[98]      MDISPLAY DLTMB warnings,⎕tcnl
+[99]      Win∆AssignVars "fmPPFDetails"
+[100] :endif
+[101] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "PPF_Details" "" "Names"
+[102]     "fmPPFDetails" ⎕wi "modified" 0
+[103] :endif
+    ∇

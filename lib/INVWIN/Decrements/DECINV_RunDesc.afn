@@ -1,1 +1,78 @@
-    ∇ res←ParmFile DECINV_RunDesc SaveCN;⎕io;CHeader;PickList;n;i[1]   ⍝ INVWIN.sf#2[2]   ⎕io←1[3]   res←0 2⍴""[4]   [5]   res←res OVER ('Output File') (,(tpr1=⎕xnnums)⌿⎕xnnames)[6]   res←res OVER ('Run Time') (RunTime)[7]   res←res OVER "" ""[8]   [9]   res←res OVER ("Parameter File") (DLTB ParmFile)[10]  CHeader←ParmFile ReadFile "Index"[11]  res←res OVER ('Parameter File Description') (↑(CHeader for 1=⍳rowsIn CHeader) at '∆_Description')[12]  res←res OVER ('Parameters Description') (desc←↑(CHeader for '∆_CompNo' (↑SaveCN)) at '∆_Description')[13]  res←res OVER ParametersSaved 'Decrements' desc[14]  res←res OVER ("Decrements File Name") ((DLTB DECRFile),'.sf')[15]  res←res OVER ("") ("")[16]  res←res OVER ("General") ("")[17]  res←res OVER ("_______") ("")[18]  res←res OVER "Membership Data" ""[19]  :if FileSelections[20]      GetAbsFileList "Fund"[21]      :if 0∊⍴n←FilesList ExactTLU fILENAME,' '[22]          res←res OVER ('    ','Investigation Data File') ((DLTB fILENAME)," ",0 1 WGetFileTime InputDir,fILENAME)[23]      :else[24]          res←res OVER ('    ','Investigation Data File') ((DLTB fILENAME)," <",(DLTMB FilesDesc[n;]),">")[25]      :endif[26]      PickList←⎕split SStoMAT ',',FILES[27]      PickList←PickList,¨(WGetFileTime ¨(⊂InputDir),¨PickList)[28]      PickList←(SStoMAT CatSels),(⊃(⊂' <File: '),¨PickList),'>'[29]      :for n :in ⍳1↑⍴PickList[30]          res←res OVER ((n=1)/'    ','Sex/Category Selections') (PickList[n;])[31]      :endfor[32]  :else[33]      PickList←SStoMAT ',',FILES[34]      PickList←PickList,' ',⊃(⊂0 1) WGetFileTime¨(⊂InputDir),¨m2n PickList[35]      :for n :in ⍳1↑⍴PickList[36]          res←res OVER ((n=1)/'    ','Investigation Data File(s)') (PickList[n;])[37]      :endfor[38]  :endif[39]  res←res OVER ('    ','Data Format') ((DLTB Format),' <',(,ClientFile ReadFile (Format[1+⍳3],'Format') (6↓Format) 'TSTAMP'),'>')[40]  res←res OVER "Investigation Parameters" ""[41]  res←res OVER ('    ','Start Date') (BDATE ConcatLabel lrBDATE)[42]  res←res OVER ('    ','End Date') (EDATE ConcatLabel lrEDATE)[43]  :if FormatType≡'Act'[44]      res←res OVER ('    ',"Based on Date of Joining") (DLTMB servind)[45]      res←res OVER ('    ',"Exposure Weighting") (DLTMB expind)[46]  :elseif uk=1[47]      res←res OVER ('    ',"Exposure Weighting") (DLTMB expindn)[48]  :else[49]      res←res OVER ('    ',"Exposure Weighting") (DLTMB expindp)[50]  :endif[51]  [52]  :for i :in ⍳9[53]      :if "1"≠DecSelect[i;] ⋄ :continue ⋄ :endif[54]      res←res OVER ("") ("")[55]      res←res OVER (CHeader←DLTB DecName[i;]) ("")[56]      res←res OVER ((⍴CHeader)⍴"_") ("")[57]      res←res OVER "Decrement Parameters" ""[58]      res←res OVER ('    ',"Exit Description") (DLTB eXITDESC[i;])[59]      PickList←SStoMAT CODE[i;][60]      :for n :in ⍳1↑⍴PickList[61]          res←res OVER ((n=1)/'    ','Modes of Exit to be Analysed') (PickList[n;])[62]      :endfor[63]      res←res OVER ('    ',"Start Age") (DLTMB BAGE[i;]," years")[64]      res←res OVER ('    ',"End Age") (DLTMB EAGE[i;]," years")[65]      res←res OVER ('    ',"Grouping of Results - Every") (DLTMB GROUP[i;]," years")[66]      res←res OVER ('    ',"Upper Limit of Durations Analysed") (DLTMB PS[i;],"")[67]      res←res OVER ('    ',"Save the Results for Sub Groups") (CheckTranslate save[i;])[68]      res←res OVER "Comparison Table" ""[69]      res←res OVER ('    ','Expected Table') (DecrDescription ExpTable[i;] OVER AgeRate[i;] OVER pcRate[i;])[70]      :if ('WLW')[1+uk]=(¯5↑DLTMB ExpTable[i;])[2][71]          res←res OVER ('    ',"Durational Weight Table") (DecrDescription TXX[i;])[72]      :endif[73]  :endfor[74]  [75]  CHeader←(CHeader,' '),(∨/' '≠(CHeader←⊃res[;1]),⊃res[;2])\':'[76]  res←CHeader," ",⊃res[;2]    ∇
+    ∇ res←ParmFile DECINV_RunDesc SaveCN;⎕io;CHeader;PickList;n;i
+[1]   ⍝ INVWIN.sf#2
+[2]   ⎕io←1
+[3]   res←0 2⍴""
+[4]   
+[5]   res←res OVER ('Output File') (,(tpr1=⎕xnnums)⌿⎕xnnames)
+[6]   res←res OVER ('Run Time') (RunTime)
+[7]   res←res OVER "" ""
+[8]   
+[9]   res←res OVER ("Parameter File") (DLTB ParmFile)
+[10]  CHeader←ParmFile ReadFile "Index"
+[11]  res←res OVER ('Parameter File Description') (↑(CHeader for 1=⍳rowsIn CHeader) at '∆_Description')
+[12]  res←res OVER ('Parameters Description') (desc←↑(CHeader for '∆_CompNo' (↑SaveCN)) at '∆_Description')
+[13]  res←res OVER ParametersSaved 'Decrements' desc
+[14]  res←res OVER ("Decrements File Name") ((DLTB DECRFile),'.sf')
+[15]  res←res OVER ("") ("")
+[16]  res←res OVER ("General") ("")
+[17]  res←res OVER ("_______") ("")
+[18]  res←res OVER "Membership Data" ""
+[19]  :if FileSelections
+[20]      GetAbsFileList "Fund"
+[21]      :if 0∊⍴n←FilesList ExactTLU fILENAME,' '
+[22]          res←res OVER ('    ','Investigation Data File') ((DLTB fILENAME)," ",0 1 WGetFileTime InputDir,fILENAME)
+[23]      :else
+[24]          res←res OVER ('    ','Investigation Data File') ((DLTB fILENAME)," <",(DLTMB FilesDesc[n;]),">")
+[25]      :endif
+[26]      PickList←⎕split SStoMAT ',',FILES
+[27]      PickList←PickList,¨(WGetFileTime ¨(⊂InputDir),¨PickList)
+[28]      PickList←(SStoMAT CatSels),(⊃(⊂' <File: '),¨PickList),'>'
+[29]      :for n :in ⍳1↑⍴PickList
+[30]          res←res OVER ((n=1)/'    ','Sex/Category Selections') (PickList[n;])
+[31]      :endfor
+[32]  :else
+[33]      PickList←SStoMAT ',',FILES
+[34]      PickList←PickList,' ',⊃(⊂0 1) WGetFileTime¨(⊂InputDir),¨m2n PickList
+[35]      :for n :in ⍳1↑⍴PickList
+[36]          res←res OVER ((n=1)/'    ','Investigation Data File(s)') (PickList[n;])
+[37]      :endfor
+[38]  :endif
+[39]  res←res OVER ('    ','Data Format') ((DLTB Format),' <',(,ClientFile ReadFile (Format[1+⍳3],'Format') (6↓Format) 'TSTAMP'),'>')
+[40]  res←res OVER "Investigation Parameters" ""
+[41]  res←res OVER ('    ','Start Date') (BDATE ConcatLabel lrBDATE)
+[42]  res←res OVER ('    ','End Date') (EDATE ConcatLabel lrEDATE)
+[43]  :if FormatType≡'Act'
+[44]      res←res OVER ('    ',"Based on Date of Joining") (DLTMB servind)
+[45]      res←res OVER ('    ',"Exposure Weighting") (DLTMB expind)
+[46]  :elseif uk=1
+[47]      res←res OVER ('    ',"Exposure Weighting") (DLTMB expindn)
+[48]  :else
+[49]      res←res OVER ('    ',"Exposure Weighting") (DLTMB expindp)
+[50]  :endif
+[51]  
+[52]  :for i :in ⍳9
+[53]      :if "1"≠DecSelect[i;] ⋄ :continue ⋄ :endif
+[54]      res←res OVER ("") ("")
+[55]      res←res OVER (CHeader←DLTB DecName[i;]) ("")
+[56]      res←res OVER ((⍴CHeader)⍴"_") ("")
+[57]      res←res OVER "Decrement Parameters" ""
+[58]      res←res OVER ('    ',"Exit Description") (DLTB eXITDESC[i;])
+[59]      PickList←SStoMAT CODE[i;]
+[60]      :for n :in ⍳1↑⍴PickList
+[61]          res←res OVER ((n=1)/'    ','Modes of Exit to be Analysed') (PickList[n;])
+[62]      :endfor
+[63]      res←res OVER ('    ',"Start Age") (DLTMB BAGE[i;]," years")
+[64]      res←res OVER ('    ',"End Age") (DLTMB EAGE[i;]," years")
+[65]      res←res OVER ('    ',"Grouping of Results - Every") (DLTMB GROUP[i;]," years")
+[66]      res←res OVER ('    ',"Upper Limit of Durations Analysed") (DLTMB PS[i;],"")
+[67]      res←res OVER ('    ',"Save the Results for Sub Groups") (CheckTranslate save[i;])
+[68]      res←res OVER "Comparison Table" ""
+[69]      res←res OVER ('    ','Expected Table') (DecrDescription ExpTable[i;] OVER AgeRate[i;] OVER pcRate[i;])
+[70]      :if ('WLW')[1+uk]=(¯5↑DLTMB ExpTable[i;])[2]
+[71]          res←res OVER ('    ',"Durational Weight Table") (DecrDescription TXX[i;])
+[72]      :endif
+[73]  :endfor
+[74]  
+[75]  CHeader←(CHeader,' '),(∨/' '≠(CHeader←⊃res[;1]),⊃res[;2])\':'
+[76]  res←CHeader," ",⊃res[;2]
+    ∇

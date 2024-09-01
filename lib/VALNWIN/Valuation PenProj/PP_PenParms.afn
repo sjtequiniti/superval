@@ -1,0 +1,204 @@
+    ∇ pp∆size PP∆PenParms pp∆exit;pp∆tPx;pp∆half
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Sets Pension Parameter variables (globally) indicating aspects of the pension benefit
+[3]   ⍝   pp∆∆ is the Spouse Age Difference (Member - Spouse)
+[4]   ⍝   pp∆MarrProp is the Proportion Married (only decremented, if required, up to "Retirement")
+[5]   
+[6]   pp∆Inconly←pp∆IncOnly[pp∆row;0]
+[7]   pp∆Revonly←pp∆RevOnly[pp∆row;0]
+[8]   :if 0≠pp∆top←0⌈pp∆End[pp∆row;pp∆year]
+[9]       pp∆size←pp∆size⌊⌈pp∆top-pp∆xexit
+[10]  :endif
+[11]  
+[12]  :select pp∆exit
+[13]  :caselist 'D ' 'DL' ⍝ Death in Service (for Actives) or in Deferment (for Deferreds/Pensioners)
+[14]  
+[15]      :if (ClassID∊3 4)^(pp∆SPMethod=¯1) ⍝ Spouse at "Exit" for Deferreds/Pensioners
+[16]      :orif (ClassID=4)^(pp∆SPMethod= 0)^(pp∆X0≥pp∆WRetAge) ⍝ Spouse at "Retirement" for Pensioners beyond Retirement
+[17]  
+[18]          :if pp∆MS∊'MSW' ⍝ Use actual Marital Status
+[19]              :if pp∆∆←pp∆MarrProp←pp∆MS='M'
+[20]                  :if uk=1 ⋄ :andif 0≠pp∆SpAge ⋄ pp∆∆←pp∆X0-pp∆SpAge ⍝ UK use actual Spouse Age even if MS unknown ??? (if available)
+[21]                  :else                        ⋄ pp∆∆←pp∆AGEDIF[⌊pp∆WRetAge]
+[22]                  :endif
+[23]                  pp∆MarrProp←pp∆MarrProp CDIV pp∆LYpre[pp∆X0-pp∆∆] ⍝ Survive from VDate
+[24]              :endif
+[25]          :else ⍝ pp∆WRetAge is used as the age at exit (and commenced deferral)
+[26]              :if uk=1 ⋄ :andif 0≠pp∆SpAge ⋄ pp∆∆←pp∆X0-pp∆SpAge ⍝ UK use actual Spouse Age even if MS unknown ??? (if available)
+[27]              :else                        ⋄ pp∆∆←pp∆AGEDIF[⌊pp∆WRetAge]
+[28]              :endif
+[29]              :if pp∆WRetAge≠⌊pp∆WRetAge ⋄ pp∆MarrProp←pp∆hMP[⌊pp∆WRetAge] CDIV pp∆lypre[⌊pp∆WRetAge-pp∆∆] ⍝ Survive from "Exit/Retirement"
+[30]              :else                      ⋄ pp∆MarrProp←pp∆h  [ pp∆WRetAge] CDIV pp∆LYpre[ pp∆WRetAge-pp∆∆]
+[31]              :endif
+[32]          :endif
+[33]  
+[34]          :if pp∆midexit ⋄ pp∆MarrProp←pp∆MarrProp×pp∆lypre[⌊pp∆Xatexit-pp∆∆] ⍝ Survive to Member Death
+[35]          :else          ⋄ pp∆MarrProp←pp∆MarrProp×pp∆LYpre[ pp∆Xatexit-pp∆∆]
+[36]          :endif
+[37]  
+[38]      :else ⍝ Spouse at actual point of Death
+[39]          pp∆∆←pp∆AGEDIF[⌊pp∆Xatexit]
+[40]          :if pp∆midexit ⋄ pp∆MarrProp←pp∆hMP[⌊pp∆Xatexit]
+[41]          :else          ⋄ pp∆MarrProp←pp∆h  [ pp∆Xatexit]
+[42]          :endif
+[43]      :endif
+[44]  
+[45]  :caselist 'ID' 'WD' 'DD' ⍝ Death in Deferment (for Actives and Accrued for Actives/Deferreds)
+[46]      :select ⍬⍴pp∆SPMethod
+[47]      :case ¯1 ⍝ Spouse at Exit
+[48]  crash!! ⍝⍝⍝  Not yet finalised and not ever used
+[49]  
+[50]          :if pp∆MS∊'MSW' ⋄ :andif pp∆Xatexit≤pp∆X0
+[51]              :if 0=pp∆SpAge ⋄ pp∆SpAge←pp∆X0-pp∆AGEDIF[pp∆X0] ⋄ :endif
+[52]              pp∆∆←pp∆size⍴pp∆X0-pp∆SpAge ⍝ Calculate actual Age Difference
+[53]              :if ↑pp∆MarrProp←pp∆size⍴pp∆MS='M' ⍝ Use actual Marital Status
+[54]                  pp∆MarrProp←pp∆size↑(pp∆SpAge↓pp∆LY) CDIV pp∆LY[pp∆SpAge]
+[55]              :endif
+[56]          :else ⍝ Proportion Married at Exit
+[57]              pp∆∆←pp∆AGEDIF[⌊pp∆Xatexit] ⍝ Need an integral value so assume constant for each year of age (no "mid" values)
+[58]              :if pp∆X0≥pp∆Xatexit ⍝ Exited in the past
+[59]                  :if pp∆midexit ⋄ pp∆MarrProp←pp∆hMP[⌊pp∆Xatexit] CDIV pp∆lypre[⌊pp∆Xatexit-pp∆∆] ⍝ Proportion married at Exit
+[60]                  :else          ⋄ pp∆MarrProp←pp∆h  [ pp∆Xatexit] CDIV pp∆LYpre[ pp∆Xatexit-pp∆∆] ⍝ divided by "ly" at exit
+[61]                  :endif
+[62]                  :if pp∆X0≥pp∆Xatprestart ⍝ Deferral Mortality from Exit to Retirement
+[63]                      :if pp∆midprestart ⋄ pp∆MarrProp←pp∆MarrProp×pp∆lypre[⌊pp∆Xatprestart-pp∆∆] CDIV pp∆ly[⌊pp∆Xatprestart-pp∆∆]
+[64]                      :else              ⋄ pp∆MarrProp←pp∆MarrProp×pp∆LYpre[ pp∆Xatprestart-pp∆∆] CDIV pp∆LY[ pp∆Xatprestart-pp∆∆]
+[65]                      :endif
+[66]                      pp∆MarrProp←pp∆size↑pp∆MarrProp×(pp∆X0-pp∆∆)↓pp∆LY
+[67]                  :else
+[68]                      pp∆MarrProp←pp∆MarrProp×pp∆LYpre[(pp∆X0-pp∆∆)+⍳1+⌊pp∆Xatprestart-pp∆X0]
+[69]                      :if pp∆midprestart
+[70]                          pp∆half←(pp∆lypre[⌊pp∆Xatprestart-pp∆∆]) CDIV pp∆LYpre[⌊pp∆Xatprestart-pp∆∆]×pp∆ly[⌊pp∆Xatprestart-pp∆∆]
+[71]                      :else
+[72]                          pp∆half←1                                CDIV                                pp∆LY[ pp∆Xatprestart-pp∆∆]
+[73]                      :endif
+[74]                      pp∆MarrProp←pp∆size↑pp∆MarrProp,(¯1↑pp∆MarrProp)×pp∆half×(1+⌊pp∆Xatprestart-pp∆∆)↓pp∆LY
+[75]                  :endif
+[76]                  pp∆∆←pp∆size⍴pp∆∆
+[77]              :else ⍝ Start Year Props Married up to pp∆Xatexit (and, for pp∆midexit, the year after so mid-point proportion calculated correctly)
+[78]                  pp∆MarrProp←(1+⌈pp∆Xatexit-pp∆X0)↑pp∆X0↓pp∆h
+[79]                  :if pp∆midexit ⍝ Post Exit Proportions married - Proportion married at Exit multplied by "tPx" after exit
+[80]                      pp∆MarrProp←pp∆hMP[⌊pp∆Xatexit]
+[81]                      :if pp∆Xatprestart>pp∆Xatexit
+[82]                          pp∆MarrProp←pp∆MarrProp×pp∆LYpre[(⌈pp∆Xatexit-pp∆∆)+⍳⌈pp∆Xatprestart-pp∆Xatexit] CDIV pp∆lypre[⌊pp∆Xatexit-pp∆∆]
+[83]                      :endif
+[84]                      :if pp∆midprestart
+[85]                          pp∆MarrProp←pp∆MarrProp,(¯1↑pp∆MarrProp)×pp∆ly[⌊pp∆Xatprestart-pp∆∆] CDIV pp∆LY[⌈pp∆Xatprestart-pp∆∆]
+[86]                      :endif
+[87]                      pp∆MarrProp←pp∆size↑pp∆MarrProp,(¯1↑pp∆MarrProp)×(⌈pp∆Xatprestart-pp∆∆)↓pp∆LY
+[88]                  :else
+[89]                      pp∆tPx←pp∆LYpre[(pp∆Xatexit-pp∆∆)+⍳1+⌊pp∆Xatprestart-pp∆Xatexit] CDIV pp∆LYpre[pp∆Xatexit-pp∆∆]
+[90]                      :if pp∆midprestart ⋄ pp∆half←pp∆lypre[⌊pp∆Xatprestart-pp∆∆] CDIV pp∆LYpre[⌊pp∆Xatprestart-pp∆∆]×pp∆ly[⌊pp∆Xatprestart-pp∆∆]
+[91]                      :else              ⋄ pp∆half←1                              CDIV                                pp∆LY[ pp∆Xatprestart-pp∆∆]
+[92]                      :endif
+[93]                      pp∆tPx←pp∆tPx,(¯1↑pp∆tPx)×pp∆half×(1+⌈pp∆Xatprestart-pp∆∆)↓pp∆LY
+[94]                      pp∆MarrProp←pp∆size↑pp∆MarrProp,pp∆h[pp∆Xatexit]×1↓pp∆tPx
+[95]                  :endif
+[96]                  pp∆∆←pp∆size OVERTAKE (⌊pp∆Xatexit)↑pp∆AGEDIF
+[97]              :endif
+[98]          :endif
+[99]  ⍝⍝⍝⍝
+[100]     :caselist 0 1 ⍝ Spouse at Retirement/Death
+[101]         pp∆∆←pp∆AGEDIF[⌊pp∆Xatstart]
+[102]         :if pp∆midstart ⋄ pp∆MarrProp←pp∆hMP[⌊pp∆Xatstart]
+[103]         :else           ⋄ pp∆MarrProp←pp∆h  [ pp∆Xatstart]
+[104]         :endif
+[105]         :if ~pp∆2Dbens
+[106]             pp∆MarrProp←pp∆size⍴pp∆MarrProp ⋄ pp∆∆←pp∆size⍴pp∆∆
+[107]         :endif
+[108] 
+[109]     :endselect
+[110] 
+[111] :else ⍝ Death while on Pension
+[112]     :select ⍬⍴¯1↑pp∆SPMethod,((⊂pp∆exit)∊'PD' 'DD' 'DT' 'DO')/1 ⍝ Spouse at Death for PD (DIS after PHI) and DiD and DiD for Transfers
+[113]     :case ¯1 ⍝ Spouse at Exit
+[114]         :if ClassID∊3 4 ⍝ "Current" Spouse if Deferred or Pensioner as already beyond "Exit"
+[115]             :if pp∆MS∊'MSW'
+[116]                 :if pp∆∆←pp∆HatExit←pp∆MS='M' ⍝ Use actual Marital Status
+[117]                     :if uk=1 ⋄ :andif 0≠pp∆SpAge ⋄ pp∆∆←pp∆X0-pp∆SpAge ⍝ UK use actual Spouse Age even if MS unknown ??? (if available)
+[118]                     :else                        ⋄ pp∆∆←pp∆AGEDIF[⌊pp∆WRetAge] ⍝ pp∆WRetAge is the age at exit from in-service
+[119]                     :endif
+[120]                     :if pp∆X0<pp∆Xatprestart
+[121]                         pp∆HatExit←pp∆HatExit CDIV pp∆LYpre[pp∆X0-pp∆∆] ⍝ Survive from VDate
+[122]                         :if pp∆midprestart ⋄ pp∆HatExit←pp∆HatExit×pp∆lypre[⌊pp∆Xatprestart-pp∆∆] ⍝ to Retirement
+[123]                         :else              ⋄ pp∆HatExit←pp∆HatExit×pp∆LYpre[ pp∆Xatprestart-pp∆∆]
+[124]                         :endif
+[125]                     :endif
+[126]                 :endif
+[127]             :else
+[128]                 :if uk=1 ⋄ :andif 0≠pp∆SpAge ⋄ pp∆∆←pp∆X0-pp∆SpAge ⍝ UK use actual Spouse Age even if MS unknown ??? (if available)
+[129]                 :else                        ⋄ pp∆∆←pp∆AGEDIF[⌊pp∆WRetAge]
+[130]                 :endif
+[131]                 :if pp∆WRetAge≠⌊pp∆WRetAge ⋄ pp∆HatExit←pp∆hMP[⌊pp∆WRetAge] CDIV pp∆lypre[⌊pp∆WRetAge-pp∆∆] ⍝ Survive from "Exit"
+[132]                 :else                      ⋄ pp∆HatExit←pp∆h  [ pp∆WRetAge] CDIV pp∆LYpre[ pp∆WRetAge-pp∆∆]
+[133]                 :endif
+[134]                 :if pp∆midprestart ⋄ pp∆HatExit←pp∆HatExit×pp∆lypre[⌊pp∆Xatprestart-pp∆∆] ⍝ to Retirement
+[135]                 :else              ⋄ pp∆HatExit←pp∆HatExit×pp∆LYpre[ pp∆Xatprestart-pp∆∆]
+[136]                 :endif
+[137]             :endif
+[138]         :else
+[139]             pp∆∆←pp∆AGEDIF[⌊pp∆Xatexit]
+[140]             :if pp∆midexit ⋄ pp∆HatExit←pp∆hMP[pp∆xexit]CDIV pp∆lypre[⌊pp∆Xexit-pp∆∆] ⍝ Survive from "Exit"
+[141]             :else          ⋄ pp∆HatExit←pp∆h  [pp∆Xexit]CDIV pp∆LYpre[ pp∆Xexit-pp∆∆]
+[142]             :endif
+[143]             :if pp∆midprestart ⋄ pp∆HatExit←pp∆HatExit×pp∆lypre[⌊pp∆Xatprestart-pp∆∆] ⍝ to Retirement
+[144]             :else              ⋄ pp∆HatExit←pp∆HatExit×pp∆LYpre[ pp∆Xatprestart-pp∆∆]
+[145]             :endif
+[146]         :endif
+[147]         pp∆∆←pp∆size⍴pp∆∆
+[148] 
+[149]     :case 0 ⍝ Spouse at Retirement
+[150]         :if (ClassID∊3 4)^(pp∆X0≥pp∆WRetAge) ⍝ "Current" Spouse if Deferred/Pensioner already beyond "Retirement"
+[151]             :if pp∆MS∊'MSW'
+[152]                 :if pp∆∆←pp∆HatRet←pp∆MS='M' ⍝ Use actual Marital Status
+[153]                     :if uk=1 ⋄ :andif 0≠pp∆SpAge ⋄ pp∆∆←pp∆X0-pp∆SpAge ⍝ UK use actual Spouse Age even if MS unknown ??? (if available)
+[154]                     :else                        ⋄ pp∆∆←pp∆AGEDIF[⌊pp∆WRetAge]
+[155]                     :endif
+[156]                 :endif
+[157]             :else
+[158]                 :if uk=1 ⋄ :andif 0≠pp∆SpAge ⋄ pp∆∆←pp∆X0-pp∆SpAge ⍝ UK use actual Spouse Age even if MS unknown ??? (if available)
+[159]                 :else                        ⋄ pp∆∆←pp∆AGEDIF[⌊pp∆WRetAge]
+[160]                 :endif
+[161]                 :if pp∆WRetAge≠⌊pp∆WRetAge ⋄ pp∆HatRet←pp∆hMP[⌊pp∆WRetAge]⍝ Survive from "Retirement"
+[162]                 :else                      ⋄ pp∆HatRet←pp∆h  [ pp∆WRetAge]
+[163]                 :endif
+[164]             :endif
+[165]         :else
+[166]             pp∆∆←pp∆AGEDIF[⌊pp∆Xprestart]
+[167]             :if isTOut
+[168]                 :if pp∆midstart ⋄ pp∆HatRet←pp∆hMP[pp∆xstart]
+[169]                 :else           ⋄ pp∆HatRet←pp∆h  [pp∆Xstart]
+[170]                 :endif
+[171]             :else
+[172]                 :if pp∆midprestart ⋄ pp∆HatRet←pp∆hMP[pp∆xprestart]
+[173]                 :else              ⋄ pp∆HatRet←pp∆h  [pp∆Xprestart]
+[174]                 :endif
+[175]             :endif
+[176]         :endif
+[177]         pp∆∆←pp∆size⍴pp∆∆
+[178] 
+[179]     :case 1 ⍝ Spouse at Death
+[180]         :if 0≠pp∆SpAge ⋄ pp∆∆←pp∆size⍴pp∆X0-pp∆SpAge ⍝ and actual Spouse Age (if available)
+[181]         :else          ⋄ pp∆∆←pp∆size↑pp∆xexit↓pp∆AGEDIF
+[182]         :endif
+[183]         :if isTOut
+[184] ⍝⍝⍝            :if pp∆midstart ⋄ pp∆MarrProp←pp∆hMP[pp∆xstart],(⌈pp∆Xstart)↓pp∆h ⋄ :else
+[185]                             ⋄ pp∆MarrProp←                    pp∆xstart ↓pp∆hMP
+[186] ⍝⍝⍝            :endif
+[187]         :else
+[188]             :if pp∆midstart ⋄ pp∆MarrProp←pp∆hMP[pp∆xstart],(⌈pp∆Xstart)↓pp∆h
+[189]             :else           ⋄ pp∆MarrProp←                    pp∆Xstart ↓pp∆h
+[190]             :endif
+[191] 
+[192]             :if uk≠1 ⍝⍝⍝ UK Error
+[193]                 pp∆MarrProp←MID pp∆MarrProp,0
+[194]             :endif
+[195]         :endif
+[196] 
+[197]         pp∆MarrProp←pp∆size↑pp∆startpad,pp∆MarrProp
+[198] 
+[199]     :endselect
+[200] :endselect
+[201] 
+[202] ⍝⍀⍝ 'S' PP∆TestUpdate 'pp∆∆←' 'pp∆MarrProp←' 'pp∆HatRet←' 'pp∆Inconly⊃' 'pp∆Revonly⊃'
+    ∇

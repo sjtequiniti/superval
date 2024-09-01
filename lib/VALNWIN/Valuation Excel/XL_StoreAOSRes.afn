@@ -1,0 +1,87 @@
+    ∇ data←ClassID XL_StoreAOSRes aos∆RES;values;z;last
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Function to store the AOS (individual and group) results
+[3]   ⍝ Revn: sjt19aug16 * return 2-element result for new ⍵ of ⍙DBInsertTempData (inMemory)
+[4]   
+[5]   last←ResSize-~⎕io
+[6]   
+[7]   ⍝ Reserves - Previous Valuation Date,Expected and Actual Reserves at Current Valuation Date
+[8]   data←      1 ⋄ values←       aos∆RES[⎕io                ;⎕io]
+[9]   data←data,17 ⋄ values←values,aos∆RES[⎕io+12- 6×ClassID=4;last]
+[10]  data←data, 2 ⋄ values←values,aos∆RES[⎕io                ;last]
+[11]  data←data,18 ⋄ values←values,aos∆RES[⎕io+13- 6×ClassID=4;last]
+[12]  data←data,32 ⋄ values←values,aos∆RES[⎕io+24-11×ClassID=4;last]
+[13]  data←data,39 ⋄ values←values,aos∆RES[⎕io+30-14×ClassID=4;last]
+[14]  
+[15]  ⍝ Actual Cash Benefit at Exit
+[16]  data←data,33 ⋄ values←values,aos∆RES[⎕io+25-11×ClassID=4;last]
+[17]  data←data,40 ⋄ values←values,aos∆RES[⎕io+31-14×ClassID=4;last]
+[18]  
+[19]  :select ClassID
+[20]  :case 1 ⍝ Actives
+[21]      ⍝ Expected Retirement, Death, Ill-Health and Leaving Service Releases
+[22]      data←data, 3 ⋄ values←values,aos∆RES[ 1+⎕io;last]
+[23]      data←data, 4 ⋄ values←values,aos∆RES[ 2+⎕io;last]
+[24]      data←data, 5 ⋄ values←values,aos∆RES[ 3+⎕io;last]
+[25]      data←data, 6 ⋄ values←values,aos∆RES[ 4+⎕io;last]
+[26]      data←data, 7 ⋄ values←values,aos∆RES[ 5+⎕io;last]
+[27]      data←data,19 ⋄ values←values,aos∆RES[14+⎕io;last]
+[28]      data←data,20 ⋄ values←values,aos∆RES[15+⎕io;last]
+[29]      data←data,21 ⋄ values←values,aos∆RES[16+⎕io;last]
+[30]      data←data,22 ⋄ values←values,aos∆RES[17+⎕io;last]
+[31]      data←data,23 ⋄ values←values,aos∆RES[18+⎕io;last]
+[32]  
+[33]      ⍝ Required Company, Expected Member and Company Conts
+[34]      data←data,10 ⋄ values←values,aos∆RES[ 6+⎕io;last]
+[35]      data←data,11 ⋄ values←values,aos∆RES[ 7+⎕io;last]
+[36]      data←data,12 ⋄ values←values,aos∆RES[ 8+⎕io;last]
+[37]      data←data,26 ⋄ values←values,aos∆RES[19+⎕io;last]
+[38]      data←data,27 ⋄ values←values,aos∆RES[20+⎕io;last]
+[39]      data←data,28 ⋄ values←values,aos∆RES[21+⎕io;last]
+[40]  
+[41]      ⍝ Expected Insured Death and Ill-Health Conts
+[42]      data←data,13 ⋄ values←values,aos∆RES[ 9+⎕io;last]
+[43]      data←data,14 ⋄ values←values,aos∆RES[10+⎕io;last]
+[44]      data←data,29 ⋄ values←values,aos∆RES[22+⎕io;last]
+[45]      data←data,30 ⋄ values←values,aos∆RES[23+⎕io;last]
+[46]  
+[47]      ⍝ Actual Member and Company Conts
+[48]      data←data,34 ⋄ values←values,aos∆RES[26+⎕io;last]
+[49]      data←data,35 ⋄ values←values,aos∆RES[27+⎕io;last]
+[50]      data←data,41 ⋄ values←values,aos∆RES[32+⎕io;last]
+[51]      data←data,42 ⋄ values←values,aos∆RES[33+⎕io;last]
+[52]  
+[53]      ⍝ Actual Death and Ill-Health Insured Conts
+[54]      data←data,36 ⋄ values←values,aos∆RES[28+⎕io;last]
+[55]      data←data,37 ⋄ values←values,aos∆RES[29+⎕io;last]
+[56]      data←data,43 ⋄ values←values,aos∆RES[34+⎕io;last]
+[57]      data←data,44 ⋄ values←values,aos∆RES[35+⎕io;last]
+[58]  
+[59]      ⍝ Expected V1%
+[60]      data←data,16 ⋄ values←values,aos∆RES[11+⎕io;last]
+[61]  
+[62]  :case 3 ⍝ Deferreds
+[63]      ⍝ Expected Retirement, Death in Deferment, and Leaving Service Releases
+[64]      data←data, 3 ⋄ values←values,aos∆RES[ 1+⎕io;last]
+[65]      data←data, 4 ⋄ values←values,aos∆RES[ 2+⎕io;last]
+[66]      data←data, 8 ⋄ values←values,aos∆RES[ 3+⎕io;last]
+[67]      data←data,19 ⋄ values←values,aos∆RES[14+⎕io;last]
+[68]      data←data,20 ⋄ values←values,aos∆RES[15+⎕io;last]
+[69]      data←data,24 ⋄ values←values,aos∆RES[16+⎕io;last]
+[70]  
+[71]  :case 4 ⍝ Pensioners
+[72]      ⍝ Expected Death on Pension Releases
+[73]      data←data, 9 ⋄ values←values,+⌿aos∆RES[2+⍳3;last]
+[74]      data←data,25 ⋄ values←values,+⌿aos∆RES[9+⍳3;last]
+[75]  
+[76]      ⍝ Actual Member and Expected Pension Payments
+[77]      data←data,15 ⋄ values←values,aos∆RES[ 5+⎕io;last]
+[78]      data←data,31 ⋄ values←values,aos∆RES[12+⎕io;last]
+[79]      data←data,38 ⋄ values←values,aos∆RES[15+⎕io;last]
+[80]      data←data,45 ⋄ values←values,aos∆RES[18+⎕io;last]
+[81]  
+[82]  :endselect
+[83]  
+[84]  :if ^/0=z←0≠values ⋄ z←1,1↓z ⋄ values←0.00001,1↓values ⋄ :endif
+[85]  data←(⎕split 'I2' ⎕fmt z/data) (z/values)           ⍝ 19aug16
+    ∇

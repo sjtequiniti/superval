@@ -1,0 +1,18 @@
+    ∇ LINE∆TOT;SUMMREC;TOTS;NN;X0;Z
+[1]   ⍝ VALNWIN.sf#4
+[2]   ⍝ Write totals out for a All Valuation Methods
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝ V2.00  RSE 01/07/94 Standardised
+[6]   →aggopt[0]/0
+[7]   →ppf/0 ⍝ Not required for PPF Valuations
+[8]   →(ValMeth≡'ABC')/END ⍝ Special Bit for ABC
+[9]   →(~summopt)/L1 ⋄ X0←15 ⋄ RECN←pAGE ⋄ NN←16+1↑⍴TOTS←TOTALS_summary
+[10]  LOOP:→(NN=X0←X0+1)/L1 ⋄ →(^/0=Z←TOTS[X0-16;])/⎕LC
+[11]  SUMMREC←1 FORMAT∆OUT((No∆Bens+8),18)⍴Z
+[12]  ⍎(X0=NN-1)/'SUMMREC[1;⍳3]←''I2,<+>'' ⎕FMT X0'
+[13]  (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN ⋄ →LOOP
+[14]  L1:SUMMREC←2 FORMAT∆OUT TOTALS ⋄ (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN ⋄ →0
+[15]  ⍝ Write out Total Results - Accrued Benefit Calcs
+[16]  END:ACC∆TOTALS
+    ∇

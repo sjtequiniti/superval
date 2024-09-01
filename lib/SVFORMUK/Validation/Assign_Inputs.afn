@@ -1,1 +1,143 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Validation" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Validation" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   :if (⊂"pgParameters")∊"fmValidation.sValidation" ⎕wi "pages"[10]  PickList←"fmValidation.sValidation.pgParameters.fDates.cbBDATE" ⎕wi "list"[11]  warnings←warnings OVER "Previous Valuation Date" Win∆DateRelative "BDATE" "lrBDATE"[12]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE[13]  :if mt selection[14]          "fmValidation.sValidation.pgParameters.fDates.cbBDATE" ⎕wi "text" (DLTB BDATE)[15]  :else[16]      "fmValidation.sValidation.pgParameters.fDates.cbBDATE" ⎕wi "value" selection[17]  :endif[18]  PickList←"fmValidation.sValidation.pgParameters.fDates.cbEDATE" ⎕wi "list"[19]  warnings←warnings OVER "Current Valuation Date" Win∆DateRelative "EDATE" "lrEDATE"[20]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE[21]  :if mt selection[22]          "fmValidation.sValidation.pgParameters.fDates.cbEDATE" ⎕wi "text" (DLTB EDATE)[23]  :else[24]      "fmValidation.sValidation.pgParameters.fDates.cbEDATE" ⎕wi "value" selection[25]  :endif[26]  "FILES" Win∆Inherits "Actsfile"[27]  "fmValidation.sValidation.pgParameters.fFiles.edFILES" ⎕wi "text" (DLTB FILES)[28]  "ValidFormat" Win∆Inherits "FormatA"[29]  PickList←"fmValidation.sValidation.pgParameters.fFiles.cbValidFormat" ⎕wi "list"[30]  warnings←warnings OVER "Data Format" Win∆FormatRelative "ValidFormat" "lrValidFormat"[31]  selection←(StripText PickList) ExactTLU DLTB StripText ValidFormat[32]  :if mt selection[33]      modified←⌈/modified,1[34]  :endif[35]  "fmValidation.sValidation.pgParameters.fFiles.cbValidFormat" ⎕wi "value" (¯1↑1,selection)[36]  "fmValidation.sValidation.pgParameters.fOutput.ckPROPT" ⎕wi "value" (zwb PROPT)[37]  "fmValidation.sValidation.pgParameters.fOutput.ckBlank" ⎕wi "value" (zwb Blank)[38]  :endif[39]  :if (⊂"pgRanges")∊"fmValidation.sValidation" ⎕wi "pages"[40]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "XClearRange" 1 1 ("fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow") ("fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol") 3[41]  MaxRow←MaxCol←1[42]  value←(1 10⌈⍴value)↑value←MATRIX Category[43]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"[44]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[45]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 1∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[46]  value←(1 10⌈⍴value)↑value←MATRIX MinAgeM[47]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"[48]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[49]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 2∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[50]  value←(1 10⌈⍴value)↑value←MATRIX MaxAgeM[51]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"[52]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[53]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 3∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[54]  value←(1 10⌈⍴value)↑value←MATRIX MinAgeF[55]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"[56]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[57]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 4∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[58]  value←(1 10⌈⍴value)↑value←MATRIX MaxAgeF[59]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"[60]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[61]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 5∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[62]  value←(1 10⌈⍴value)↑value←MATRIX MinSal[63]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"[64]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[65]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 6∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[66]  value←(1 10⌈⍴value)↑value←MATRIX MaxSal[67]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"[68]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[69]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 7∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[70]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[71]  (MaxRow MaxCol)←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xGetActiveCell" 0 0[72]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xSetActiveCell" (MaxRow⌊"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xMaxRow") (MaxCol⌊"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xMaxCol")[73]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xmodified" 0[74]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "onXModified" "('fmValidation.sValidation' (Win∆Parent 'fmValidation.sValidation')) MultiWI 'modified' ('fmValidation.sValidation.pgRanges.fActValidation.ssActValidation' ⎕wi 'xmodified')"[75]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "XClearRange" 1 1 ("fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow") ("fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol") 3[76]  MaxRow←MaxCol←1[77]  value←(1 10⌈⍴value)↑value←MATRIX Category[78]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"[79]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[80]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 1∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[81]  value←(1 10⌈⍴value)↑value←MATRIX MinAgeM[82]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"[83]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[84]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 2∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[85]  value←(1 10⌈⍴value)↑value←MATRIX MaxAgeM[86]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"[87]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[88]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 3∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[89]  value←(1 10⌈⍴value)↑value←MATRIX MinAgeF[90]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"[91]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[92]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 4∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[93]  value←(1 10⌈⍴value)↑value←MATRIX MaxAgeF[94]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"[95]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[96]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 5∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[97]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[98]  (MaxRow MaxCol)←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xGetActiveCell" 0 0[99]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xSetActiveCell" (MaxRow⌊"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xMaxRow") (MaxCol⌊"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xMaxCol")[100] "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xmodified" 0[101] "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "onXModified" "('fmValidation.sValidation' (Win∆Parent 'fmValidation.sValidation')) MultiWI 'modified' ('fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation' ⎕wi 'xmodified')"[102] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "XClearRange" 1 1 ("fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow") ("fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol") 3[103] MaxRow←MaxCol←1[104] value←(1 10⌈⍴value)↑value←MATRIX Category[105] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"[106] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[107] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 1∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[108] value←(1 10⌈⍴value)↑value←MATRIX MinAgeM[109] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"[110] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[111] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 2∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[112] value←(1 10⌈⍴value)↑value←MATRIX MaxAgeM[113] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"[114] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[115] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 3∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[116] value←(1 10⌈⍴value)↑value←MATRIX MinAgeF[117] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"[118] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[119] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 4∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[120] value←(1 10⌈⍴value)↑value←MATRIX MaxAgeF[121] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"[122] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)[123] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 5∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)[124] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0[125] (MaxRow MaxCol)←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xGetActiveCell" 0 0[126] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xSetActiveCell" (MaxRow⌊"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xMaxRow") (MaxCol⌊"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xMaxCol")[127] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xmodified" 0[128] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "onXModified" "('fmValidation.sValidation' (Win∆Parent 'fmValidation.sValidation')) MultiWI 'modified' ('fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation' ⎕wi 'xmodified')"[129] :endif[130] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Validation[131]     :for var :in spin Comment_Validation at "variable" "row" ⋄ (var row)←var[132]         "Validation" ParmColor ((FormFields for "variable" var) at "control"),var row 1[133]     :endfor[134] :endif[135] :if ~0∊⍴,warnings[136]     MDISPLAY DLTMB warnings,⎕tcnl[137]     Win∆AssignVars "fmValidation.sValidation"[138] :endif[139] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Validation" "" "Names"[140]     "fmValidation.sValidation" ⎕wi "modified" 0[141] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Validation" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Validation" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   :if (⊂"pgParameters")∊"fmValidation.sValidation" ⎕wi "pages"
+[10]  PickList←"fmValidation.sValidation.pgParameters.fDates.cbBDATE" ⎕wi "list"
+[11]  warnings←warnings OVER "Previous Valuation Date" Win∆DateRelative "BDATE" "lrBDATE"
+[12]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE
+[13]  :if mt selection
+[14]          "fmValidation.sValidation.pgParameters.fDates.cbBDATE" ⎕wi "text" (DLTB BDATE)
+[15]  :else
+[16]      "fmValidation.sValidation.pgParameters.fDates.cbBDATE" ⎕wi "value" selection
+[17]  :endif
+[18]  PickList←"fmValidation.sValidation.pgParameters.fDates.cbEDATE" ⎕wi "list"
+[19]  warnings←warnings OVER "Current Valuation Date" Win∆DateRelative "EDATE" "lrEDATE"
+[20]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE
+[21]  :if mt selection
+[22]          "fmValidation.sValidation.pgParameters.fDates.cbEDATE" ⎕wi "text" (DLTB EDATE)
+[23]  :else
+[24]      "fmValidation.sValidation.pgParameters.fDates.cbEDATE" ⎕wi "value" selection
+[25]  :endif
+[26]  "FILES" Win∆Inherits "Actsfile"
+[27]  "fmValidation.sValidation.pgParameters.fFiles.edFILES" ⎕wi "text" (DLTB FILES)
+[28]  "ValidFormat" Win∆Inherits "FormatA"
+[29]  PickList←"fmValidation.sValidation.pgParameters.fFiles.cbValidFormat" ⎕wi "list"
+[30]  warnings←warnings OVER "Data Format" Win∆FormatRelative "ValidFormat" "lrValidFormat"
+[31]  selection←(StripText PickList) ExactTLU DLTB StripText ValidFormat
+[32]  :if mt selection
+[33]      modified←⌈/modified,1
+[34]  :endif
+[35]  "fmValidation.sValidation.pgParameters.fFiles.cbValidFormat" ⎕wi "value" (¯1↑1,selection)
+[36]  "fmValidation.sValidation.pgParameters.fOutput.ckPROPT" ⎕wi "value" (zwb PROPT)
+[37]  "fmValidation.sValidation.pgParameters.fOutput.ckBlank" ⎕wi "value" (zwb Blank)
+[38]  :endif
+[39]  :if (⊂"pgRanges")∊"fmValidation.sValidation" ⎕wi "pages"
+[40]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "XClearRange" 1 1 ("fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow") ("fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol") 3
+[41]  MaxRow←MaxCol←1
+[42]  value←(1 10⌈⍴value)↑value←MATRIX Category
+[43]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"
+[44]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[45]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 1∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[46]  value←(1 10⌈⍴value)↑value←MATRIX MinAgeM
+[47]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"
+[48]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[49]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 2∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[50]  value←(1 10⌈⍴value)↑value←MATRIX MaxAgeM
+[51]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"
+[52]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[53]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 3∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[54]  value←(1 10⌈⍴value)↑value←MATRIX MinAgeF
+[55]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"
+[56]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[57]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 4∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[58]  value←(1 10⌈⍴value)↑value←MATRIX MaxAgeF
+[59]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"
+[60]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[61]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 5∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[62]  value←(1 10⌈⍴value)↑value←MATRIX MinSal
+[63]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"
+[64]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[65]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 6∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[66]  value←(1 10⌈⍴value)↑value←MATRIX MaxSal
+[67]  MaxRow←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxRow"
+[68]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[69]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "TextRC[]" (⎕mix 7∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[70]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[71]  (MaxRow MaxCol)←"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xGetActiveCell" 0 0
+[72]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xSetActiveCell" (MaxRow⌊"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xMaxRow") (MaxCol⌊"fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xMaxCol")
+[73]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "xmodified" 0
+[74]  "fmValidation.sValidation.pgRanges.fActValidation.ssActValidation" ⎕wi "onXModified" "('fmValidation.sValidation' (Win∆Parent 'fmValidation.sValidation')) MultiWI 'modified' ('fmValidation.sValidation.pgRanges.fActValidation.ssActValidation' ⎕wi 'xmodified')"
+[75]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "XClearRange" 1 1 ("fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow") ("fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol") 3
+[76]  MaxRow←MaxCol←1
+[77]  value←(1 10⌈⍴value)↑value←MATRIX Category
+[78]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"
+[79]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[80]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 1∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[81]  value←(1 10⌈⍴value)↑value←MATRIX MinAgeM
+[82]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"
+[83]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[84]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 2∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[85]  value←(1 10⌈⍴value)↑value←MATRIX MaxAgeM
+[86]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"
+[87]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[88]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 3∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[89]  value←(1 10⌈⍴value)↑value←MATRIX MinAgeF
+[90]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"
+[91]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[92]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 4∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[93]  value←(1 10⌈⍴value)↑value←MATRIX MaxAgeF
+[94]  MaxRow←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxRow"
+[95]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[96]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "TextRC[]" (⎕mix 5∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[97]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[98]  (MaxRow MaxCol)←"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xGetActiveCell" 0 0
+[99]  "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xSetActiveCell" (MaxRow⌊"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xMaxRow") (MaxCol⌊"fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xMaxCol")
+[100] "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "xmodified" 0
+[101] "fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation" ⎕wi "onXModified" "('fmValidation.sValidation' (Win∆Parent 'fmValidation.sValidation')) MultiWI 'modified' ('fmValidation.sValidation.pgRanges.fDefValidation.ssDefValidation' ⎕wi 'xmodified')"
+[102] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "XClearRange" 1 1 ("fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow") ("fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol") 3
+[103] MaxRow←MaxCol←1
+[104] value←(1 10⌈⍴value)↑value←MATRIX Category
+[105] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"
+[106] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[107] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 1∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[108] value←(1 10⌈⍴value)↑value←MATRIX MinAgeM
+[109] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"
+[110] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[111] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 2∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[112] value←(1 10⌈⍴value)↑value←MATRIX MaxAgeM
+[113] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"
+[114] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[115] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 3∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[116] value←(1 10⌈⍴value)↑value←MATRIX MinAgeF
+[117] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"
+[118] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[119] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 4∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[120] value←(1 10⌈⍴value)↑value←MATRIX MaxAgeF
+[121] MaxRow←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxRow"
+[122] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "MaxCol" (MaxCol←MaxCol⌈1↑⍴value)
+[123] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "TextRC[]" (⎕mix 5∘.,⍳1↑⍴value) (m2n ⎕av[209 151] REPL value)
+[124] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "SetColWidthAuto" 1 1 MaxRow MaxCol 0
+[125] (MaxRow MaxCol)←"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xGetActiveCell" 0 0
+[126] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xSetActiveCell" (MaxRow⌊"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xMaxRow") (MaxCol⌊"fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xMaxCol")
+[127] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "xmodified" 0
+[128] "fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation" ⎕wi "onXModified" "('fmValidation.sValidation' (Win∆Parent 'fmValidation.sValidation')) MultiWI 'modified' ('fmValidation.sValidation.pgRanges.fPenValidation.ssPenValidation' ⎕wi 'xmodified')"
+[129] :endif
+[130] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Validation
+[131]     :for var :in spin Comment_Validation at "variable" "row" ⋄ (var row)←var
+[132]         "Validation" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[133]     :endfor
+[134] :endif
+[135] :if ~0∊⍴,warnings
+[136]     MDISPLAY DLTMB warnings,⎕tcnl
+[137]     Win∆AssignVars "fmValidation.sValidation"
+[138] :endif
+[139] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Validation" "" "Names"
+[140]     "fmValidation.sValidation" ⎕wi "modified" 0
+[141] :endif
+    ∇

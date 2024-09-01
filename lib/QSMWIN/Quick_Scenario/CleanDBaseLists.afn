@@ -1,1 +1,23 @@
-    ∇ CleanDBaseLists excluded;field;list;pages;text[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Remove "saved" Database descriptions from lists[3]   [4]   pages←(parent ⎕wi 'pages'),¨'.'[5]   list←(((⊂parent),¨pages~⊂controlpage),¨⊂'cbdummymdbFile'),(((⊂parent),¨pages~⊂controlpage),¨⊂'cbdummysqlDBase')[6]   list←list,(⊂parent,controlpage),¨'cbmdbFile' 'cbsqlDBase'[7]   [8]   :for field :in list[9]       text←field ⎕wi 'text'[10]      list←field ⎕wi 'list'[11]  ⍝⍝⍝    field ⎕wi 'list' (list←⊃m2n (∨/' '≠1↑[1]list)↓[1]list)[12]      :if mt excluded ⋄ field ⎕wi 'list' (list←⊃lmt m2n list)[13]      :else           ⋄ field ⎕wi 'list' (list←(~∨/excluded⍷list)⌿list)[14]      :endif[15]      field ⎕wi 'extent' (150,(¯10+(6×¯1↑CharSize)+¯1↑Win∆TextSize list)) ⍝ Stretch field to fit[16]      :if ~mt text[17]          field ⎕wi 'suppress' 1[18]          field ⎕wi 'value' (↑list ExactTLU text)[19]          field ⎕wi 'suppress' 0[20]      :endif[21]  :endfor    ∇
+    ∇ CleanDBaseLists excluded;field;list;pages;text
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Remove "saved" Database descriptions from lists
+[3]   
+[4]   pages←(parent ⎕wi 'pages'),¨'.'
+[5]   list←(((⊂parent),¨pages~⊂controlpage),¨⊂'cbdummymdbFile'),(((⊂parent),¨pages~⊂controlpage),¨⊂'cbdummysqlDBase')
+[6]   list←list,(⊂parent,controlpage),¨'cbmdbFile' 'cbsqlDBase'
+[7]   
+[8]   :for field :in list
+[9]       text←field ⎕wi 'text'
+[10]      list←field ⎕wi 'list'
+[11]  ⍝⍝⍝    field ⎕wi 'list' (list←⊃m2n (∨/' '≠1↑[1]list)↓[1]list)
+[12]      :if mt excluded ⋄ field ⎕wi 'list' (list←⊃lmt m2n list)
+[13]      :else           ⋄ field ⎕wi 'list' (list←(~∨/excluded⍷list)⌿list)
+[14]      :endif
+[15]      field ⎕wi 'extent' (150,(¯10+(6×¯1↑CharSize)+¯1↑Win∆TextSize list)) ⍝ Stretch field to fit
+[16]      :if ~mt text
+[17]          field ⎕wi 'suppress' 1
+[18]          field ⎕wi 'value' (↑list ExactTLU text)
+[19]          field ⎕wi 'suppress' 0
+[20]      :endif
+[21]  :endfor
+    ∇

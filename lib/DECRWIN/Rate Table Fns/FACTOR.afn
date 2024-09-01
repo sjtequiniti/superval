@@ -1,1 +1,51 @@
-    ∇ res←type FACTOR DATE;⎕IO;File;tieno;Index;factors;dates;N;RATES;Dates[1]   ⍝ DECRWIN.sf#2[2]   ⍝ type is Factor Table Code[3]   ⍝ DATE is either 'All' (return all Factors and Dates)[4]   ⍝             or 'Index' (return the Index of Factor Tables)[5]   ⍝             or Numeric in YYYYMMDD or DD MM YY(YY) Format to get[6]   ⍝                the last updated factor at the date specified[7]   [8]   ⎕IO←1[9]   :select type ⍝ Compatibility with old UK/SA code[10]  :case 1 ⋄ type←'BSP'[11]  :case 2 ⋄ type←'LEL'[12]  :case 3 ⋄ type←'UEL'[13]  :case 4 ⋄ type←'S21'[14]  :case 5 ⋄ type←'MAX'[15]  :else   ⋄ type←DLTB StripText type[16]  :endselect[17]  [18]  :select DATE ⍝ Default response[19]  :case 'All'   ⋄ res←0 0[20]  :case 'Index' ⋄ res←0 0⍴''[21]  :else         ⋄ res←0[22]  :endselect[23]  [24]  :if uk=1[25]      Index←FactorFile ReadFile 'Index'[26]      :if DATE≡'Index'[27]          res←1 0↓Index[;Index[1;]⍳'∆_Name' '∆_Description'][28]          res←⊃(res[;1],¨⊂' - '),¨res[;2] ⋄ :return[29]      :endif[30]      :if 0∊⍴FactorFile ReadFile type ⋄ :return[31]      :else[32]          dates←MatrixZWB Dates[;7 8 9 10 4 5 1 2][33]          factors←MatrixZWB RATES[34]      :endif[35]  :else ⍝ Non-UK ones[36]      File←LibraryDir,'FACTORS'[37]      :if 0≠File FSTIE tieno←TieNumber File ⋄ :return ⋄ :endif[38]      Index←⎕FREAD tieno,1[39]      :if DATE≡'Index' ⋄ res←('∇'≠Index[;1])⌿Index ⋄ :return ⋄ :endif[40]      :if 0∊⍴N←Index ExactTLU type ⋄ :return ⋄ :endif[41]      factors←((0.5×⍴factors),2)⍴factors←MatrixZWB ⎕FREAD tieno,N+1[42]      dates←factors[;1] ⋄ factors←factors[;2][43]      ⎕funtie tieno[44]  :endif[45]  [46]  :if DATE≡'All' ⋄ res←dates factors ⋄ :return ⋄ :endif[47]  :if 1≠⍴,DATE ⋄ DATE←(19000000×DATE[3]<100)++/DATE× 1 100 10000 ⋄ :endif[48]  [49]  res←factors[+/DATE≥dates]    ∇
+    ∇ res←type FACTOR DATE;⎕IO;File;tieno;Index;factors;dates;N;RATES;Dates
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ type is Factor Table Code
+[3]   ⍝ DATE is either 'All' (return all Factors and Dates)
+[4]   ⍝             or 'Index' (return the Index of Factor Tables)
+[5]   ⍝             or Numeric in YYYYMMDD or DD MM YY(YY) Format to get
+[6]   ⍝                the last updated factor at the date specified
+[7]   
+[8]   ⎕IO←1
+[9]   :select type ⍝ Compatibility with old UK/SA code
+[10]  :case 1 ⋄ type←'BSP'
+[11]  :case 2 ⋄ type←'LEL'
+[12]  :case 3 ⋄ type←'UEL'
+[13]  :case 4 ⋄ type←'S21'
+[14]  :case 5 ⋄ type←'MAX'
+[15]  :else   ⋄ type←DLTB StripText type
+[16]  :endselect
+[17]  
+[18]  :select DATE ⍝ Default response
+[19]  :case 'All'   ⋄ res←0 0
+[20]  :case 'Index' ⋄ res←0 0⍴''
+[21]  :else         ⋄ res←0
+[22]  :endselect
+[23]  
+[24]  :if uk=1
+[25]      Index←FactorFile ReadFile 'Index'
+[26]      :if DATE≡'Index'
+[27]          res←1 0↓Index[;Index[1;]⍳'∆_Name' '∆_Description']
+[28]          res←⊃(res[;1],¨⊂' - '),¨res[;2] ⋄ :return
+[29]      :endif
+[30]      :if 0∊⍴FactorFile ReadFile type ⋄ :return
+[31]      :else
+[32]          dates←MatrixZWB Dates[;7 8 9 10 4 5 1 2]
+[33]          factors←MatrixZWB RATES
+[34]      :endif
+[35]  :else ⍝ Non-UK ones
+[36]      File←LibraryDir,'FACTORS'
+[37]      :if 0≠File FSTIE tieno←TieNumber File ⋄ :return ⋄ :endif
+[38]      Index←⎕FREAD tieno,1
+[39]      :if DATE≡'Index' ⋄ res←('∇'≠Index[;1])⌿Index ⋄ :return ⋄ :endif
+[40]      :if 0∊⍴N←Index ExactTLU type ⋄ :return ⋄ :endif
+[41]      factors←((0.5×⍴factors),2)⍴factors←MatrixZWB ⎕FREAD tieno,N+1
+[42]      dates←factors[;1] ⋄ factors←factors[;2]
+[43]      ⎕funtie tieno
+[44]  :endif
+[45]  
+[46]  :if DATE≡'All' ⋄ res←dates factors ⋄ :return ⋄ :endif
+[47]  :if 1≠⍴,DATE ⋄ DATE←(19000000×DATE[3]<100)++/DATE× 1 100 10000 ⋄ :endif
+[48]  
+[49]  res←factors[+/DATE≥dates]
+    ∇

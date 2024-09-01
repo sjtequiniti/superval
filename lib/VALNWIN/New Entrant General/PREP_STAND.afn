@@ -1,0 +1,71 @@
+    ∇ res←PREP∆STAND;SUMMREC;N;NAME;REC;F;File
+[1]   ⍝ VALNWIN.sf#13
+[2]   ⍝ Preparatory Work for a New Entrant Model Run
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ClassID←2 ⋄ salmult←1 ⋄ dfDOB←(8⌊⍴fDOB)↑'YYYYMMDD' ⍝ Dummy some variables
+[8]   gROUP←DLTMB NEparms
+[9]   H2←((-¯1↑⍴H2) WRITE∆HEAD 'NEW ENTRANT SUMMARY LISTING') OVER 2 0↓H2
+[10]  
+[11]  SUMMREC←NEM_RunDesc
+[12]  rUNDESC←rUNDESC OVER ' ' OVER SUMMREC
+[13]  
+[14]  →(res←CREATE∆NEM)/0
+[15]  
+[16]  ('Projection Year:' 'Record Number:') Win∆ProgressBar2 'SetLabels'
+[17]  ('Running New Entrant Model for ',ValName,' - ',NEparms) Win∆ProgressBar2 'Open'
+[18]  (0 projTerm) Win∆ProgressBar2 'FileUpdate'
+[19]  
+[20]  recn←0 ⋄ NoInd←1 ⋄ EXIT← 0 1 0 0 0 0 ⋄ ValDATE←VDATE
+[21]  H2[3+⍳3;⍳11]← 3 11 ⍴'       No.        of  Age   Memb.'
+[22]  
+[23]  :if uk=1
+[24]      Minterm←Maxterm
+[25]  :else ⍝ Force at least this number of calculations
+[26]      Minterm←⌈/(⍴,f),(⍴,i),(⍴,j),(⍴,jcc),(⍴,jmpu),(+/~^\⌽TXX0=¯1↑TXX0),(dab∨~NotPUC)/contper⌊projTerm
+[27]      F← 0 1 ×(⍴SALinf)⌈(⍴SALdednf)⌈⍴SALmaxf ⋄ N←0
+[28]      F←((F⌈⍴SALinf)↑SALinf)⍪((F⌈⍴SALdednf)↑SALdednf)⍪(F⌈⍴SALmaxf)↑SALmaxf
+[29]      Minterm←Minterm⌈⍴⎕FI F[N;] ⋄ →((1↑⍴F)>N←N+1)/⎕LC ⋄ Maxterm←Maxterm⌈Minterm
+[30]  :endif
+[31]  ⍝ Get Fund Totals for the various Methods of Replacement
+[32]  
+[33]  :select ↑RepMeth
+[34]  :caselist ' ' 'N'
+[35]      TPX←(1+projTerm)↑,CFTOT[2;;0]-CFTOT[2;;15] ⍝ Reduce by Overage Members
+[36]  :case 'S'
+[37]      TPX←(1+projTerm)↑,CFTOT[2;;7]-??? ⍝⍝⍝ Reduce by Overage Members
+[38]  :case 'R'
+[39]      TPX←(1+projTerm)↑,CFTOT[2;;9]-??? ⍝⍝⍝ Reduce by Overage Members
+[40]  :endselect
+[41]  
+[42]  :if res←~AllowNegNE ⋄ :andif res←^/0≥FUNDTOT-TPX
+[43]      'No New Entrants are projected to join' VALN∆LOG 'Error'
+[44]      :return
+[45]  :endif
+[46]  
+[47]  SPAGE←1↑H2[⍳3;] OUTPUT tpr1,0,pAGE ⍝ Output Basis Details
+[48]  SPAGE←'NEW ENTRANT' DATA∆FILE 'Y' netie tpr1 SPAGE ⍝ New Entrant Deck to output
+[49]  
+[50]  ⍝ Reset totals variables
+[51]  CFTOT←(3,(LRA-14),16)↑0 ⋄ TOTALS←TOTALS×CHECKTOT←0
+[52]  PENAMTS←PENVALS←(projTerm,4)⍴0 ⍝⍝⍝⍝ Must Set "cssspread" Variables
+[53]  RECN←pAGE
+[54]  
+[55]  summtie←TieNumber File←OutputDir,'TEMPNEWE.SF'
+[56]  ⍝ Check if file already exists and delete, then create
+[57]  :if FileExist File
+[58]      →(~File FTIE summtie)/⎕lc ⍝ Keep trying
+[59]      File ⎕xferase summtie
+[60]  :endif
+[61]  File ⎕xfcreate summtie ⋄ File ⎕xftie summtie
+[62]  
+[63]  ⍝ Accumulate TOTALS, CFTOT, PENAMTS and PENVALS in File
+[64]  0 0 ⍴0 ⎕FAPPEND summtie ⋄ 0 0 ⍴0 ⎕FAPPEND summtie
+[65]  0 0 ⍴0 ⎕FAPPEND summtie ⋄ 0 0 ⍴0 ⎕FAPPEND summtie
+[66]  :if ⍙dbopt
+[67]      0 0⍴ValnResultsDB ⍙DBCreateMainDB ¯1
+[68]      0 ⍙DBTempDBFiles hpcenabled
+[69]  :endif
+    ∇

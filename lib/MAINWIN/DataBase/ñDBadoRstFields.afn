@@ -1,0 +1,14 @@
+    ∇ fields←fields ⍙DBadoRstFields rst;i;z
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Return a list of the Field Numbers or Names using Headers from a RecordSet
+[3]   ⍝ (optional) fields is a list of field names (to return Field Numbers)
+[4]   
+[5]   z←0⍴''
+[6]   :for i :in (-⎕io)+⍳rst ⎕wi 'xFields.xCount'
+[7]       z←z,⊂(rst ⎕wi 'xFields.xItem' i) ⎕wi 'xName'
+[8]   :endfor
+[9]   
+[10]  :if 0=⎕nc 'fields' ⋄ fields←z
+[11]  :else              ⋄ fields←z⍳fields
+[12]  :endif
+    ∇

@@ -1,1 +1,14 @@
-    ∇ HPC_Run;tab;∆[1]   ⍝ HPCWIN.sf#5[2]   ⍝ Initialise and Finalise HPC Runs[3]   [4]   tab←MembGroup HPC_Process InputDir[5]   ⍙⍙SubProcTab←⍙⍙SubProcTab append tab[6]   CLEARVARS[7]   [8]   ∆←(×rowsIn ⍙⍙SubProcTab)×(~⍙⍙MethSubProc≡'APL')⌈+/0=⍙⍙SubProcTab at 'Finished'[9]   :if (BatchRow=TotalRuns)^0≠∆               ⍝ Check for finished runs if no more runs or sub-processes[10]  :orif (⍙⍙MethSubProc≡'APL')^⍙⍙MaxSubProc=∆[11]      HPC_RunMonitor[12]  :endif    ∇
+    ∇ HPC_Run;tab;∆
+[1]   ⍝ HPCWIN.sf#5
+[2]   ⍝ Initialise and Finalise HPC Runs
+[3]   
+[4]   tab←MembGroup HPC_Process InputDir
+[5]   ⍙⍙SubProcTab←⍙⍙SubProcTab append tab
+[6]   CLEARVARS
+[7]   
+[8]   ∆←(×rowsIn ⍙⍙SubProcTab)×(~⍙⍙MethSubProc≡'APL')⌈+/0=⍙⍙SubProcTab at 'Finished'
+[9]   :if (BatchRow=TotalRuns)^0≠∆               ⍝ Check for finished runs if no more runs or sub-processes
+[10]  :orif (⍙⍙MethSubProc≡'APL')^⍙⍙MaxSubProc=∆
+[11]      HPC_RunMonitor
+[12]  :endif
+    ∇

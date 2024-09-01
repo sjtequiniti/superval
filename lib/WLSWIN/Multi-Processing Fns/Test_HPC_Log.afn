@@ -1,0 +1,53 @@
+    ∇ Z←Test_HPC_Log;∆;test_parms;fnam;tno;olf
+[1]   ⍝ WLSWIN.sf#2
+[2]   ⍝ Test `Log` in HPCLogDir, which defaults to child of current directory
+[3]   ⍝ e.g. Test_Log
+[4]   
+[5]   FIX ME !!!
+[6]   
+[7]    Z←''
+[8]   
+[9]   ⍝⍝⍝ :if 2≠⎕NC 'HPCLogDir'
+[10]  ⍝⍝⍝    HPCLogDir←(⎕CHDIR ''),'\log' ⍝ default to working directory
+[11]  ⍝⍝⍝    Z←Z,'Set HPCLogDir to ',HPCLogDir,⎕TCNL
+[12]  ⍝⍝⍝ :endif
+[13]  
+[14]   ⎕NUNTIE ⎕XNNUMS ⍝ untie all files for test
+[15]   3 ⎕CMD 'DEL /Q ',HPCLogDir,'*.*' ⍝ clear test folder
+[16]   Z←Z,'HPCLogDir is empty' confirm '0 0≡⍴⎕XLIB HPCLogDir'
+[17]   Z←Z,'no LOG_PARMS defined' confirm '0 0≡⍴⎕ERASE "LOG_PARMS"'
+[18]  
+[19]   'test' HTTP_Log 'Start test'
+[20]   Z←Z,'default INI created' confirm 'FileExist "',HPCLogDir,'HTTP_Broker.ini"'
+[21]   Z←Z,'current log created' confirm 'FileExist "',HPCLogDir,'test.log"'
+[22]   test_parms←('keep' 'next')(10,100⊥nextDay 3↑⎕TS)
+[23]   Z←Z,confirm 'LOG_PARMS≡test_parms'
+[24]  
+[25]  ⍝ test log does not roll if current file in use today
+[26]   LOG_PARMS←LOG_PARMS update 'next' (100⊥3↑⎕TS) ⍝ make today the day to roll
+[27]   'test' HTTP_Log 'Roll up, roll up!'
+[28]   Z←Z,'log not rolled' confirm '~FileExist "',HPCLogDir,'test-',(⍕100⊥3↑⎕TS),'.log"'
+[29]   Z←Z,'next roll date set' confirm '(LOG_PARMS at "next") ≡ 100⊥nextDay 3↑⎕TS'
+[30]  
+[31]  ⍝ test dropping old files
+[32]   olf←(⊂'test-',(⍕↑⎕TS-1),'12'),¨(⍕¨31-⍳20),¨⊂'.log' ⍝ old logs
+[33]  :Try
+[34]      :For fnam :In olf
+[35]          (HPCLogDir,fnam)⎕XNCREATE tno←'Native' TieNumber ''
+[36]          'test file' ⎕NAPPEND tno
+[37]          ⎕NUNTIE tno
+[38]      :EndFor
+[39]      Z←Z,'Created ',(⍕↑⍴olf),' test files',⎕TCNL
+[40]      (HPCLogDir,'test.log') ⎕XNTIE tno←'Native' TieNumber ''
+[41]      (HPCLogDir,'test.log') ⎕XNERASE tno ⍝ erase current logfile
+[42]  :CatchAll
+[43]      Z←Z,'** Failed to create test files',⎕TCNL
+[44]  :EndTry
+[45]  ⍝ FIXME include log files with other prefixes to demonstrate they are untouched by the roll
+[46]   Z←Z,(⍕↑⍴((4↑[2]∆)^.='test')⌿∆←⎕XLIB HPCLogDir),' test log files in folder.',⎕TCNL
+[47]   LOG_PARMS←LOG_PARMS update 'next' (100⊥3↑⎕TS) ⍝ make today the day to roll
+[48]   'test' HTTP_Log 'Another roll, Vicar?'
+[49]   Z←Z,'only 10 files kept' confirm '10=↑⍴((4↑[2]∆)^.="test")⌿∆←⎕XLIB HPCLogDir'
+[50]   Z←Z,'log next rolls tomorrow' confirm '(LOG_PARMS at "next") ≡ 100⊥nextDay 3↑⎕TS'
+[51]  
+    ∇

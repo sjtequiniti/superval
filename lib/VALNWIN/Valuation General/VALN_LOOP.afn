@@ -1,0 +1,36 @@
+    ∇ newrecsize←VALN_LOOP MembGroup
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Run the Memeber Loop and some finalisation
+[3]   
+[4]   :if ⍙dbopt ⋄ recn ⍙DBTempDBFiles hpcenabled ⋄ :endif ⍝ Create Temporary Files for Database Records
+[5]   
+[6]   :if MembGroup≡'Pensioners' ⋄ MAIN∆PEN ⍝ Run the Member Loop
+[7]   :else                      ⋄ MAIN MembGroup ⍝ Run the Member Loop
+[8]   :endif
+[9]   
+[10]  'Finalising Valuation Results' Win∆ProgressBar2 'Open'
+[11]  ('Task:' 'Process:') Win∆ProgressBar2 'SetLabels'
+[12]  
+[13]  :if ~suppressText
+[14]      (1 6 'Finalising Text Output') Win∆ProgressBar2 'FileUpdate'
+[15]      :if MembGroup≡'Pensioners'
+[16]          :if aosind
+[17]              (1 1 'Creating AOS Text Output') Win∆ProgressBar2 'MemberUpdate'
+[18]              :if ~∨/0≠,aos∆TOTS[0;;;]
+[19]                  aos∆TOTS←1 0 0 0↓aos∆TOTS ⋄ aostype←1 0↓aostype
+[20]              :endif
+[21]              AOS∆TOTALS∆PEN ⍝ Total Line by Line Member
+[22]              PRINT∆AOS ⍝ Print Reserve Build-Ups
+[23]          :endif
+[24]      :else
+[25]  ⍝⍝⍝        :if test ⋄ :andif MembGroup≡'Actives' ⋄ XV_CategoryAudit tpr1 ⋄ :endif ⍝ make XHTML version of TXT file
+[26]  ⍝⌿⍝        :if MembGroup≡'Actives' ⋄ XV_CategoryAudit tpr1 ⋄ :endif ⍝ make XHTML version of TXT file
+[27]          PRINT∆TOTALS ⍝ Write totals out to files
+[28]      :endif
+[29]  :endif
+[30]  
+[31]  :if ⍙dbopt ⋄ newrecsize←⍙DBCompressFiles hpcenabled ⍝ Summarising Temporary Database records
+[32]      :if ~hpcenabled ⋄ schemafiles←⍙DBSchemaFiles InputDir ⋄ :endif
+[33]  :else      ⋄ newrecsize←0
+[34]  :endif
+    ∇

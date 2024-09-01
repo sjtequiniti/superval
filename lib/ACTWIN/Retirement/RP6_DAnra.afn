@@ -1,1 +1,50 @@
-    ∇ RP6∆DAnra;Dec∆pp;ExitProbs∆pp;Age∆pp;Start∆pp;End∆pp;GP∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;FWARNRAL;WARNRAL;RetAge∆pp;WARSPAL;FWARSPAL;GWARNRAL;FGWARNRAL;GWARSPAL;FGWARSPAL;WARPRESPAL;FWARPRESPAL;GWARPRESPAL;FGWARPRESPAL[1]   ⍝ ACTWIN.sf#5[2]   ⍝ CLAYBROOK VALUATION SYSTEM - Death After Retirement PENSION[3]   [4]   :if PreSPASplit[5]       (  WARSPAL   WARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPENSPA                )[⎕io+2;;][6]       ( FWARSPAL  FWARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;⎕io+2;;   ;;;])[⎕io+2;;][7]       ( GWARSPAL  GWARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;     ;;⎕io;;;])[⎕io+2;;][8]       (FGWARSPAL FGWARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPENSPA[;⎕io+2;;⎕io;;;])[⎕io+2;;][9]   [10]        WARPRESPAL←(0.5×(1↓[1]  WARPRESPAL)+¯1↓[1]  WARPRESPAL),0[11]       FWARPRESPAL←(0.5×(1↓[1] FWARPRESPAL)+¯1↓[1] FWARPRESPAL),0[12]       GWARPRESPAL←(0.5×(1↓[1] GWARPRESPAL)+¯1↓[1] GWARPRESPAL),0[13]      FGWARPRESPAL←(0.5×(1↓[1]FGWARPRESPAL)+¯1↓[1]FGWARPRESPAL),0[14]  :else[15]         WARNRAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPEN                   )[⎕io+2; ] ⍝ DIS Pension is before Commutation[16]        FWARNRAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPEN   [;⎕io+2;;   ;;;])[⎕io+2; ][17]        GWARNRAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPEN   [;     ;;⎕io;;;])[⎕io+2; ][18]       FGWARNRAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPEN   [;⎕io+2;;⎕io;;;])[⎕io+2; ][19]         WARSPAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPENSPA                )[⎕io+2; ][20]        FWARSPAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;⎕io+2;;   ;;;])[⎕io+2; ][21]        GWARSPAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;     ;;⎕io;;;])[⎕io+2; ][22]       FGWARSPAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPENSPA[;⎕io+2;;⎕io;;;])[⎕io+2; ][23]  :endif[24]  ⍝[25]  Dec∆pp←'DL' ⋄ ExitProbs∆pp←PROBS[;1]×(ENX_1,LNX+1)/0 1[26]  RetAge∆pp←Start∆pp←Age∆pp←,XMP ⋄ End∆pp←GP∆pp←Con∆pp←FCon∆pp←⍬[27]  [28]  Upin∆pp←0 ⍝ Not "underpinned"[29]  :if PreSPASplit ⋄ SL∆pp←                   WARPRESPAL-GWARPRESPAL ⋄ FSL∆pp←                   FWARPRESPAL-FGWARPRESPAL[30]  :else           ⋄ SL∆pp←,(SPA>Age∆pp)×(MID WARNRAL   -GWARNRAL),0 ⋄ FSL∆pp←,(SPA>Age∆pp)×(MID FWARNRAL-   FGWARNRAL),0[31]  :endif[32]  [33]  PP∆CreateInterface[34]  [35]  Upin∆pp←1 ⍝ "underpinned"[36]  :if PreSPASplit ⋄ SL∆pp←                              GWARPRESPAL ⋄ FSL∆pp←                               FGWARPRESPAL[37]  :else           ⋄ SL∆pp←,(SPA>Age∆pp)×(MID            GWARNRAL),0 ⋄ FSL∆pp←,(SPA>Age∆pp)×(MID             FGWARNRAL),0[38]  :endif[39]  [40]  PP∆CreateInterface[41]  [42]  Upin∆pp←0 ⍝ Not "underpinned"[43]  SL∆pp←,(SPA<Age∆pp)×(MID WARSPAL-GWARSPAL),0 ⋄ FSL∆pp←,(SPA<Age∆pp)×(MID FWARSPAL-FGWARSPAL),0[44]  PP∆CreateInterface[45]  [46]  Upin∆pp←1 ⍝ "underpinned"[47]  SL∆pp←,(SPA<Age∆pp)×(MID         GWARSPAL),0 ⋄ FSL∆pp←,(SPA<Age∆pp)×(MID          FGWARSPAL),0[48]  PP∆CreateInterface    ∇
+    ∇ RP6∆DAnra;Dec∆pp;ExitProbs∆pp;Age∆pp;Start∆pp;End∆pp;GP∆pp;Upin∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;FWARNRAL;WARNRAL;RetAge∆pp;WARSPAL;FWARSPAL;GWARNRAL;FGWARNRAL;GWARSPAL;FGWARSPAL;WARPRESPAL;FWARPRESPAL;GWARPRESPAL;FGWARPRESPAL
+[1]   ⍝ ACTWIN.sf#5
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - Death After Retirement PENSION
+[3]   
+[4]   :if PreSPASplit
+[5]       (  WARSPAL   WARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPENSPA                )[⎕io+2;;]
+[6]       ( FWARSPAL  FWARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;⎕io+2;;   ;;;])[⎕io+2;;]
+[7]       ( GWARSPAL  GWARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;     ;;⎕io;;;])[⎕io+2;;]
+[8]       (FGWARSPAL FGWARPRESPAL)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPENSPA[;⎕io+2;;⎕io;;;])[⎕io+2;;]
+[9]   
+[10]        WARPRESPAL←(0.5×(1↓[1]  WARPRESPAL)+¯1↓[1]  WARPRESPAL),0
+[11]       FWARPRESPAL←(0.5×(1↓[1] FWARPRESPAL)+¯1↓[1] FWARPRESPAL),0
+[12]       GWARPRESPAL←(0.5×(1↓[1] GWARPRESPAL)+¯1↓[1] GWARPRESPAL),0
+[13]      FGWARPRESPAL←(0.5×(1↓[1]FGWARPRESPAL)+¯1↓[1]FGWARPRESPAL),0
+[14]  :else
+[15]         WARNRAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPEN                   )[⎕io+2; ] ⍝ DIS Pension is before Commutation
+[16]        FWARNRAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPEN   [;⎕io+2;;   ;;;])[⎕io+2; ]
+[17]        GWARNRAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPEN   [;     ;;⎕io;;;])[⎕io+2; ]
+[18]       FGWARNRAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPEN   [;⎕io+2;;⎕io;;;])[⎕io+2; ]
+[19]         WARSPAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]SERACCPENSPA                )[⎕io+2; ]
+[20]        FWARSPAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;⎕io+2;;   ;;;])[⎕io+2; ]
+[21]        GWARSPAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]         SERACCPENSPA[;     ;;⎕io;;;])[⎕io+2; ]
+[22]       FGWARSPAL                           ←(+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]                  SERACCPENSPA[;⎕io+2;;⎕io;;;])[⎕io+2; ]
+[23]  :endif
+[24]  ⍝
+[25]  Dec∆pp←'DL' ⋄ ExitProbs∆pp←PROBS[;1]×(ENX_1,LNX+1)/0 1
+[26]  RetAge∆pp←Start∆pp←Age∆pp←,XMP ⋄ End∆pp←GP∆pp←Con∆pp←FCon∆pp←⍬
+[27]  
+[28]  Upin∆pp←0 ⍝ Not "underpinned"
+[29]  :if PreSPASplit ⋄ SL∆pp←                   WARPRESPAL-GWARPRESPAL ⋄ FSL∆pp←                   FWARPRESPAL-FGWARPRESPAL
+[30]  :else           ⋄ SL∆pp←,(SPA>Age∆pp)×(MID WARNRAL   -GWARNRAL),0 ⋄ FSL∆pp←,(SPA>Age∆pp)×(MID FWARNRAL-   FGWARNRAL),0
+[31]  :endif
+[32]  
+[33]  PP∆CreateInterface
+[34]  
+[35]  Upin∆pp←1 ⍝ "underpinned"
+[36]  :if PreSPASplit ⋄ SL∆pp←                              GWARPRESPAL ⋄ FSL∆pp←                               FGWARPRESPAL
+[37]  :else           ⋄ SL∆pp←,(SPA>Age∆pp)×(MID            GWARNRAL),0 ⋄ FSL∆pp←,(SPA>Age∆pp)×(MID             FGWARNRAL),0
+[38]  :endif
+[39]  
+[40]  PP∆CreateInterface
+[41]  
+[42]  Upin∆pp←0 ⍝ Not "underpinned"
+[43]  SL∆pp←,(SPA<Age∆pp)×(MID WARSPAL-GWARSPAL),0 ⋄ FSL∆pp←,(SPA<Age∆pp)×(MID FWARSPAL-FGWARSPAL),0
+[44]  PP∆CreateInterface
+[45]  
+[46]  Upin∆pp←1 ⍝ "underpinned"
+[47]  SL∆pp←,(SPA<Age∆pp)×(MID         GWARSPAL),0 ⋄ FSL∆pp←,(SPA<Age∆pp)×(MID          FGWARSPAL),0
+[48]  PP∆CreateInterface
+    ∇

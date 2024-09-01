@@ -1,1 +1,69 @@
-    ∇ res←Run_BasisUpdate;saveVersion;tpL;LogFile;errlog;∆;ss;cn;MembGroup;File;Desc;SavedModule;packold;warnings;relRules;packnew;z;AuditLog;AuditCN;cns;comments[1]   ⍝ PARMWIN.sf#39[2]   ⍝ Execute the Basis Update[3]   [4]   ('Task:' 'Progress:') Win∆ProgressBar 'SetLabels'[5]   ('Running Basis Update') Win∆ProgressBar 'Open'[6]   [7]   0 0⍴(SystemDir,'PARMWIN') ReadFile 'Scenarios'[8]   0 0⍴(SystemDir,'OVERWIN') ReadFile 'Run_Scenarios'[9]   [10]  0 0⍴⍙VALUESdict ReadDictFile 'Scenarios' ⍝ System Defaults[11]  0 0⍴ClientFile ReadFile (parent,'lvSavedScens') ⎕wi 'value' ⍝ Read Scenarios Parameters[12]  saveVersion←+/(10*-0 2 4)×MatrixZWB SStoMAT '.',version[13]  [14]  :if zwb updateScheme ⋄ Update_Scheme ⋄ :endif[15]  [16]  ⍝ Create the Financials Dictionary and, if required, a new set of Financials[17]  :if CreateFinancials ⋄ res←'' ⋄  →end ⋄ :endif[18]  [19]  ⍝ Create any Globals required by non-pointer settings[20]  CreateGlobals[21]  [22]  →(0=tpL←34 NCREATE LogFile←InputDir,'UPDATE.$LOG')/⎕lc ⍝ Keep trying until success[23]  [24]  ((MATRIX 'Basis Update Error Report')⍪'=') APPEND tpL ⋄ errlog←0[25]  [26]  (3 3 'Updating Basis Parameters') Win∆ProgressBar 'FileUpdate'[27]  :if ~mt SavedParms[28]      ScenRel←zwb ScenRel ⋄ ScenAbs←0[29]      :for ∆ :in spin (m2n MATRIX SavedParms) (cns←(parent,'lvSavedParms') ⎕wi 'value') ⋄ (ss cn)←∆[30]          (MembGroup File Desc)←3↑m2n SStoMAT ss[31]          cn←1000000∣cn ⋄ SavedModule←MembGroup,'_Basis'[32]          ((cns⍳cn) (⍴cns) (MembGroup,' - ',File,' ',Desc)) Win∆ProgressBar 'MemberUpdate'[33]  [34]          packold←cn file_get_cns File←InputDir,File,'.sf'[35]          packold←packold pevalz '⍙pkg FixPackage "',MembGroup,'"'[36]  [37]          :if ~mt TargetFile ⋄ File←InputDir,TargetFile ⋄ :endif[38]  [39]      ⍝⍝⍝ FIXME: Do I need to do anything with comments?[40]          :if ×rowsIn ↑(warnings relRules packnew comments)←packold pevalz '⍙pkg UpdateBasisParms "',MembGroup,'" 0'[41]              errlog←1 ⋄ warnings←⊃ warnings at 'message'[42]              ('Basis File:        ',File) APPEND tpL[43]              ('Basis Description: ',Desc) APPEND tpL[44]              z←(warnings TLU 'Warning:')-~⎕io[45]              (' '⍪warnings[((⍳↑⍴warnings)~z),z;]⍪' ') APPEND tpL[46]          :endif[47]  [48]          cn←File SaveToFile SavedModule Desc packnew[49]  [50]          saveVersion←↑File ReadFile SavedModule Desc 'VERSION'[51]          ⍝ Audit the changes[52]          :if 1<↑⍴AuditLog←packold Win∆AuditLog packnew[53]              AuditCN←File AddToFile ('⊂',(⍕cn),'⊃') Desc[54]              0 0⍴File SaveToFile AuditCN Desc (pack 'AuditLog') 0[55]          :endif[56]      :endfor[57]  :endif[58]  Win∆ProgressBar 'Close'[59]  [60]  :if errlog ⋄ BROWSE 'ß',LogFile[61]  :else      ⋄ LogFile NERASE tpL[62]  :endif[63]  ⎕nuntie tpL[64]  [65]  res←'Quit' ⋄ :return[66]  [67]  end:Win∆ProgressBar 'Close'    ∇
+    ∇ res←Run_BasisUpdate;saveVersion;tpL;LogFile;errlog;∆;ss;cn;MembGroup;File;Desc;SavedModule;packold;warnings;relRules;packnew;z;AuditLog;AuditCN;cns;comments
+[1]   ⍝ PARMWIN.sf#39
+[2]   ⍝ Execute the Basis Update
+[3]   
+[4]   ('Task:' 'Progress:') Win∆ProgressBar 'SetLabels'
+[5]   ('Running Basis Update') Win∆ProgressBar 'Open'
+[6]   
+[7]   0 0⍴(SystemDir,'PARMWIN') ReadFile 'Scenarios'
+[8]   0 0⍴(SystemDir,'OVERWIN') ReadFile 'Run_Scenarios'
+[9]   
+[10]  0 0⍴⍙VALUESdict ReadDictFile 'Scenarios' ⍝ System Defaults
+[11]  0 0⍴ClientFile ReadFile (parent,'lvSavedScens') ⎕wi 'value' ⍝ Read Scenarios Parameters
+[12]  saveVersion←+/(10*-0 2 4)×MatrixZWB SStoMAT '.',version
+[13]  
+[14]  :if zwb updateScheme ⋄ Update_Scheme ⋄ :endif
+[15]  
+[16]  ⍝ Create the Financials Dictionary and, if required, a new set of Financials
+[17]  :if CreateFinancials ⋄ res←'' ⋄  →end ⋄ :endif
+[18]  
+[19]  ⍝ Create any Globals required by non-pointer settings
+[20]  CreateGlobals
+[21]  
+[22]  →(0=tpL←34 NCREATE LogFile←InputDir,'UPDATE.$LOG')/⎕lc ⍝ Keep trying until success
+[23]  
+[24]  ((MATRIX 'Basis Update Error Report')⍪'=') APPEND tpL ⋄ errlog←0
+[25]  
+[26]  (3 3 'Updating Basis Parameters') Win∆ProgressBar 'FileUpdate'
+[27]  :if ~mt SavedParms
+[28]      ScenRel←zwb ScenRel ⋄ ScenAbs←0
+[29]      :for ∆ :in spin (m2n MATRIX SavedParms) (cns←(parent,'lvSavedParms') ⎕wi 'value') ⋄ (ss cn)←∆
+[30]          (MembGroup File Desc)←3↑m2n SStoMAT ss
+[31]          cn←1000000∣cn ⋄ SavedModule←MembGroup,'_Basis'
+[32]          ((cns⍳cn) (⍴cns) (MembGroup,' - ',File,' ',Desc)) Win∆ProgressBar 'MemberUpdate'
+[33]  
+[34]          packold←cn file_get_cns File←InputDir,File,'.sf'
+[35]          packold←packold pevalz '⍙pkg FixPackage "',MembGroup,'"'
+[36]  
+[37]          :if ~mt TargetFile ⋄ File←InputDir,TargetFile ⋄ :endif
+[38]  
+[39]      ⍝⍝⍝ FIXME: Do I need to do anything with comments?
+[40]          :if ×rowsIn ↑(warnings relRules packnew comments)←packold pevalz '⍙pkg UpdateBasisParms "',MembGroup,'" 0'
+[41]              errlog←1 ⋄ warnings←⊃ warnings at 'message'
+[42]              ('Basis File:        ',File) APPEND tpL
+[43]              ('Basis Description: ',Desc) APPEND tpL
+[44]              z←(warnings TLU 'Warning:')-~⎕io
+[45]              (' '⍪warnings[((⍳↑⍴warnings)~z),z;]⍪' ') APPEND tpL
+[46]          :endif
+[47]  
+[48]          cn←File SaveToFile SavedModule Desc packnew
+[49]  
+[50]          saveVersion←↑File ReadFile SavedModule Desc 'VERSION'
+[51]          ⍝ Audit the changes
+[52]          :if 1<↑⍴AuditLog←packold Win∆AuditLog packnew
+[53]              AuditCN←File AddToFile ('⊂',(⍕cn),'⊃') Desc
+[54]              0 0⍴File SaveToFile AuditCN Desc (pack 'AuditLog') 0
+[55]          :endif
+[56]      :endfor
+[57]  :endif
+[58]  Win∆ProgressBar 'Close'
+[59]  
+[60]  :if errlog ⋄ BROWSE 'ß',LogFile
+[61]  :else      ⋄ LogFile NERASE tpL
+[62]  :endif
+[63]  ⎕nuntie tpL
+[64]  
+[65]  res←'Quit' ⋄ :return
+[66]  
+[67]  end:Win∆ProgressBar 'Close'
+    ∇

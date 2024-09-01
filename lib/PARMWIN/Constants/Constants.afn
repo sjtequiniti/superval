@@ -1,1 +1,52 @@
-    ∇ res←field Constants parm;parent;SSName;MaxRow;text;z[1]   ⍝ PARMWIN.sf#23[2]   ⍝ Function to allow user control on Scheme Constants[3]   [4]   parent←'fmConstants.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   :case 'Pre-Audit' ⍝ Adjustments to screen variables (particularly S21 Migration)[8]   [9]       :if ∆adddate←mt DateName ExactTLU ⊃'scDATE' 'sc_scDATE'[10]      :andif ∆adddate←mt ClientFile ReadFile 'Constants' '' 'NAMES' ⍝ Not yet saved[11]          (DateName DateValue DateComment)←MATRIX¨'sc_scDATE' '06/04/1978' 'Scheme Contracted Out Date'[12]      :endif[13]  [14]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[15]  [16]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[17]      Display∆Access basAccess[1 2][18]      parent ⎕wi 'modified' ∆adddate[19]  [20]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[21]  [22]      :repeat[23]          :select ↑field[24]          :caselist 'ssNumConst' 'ssDateConst'[25]              :if uk=1 ⍝ Put "sc_" at the start if not already!![26]              :andif Win∆F1SSFilled SSName←parent,↑field[27]                  MaxRow←SSName ⎕wi 'xMaxRow'[28]                  text←((⊂' _') REPL¨SSName Win∆F1SSGetTextArray 1 1 MaxRow 1)[;1][29]                  z←(~(⊂'sc_')≡¨3↑¨text)^∨/¨' '≠¨text[30]                  text←DLTB¨(z\z/⊂'sc_'),¨text[31]                  SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,1) text[32]              :endif[33]          :endselect[34]          (↑field) Win∆FormValidation 'Change'[35]      :until mt field←1↓field[36]  [37]  :case 'Valid' ⍝ Routine specific validation[38]  [39]      :if ~mt res←((Win∆GetControlList parent) at 'variable') Win∆FormValidation 'Valid' ⋄ :return ⋄ :endif[40]      :if ~mt res←Constants_Valid ⋄ :return ⋄ :endif[41]  [42]  :case 'Run'[43]  [44]      AbsDict←AbsDict UpdateAbsDict 'Constants'[45]      res←'Quit'[46]  [47]  :case 'Quit' ⍝ Deleting "other" variables[48]      0 0⍴⎕ex '∆adddate'[49]  [50]  :endselect    ∇
+    ∇ res←field Constants parm;parent;SSName;MaxRow;text;z
+[1]   ⍝ PARMWIN.sf#23
+[2]   ⍝ Function to allow user control on Scheme Constants
+[3]   
+[4]   parent←'fmConstants.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Pre-Audit' ⍝ Adjustments to screen variables (particularly S21 Migration)
+[8]   
+[9]       :if ∆adddate←mt DateName ExactTLU ⊃'scDATE' 'sc_scDATE'
+[10]      :andif ∆adddate←mt ClientFile ReadFile 'Constants' '' 'NAMES' ⍝ Not yet saved
+[11]          (DateName DateValue DateComment)←MATRIX¨'sc_scDATE' '06/04/1978' 'Scheme Contracted Out Date'
+[12]      :endif
+[13]  
+[14]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[15]  
+[16]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[17]      Display∆Access basAccess[1 2]
+[18]      parent ⎕wi 'modified' ∆adddate
+[19]  
+[20]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[21]  
+[22]      :repeat
+[23]          :select ↑field
+[24]          :caselist 'ssNumConst' 'ssDateConst'
+[25]              :if uk=1 ⍝ Put "sc_" at the start if not already!!
+[26]              :andif Win∆F1SSFilled SSName←parent,↑field
+[27]                  MaxRow←SSName ⎕wi 'xMaxRow'
+[28]                  text←((⊂' _') REPL¨SSName Win∆F1SSGetTextArray 1 1 MaxRow 1)[;1]
+[29]                  z←(~(⊂'sc_')≡¨3↑¨text)^∨/¨' '≠¨text
+[30]                  text←DLTB¨(z\z/⊂'sc_'),¨text
+[31]                  SSName ⎕wi 'TextRC[]' (⎕mix (⍳MaxRow)∘.,1) text
+[32]              :endif
+[33]          :endselect
+[34]          (↑field) Win∆FormValidation 'Change'
+[35]      :until mt field←1↓field
+[36]  
+[37]  :case 'Valid' ⍝ Routine specific validation
+[38]  
+[39]      :if ~mt res←((Win∆GetControlList parent) at 'variable') Win∆FormValidation 'Valid' ⋄ :return ⋄ :endif
+[40]      :if ~mt res←Constants_Valid ⋄ :return ⋄ :endif
+[41]  
+[42]  :case 'Run'
+[43]  
+[44]      AbsDict←AbsDict UpdateAbsDict 'Constants'
+[45]      res←'Quit'
+[46]  
+[47]  :case 'Quit' ⍝ Deleting "other" variables
+[48]      0 0⍴⎕ex '∆adddate'
+[49]  
+[50]  :endselect
+    ∇

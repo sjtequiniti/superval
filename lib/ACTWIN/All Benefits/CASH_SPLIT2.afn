@@ -1,1 +1,212 @@
-    ∇ L CASH∆SPLIT2 R;CASHFAC1∆l;CASHFAC2∆l;CASHFAC3∆l;CASHFAC4∆l;CASHP∆L;PEN1S;PEN1M;PEN1L;PEN14;PEN2S;PEN2M;PEN2L;PEN24;PEN3S;PEN3M;PEN3L;PEN34;PENS;PENM;PENL;PEN4;CALCCASH;CALCP;IRCASH∆l;CASHT;PENT;cfs[1]   ⍝ ACTWIN.sf#4[2]   ⍝[3]   :if R≡'ILL'[4]       CALCP←ILLCALCPEN[5]       IRCASH∆l←IRILLC[6]       CASHP∆L←Icashp[7]       CASHFAC1∆l←ILLCASHFAC1[8]       CASHFAC2∆l←ILLCASHFAC2[9]       CASHFAC3∆l←ILLCASHFAC3[10]      CASHFAC4∆l←ILLCASHFAC4[11]  :else[12]      CALCP←CALCPEN[13]      IRCASH∆l←IRCASH[14]      CASHP∆L←cashp[15]      :if L=1 ⍝ Called from COMMUTE[16]          CASHFAC1∆l←CASHFAC1[17]          CASHFAC2∆l←CASHFAC2[18]          CASHFAC3∆l←CASHFAC3[19]          CASHFAC4∆l←CASHFAC4[20]      :else ⍝ Called from CASH∆PUP∆ACT[21]          :if IsAccrued[22]              CASHFAC1∆l←COMTAB1∆G  [X] ⋄ CASHFAC2∆l←COMTAB2∆G  [X][23]              CASHFAC3∆l←COMTAB3∆G  [X] ⋄ CASHFAC4∆l←COMTAB4∆G  [X][24]          :else[25]              CASHFAC1∆l←COMTAB1∆GMP[X] ⋄ CASHFAC2∆l←COMTAB2∆GMP[X][26]              CASHFAC3∆l←COMTAB3∆GMP[X] ⋄ CASHFAC4∆l←COMTAB4∆GMP[X][27]          :endif[28]      :endif[29]  :endif[30]  cfs←CASHFAC1∆l⍪CASHFAC2∆l⍪CASHFAC3∆l⍪MATRIX CASHFAC4∆l[31]  [32]  :select CASHP∆L  ⍝ User defined priority: B(efore split), A(fter split + future), P(R)iority, P(ro-Rata)[33]  :case 'B'[34]      PENT←COMT[⎕io;⎕io;]⍪COMT[⎕io+1;⎕io;]⍪COMT[⎕io+2;⎕io;]⍪COMT[⎕io+3;⎕io;]⍪(COMT[⎕io;⎕io+1;]+COMT[⎕io;⎕io+2;])⍪(COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;])⍪(COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;])⍪MATRIX (COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;])[35]      PENT←(+⌿CALCP)⌊[⎕io+1]+\[⎕io]PENT ⍝ Compare with cumulative totals[36]      PENT←PENT-(⍴PENT)↑((¯1↑⍴PENT)⍴0)⍪PENT   ⍝ Differences to get back to split[37]      CASHT←PENT×(cfs OVER cfs)×1⌈COMADayPER∆L  ⍝ Apply Cash Factors[38]  ⍝⍝⍝    :if test[39]  ⍝⌿⍝        PEN1S←PENT[⎕io  ;][40]  ⍝⌿⍝        PEN1M←PENT[⎕io+1;][41]  ⍝⌿⍝        PEN1L←PENT[⎕io+2;][42]  ⍝⌿⍝        PEN14←PENT[⎕io+3;][43]  ⍝⌿⍝        PEN2S←PENT[⎕io+4;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][44]  ⍝⌿⍝        PEN3S←PENT[⎕io+4;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][45]  ⍝⌿⍝        PEN2M←PENT[⎕io+5;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][46]  ⍝⌿⍝        PEN3M←PENT[⎕io+5;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][47]  ⍝⌿⍝        PEN2L←PENT[⎕io+6;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][48]  ⍝⌿⍝        PEN3L←PENT[⎕io+6;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][49]  ⍝⌿⍝        PEN24←PENT[⎕io+7;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][50]  ⍝⌿⍝        PEN34←PENT[⎕io+7;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][51]  ⍝⍝⍝    :endif[52]      :if L=1[53]          CASHT←IRCASH∆l⌊[⎕io+1]+\[⎕io]CASHT  ⍝ Compare IRCASH∆l with cumulative totals[54]          CASHT←CASHT-(⍴CASHT)↑((¯1↑⍴CASHT)⍴0)⍪CASHT  ⍝ Differences to get back to split[55]      :endif[56]      CASHT←CASHT×1⌊COMADayPER∆L[57]      CASH1S←CASHT[⎕io  ;][58]      CASH1M←CASHT[⎕io+1;][59]      CASH1L←CASHT[⎕io+2;][60]      CASH14←CASHT[⎕io+3;][61]      CASH2S←CASHT[⎕io+4;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][62]      CASH3S←CASHT[⎕io+4;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][63]      CASH2M←CASHT[⎕io+5;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][64]      CASH3M←CASHT[⎕io+5;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][65]      CASH2L←CASHT[⎕io+6;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][66]      CASH3L←CASHT[⎕io+6;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][67]      CASH24←CASHT[⎕io+7;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][68]      CASH34←CASHT[⎕io+7;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][69]  :case 'A'[70]      PENT←(COMT[⎕io;⎕io+1;]+COMT[⎕io;⎕io+2;])⍪(COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;])⍪(COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;])⍪(COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;])⍪COMT[⎕io;⎕io;]⍪COMT[⎕io+1;⎕io;]⍪COMT[⎕io+2;⎕io;]⍪MATRIX COMT[⎕io+3;⎕io;][71]      PENT←(+⌿CALCP)⌊[⎕io+1]+\[⎕io]PENT ⍝ Compare with cumulative totals[72]      PENT←PENT-(⍴PENT)↑((¯1↑⍴PENT)⍴0)⍪PENT   ⍝ Differences to get back to split[73]      CASHT←PENT×(cfs OVER cfs)×1⌈COMADayPER∆L  ⍝ Apply Cash Factors[74]  ⍝⍝⍝    :if test[75]  ⍝⌿⍝        PEN1S←PENT[⎕io+4;][76]  ⍝⌿⍝        PEN1M←PENT[⎕io+5;][77]  ⍝⌿⍝        PEN1L←PENT[⎕io+6;][78]  ⍝⌿⍝        PEN14←PENT[⎕io+7;][79]  ⍝⌿⍝        PEN2S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][80]  ⍝⌿⍝        PEN3S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][81]  ⍝⌿⍝        PEN2M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][82]  ⍝⌿⍝        PEN3M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][83]  ⍝⌿⍝        PEN2L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][84]  ⍝⌿⍝        PEN3L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][85]  ⍝⌿⍝        PEN24←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][86]  ⍝⌿⍝        PEN34←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][87]  ⍝⍝⍝     :endif[88]      :if L=1[89]          CASHT←IRCASH∆l⌊[⎕io+1]+\[⎕io]CASHT  ⍝ Compare IRCASH∆l with cumulative totals[90]          CASHT←CASHT-(⍴CASHT)↑((¯1↑⍴CASHT)⍴0)⍪CASHT  ⍝ Differences to get back to split[91]      :endif[92]      CASHT←CASHT×1⌊COMADayPER∆L[93]      CASH1S←CASHT[⎕io+4;][94]      CASH1M←CASHT[⎕io+5;][95]      CASH1L←CASHT[⎕io+6;][96]      CASH14←CASHT[⎕io+7;][97]      CASH2S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][98]      CASH3S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][99]      CASH2M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][100]     CASH3M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][101]     CASH2L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][102]     CASH3L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][103]     CASH24←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][104]     CASH34←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][105] :case 'R'[106]     PENT←(COMT[⎕io;⎕io;]+COMT[⎕io;⎕io+1;]+COMT[⎕io;⎕io+2;])⍪(COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;])⍪(COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;])⍪MATRIX COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][107]     PENT←(+⌿CALCP)⌊[⎕io+1]+\[⎕io]PENT ⍝ Compare with cumulative totals[108]     PENT←PENT-(⍴PENT)↑((¯1↑⍴PENT)⍴0)⍪PENT   ⍝ Differences to get back to split[109]     CASHT←PENT×cfs×1⌈COMADayPER∆L  ⍝ Apply Cash Factors[110] ⍝⍝⍝    :if test[111] ⍝⌿⍝        PEN1S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io  ;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][112] ⍝⌿⍝        PEN2S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][113] ⍝⌿⍝        PEN3S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][114] ⍝⌿⍝        PEN1M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io  ;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][115] ⍝⌿⍝        PEN2M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][116] ⍝⌿⍝        PEN3M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][117] ⍝⌿⍝        PEN1L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io  ;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][118] ⍝⌿⍝        PEN2L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][119] ⍝⌿⍝        PEN3L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][120] ⍝⌿⍝        PEN14←PENT[⎕io+3;]×COMT[⎕io+3;⎕io  ;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][121] ⍝⌿⍝        PEN24←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][122] ⍝⌿⍝        PEN34←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][123] ⍝⍝⍝    :endif[124]     :if L=1[125]         CASHT←IRCASH∆l⌊[⎕io+1]+\[⎕io]CASHT  ⍝ Compare IRCASH∆l with cumulative totals[126]         CASHT←CASHT-(⍴CASHT)↑((¯1↑⍴CASHT)⍴0)⍪CASHT  ⍝ Differences to get back to split[127]     :endif[128]     CASHT←CASHT×1⌊COMADayPER∆L[129]     CASH1S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io  ;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][130]     CASH2S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][131]     CASH3S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][132]     CASH1M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io  ;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][133]     CASH2M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][134]     CASH3M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][135]     CASH1L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io  ;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][136]     CASH2L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][137]     CASH3L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][138]     CASH14←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io  ;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][139]     CASH24←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][140]     CASH34←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][141] :case 'D' ⍝ Separate A-Day Cash Factors[142]     PENT←+/[⎕io+1]COMT[143]     PENT←((CALCP⌊PENT) CDIV PENT)×PENT[144]     CASHT←PENT×cfs×1⌈COMADayPER∆L  ⍝ Apply Cash Factors[145] ⍝⍝⍝    :if test[146] ⍝⌿⍝        (PEN1S PEN2S PEN3S)←(⊂PENT[⎕io  ;])×(⎕split COMT[⎕io  ;⍳3;]) CDIV ⊂+⌿COMT[⎕io  ;⍳3;][147] ⍝⌿⍝        (PEN1M PEN2M PEN3M)←(⊂PENT[⎕io+1;])×(⎕split COMT[⎕io+1;⍳3;]) CDIV ⊂+⌿COMT[⎕io+1;⍳3;][148] ⍝⌿⍝        (PEN1L PEN2L PEN3L)←(⊂PENT[⎕io+2;])×(⎕split COMT[⎕io+2;⍳3;]) CDIV ⊂+⌿COMT[⎕io+2;⍳3;][149] ⍝⌿⍝        (PEN14 PEN24 PEN34)←(⊂PENT[⎕io+3;])×(⎕split COMT[⎕io+3;⍳3;]) CDIV ⊂+⌿COMT[⎕io+3;⍳3;][150] ⍝⍝⍝    :endif[151]     :if L=1 ⍝ IR limit not checked for Leavers[152]         CASHT←((IRCASH∆l⌊+/[⎕io]CASHT) CDIV +/[⎕io]CASHT)×[⎕io+1]CASHT ⍝ Compare IRCASH∆l with totals[153]     :endif[154]     CASHT←CASHT×1⌊COMADayPER∆L[155]     (CASH1S CASH2S CASH3S)←(⊂CASHT[⎕io  ;])×(⎕split COMT[⎕io  ;⍳3;]) CDIV ⊂+⌿COMT[⎕io  ;⍳3;][156]     (CASH1M CASH2M CASH3M)←(⊂CASHT[⎕io+1;])×(⎕split COMT[⎕io+1;⍳3;]) CDIV ⊂+⌿COMT[⎕io+1;⍳3;][157]     (CASH1L CASH2L CASH3L)←(⊂CASHT[⎕io+2;])×(⎕split COMT[⎕io+2;⍳3;]) CDIV ⊂+⌿COMT[⎕io+2;⍳3;][158]     (CASH14 CASH24 CASH34)←(⊂CASHT[⎕io+3;])×(⎕split COMT[⎕io+3;⍳3;]) CDIV ⊂+⌿COMT[⎕io+3;⍳3;][159] :else[160]     PENT←+/[⎕io+1]COMT[161]     PENT←(((+⌿CALCP)⌊+/[⎕io]PENT) CDIV +/[⎕io]PENT)×[⎕io+1]PENT[162]     CASHT←PENT×cfs×1⌈COMADayPER∆L ⍝ Apply Cash Factors[163] ⍝⍝⍝    :if test[164] ⍝⌿⍝        PEN1S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io  ;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][165] ⍝⌿⍝        PEN2S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][166] ⍝⌿⍝        PEN3S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][167] ⍝⌿⍝        PEN1M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io  ;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][168] ⍝⌿⍝        PEN2M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][169] ⍝⌿⍝        PEN3M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][170] ⍝⌿⍝        PEN1L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io  ;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][171] ⍝⌿⍝        PEN2L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][172] ⍝⌿⍝        PEN3L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][173] ⍝⌿⍝        PEN14←PENT[⎕io+3;]×COMT[⎕io+3;⎕io  ;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][174] ⍝⌿⍝        PEN24←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][175] ⍝⌿⍝        PEN34←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][176] ⍝⍝⍝    :endif[177]     :if L=1 ⍝ IR limit not checked for Leavers[178]         CASHT←((IRCASH∆l⌊+/[⎕io]CASHT) CDIV +/[⎕io]CASHT)×[⎕io+1]CASHT ⍝ Compare IRCASH∆l with totals[179]     :endif[180]     CASHT←CASHT×1⌊COMADayPER∆L[181]     CASH1S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io  ;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][182]     CASH2S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][183]     CASH3S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;][184]     CASH1M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io  ;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][185]     CASH2M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][186]     CASH3M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;][187]     CASH1L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io  ;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][188]     CASH2L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][189]     CASH3L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;][190]     CASH14←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io  ;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][191]     CASH24←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][192]     CASH34←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;][193] :endselect[194] [195] ⍝⍝⍝ :if test[196] ⍝⌿⍝    PENS←PEN1S+PEN2S+PEN3S[197] ⍝⌿⍝    PENM←PEN1M+PEN2M+PEN3M[198] ⍝⌿⍝    PENL←PEN1L+PEN2L+PEN3L[199] ⍝⌿⍝    PEN4←PEN14+PEN24+PEN34[200] ⍝⌿⍝    CALCCASH←(PENS×CASHFAC1∆l)+(PENM×CASHFAC2∆l)+(PENL×CASHFAC3∆l)+PEN4×CASHFAC4∆l[201] ⍝⌿⍝    :if R≡'ILL'[202] ⍝⌿⍝        :if ICTYPE∆L=9 ⋄ AUDIT '1459' ⋄ :endif[203] ⍝⌿⍝        AUDIT '1460','abcdefgh'[ICTYPE∆L-2] ⍝ Ill-Health[204] ⍝⌿⍝    :elseif L=2 ⍝ Called from CASH∆PUP∆ACT[205] ⍝⌿⍝        AUDIT '2510',¯1↑'b',(NRA<SPA)/'a' ⋄ AUDIT '2520','Xaabcefgh'[CTYPE∆L-~⎕IO][206] ⍝⌿⍝    :else[207] ⍝⌿⍝        :if CTYPE∆L=9 ⋄ AUDIT '1409' ⋄ :endif[208] ⍝⌿⍝        AUDIT '1410','abcdefgh'[CTYPE∆L-2] ⍝ Retirement[209] ⍝⌿⍝    :endif[210] ⍝⍝⍝ :endif    ∇
+    ∇ L CASH∆SPLIT2 R;CASHFAC1∆l;CASHFAC2∆l;CASHFAC3∆l;CASHFAC4∆l;CASHP∆L;PEN1S;PEN1M;PEN1L;PEN14;PEN2S;PEN2M;PEN2L;PEN24;PEN3S;PEN3M;PEN3L;PEN34;PENS;PENM;PENL;PEN4;CALCCASH;CALCP;IRCASH∆l;CASHT;PENT;cfs
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝
+[3]   :if R≡'ILL'
+[4]       CALCP←ILLCALCPEN
+[5]       IRCASH∆l←IRILLC
+[6]       CASHP∆L←Icashp
+[7]       CASHFAC1∆l←ILLCASHFAC1
+[8]       CASHFAC2∆l←ILLCASHFAC2
+[9]       CASHFAC3∆l←ILLCASHFAC3
+[10]      CASHFAC4∆l←ILLCASHFAC4
+[11]  :else
+[12]      CALCP←CALCPEN
+[13]      IRCASH∆l←IRCASH
+[14]      CASHP∆L←cashp
+[15]      :if L=1 ⍝ Called from COMMUTE
+[16]          CASHFAC1∆l←CASHFAC1
+[17]          CASHFAC2∆l←CASHFAC2
+[18]          CASHFAC3∆l←CASHFAC3
+[19]          CASHFAC4∆l←CASHFAC4
+[20]      :else ⍝ Called from CASH∆PUP∆ACT
+[21]          :if IsAccrued
+[22]              CASHFAC1∆l←COMTAB1∆G  [X] ⋄ CASHFAC2∆l←COMTAB2∆G  [X]
+[23]              CASHFAC3∆l←COMTAB3∆G  [X] ⋄ CASHFAC4∆l←COMTAB4∆G  [X]
+[24]          :else
+[25]              CASHFAC1∆l←COMTAB1∆GMP[X] ⋄ CASHFAC2∆l←COMTAB2∆GMP[X]
+[26]              CASHFAC3∆l←COMTAB3∆GMP[X] ⋄ CASHFAC4∆l←COMTAB4∆GMP[X]
+[27]          :endif
+[28]      :endif
+[29]  :endif
+[30]  cfs←CASHFAC1∆l⍪CASHFAC2∆l⍪CASHFAC3∆l⍪MATRIX CASHFAC4∆l
+[31]  
+[32]  :select CASHP∆L  ⍝ User defined priority: B(efore split), A(fter split + future), P(R)iority, P(ro-Rata)
+[33]  :case 'B'
+[34]      PENT←COMT[⎕io;⎕io;]⍪COMT[⎕io+1;⎕io;]⍪COMT[⎕io+2;⎕io;]⍪COMT[⎕io+3;⎕io;]⍪(COMT[⎕io;⎕io+1;]+COMT[⎕io;⎕io+2;])⍪(COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;])⍪(COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;])⍪MATRIX (COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;])
+[35]      PENT←(+⌿CALCP)⌊[⎕io+1]+\[⎕io]PENT ⍝ Compare with cumulative totals
+[36]      PENT←PENT-(⍴PENT)↑((¯1↑⍴PENT)⍴0)⍪PENT   ⍝ Differences to get back to split
+[37]      CASHT←PENT×(cfs OVER cfs)×1⌈COMADayPER∆L  ⍝ Apply Cash Factors
+[38]  ⍝⍝⍝    :if test
+[39]  ⍝⌿⍝        PEN1S←PENT[⎕io  ;]
+[40]  ⍝⌿⍝        PEN1M←PENT[⎕io+1;]
+[41]  ⍝⌿⍝        PEN1L←PENT[⎕io+2;]
+[42]  ⍝⌿⍝        PEN14←PENT[⎕io+3;]
+[43]  ⍝⌿⍝        PEN2S←PENT[⎕io+4;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[44]  ⍝⌿⍝        PEN3S←PENT[⎕io+4;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[45]  ⍝⌿⍝        PEN2M←PENT[⎕io+5;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[46]  ⍝⌿⍝        PEN3M←PENT[⎕io+5;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[47]  ⍝⌿⍝        PEN2L←PENT[⎕io+6;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[48]  ⍝⌿⍝        PEN3L←PENT[⎕io+6;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[49]  ⍝⌿⍝        PEN24←PENT[⎕io+7;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[50]  ⍝⌿⍝        PEN34←PENT[⎕io+7;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[51]  ⍝⍝⍝    :endif
+[52]      :if L=1
+[53]          CASHT←IRCASH∆l⌊[⎕io+1]+\[⎕io]CASHT  ⍝ Compare IRCASH∆l with cumulative totals
+[54]          CASHT←CASHT-(⍴CASHT)↑((¯1↑⍴CASHT)⍴0)⍪CASHT  ⍝ Differences to get back to split
+[55]      :endif
+[56]      CASHT←CASHT×1⌊COMADayPER∆L
+[57]      CASH1S←CASHT[⎕io  ;]
+[58]      CASH1M←CASHT[⎕io+1;]
+[59]      CASH1L←CASHT[⎕io+2;]
+[60]      CASH14←CASHT[⎕io+3;]
+[61]      CASH2S←CASHT[⎕io+4;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[62]      CASH3S←CASHT[⎕io+4;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[63]      CASH2M←CASHT[⎕io+5;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[64]      CASH3M←CASHT[⎕io+5;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[65]      CASH2L←CASHT[⎕io+6;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[66]      CASH3L←CASHT[⎕io+6;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[67]      CASH24←CASHT[⎕io+7;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[68]      CASH34←CASHT[⎕io+7;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[69]  :case 'A'
+[70]      PENT←(COMT[⎕io;⎕io+1;]+COMT[⎕io;⎕io+2;])⍪(COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;])⍪(COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;])⍪(COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;])⍪COMT[⎕io;⎕io;]⍪COMT[⎕io+1;⎕io;]⍪COMT[⎕io+2;⎕io;]⍪MATRIX COMT[⎕io+3;⎕io;]
+[71]      PENT←(+⌿CALCP)⌊[⎕io+1]+\[⎕io]PENT ⍝ Compare with cumulative totals
+[72]      PENT←PENT-(⍴PENT)↑((¯1↑⍴PENT)⍴0)⍪PENT   ⍝ Differences to get back to split
+[73]      CASHT←PENT×(cfs OVER cfs)×1⌈COMADayPER∆L  ⍝ Apply Cash Factors
+[74]  ⍝⍝⍝    :if test
+[75]  ⍝⌿⍝        PEN1S←PENT[⎕io+4;]
+[76]  ⍝⌿⍝        PEN1M←PENT[⎕io+5;]
+[77]  ⍝⌿⍝        PEN1L←PENT[⎕io+6;]
+[78]  ⍝⌿⍝        PEN14←PENT[⎕io+7;]
+[79]  ⍝⌿⍝        PEN2S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[80]  ⍝⌿⍝        PEN3S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[81]  ⍝⌿⍝        PEN2M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[82]  ⍝⌿⍝        PEN3M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[83]  ⍝⌿⍝        PEN2L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[84]  ⍝⌿⍝        PEN3L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[85]  ⍝⌿⍝        PEN24←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[86]  ⍝⌿⍝        PEN34←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[87]  ⍝⍝⍝     :endif
+[88]      :if L=1
+[89]          CASHT←IRCASH∆l⌊[⎕io+1]+\[⎕io]CASHT  ⍝ Compare IRCASH∆l with cumulative totals
+[90]          CASHT←CASHT-(⍴CASHT)↑((¯1↑⍴CASHT)⍴0)⍪CASHT  ⍝ Differences to get back to split
+[91]      :endif
+[92]      CASHT←CASHT×1⌊COMADayPER∆L
+[93]      CASH1S←CASHT[⎕io+4;]
+[94]      CASH1M←CASHT[⎕io+5;]
+[95]      CASH1L←CASHT[⎕io+6;]
+[96]      CASH14←CASHT[⎕io+7;]
+[97]      CASH2S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[98]      CASH3S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[99]      CASH2M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[100]     CASH3M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[101]     CASH2L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[102]     CASH3L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[103]     CASH24←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[104]     CASH34←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[105] :case 'R'
+[106]     PENT←(COMT[⎕io;⎕io;]+COMT[⎕io;⎕io+1;]+COMT[⎕io;⎕io+2;])⍪(COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;])⍪(COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;])⍪MATRIX COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[107]     PENT←(+⌿CALCP)⌊[⎕io+1]+\[⎕io]PENT ⍝ Compare with cumulative totals
+[108]     PENT←PENT-(⍴PENT)↑((¯1↑⍴PENT)⍴0)⍪PENT   ⍝ Differences to get back to split
+[109]     CASHT←PENT×cfs×1⌈COMADayPER∆L  ⍝ Apply Cash Factors
+[110] ⍝⍝⍝    :if test
+[111] ⍝⌿⍝        PEN1S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io  ;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[112] ⍝⌿⍝        PEN2S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[113] ⍝⌿⍝        PEN3S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[114] ⍝⌿⍝        PEN1M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io  ;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[115] ⍝⌿⍝        PEN2M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[116] ⍝⌿⍝        PEN3M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[117] ⍝⌿⍝        PEN1L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io  ;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[118] ⍝⌿⍝        PEN2L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[119] ⍝⌿⍝        PEN3L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[120] ⍝⌿⍝        PEN14←PENT[⎕io+3;]×COMT[⎕io+3;⎕io  ;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[121] ⍝⌿⍝        PEN24←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[122] ⍝⌿⍝        PEN34←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[123] ⍝⍝⍝    :endif
+[124]     :if L=1
+[125]         CASHT←IRCASH∆l⌊[⎕io+1]+\[⎕io]CASHT  ⍝ Compare IRCASH∆l with cumulative totals
+[126]         CASHT←CASHT-(⍴CASHT)↑((¯1↑⍴CASHT)⍴0)⍪CASHT  ⍝ Differences to get back to split
+[127]     :endif
+[128]     CASHT←CASHT×1⌊COMADayPER∆L
+[129]     CASH1S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io  ;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[130]     CASH2S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[131]     CASH3S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[132]     CASH1M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io  ;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[133]     CASH2M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[134]     CASH3M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[135]     CASH1L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io  ;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[136]     CASH2L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[137]     CASH3L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[138]     CASH14←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io  ;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[139]     CASH24←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[140]     CASH34←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[141] :case 'D' ⍝ Separate A-Day Cash Factors
+[142]     PENT←+/[⎕io+1]COMT
+[143]     PENT←((CALCP⌊PENT) CDIV PENT)×PENT
+[144]     CASHT←PENT×cfs×1⌈COMADayPER∆L  ⍝ Apply Cash Factors
+[145] ⍝⍝⍝    :if test
+[146] ⍝⌿⍝        (PEN1S PEN2S PEN3S)←(⊂PENT[⎕io  ;])×(⎕split COMT[⎕io  ;⍳3;]) CDIV ⊂+⌿COMT[⎕io  ;⍳3;]
+[147] ⍝⌿⍝        (PEN1M PEN2M PEN3M)←(⊂PENT[⎕io+1;])×(⎕split COMT[⎕io+1;⍳3;]) CDIV ⊂+⌿COMT[⎕io+1;⍳3;]
+[148] ⍝⌿⍝        (PEN1L PEN2L PEN3L)←(⊂PENT[⎕io+2;])×(⎕split COMT[⎕io+2;⍳3;]) CDIV ⊂+⌿COMT[⎕io+2;⍳3;]
+[149] ⍝⌿⍝        (PEN14 PEN24 PEN34)←(⊂PENT[⎕io+3;])×(⎕split COMT[⎕io+3;⍳3;]) CDIV ⊂+⌿COMT[⎕io+3;⍳3;]
+[150] ⍝⍝⍝    :endif
+[151]     :if L=1 ⍝ IR limit not checked for Leavers
+[152]         CASHT←((IRCASH∆l⌊+/[⎕io]CASHT) CDIV +/[⎕io]CASHT)×[⎕io+1]CASHT ⍝ Compare IRCASH∆l with totals
+[153]     :endif
+[154]     CASHT←CASHT×1⌊COMADayPER∆L
+[155]     (CASH1S CASH2S CASH3S)←(⊂CASHT[⎕io  ;])×(⎕split COMT[⎕io  ;⍳3;]) CDIV ⊂+⌿COMT[⎕io  ;⍳3;]
+[156]     (CASH1M CASH2M CASH3M)←(⊂CASHT[⎕io+1;])×(⎕split COMT[⎕io+1;⍳3;]) CDIV ⊂+⌿COMT[⎕io+1;⍳3;]
+[157]     (CASH1L CASH2L CASH3L)←(⊂CASHT[⎕io+2;])×(⎕split COMT[⎕io+2;⍳3;]) CDIV ⊂+⌿COMT[⎕io+2;⍳3;]
+[158]     (CASH14 CASH24 CASH34)←(⊂CASHT[⎕io+3;])×(⎕split COMT[⎕io+3;⍳3;]) CDIV ⊂+⌿COMT[⎕io+3;⍳3;]
+[159] :else
+[160]     PENT←+/[⎕io+1]COMT
+[161]     PENT←(((+⌿CALCP)⌊+/[⎕io]PENT) CDIV +/[⎕io]PENT)×[⎕io+1]PENT
+[162]     CASHT←PENT×cfs×1⌈COMADayPER∆L ⍝ Apply Cash Factors
+[163] ⍝⍝⍝    :if test
+[164] ⍝⌿⍝        PEN1S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io  ;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[165] ⍝⌿⍝        PEN2S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[166] ⍝⌿⍝        PEN3S←PENT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[167] ⍝⌿⍝        PEN1M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io  ;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[168] ⍝⌿⍝        PEN2M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[169] ⍝⌿⍝        PEN3M←PENT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[170] ⍝⌿⍝        PEN1L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io  ;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[171] ⍝⌿⍝        PEN2L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[172] ⍝⌿⍝        PEN3L←PENT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[173] ⍝⌿⍝        PEN14←PENT[⎕io+3;]×COMT[⎕io+3;⎕io  ;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[174] ⍝⌿⍝        PEN24←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[175] ⍝⌿⍝        PEN34←PENT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[176] ⍝⍝⍝    :endif
+[177]     :if L=1 ⍝ IR limit not checked for Leavers
+[178]         CASHT←((IRCASH∆l⌊+/[⎕io]CASHT) CDIV +/[⎕io]CASHT)×[⎕io+1]CASHT ⍝ Compare IRCASH∆l with totals
+[179]     :endif
+[180]     CASHT←CASHT×1⌊COMADayPER∆L
+[181]     CASH1S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io  ;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[182]     CASH2S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+1;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[183]     CASH3S←CASHT[⎕io  ;]×COMT[⎕io  ;⎕io+2;] CDIV COMT[⎕io  ;⎕io;]+COMT[⎕io  ;⎕io+1;]+COMT[⎕io  ;⎕io+2;]
+[184]     CASH1M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io  ;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[185]     CASH2M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+1;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[186]     CASH3M←CASHT[⎕io+1;]×COMT[⎕io+1;⎕io+2;] CDIV COMT[⎕io+1;⎕io;]+COMT[⎕io+1;⎕io+1;]+COMT[⎕io+1;⎕io+2;]
+[187]     CASH1L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io  ;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[188]     CASH2L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+1;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[189]     CASH3L←CASHT[⎕io+2;]×COMT[⎕io+2;⎕io+2;] CDIV COMT[⎕io+2;⎕io;]+COMT[⎕io+2;⎕io+1;]+COMT[⎕io+2;⎕io+2;]
+[190]     CASH14←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io  ;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[191]     CASH24←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+1;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[192]     CASH34←CASHT[⎕io+3;]×COMT[⎕io+3;⎕io+2;] CDIV COMT[⎕io+3;⎕io;]+COMT[⎕io+3;⎕io+1;]+COMT[⎕io+3;⎕io+2;]
+[193] :endselect
+[194] 
+[195] ⍝⍝⍝ :if test
+[196] ⍝⌿⍝    PENS←PEN1S+PEN2S+PEN3S
+[197] ⍝⌿⍝    PENM←PEN1M+PEN2M+PEN3M
+[198] ⍝⌿⍝    PENL←PEN1L+PEN2L+PEN3L
+[199] ⍝⌿⍝    PEN4←PEN14+PEN24+PEN34
+[200] ⍝⌿⍝    CALCCASH←(PENS×CASHFAC1∆l)+(PENM×CASHFAC2∆l)+(PENL×CASHFAC3∆l)+PEN4×CASHFAC4∆l
+[201] ⍝⌿⍝    :if R≡'ILL'
+[202] ⍝⌿⍝        :if ICTYPE∆L=9 ⋄ AUDIT '1459' ⋄ :endif
+[203] ⍝⌿⍝        AUDIT '1460','abcdefgh'[ICTYPE∆L-2] ⍝ Ill-Health
+[204] ⍝⌿⍝    :elseif L=2 ⍝ Called from CASH∆PUP∆ACT
+[205] ⍝⌿⍝        AUDIT '2510',¯1↑'b',(NRA<SPA)/'a' ⋄ AUDIT '2520','Xaabcefgh'[CTYPE∆L-~⎕IO]
+[206] ⍝⌿⍝    :else
+[207] ⍝⌿⍝        :if CTYPE∆L=9 ⋄ AUDIT '1409' ⋄ :endif
+[208] ⍝⌿⍝        AUDIT '1410','abcdefgh'[CTYPE∆L-2] ⍝ Retirement
+[209] ⍝⌿⍝    :endif
+[210] ⍝⍝⍝ :endif
+    ∇

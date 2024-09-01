@@ -1,0 +1,138 @@
+    ∇ exitind←PRELIM exitind;ID;Age;values;data;z;ARSL;contsSALMP;∆
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Does all the preliminary work for the valuation of a member. Sets up
+[3]   ⍝ vectors of salaries and conts, ages, service, membership, etc
+[4]   ⍝ Takes all the info from the record and stores in the variable name.
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   
+[7]   Xe←⍬⍴100∣DOB YDAYS ValDATE ⋄ X←'YN' DURN DOB,ValDATE
+[8]   :if AgeInterp
+[9]       :if lowerAge ⋄ X0←⌊Xe ⋄ AgeMult←X0+1-Xe ⋄ dbX0←⌊0.5+dbXe←Xe
+[10]      :else        ⋄ X0←⌈Xe ⋄ AgeMult←1-AgeMult
+[11]      :endif
+[12]  :else
+[13]      :if ×uk ⋄ dbXe←dbX0←X0←X
+[14]      :else   ⋄ dbXe←dbX0←X0←⌊0.5+X←16⌈Xe
+[15]      :endif
+[16]  :endif
+[17]  SRD←DOB+0 0,SPA
+[18]  exitind STANDARD∆FIELDS MembGroup
+[19]  NAME←(2×^/0=KnownExit)↓'$>',NAME
+[20]  
+[21]  RET∆DATE ⍝ Various Definitions of NRD
+[22]  
+[23]  →exitind/0
+[24]  
+[25]  VAR∆FIELDS ⍝ Creating the data in the variable fields.
+[26]  SERV∆CALCS ⍝ Various Service Calculations
+[27]  
+[28]  ⍝ OVERTAKE i, f and pvm to allow for sliding-scale vectors
+[29]  vMP   ←( NX_1↑VMP),      ¯1  ↑v←NX↑V ⍝ At t=0.5, 1.5, 2.5,...N-.5, N
+[30]  vMPRet←(ENX_1↑VMP),(ENX_1-NX)↑v      ⍝ At t=0.5, 1.5, 2.5,., ENX,..N-1, N
+[31]  vQ←NX_1↑VQ ⍝ At t=0.25, 1.25, 2.25,...
+[32]  
+[33]  ⍝ Initialise Benefit Output
+[34]  Ind∆Output←PP∆InterfaceHeader 'Ind'
+[35]  
+[36]  ⍝ Prelims specific to Version
+[37]  PRELIM∆ver
+[38]  
+[39]  H←(X0↓lra↑HXX),¯1↑HMP←(X0↓lra↑HMPXX),HXX[X0⌈lra] ⍝ Marriage Rates (only used by Death so mid-year is OK)
+[40]  tPx←X0 SERVTAB∆SELW 1↑PS ⍝ Set up service table
+[41]  ⍝ Set up probabilities of exiting in year t(rows) due to cause x(cols)
+[42]  tPx←tPx÷(∨/0≠KnownExit)⊃(tPx[0;0]) 1 ⋄ PROBS←0 1↓tPx ⋄ tPx←tPx[;0]
+[43]  
+[44]  :if IsDeferred ⍝ Enhanced Deferreds
+[45]      :if ~suppressText ⋄ Ind∆Totals[1;0]←NOM ⋄ :endif
+[46]      CONTS←NX⍴0
+[47]  :else
+[48]      FAS←FASMP←SAL←SALMP←SAL0←salmult×(ZWB REC[fSAL])×(1,NOM)[neIND]
+[49]      PSAL0←PSAL←(~aosind)×salmult×(ZWB REC[fPSAL])×(1,NOM)[neIND]
+[50]      F←term↓(term+NX) OVERTAKE f
+[51]      J←term↓(term+NX_1) OVERTAKE j ⋄ Jmpu←term↓(term+NX_1) OVERTAKE jmpu
+[52]      ⍝ Calculate salary at t=0,1,2...(NRA-X0) & at mid-points as well
+[53]      SALS ⍝ (SAL and SALMP). Also FAS and FASMP.
+[54]  
+[55]      data←AC0,data
+[56]  
+[57]      :if ExactConts←~V1pcflag ⍝ Vpcflag indicates Exact Years Contributions
+[58]          ExactConts←NX↑((NX_1-SNX)/1),1E¯20×(~aosind)×(ValMeth≡'AAN')
+[59]      :elseif X0<NRA
+[60]          ExactConts←NX↑((NX_1-SNX) OVERTAKE (⌽ENX_1 OVERTAKE (1+(100∣DOB YDAYS NRD)-Xe+ENX_1),1),1),1E¯20×(~aosind)×(ValMeth≡'AAN')
+[61]      :elseif Xe<NRA ⋄ :andif NRA=LRA
+[62]          ExactConts←NX↑VDATE YDAYS NRD
+[63]      :elseif X0<LRA
+[64]          ExactConts←NX↑((NX_1-SNX) OVERTAKE                  (1+(100∣DOB YDAYS LRD)-Xe+LNX-SNX ),1),1E¯20×(~aosind)×(ValMeth≡'AAN')
+[65]      :elseif Xe<LRA
+[66]          ExactConts←NX↑VDATE YDAYS LRD
+[67]      :endif
+[68]  
+[69]      contsSALMP←SALMPvec[;contsSAL] ⋄ PHICONTS←0 ⋄ CONTS←contsl MEMB∆CONT contsr ⍝ Member Contributions
+[70]      ⍝ Calculate accumulated conts at t=0,1... & at mid-pts as well
+[71]      ACMP←(MID AC),¯1↑AC←J ROLLUP AC0,¯1↓CONTS⌈DCR×SALMPvec[;contsSAL]
+[72]      ACPMMP←(MID ACPM),¯1↑ACPM←AC0×1,×\J
+[73]      :if aosind ⋄ :orif uk=2
+[74]          contsSALMP←SALMPvec[;V1pcSAL] ⋄ CCONTS←ccl COMP∆CONT ccr ⍝ Company Contributions
+[75]      :endif
+[76]      :if mpuflag
+[77]          contsSALMP←SALMPvec[;mpuSAL] ⋄ PCONTS←mpul MPU∆CONT mpur ⍝ Underpin Contributions
+[78]          PACMP←(MID PAC),¯1↑PAC←Jmpu ROLLUP PAC0,¯1↓PCONTS
+[79]          PACPMMP←(MID PACPM),¯1↑PACPM←PAC0×1,×\Jmpu
+[80]      :endif
+[81]  
+[82]       MidtPx←0.5×(1↓((NX-SNX)↑tPx),(-SNX+1)↑tPx)+tPx-PROBS[;0]×(ENX_1,(LNX-SNX),SNX+1)/0 1 0
+[83]      DifftPx←NX↑(DIFF -tPx)-¯1↓PROBS[;0]×(ENX_1,LNX+1)/0 1
+[84]      :if PHI ⋄ :andif PHIContsDed ⋄ :andif ∨/0≠CONTS
+[85]          PHICONTS←PHIMEMB∆CONT
+[86]      :endif
+[87]  
+[88]      ARSL←+/(DifftPx×PMMP-1↑PM)+(PM-1↑PM)×PROBS[;0]×(ENX_1,LNX+1)/0 1
+[89]      :if ~suppressText ⍝ Group grand totals and Membership Statistics of In Force
+[90]          Ind∆Totals[0;]←(SAL0××/term OVERTAKE f),(10↑SALvec[0;]),data
+[91]          Ind∆Totals[1+⍳3;⍳10]←(NOM,SALvec[0;contsSAL,V1pcSAL])∘.×1,ARSL,X0,(1↑PS),(1↑PM),TS,TM,(1↑FM),(nra⌈X0×servind)-TS,TM
+[92]      :endif
+[93]      EXPPM←(×/term OVERTAKE f)×NOM×(1,×\NX_1↑F)×(¯1↓MidtPx),0
+[94]  :endif
+[95]  
+[96]  :if aggopt[0]∨csvind∨summopt ⋄ MembID←-⍬⍴X0 ⍝ -ve number means "grouped" Member ID
+[97]  :else                        ⋄ MembID←recn
+[98]  :endif
+[99]  :if ⍙dbresults←⍙dbopt^(~prevind)^∨/(∨/0≠KnownExit),EXIT[1 2],aosind ⍝ DB Results indicator
+[100]     ⍝ Data and Demographics
+[101]     ⍙dbbenres←⍙dbbenres⍪((0 0 7 1) dbXe term) ⍙DBValnRecords NOM×∨/EXIT[1 2],∣×KnownExit
+[102]     :if ∨/EXIT[1 2]
+[103]         ⍙dbbenres←⍙dbbenres⍪((0 0 7 8) dbXe term) ⍙DBValnRecords AC0
+[104]         :if ~IsDeferred ⍝ Not Enhanced Deferreds
+[105]             ⍙dbbenres←⍙dbbenres⍪((0 0 7 2) dbXe term) ⍙DBValnRecords NOM×PM[0]
+[106]             ⍙dbbenres←⍙dbbenres⍪((0 0 7 3) dbXe term) ⍙DBValnRecords NOM×PS[0]
+[107]             ⍙dbbenres←⍙dbbenres⍪((0 0 7 4) dbXe term) ⍙DBValnRecords NOM×FM[0]
+[108]             ⍙dbbenres←⍙dbbenres⍪((0 0 7 5) dbXe term) ⍙DBValnRecords SAL0
+[109]             ⍙dbbenres←⍙dbbenres⍪((0 0 7 6) dbXe term) ⍙DBValnRecords SALvec[0;contsSAL]
+[110]             ⍙dbbenres←⍙dbbenres⍪((0 0 7 7) dbXe term) ⍙DBValnRecords SALvec[0;V1pcSAL]
+[111]             :if ~neIND
+[112]                 z←0≠,values←5 1⍴ARSL,TS,TM,(nra⌈X0×servind)-TS,TM
+[113]                 ⍙dbbenres←⍙dbbenres⍪0,0,7,z⌿(17 19 18 20 21),(⍬⍴dbXe),0,values
+[114]                 :if summopt∨csvind∨aggopt[0]
+[115]                     z←0≠,values←16 1⍴,(SALvec[0;contsSAL,V1pcSAL])∘.×ARSL,(1↑PS),(1↑PM),TS,TM,(1↑FM),(nra⌈X0×servind)-TS,TM
+[116]                     ⍙dbbenres←⍙dbbenres⍪0,0,7,z⌿(61 62 63 64 65 66 67 68 71 72 73 74 75 76 77 78),(⍬⍴dbXe),0,values
+[117]                 :endif
+[118]             :endif
+[119] 
+[120]             ⍝ Per Member expenses data
+[121]             ⍙dbbenproj←⍙dbbenproj⍪((32 16 7 16)    0 (1+term+⍳NX)) ⍙DBValnRecords        EXPPM
+[122]             ⍙dbbenproj←⍙dbbenproj⍪((32 16 7 16) dbX0    term     ) ⍙DBValnRecords +/CP↑∆←EXPPM×vMP
+[123]             :if bQSM ⍝ Total FS figures for QSM
+[124]                 ⍙dbbenproj←⍙dbbenproj⍪((32 16 7 96) dbX0 term    ) ⍙DBValnRecords +/∆
+[125]             :endif
+[126] 
+[127]         :endif
+[128]         ⍙DBAddRecords
+[129]     :endif
+[130] :endif
+[131] 
+[132] →(NoInd∨prevind∨suppressText)/0 ⍝ Don't always need full indiv p/out
+[133] ⍝ Member details in headers - UK headers already set in PRELIM∆ver
+[134] :if ×uk ⋄ H7←(2↑[0]H7) OVER H0[2;] OVER 3↓[0]H7
+[135] :else   ⋄ H0[2;15+⍳width-15]←H1[2;15+⍳width-15]←H5[2;15+⍳width-15]←H7[2;15+⍳width-15]←(width-15)↑REC
+[136] :endif
+    ∇

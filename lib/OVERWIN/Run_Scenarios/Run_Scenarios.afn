@@ -1,1 +1,68 @@
-    ∇ res←field Run_Scenarios parm;parent;desc;listview;z;ParmDesc;ParmTS;progid[1]   ⍝ OVERWIN.sf#29[2]   ⍝ Function to allow user control on running Scenario Valuations[3]   [4]   parent←'fmRunScenarios.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       ((parent,'lvSavedBatch') 'Run_Scenarios') Win∆UpdateListview 'Batch_Display' GetScenList 'SavedBatch'[10]      ((parent,'lvSavedScens') 'Run_Scenarios') Win∆UpdateListview 'Scenarios' GetScenList 'SavedScens'[11]      excelMonitor←0[12]  [13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[14]  [15]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[16]  [17]      :repeat[18]          :select ↑field[19]          :case 'lvSavedBatch'[20]              z←×↑⍴(parent,'lvSavedBatch') ⎕wi 'list'[21]              (parent,'fBatchButtons.bnRun_ScenariosAddBatch') ⎕wi 'enabled' (~z)[22]              (parent,'fBatchButtons.bnRun_ScenariosRemBatch') ⎕wi 'enabled'   z[23]          :case 'lvSavedScens'[24]              (parent,'fScenButtons.bnRun_ScenariosRemScen') ⎕wi 'enabled' (×⍴(parent,'lvSavedScens') ⎕wi 'value')[25]          :case 'ckCreateScenXL'[26]              (parent 'edScenDBName') Win∆SetRelated 'enabled' ((parent,'ckCreateScenXL') ⎕wi 'value')[27]          :case 'ckScentrick'[28]              0 0⍴'lvSavedBatch' 'lvSavedScens' Run_Scenarios 'Change'[29]              desc←parent ⎕wi '∆savedesc'[30]              :for listview :in (⊂parent),¨'lvSavedBatch' 'lvSavedScens'[31]                  (listview 'Run_Scenarios') Win∆SortListview DLTB ↑(((listviewDict append ListviewDict) for "Control" listview) for 'Parameters' desc) at "Sort"[32]              :endfor[33]          :endselect[34]      :until mt field←1↓field[35]  [36]  :case 'Spin'[37]  [38]      (parent,'lvSavedScens') Sel∆Spin field[39]  [40]  :case 'Valid'[41]  [42]      res←Run_Scenarios_Valid[43]  [44]  :case 'Run'[45]  [46]      (ParmDesc ParmTS)←↑¨((ClientFile ReadFile 'Index') for '∆_CompNo' (↑ControlName ⎕wi '∆savecn')) at '∆_Description' '∆_TimeModified'[47]      ParmTS←⍙DBTimeStamp ParmTS[48]      CreateScenXL←zwb CreateScenXL[49]  [50]      :if ~sqlDatabase ⋄ :andif mt progid←⍙DBAccessProvider 1 ⍝ Determine the Access Provider string[51]          MDISPLAY 'Unable to determine the Microsoft Access Provider in use on this machine'[52]          res←'' ⋄ :return[53]      :endif[54]  [55]      ('Valuation Run:' 'Record Number:') Win∆ProgressBar 'SetLabels'[56]      ('Running Valuations') Win∆ProgressBar 'Open'[57]  [58]      "Scenarios_Valuation" Win∆ProgressBar 'Start'[59]  [60]      ControlName ⎕wi '∆modified' 1[61]      res←'Quit'[62]  [63]  :case 'Quit' ⍝ Deleting "other" variables[64]      0 0⍴⎕ex 'vALmETH bENcAP nOTpuc DaB iNSiND cONTpER excelMonitor'[65]  [66]  :endselect    ∇
+    ∇ res←field Run_Scenarios parm;parent;desc;listview;z;ParmDesc;ParmTS;progid
+[1]   ⍝ OVERWIN.sf#29
+[2]   ⍝ Function to allow user control on running Scenario Valuations
+[3]   
+[4]   parent←'fmRunScenarios.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       ((parent,'lvSavedBatch') 'Run_Scenarios') Win∆UpdateListview 'Batch_Display' GetScenList 'SavedBatch'
+[10]      ((parent,'lvSavedScens') 'Run_Scenarios') Win∆UpdateListview 'Scenarios' GetScenList 'SavedScens'
+[11]      excelMonitor←0
+[12]  
+[13]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[14]  
+[15]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[16]  
+[17]      :repeat
+[18]          :select ↑field
+[19]          :case 'lvSavedBatch'
+[20]              z←×↑⍴(parent,'lvSavedBatch') ⎕wi 'list'
+[21]              (parent,'fBatchButtons.bnRun_ScenariosAddBatch') ⎕wi 'enabled' (~z)
+[22]              (parent,'fBatchButtons.bnRun_ScenariosRemBatch') ⎕wi 'enabled'   z
+[23]          :case 'lvSavedScens'
+[24]              (parent,'fScenButtons.bnRun_ScenariosRemScen') ⎕wi 'enabled' (×⍴(parent,'lvSavedScens') ⎕wi 'value')
+[25]          :case 'ckCreateScenXL'
+[26]              (parent 'edScenDBName') Win∆SetRelated 'enabled' ((parent,'ckCreateScenXL') ⎕wi 'value')
+[27]          :case 'ckScentrick'
+[28]              0 0⍴'lvSavedBatch' 'lvSavedScens' Run_Scenarios 'Change'
+[29]              desc←parent ⎕wi '∆savedesc'
+[30]              :for listview :in (⊂parent),¨'lvSavedBatch' 'lvSavedScens'
+[31]                  (listview 'Run_Scenarios') Win∆SortListview DLTB ↑(((listviewDict append ListviewDict) for "Control" listview) for 'Parameters' desc) at "Sort"
+[32]              :endfor
+[33]          :endselect
+[34]      :until mt field←1↓field
+[35]  
+[36]  :case 'Spin'
+[37]  
+[38]      (parent,'lvSavedScens') Sel∆Spin field
+[39]  
+[40]  :case 'Valid'
+[41]  
+[42]      res←Run_Scenarios_Valid
+[43]  
+[44]  :case 'Run'
+[45]  
+[46]      (ParmDesc ParmTS)←↑¨((ClientFile ReadFile 'Index') for '∆_CompNo' (↑ControlName ⎕wi '∆savecn')) at '∆_Description' '∆_TimeModified'
+[47]      ParmTS←⍙DBTimeStamp ParmTS
+[48]      CreateScenXL←zwb CreateScenXL
+[49]  
+[50]      :if ~sqlDatabase ⋄ :andif mt progid←⍙DBAccessProvider 1 ⍝ Determine the Access Provider string
+[51]          MDISPLAY 'Unable to determine the Microsoft Access Provider in use on this machine'
+[52]          res←'' ⋄ :return
+[53]      :endif
+[54]  
+[55]      ('Valuation Run:' 'Record Number:') Win∆ProgressBar 'SetLabels'
+[56]      ('Running Valuations') Win∆ProgressBar 'Open'
+[57]  
+[58]      "Scenarios_Valuation" Win∆ProgressBar 'Start'
+[59]  
+[60]      ControlName ⎕wi '∆modified' 1
+[61]      res←'Quit'
+[62]  
+[63]  :case 'Quit' ⍝ Deleting "other" variables
+[64]      0 0⍴⎕ex 'vALmETH bENcAP nOTpuc DaB iNSiND cONTpER excelMonitor'
+[65]  
+[66]  :endselect
+    ∇

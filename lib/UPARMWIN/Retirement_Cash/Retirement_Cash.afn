@@ -1,0 +1,52 @@
+    ∇ res←field Retirement_Cash parm;parent;∆
+[1]   ⍝ UPARMWIN.sf#12
+[2]   ⍝ Function to allow user control on Retirement Cash Module
+[3]   
+[4]   parent←'fmRetCash.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[8]       isActive←1
+[9]       :if 0≠⎕nc 'globalsPkg' ⍝ Default values from form
+[10]          :if ~mt pnames globalsPkg
+[11]              pdef globalsPkg
+[12]  
+[13]              :select grcCTYPE
+[14]              :case '25% Pension'    ⋄ grcCTYPE←'% of Pension'        ⋄ grcCOMPER ←'25'
+[15]              :case '2.25 x Pension' ⋄ grcCTYPE←'Multiple of Pension' ⋄ grcCOMMULT←'2.25'
+[16]              :case '3 x Pension'    ⋄ grcCTYPE←'Multiple of Pension' ⋄ grcCOMMULT←'3'
+[17]              :endselect
+[18]              grcCOMMULTmt←⍕~∆←(,1)≡⎕vi grcCOMMULT ⋄ grcCOMMULT←∆/grcCOMMULT
+[19]              grcCOMPERmt ←⍕~∆←(,1)≡⎕vi grcCOMPER  ⋄ grcCOMPER ←∆/grcCOMPER
+[20]          :endif
+[21]          0 0⍴⎕ex 'globalsPkg'
+[22]      :endif
+[23]  
+[24]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[25]      Display∆Access basAccess[1 2]
+[26]  
+[27]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[28]  
+[29]      :repeat
+[30]          :select ↑field
+[31]          :case 'cbgrcCTYPE'
+[32]              (parent,'lrgrcCTYPE') ⎕wi 'visible' ((⊂7↑(parent,'cbgrcCTYPE') ⎕wi 'text')∊'IR Maxi' 'Accrual')
+[33]          :case 'edgrcCOMMULT'
+[34]              grcCOMMULTmt←⍕mt DLTB (parent,'edgrcCOMMULT') ⎕wi 'text'
+[35]          :case 'edgrcCOMPER'
+[36]              grcCOMPERmt←⍕mt DLTB (parent,'edgrcCOMPER') ⎕wi 'text'
+[37]          :endselect
+[38]          (↑field) Win∆FormValidation 'Change'
+[39]      :until mt field←1↓field
+[40]  
+[41]  :case 'Valid' ⍝ Routine specific validation
+[42]      res←(FormFields at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[43]  
+[44]  :case 'Run'
+[45]      res←'Quit'
+[46]  
+[47]  :case 'Quit' ⍝ Deleting "other" variables
+[48]      0 0⍴⎕ex 'isActive'
+[49]  
+[50]  :endselect
+    ∇

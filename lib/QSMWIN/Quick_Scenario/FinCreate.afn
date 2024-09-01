@@ -1,0 +1,21 @@
+    ∇ FinCreate;ControlName;xxx;MESS;vars;Financials;store
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Create a Financials Parameter Set from QSM adjustments
+[3]   
+[4]   Win∆AssignVars ControlName←"fmQuickSM" ⍝ Update variables with latest settings
+[5]   
+[6]   store←pack vars←⍙VALUESdict ReadDictFile 'Financials' '' 'Names'
+[7]   
+[8]   :if mt MESS←FinancialsCreate
+[9]       ControlName ⎕wi '∆savecn' (⍳0)
+[10]      ControlName ⎕wi '∆inputstype' 'ClientFile'
+[11]  
+[12]      0 0⍴⎕fx ⊃'res←L Financials R' 'res←0⍴""' ⍝ Dummy Financials function to trick Validation
+[13]      FormName ⎕wi 'caption' ((FormName ⎕wi 'caption'),' - Create Financials')
+[14]      'Financials' SaveBasParms 'SaveAs'
+[15]  :else
+[16]      MDISPLAY MESS
+[17]  :endif
+[18]  
+[19]  pdef store
+    ∇

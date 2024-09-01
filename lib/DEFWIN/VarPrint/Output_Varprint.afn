@@ -1,1 +1,255 @@
-    ∇ Output∆Varprint bentype;RP4;RF4;LP4;LF4;∆A;OLDAGES;idx;code1;code2;∆A;∆B;PENNRAN;WARNRAN;PENSPAN;WARSPAN;PENNRAD;WARNRAD;PENSPAD;WARSPAD;PENNRAL;WARNRAL;PENSPAL;WARSPAL;PENNRA4;WARNRA4;PENSPA4;WARSPA4;TOC_SOURCE;Headers;tab;mat;disc[1]   ⍝ DEFWIN.sf#9[2]   ⍝ Deferreds Costing Tables output to VarPrint[3]   [4]   (PENNRAN  PENNRAD  PENNRAL  PENNRA4)←⊂[1] BEN[iPEN;iWHO;iNRA;;]               ⍝ pennra-upennra∆[5]   (WARNRAN  WARNRAD  WARNRAL  WARNRA4)←⊂[1] BEN[iWAR;iWHO;iNRA;;]               ⍝ warnra-uwarnra∆[6]   (PENSPAN  PENSPAD  PENSPAL  PENSPA4)←⊂[1] BEN[iPEN;iWHO;iSPA;;]               ⍝ penspa-upenspa∆[7]   (WARSPAN  WARSPAD  WARSPAL  WARSPA4)←⊂[1] BEN[iWAR;iWHO;iSPA;;]               ⍝ warspa-uwarspa∆[8]   [9]   :select bentype[10]  :case 1 ⍝ Accrued[11]      0 0⍴VPFile1 NTIE (vtpr1←'Native' TieNumber VPFile1),2 ⍝ Retie VarPrint file (assume it works??)[12]      TOC_SOURCE←TOC_SOURCE1[13]  [14]      TRACE_BOOKMARK 'Capitalising PUPs'[15]      TRACE_Def 'h1' xtag 'Capitalising PUPs'[16]  [17]      Headers←"Member's PUP" "Member's Annuity" "Reversion" "Reversionary Annuity" "Capitalised PUP"[18]      (   "Main Lifetime Pension payable from max(NRA:SPA)" Headers) DEBUG ⊃'PENSPAD' 'RWA2' 'WARSPAD' 'LWA2'  'WVD2'[19]      (   "Main Temporary Pension payable to SPA (>NRA)"    Headers) DEBUG ⊃'PENNRAD' 'RWT2' 'WARNRAD' 'LWT2'  'WVT2'[20]      ("Special Lifetime Pension payable from max(NRA:SPA)" Headers) DEBUG ⊃'PENSPAN' 'RWA1' 'WARSPAN' 'LWA1'  'WVD1'[21]      ("Special Temporary Pension payable to SPA (>NRA)"    Headers) DEBUG ⊃'PENNRAN' 'RWT1' 'WARNRAN' 'LWT1'  'WVT1'[22]      ("Peninc3 Lifetime Pension payable from max(NRA:SPA)" Headers) DEBUG ⊃'PENSPAL' 'RWA6' 'WARSPAL' 'LWA10' 'WVD6'[23]      ("Peninc3 Temporary Pension payable to SPA (>NRA)"    Headers) DEBUG ⊃'PENNRAL' 'RWT6' 'WARNRAL' 'LWT10' 'WVT6'[24]      ("Peninc4 Lifetime Pension payable from max(NRA:SPA)" Headers) DEBUG ⊃'PENSPA4' 'RWA7' 'WARSPA4' 'LWA12' 'WVD7'[25]      ("Peninc4 Temporary Pension payable to SPA (>NRA)"    Headers) DEBUG ⊃'PENNRA4' 'RWT7' 'WARNRA4' 'LWT12' 'WVT7'[26]  [27]      TRACE_BOOKMARK 'Capitalising GMPs'[28]      TRACE_Def 'h1' xtag 'Capitalising GMPs'[29]  [30]      Headers←"Revalued GMP" "Member's Annuity" "Reversionary Annuity" "Capitalised GMP"[31]      ("Lifetime Pre 1988 GMP payable from max(NRA:SPA)"  Headers) DEBUG ⊃'PreGMPR'  'RWA3' 'LWA3' 'WVD3'[32]      ("Lifetime Post 1988 GMP payable from max(NRA:SPA)" Headers) DEBUG ⊃'PostGMPR' 'RWA4' 'LWA4' 'WVD4'[33]  [34]      TRACE_BOOKMARK 'Underpin Proportions'[35]      TRACE_Def 'h1' xtag 'Underpin Proportions'[36]  [37]      Headers←"Main" "Special" "Peninc3" "Peninc4" "Main Spouse" "Special Spouse" "Peninc3 Spouse" "Peninc4 Spouse"[38]      ("Proportions of max(RA:SPA) PUPs underpinned" Headers)      DEBUG ⊃'GFRAC3'  'GFRAC4'  'GFRAC5'  'GFRAC6'  'SGFRAC3'  'SGFRAC4'  'SGFRAC5'  'SGFRAC6'[39]      ("Proportions of SPA PUPs underpinned"         Headers)      DEBUG ⊃'GFRAC3A' 'GFRAC4A' 'GFRAC5A' 'GFRAC6A' 'SGFRAC3A' 'SGFRAC4A' 'SGFRAC5A' 'SGFRAC6A'[40]      ("Proportions of GMPs underpinned" ("Pre 1988" "Post 1988")) DEBUG ⊃'GFRAC1' 'GFRAC2'[41]      Headers←"Accumulated Underpin" "Underpinned Cash" "Underpinned Pension"[42]      ("Underpin Amounts" Headers) DEBUG ⊃'UFUND' 'GCASH' 'UFUNDW'[43]  [44]      :if ∨/0≠Indpups[45]          TRACE_BOOKMARK 'Capitalising Independent PUPs'[46]          TRACE_Def 'h1' xtag 'Capitalising Independent PUPs'[47]          Headers←"Member's PUP" "Member's Temporary Annuity" "Member's Deferred Annuity" "Reversion" "Reversionary Temporary Annuity" "Reversionary Deferred Annuity" "Capitalised Temporary PUP" "Capitalised Deferred PUP"[48]  [49]          :for idx :in 1+⍳⍴Indpups[50]              :if ∨/0≠(⍎'WVTI',¯2↑'0',⍕idx)+⍎'WVDI',¯2↑'0',⍕idx[51]                  (("Independent PUP ",⍕idx) Headers) DEBUG ⊃('IPEN',¯2↑'0',⍕idx) ('RWAI',¯2↑'0',⍕idx) ('RWTI',¯2↑'0',⍕idx) ('ISPEN',¯2↑'0',⍕idx) ('LWAI',¯2↑'0',⍕idx) ('LWTI',¯2↑'0',⍕idx) ('WVDI',¯2↑'0',⍕idx) ('WVTI',¯2↑'0',⍕idx)[52]              :endif[53]          :endfor[54]      :endif[55]  :case 0 ⍝ Non-Transfer On-going[56]      0 0⍴VPFile0 NTIE (vtpr1←'Native' TieNumber VPFile0),2 ⍝ Retie VarPrint file (assume it works??)[57]      TOC_SOURCE←TOC_SOURCE0[58]  [59]      TRACE_BOOKMARK 'Capitalising PUPs'[60]      TRACE_Def 'h1' xtag 'Capitalising PUPs'[61]  [62]      Headers←"Member's PUP" "Member's Annuity" "Reversion" "Reversionary Annuity" "Capitalised PUP"[63]      (   "Main Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAD' 'RAA2' 'WARSPAD' 'LAA2'  'RVD2'[64]      (   "Main Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAD' 'RAT2' 'WARNRAD' 'LAT2'  'RVT2'[65]      ("Special Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAN' 'RAA1' 'WARSPAN' 'LAA1'  'RVD1'[66]      ("Special Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAN' 'RAT1' 'WARNRAN' 'LAT1'  'RVT1'[67]      ("Peninc3 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAL' 'RAA6' 'WARSPAL' 'LAA10' 'RVD6'[68]      ("Peninc3 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAL' 'RAT6' 'WARNRAL' 'LAT10' 'RVT6'[69]      ("Peninc4 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPA4' 'RAA7' 'WARSPA4' 'LAA12' 'RVD7'[70]      ("Peninc4 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRA4' 'RAT7' 'WARNRA4' 'LAT12' 'RVT7'[71]  [72]      TRACE_BOOKMARK 'Capitalising GMPs'[73]      TRACE_Def 'h1' xtag 'Capitalising GMPs'[74]  [75]      Headers←"Revalued GMP" "Member's Annuity" "Reversionary Annuity" "Capitalised GMP"[76]      ("Lifetime Pre 1988 GMP payable from max(NRA:SPA)"  Headers) DEBUG ⊃'PreGMPR'  'RAA3' 'LAA3' 'RVD3'[77]      ("Lifetime Post 1988 GMP payable from max(NRA:SPA)" Headers) DEBUG ⊃'PostGMPR' 'RAA4' 'LAA4' 'RVD4'[78]  [79]      TRACE_BOOKMARK 'Underpin Proportions'[80]      TRACE_Def 'h1' xtag 'Underpin Proportions'[81]  [82]      Headers←"Main" "Special" "Peninc3" "Peninc4" "Main Spouse" "Special Spouse" "Peninc3 Spouse" "Peninc4 Spouse"[83]      ("Proportions of max(RA:SPA) PUPs underpinned" Headers)      DEBUG ⊃'GFRAC3'  'GFRAC4'  'GFRAC5'  'GFRAC6'  'SGFRAC3'  'SGFRAC4'  'SGFRAC5'  'SGFRAC6'[84]      ("Proportions of SPA PUPs underpinned"         Headers)      DEBUG ⊃'GFRAC3A' 'GFRAC4A' 'GFRAC5A' 'GFRAC6A' 'SGFRAC3A' 'SGFRAC4A' 'SGFRAC5A' 'SGFRAC6A'[85]      ("Proportions of GMPs underpinned" ("Pre 1988" "Post 1988")) DEBUG ⊃'GFRAC1' 'GFRAC2'[86]      Headers←"Accumulated Underpin" "Underpinned Cash" "Underpinned Pension"[87]      ("Underpin Amounts" Headers) DEBUG ⊃'UFUNDMP' 'GCASH' 'UFUNDR'[88]  [89]      :if ∨/0≠Indpups[90]          TRACE_BOOKMARK 'Capitalising Independent PUPs'[91]          TRACE_Def 'h1' xtag 'Capitalising Independent PUPs'[92]          Headers←"Member's PUP" "Member's Temporary Annuity" "Member's Deferred Annuity" "Reversion" "Reversionary Temporary Annuity" "Reversionary Deferred Annuity" "Capitalised Temporary PUP" "Capitalised Deferred PUP"[93]  [94]          :for idx :in 1+⍳⍴Indpups[95]              :if ∨/0≠(⍎'RVTI',¯2↑'0',⍕idx)+⍎'RVDI',¯2↑'0',⍕idx[96]                  (("Independent PUP ",⍕idx) Headers) DEBUG ⊃('IPEN',¯2↑'0',⍕idx) ('RAAI',¯2↑'0',⍕idx) ('RATI',¯2↑'0',⍕idx) ('ISPEN',¯2↑'0',⍕idx) ('LAAI',¯2↑'0',⍕idx) ('LATI',¯2↑'0',⍕idx) ('RVDI',¯2↑'0',⍕idx) ('RVTI',¯2↑'0',⍕idx)[97]              :endif[98]          :endfor[99]      :endif[100]     TRACE_BOOKMARK 'Valuing PUPs'[101]     TRACE_Def 'h1' xtag 'Service Table'[102] [103]     Headers←"Age" "Survivors" "Retirements" "Deaths" "Transfers Out" "Retirement Transfers" "Age" "Prob. Survival" "Prob. Retirement" "Prob. Death" "Prob. Transfer Out" "Prob. Retirement Transfer"[104]     'Service Table/Probabilities'         TRACE_Def Headers⍪X,(1 rnd (tPx,PROBS[;0 1 4 5])×10000÷¯1↑tPx),X,rnd tPx,PROBS[;0 1 4 5][105] [106]     TRACE_Def 'h1' xtag 'Valuing Retirement PUPs'[107] [108]     Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."[109]     disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre[110]     tab←1 rnd tab⍪+⌿tab←(0 ¯1↓rPVTV),+/rPVTV ⋄ mat←1 rnd mat,+/mat←VC[;0],0 ¯1↓VRB[111]     'Retirement PUPs'         TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab[112] [113]     TRACE_Def 'h1' xtag 'Valuing Death in Deferment PUPs'[114] [115]     tab←1 rnd tab⍪+⌿tab←(0 ¯1↓mPVTV),+/mPVTV ⋄ mat←1 rnd mat,+/mat←VC[;1],0 ¯1↓VMB[116]     'Death in Deferment PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab[117] :case 2 ⍝ Transfers[118]     (PENNRAN  PENNRAD  PENNRAL  PENNRA4)←⊂[1] TransBEN[iPEN;iWHO;iNRA;;]               ⍝ pennra-upennra∆[119]     (WARNRAN  WARNRAD  WARNRAL  WARNRA4)←⊂[1] TransBEN[iWAR;iWHO;iNRA;;]               ⍝ warnra-uwarnra∆[120]     (PENSPAN  PENSPAD  PENSPAL  PENSPA4)←⊂[1] TransBEN[iPEN;iWHO;iSPA;;]               ⍝ penspa-upenspa∆[121]     (WARSPAN  WARSPAD  WARSPAL  WARSPA4)←⊂[1] TransBEN[iWAR;iWHO;iSPA;;]               ⍝ warspa-uwarspa∆[122] [123]     0 0⍴VPFile0 NTIE (vtpr1←'Native' TieNumber VPFile0),2 ⍝ Retie VarPrint file (assume it works??)[124]     TOC_SOURCE←TOC_SOURCE0[125] [126]     TRACE_BOOKMARK 'Capitalising Retirement Transfer PUPs'[127]     TRACE_Def 'h1' xtag 'Capitalising Retirement Transfer PUPs'[128] [129]     Headers←"Member's PUP" "Member's Annuity" "Reversion" "Reversionary Annuity" "Capitalised Retirement Transfer PUP"[130]     (   "Main Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAD' 'TRAA2' 'WARSPAD' 'TLAA2'  'TRVD2'[131]     (   "Main Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAD' 'TRAT2' 'WARNRAD' 'TLAT2'  'TRVT2'[132]     ("Special Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAN' 'TRAA1' 'WARSPAN' 'TLAA1'  'TRVD1'[133]     ("Special Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAN' 'TRAT1' 'WARNRAN' 'TLAT1'  'TRVT1'[134]     ("Peninc3 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAL' 'TRAA6' 'WARSPAL' 'TLAA10' 'TRVD6'[135]     ("Peninc3 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAL' 'TRAT6' 'WARNRAL' 'TLAT10' 'TRVT6'[136]     ("Peninc4 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPA4' 'TRAA7' 'WARSPA4' 'TLAA12' 'TRVD7'[137]     ("Peninc4 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRA4' 'TRAT7' 'WARNRA4' 'TLAT12' 'TRVT7'[138] [139]     TRACE_BOOKMARK 'Capitalising Retirement Transfer GMPs'[140]     TRACE_Def 'h1' xtag 'Capitalising Retirement Transfer GMPs'[141] [142]     Headers←"Revalued GMP" "Member's Annuity" "Reversionary Annuity" "Capitalised Retirement Transfer GMP"[143]     ("Lifetime Pre 1988 GMP payable from max(NRA:SPA)"  Headers) DEBUG ⊃'PreGMPR'  'TRAA3' 'TLAA3' 'TRVD3'[144]     ("Lifetime Post 1988 GMP payable from max(NRA:SPA)" Headers) DEBUG ⊃'PostGMPR' 'TRAA4' 'TLAA4' 'TRVD4'[145] [146]     TRACE_BOOKMARK 'Underpin Proportions'[147]     TRACE_Def 'h1' xtag 'Underpin Proportions'[148] [149]     Headers←"Main" "Special" "Peninc3" "Peninc4" "Main Spouse" "Special Spouse" "Peninc3 Spouse" "Peninc4 Spouse"[150]     ("Proportions of max(RA:SPA) PUPs underpinned" Headers)      DEBUG ⊃'GFRAC3'  'GFRAC4'  'GFRAC5'  'GFRAC6'  'SGFRAC3'  'SGFRAC4'  'SGFRAC5'  'SGFRAC6'[151]     ("Proportions of SPA PUPs underpinned"         Headers)      DEBUG ⊃'GFRAC3A' 'GFRAC4A' 'GFRAC5A' 'GFRAC6A' 'SGFRAC3A' 'SGFRAC4A' 'SGFRAC5A' 'SGFRAC6A'[152]     ("Proportions of GMPs underpinned" ("Pre 1988" "Post 1988")) DEBUG ⊃'GFRAC1' 'GFRAC2'[153]     Headers←"Accumulated Underpin" "Underpinned Cash" "Underpinned Pension"[154]     ("Underpin Amounts" Headers) DEBUG ⊃'UFUNDMP' 'GCASH' 'UFUNDT'[155] [156]     :if ∨/0≠Indpups[157]         TRACE_BOOKMARK 'Capitalising Independent Retirement Transfer PUPs'[158]         TRACE_Def 'h1' xtag 'Capitalising Independent Retirement Transfer PUPs'[159]         Headers←"Member's PUP" "Member's Temporary Annuity" "Member's Deferred Annuity" "Reversion" "Reversionary Temporary Annuity" "Reversionary Deferred Annuity" "Capitalised Temporary Retirement Transfer PUP" "Capitalised Deferred Retirement Transfer PUP"[160] [161]         :for idx :in 1+⍳⍴Indpups[162]             :if ∨/0≠(⍎'TRVTI',¯2↑'0',⍕idx)+⍎'TRVDI',¯2↑'0',⍕idx[163]                 (("Independent PUP ",⍕idx) Headers) DEBUG ⊃('IPEN',¯2↑'0',⍕idx) ('TRATI',¯2↑'0',⍕idx) ('TRAAI',¯2↑'0',⍕idx) ('ISPEN',¯2↑'0',⍕idx) ('TLATI',¯2↑'0',⍕idx) ('TLAAI',¯2↑'0',⍕idx) ('TRVDI',¯2↑'0',⍕idx) ('TRVTI',¯2↑'0',⍕idx)[164]             :endif[165]         :endfor[166]     :endif[167]     TRACE_BOOKMARK 'Valuing Retirement Transfer PUPs'[168]     TRACE_Def 'h1' xtag 'Service Table'[169] [170]     Headers←"Age" "Survivors" "Retirements" "Deaths" "Transfers Out" "Retirement Transfers" "Age" "Prob. Survival" "Prob. Retirement" "Prob. Death" "Prob. Transfer Out" "Prob. Retirement Transfer"[171]     'Service Table/Probabilities' TRACE_Def Headers⍪X,(1 rnd (tPx,PROBS[;0 1 4 5])×10000÷¯1↑tPx),X,rnd tPx,PROBS[;0 1 4 5][172] [173]     TRACE_Def 'h1' xtag 'Valuing Retirement Transfer PUPs'[174] [175]     Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."[176]     disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre[177]     tab←1 rnd tab⍪+⌿tab←(0 ¯1↓TPVTV),+/TPVTV ⋄ mat←1 rnd mat,+/mat←VC[;4],0 ¯1↓V∆B[178]     'Retirement Transfer PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab[179] [180]     :if ~TVIgnoreDiD[181]         TRACE_Def 'h1' xtag 'Valuing Retirement Transfer Death in Deferment PUPs'[182] [183]         Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."[184]         disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre[185]         tab←1 rnd tab⍪+⌿tab←(0 ¯1↓tPVTV),+/tPVTV ⋄ mat←1 rnd mat,+/mat←VC[;5],0 ¯1↓VtB[186]         'Death after Retirement Transfer PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab[187]     :endif[188] [189]     TRACE_BOOKMARK 'Capitalising Transfer Value PUPs'[190]     TRACE_Def 'h1' xtag 'Capitalising Transfer Value PUPs'[191] [192]     Headers←"Member's PUP" "Member's Annuity" "Reversion" "Reversionary Annuity" "Capitalised Transfer Value PUP"[193]     (   "Main Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAD' 'TVRAA2' 'WARSPAD' 'TVLAA2'  'TVD2'[194]     (   "Main Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAD' 'TVRAT2' 'WARNRAD' 'TVLAT2'  'TVT2'[195]     ("Special Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAN' 'TVRAA1' 'WARSPAN' 'TVLAA1'  'TVD1'[196]     ("Special Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAN' 'TVRAT1' 'WARNRAN' 'TVLAT1'  'TVT1'[197]     ("Peninc3 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAL' 'TVRAA6' 'WARSPAL' 'TVLAA10' 'TVD6'[198]     ("Peninc3 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAL' 'TVRAT6' 'WARNRAL' 'TVLAT10' 'TVT6'[199]     ("Peninc4 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPA4' 'TVRAA7' 'WARSPA4' 'TVLAA12' 'TVD7'[200]     ("Peninc4 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRA4' 'TVRAT7' 'WARNRA4' 'TVLAT12' 'TVT7'[201] [202]     TRACE_BOOKMARK 'Capitalising Transfer Value GMPs'[203]     TRACE_Def 'h1' xtag 'Capitalising Transfer Value GMPs'[204] [205]     Headers←"Revalued GMP" "Member's Annuity" "Reversionary Annuity" "Capitalised Transfer Value GMP"[206]     ("Lifetime Pre 1988 GMP payable from max(NRA:SPA)"  Headers) DEBUG ⊃'PreGMPR'  'TVRAA3' 'TVLAA3' 'TVD3'[207]     ("Lifetime Post 1988 GMP payable from max(NRA:SPA)" Headers) DEBUG ⊃'PostGMPR' 'TVRAA4' 'TVLAA4' 'TVD4'[208] [209]     TRACE_BOOKMARK 'Underpin Proportions'[210]     TRACE_Def 'h1' xtag 'Underpin Proportions'[211] [212]     Headers←"Main" "Special" "Peninc3" "Peninc4" "Main Spouse" "Special Spouse" "Peninc3 Spouse" "Peninc4 Spouse"[213]     ("Proportions of max(RA:SPA) PUPs underpinned" Headers)      DEBUG ⊃'GFRAC3'  'GFRAC4'  'GFRAC5'  'GFRAC6'  'SGFRAC3'  'SGFRAC4'  'SGFRAC5'  'SGFRAC6'[214]     ("Proportions of SPA PUPs underpinned"         Headers)      DEBUG ⊃'GFRAC3A' 'GFRAC4A' 'GFRAC5A' 'GFRAC6A' 'SGFRAC3A' 'SGFRAC4A' 'SGFRAC5A' 'SGFRAC6A'[215]     ("Proportions of GMPs underpinned" ("Pre 1988" "Post 1988")) DEBUG ⊃'GFRAC1' 'GFRAC2'[216]     Headers←"Accumulated Underpin" "Underpinned Cash" "Underpinned Pension"[217]     ("Underpin Amounts" Headers) DEBUG ⊃'UFUNDMP' 'GCASH' 'UFUNDO'[218] [219]     :if ∨/0≠Indpups[220]         TRACE_BOOKMARK 'Capitalising Independent Transfer Value PUPs'[221]         TRACE_Def 'h1' xtag 'Capitalising Independent Transfer Value PUPs'[222]         Headers←"Member's PUP" "Member's Temporary Annuity" "Member's Deferred Annuity" "Reversion" "Reversionary Temporary Annuity" "Reversionary Deferred Annuity" "Capitalised Temporary Transfer Value PUP" "Capitalised Deferred Transfer Value PUP"[223] [224]         :for idx :in 1+⍳⍴Indpups[225]             :if ∨/0≠(⍎'TVRVTI',¯2↑'0',⍕idx)+⍎'TVRVDI',¯2↑'0',⍕idx[226]                 (("Independent PUP ",⍕idx) Headers) DEBUG ⊃('IPEN',¯2↑'0',⍕idx) ('TVRATI',¯2↑'0',⍕idx) ('TVRAAI',¯2↑'0',⍕idx) ('ISPEN',¯2↑'0',⍕idx) ('TVLATI',¯2↑'0',⍕idx) ('TVLAAI',¯2↑'0',⍕idx) ('TVRVDI',¯2↑'0',⍕idx) ('TVRVTI',¯2↑'0',⍕idx)[227]             :endif[228]         :endfor[229]     :endif[230]     TRACE_BOOKMARK 'Valuing Transfer Value PUPs'[231]     TRACE_Def 'h1' xtag 'Service Table'[232] [233]     Headers←"Age" "Survivors" "Retirements" "Deaths" "Transfers Out" "Retirement Transfers" "Age" "Prob. Survival" "Prob. Retirement" "Prob. Death" "Prob. Transfer Out" "Prob. Retirement Transfer"[234]     'Service Table/Probabilities' TRACE_Def Headers⍪X,(1 rnd (tPx,PROBS[;0 1 4 5])×10000÷¯1↑tPx),X,rnd tPx,PROBS[;0 1 4 5][235] [236]     TRACE_Def 'h1' xtag 'Valuing Transfer Value PUPs'[237] [238]     Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."[239]     disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre[240]     tab←1 rnd tab⍪+⌿tab←(0 ¯1↓OPVTV),+/OPVTV ⋄ mat←1 rnd mat,+/mat←VC[;6],0 ¯1↓VOB[241]     'Transfer Value PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab[242] [243]     :if ~TVIgnoreDiD[244]         TRACE_Def 'h1' xtag 'Valuing Transfer Value Death in Deferment PUPs'[245] [246]         Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."[247]         disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre[248]         tab←1 rnd tab⍪+⌿tab←(0 ¯1↓oPVTV),+/oPVTV ⋄ mat←1 rnd mat,+/mat←VC[;7],0 ¯1↓VoB[249]         'Death after Transfer Value PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab[250]     :endif[251] [252] :endselect[253] TRACE_CLOSE    ∇
+    ∇ Output∆Varprint bentype;RP4;RF4;LP4;LF4;∆A;OLDAGES;idx;code1;code2;∆A;∆B;PENNRAN;WARNRAN;PENSPAN;WARSPAN;PENNRAD;WARNRAD;PENSPAD;WARSPAD;PENNRAL;WARNRAL;PENSPAL;WARSPAL;PENNRA4;WARNRA4;PENSPA4;WARSPA4;TOC_SOURCE;Headers;tab;mat;disc
+[1]   ⍝ DEFWIN.sf#9
+[2]   ⍝ Deferreds Costing Tables output to VarPrint
+[3]   
+[4]   (PENNRAN  PENNRAD  PENNRAL  PENNRA4)←⊂[1] BEN[iPEN;iWHO;iNRA;;]               ⍝ pennra-upennra∆
+[5]   (WARNRAN  WARNRAD  WARNRAL  WARNRA4)←⊂[1] BEN[iWAR;iWHO;iNRA;;]               ⍝ warnra-uwarnra∆
+[6]   (PENSPAN  PENSPAD  PENSPAL  PENSPA4)←⊂[1] BEN[iPEN;iWHO;iSPA;;]               ⍝ penspa-upenspa∆
+[7]   (WARSPAN  WARSPAD  WARSPAL  WARSPA4)←⊂[1] BEN[iWAR;iWHO;iSPA;;]               ⍝ warspa-uwarspa∆
+[8]   
+[9]   :select bentype
+[10]  :case 1 ⍝ Accrued
+[11]      0 0⍴VPFile1 NTIE (vtpr1←'Native' TieNumber VPFile1),2 ⍝ Retie VarPrint file (assume it works??)
+[12]      TOC_SOURCE←TOC_SOURCE1
+[13]  
+[14]      TRACE_BOOKMARK 'Capitalising PUPs'
+[15]      TRACE_Def 'h1' xtag 'Capitalising PUPs'
+[16]  
+[17]      Headers←"Member's PUP" "Member's Annuity" "Reversion" "Reversionary Annuity" "Capitalised PUP"
+[18]      (   "Main Lifetime Pension payable from max(NRA:SPA)" Headers) DEBUG ⊃'PENSPAD' 'RWA2' 'WARSPAD' 'LWA2'  'WVD2'
+[19]      (   "Main Temporary Pension payable to SPA (>NRA)"    Headers) DEBUG ⊃'PENNRAD' 'RWT2' 'WARNRAD' 'LWT2'  'WVT2'
+[20]      ("Special Lifetime Pension payable from max(NRA:SPA)" Headers) DEBUG ⊃'PENSPAN' 'RWA1' 'WARSPAN' 'LWA1'  'WVD1'
+[21]      ("Special Temporary Pension payable to SPA (>NRA)"    Headers) DEBUG ⊃'PENNRAN' 'RWT1' 'WARNRAN' 'LWT1'  'WVT1'
+[22]      ("Peninc3 Lifetime Pension payable from max(NRA:SPA)" Headers) DEBUG ⊃'PENSPAL' 'RWA6' 'WARSPAL' 'LWA10' 'WVD6'
+[23]      ("Peninc3 Temporary Pension payable to SPA (>NRA)"    Headers) DEBUG ⊃'PENNRAL' 'RWT6' 'WARNRAL' 'LWT10' 'WVT6'
+[24]      ("Peninc4 Lifetime Pension payable from max(NRA:SPA)" Headers) DEBUG ⊃'PENSPA4' 'RWA7' 'WARSPA4' 'LWA12' 'WVD7'
+[25]      ("Peninc4 Temporary Pension payable to SPA (>NRA)"    Headers) DEBUG ⊃'PENNRA4' 'RWT7' 'WARNRA4' 'LWT12' 'WVT7'
+[26]  
+[27]      TRACE_BOOKMARK 'Capitalising GMPs'
+[28]      TRACE_Def 'h1' xtag 'Capitalising GMPs'
+[29]  
+[30]      Headers←"Revalued GMP" "Member's Annuity" "Reversionary Annuity" "Capitalised GMP"
+[31]      ("Lifetime Pre 1988 GMP payable from max(NRA:SPA)"  Headers) DEBUG ⊃'PreGMPR'  'RWA3' 'LWA3' 'WVD3'
+[32]      ("Lifetime Post 1988 GMP payable from max(NRA:SPA)" Headers) DEBUG ⊃'PostGMPR' 'RWA4' 'LWA4' 'WVD4'
+[33]  
+[34]      TRACE_BOOKMARK 'Underpin Proportions'
+[35]      TRACE_Def 'h1' xtag 'Underpin Proportions'
+[36]  
+[37]      Headers←"Main" "Special" "Peninc3" "Peninc4" "Main Spouse" "Special Spouse" "Peninc3 Spouse" "Peninc4 Spouse"
+[38]      ("Proportions of max(RA:SPA) PUPs underpinned" Headers)      DEBUG ⊃'GFRAC3'  'GFRAC4'  'GFRAC5'  'GFRAC6'  'SGFRAC3'  'SGFRAC4'  'SGFRAC5'  'SGFRAC6'
+[39]      ("Proportions of SPA PUPs underpinned"         Headers)      DEBUG ⊃'GFRAC3A' 'GFRAC4A' 'GFRAC5A' 'GFRAC6A' 'SGFRAC3A' 'SGFRAC4A' 'SGFRAC5A' 'SGFRAC6A'
+[40]      ("Proportions of GMPs underpinned" ("Pre 1988" "Post 1988")) DEBUG ⊃'GFRAC1' 'GFRAC2'
+[41]      Headers←"Accumulated Underpin" "Underpinned Cash" "Underpinned Pension"
+[42]      ("Underpin Amounts" Headers) DEBUG ⊃'UFUND' 'GCASH' 'UFUNDW'
+[43]  
+[44]      :if ∨/0≠Indpups
+[45]          TRACE_BOOKMARK 'Capitalising Independent PUPs'
+[46]          TRACE_Def 'h1' xtag 'Capitalising Independent PUPs'
+[47]          Headers←"Member's PUP" "Member's Temporary Annuity" "Member's Deferred Annuity" "Reversion" "Reversionary Temporary Annuity" "Reversionary Deferred Annuity" "Capitalised Temporary PUP" "Capitalised Deferred PUP"
+[48]  
+[49]          :for idx :in 1+⍳⍴Indpups
+[50]              :if ∨/0≠(⍎'WVTI',¯2↑'0',⍕idx)+⍎'WVDI',¯2↑'0',⍕idx
+[51]                  (("Independent PUP ",⍕idx) Headers) DEBUG ⊃('IPEN',¯2↑'0',⍕idx) ('RWAI',¯2↑'0',⍕idx) ('RWTI',¯2↑'0',⍕idx) ('ISPEN',¯2↑'0',⍕idx) ('LWAI',¯2↑'0',⍕idx) ('LWTI',¯2↑'0',⍕idx) ('WVDI',¯2↑'0',⍕idx) ('WVTI',¯2↑'0',⍕idx)
+[52]              :endif
+[53]          :endfor
+[54]      :endif
+[55]  :case 0 ⍝ Non-Transfer On-going
+[56]      0 0⍴VPFile0 NTIE (vtpr1←'Native' TieNumber VPFile0),2 ⍝ Retie VarPrint file (assume it works??)
+[57]      TOC_SOURCE←TOC_SOURCE0
+[58]  
+[59]      TRACE_BOOKMARK 'Capitalising PUPs'
+[60]      TRACE_Def 'h1' xtag 'Capitalising PUPs'
+[61]  
+[62]      Headers←"Member's PUP" "Member's Annuity" "Reversion" "Reversionary Annuity" "Capitalised PUP"
+[63]      (   "Main Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAD' 'RAA2' 'WARSPAD' 'LAA2'  'RVD2'
+[64]      (   "Main Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAD' 'RAT2' 'WARNRAD' 'LAT2'  'RVT2'
+[65]      ("Special Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAN' 'RAA1' 'WARSPAN' 'LAA1'  'RVD1'
+[66]      ("Special Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAN' 'RAT1' 'WARNRAN' 'LAT1'  'RVT1'
+[67]      ("Peninc3 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAL' 'RAA6' 'WARSPAL' 'LAA10' 'RVD6'
+[68]      ("Peninc3 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAL' 'RAT6' 'WARNRAL' 'LAT10' 'RVT6'
+[69]      ("Peninc4 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPA4' 'RAA7' 'WARSPA4' 'LAA12' 'RVD7'
+[70]      ("Peninc4 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRA4' 'RAT7' 'WARNRA4' 'LAT12' 'RVT7'
+[71]  
+[72]      TRACE_BOOKMARK 'Capitalising GMPs'
+[73]      TRACE_Def 'h1' xtag 'Capitalising GMPs'
+[74]  
+[75]      Headers←"Revalued GMP" "Member's Annuity" "Reversionary Annuity" "Capitalised GMP"
+[76]      ("Lifetime Pre 1988 GMP payable from max(NRA:SPA)"  Headers) DEBUG ⊃'PreGMPR'  'RAA3' 'LAA3' 'RVD3'
+[77]      ("Lifetime Post 1988 GMP payable from max(NRA:SPA)" Headers) DEBUG ⊃'PostGMPR' 'RAA4' 'LAA4' 'RVD4'
+[78]  
+[79]      TRACE_BOOKMARK 'Underpin Proportions'
+[80]      TRACE_Def 'h1' xtag 'Underpin Proportions'
+[81]  
+[82]      Headers←"Main" "Special" "Peninc3" "Peninc4" "Main Spouse" "Special Spouse" "Peninc3 Spouse" "Peninc4 Spouse"
+[83]      ("Proportions of max(RA:SPA) PUPs underpinned" Headers)      DEBUG ⊃'GFRAC3'  'GFRAC4'  'GFRAC5'  'GFRAC6'  'SGFRAC3'  'SGFRAC4'  'SGFRAC5'  'SGFRAC6'
+[84]      ("Proportions of SPA PUPs underpinned"         Headers)      DEBUG ⊃'GFRAC3A' 'GFRAC4A' 'GFRAC5A' 'GFRAC6A' 'SGFRAC3A' 'SGFRAC4A' 'SGFRAC5A' 'SGFRAC6A'
+[85]      ("Proportions of GMPs underpinned" ("Pre 1988" "Post 1988")) DEBUG ⊃'GFRAC1' 'GFRAC2'
+[86]      Headers←"Accumulated Underpin" "Underpinned Cash" "Underpinned Pension"
+[87]      ("Underpin Amounts" Headers) DEBUG ⊃'UFUNDMP' 'GCASH' 'UFUNDR'
+[88]  
+[89]      :if ∨/0≠Indpups
+[90]          TRACE_BOOKMARK 'Capitalising Independent PUPs'
+[91]          TRACE_Def 'h1' xtag 'Capitalising Independent PUPs'
+[92]          Headers←"Member's PUP" "Member's Temporary Annuity" "Member's Deferred Annuity" "Reversion" "Reversionary Temporary Annuity" "Reversionary Deferred Annuity" "Capitalised Temporary PUP" "Capitalised Deferred PUP"
+[93]  
+[94]          :for idx :in 1+⍳⍴Indpups
+[95]              :if ∨/0≠(⍎'RVTI',¯2↑'0',⍕idx)+⍎'RVDI',¯2↑'0',⍕idx
+[96]                  (("Independent PUP ",⍕idx) Headers) DEBUG ⊃('IPEN',¯2↑'0',⍕idx) ('RAAI',¯2↑'0',⍕idx) ('RATI',¯2↑'0',⍕idx) ('ISPEN',¯2↑'0',⍕idx) ('LAAI',¯2↑'0',⍕idx) ('LATI',¯2↑'0',⍕idx) ('RVDI',¯2↑'0',⍕idx) ('RVTI',¯2↑'0',⍕idx)
+[97]              :endif
+[98]          :endfor
+[99]      :endif
+[100]     TRACE_BOOKMARK 'Valuing PUPs'
+[101]     TRACE_Def 'h1' xtag 'Service Table'
+[102] 
+[103]     Headers←"Age" "Survivors" "Retirements" "Deaths" "Transfers Out" "Retirement Transfers" "Age" "Prob. Survival" "Prob. Retirement" "Prob. Death" "Prob. Transfer Out" "Prob. Retirement Transfer"
+[104]     'Service Table/Probabilities'         TRACE_Def Headers⍪X,(1 rnd (tPx,PROBS[;0 1 4 5])×10000÷¯1↑tPx),X,rnd tPx,PROBS[;0 1 4 5]
+[105] 
+[106]     TRACE_Def 'h1' xtag 'Valuing Retirement PUPs'
+[107] 
+[108]     Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."
+[109]     disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre
+[110]     tab←1 rnd tab⍪+⌿tab←(0 ¯1↓rPVTV),+/rPVTV ⋄ mat←1 rnd mat,+/mat←VC[;0],0 ¯1↓VRB
+[111]     'Retirement PUPs'         TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab
+[112] 
+[113]     TRACE_Def 'h1' xtag 'Valuing Death in Deferment PUPs'
+[114] 
+[115]     tab←1 rnd tab⍪+⌿tab←(0 ¯1↓mPVTV),+/mPVTV ⋄ mat←1 rnd mat,+/mat←VC[;1],0 ¯1↓VMB
+[116]     'Death in Deferment PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab
+[117] :case 2 ⍝ Transfers
+[118]     (PENNRAN  PENNRAD  PENNRAL  PENNRA4)←⊂[1] TransBEN[iPEN;iWHO;iNRA;;]               ⍝ pennra-upennra∆
+[119]     (WARNRAN  WARNRAD  WARNRAL  WARNRA4)←⊂[1] TransBEN[iWAR;iWHO;iNRA;;]               ⍝ warnra-uwarnra∆
+[120]     (PENSPAN  PENSPAD  PENSPAL  PENSPA4)←⊂[1] TransBEN[iPEN;iWHO;iSPA;;]               ⍝ penspa-upenspa∆
+[121]     (WARSPAN  WARSPAD  WARSPAL  WARSPA4)←⊂[1] TransBEN[iWAR;iWHO;iSPA;;]               ⍝ warspa-uwarspa∆
+[122] 
+[123]     0 0⍴VPFile0 NTIE (vtpr1←'Native' TieNumber VPFile0),2 ⍝ Retie VarPrint file (assume it works??)
+[124]     TOC_SOURCE←TOC_SOURCE0
+[125] 
+[126]     TRACE_BOOKMARK 'Capitalising Retirement Transfer PUPs'
+[127]     TRACE_Def 'h1' xtag 'Capitalising Retirement Transfer PUPs'
+[128] 
+[129]     Headers←"Member's PUP" "Member's Annuity" "Reversion" "Reversionary Annuity" "Capitalised Retirement Transfer PUP"
+[130]     (   "Main Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAD' 'TRAA2' 'WARSPAD' 'TLAA2'  'TRVD2'
+[131]     (   "Main Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAD' 'TRAT2' 'WARNRAD' 'TLAT2'  'TRVT2'
+[132]     ("Special Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAN' 'TRAA1' 'WARSPAN' 'TLAA1'  'TRVD1'
+[133]     ("Special Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAN' 'TRAT1' 'WARNRAN' 'TLAT1'  'TRVT1'
+[134]     ("Peninc3 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAL' 'TRAA6' 'WARSPAL' 'TLAA10' 'TRVD6'
+[135]     ("Peninc3 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAL' 'TRAT6' 'WARNRAL' 'TLAT10' 'TRVT6'
+[136]     ("Peninc4 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPA4' 'TRAA7' 'WARSPA4' 'TLAA12' 'TRVD7'
+[137]     ("Peninc4 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRA4' 'TRAT7' 'WARNRA4' 'TLAT12' 'TRVT7'
+[138] 
+[139]     TRACE_BOOKMARK 'Capitalising Retirement Transfer GMPs'
+[140]     TRACE_Def 'h1' xtag 'Capitalising Retirement Transfer GMPs'
+[141] 
+[142]     Headers←"Revalued GMP" "Member's Annuity" "Reversionary Annuity" "Capitalised Retirement Transfer GMP"
+[143]     ("Lifetime Pre 1988 GMP payable from max(NRA:SPA)"  Headers) DEBUG ⊃'PreGMPR'  'TRAA3' 'TLAA3' 'TRVD3'
+[144]     ("Lifetime Post 1988 GMP payable from max(NRA:SPA)" Headers) DEBUG ⊃'PostGMPR' 'TRAA4' 'TLAA4' 'TRVD4'
+[145] 
+[146]     TRACE_BOOKMARK 'Underpin Proportions'
+[147]     TRACE_Def 'h1' xtag 'Underpin Proportions'
+[148] 
+[149]     Headers←"Main" "Special" "Peninc3" "Peninc4" "Main Spouse" "Special Spouse" "Peninc3 Spouse" "Peninc4 Spouse"
+[150]     ("Proportions of max(RA:SPA) PUPs underpinned" Headers)      DEBUG ⊃'GFRAC3'  'GFRAC4'  'GFRAC5'  'GFRAC6'  'SGFRAC3'  'SGFRAC4'  'SGFRAC5'  'SGFRAC6'
+[151]     ("Proportions of SPA PUPs underpinned"         Headers)      DEBUG ⊃'GFRAC3A' 'GFRAC4A' 'GFRAC5A' 'GFRAC6A' 'SGFRAC3A' 'SGFRAC4A' 'SGFRAC5A' 'SGFRAC6A'
+[152]     ("Proportions of GMPs underpinned" ("Pre 1988" "Post 1988")) DEBUG ⊃'GFRAC1' 'GFRAC2'
+[153]     Headers←"Accumulated Underpin" "Underpinned Cash" "Underpinned Pension"
+[154]     ("Underpin Amounts" Headers) DEBUG ⊃'UFUNDMP' 'GCASH' 'UFUNDT'
+[155] 
+[156]     :if ∨/0≠Indpups
+[157]         TRACE_BOOKMARK 'Capitalising Independent Retirement Transfer PUPs'
+[158]         TRACE_Def 'h1' xtag 'Capitalising Independent Retirement Transfer PUPs'
+[159]         Headers←"Member's PUP" "Member's Temporary Annuity" "Member's Deferred Annuity" "Reversion" "Reversionary Temporary Annuity" "Reversionary Deferred Annuity" "Capitalised Temporary Retirement Transfer PUP" "Capitalised Deferred Retirement Transfer PUP"
+[160] 
+[161]         :for idx :in 1+⍳⍴Indpups
+[162]             :if ∨/0≠(⍎'TRVTI',¯2↑'0',⍕idx)+⍎'TRVDI',¯2↑'0',⍕idx
+[163]                 (("Independent PUP ",⍕idx) Headers) DEBUG ⊃('IPEN',¯2↑'0',⍕idx) ('TRATI',¯2↑'0',⍕idx) ('TRAAI',¯2↑'0',⍕idx) ('ISPEN',¯2↑'0',⍕idx) ('TLATI',¯2↑'0',⍕idx) ('TLAAI',¯2↑'0',⍕idx) ('TRVDI',¯2↑'0',⍕idx) ('TRVTI',¯2↑'0',⍕idx)
+[164]             :endif
+[165]         :endfor
+[166]     :endif
+[167]     TRACE_BOOKMARK 'Valuing Retirement Transfer PUPs'
+[168]     TRACE_Def 'h1' xtag 'Service Table'
+[169] 
+[170]     Headers←"Age" "Survivors" "Retirements" "Deaths" "Transfers Out" "Retirement Transfers" "Age" "Prob. Survival" "Prob. Retirement" "Prob. Death" "Prob. Transfer Out" "Prob. Retirement Transfer"
+[171]     'Service Table/Probabilities' TRACE_Def Headers⍪X,(1 rnd (tPx,PROBS[;0 1 4 5])×10000÷¯1↑tPx),X,rnd tPx,PROBS[;0 1 4 5]
+[172] 
+[173]     TRACE_Def 'h1' xtag 'Valuing Retirement Transfer PUPs'
+[174] 
+[175]     Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."
+[176]     disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre
+[177]     tab←1 rnd tab⍪+⌿tab←(0 ¯1↓TPVTV),+/TPVTV ⋄ mat←1 rnd mat,+/mat←VC[;4],0 ¯1↓V∆B
+[178]     'Retirement Transfer PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab
+[179] 
+[180]     :if ~TVIgnoreDiD
+[181]         TRACE_Def 'h1' xtag 'Valuing Retirement Transfer Death in Deferment PUPs'
+[182] 
+[183]         Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."
+[184]         disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre
+[185]         tab←1 rnd tab⍪+⌿tab←(0 ¯1↓tPVTV),+/tPVTV ⋄ mat←1 rnd mat,+/mat←VC[;5],0 ¯1↓VtB
+[186]         'Death after Retirement Transfer PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab
+[187]     :endif
+[188] 
+[189]     TRACE_BOOKMARK 'Capitalising Transfer Value PUPs'
+[190]     TRACE_Def 'h1' xtag 'Capitalising Transfer Value PUPs'
+[191] 
+[192]     Headers←"Member's PUP" "Member's Annuity" "Reversion" "Reversionary Annuity" "Capitalised Transfer Value PUP"
+[193]     (   "Main Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAD' 'TVRAA2' 'WARSPAD' 'TVLAA2'  'TVD2'
+[194]     (   "Main Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAD' 'TVRAT2' 'WARNRAD' 'TVLAT2'  'TVT2'
+[195]     ("Special Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAN' 'TVRAA1' 'WARSPAN' 'TVLAA1'  'TVD1'
+[196]     ("Special Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAN' 'TVRAT1' 'WARNRAN' 'TVLAT1'  'TVT1'
+[197]     ("Peninc3 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPAL' 'TVRAA6' 'WARSPAL' 'TVLAA10' 'TVD6'
+[198]     ("Peninc3 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRAL' 'TVRAT6' 'WARNRAL' 'TVLAT10' 'TVT6'
+[199]     ("Peninc4 Lifetime Pension payable from max(RA:SPA)" Headers) DEBUG ⊃'PENSPA4' 'TVRAA7' 'WARSPA4' 'TVLAA12' 'TVD7'
+[200]     ("Peninc4 Temporary Pension payable to SPA (>RA)"    Headers) DEBUG ⊃'PENNRA4' 'TVRAT7' 'WARNRA4' 'TVLAT12' 'TVT7'
+[201] 
+[202]     TRACE_BOOKMARK 'Capitalising Transfer Value GMPs'
+[203]     TRACE_Def 'h1' xtag 'Capitalising Transfer Value GMPs'
+[204] 
+[205]     Headers←"Revalued GMP" "Member's Annuity" "Reversionary Annuity" "Capitalised Transfer Value GMP"
+[206]     ("Lifetime Pre 1988 GMP payable from max(NRA:SPA)"  Headers) DEBUG ⊃'PreGMPR'  'TVRAA3' 'TVLAA3' 'TVD3'
+[207]     ("Lifetime Post 1988 GMP payable from max(NRA:SPA)" Headers) DEBUG ⊃'PostGMPR' 'TVRAA4' 'TVLAA4' 'TVD4'
+[208] 
+[209]     TRACE_BOOKMARK 'Underpin Proportions'
+[210]     TRACE_Def 'h1' xtag 'Underpin Proportions'
+[211] 
+[212]     Headers←"Main" "Special" "Peninc3" "Peninc4" "Main Spouse" "Special Spouse" "Peninc3 Spouse" "Peninc4 Spouse"
+[213]     ("Proportions of max(RA:SPA) PUPs underpinned" Headers)      DEBUG ⊃'GFRAC3'  'GFRAC4'  'GFRAC5'  'GFRAC6'  'SGFRAC3'  'SGFRAC4'  'SGFRAC5'  'SGFRAC6'
+[214]     ("Proportions of SPA PUPs underpinned"         Headers)      DEBUG ⊃'GFRAC3A' 'GFRAC4A' 'GFRAC5A' 'GFRAC6A' 'SGFRAC3A' 'SGFRAC4A' 'SGFRAC5A' 'SGFRAC6A'
+[215]     ("Proportions of GMPs underpinned" ("Pre 1988" "Post 1988")) DEBUG ⊃'GFRAC1' 'GFRAC2'
+[216]     Headers←"Accumulated Underpin" "Underpinned Cash" "Underpinned Pension"
+[217]     ("Underpin Amounts" Headers) DEBUG ⊃'UFUNDMP' 'GCASH' 'UFUNDO'
+[218] 
+[219]     :if ∨/0≠Indpups
+[220]         TRACE_BOOKMARK 'Capitalising Independent Transfer Value PUPs'
+[221]         TRACE_Def 'h1' xtag 'Capitalising Independent Transfer Value PUPs'
+[222]         Headers←"Member's PUP" "Member's Temporary Annuity" "Member's Deferred Annuity" "Reversion" "Reversionary Temporary Annuity" "Reversionary Deferred Annuity" "Capitalised Temporary Transfer Value PUP" "Capitalised Deferred Transfer Value PUP"
+[223] 
+[224]         :for idx :in 1+⍳⍴Indpups
+[225]             :if ∨/0≠(⍎'TVRVTI',¯2↑'0',⍕idx)+⍎'TVRVDI',¯2↑'0',⍕idx
+[226]                 (("Independent PUP ",⍕idx) Headers) DEBUG ⊃('IPEN',¯2↑'0',⍕idx) ('TVRATI',¯2↑'0',⍕idx) ('TVRAAI',¯2↑'0',⍕idx) ('ISPEN',¯2↑'0',⍕idx) ('TVLATI',¯2↑'0',⍕idx) ('TVLAAI',¯2↑'0',⍕idx) ('TVRVDI',¯2↑'0',⍕idx) ('TVRVTI',¯2↑'0',⍕idx)
+[227]             :endif
+[228]         :endfor
+[229]     :endif
+[230]     TRACE_BOOKMARK 'Valuing Transfer Value PUPs'
+[231]     TRACE_Def 'h1' xtag 'Service Table'
+[232] 
+[233]     Headers←"Age" "Survivors" "Retirements" "Deaths" "Transfers Out" "Retirement Transfers" "Age" "Prob. Survival" "Prob. Retirement" "Prob. Death" "Prob. Transfer Out" "Prob. Retirement Transfer"
+[234]     'Service Table/Probabilities' TRACE_Def Headers⍪X,(1 rnd (tPx,PROBS[;0 1 4 5])×10000÷¯1↑tPx),X,rnd tPx,PROBS[;0 1 4 5]
+[235] 
+[236]     TRACE_Def 'h1' xtag 'Valuing Transfer Value PUPs'
+[237] 
+[238]     Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."
+[239]     disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre
+[240]     tab←1 rnd tab⍪+⌿tab←(0 ¯1↓OPVTV),+/OPVTV ⋄ mat←1 rnd mat,+/mat←VC[;6],0 ¯1↓VOB
+[241]     'Transfer Value PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab
+[242] 
+[243]     :if ~TVIgnoreDiD
+[244]         TRACE_Def 'h1' xtag 'Valuing Transfer Value Death in Deferment PUPs'
+[245] 
+[246]         Headers←"Age" "Discount" "Cash Ben." "GMP Ben." "Main Ben." "Special Ben." "Peninc3 Ben." "Peninc4 Ben." "Underpin Ben." "Total Ben." "Cash Liab." "GMP Liab." "Main Liab." "Special Liab." "Peninc Liab." "Peninc4 Liab." "Underpin Liab." "Total Liab."
+[247]         disc←rnd (NX_1↑pp∆vMPPre),↑NX_1↓pp∆vPre
+[248]         tab←1 rnd tab⍪+⌿tab←(0 ¯1↓oPVTV),+/oPVTV ⋄ mat←1 rnd mat,+/mat←VC[;7],0 ¯1↓VoB
+[249]         'Death after Transfer Value PUPs' TRACE_Def Headers⍪((XMP,disc,mat) OVER (⊂'Total'),9⍴⊂' '),tab
+[250]     :endif
+[251] 
+[252] :endselect
+[253] TRACE_CLOSE
+    ∇

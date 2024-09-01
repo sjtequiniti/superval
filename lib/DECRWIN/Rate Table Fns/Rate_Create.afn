@@ -1,1 +1,36 @@
-    ∇ res←larg Rate∆Create rarg;TABNUM;RATE;ADD;default;pad;NEterm[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Create the Rate Table according to its type[3]   ⍝ Copes with "defaults" - 000 Tables[4]   ⍝            "Select Tables" - stored as row of select rates for age x at commencement plus column of ultimate rates[5]   ⍝            "2D Tables"[6]   ⍝            "Duration Only Tables"[7]   ⍝        and "Age" Tables[8]   ⍝  Age Tables are expanded to 120 rates, all other Tables are expanded into 120 120 array of rates[9]   ⍝ larg contains [0] the "default" value[10]  ⍝               [1] the "new entrant term" (to get rates by age and term at entry)[11]  ⍝               [2] the "padding" value (to pad out to 120 values)[12]  ⍝               [3...] the ages at which "Select" Rates required for start-year benefits[13]  [14]  :if 1=≡rarg ⋄ rarg←⎕split MATRIX rarg ⋄ :endif[15]  (TABNUM RATE ADD)←3↑rarg,' ' ' ' ⋄ (default NEterm pad)←3↑larg[16]  [17]  :if '000'≡2↓TABNUM←¯5↑DLTMB TABNUM ⍝ Default Table[18]      res←120⍴default[19]  :else[20]      :if ¯1≡res←¯1 DEC∆CHECK TABNUM OVER RATE OVER ADD ⋄ :return ⋄ :endif[21]      :if TwoDTable TABNUM ⍝ 2D Tables[22]          :if (1↑1↓TABNUM)∊'Ss' ⍝ Select Table[23]              res←(2↓larg) SELECT2D res[24]          :elseif (1↑1↓TABNUM)∊'Rr' ⍝ Retirement Age related[25]              :return[26]          :else ⍝ Two Dimensional Table[27]              res←(pad,NEterm) OVERTAKE2D res[28]          :endif[29]      :elseif (1↑1↓TABNUM)∊'Tt'                   ⍝ Durational Table[30]          res←(⎕io-⍳120)⌽120 120⍴120 OVERTAKE res,pad[31]      :else                                       ⍝ Age-related Table[32]          res←120 OVERTAKE (DTZ res),pad[33]      :endif[34]  :endif    ∇
+    ∇ res←larg Rate∆Create rarg;TABNUM;RATE;ADD;default;pad;NEterm
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Create the Rate Table according to its type
+[3]   ⍝ Copes with "defaults" - 000 Tables
+[4]   ⍝            "Select Tables" - stored as row of select rates for age x at commencement plus column of ultimate rates
+[5]   ⍝            "2D Tables"
+[6]   ⍝            "Duration Only Tables"
+[7]   ⍝        and "Age" Tables
+[8]   ⍝  Age Tables are expanded to 120 rates, all other Tables are expanded into 120 120 array of rates
+[9]   ⍝ larg contains [0] the "default" value
+[10]  ⍝               [1] the "new entrant term" (to get rates by age and term at entry)
+[11]  ⍝               [2] the "padding" value (to pad out to 120 values)
+[12]  ⍝               [3...] the ages at which "Select" Rates required for start-year benefits
+[13]  
+[14]  :if 1=≡rarg ⋄ rarg←⎕split MATRIX rarg ⋄ :endif
+[15]  (TABNUM RATE ADD)←3↑rarg,' ' ' ' ⋄ (default NEterm pad)←3↑larg
+[16]  
+[17]  :if '000'≡2↓TABNUM←¯5↑DLTMB TABNUM ⍝ Default Table
+[18]      res←120⍴default
+[19]  :else
+[20]      :if ¯1≡res←¯1 DEC∆CHECK TABNUM OVER RATE OVER ADD ⋄ :return ⋄ :endif
+[21]      :if TwoDTable TABNUM ⍝ 2D Tables
+[22]          :if (1↑1↓TABNUM)∊'Ss' ⍝ Select Table
+[23]              res←(2↓larg) SELECT2D res
+[24]          :elseif (1↑1↓TABNUM)∊'Rr' ⍝ Retirement Age related
+[25]              :return
+[26]          :else ⍝ Two Dimensional Table
+[27]              res←(pad,NEterm) OVERTAKE2D res
+[28]          :endif
+[29]      :elseif (1↑1↓TABNUM)∊'Tt'                   ⍝ Durational Table
+[30]          res←(⎕io-⍳120)⌽120 120⍴120 OVERTAKE res,pad
+[31]      :else                                       ⍝ Age-related Table
+[32]          res←120 OVERTAKE (DTZ res),pad
+[33]      :endif
+[34]  :endif
+    ∇

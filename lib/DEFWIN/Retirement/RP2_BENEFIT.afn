@@ -1,1 +1,57 @@
-    ∇ RP2∆BENEFIT;BenType∆pp;IncType∆pp;ABno∆pp;Upin∆pp;Inc∆pp;SL∆pp;Con∆pp;Start∆pp;End∆pp;GP∆pp;AltABno∆pp[1]   ⍝ DEFWIN.sf#5[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT PENSION 2[3]   ⍝ v8.50 [EnhDef] DT/SJT summer 2010[4]   [5]   ⍝ Pension Projector Variables[6]   BenType∆pp←'P' ⍝ Benefit type[7]   IncType∆pp←'M' ⍝ Increase "description"[8]   :if ~IsAccrued      ⋄ Start∆pp←,    Age∆pp[9]   :else ⋄ ABno∆pp←'2' ⋄ Start∆pp←,NRA⌈Age∆pp ⋄ AltABno∆pp←''[10]  :endif[11]  GP∆pp←NX⍴,GPeriod ⋄ End∆pp←,SPA⌈RetAge∆pp[12]  [13]  :if isNPCR[14]      Upin∆pp←0 ⍝ Not "underpinned"[15]      Inc∆pp←DYNINCPost[16]  [17]      End∆pp←⍬[18]  [19]      SL∆pp ←,ninetypct×capratio×¯1↑   +⌿+/POSTP[;↑iWho;↑iPen;↑iRet;;iMid,iPos] ⍝ [IUTDXP] SV5000329[20]      Con∆pp←,ninetypct×capratio×¯1↑   +⌿+/POSTP[;↑iWho;↑iPen;↑iDar;;iMid,iPos] ⍝ [IUTDXP] SV5000329[21]  [22]      PP∆CreateInterface[23]  [24]  :else[25]      Inc∆pp←DYNINC[26]  [27]      Upin∆pp←0 ⍝ Not "underpinned"[28]      SL∆pp←, BEN[iPEN;iDIF;iNRA;iM;] ⋄ Con∆pp←, BEN[iWAR;iDIF;iNRA;iM;][29]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[30]  [31]      PP∆CreateInterface[32]  [33]      Upin∆pp←1 ⍝ "Underpinned"[34]      SL∆pp←,BEN[iPEN;iUND;iNRA;iM;] ⋄ Con∆pp←,BEN[iWAR;iUND;iNRA;iM;][35]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[36]  [37]      PP∆CreateInterface[38]  [39]      Start∆pp←End∆pp ⋄ End∆pp←⍬[40]      :if ~IsAccrued ⋄ GP∆pp←,0⌈GPeriod-0⌈(SPA⌈Age∆pp)-RetAge∆pp[41]      :else          ⋄ GP∆pp←,0⌈GPeriod-0⌈ SPA        -RetAge∆pp[42]      :endif[43]  [44]      Upin∆pp←0 ⍝ Not "underpinned"[45]      SL∆pp←, BEN[iPEN;iDIF;iSPA;iM;] ⋄ Con∆pp←, BEN[iWAR;iDIF;iSPA;iM;][46]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[47]  [48]      PP∆CreateInterface[49]  [50]      Upin∆pp←1 ⍝ "Underpinned"[51]      SL∆pp←,BEN[iPEN;iUND;iSPA;iM;] ⋄ Con∆pp←,BEN[iWAR;iUND;iSPA;iM;][52]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif[53]  [54]      PP∆CreateInterface[55]  :endif    ∇
+    ∇ RP2∆BENEFIT;BenType∆pp;IncType∆pp;ABno∆pp;Upin∆pp;Inc∆pp;SL∆pp;Con∆pp;Start∆pp;End∆pp;GP∆pp;AltABno∆pp
+[1]   ⍝ DEFWIN.sf#5
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM - PAST SERVICE RETIREMENT PENSION 2
+[3]   ⍝ v8.50 [EnhDef] DT/SJT summer 2010
+[4]   
+[5]   ⍝ Pension Projector Variables
+[6]   BenType∆pp←'P' ⍝ Benefit type
+[7]   IncType∆pp←'M' ⍝ Increase "description"
+[8]   :if ~IsAccrued      ⋄ Start∆pp←,    Age∆pp
+[9]   :else ⋄ ABno∆pp←'2' ⋄ Start∆pp←,NRA⌈Age∆pp ⋄ AltABno∆pp←''
+[10]  :endif
+[11]  GP∆pp←NX⍴,GPeriod ⋄ End∆pp←,SPA⌈RetAge∆pp
+[12]  
+[13]  :if isNPCR
+[14]      Upin∆pp←0 ⍝ Not "underpinned"
+[15]      Inc∆pp←DYNINCPost
+[16]  
+[17]      End∆pp←⍬
+[18]  
+[19]      SL∆pp ←,ninetypct×capratio×¯1↑   +⌿+/POSTP[;↑iWho;↑iPen;↑iRet;;iMid,iPos] ⍝ [IUTDXP] SV5000329
+[20]      Con∆pp←,ninetypct×capratio×¯1↑   +⌿+/POSTP[;↑iWho;↑iPen;↑iDar;;iMid,iPos] ⍝ [IUTDXP] SV5000329
+[21]  
+[22]      PP∆CreateInterface
+[23]  
+[24]  :else
+[25]      Inc∆pp←DYNINC
+[26]  
+[27]      Upin∆pp←0 ⍝ Not "underpinned"
+[28]      SL∆pp←, BEN[iPEN;iDIF;iNRA;iM;] ⋄ Con∆pp←, BEN[iWAR;iDIF;iNRA;iM;]
+[29]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[30]  
+[31]      PP∆CreateInterface
+[32]  
+[33]      Upin∆pp←1 ⍝ "Underpinned"
+[34]      SL∆pp←,BEN[iPEN;iUND;iNRA;iM;] ⋄ Con∆pp←,BEN[iWAR;iUND;iNRA;iM;]
+[35]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[36]  
+[37]      PP∆CreateInterface
+[38]  
+[39]      Start∆pp←End∆pp ⋄ End∆pp←⍬
+[40]      :if ~IsAccrued ⋄ GP∆pp←,0⌈GPeriod-0⌈(SPA⌈Age∆pp)-RetAge∆pp
+[41]      :else          ⋄ GP∆pp←,0⌈GPeriod-0⌈ SPA        -RetAge∆pp
+[42]      :endif
+[43]  
+[44]      Upin∆pp←0 ⍝ Not "underpinned"
+[45]      SL∆pp←, BEN[iPEN;iDIF;iSPA;iM;] ⋄ Con∆pp←, BEN[iWAR;iDIF;iSPA;iM;]
+[46]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[47]  
+[48]      PP∆CreateInterface
+[49]  
+[50]      Upin∆pp←1 ⍝ "Underpinned"
+[51]      SL∆pp←,BEN[iPEN;iUND;iSPA;iM;] ⋄ Con∆pp←,BEN[iWAR;iUND;iSPA;iM;]
+[52]      :if IsAccrued ⋄ SL∆pp←NX⍴¯1↑SL∆pp ⋄ Con∆pp←NX⍴¯1↑Con∆pp ⋄ :endif
+[53]  
+[54]      PP∆CreateInterface
+[55]  :endif
+    ∇

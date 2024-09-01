@@ -1,0 +1,32 @@
+    ∇ field Def_Membership parm;page;isActive;MESS;sex
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Membership
+[3]   
+[4]   page←'pgMembership.'
+[5]   
+[6]   :select parm
+[7]   :case 'Init'
+[8]       (parent,page,'fButtons.bnDeferreds_BasisEditRA') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[9]   
+[10]  :case 'Change'
+[11]      :select field
+[12]      :caselist 'cbm_RAParm' 'cbf_RAParm'
+[13]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fRetirement.',field) ⎕wi 'text'),'"'
+[14]              isActive←0
+[15]              sex←(↑('M' 'Fem')[1+'f'=field[3]]),'ale '
+[16]              MESS←2⊃((sex,'Retirement Age Parameter Set') 0) GET∆RetAgeGlobals 2↓field
+[17]              :if ~openParameters∨changedParm
+[18]                  changedParm←1
+[19]                  (parent,page,'fRetirement.',field) ⎕wi 'suppress' 1
+[20]                  Assign_Inputs 1
+[21]                  (parent,page,'fRetirement.',field) ⎕wi 'suppress' 0
+[22]                  changedParm←0
+[23]              :endif
+[24]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[25]          :endif
+[26]      :endselect
+[27]  
+[28]  :case 'Valid'
+[29]  
+[30]  :endselect
+    ∇

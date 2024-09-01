@@ -1,0 +1,35 @@
+    ∇ field Results∆Click ind;rUNDESC;File;tpr1;H1;SUMMREC;pAGE;cn;HeadText;list;cn_desc;col
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Browse the Basis Details if Right Click pressed on list of runs
+[3]   
+[4]   :if 0=cn←⎕warg[1] ⍝ Nothing Selected
+[5]   :orif (⎕wevent≡'Click')^2≠⎕warg[7] ⍝ Must be Right Click
+[6]       :return
+[7]   :endif
+[8]   
+[9]   ⎕wgive 0 ⍝⍝ Allow onSelect to occur!!
+[10]  
+[11]  :if ind ⍝ either Consolidation or
+[12]      :if uk=1 ⍝ Database Companion File
+[13]          col←2+(DLTB¨(⎕wi 'columndisplay')[;1]~¨⊂'<>')⍳⊂'Valuation Run Time'
+[14]          list←(⎕wi 'list')[;1,col] ⋄ cn_desc←⍕¨list[list[;1]⍳cn;]
+[15]          0 0⍴(ConsolidDir,'ValBasis') ReadFile cn_desc
+[16]      :else ⍝ ValRes File
+[17]          0 0⍴(ConsolidDir,'SVVALRES') ReadFile cn '' 'rUNDESC'
+[18]      :endif
+[19]      HeadText←'VALUATION BASIS DESCRIPTION'
+[20]  :else ⍝ or Investigation
+[21]      0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' 'rUNDESC'
+[22]      HeadText←'INVESTIGATION BASIS DESCRIPTION'
+[23]  :endif
+[24]  
+[25]  :if 0≠⎕nc 'rUNDESC'
+[26]      H1←((¯1↑⍴rUNDESC) WRITE∆HEAD HeadText) OVER ' '
+[27]      pAGE←3+1↑⍴rUNDESC ⍝ Put all on one page!!
+[28]      tpr1←NCREATE File←OutputDir,'TEMP$$.RUN' ⋄ SUMMREC←rUNDESC ⋄ 0 0⍴H1 OUTPUT tpr1,1
+[29]      BROWSE 'ß',File
+[30]      :if File NTIE tpr1←'Native' TieNumber File
+[31]          File NERASE tpr1
+[32]      :endif
+[33]  :endif
+    ∇

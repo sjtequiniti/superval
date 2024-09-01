@@ -1,0 +1,33 @@
+    ∇ Range XL_NumberFormat format;⎕elx;elx;noranges;range;rng;MaxNo;roworcol;splits;∆
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Apply a Number Format to range (cut down version of XL_ApplyProperty)
+[3]   
+[4]   noranges←1 ⋄ range←⊂Range←4⍴Range
+[5]   :if 82≠⎕dr Range ⋄ elx←⎕elx ⋄ ⎕elx←'→Retry' ⋄ :endif ⍝ Retry with "Range" split into smaller bits if numeric Range
+[6]   
+[7]   Top:
+[8]   :for rng :in range
+[9]       'XL' ⎕wi 'Range>.Rng' (RCtoA1 rng)
+[10]      0 0⍴'XL.Rng' ⎕wi 'xNumberFormat' format
+[11]  :endfor
+[12]  
+[13]  :return ⍝ Success
+[14]  
+[15]  Retry:
+[16]  :if ~mt ∆←(WHERE (⊂⍬)≡¨Range)-⎕io ⋄ roworcol←~↑∆
+[17]  :else                             ⋄ roworcol←≠/Range[⎕io+1 3] ⍝ 1 is Column based copying (0 is row based)
+[18]  :endif
+[19]  MaxNo←1+-/Range[⎕io+roworcol+2 0]
+[20]  ⎕elx←'→Retry1'
+[21]  
+[22]  Retry1:                                 ⍝ Use smaller ranges to overcome error
+[23]  :if noranges=MaxNo ⋄ ⎕elx←elx ⋄ →Top ⋄ :endif ⍝ One last try!
+[24]  noranges←MaxNo⌊noranges×2               ⍝ Set the number of smaller ranges
+[25]  
+[26]  ⍝ Create a number of smaller ranges, if required
+[27]  splits←MaxNo÷noranges
+[28]  splits←(Range[⎕io+roworcol]+⌊splits×(⍳noranges)-⎕io),Range[⎕io+2+roworcol]+1
+[29]  range←noranges⌿MATRIX Range ⋄ range[;⎕io+roworcol]←¯1↓splits ⋄ range[;⎕io+2+roworcol]←1↓splits-1 ⋄ range←⎕split range
+[30]  
+[31]  →Top
+    ∇

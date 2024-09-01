@@ -1,0 +1,32 @@
+    ∇ field Def_RetPension parm;page;isActive;MESS;sex
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Retirement Pension Page
+[3]   
+[4]   page←'pgRetPension.'
+[5]   
+[6]   :select parm
+[7]   :case 'Init'
+[8]       (parent,page,'fButtons.bnDeferreds_BasisEditRF') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[9]   
+[10]  :case 'Change'
+[11]      :select field
+[12]      :caselist 'cbm_ERTABParm' 'cbf_ERTABParm'
+[13]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fERFact.',field) ⎕wi 'text'),'"'
+[14]              isActive←0
+[15]              sex←(↑('M' 'Fem')[1+'f'=field[3]]),'ale '
+[16]              MESS←2⊃((sex,'Pension Retirement Factors Parameter Set') 0) GET∆RetFactGlobals 2↓field
+[17]              :if ~openParameters∨changedParm
+[18]                  changedParm←1
+[19]                  (parent,page,'fERFact.',field) ⎕wi 'suppress' 1
+[20]                  Assign_Inputs 1
+[21]                  (parent,page,'fERFact.',field) ⎕wi 'suppress' 0
+[22]                  changedParm←0
+[23]              :endif
+[24]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[25]          :endif
+[26]      :endselect
+[27]  
+[28]  :case 'Valid'
+[29]  
+[30]  :endselect
+    ∇

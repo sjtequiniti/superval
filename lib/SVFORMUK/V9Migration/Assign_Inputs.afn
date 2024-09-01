@@ -1,1 +1,164 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "V9Migration" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "V9Migration" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmMigration.fBases.fActives.lvActBases" ⎕wi "list"[10]  :if 0∊⍴PickList[11]      value←⍬[12]  :else[13]      list←(1 0×⍴PickList)⍴""[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX ActBases) OVER " ")[1;][15]          list←list,"⍺",(⊃PickList[;n])," "[16]      :endfor[17]      list←m2n list[18]      NameList←m2n MATRIX ActBases[19]      value←(list∊NameList)/PickList[;1][20]  :endif[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[22]      value←PickList[1;1] ⋄ modified←1[23]  :endif[24]  "fmMigration.fBases.fActives.lvActBases" ⎕wi "value" value[25]  0 0⍴"fmMigration.fBases.fActives.lvActBases" ⎕wi "EnsureVisible" ((1↑value),1)[26]  "fmMigration.fBases.fActives.ckActKeepName" ⎕wi "value" (zwb ActKeepName)[27]  PickList←"fmMigration.fBases.fActives.cbActBasisFile" ⎕wi "list"[28]  selection←PickList ExactTLU DLTB ActBasisFile[29]  :if mt selection[30]          "fmMigration.fBases.fActives.cbActBasisFile" ⎕wi "text" (DLTB ActBasisFile)[31]  :else[32]      "fmMigration.fBases.fActives.cbActBasisFile" ⎕wi "value" selection[33]  :endif[34]  PickList←"fmMigration.fBases.fDeferreds.lvDefBases" ⎕wi "list"[35]  :if 0∊⍴PickList[36]      value←⍬[37]  :else[38]      list←(1 0×⍴PickList)⍴""[39]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX DefBases) OVER " ")[1;][40]          list←list,"⍺",(⊃PickList[;n])," "[41]      :endfor[42]      list←m2n list[43]      NameList←m2n MATRIX DefBases[44]      value←(list∊NameList)/PickList[;1][45]  :endif[46]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[47]      value←PickList[1;1] ⋄ modified←1[48]  :endif[49]  "fmMigration.fBases.fDeferreds.lvDefBases" ⎕wi "value" value[50]  0 0⍴"fmMigration.fBases.fDeferreds.lvDefBases" ⎕wi "EnsureVisible" ((1↑value),1)[51]  "fmMigration.fBases.fDeferreds.ckDefKeepName" ⎕wi "value" (zwb DefKeepName)[52]  PickList←"fmMigration.fBases.fDeferreds.cbDefBasisFile" ⎕wi "list"[53]  selection←PickList ExactTLU DLTB DefBasisFile[54]  :if mt selection[55]          "fmMigration.fBases.fDeferreds.cbDefBasisFile" ⎕wi "text" (DLTB DefBasisFile)[56]  :else[57]      "fmMigration.fBases.fDeferreds.cbDefBasisFile" ⎕wi "value" selection[58]  :endif[59]  PickList←"fmMigration.fBases.fPensioners.lvPenBases" ⎕wi "list"[60]  :if 0∊⍴PickList[61]      value←⍬[62]  :else[63]      list←(1 0×⍴PickList)⍴""[64]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX PenBases) OVER " ")[1;][65]          list←list,"⍺",(⊃PickList[;n])," "[66]      :endfor[67]      list←m2n list[68]      NameList←m2n MATRIX PenBases[69]      value←(list∊NameList)/PickList[;1][70]  :endif[71]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0[72]      value←PickList[1;1] ⋄ modified←1[73]  :endif[74]  "fmMigration.fBases.fPensioners.lvPenBases" ⎕wi "value" value[75]  0 0⍴"fmMigration.fBases.fPensioners.lvPenBases" ⎕wi "EnsureVisible" ((1↑value),1)[76]  "fmMigration.fBases.fPensioners.ckPenKeepName" ⎕wi "value" (zwb PenKeepName)[77]  PickList←"fmMigration.fBases.fPensioners.cbPenBasisFile" ⎕wi "list"[78]  selection←PickList ExactTLU DLTB PenBasisFile[79]  :if mt selection[80]          "fmMigration.fBases.fPensioners.cbPenBasisFile" ⎕wi "text" (DLTB PenBasisFile)[81]  :else[82]      "fmMigration.fBases.fPensioners.cbPenBasisFile" ⎕wi "value" selection[83]  :endif[84]  PickList←"fmMigration.fParms.fNames.cbmigTable" ⎕wi "list"[85]  selection←PickList ExactTLU DLTB migTable[86]  :if mt selection[87]      :if ~mt DLTB migTable[88]          warnings←warnings OVER "Previous Selection for 'Table of Migration Default Names' is no longer available"[89]      :endif[90]      modified←⌈/modified,0[91]  :endif[92]  "fmMigration.fParms.fNames.cbmigTable" ⎕wi "value" (¯1↑0,selection)[93]  PickList←"fmMigration.fParms.fFinancials.cbfaParms" ⎕wi "list"[94]  selection←PickList ExactTLU DLTB faParms[95]  :if mt selection[96]          "fmMigration.fParms.fFinancials.cbfaParms" ⎕wi "text" (DLTB faParms)[97]  :else[98]      "fmMigration.fParms.fFinancials.cbfaParms" ⎕wi "value" selection[99]  :endif[100] "fmMigration.fParms.fFinancials.ckmigParm3" ⎕wi "value" (zwb migParm[3;])[101] "fmMigration.fParms.fFinancials.ckmigParm1" ⎕wi "value" (zwb migParm[1;])[102] "fmMigration.fParms.fFinancials.ckmigParm2" ⎕wi "value" (zwb migParm[2;])[103] "fmMigration.fParms.fGlobals.ckmigGpMatch1" ⎕wi "value" (zwb migGpMatch[1;])[104] "fmMigration.fParms.fGlobals.ckmigGpMatch2" ⎕wi "value" (zwb migGpMatch[2;])[105] "fmMigration.fParms.fGlobals.ckmigGpMatch3" ⎕wi "value" (zwb migGpMatch[3;])[106] :if 0≠value←"fmMigration.fInterest.trInterest" ⎕wi "value"[107]     "fmMigration.fInterest.trInterest" ⎕wi "value" 1[108]     "fmMigration.fInterest.trInterest" ⎕wi "value" value[109] :endif[110] "fmMigration.fInterest.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[111] :if 0≠value←"fmMigration.fInflation.trInflation" ⎕wi "value"[112]     "fmMigration.fInflation.trInflation" ⎕wi "value" 1[113]     "fmMigration.fInflation.trInflation" ⎕wi "value" value[114] :endif[115] "fmMigration.fInflation.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[116] :if 0≠value←"fmMigration.fRevaluation.trRevaluation" ⎕wi "value"[117]     "fmMigration.fRevaluation.trRevaluation" ⎕wi "value" 1[118]     "fmMigration.fRevaluation.trRevaluation" ⎕wi "value" value[119] :endif[120] "fmMigration.fRevaluation.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[121] :if 0≠value←"fmMigration.fIncrease.trIncrease" ⎕wi "value"[122]     "fmMigration.fIncrease.trIncrease" ⎕wi "value" 1[123]     "fmMigration.fIncrease.trIncrease" ⎕wi "value" value[124] :endif[125] "fmMigration.fIncrease.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[126] :if 0≠value←"fmMigration.fSelMort.trSelMort" ⎕wi "value"[127]     "fmMigration.fSelMort.trSelMort" ⎕wi "value" 1[128]     "fmMigration.fSelMort.trSelMort" ⎕wi "value" value[129] :endif[130] "fmMigration.fSelMort.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[131] :if 0≠value←"fmMigration.fMortality.trMortality" ⎕wi "value"[132]     "fmMigration.fMortality.trMortality" ⎕wi "value" 1[133]     "fmMigration.fMortality.trMortality" ⎕wi "value" value[134] :endif[135] "fmMigration.fMortality.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[136] :if 0≠value←"fmMigration.fMortImp.trMortImp" ⎕wi "value"[137]     "fmMigration.fMortImp.trMortImp" ⎕wi "value" 1[138]     "fmMigration.fMortImp.trMortImp" ⎕wi "value" value[139] :endif[140] "fmMigration.fMortImp.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[141] :if 0≠value←"fmMigration.fConts.trConts" ⎕wi "value"[142]     "fmMigration.fConts.trConts" ⎕wi "value" 1[143]     "fmMigration.fConts.trConts" ⎕wi "value" value[144] :endif[145] "fmMigration.fConts.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[146] :if 0≠value←"fmMigration.fNEM.trNEM" ⎕wi "value"[147]     "fmMigration.fNEM.trNEM" ⎕wi "value" 1[148]     "fmMigration.fNEM.trNEM" ⎕wi "value" value[149] :endif[150] "fmMigration.fNEM.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)[151] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_V9Migration[152]     :for var :in spin Comment_V9Migration at "variable" "row" ⋄ (var row)←var[153]         "V9Migration" ParmColor ((FormFields for "variable" var) at "control"),var row 1[154]     :endfor[155] :endif[156] :if ~0∊⍴,warnings[157]     MDISPLAY DLTMB warnings,⎕tcnl[158]     Win∆AssignVars "fmMigration"[159] :endif[160] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "V9Migration" "" "Names"[161]     "fmMigration" ⎕wi "modified" 0[162] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "V9Migration" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "V9Migration" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmMigration.fBases.fActives.lvActBases" ⎕wi "list"
+[10]  :if 0∊⍴PickList
+[11]      value←⍬
+[12]  :else
+[13]      list←(1 0×⍴PickList)⍴""
+[14]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX ActBases) OVER " ")[1;]
+[15]          list←list,"⍺",(⊃PickList[;n])," "
+[16]      :endfor
+[17]      list←m2n list
+[18]      NameList←m2n MATRIX ActBases
+[19]      value←(list∊NameList)/PickList[;1]
+[20]  :endif
+[21]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[22]      value←PickList[1;1] ⋄ modified←1
+[23]  :endif
+[24]  "fmMigration.fBases.fActives.lvActBases" ⎕wi "value" value
+[25]  0 0⍴"fmMigration.fBases.fActives.lvActBases" ⎕wi "EnsureVisible" ((1↑value),1)
+[26]  "fmMigration.fBases.fActives.ckActKeepName" ⎕wi "value" (zwb ActKeepName)
+[27]  PickList←"fmMigration.fBases.fActives.cbActBasisFile" ⎕wi "list"
+[28]  selection←PickList ExactTLU DLTB ActBasisFile
+[29]  :if mt selection
+[30]          "fmMigration.fBases.fActives.cbActBasisFile" ⎕wi "text" (DLTB ActBasisFile)
+[31]  :else
+[32]      "fmMigration.fBases.fActives.cbActBasisFile" ⎕wi "value" selection
+[33]  :endif
+[34]  PickList←"fmMigration.fBases.fDeferreds.lvDefBases" ⎕wi "list"
+[35]  :if 0∊⍴PickList
+[36]      value←⍬
+[37]  :else
+[38]      list←(1 0×⍴PickList)⍴""
+[39]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX DefBases) OVER " ")[1;]
+[40]          list←list,"⍺",(⊃PickList[;n])," "
+[41]      :endfor
+[42]      list←m2n list
+[43]      NameList←m2n MATRIX DefBases
+[44]      value←(list∊NameList)/PickList[;1]
+[45]  :endif
+[46]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[47]      value←PickList[1;1] ⋄ modified←1
+[48]  :endif
+[49]  "fmMigration.fBases.fDeferreds.lvDefBases" ⎕wi "value" value
+[50]  0 0⍴"fmMigration.fBases.fDeferreds.lvDefBases" ⎕wi "EnsureVisible" ((1↑value),1)
+[51]  "fmMigration.fBases.fDeferreds.ckDefKeepName" ⎕wi "value" (zwb DefKeepName)
+[52]  PickList←"fmMigration.fBases.fDeferreds.cbDefBasisFile" ⎕wi "list"
+[53]  selection←PickList ExactTLU DLTB DefBasisFile
+[54]  :if mt selection
+[55]          "fmMigration.fBases.fDeferreds.cbDefBasisFile" ⎕wi "text" (DLTB DefBasisFile)
+[56]  :else
+[57]      "fmMigration.fBases.fDeferreds.cbDefBasisFile" ⎕wi "value" selection
+[58]  :endif
+[59]  PickList←"fmMigration.fBases.fPensioners.lvPenBases" ⎕wi "list"
+[60]  :if 0∊⍴PickList
+[61]      value←⍬
+[62]  :else
+[63]      list←(1 0×⍴PickList)⍴""
+[64]      :for n :in 2+⍳1⌈+/"⍺"=((MATRIX PenBases) OVER " ")[1;]
+[65]          list←list,"⍺",(⊃PickList[;n])," "
+[66]      :endfor
+[67]      list←m2n list
+[68]      NameList←m2n MATRIX PenBases
+[69]      value←(list∊NameList)/PickList[;1]
+[70]  :endif
+[71]  :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 0
+[72]      value←PickList[1;1] ⋄ modified←1
+[73]  :endif
+[74]  "fmMigration.fBases.fPensioners.lvPenBases" ⎕wi "value" value
+[75]  0 0⍴"fmMigration.fBases.fPensioners.lvPenBases" ⎕wi "EnsureVisible" ((1↑value),1)
+[76]  "fmMigration.fBases.fPensioners.ckPenKeepName" ⎕wi "value" (zwb PenKeepName)
+[77]  PickList←"fmMigration.fBases.fPensioners.cbPenBasisFile" ⎕wi "list"
+[78]  selection←PickList ExactTLU DLTB PenBasisFile
+[79]  :if mt selection
+[80]          "fmMigration.fBases.fPensioners.cbPenBasisFile" ⎕wi "text" (DLTB PenBasisFile)
+[81]  :else
+[82]      "fmMigration.fBases.fPensioners.cbPenBasisFile" ⎕wi "value" selection
+[83]  :endif
+[84]  PickList←"fmMigration.fParms.fNames.cbmigTable" ⎕wi "list"
+[85]  selection←PickList ExactTLU DLTB migTable
+[86]  :if mt selection
+[87]      :if ~mt DLTB migTable
+[88]          warnings←warnings OVER "Previous Selection for 'Table of Migration Default Names' is no longer available"
+[89]      :endif
+[90]      modified←⌈/modified,0
+[91]  :endif
+[92]  "fmMigration.fParms.fNames.cbmigTable" ⎕wi "value" (¯1↑0,selection)
+[93]  PickList←"fmMigration.fParms.fFinancials.cbfaParms" ⎕wi "list"
+[94]  selection←PickList ExactTLU DLTB faParms
+[95]  :if mt selection
+[96]          "fmMigration.fParms.fFinancials.cbfaParms" ⎕wi "text" (DLTB faParms)
+[97]  :else
+[98]      "fmMigration.fParms.fFinancials.cbfaParms" ⎕wi "value" selection
+[99]  :endif
+[100] "fmMigration.fParms.fFinancials.ckmigParm3" ⎕wi "value" (zwb migParm[3;])
+[101] "fmMigration.fParms.fFinancials.ckmigParm1" ⎕wi "value" (zwb migParm[1;])
+[102] "fmMigration.fParms.fFinancials.ckmigParm2" ⎕wi "value" (zwb migParm[2;])
+[103] "fmMigration.fParms.fGlobals.ckmigGpMatch1" ⎕wi "value" (zwb migGpMatch[1;])
+[104] "fmMigration.fParms.fGlobals.ckmigGpMatch2" ⎕wi "value" (zwb migGpMatch[2;])
+[105] "fmMigration.fParms.fGlobals.ckmigGpMatch3" ⎕wi "value" (zwb migGpMatch[3;])
+[106] :if 0≠value←"fmMigration.fInterest.trInterest" ⎕wi "value"
+[107]     "fmMigration.fInterest.trInterest" ⎕wi "value" 1
+[108]     "fmMigration.fInterest.trInterest" ⎕wi "value" value
+[109] :endif
+[110] "fmMigration.fInterest.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[111] :if 0≠value←"fmMigration.fInflation.trInflation" ⎕wi "value"
+[112]     "fmMigration.fInflation.trInflation" ⎕wi "value" 1
+[113]     "fmMigration.fInflation.trInflation" ⎕wi "value" value
+[114] :endif
+[115] "fmMigration.fInflation.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[116] :if 0≠value←"fmMigration.fRevaluation.trRevaluation" ⎕wi "value"
+[117]     "fmMigration.fRevaluation.trRevaluation" ⎕wi "value" 1
+[118]     "fmMigration.fRevaluation.trRevaluation" ⎕wi "value" value
+[119] :endif
+[120] "fmMigration.fRevaluation.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[121] :if 0≠value←"fmMigration.fIncrease.trIncrease" ⎕wi "value"
+[122]     "fmMigration.fIncrease.trIncrease" ⎕wi "value" 1
+[123]     "fmMigration.fIncrease.trIncrease" ⎕wi "value" value
+[124] :endif
+[125] "fmMigration.fIncrease.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[126] :if 0≠value←"fmMigration.fSelMort.trSelMort" ⎕wi "value"
+[127]     "fmMigration.fSelMort.trSelMort" ⎕wi "value" 1
+[128]     "fmMigration.fSelMort.trSelMort" ⎕wi "value" value
+[129] :endif
+[130] "fmMigration.fSelMort.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[131] :if 0≠value←"fmMigration.fMortality.trMortality" ⎕wi "value"
+[132]     "fmMigration.fMortality.trMortality" ⎕wi "value" 1
+[133]     "fmMigration.fMortality.trMortality" ⎕wi "value" value
+[134] :endif
+[135] "fmMigration.fMortality.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[136] :if 0≠value←"fmMigration.fMortImp.trMortImp" ⎕wi "value"
+[137]     "fmMigration.fMortImp.trMortImp" ⎕wi "value" 1
+[138]     "fmMigration.fMortImp.trMortImp" ⎕wi "value" value
+[139] :endif
+[140] "fmMigration.fMortImp.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[141] :if 0≠value←"fmMigration.fConts.trConts" ⎕wi "value"
+[142]     "fmMigration.fConts.trConts" ⎕wi "value" 1
+[143]     "fmMigration.fConts.trConts" ⎕wi "value" value
+[144] :endif
+[145] "fmMigration.fConts.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[146] :if 0≠value←"fmMigration.fNEM.trNEM" ⎕wi "value"
+[147]     "fmMigration.fNEM.trNEM" ⎕wi "value" 1
+[148]     "fmMigration.fNEM.trNEM" ⎕wi "value" value
+[149] :endif
+[150] "fmMigration.fNEM.edResults" ⎕wi "text" (1↓,⎕tcnl,Results)
+[151] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_V9Migration
+[152]     :for var :in spin Comment_V9Migration at "variable" "row" ⋄ (var row)←var
+[153]         "V9Migration" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[154]     :endfor
+[155] :endif
+[156] :if ~0∊⍴,warnings
+[157]     MDISPLAY DLTMB warnings,⎕tcnl
+[158]     Win∆AssignVars "fmMigration"
+[159] :endif
+[160] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "V9Migration" "" "Names"
+[161]     "fmMigration" ⎕wi "modified" 0
+[162] :endif
+    ∇

@@ -1,0 +1,17 @@
+    ∇ NTRANSFER tieno;size;recs;startrec
+[1]   ⍝ MAINWIN.sf#8
+[2]   ⍝ Reads a Native DOS file (tied to tieno) and writes out same into another
+[3]   ⍝ Native DOS File tied with global `tpr1'. The File is then erased
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   :if 0≠size←⎕NSIZE tieno ⍝ Size of File
+[8]       ⎕tcff ⎕nappend tpr1 ⍝ OUTPUT precludes "initial" Form-Feed!!
+[9]       startrec←0
+[10]      :while ~mt recs←'ASCII' Read∆DataFile tieno,size,0,size,startrec
+[11]          startrec←startrec+⍴recs
+[12]          recs ⎕nappend tpr1
+[13]      :endwhile
+[14]  :endif
+[15]  NERASE tieno ⍝ Erase the original file
+    ∇

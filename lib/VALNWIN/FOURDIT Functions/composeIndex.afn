@@ -1,0 +1,22 @@
+    ∇ html←t composeIndex args;td;capn;th;bkmk;colhds;∆;tbls;selector;tbl
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ HTML index section for entries in tbl
+[3]   ⍝ t: (tbl) `table`var`descn (at least)
+[4]   ⍝ args: selector + bookmark + caption
+[5]   ⍝ selector: (str) key of t with flags
+[6]   ⍝ bookmark: (str)
+[7]   ⍝ caption: (str)
+[8]   ⍝ Vern: sjt21sep15
+[9]   (selector bkmk capn)←args
+[10]  :if ×rowsIn tbl←t for t at selector
+[11]      colhds←'table' 'var' 'desc'
+[12]      th←TH¨colhds
+[13]      tbls←tbl at 'subtitle'
+[14]      ∆←'a' xattr¨(⊂'href')pr¨(⊂'#t'),¨⍕¨AllTables⍳tbls       ⍝ anchor tags for tables
+[15]      ∆←∆ xtag¨xmlEscape¨aplEscape¨tbls                       ⍝ hyperlinked table names
+[16]      td←TD¨∆,xmlEscape¨1 0↓tbl select 1↓colhds               ⍝ table body
+[17]      html←(bkmk 'index') tableToHtml td th capn
+[18]  :else
+[19]      html←''
+[20]  :endif
+    ∇

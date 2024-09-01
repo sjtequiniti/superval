@@ -1,1 +1,174 @@
-    ∇ P∆CALCS;cf;PreGMPR;PostGMPR;GMPR;WGMPR;GMPRsplit;WGMPRsplit;memdedSPA;n;ID;ct;gmprevdef;gmprevdefSY;Title;Ind∆Ongoing;Ind∆Output;Ind∆Accrued;bothspded;gmpVD;gmpRET;PGMP;WPGMP;memtot;sptot;memdef;spdef;gmpdef;wgmpdef;gtee;wgtee;spded;RGP;def;maxdef;IsAccrued;OutputMat;z;OngoingMat;AccruedMat;N;fixed;gmpE0;gmp0[1]   ⍝ PENWIN.sf#3[2]   ⍝ Actually values each pension and any lump sum during deferment.[3]   ⍝[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   :if GMPSplit ⋄ GMPSplit∆Vars ⋄ :endif[8]   [9]   :if ppf ⋄ CAP∆FILTER PPFNRA ⋄ :endif ⍝ PPF Cap applied[10]  [11]  :if ∨/0≠GMP0,GMPE0[12]      :if GMPREV2[13]          GMPREV1←×\1,(2/70 OVERTAKE fixed←FIXEDRATE LD)*0.5[14]          ⍝⍀⍝ Year←0.5×⍳141[15]          ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'GMPREV2 LD fixed'[16]          ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'Year GMPREV1←'[17]          :if mt PRESPAREV[18]              GMPREVDEF←GMPREV1[19]              ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'Year GMPREVDEF←'[20]          :endif[21]      :endif[22]      maxdef←2×1+(⌈/SPA,BAGE)-⌊/X0,↑Xdpc ⍝ Maximum Deferral Period[23]      gmprevdefSY←((⍴gmprevdef)⍴1 0)/gmprevdef←maxdef↑GMPREVDEF[24]      gmprevdef  ←((⍴gmprevdef)⍴0 1)/gmprevdef[25]      ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'gmprevdefSY← gmprevdef←'[26]  :else[27]      gmprevdef←gmprevdefSY←LE⍴PreGMPR←PostGMPR←0[28]  :endif[29]  [30]  :if 0≠No∆Pens[31]      gmpVD ←(,ZWB PreVD ),[¯0.5]ZWB PostVD[32]      gmpRET←(,ZWB PreRET),[¯0.5]ZWB PostRET[33]      memdedSPA←spded←(1,No∆Pens)⍴ToSPA←0[34]      ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'PreVD PostVD gmpVD← PreRET PostRET gmpRET←'[35]  :endif[36]  [37]  :if ~ppf[38]      BenID←⍳0 ⍝ List of BenefitTypes valued[39]      IsAccrued←0[40]      OutputMat←19 11⍴0 ⍝ Matrix of Payment Parameters and Results for Text Output[41]      Ind∆Output←PP∆InterfaceHeader 'Ind'[42]      :if ∨/0≠GMP0,GMPE0[43]          ProcessGMPs  ⍝ Process GMPs[44]      :endif[45]  [46]      :if 0≠No∆Pens ⍝ Now Pensions[47]          :if PUPRDN ⋄ :andif NotSpouse ⋄ :andif Xe<SPA ⋄ :andif ∨/0≠GMP0,GMPE0 ⍝ Xe is exact (unrounded age at VDATE)[48]              PUP∆Franking[49]          :endif[50]          PENVAL[51]      :endif[52]      Ind∆Ongoing←Ind∆Output[53]  [54]      :for ID :in 0,nub BenID[55]          ⍙dbbenres←⍙dbbenres⍪((ID 0 7 1) dbXe 0) ⍙DBValnRecords NOM[56]      :endfor[57]      OngoingMat←OutputMat[58]  :endif[59]  [60]  :if ppf ⋄ :orif bencap[61]      BenID←⍳0 ⍝ List of BenefitTypes valued[62]      IsAccrued←1[63]      OutputMat←((4+15×bencap),11)⍴0 ⍝ Matrix of Payment Parameters and Results for Text Output[64]      Ind∆Output←PP∆InterfaceHeader 'Ind'[65]      :if bencap[66]          CAP∆FILTER (No∆Pens,2)/PPFCapNRA,PPFGMPNRA ⍝ PPF Cap applied[67]          :if ^/0=GMP0,GMPE0[68]              gmprevdef←gmprevdefSY←LE⍴0[69]          :endif[70]      :endif[71]  [72]      :if ∨/0≠GMP0,GMPE0[73]          ProcessGMPs  ⍝ Process GMPs[74]      :endif[75]  [76]      :if 0≠No∆Pens ⍝ Now Pensions[77]          :if PUPRDN ⋄ :andif NotSpouse ⋄ :andif Xe<SPA ⋄ :andif ∨/0≠GMP0,GMPE0 ⍝ Xe is exact (unrounded age at VDATE)[78]              PUP∆Franking[79]          :endif[80]          PENVAL[81]      :endif[82]  [83]      Ind∆Accrued←Ind∆Output[84]      ⍙dbbenres←⍙dbbenres⍪((0 99 9 24) dbXe 0) ⍙DBValnRecords capflag[85]  [86]      :for ID :in 0,nub BenID[87]          ⍙dbbenres←⍙dbbenres⍪((ID 0 7,1+25×bencap) dbXe 0) ⍙DBValnRecords NOM[88]      :endfor[89]      AccruedMat←OutputMat[90]  :endif[91]  [92]  PP∆Projector 0[93]  [94]  :if ~suppressText[95]      :if ~ppf[96]          :for ct :in ⍳19[97]              ID←(1 2 3,14+⍳16)[ct][98]              :if ~∨/z←(xl_membres[;1]=ID)^(xl_membres[;4]=13) ⋄ :continue ⋄ :endif[99]              :for n :in ⍳3[100]                 ID←(2 6 12)[n][101]                 OngoingMat[ct;7+n+ID=6]←OngoingMat[ct;7+n+ID=6]-+/(z^xl_membres[;2]=ID)/xl_membres[;7] ⍝⍝⍝ DID stored with Reversion (for now)![102]             :endfor[103]         :endfor[104]         OngoingMat[;10]←+/OngoingMat[;7+⍳3][105] [106]         ⍝⍀⍝ TRACE_PENSIONS[107] [108]         :if aosind ⍝ Put Valuation AOS Numbers in Matrix[109]             RGP←NotSpouse×0⌈GP-YOP+def←NotSpouse×0⌈SPA-X0[110]             1 AOS∆TOTS (aos∆results[1;;]) (aos∆cf[1;;])[111]             :for N :in 2+⍳No∆Pens[112]                 RGP←NotSpouse×0⌈GP-YOP+def←DEF⌈BAGE[N-2]-X0[113]                 N AOS∆TOTS (aos∆results[N;;]) (aos∆cf[N;;])[114]             :endfor[115]             :if ~prevind ⋄ AOS∆PROC ⋄ :endif ⍝ Process AOS Results (inc any Approximations)[116]         :endif[117] [118]         :if ~aosind^prevind ⋄ :andif ~∨/EXIT[3 4] ⋄ :andif ~^/OngoingMat[;10]=0 ⍝ Update Totals when Required[119]             :if ~XLCtl ⋄ :andif ~test ⍝ Cash flow and Reserve Figures for VALRES Consolidation[120]                 CFTOT[;0]←CFTOT[;0]+125 ⍙DBCrossTab (⍙dbfundres[;2]= 8)⌿⍙dbfundres[;5 6][121]                 CFTOT[;1]←CFTOT[;1]+125 ⍙DBCrossTab (⍙dbfundres[;3]=14)⌿⍙dbfundres[;5 6][122]             :endif[123] [124]             GTOTS←GTOTS+OngoingMat ⋄ GTOTS[0;⍳3]←GTOTS[0;⍳3]+NOM×1,1,X0[125] [126]             :if memsumm ⍝ Output Summary Line when Required[127]                 SUMMREC←SUMMHEAD,'<   All>,BCM<->I46,BCM<->I19,CM<->I22' ⎕FMT MATRIX 0,+⌿OngoingMat[;7 10][128]                 SUMMREC←SUMMREC OVER 'BCM<->I82,CM<->I19,BCM<->I20' ⎕FMT MATRIX 0,+⌿OngoingMat[;1 9][129]             :else[130]                 ct←×+/∣OngoingMat[;1 10] ⋄ SUMMREC←(+/ct)↑[0]SUMMHEAD[131]                 SUMMREC←((2×+/ct)⍴1 0)⍀SUMMREC,(⊃ct/0 Pens∆Title 0),'BF8.2,3BI6,BCM<->I20,BCM<->I19,CM<->I22' ⎕FMT MATRIX ct⌿(4 1 2/1 0 1)\OngoingMat[;(3+⍳4),7 10][132]                 SUMMREC[1+2×⍳+/ct;]←(¯1↑⍴SUMMREC)↑[1]'BCM<->I82,CM<->I19,BCM<->I20' ⎕FMT MATRIX ct⌿0,OngoingMat[;1 9][133]             :endif[134]             SUMMREC←UNSTAGGER SUMMREC ⋄ (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN[135] [136]             :if csvind ⋄ EXTRACT∆CSV OngoingMat ⋄ :endif[137]         :endif[138]     :endif[139] [140]     :if ppf ⋄ :orif bencap[141]         :for ct :in ⍳4+15×bencap[142]             :if ppf ⋄ ID←ct⊃(1 (12 38) (13 39) (34 40))[143]             :else   ⋄ ID←(1 2 3,14+⍳16)[ct][144]             :endif[145]             :if ~∨/z←(xl_membres[;1]∊ID)^(xl_membres[;4]=14) ⋄ :continue ⋄ :endif[146]             :for n :in ⍳3[147]                 ID←(2 6 12)[n][148]                 AccruedMat[ct;7+n+ID=6]←AccruedMat[ct;7+n+ID=6]-+/(z^xl_membres[;2]=ID)/xl_membres[;7] ⍝⍝⍝ DID stored with Reversion (for now)![149]             :endfor[150]         :endfor[151]         AccruedMat[;10]←+/AccruedMat[;7+⍳3][152] [153]         :if ~aosind^prevind ⋄ :andif ~∨/EXIT[3 4] ⋄ :andif ~^/AccruedMat[;10]=0 ⍝ Update Totals when Required[154] [155]             ATOTS←ATOTS+AccruedMat ⋄ ATOTS[0;⍳3]←ATOTS[0;⍳3]+NOM×1,1,X0[156] [157]             :if memsumm ⍝ Output Summary Line when Required[158]                 SUMMREC←SUMMHEAD,'<   All>,BCM<->I46,BCM<->I19,CM<->I22' ⎕FMT MATRIX 0,+⌿AccruedMat[;7 10][159]                 SUMMREC←SUMMREC OVER 'BCM<->I82,CM<->I19,BCM<->I20' ⎕FMT MATRIX 0,+⌿AccruedMat[;1 9][160]             :else[161]                 ct←×+/∣AccruedMat[;1 10] ⋄ SUMMREC←(+/ct)↑[0]SUMMHEAD[162]                 SUMMREC←((2×+/ct)⍴1 0)⍀SUMMREC,(⊃ct/ppf Pens∆Title 0),'BF8.2,3BI6,BCM<->I20,BCM<->I19,CM<->I22' ⎕FMT MATRIX ct⌿(4 1 2/1 0 1)\AccruedMat[;(3+⍳4),7 10][163]                 SUMMREC[1+2×⍳+/ct;]←(¯1↑⍴SUMMREC)↑[1]'BCM<->I82,CM<->I19,BCM<->I20' ⎕FMT MATRIX ct⌿0,AccruedMat[;1 9][164]             :endif[165]             SUMMREC←UNSTAGGER SUMMREC ⋄ (APAGE ARECN)←H3 OUTPUT tpA,APAGE,ARECN[166] [167]             :if csvind ⋄ EXTRACT∆CSV AccruedMat ⋄ :endif[168]         :endif[169]     :endif[170] :endif[171] [172] ⍙DBWriteTempDB 1    ∇
+    ∇ P∆CALCS;cf;PreGMPR;PostGMPR;GMPR;WGMPR;GMPRsplit;WGMPRsplit;memdedSPA;n;ID;ct;gmprevdef;gmprevdefSY;Title;Ind∆Ongoing;Ind∆Output;Ind∆Accrued;bothspded;gmpVD;gmpRET;PGMP;WPGMP;memtot;sptot;memdef;spdef;gmpdef;wgmpdef;gtee;wgtee;spded;RGP;def;maxdef;IsAccrued;OutputMat;z;OngoingMat;AccruedMat;N;fixed;gmpE0;gmp0
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ Actually values each pension and any lump sum during deferment.
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   :if GMPSplit ⋄ GMPSplit∆Vars ⋄ :endif
+[8]   
+[9]   :if ppf ⋄ CAP∆FILTER PPFNRA ⋄ :endif ⍝ PPF Cap applied
+[10]  
+[11]  :if ∨/0≠GMP0,GMPE0
+[12]      :if GMPREV2
+[13]          GMPREV1←×\1,(2/70 OVERTAKE fixed←FIXEDRATE LD)*0.5
+[14]          ⍝⍀⍝ Year←0.5×⍳141
+[15]          ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'GMPREV2 LD fixed'
+[16]          ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'Year GMPREV1←'
+[17]          :if mt PRESPAREV
+[18]              GMPREVDEF←GMPREV1
+[19]              ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'Year GMPREVDEF←'
+[20]          :endif
+[21]      :endif
+[22]      maxdef←2×1+(⌈/SPA,BAGE)-⌊/X0,↑Xdpc ⍝ Maximum Deferral Period
+[23]      gmprevdefSY←((⍴gmprevdef)⍴1 0)/gmprevdef←maxdef↑GMPREVDEF
+[24]      gmprevdef  ←((⍴gmprevdef)⍴0 1)/gmprevdef
+[25]      ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'gmprevdefSY← gmprevdef←'
+[26]  :else
+[27]      gmprevdef←gmprevdefSY←LE⍴PreGMPR←PostGMPR←0
+[28]  :endif
+[29]  
+[30]  :if 0≠No∆Pens
+[31]      gmpVD ←(,ZWB PreVD ),[¯0.5]ZWB PostVD
+[32]      gmpRET←(,ZWB PreRET),[¯0.5]ZWB PostRET
+[33]      memdedSPA←spded←(1,No∆Pens)⍴ToSPA←0
+[34]      ⍝⍀⍝ 'Executing Basis Parameters' 'GMP Parameters' FOURDIT 'PreVD PostVD gmpVD← PreRET PostRET gmpRET←'
+[35]  :endif
+[36]  
+[37]  :if ~ppf
+[38]      BenID←⍳0 ⍝ List of BenefitTypes valued
+[39]      IsAccrued←0
+[40]      OutputMat←19 11⍴0 ⍝ Matrix of Payment Parameters and Results for Text Output
+[41]      Ind∆Output←PP∆InterfaceHeader 'Ind'
+[42]      :if ∨/0≠GMP0,GMPE0
+[43]          ProcessGMPs  ⍝ Process GMPs
+[44]      :endif
+[45]  
+[46]      :if 0≠No∆Pens ⍝ Now Pensions
+[47]          :if PUPRDN ⋄ :andif NotSpouse ⋄ :andif Xe<SPA ⋄ :andif ∨/0≠GMP0,GMPE0 ⍝ Xe is exact (unrounded age at VDATE)
+[48]              PUP∆Franking
+[49]          :endif
+[50]          PENVAL
+[51]      :endif
+[52]      Ind∆Ongoing←Ind∆Output
+[53]  
+[54]      :for ID :in 0,nub BenID
+[55]          ⍙dbbenres←⍙dbbenres⍪((ID 0 7 1) dbXe 0) ⍙DBValnRecords NOM
+[56]      :endfor
+[57]      OngoingMat←OutputMat
+[58]  :endif
+[59]  
+[60]  :if ppf ⋄ :orif bencap
+[61]      BenID←⍳0 ⍝ List of BenefitTypes valued
+[62]      IsAccrued←1
+[63]      OutputMat←((4+15×bencap),11)⍴0 ⍝ Matrix of Payment Parameters and Results for Text Output
+[64]      Ind∆Output←PP∆InterfaceHeader 'Ind'
+[65]      :if bencap
+[66]          CAP∆FILTER (No∆Pens,2)/PPFCapNRA,PPFGMPNRA ⍝ PPF Cap applied
+[67]          :if ^/0=GMP0,GMPE0
+[68]              gmprevdef←gmprevdefSY←LE⍴0
+[69]          :endif
+[70]      :endif
+[71]  
+[72]      :if ∨/0≠GMP0,GMPE0
+[73]          ProcessGMPs  ⍝ Process GMPs
+[74]      :endif
+[75]  
+[76]      :if 0≠No∆Pens ⍝ Now Pensions
+[77]          :if PUPRDN ⋄ :andif NotSpouse ⋄ :andif Xe<SPA ⋄ :andif ∨/0≠GMP0,GMPE0 ⍝ Xe is exact (unrounded age at VDATE)
+[78]              PUP∆Franking
+[79]          :endif
+[80]          PENVAL
+[81]      :endif
+[82]  
+[83]      Ind∆Accrued←Ind∆Output
+[84]      ⍙dbbenres←⍙dbbenres⍪((0 99 9 24) dbXe 0) ⍙DBValnRecords capflag
+[85]  
+[86]      :for ID :in 0,nub BenID
+[87]          ⍙dbbenres←⍙dbbenres⍪((ID 0 7,1+25×bencap) dbXe 0) ⍙DBValnRecords NOM
+[88]      :endfor
+[89]      AccruedMat←OutputMat
+[90]  :endif
+[91]  
+[92]  PP∆Projector 0
+[93]  
+[94]  :if ~suppressText
+[95]      :if ~ppf
+[96]          :for ct :in ⍳19
+[97]              ID←(1 2 3,14+⍳16)[ct]
+[98]              :if ~∨/z←(xl_membres[;1]=ID)^(xl_membres[;4]=13) ⋄ :continue ⋄ :endif
+[99]              :for n :in ⍳3
+[100]                 ID←(2 6 12)[n]
+[101]                 OngoingMat[ct;7+n+ID=6]←OngoingMat[ct;7+n+ID=6]-+/(z^xl_membres[;2]=ID)/xl_membres[;7] ⍝⍝⍝ DID stored with Reversion (for now)!
+[102]             :endfor
+[103]         :endfor
+[104]         OngoingMat[;10]←+/OngoingMat[;7+⍳3]
+[105] 
+[106]         ⍝⍀⍝ TRACE_PENSIONS
+[107] 
+[108]         :if aosind ⍝ Put Valuation AOS Numbers in Matrix
+[109]             RGP←NotSpouse×0⌈GP-YOP+def←NotSpouse×0⌈SPA-X0
+[110]             1 AOS∆TOTS (aos∆results[1;;]) (aos∆cf[1;;])
+[111]             :for N :in 2+⍳No∆Pens
+[112]                 RGP←NotSpouse×0⌈GP-YOP+def←DEF⌈BAGE[N-2]-X0
+[113]                 N AOS∆TOTS (aos∆results[N;;]) (aos∆cf[N;;])
+[114]             :endfor
+[115]             :if ~prevind ⋄ AOS∆PROC ⋄ :endif ⍝ Process AOS Results (inc any Approximations)
+[116]         :endif
+[117] 
+[118]         :if ~aosind^prevind ⋄ :andif ~∨/EXIT[3 4] ⋄ :andif ~^/OngoingMat[;10]=0 ⍝ Update Totals when Required
+[119]             :if ~XLCtl ⋄ :andif ~test ⍝ Cash flow and Reserve Figures for VALRES Consolidation
+[120]                 CFTOT[;0]←CFTOT[;0]+125 ⍙DBCrossTab (⍙dbfundres[;2]= 8)⌿⍙dbfundres[;5 6]
+[121]                 CFTOT[;1]←CFTOT[;1]+125 ⍙DBCrossTab (⍙dbfundres[;3]=14)⌿⍙dbfundres[;5 6]
+[122]             :endif
+[123] 
+[124]             GTOTS←GTOTS+OngoingMat ⋄ GTOTS[0;⍳3]←GTOTS[0;⍳3]+NOM×1,1,X0
+[125] 
+[126]             :if memsumm ⍝ Output Summary Line when Required
+[127]                 SUMMREC←SUMMHEAD,'<   All>,BCM<->I46,BCM<->I19,CM<->I22' ⎕FMT MATRIX 0,+⌿OngoingMat[;7 10]
+[128]                 SUMMREC←SUMMREC OVER 'BCM<->I82,CM<->I19,BCM<->I20' ⎕FMT MATRIX 0,+⌿OngoingMat[;1 9]
+[129]             :else
+[130]                 ct←×+/∣OngoingMat[;1 10] ⋄ SUMMREC←(+/ct)↑[0]SUMMHEAD
+[131]                 SUMMREC←((2×+/ct)⍴1 0)⍀SUMMREC,(⊃ct/0 Pens∆Title 0),'BF8.2,3BI6,BCM<->I20,BCM<->I19,CM<->I22' ⎕FMT MATRIX ct⌿(4 1 2/1 0 1)\OngoingMat[;(3+⍳4),7 10]
+[132]                 SUMMREC[1+2×⍳+/ct;]←(¯1↑⍴SUMMREC)↑[1]'BCM<->I82,CM<->I19,BCM<->I20' ⎕FMT MATRIX ct⌿0,OngoingMat[;1 9]
+[133]             :endif
+[134]             SUMMREC←UNSTAGGER SUMMREC ⋄ (SPAGE RECN)←H2 OUTPUT tpr1,SPAGE,RECN
+[135] 
+[136]             :if csvind ⋄ EXTRACT∆CSV OngoingMat ⋄ :endif
+[137]         :endif
+[138]     :endif
+[139] 
+[140]     :if ppf ⋄ :orif bencap
+[141]         :for ct :in ⍳4+15×bencap
+[142]             :if ppf ⋄ ID←ct⊃(1 (12 38) (13 39) (34 40))
+[143]             :else   ⋄ ID←(1 2 3,14+⍳16)[ct]
+[144]             :endif
+[145]             :if ~∨/z←(xl_membres[;1]∊ID)^(xl_membres[;4]=14) ⋄ :continue ⋄ :endif
+[146]             :for n :in ⍳3
+[147]                 ID←(2 6 12)[n]
+[148]                 AccruedMat[ct;7+n+ID=6]←AccruedMat[ct;7+n+ID=6]-+/(z^xl_membres[;2]=ID)/xl_membres[;7] ⍝⍝⍝ DID stored with Reversion (for now)!
+[149]             :endfor
+[150]         :endfor
+[151]         AccruedMat[;10]←+/AccruedMat[;7+⍳3]
+[152] 
+[153]         :if ~aosind^prevind ⋄ :andif ~∨/EXIT[3 4] ⋄ :andif ~^/AccruedMat[;10]=0 ⍝ Update Totals when Required
+[154] 
+[155]             ATOTS←ATOTS+AccruedMat ⋄ ATOTS[0;⍳3]←ATOTS[0;⍳3]+NOM×1,1,X0
+[156] 
+[157]             :if memsumm ⍝ Output Summary Line when Required
+[158]                 SUMMREC←SUMMHEAD,'<   All>,BCM<->I46,BCM<->I19,CM<->I22' ⎕FMT MATRIX 0,+⌿AccruedMat[;7 10]
+[159]                 SUMMREC←SUMMREC OVER 'BCM<->I82,CM<->I19,BCM<->I20' ⎕FMT MATRIX 0,+⌿AccruedMat[;1 9]
+[160]             :else
+[161]                 ct←×+/∣AccruedMat[;1 10] ⋄ SUMMREC←(+/ct)↑[0]SUMMHEAD
+[162]                 SUMMREC←((2×+/ct)⍴1 0)⍀SUMMREC,(⊃ct/ppf Pens∆Title 0),'BF8.2,3BI6,BCM<->I20,BCM<->I19,CM<->I22' ⎕FMT MATRIX ct⌿(4 1 2/1 0 1)\AccruedMat[;(3+⍳4),7 10]
+[163]                 SUMMREC[1+2×⍳+/ct;]←(¯1↑⍴SUMMREC)↑[1]'BCM<->I82,CM<->I19,BCM<->I20' ⎕FMT MATRIX ct⌿0,AccruedMat[;1 9]
+[164]             :endif
+[165]             SUMMREC←UNSTAGGER SUMMREC ⋄ (APAGE ARECN)←H3 OUTPUT tpA,APAGE,ARECN
+[166] 
+[167]             :if csvind ⋄ EXTRACT∆CSV AccruedMat ⋄ :endif
+[168]         :endif
+[169]     :endif
+[170] :endif
+[171] 
+[172] ⍙DBWriteTempDB 1
+    ∇

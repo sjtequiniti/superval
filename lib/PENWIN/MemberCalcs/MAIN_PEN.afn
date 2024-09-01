@@ -1,1 +1,91 @@
-    ∇ res←MAIN∆PEN;SUMMREC;AOSUMM;Ind∆AOS;ResMult;PerToEnt;ExitMult;A;aosrow;aosplane;errmsg;NOM;NX;DOB;DPC;Xdpc;SUMMHEAD[1]   ⍝ PENWIN.sf#3[2]   ⍝ Core function which values each deck in turn, displaying a screen[3]   ⍝ showing the progress, determines whether a pensioner is active at the[4]   ⍝ valuation date, calls PENPRELIM, calls PCALCS to actually value each[5]   ⍝ member, and keeps tracks of totals.[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   [8]   ⍝ Set up loop(s) to read member data from file, do calculations[9]   READ:→(NUMRECS<recn←recn+1)/FINISH[10]  :if hpcenabled ⋄ :andif 0=5∣recn[11]      :if hpcHTTP ⋄ 0 0⍴5 1 BrokerRequest 'pro?wid=',wid,'&tid=',tid,'&nrec=',⍕recn[12]      :else       ⋄ ⍙⍙hpcLogTie HPC_Log 'ResultsCategoryID=',(⍕ResultsCategoryID),' ! Record Number=',⍕recn[13]      :endif[14]  :endif[15]  REC←,'ASCII' Read∆DataFile dattie,filesize,RECL,1,recn-1 ⍝ Input data loop.[16]  lowerAge←1[17]  [18]  (recn NUMRECS) Win∆ProgressBar 'MemberUpdate'[19]  →(test^'*'≠REC[RECL-3])/READ[20]  ⍝⍀⍝ FOURDITopen 'Member'[21]  [22]  EDATE←VDATE ⋄ EXIT←PACTIVE ⍝ Indication of Exit/Active Status[23]  [24]  →(∨/EXIT[0 5],~aosind)/IN[25]  BDATE←vDATE+ 0 0 ,PerToEnt-⌈ValPer ⋄ Ind∆AOS←(3+No∆Pens)⌿(⍴aos∆TOTS[0;,0;;])⍴0[26]  LOOP:CREATEDATANUMS prevind←~prevind[27]  :if prevind ⋄ termAdjFin←PerToEnt[28]  :else       ⋄ termAdjFin←pvDATE YDAYS EDATE[29]  :endif[30]  [31]  ⍝⍝⍝ FIXME: Adjust Financials by termAdjFin here[32]  [33]  IN:[34]  ⍝⍀⍝ FOURDITopen 'Benefits'[35]  VDATE←¯3↑EDATE,prevind/BDATE ⍝ Sets up vectors of age/spouse etc[36]  A←PENPRELIM A←(0=KnownExit)^∨/EXIT[0 5],EXIT[3 4]×~aosind[37]  [38]  →(DATA∆TEST A)/L1[39]  [40]  :if aosind ⋄ :orif prevind[41]      penvals←(NX,4)⍴VRB←(NX,1+↑⍴PenDesc)⍴0[42]  :endif[43]  [44]  P∆CALCS[45]  [46]  ⍝⍀⍝ TRACE_CLOSE[47]  ⍝⍀⍝ FOURDITclose 'Benefits'[48]  →prevind/LOOP[49]  [50]  :if AgeInterp[51]      ⍙DBWriteTempDB 1 ⍝ Force write of records to Temp DB (to get age weighting)[52]      :if fscopt ⋄ XL_StoreScen ⋄ :endif[53]      →((1≠AgeMult)^~lowerAge←~lowerAge)/IN[54]  :endif[55]  ⍝⍀⍝ FOURDITclose 'Member'[56]  [57]  →suppressText/READ[58]  →(READ,L1)[(~aosind)↑^/0=GTOTS[;10],ATOTS[;10]][59]  [60]  ⍝ Add Valuation AOS Numbers in Total Matrix[61]  aos∆TOTS[aosplane;aosrow;;]←aos∆TOTS[aosplane;aosrow;;]+Ind∆AOS[62]  VDATE←vDATE ⋄ →(~∨/EXIT[3 4],^/GTOTS[;10]=0)/READ[63]  [64]  L1:(' ' join 'Record:' (⍕recn) (REC[fNAME]) (REC[fSEX]) (REC[fDOB]) errmsg) VALN∆LOG 'Warning'[65]  →(summopt∨hpcenabled)/READ[66]  SUMMREC←(SUMMHEAD,MATRIX errmsg) OVER ' '[67]  :if ppf ⋄ (APAGE ARECN)←H2 OUTPUT tpA ,APAGE,ARECN[68]  :else   ⋄ (SPAGE  RECN)←H2 OUTPUT tpr1,SPAGE, RECN[69]  :endif[70]  →READ[71]  [72]  ⍝ Write totals out to files[73]  FINISH:[74]  :if hpcenabled[75]      :if hpcHTTP ⋄ 0 0⍴1 BrokerRequest 'pro?wid=',wid,'&tid=',tid,'&nrec=',⍕NUMRECS[76]      :else       ⋄ ⍙⍙hpcLogTie HPC_Log 'ResultsCategoryID=',(⍕ResultsCategoryID),' ! Record Number=',⍕NUMRECS[77]      :endif[78]  :endif[79]  [80]  :if ~suppressText ⋄ ATOTS PRINT∆TOTALS∆PEN GTOTS ⋄ :endif[81]  [82]  ⍝⍀⍝ FOURDITclose 'Basis'[83]  :if uk=1 ⋄ NERASE dattie[84]  :else    ⋄ ⎕nuntie dattie[85]  :endif[86]  [87]  :if ~XLCtl ⋄ :andif ~suppressText ⍝ Conversion to "old" results format[88]      GTOTS←(2 2 5/1 0 1)\GTOTS[;2 0 1,7+⍳4] ⋄ GTOTS[0;4+⍳5]←+⌿GTOTS[;4+⍳5][89]  :endif    ∇
+    ∇ res←MAIN∆PEN;SUMMREC;AOSUMM;Ind∆AOS;ResMult;PerToEnt;ExitMult;A;aosrow;aosplane;errmsg;NOM;NX;DOB;DPC;Xdpc;SUMMHEAD
+[1]   ⍝ PENWIN.sf#3
+[2]   ⍝ Core function which values each deck in turn, displaying a screen
+[3]   ⍝ showing the progress, determines whether a pensioner is active at the
+[4]   ⍝ valuation date, calls PENPRELIM, calls PCALCS to actually value each
+[5]   ⍝ member, and keeps tracks of totals.
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   
+[8]   ⍝ Set up loop(s) to read member data from file, do calculations
+[9]   READ:→(NUMRECS<recn←recn+1)/FINISH
+[10]  :if hpcenabled ⋄ :andif 0=5∣recn
+[11]      :if hpcHTTP ⋄ 0 0⍴5 1 BrokerRequest 'pro?wid=',wid,'&tid=',tid,'&nrec=',⍕recn
+[12]      :else       ⋄ ⍙⍙hpcLogTie HPC_Log 'ResultsCategoryID=',(⍕ResultsCategoryID),' ! Record Number=',⍕recn
+[13]      :endif
+[14]  :endif
+[15]  REC←,'ASCII' Read∆DataFile dattie,filesize,RECL,1,recn-1 ⍝ Input data loop.
+[16]  lowerAge←1
+[17]  
+[18]  (recn NUMRECS) Win∆ProgressBar 'MemberUpdate'
+[19]  →(test^'*'≠REC[RECL-3])/READ
+[20]  ⍝⍀⍝ FOURDITopen 'Member'
+[21]  
+[22]  EDATE←VDATE ⋄ EXIT←PACTIVE ⍝ Indication of Exit/Active Status
+[23]  
+[24]  →(∨/EXIT[0 5],~aosind)/IN
+[25]  BDATE←vDATE+ 0 0 ,PerToEnt-⌈ValPer ⋄ Ind∆AOS←(3+No∆Pens)⌿(⍴aos∆TOTS[0;,0;;])⍴0
+[26]  LOOP:CREATEDATANUMS prevind←~prevind
+[27]  :if prevind ⋄ termAdjFin←PerToEnt
+[28]  :else       ⋄ termAdjFin←pvDATE YDAYS EDATE
+[29]  :endif
+[30]  
+[31]  ⍝⍝⍝ FIXME: Adjust Financials by termAdjFin here
+[32]  
+[33]  IN:
+[34]  ⍝⍀⍝ FOURDITopen 'Benefits'
+[35]  VDATE←¯3↑EDATE,prevind/BDATE ⍝ Sets up vectors of age/spouse etc
+[36]  A←PENPRELIM A←(0=KnownExit)^∨/EXIT[0 5],EXIT[3 4]×~aosind
+[37]  
+[38]  →(DATA∆TEST A)/L1
+[39]  
+[40]  :if aosind ⋄ :orif prevind
+[41]      penvals←(NX,4)⍴VRB←(NX,1+↑⍴PenDesc)⍴0
+[42]  :endif
+[43]  
+[44]  P∆CALCS
+[45]  
+[46]  ⍝⍀⍝ TRACE_CLOSE
+[47]  ⍝⍀⍝ FOURDITclose 'Benefits'
+[48]  →prevind/LOOP
+[49]  
+[50]  :if AgeInterp
+[51]      ⍙DBWriteTempDB 1 ⍝ Force write of records to Temp DB (to get age weighting)
+[52]      :if fscopt ⋄ XL_StoreScen ⋄ :endif
+[53]      →((1≠AgeMult)^~lowerAge←~lowerAge)/IN
+[54]  :endif
+[55]  ⍝⍀⍝ FOURDITclose 'Member'
+[56]  
+[57]  →suppressText/READ
+[58]  →(READ,L1)[(~aosind)↑^/0=GTOTS[;10],ATOTS[;10]]
+[59]  
+[60]  ⍝ Add Valuation AOS Numbers in Total Matrix
+[61]  aos∆TOTS[aosplane;aosrow;;]←aos∆TOTS[aosplane;aosrow;;]+Ind∆AOS
+[62]  VDATE←vDATE ⋄ →(~∨/EXIT[3 4],^/GTOTS[;10]=0)/READ
+[63]  
+[64]  L1:(' ' join 'Record:' (⍕recn) (REC[fNAME]) (REC[fSEX]) (REC[fDOB]) errmsg) VALN∆LOG 'Warning'
+[65]  →(summopt∨hpcenabled)/READ
+[66]  SUMMREC←(SUMMHEAD,MATRIX errmsg) OVER ' '
+[67]  :if ppf ⋄ (APAGE ARECN)←H2 OUTPUT tpA ,APAGE,ARECN
+[68]  :else   ⋄ (SPAGE  RECN)←H2 OUTPUT tpr1,SPAGE, RECN
+[69]  :endif
+[70]  →READ
+[71]  
+[72]  ⍝ Write totals out to files
+[73]  FINISH:
+[74]  :if hpcenabled
+[75]      :if hpcHTTP ⋄ 0 0⍴1 BrokerRequest 'pro?wid=',wid,'&tid=',tid,'&nrec=',⍕NUMRECS
+[76]      :else       ⋄ ⍙⍙hpcLogTie HPC_Log 'ResultsCategoryID=',(⍕ResultsCategoryID),' ! Record Number=',⍕NUMRECS
+[77]      :endif
+[78]  :endif
+[79]  
+[80]  :if ~suppressText ⋄ ATOTS PRINT∆TOTALS∆PEN GTOTS ⋄ :endif
+[81]  
+[82]  ⍝⍀⍝ FOURDITclose 'Basis'
+[83]  :if uk=1 ⋄ NERASE dattie
+[84]  :else    ⋄ ⎕nuntie dattie
+[85]  :endif
+[86]  
+[87]  :if ~XLCtl ⋄ :andif ~suppressText ⍝ Conversion to "old" results format
+[88]      GTOTS←(2 2 5/1 0 1)\GTOTS[;2 0 1,7+⍳4] ⋄ GTOTS[0;4+⍳5]←+⌿GTOTS[;4+⍳5]
+[89]  :endif
+    ∇

@@ -1,1 +1,20 @@
-    ∇ res←yr ⍙WebRFPenWeights p[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Determine the proportion of Pension paid after p years[3]   ⍝  Different formula for year 1 and rest[4]   [5]   :select yr[6]   :case 1 ⍝ 0 < p < 1.5 - first year relating to members aged NRA-0.5 to NRA[7]       :if ~res←p≥1.5[8]           res←    (0.5⌊p)*2           ⍝ First 6 months (quarter of cash flow in triangle)[9]           res←res+(0.5⌈1⌊p)-0.5       ⍝ Second 6 months (half of cash flow in rectangle)[10]          res←res+0.25-(1.5-1⌈p)*2    ⍝ Third 6 months (quarter of cash flow in triangle)[11]      :endif[12]  :case 2 ⍝ 0 < p < 2 - subsequent year relating to members aged less than NRA-0.5[13]      res←    0.5×(0.5⌊p)*2             ⍝ First 6 months (eighth of cash flow in triangle)[14]      res←res+0.5×((1⌊p)*2)-(0.5⌊p)*2   ⍝ Second 6 months (3/8ths of cash flow in rectangle)[15]      res←res+0.5×1-(2-1.5⌊p⌈1)*2       ⍝ Third 6 months (3/8ths of cash flow in rectangle)[16]      res←res+0.5×0.25-(2-1.5⌈p)*2      ⍝ Fourth 6 months (eighth of cash flow in triangle)[17]  [18]  :endselect    ∇
+    ∇ res←yr ⍙WebRFPenWeights p
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Determine the proportion of Pension paid after p years
+[3]   ⍝  Different formula for year 1 and rest
+[4]   
+[5]   :select yr
+[6]   :case 1 ⍝ 0 < p < 1.5 - first year relating to members aged NRA-0.5 to NRA
+[7]       :if ~res←p≥1.5
+[8]           res←    (0.5⌊p)*2           ⍝ First 6 months (quarter of cash flow in triangle)
+[9]           res←res+(0.5⌈1⌊p)-0.5       ⍝ Second 6 months (half of cash flow in rectangle)
+[10]          res←res+0.25-(1.5-1⌈p)*2    ⍝ Third 6 months (quarter of cash flow in triangle)
+[11]      :endif
+[12]  :case 2 ⍝ 0 < p < 2 - subsequent year relating to members aged less than NRA-0.5
+[13]      res←    0.5×(0.5⌊p)*2             ⍝ First 6 months (eighth of cash flow in triangle)
+[14]      res←res+0.5×((1⌊p)*2)-(0.5⌊p)*2   ⍝ Second 6 months (3/8ths of cash flow in rectangle)
+[15]      res←res+0.5×1-(2-1.5⌊p⌈1)*2       ⍝ Third 6 months (3/8ths of cash flow in rectangle)
+[16]      res←res+0.5×0.25-(2-1.5⌈p)*2      ⍝ Fourth 6 months (eighth of cash flow in triangle)
+[17]  
+[18]  :endselect
+    ∇

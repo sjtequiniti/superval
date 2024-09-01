@@ -1,1 +1,14 @@
-    ∇ suppress ⍙WebUpdateControls tab;control;prop;value;∆[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Display values in controls without triggerring Changes[3]   [4]   :if 0=⎕nc 'suppress' ⋄ suppress←0 ⋄ :endif ⍝ Default to not suppressing onChange call[5]   [6]   :for ∆ :in ⎕split tab ⋄ (control prop value)←∆[7]       :if ~value≡control ⎕wi prop[8]           :if suppress ⋄ control ⎕wi 'suppress' 1 ⋄ :endif[9]           control ⎕wi prop value[10]          :if suppress ⋄ control ⎕wi 'suppress' 0 ⋄ :endif[11]      :endif[12]  :endfor    ∇
+    ∇ suppress ⍙WebUpdateControls tab;control;prop;value;∆
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Display values in controls without triggerring Changes
+[3]   
+[4]   :if 0=⎕nc 'suppress' ⋄ suppress←0 ⋄ :endif ⍝ Default to not suppressing onChange call
+[5]   
+[6]   :for ∆ :in ⎕split tab ⋄ (control prop value)←∆
+[7]       :if ~value≡control ⎕wi prop
+[8]           :if suppress ⋄ control ⎕wi 'suppress' 1 ⋄ :endif
+[9]           control ⎕wi prop value
+[10]          :if suppress ⋄ control ⎕wi 'suppress' 0 ⋄ :endif
+[11]      :endif
+[12]  :endfor
+    ∇

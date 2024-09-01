@@ -1,1 +1,23 @@
-    ∇ BatchSave parm;Exit[1]   ⍝ OVERWIN.sf#19[2]   ⍝ Batch Saving/Running Routine[3]   ⍝ parm can be either "SaveAs", "Save", "Run" or "Unattend"[4]   [5]   :if 0∊⍴'fmBatchDisplay.fDisplay.lvRuns' ⎕wi 'list'[6]       MDISPLAY 'CompBatch' ⋄ :return[7]   :endif[8]   [9]   :if parm≡'SaveAs'[10]      'SaveAs' RunModule 'Batch_Display'[11]  :else[12]      :if ControlName ValidateParms 'Batch_Display' ⋄ :return ⋄ :endif[13]      :if 'Save' SaveRunParms 'Batch_Display' ControlName ⋄ :return ⋄ :endif ⍝ Save Parameters[14]      :if parm≡'Save' ⋄ :return ⋄ :endif[15]      :if parm≡'Run'[16]          Exit←0 Batch_Display 'Run'[17]      :else ⍝ unattended Valuation Runs[18]          Exit←1 Batch_Display 'Run'[19]      :endif[20]      Exit EndModule 'Batch_Display'[21]  :endif    ∇
+    ∇ BatchSave parm;Exit
+[1]   ⍝ OVERWIN.sf#19
+[2]   ⍝ Batch Saving/Running Routine
+[3]   ⍝ parm can be either "SaveAs", "Save", "Run" or "Unattend"
+[4]   
+[5]   :if 0∊⍴'fmBatchDisplay.fDisplay.lvRuns' ⎕wi 'list'
+[6]       MDISPLAY 'CompBatch' ⋄ :return
+[7]   :endif
+[8]   
+[9]   :if parm≡'SaveAs'
+[10]      'SaveAs' RunModule 'Batch_Display'
+[11]  :else
+[12]      :if ControlName ValidateParms 'Batch_Display' ⋄ :return ⋄ :endif
+[13]      :if 'Save' SaveRunParms 'Batch_Display' ControlName ⋄ :return ⋄ :endif ⍝ Save Parameters
+[14]      :if parm≡'Save' ⋄ :return ⋄ :endif
+[15]      :if parm≡'Run'
+[16]          Exit←0 Batch_Display 'Run'
+[17]      :else ⍝ unattended Valuation Runs
+[18]          Exit←1 Batch_Display 'Run'
+[19]      :endif
+[20]      Exit EndModule 'Batch_Display'
+[21]  :endif
+    ∇

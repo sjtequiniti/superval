@@ -1,0 +1,33 @@
+    ∇ field Act_IllHCOT parm;page;MESS;isActive
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Do Initialisation, Changes and Validation of Ill Health COT Page
+[3]   
+[4]   page←'pgIHCOT.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]   
+[9]   :case 'Init'
+[10]      (parent,page,'fButtons.bnActives_BasisEditRC') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[11]  
+[12]  :case 'Change'
+[13]      :select field
+[14]      :case 'cbILLCashParm2'
+[15]          :if ~mt ⍎(2↓field),'←"',(DLTB (parent,page,'fIHCOT.',field) ⎕wi 'text'),'"'
+[16]              isActive←1
+[17]              MESS←2⊃('Ill-Health Retirement Cash on Top Parameter Set' 0) GET∆RetCashGlobals 2↓field
+[18]              :if ~openParameters∨changedParm
+[19]                  changedParm←1
+[20]                  (parent,page,'fIHCOT.',field) ⎕wi 'suppress' 1
+[21]                  Assign_Inputs 1
+[22]                  (parent,page,'fIHCOT.',field) ⎕wi 'suppress' 0
+[23]                  changedParm←0
+[24]              :endif
+[25]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[26]          :endif
+[27]      :endselect
+[28]  
+[29]  :case 'Valid'
+[30]  
+[31]  :endselect
+    ∇

@@ -1,0 +1,41 @@
+    ∇ tie←worker ⍙DBCreateTempDB filename;⎕WSELF;⎕elx;elx;xxx
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Create a CSV File for temporary storage of database records - in Client Directory to avoid use clashes
+[3]   ⍝ {worker}: Launch a worker task with this name to read the file and sum it in memory as it written.
+[4]   ⍝ Revn: sjt01sep15
+[5]   
+[6]   tie←(34+32×hpcenabled) NCREATE filename
+[7]   
+[8]   :if tie≠0
+[9]   :andif 2=⎕NC 'worker'
+[10]  :andif ~mt worker
+[11]  
+[12]      elx←⎕elx ⋄ ⎕elx←'→err'
+[13]  
+[14]      ⎕WSELF←worker ⎕WI 'New' 'APLW.WSEngine'
+[15]  ⍝⍝  ⎕WI 'xvisible' 1 ⍝ DEBUG
+[16]      ⎕WI 'SysCall' 'XLOAD' (SystemDir,'CSVSUM',runtime/'R')
+[17]      ⎕WI 'xVariable' 'Finished' 0
+[18]      ⎕WI 'xVariable' 'TASKOBJ' worker ⍝ for logging
+[19]      ⎕WI 'XCall' '⎕WI' ('Defer' ('Sum "',filename,'"')) '#'
+[20]      ⎕←'Launched ',worker,' to summarise ',filename
+[21]      ⍝ worker task will read and sum filename until parent sets its Finished flag
+[22]      ⍝ See ⍙DBSummariseCOM for handler to catch the SysNotification event
+[23]      ⍝ that fires when the Defer call terminates
+[24]  
+[25]      filename ⎕XNTIE tie 66 ⍝ retie file in Shared mode
+[26]      ⍝ Watch Out: the above 'slippery' tie has been observed to change the tie mode of other tied native files
+[27]      ⍝ later leaving them untied after WGetFileTime is called on them
+[28]  :endif
+[29]  
+[30]  :return
+[31]  
+[32]  err:⎕elx←elx
+[33]  :if (⊂worker)∊'#' ⎕wi 'children'
+[34]      xxx←worker ⎕WI 'Close'
+[35]      ('Note:  Parallelisation Task for "',worker,'" failed during Initialisation') VALN∆LOG 'Add'
+[36]  :else
+[37]      ('Note:  Parallelisation Task for "',worker,'" failed during Creation') VALN∆LOG 'Add'
+[38]  :endif
+[39]  xxx←worker ⎕WI 'Delete'
+    ∇

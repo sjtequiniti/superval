@@ -1,0 +1,39 @@
+    ∇ L ⍙DBInsertTempData R;keys;vals;∆;kw;CACHE_LIMIT;SUMKEYS_NAME;SUMVALS_NAME;CACHEDKEYS_NAME;CACHEDVALS_NAME;CACHESIZE_NAME;cachesize;tie;type
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Cache data for writing to file.
+[3]   ⍝ If it exceeds cache size limit, summarise it, and cache interim summary.
+[4]   ⍝ Revn: sjt16aug16 * cache and (if necessary) summarise in memory: no file operations
+[5]   ⍝                  * pass caches by reference, not value, to minimise copying in memory
+[6]   ⍝       sjt20aug16 * cache keys (char matrix) and values (float vector) separately to reduce copying and memory use
+[7]   ⍝                  * indexed insertions into cache; keep interim sum keys as vector, cached keys as matrix
+[8]   ⍝       sjt25aug16 * sumkeys as a vector of keys
+[9]   
+[10]  :if 82=⎕dr R ⋄ (keys vals)←⍎R                           ⍝ accept variable name (use if variable is large)
+[11]  :else        ⋄ (keys vals)← R
+[12]  :endif
+[13]  
+[14]  :if ~mt keys
+[15]      (tie type)←L
+[16]      :if inMemory ⍝ Summarise in Memory
+[17]          (SUMKEYS_NAME SUMVALS_NAME CACHEDKEYS_NAME CACHEDVALS_NAME CACHESIZE_NAME)←(⊂type),¨'SumKeys' 'SumVals' 'CachedKeys' 'CachedVals' 'CacheSize'
+[18]          CACHE_LIMIT←4E6⌈tally keys                      ⍝ max # records in cache
+[19]          cachesize←⍎CACHESIZE_NAME
+[20]          :if (cachesize+tally vals)<CACHE_LIMIT          ⍝ still room in the cache?
+[21]              ∆←cachesize+⍳tally vals                     ⍝ insertion index
+[22]              ⍎CACHEDKEYS_NAME,"[∆;]←keys"                ⍝ cache new keys
+[23]              ⍎CACHEDVALS_NAME,"[∆]←vals"                 ⍝ cache new vals
+[24]              ⍎CACHESIZE_NAME,"←cachesize+tally vals"     ⍝ increment cache size
+[25]          :else
+[26]              SUMKEYS_NAME SUMVALS_NAME ⍙DBSummariseMem CACHEDKEYS_NAME CACHEDVALS_NAME CACHESIZE_NAME ⍝ summarise cache contents
+[27]              kw←1⊃⍴keys                                  ⍝ key width
+[28]              ⍎CACHEDKEYS_NAME,"←CACHE_LIMIT kw↑keys"     ⍝ cache new keys
+[29]              ⍎CACHEDVALS_NAME,"←CACHE_LIMIT↑vals"        ⍝ cache new vals
+[30]              ⍎CACHESIZE_NAME,"←tally vals"               ⍝ reset cache size
+[31]          :endif
+[32]      :else ⍝ Put data into an CSV Temporary file
+[33]          vals←('E17.10,<',⎕tcnl,⎕tclf,'>') ⎕fmt vals ⍝ Use Exponential notation to retain (spurious!) accuracy
+[34]          vals[;⎕io+0 13]←'¯-' REPL vals[;⎕io+0 13] ⍝ but replacing APL high minuses
+[35]          (keys,vals) ⎕nappend tie
+[36]      :endif
+[37]  :endif
+    ∇

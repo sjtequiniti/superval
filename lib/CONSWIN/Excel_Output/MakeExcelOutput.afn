@@ -1,1 +1,77 @@
-    ∇ flag MakeExcelOutput tbl;⎕io;dic;key;ValMeth;basisFile;bencap;contper;insind;abNO;AgeInterp;neIND;aosind;vDATE;pvDATE;s143;z;BasisCategoryID;ClassID;ScenarioDesc;scenario;vDATEind;basisDesc;Cat;ppf;NotPUC;dab;CatID;ClassBase;summopt;aggopt;csvind;SelSex;tpL;excelDelay;xxx;cursor;lock;useBasisCat;VALN∆Errors;AbortedRuns;ActivesID;Valnts;DBResID;DBBasisID;DatabaseID;ExcelRunButton[1]   ⍝ CONSWIN.sf#17[2]   ⍝ Function to Create Excel Output file from table of Database results[3]   ⎕io←0[4]   [5]   :if 0=rowsIn tbl ⋄ :return ⋄ :endif ⍝ No completed/selected Valuation runs[6]   [7]   ('Task' 'Excel File:') Win∆ProgressBar 'SetLabels'[8]   'Creating Excel Outputs' Win∆ProgressBar 'Open'[9]   (1 2 'Connecting to Database') Win∆ProgressBar 'FileUpdate'[10]  [11]  :if excelMonitor ⋄ 0 0⍴1 ⎕mf ⎕nl 3 ⋄ :endif[12]  [13]  tbl←tbl amend 'timestamp' ((tbl at 'timestamp')+.0000001××tbl at 'neActID') ⍝ Put NE runs immediately after linked Actives Run[14]  tbl←tbl sortedBy 'timestamp' ⍝ Sort runs into order performed[15]  ⍝ Group the tbl by keys for Excel Output files[16]  dic←tbl groupby ('method' 'basisfile' 'capped' 'contper' 'insinc' 'targetAB' 'vdate' 'exact age' 'aosind' 'prev vdate' 's143' 'scenario') ('ID' 'outime' 'user' 'version' 'neActID' 'timestamp' 'BasisID' 'BasisCat' 'scheme' 'sex' 'basisdesc' 'classid' 'cat' 'newent' 'fscopt' 'desc' 'outfile' 'summopt' 'csvind' 'aggopt')[17]  [18]  ⍝ Open Connection to Valuation Database (to get Excel Results)[19]  xxx←ValnResultsDB ⍙DBOpen ¯1[20]  [21]  0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'[22]  cursor←'ADOrst' ⎕wi 'adOpenStatic' ⋄ lock←'ADOrst' ⎕wi 'adLockOptimistic'[23]  [24]  :if flag ⋄ VALN∆LOG 'Create' ⍝ Create Valuation Log tied to tpL[25]  :else    ⋄ VALN∆LOG 'VarReset'[26]  :endif[27]  AbortedRuns←MATRIX 'ClassID' 'Sex' 'Desc' 'ScenarioDesc' 'Reason'[28]  (2 2 'Creating Excel Outputs') Win∆ProgressBar 'FileUpdate'[29]  excelDelay←0[30]  DatabaseID←1000000×sqlschemeID[31]  [32]  DBResID←  10,10000∣,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DatabaseID ⍝ Get all Results ID's and start with next available ResultsCategoryID number[33]  DBBasisID←10,10000∣,1 ⍙DBadoCONCommand "SELECT BasisCategoryID   FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DatabaseID ⍝ Get all Basis ID's and start with next available BasisCategoryID number[34]  [35]  0 0⍴'fmtemp' ⎕wi 'Create' 'Form' ('visible' 0) ⍝ Run from hidden button on Hidden form[36]  ExcelRunButton←'fmtemp.bntemp' ⎕wi 'Create' 'Button' ('visible' 0) ('onClick' 'key ExcelCoverFn dic')[37]  [38]  0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Excel'[39]  0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Database'[40]  [41]  :for key :in ↑dic[42]      ExcelRunButton ⎕wi 'Click'[43]  [44]      :if CloseExcel[45]          0 0⍴'fmtemp' ⎕wi 'Create' 'Form' ('visible' 0)[46]          ExcelRunButton←'fmtemp.bntemp' ⎕wi 'Create' 'Button' ('visible' 0) ('onClick' 'key ExcelCoverFn dic')[47]      :elseif ~mt 'XL' ⎕wi 'self'[48]          0 0⍴'XL.wb' ⎕wi 'Close' ⍝ Closes workbook but leaves Excel connection[49]      :endif[50]  :endfor[51]  [52]  0 0⍴'ADOrst' ⎕wi 'Delete'[53]  0 0⍴'ADOconcmd' ⎕wi 'Delete'[54]  0 0⍴'ADOcon' ⎕wi 'XClose' ⋄ 0 0⍴'ADOcon' ⎕wi 'Delete'[55]  XL_Quit ⍝ Unload the Excel used for preparation[56]  [57]  Win∆ProgressBar 'Close'[58]  [59]  :if excelMonitor[60]      0 0⍴(SystemDir,'Monitor') ReadFile 'CPUMonitor'[61]      CMDWSTIME 0[62]      0 0⍴(SystemDir,'Monitor') DeleteModule 'CPUMonitor'[63]  :endif[64]  [65]  0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Excel'[66]  0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Database'[67]  [68]  0 0⍴ExcelRunButton ⎕wi 'Delete'[69]  0 0⍴'XL' ⎕wi 'Delete'[70]  0 0⍴'fmtemp' ⎕wi 'Delete' ⍝ Delete Hidden form[71]  [72]  :if ~mt VALN∆Errors[73]      MDISPLAY (VALN∆Errors,⎕tcnl),⎕tcnl[74]  :endif[75]  :if flag ⋄ ⎕nuntie tpL ⋄ :endif    ∇
+    ∇ flag MakeExcelOutput tbl;⎕io;dic;key;ValMeth;basisFile;bencap;contper;insind;abNO;AgeInterp;neIND;aosind;vDATE;pvDATE;s143;z;BasisCategoryID;ClassID;ScenarioDesc;scenario;vDATEind;basisDesc;Cat;ppf;NotPUC;dab;CatID;ClassBase;summopt;aggopt;csvind;SelSex;tpL;excelDelay;xxx;cursor;lock;useBasisCat;VALN∆Errors;AbortedRuns;ActivesID;Valnts;DBResID;DBBasisID;DatabaseID;ExcelRunButton
+[1]   ⍝ CONSWIN.sf#17
+[2]   ⍝ Function to Create Excel Output file from table of Database results
+[3]   ⎕io←0
+[4]   
+[5]   :if 0=rowsIn tbl ⋄ :return ⋄ :endif ⍝ No completed/selected Valuation runs
+[6]   
+[7]   ('Task' 'Excel File:') Win∆ProgressBar 'SetLabels'
+[8]   'Creating Excel Outputs' Win∆ProgressBar 'Open'
+[9]   (1 2 'Connecting to Database') Win∆ProgressBar 'FileUpdate'
+[10]  
+[11]  :if excelMonitor ⋄ 0 0⍴1 ⎕mf ⎕nl 3 ⋄ :endif
+[12]  
+[13]  tbl←tbl amend 'timestamp' ((tbl at 'timestamp')+.0000001××tbl at 'neActID') ⍝ Put NE runs immediately after linked Actives Run
+[14]  tbl←tbl sortedBy 'timestamp' ⍝ Sort runs into order performed
+[15]  ⍝ Group the tbl by keys for Excel Output files
+[16]  dic←tbl groupby ('method' 'basisfile' 'capped' 'contper' 'insinc' 'targetAB' 'vdate' 'exact age' 'aosind' 'prev vdate' 's143' 'scenario') ('ID' 'outime' 'user' 'version' 'neActID' 'timestamp' 'BasisID' 'BasisCat' 'scheme' 'sex' 'basisdesc' 'classid' 'cat' 'newent' 'fscopt' 'desc' 'outfile' 'summopt' 'csvind' 'aggopt')
+[17]  
+[18]  ⍝ Open Connection to Valuation Database (to get Excel Results)
+[19]  xxx←ValnResultsDB ⍙DBOpen ¯1
+[20]  
+[21]  0 0⍴'ADOrst' ⎕wi 'Create' 'ADODB.Recordset'
+[22]  cursor←'ADOrst' ⎕wi 'adOpenStatic' ⋄ lock←'ADOrst' ⎕wi 'adLockOptimistic'
+[23]  
+[24]  :if flag ⋄ VALN∆LOG 'Create' ⍝ Create Valuation Log tied to tpL
+[25]  :else    ⋄ VALN∆LOG 'VarReset'
+[26]  :endif
+[27]  AbortedRuns←MATRIX 'ClassID' 'Sex' 'Desc' 'ScenarioDesc' 'Reason'
+[28]  (2 2 'Creating Excel Outputs') Win∆ProgressBar 'FileUpdate'
+[29]  excelDelay←0
+[30]  DatabaseID←1000000×sqlschemeID
+[31]  
+[32]  DBResID←  10,10000∣,1 ⍙DBadoCONCommand "SELECT ResultsCategoryID FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DatabaseID ⍝ Get all Results ID's and start with next available ResultsCategoryID number
+[33]  DBBasisID←10,10000∣,1 ⍙DBadoCONCommand "SELECT BasisCategoryID   FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DatabaseID ⍝ Get all Basis ID's and start with next available BasisCategoryID number
+[34]  
+[35]  0 0⍴'fmtemp' ⎕wi 'Create' 'Form' ('visible' 0) ⍝ Run from hidden button on Hidden form
+[36]  ExcelRunButton←'fmtemp.bntemp' ⎕wi 'Create' 'Button' ('visible' 0) ('onClick' 'key ExcelCoverFn dic')
+[37]  
+[38]  0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Excel'
+[39]  0 0⍴(SystemDir,'VALNWIN') ReadFile 'Valuation Database'
+[40]  
+[41]  :for key :in ↑dic
+[42]      ExcelRunButton ⎕wi 'Click'
+[43]  
+[44]      :if CloseExcel
+[45]          0 0⍴'fmtemp' ⎕wi 'Create' 'Form' ('visible' 0)
+[46]          ExcelRunButton←'fmtemp.bntemp' ⎕wi 'Create' 'Button' ('visible' 0) ('onClick' 'key ExcelCoverFn dic')
+[47]      :elseif ~mt 'XL' ⎕wi 'self'
+[48]          0 0⍴'XL.wb' ⎕wi 'Close' ⍝ Closes workbook but leaves Excel connection
+[49]      :endif
+[50]  :endfor
+[51]  
+[52]  0 0⍴'ADOrst' ⎕wi 'Delete'
+[53]  0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[54]  0 0⍴'ADOcon' ⎕wi 'XClose' ⋄ 0 0⍴'ADOcon' ⎕wi 'Delete'
+[55]  XL_Quit ⍝ Unload the Excel used for preparation
+[56]  
+[57]  Win∆ProgressBar 'Close'
+[58]  
+[59]  :if excelMonitor
+[60]      0 0⍴(SystemDir,'Monitor') ReadFile 'CPUMonitor'
+[61]      CMDWSTIME 0
+[62]      0 0⍴(SystemDir,'Monitor') DeleteModule 'CPUMonitor'
+[63]  :endif
+[64]  
+[65]  0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Excel'
+[66]  0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation Database'
+[67]  
+[68]  0 0⍴ExcelRunButton ⎕wi 'Delete'
+[69]  0 0⍴'XL' ⎕wi 'Delete'
+[70]  0 0⍴'fmtemp' ⎕wi 'Delete' ⍝ Delete Hidden form
+[71]  
+[72]  :if ~mt VALN∆Errors
+[73]      MDISPLAY (VALN∆Errors,⎕tcnl),⎕tcnl
+[74]  :endif
+[75]  :if flag ⋄ ⎕nuntie tpL ⋄ :endif
+    ∇

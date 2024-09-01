@@ -1,1 +1,159 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Client" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Client" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   :if (⊂"pgFiles")∊"fmClient.sClient" ⎕wi "pages"[10]  "fmClient.sClient.pgFiles.edClientName" ⎕wi "text" (DLTB ClientName)[11]  "fmClient.sClient.pgFiles.fFolders.edinputDir" ⎕wi "text" (DLTB inputDir)[12]  "fmClient.sClient.pgFiles.fFolders.edyieldDir" ⎕wi "text" (DLTB yieldDir)[13]  "fmClient.sClient.pgFiles.fFolders.edoutputDir" ⎕wi "text" (DLTB outputDir)[14]  "fmClient.sClient.pgFiles.fFolders.edconsolidDir" ⎕wi "text" (DLTB consolidDir)[15]  "fmClient.sClient.pgFiles.fFolders.ckS21Migrate" ⎕wi "value" (zwb S21Migrate)[16]  "fmClient.sClient.pgFiles.fFolders.edMigFolder" ⎕wi "text" (DLTB MigFolder)[17]  PickList←"fmClient.sClient.pgFiles.fFolders.cbcsvType" ⎕wi "list"[18]  selection←PickList ExactTLU DLTB csvType[19]  :if mt selection[20]      :if ~mt DLTB csvType[21]          warnings←warnings OVER "Previous Selection for 'Mortality Improvement Files' is no longer available"[22]      :endif[23]      modified←⌈/modified,1[24]  :endif[25]  "fmClient.sClient.pgFiles.fFolders.cbcsvType" ⎕wi "value" (¯1↑1,selection)[26]  "fmClient.sClient.pgFiles.fFolders.edmicsvDir" ⎕wi "text" (DLTB micsvDir)[27]  PickList←"fmClient.sClient.pgFiles.fFiles.cbclientFile" ⎕wi "list"[28]  selection←PickList ExactTLU DLTB clientFile[29]  :if mt selection[30]          "fmClient.sClient.pgFiles.fFiles.cbclientFile" ⎕wi "text" (DLTB clientFile)[31]  :else[32]      "fmClient.sClient.pgFiles.fFiles.cbclientFile" ⎕wi "value" selection[33]  :endif[34]  PickList←"fmClient.sClient.pgFiles.fFiles.cbglobalsFile" ⎕wi "list"[35]  selection←PickList ExactTLU DLTB globalsFile[36]  :if mt selection[37]          "fmClient.sClient.pgFiles.fFiles.cbglobalsFile" ⎕wi "text" (DLTB globalsFile)[38]  :else[39]      "fmClient.sClient.pgFiles.fFiles.cbglobalsFile" ⎕wi "value" selection[40]  :endif[41]  PickList←"fmClient.sClient.pgFiles.fFiles.cbbasisFile" ⎕wi "list"[42]  selection←PickList ExactTLU DLTB basisFile[43]  :if mt selection[44]      modified←⌈/modified,1[45]  :endif[46]  "fmClient.sClient.pgFiles.fFiles.cbbasisFile" ⎕wi "value" (¯1↑1,selection)[47]  PickList←"fmClient.sClient.pgFiles.fFiles.cbDecrFile" ⎕wi "list"[48]  selection←PickList ExactTLU DLTB DecrFile[49]  :if mt selection[50]      :if ~mt DLTB DecrFile[51]          warnings←warnings OVER "Previous Selection for 'Rate Tables File' is no longer available"[52]      :endif[53]      modified←⌈/modified,1[54]  :endif[55]  "fmClient.sClient.pgFiles.fFiles.cbDecrFile" ⎕wi "value" (¯1↑1,selection)[56]  PickList←"fmClient.sClient.pgFiles.fFiles.cbfactorFile" ⎕wi "list"[57]  selection←PickList ExactTLU DLTB factorFile[58]  :if mt selection[59]      :if ~mt DLTB factorFile[60]          warnings←warnings OVER "Previous Selection for 'Factor File' is no longer available"[61]      :endif[62]      modified←⌈/modified,1[63]  :endif[64]  "fmClient.sClient.pgFiles.fFiles.cbfactorFile" ⎕wi "value" (¯1↑1,selection)[65]  :endif[66]  :if (⊂"pgData")∊"fmClient.sClient" ⎕wi "pages"[67]  "fmClient.sClient.pgData.fDates.edvDATE" ⎕wi "text" (DLTB vDATE)[68]  "fmClient.sClient.pgData.fDates.edpvDATE" ⎕wi "text" (DLTB pvDATE)[69]  "fmClient.sClient.pgData.fFiles.edActsfile" ⎕wi "text" (DLTB Actsfile)[70]  PickList←"fmClient.sClient.pgData.fFiles.cbFormatA" ⎕wi "list"[71]  selection←PickList ExactTLU DLTB FormatA[72]  :if mt selection[73]      :if ~mt DLTB FormatA[74]          warnings←warnings OVER "Previous Selection for 'Format of Main Actives Data File' is no longer available"[75]      :endif[76]      modified←⌈/modified,0[77]  :endif[78]  "fmClient.sClient.pgData.fFiles.cbFormatA" ⎕wi "value" (¯1↑0,selection)[79]  "fmClient.sClient.pgData.fFiles.edDefsfile" ⎕wi "text" (DLTB Defsfile)[80]  PickList←"fmClient.sClient.pgData.fFiles.cbFormatD" ⎕wi "list"[81]  selection←PickList ExactTLU DLTB FormatD[82]  :if mt selection[83]      :if ~mt DLTB FormatD[84]          warnings←warnings OVER "Previous Selection for 'Format of Main Deferreds Data File' is no longer available"[85]      :endif[86]      modified←⌈/modified,0[87]  :endif[88]  "fmClient.sClient.pgData.fFiles.cbFormatD" ⎕wi "value" (¯1↑0,selection)[89]  "fmClient.sClient.pgData.fFiles.edPensfile" ⎕wi "text" (DLTB Pensfile)[90]  PickList←"fmClient.sClient.pgData.fFiles.cbFormatP" ⎕wi "list"[91]  selection←PickList ExactTLU DLTB FormatP[92]  :if mt selection[93]      :if ~mt DLTB FormatP[94]          warnings←warnings OVER "Previous Selection for 'Format of Main Pensioners Data File' is no longer available"[95]      :endif[96]      modified←⌈/modified,0[97]  :endif[98]  "fmClient.sClient.pgData.fFiles.cbFormatP" ⎕wi "value" (¯1↑0,selection)[99]  :endif[100] :if (⊂"pgValnOptions")∊"fmClient.sClient" ⎕wi "pages"[101] "fmClient.sClient.pgValnOptions.fDefaults.ckPPFenabled" ⎕wi "value" (zwb PPFenabled)[102] "fmClient.sClient.pgValnOptions.fDefaults.ckCAPenabled" ⎕wi "value" (zwb CAPenabled)[103] "fmClient.sClient.pgValnOptions.fDefaults.ckValuePre88MS" ⎕wi "value" (zwb ValuePre88MS)[104] "fmClient.sClient.pgValnOptions.fDefaults.ckUseBasisCat" ⎕wi "value" (zwb UseBasisCat)[105] "fmClient.sClient.pgValnOptions.fDefaults.ckAOSenabled" ⎕wi "value" (zwb AOSenabled)[106] "fmClient.sClient.pgValnOptions.fDefaults.ckSepComCot" ⎕wi "value" (zwb SepComCot)[107] "fmClient.sClient.pgValnOptions.fDefaults.ckIncIndivVF" ⎕wi "value" (zwb IncIndivVF)[108] "fmClient.sClient.pgValnOptions.fDefaults.ckSplitCombyPI" ⎕wi "value" (zwb SplitCombyPI)[109] "fmClient.sClient.pgValnOptions.fALMLDI.ckhldii" ⎕wi "value" (zwb hldii)[110] "fmClient.sClient.pgValnOptions.fALMLDI.ckcpbreakdown" ⎕wi "value" (zwb cpbreakdown)[111] "fmClient.sClient.pgValnOptions.fALMLDI.edfsbreakdown" ⎕wi "text" (DLTB fsbreakdown)[112] "fmClient.sClient.pgValnOptions.fALMLDI.ckspousecf" ⎕wi "value" (zwb spousecf)[113] :endif[114] :if (⊂"pgSQLDatabase")∊"fmClient.sClient" ⎕wi "pages"[115] "fmClient.sClient.pgSQLDatabase.fConfig.ckSQLDatabase" ⎕wi "value" (zwb SQLDatabase)[116] PickList←"fmClient.sClient.pgSQLDatabase.fConfig.cbSQLDBName" ⎕wi "list"[117] selection←PickList ExactTLU DLTB SQLDBName[118] :if mt selection[119]     :if ~mt DLTB SQLDBName[120]         warnings←warnings OVER "Previous Selection for 'SQL Server Database Name' is no longer available"[121]     :endif[122]     modified←⌈/modified,1[123] :endif[124] "fmClient.sClient.pgSQLDatabase.fConfig.cbSQLDBName" ⎕wi "value" (¯1↑1,selection)[125] PickList←"fmClient.sClient.pgSQLDatabase.fConfig.lvSQLDBScheme" ⎕wi "list"[126] :if 0∊⍴PickList[127]     value←⍬[128] :else[129]     list←(1 0×⍴PickList)⍴""[130]     :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SQLDBScheme) OVER " ")[1;][131]         list←list,"⍺",(⊃PickList[;n])," "[132]     :endfor[133]     list←m2n list[134]     NameList←m2n MATRIX SQLDBScheme[135]     value←(list∊NameList)/PickList[;1][136] :endif[137] :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1[138]     value←PickList[1;1] ⋄ modified←1[139] :endif[140] "fmClient.sClient.pgSQLDatabase.fConfig.lvSQLDBScheme" ⎕wi "value" value[141] 0 0⍴"fmClient.sClient.pgSQLDatabase.fConfig.lvSQLDBScheme" ⎕wi "EnsureVisible" ((1↑value),1)[142] "fmClient.sClient.pgSQLDatabase.fConfig.ckSQLlocalUNC" ⎕wi "value" (zwb SQLlocalUNC)[143] "fmClient.sClient.pgSQLDatabase.fConfig.ckSQLsetUNC" ⎕wi "value" (zwb SQLsetUNC)[144] "fmClient.sClient.pgSQLDatabase.fConfig.edInputDirUNC" ⎕wi "text" (DLTB InputDirUNC)[145] :endif[146] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Client[147]     :for var :in spin Comment_Client at "variable" "row" ⋄ (var row)←var[148]         "Client" ParmColor ((FormFields for "variable" var) at "control"),var row 1[149]     :endfor[150] :endif[151] :if ~0∊⍴,warnings[152]     MDISPLAY DLTMB warnings,⎕tcnl[153]     Win∆AssignVars "fmClient.sClient"[154] :endif[155] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Client" "" "Names"[156]     "fmClient.sClient" ⎕wi "modified" 0[157] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Client" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Client" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   :if (⊂"pgFiles")∊"fmClient.sClient" ⎕wi "pages"
+[10]  "fmClient.sClient.pgFiles.edClientName" ⎕wi "text" (DLTB ClientName)
+[11]  "fmClient.sClient.pgFiles.fFolders.edinputDir" ⎕wi "text" (DLTB inputDir)
+[12]  "fmClient.sClient.pgFiles.fFolders.edyieldDir" ⎕wi "text" (DLTB yieldDir)
+[13]  "fmClient.sClient.pgFiles.fFolders.edoutputDir" ⎕wi "text" (DLTB outputDir)
+[14]  "fmClient.sClient.pgFiles.fFolders.edconsolidDir" ⎕wi "text" (DLTB consolidDir)
+[15]  "fmClient.sClient.pgFiles.fFolders.ckS21Migrate" ⎕wi "value" (zwb S21Migrate)
+[16]  "fmClient.sClient.pgFiles.fFolders.edMigFolder" ⎕wi "text" (DLTB MigFolder)
+[17]  PickList←"fmClient.sClient.pgFiles.fFolders.cbcsvType" ⎕wi "list"
+[18]  selection←PickList ExactTLU DLTB csvType
+[19]  :if mt selection
+[20]      :if ~mt DLTB csvType
+[21]          warnings←warnings OVER "Previous Selection for 'Mortality Improvement Files' is no longer available"
+[22]      :endif
+[23]      modified←⌈/modified,1
+[24]  :endif
+[25]  "fmClient.sClient.pgFiles.fFolders.cbcsvType" ⎕wi "value" (¯1↑1,selection)
+[26]  "fmClient.sClient.pgFiles.fFolders.edmicsvDir" ⎕wi "text" (DLTB micsvDir)
+[27]  PickList←"fmClient.sClient.pgFiles.fFiles.cbclientFile" ⎕wi "list"
+[28]  selection←PickList ExactTLU DLTB clientFile
+[29]  :if mt selection
+[30]          "fmClient.sClient.pgFiles.fFiles.cbclientFile" ⎕wi "text" (DLTB clientFile)
+[31]  :else
+[32]      "fmClient.sClient.pgFiles.fFiles.cbclientFile" ⎕wi "value" selection
+[33]  :endif
+[34]  PickList←"fmClient.sClient.pgFiles.fFiles.cbglobalsFile" ⎕wi "list"
+[35]  selection←PickList ExactTLU DLTB globalsFile
+[36]  :if mt selection
+[37]          "fmClient.sClient.pgFiles.fFiles.cbglobalsFile" ⎕wi "text" (DLTB globalsFile)
+[38]  :else
+[39]      "fmClient.sClient.pgFiles.fFiles.cbglobalsFile" ⎕wi "value" selection
+[40]  :endif
+[41]  PickList←"fmClient.sClient.pgFiles.fFiles.cbbasisFile" ⎕wi "list"
+[42]  selection←PickList ExactTLU DLTB basisFile
+[43]  :if mt selection
+[44]      modified←⌈/modified,1
+[45]  :endif
+[46]  "fmClient.sClient.pgFiles.fFiles.cbbasisFile" ⎕wi "value" (¯1↑1,selection)
+[47]  PickList←"fmClient.sClient.pgFiles.fFiles.cbDecrFile" ⎕wi "list"
+[48]  selection←PickList ExactTLU DLTB DecrFile
+[49]  :if mt selection
+[50]      :if ~mt DLTB DecrFile
+[51]          warnings←warnings OVER "Previous Selection for 'Rate Tables File' is no longer available"
+[52]      :endif
+[53]      modified←⌈/modified,1
+[54]  :endif
+[55]  "fmClient.sClient.pgFiles.fFiles.cbDecrFile" ⎕wi "value" (¯1↑1,selection)
+[56]  PickList←"fmClient.sClient.pgFiles.fFiles.cbfactorFile" ⎕wi "list"
+[57]  selection←PickList ExactTLU DLTB factorFile
+[58]  :if mt selection
+[59]      :if ~mt DLTB factorFile
+[60]          warnings←warnings OVER "Previous Selection for 'Factor File' is no longer available"
+[61]      :endif
+[62]      modified←⌈/modified,1
+[63]  :endif
+[64]  "fmClient.sClient.pgFiles.fFiles.cbfactorFile" ⎕wi "value" (¯1↑1,selection)
+[65]  :endif
+[66]  :if (⊂"pgData")∊"fmClient.sClient" ⎕wi "pages"
+[67]  "fmClient.sClient.pgData.fDates.edvDATE" ⎕wi "text" (DLTB vDATE)
+[68]  "fmClient.sClient.pgData.fDates.edpvDATE" ⎕wi "text" (DLTB pvDATE)
+[69]  "fmClient.sClient.pgData.fFiles.edActsfile" ⎕wi "text" (DLTB Actsfile)
+[70]  PickList←"fmClient.sClient.pgData.fFiles.cbFormatA" ⎕wi "list"
+[71]  selection←PickList ExactTLU DLTB FormatA
+[72]  :if mt selection
+[73]      :if ~mt DLTB FormatA
+[74]          warnings←warnings OVER "Previous Selection for 'Format of Main Actives Data File' is no longer available"
+[75]      :endif
+[76]      modified←⌈/modified,0
+[77]  :endif
+[78]  "fmClient.sClient.pgData.fFiles.cbFormatA" ⎕wi "value" (¯1↑0,selection)
+[79]  "fmClient.sClient.pgData.fFiles.edDefsfile" ⎕wi "text" (DLTB Defsfile)
+[80]  PickList←"fmClient.sClient.pgData.fFiles.cbFormatD" ⎕wi "list"
+[81]  selection←PickList ExactTLU DLTB FormatD
+[82]  :if mt selection
+[83]      :if ~mt DLTB FormatD
+[84]          warnings←warnings OVER "Previous Selection for 'Format of Main Deferreds Data File' is no longer available"
+[85]      :endif
+[86]      modified←⌈/modified,0
+[87]  :endif
+[88]  "fmClient.sClient.pgData.fFiles.cbFormatD" ⎕wi "value" (¯1↑0,selection)
+[89]  "fmClient.sClient.pgData.fFiles.edPensfile" ⎕wi "text" (DLTB Pensfile)
+[90]  PickList←"fmClient.sClient.pgData.fFiles.cbFormatP" ⎕wi "list"
+[91]  selection←PickList ExactTLU DLTB FormatP
+[92]  :if mt selection
+[93]      :if ~mt DLTB FormatP
+[94]          warnings←warnings OVER "Previous Selection for 'Format of Main Pensioners Data File' is no longer available"
+[95]      :endif
+[96]      modified←⌈/modified,0
+[97]  :endif
+[98]  "fmClient.sClient.pgData.fFiles.cbFormatP" ⎕wi "value" (¯1↑0,selection)
+[99]  :endif
+[100] :if (⊂"pgValnOptions")∊"fmClient.sClient" ⎕wi "pages"
+[101] "fmClient.sClient.pgValnOptions.fDefaults.ckPPFenabled" ⎕wi "value" (zwb PPFenabled)
+[102] "fmClient.sClient.pgValnOptions.fDefaults.ckCAPenabled" ⎕wi "value" (zwb CAPenabled)
+[103] "fmClient.sClient.pgValnOptions.fDefaults.ckValuePre88MS" ⎕wi "value" (zwb ValuePre88MS)
+[104] "fmClient.sClient.pgValnOptions.fDefaults.ckUseBasisCat" ⎕wi "value" (zwb UseBasisCat)
+[105] "fmClient.sClient.pgValnOptions.fDefaults.ckAOSenabled" ⎕wi "value" (zwb AOSenabled)
+[106] "fmClient.sClient.pgValnOptions.fDefaults.ckSepComCot" ⎕wi "value" (zwb SepComCot)
+[107] "fmClient.sClient.pgValnOptions.fDefaults.ckIncIndivVF" ⎕wi "value" (zwb IncIndivVF)
+[108] "fmClient.sClient.pgValnOptions.fDefaults.ckSplitCombyPI" ⎕wi "value" (zwb SplitCombyPI)
+[109] "fmClient.sClient.pgValnOptions.fALMLDI.ckhldii" ⎕wi "value" (zwb hldii)
+[110] "fmClient.sClient.pgValnOptions.fALMLDI.ckcpbreakdown" ⎕wi "value" (zwb cpbreakdown)
+[111] "fmClient.sClient.pgValnOptions.fALMLDI.edfsbreakdown" ⎕wi "text" (DLTB fsbreakdown)
+[112] "fmClient.sClient.pgValnOptions.fALMLDI.ckspousecf" ⎕wi "value" (zwb spousecf)
+[113] :endif
+[114] :if (⊂"pgSQLDatabase")∊"fmClient.sClient" ⎕wi "pages"
+[115] "fmClient.sClient.pgSQLDatabase.fConfig.ckSQLDatabase" ⎕wi "value" (zwb SQLDatabase)
+[116] PickList←"fmClient.sClient.pgSQLDatabase.fConfig.cbSQLDBName" ⎕wi "list"
+[117] selection←PickList ExactTLU DLTB SQLDBName
+[118] :if mt selection
+[119]     :if ~mt DLTB SQLDBName
+[120]         warnings←warnings OVER "Previous Selection for 'SQL Server Database Name' is no longer available"
+[121]     :endif
+[122]     modified←⌈/modified,1
+[123] :endif
+[124] "fmClient.sClient.pgSQLDatabase.fConfig.cbSQLDBName" ⎕wi "value" (¯1↑1,selection)
+[125] PickList←"fmClient.sClient.pgSQLDatabase.fConfig.lvSQLDBScheme" ⎕wi "list"
+[126] :if 0∊⍴PickList
+[127]     value←⍬
+[128] :else
+[129]     list←(1 0×⍴PickList)⍴""
+[130]     :for n :in 2+⍳1⌈+/"⍺"=((MATRIX SQLDBScheme) OVER " ")[1;]
+[131]         list←list,"⍺",(⊃PickList[;n])," "
+[132]     :endfor
+[133]     list←m2n list
+[134]     NameList←m2n MATRIX SQLDBScheme
+[135]     value←(list∊NameList)/PickList[;1]
+[136] :endif
+[137] :if 0∊⍴value ⋄ :andif ~0∊⍴PickList ⋄ :andif 1
+[138]     value←PickList[1;1] ⋄ modified←1
+[139] :endif
+[140] "fmClient.sClient.pgSQLDatabase.fConfig.lvSQLDBScheme" ⎕wi "value" value
+[141] 0 0⍴"fmClient.sClient.pgSQLDatabase.fConfig.lvSQLDBScheme" ⎕wi "EnsureVisible" ((1↑value),1)
+[142] "fmClient.sClient.pgSQLDatabase.fConfig.ckSQLlocalUNC" ⎕wi "value" (zwb SQLlocalUNC)
+[143] "fmClient.sClient.pgSQLDatabase.fConfig.ckSQLsetUNC" ⎕wi "value" (zwb SQLsetUNC)
+[144] "fmClient.sClient.pgSQLDatabase.fConfig.edInputDirUNC" ⎕wi "text" (DLTB InputDirUNC)
+[145] :endif
+[146] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Client
+[147]     :for var :in spin Comment_Client at "variable" "row" ⋄ (var row)←var
+[148]         "Client" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[149]     :endfor
+[150] :endif
+[151] :if ~0∊⍴,warnings
+[152]     MDISPLAY DLTMB warnings,⎕tcnl
+[153]     Win∆AssignVars "fmClient.sClient"
+[154] :endif
+[155] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Client" "" "Names"
+[156]     "fmClient.sClient" ⎕wi "modified" 0
+[157] :endif
+    ∇

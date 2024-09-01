@@ -1,0 +1,75 @@
+    ∇ res←X0 SERVTAB∆SELW PS;N;LX;D;I;L;R;DI;II;LI;RI;rates;vddDI;idx;terms;∆;TP;TO;TI
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ This program returns a service table scaled to produce 1
+[3]   ⍝ retirement at Early Retirement Age (ERA, Global) of shape NX x 7.
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   ⍝ X0 is the member's age nearest, and PS his past service (fractional)
+[7]   ⍝ Assumes DXX, IXX, RXX, LXX, TXX and TXX0 (durn/time weights for LXX) and TOXX and TPXX (transfers) in WS.
+[8]   ⍝ All these decrements commence at age 0, and curtate durn 0 for TXX's
+[9]   :if ∨/×∣KnownExit
+[10]      idx←(0≥terms←(X0++/KnownExit)-XMP)⍳1
+[11]      res←terms[idx] CDIV DIFF XMP[NX_1⌊idx+0 1]
+[12]      :if 0=idx ⋄ res←⍉⊃(×∣KnownExit)\⊂NX↑(1+∣res),res
+[13]      :else     ⋄ res←⍉⊃(×∣KnownExit)\⊂NX↑((idx-1)/0),(∣res),1+res
+[14]      :endif
+[15]      res←(NX↑1-(1-1⌈↑∆),∆←+\+/res),res
+[16]  :else
+[17]      N←ERA-X0 ⋄ vddDI←DI←D←N↑X0↓DXX∆l
+[18]      R←N↑X0↓(X0,DecPS) Dec∆Select RXX ⋄ I←N↑X0↓(X0,DecPS) Dec∆Select IXX
+[19]      :if PHI ⋄ I←N↑(0⌈PHIEndAge-X0)↑I ⋄ :endif ⍝ Limit exits to PHI End Age
+[20]      L←N↑X0↓(X0,DecPS) Dec∆Select LXX ⋄ L←TXX0[term+⍳N]×(X0,PS) qwsel L
+[21]      TO←N↑X0↓(X0,DecPS) Dec∆Select TOXX
+[22]      :if ~dECR∆IND ⍝ If rates are Independent, create Dependent rates from the Independent ones
+[23]          RI←R ⋄ II←I ⋄ LI←L ⋄ TI←TO
+[24]          D←DI×1+(¯0.5×II+LI+RI+TI)+(÷3)×(LI×TI)+(II×TI)+(II×LI)+(RI×TI)+(RI×LI)+(RI×II)
+[25]          I←II×1+(¯0.5×LI+RI+DI+TI)+(÷3)×(LI×TI)+(DI×TI)+(DI×LI)+(RI×TI)+(RI×LI)+(RI×DI)
+[26]          L←LI×1+(¯0.5×RI+DI+II+TI)+(÷3)×(II×TI)+(DI×TI)+(DI×II)+(RI×TI)+(RI×II)+(RI×DI)
+[27]          R←RI×1+(¯0.5×DI+II+LI+TI)+(÷3)×(II×TI)+(DI×TI)+(DI×II)+(LI×TI)+(LI×II)+(LI×DI)
+[28]         TO←TI×1+(¯0.5×DI+II+LI+RI)+(÷3)×(II×RI)+(DI×RI)+(DI×II)+(LI×RI)+(LI×II)+(LI×DI)
+[29]      :else
+[30]          vddDI←D÷1-0.5×I+L+R
+[31]      :endif
+[32]      R←R⌊0.9999999 ⋄ D←D⌊0.9999999-R ⋄ I←I⌊0.9999999-R+D ⋄ L←L⌊0.9999999-R+D+I ⋄ TO←TO⌊0.9999999-R+D+I+L
+[33]      rates←(5,N)⍴R,D,I,L,TO
+[34]  ⍝⍝⍝    LX←÷⌽×\⌽1-+⌿rates←(5,N)⍴R,D,I,L,TO
+[35]  ⍝⍝⍝    res←⍉LX,[⎕IO]rates×(5,N)⍴LX
+[36]      :if 0≠LNX-SNX ⍝ Extend Service Table to include Late Retirement
+[37]          DI←D←(LNX-SNX)↑(X0+N)↓DXX∆l ⋄ R←(LNX-SNX)↑(X0+N)↓(X0,DecPS,NRA) Dec∆Select RXX
+[38]          TO←(LNX-SNX)↑(X0+N)↓(X0,DecPS,NRA) Dec∆Select TOXX
+[39]          :if ~dECR∆IND ⍝ If rates are Independent, create Dependent rates from the Independent ones
+[40]              ⍝ Retirement/Transfer rates are "Start-Year"
+[41]              D←DI×1-1⌊R+TO
+[42]          :endif
+[43]          R←R⌊0.9999999 ⋄ TO←TO⌊0.9999999-R ⋄ D←D⌊0.9999999-R+TO
+[44]          rates←rates,R⍪D⍪0⍪0,[¯0.5]TO
+[45]  ⍝⍝⍝        LX←÷⌽×\⌽1-+⌿rates←(5,LNX-SNX)⍴R,D,3/(LNX-SNX)/0
+[46]  ⍝⍝⍝        res←(res×LX[0])⍪⍉LX,[⎕IO]rates×(5,LNX-SNX)⍴LX
+[47]      :endif
+[48]      LX←÷⌽×\⌽1-+⌿rates
+[49]      res←⍉LX,[⎕IO]rates×(5,N+LNX-SNX)⍴LX
+[50]      res←(NX,6)↑res⍪1,(1-TO),0 0 0,TO←TOXX[X0+N+LNX-SNX]
+[51]      TP←NX↑X0↓(X0,DecPS) Dec∆Select TPXX ⍝ Proportion of (Early/Normal) Retirees Transferring
+[52]      res←res,TP×res[;1] ⋄ res[;1]←res[;1]×1-TP
+[53]  :endif
+[54]  
+[55]  :if PHIMidtPx←PHI
+[56]      PHIMatMY←(×res[;3])×[0]PHIMatMY
+[57]      PHIMYBen←(×res[;3])×[0]PHIMYBen ⋄ PHISYBen←(×res[;3])×[0]PHISYBen ⋄ PHINRABen←(×res[;3])×[0]PHINRABen
+[58]      :if 2=⍴⍴QXill∆l
+[59]          PHIQx←PHIMYBen×⊃(-NX)↑¨(X0+⍳NX)↓¨((X0+⍳NX),¨ 0) Dec∆Select¨⊂(X0+NX)↑[1]QXill∆l
+[60]      :else
+[61]          PHIQx←PHIMYBen×[1]NX↑X0↓((X0+⍳NX) 0) Dec∆Select QXill∆l
+[62]      :endif
+[63]      PHIMidtPx←(PHISYBen-PHINRABen)×(⊃MID ¨⎕split PHItPx←(0 ¯1↓×\1-0,PHIQx)×[0]res[;3]÷res[0;0]),0
+[64]      PHIQxret←+/PHItPx×PHINRABen ⋄ PHIQx←PHIQx×PHItPx←PHItPx××PHIMYBen
+[65]  :endif
+[66]  
+[67]  →(~defind)/VDD←0 ⍝ Return of Conts on Death in Deferment
+[68]  :if ×uk
+[69]      VDD←(res[;4]÷res[0;0])×(jdef-1) DDTAB∆2 1
+[70]  :else
+[71]      LX←(1,N↑×\1-vddDI←(⌊t)↑vddDI)×jdef*⍳NX
+[72]  ???    (res[;4]÷res[0;0])×(MID(⌽+\⌽(NX↑vddDI)×LX×v÷1↑v)÷vMP×LX),0
+[73]  :endif
+    ∇

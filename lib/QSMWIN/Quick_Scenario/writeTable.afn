@@ -1,0 +1,20 @@
+    ∇ html←writeTable tbl;a;head;body;t;∆;v;typ
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Usage: writeTable 'c1' 'c2' 'c3' 'c4'⍪'one' 'two' 'three',3 3⍴⍳9
+[3]   ⍝ NB: HTML requires style rule for class 'right-align'
+[4]   ⍝ Version: sjt31mar19
+[5]   
+[6]   :if ×rowsIn tbl
+[7]       typ←'nc'[1+' '=↑¨0⍴¨↑¨tbl[2;]]                                      ⍝ column types
+[8]   :else
+[9]       typ←(2⊃⍴tbl)⍴'c'                                                    ⍝ default to char
+[10]  :endif
+[11]  v←1 0↓tbl                                                               ⍝ table value
+[12]  ∆←typ='n'                                                               ⍝ flag numeric columns
+[13]  (∆/v)←(⊂'M<->CI20')⎕FMT¨∆/v                                             ⍝ cast numeric to formatted string
+[14]  t←DLTB¨tbl[1;]⍪v                                                        ⍝ trim cells
+[15]  a←('left-align' 'right-align')['cn'⍳typ]                                ⍝ alignment classes
+[16]  head←⊂'tr' xtag↑,/((⊂'th')xattr¨(⊂'class')pr¨a)xtag¨t[1;]               ⍝ table head
+[17]  body←(⊂'tr')xtag¨,/(((⍴t)-1 0)⍴(⊂'td')xattr¨(⊂'class')pr¨a)xtag¨1 0↓t   ⍝ table body
+[18]  html←'table' xtag↑,/'thead' 'tbody'xtag¨head body                       ⍝ HTML table
+    ∇

@@ -1,1 +1,67 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Print_Dialog" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Print_Dialog" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmPrint.cbPrinter" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB Printer[11]  :if mt selection[12]      :if ~mt DLTB Printer[13]          warnings←warnings OVER "Previous Selection for 'Select Printer' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmPrint.cbPrinter" ⎕wi "value" (¯1↑1,selection)[18]  no←1↑⍴PickList←SStoMAT ("fmPrint.opPrintOpt_1" ⎕wi "∆lastoption") ⎕wi "∆options"[19]  value←¯1↑1,selection←PickList ExactTLU PrintOpt[20]  :if 0∊⍴selection[21]      modified←⌈/modified,×value[22]  :endif[23]  :for nn :in ⍳no[24]      ("fmPrint.opPrintOpt_",⍕nn) ⎕wi "value" (value=nn)[25]  :endfor[26]  "fmPrint.fPages.edStartPage" ⎕wi "text" (DLTB StartPage)[27]  "fmPrint.fPages.edEndPage" ⎕wi "text" (DLTB EndPage)[28]  no←1↑⍴PickList←SStoMAT ("fmPrint.forientation.oporientation_1" ⎕wi "∆lastoption") ⎕wi "∆options"[29]  value←¯1↑1,selection←PickList ExactTLU orientation[30]  :if 0∊⍴selection[31]      modified←⌈/modified,×value[32]  :endif[33]  :for nn :in ⍳no[34]      ("fmPrint.forientation.oporientation_",⍕nn) ⎕wi "value" (value=nn)[35]  :endfor[36]  "fmPrint.fMargins.edtopmargin" ⎕wi "text" (DLTB topmargin)[37]  "fmPrint.fMargins.edleftmargin" ⎕wi "text" (DLTB leftmargin)[38]  no←1↑⍴PickList←SStoMAT ("fmPrint.fFontStyle.opFontStyle_1" ⎕wi "∆lastoption") ⎕wi "∆options"[39]  value←¯1↑1,selection←PickList ExactTLU FontStyle[40]  :if 0∊⍴selection[41]      modified←⌈/modified,×value[42]  :endif[43]  :for nn :in ⍳no[44]      ("fmPrint.fFontStyle.opFontStyle_",⍕nn) ⎕wi "value" (value=nn)[45]  :endfor[46]  no←1↑⍴PickList←SStoMAT ("fmPrint.fFontSize.opFontSize_1" ⎕wi "∆lastoption") ⎕wi "∆options"[47]  value←¯1↑1,selection←PickList ExactTLU FontSize[48]  :if 0∊⍴selection[49]      modified←⌈/modified,×value[50]  :endif[51]  :for nn :in ⍳no[52]      ("fmPrint.fFontSize.opFontSize_",⍕nn) ⎕wi "value" (value=nn)[53]  :endfor[54]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Print_Dialog[55]      :for var :in spin Comment_Print_Dialog at "variable" "row" ⋄ (var row)←var[56]          "Print_Dialog" ParmColor ((FormFields for "variable" var) at "control"),var row 1[57]      :endfor[58]  :endif[59]  :if ~0∊⍴,warnings[60]      MDISPLAY DLTMB warnings,⎕tcnl[61]      Win∆AssignVars "fmPrint"[62]  :endif[63]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Print_Dialog" "" "Names"[64]      "fmPrint" ⎕wi "modified" 0[65]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Print_Dialog" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Print_Dialog" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmPrint.cbPrinter" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB Printer
+[11]  :if mt selection
+[12]      :if ~mt DLTB Printer
+[13]          warnings←warnings OVER "Previous Selection for 'Select Printer' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmPrint.cbPrinter" ⎕wi "value" (¯1↑1,selection)
+[18]  no←1↑⍴PickList←SStoMAT ("fmPrint.opPrintOpt_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[19]  value←¯1↑1,selection←PickList ExactTLU PrintOpt
+[20]  :if 0∊⍴selection
+[21]      modified←⌈/modified,×value
+[22]  :endif
+[23]  :for nn :in ⍳no
+[24]      ("fmPrint.opPrintOpt_",⍕nn) ⎕wi "value" (value=nn)
+[25]  :endfor
+[26]  "fmPrint.fPages.edStartPage" ⎕wi "text" (DLTB StartPage)
+[27]  "fmPrint.fPages.edEndPage" ⎕wi "text" (DLTB EndPage)
+[28]  no←1↑⍴PickList←SStoMAT ("fmPrint.forientation.oporientation_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[29]  value←¯1↑1,selection←PickList ExactTLU orientation
+[30]  :if 0∊⍴selection
+[31]      modified←⌈/modified,×value
+[32]  :endif
+[33]  :for nn :in ⍳no
+[34]      ("fmPrint.forientation.oporientation_",⍕nn) ⎕wi "value" (value=nn)
+[35]  :endfor
+[36]  "fmPrint.fMargins.edtopmargin" ⎕wi "text" (DLTB topmargin)
+[37]  "fmPrint.fMargins.edleftmargin" ⎕wi "text" (DLTB leftmargin)
+[38]  no←1↑⍴PickList←SStoMAT ("fmPrint.fFontStyle.opFontStyle_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[39]  value←¯1↑1,selection←PickList ExactTLU FontStyle
+[40]  :if 0∊⍴selection
+[41]      modified←⌈/modified,×value
+[42]  :endif
+[43]  :for nn :in ⍳no
+[44]      ("fmPrint.fFontStyle.opFontStyle_",⍕nn) ⎕wi "value" (value=nn)
+[45]  :endfor
+[46]  no←1↑⍴PickList←SStoMAT ("fmPrint.fFontSize.opFontSize_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[47]  value←¯1↑1,selection←PickList ExactTLU FontSize
+[48]  :if 0∊⍴selection
+[49]      modified←⌈/modified,×value
+[50]  :endif
+[51]  :for nn :in ⍳no
+[52]      ("fmPrint.fFontSize.opFontSize_",⍕nn) ⎕wi "value" (value=nn)
+[53]  :endfor
+[54]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Print_Dialog
+[55]      :for var :in spin Comment_Print_Dialog at "variable" "row" ⋄ (var row)←var
+[56]          "Print_Dialog" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[57]      :endfor
+[58]  :endif
+[59]  :if ~0∊⍴,warnings
+[60]      MDISPLAY DLTMB warnings,⎕tcnl
+[61]      Win∆AssignVars "fmPrint"
+[62]  :endif
+[63]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Print_Dialog" "" "Names"
+[64]      "fmPrint" ⎕wi "modified" 0
+[65]  :endif
+    ∇

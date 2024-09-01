@@ -1,1 +1,150 @@
-    ∇ res←field Batch_Define parm;parent;value;Module;z;Method[1]   ⍝ OVERWIN.sf#20[2]   ⍝ Function to allow user control on Batch Define[3]   [4]   parent←'fmBatchDefine.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Prepare'  ⍝ Preparatory Routines[9]       InputsType←'BasisFile'[10]  [11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[12]  [13]      parent ⎕wi '∆parm' 1[14]      ValMeth←''[15]      :if 0≠⎕nc 'BatchRow' ⋄ BatchVars ⋄ :endif[16]  [17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[18]  [19]      (parent,'lvBases') ⎕wi 'onClick' (((parent,'lvBases') ⎕wi 'onClick'),' ⋄ ',(parent,'lvBases') ⎕wi 'onExit')[20]      (parent,'lvBases') ⎕wi 'onExit' ''[21]      (parent,'bnBatch_DefineSave') ⎕wi 'caption' 'Add'[22]      (parent,'bnBatch_DefineSave') ⎕wi 'imageindex' 0[23]      (parent,'bnBatch_DefineSave') ⎕wi 'tooltip' 'Add Defined Valuation Run(s) to Batch'[24]  [25]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[26]  [27]      Method←3↑,((parent,'lsValMeth') ⎕wi 'list')[(parent,'lsValMeth') ⎕wi 'value';][28]      :repeat[29]          :select ↑field[30]          :case 'lsValMeth'[31]              :if ⍬≡value←(parent,'lsValMeth') ⎕wi 'value'[32]                  (parent 'lvBases') Win∆SetRelated 'enabled' 0[33]                  (parent,'bnBatch_DefineSave') ⎕wi 'enabled' 0[34]                  ((parent,'fRunOpt') ⎕wi 'children') MultiWI 'enabled' 0[35]                  ((parent,'fOutOpt') ⎕wi 'children') MultiWI 'enabled' 0[36]                  (parent 'lsValMeth') Win∆SetRelated 'enabled' 1[37]              :else[38]                  ((parent,'fRunOpt') ⎕wi 'children') MultiWI 'enabled' 1[39]                  ((parent,'fOutOpt') ⎕wi 'children') MultiWI 'enabled' 1[40]                  OptionsEnabled ⊂Method[41]                  (parent,'bnBatch_DefineSave') ⎕wi 'enabled' 1[42]                  ((parent) ('lsValMeth' 'lvBases')) Win∆SetRelated 'enabled' (0=⎕nc 'BatchRow')[43]                  ((parent,'fRunOpt.') 'cbSexSel') Win∆SetRelated 'enabled' (0=⎕nc 'BatchRow')[44]                  0 0⍴('cbvDATEind' ('c',('kb'[1+uk=1]),'test')) Batch_Define 'Change'[45]              :endif[46]  [47]              :select Method[48]              :case '   '           ⋄ Module←''[49]              :caselist 'PEN' 'PPP' ⋄ Module←'Pensioners_Basis'[50]              :caselist 'DEF' 'PPD' ⋄ Module←'Deferreds_Basis'[51]              :else                 ⋄ Module←'Actives_Basis'[52]              :endselect[53]              ((parent,'lvBases') 'Batch_Define') Win∆UpdateListview Module GetParmDesc 'BasisFile'[54]  [55]          :case 'cbvDATEind'[56]             (parent,'fRunOpt.ckaosind') ⎕wi 'enabled' (aosenabled^((parent,'fRunOpt.cbvDATEind') ⎕wi 'enabled')^(1=(parent,'fRunOpt.cbvDATEind') ⎕wi 'value')^~(⊂Method)∊'   ' 'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP')[57]  [58]          :case 'cktest'[59]              :if (parent,'fRunOpt') ⎕wi 'enabled'[60]              :andif (parent,'fRunOpt.cktest') ⎕wi 'enabled'[61]                  z←(parent,'fRunOpt.cktest') ⎕wi 'value'[62]                  ((⊂parent,'fOutOpt.'),¨'ckdataind' 'cksummopt') MultiWI 'enabled' (~z)[63]                  (parent,'fOutOpt.ckKeepResult') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'ABC' 'SUR')[64]                  (parent,'fOutOpt.ckSSexport') ⎕wi 'enabled' (z←(~z)^~(⊂Method)∊'   ' 'SUR',⊂(gmc^uk=2)/'ABC')[65]                  :if uk=2[66]                      (parent,'fOutOpt.ckSSexpparms') ⎕wi 'enabled' z[67]                  :endif[68]                  ((⊂parent),¨'fRunOpt.cknewent' 'fOutOpt.ckdataind' 'fOutOpt.cksummopt' 'fOutOpt.ckKeepResult') MultiWI 'value' 0[69]              :endif[70]  [71]          :case 'cbtest'[72]              :if (parent,'fRunOpt') ⎕wi 'enabled'[73]              :andif (parent,'fRunOpt.cbtest') ⎕wi 'enabled'[74]                  z←'N'≠↑(parent,'fRunOpt.cbtest') ⎕wi 'text'[75]                  ((parent,'fOutOpt.') 'cbdataind') Win∆SetRelated 'enabled' (~z)[76]                  ((parent,'fRunOpt.') 'cknewent') Win∆SetRelated 'enabled' ((~z)^~(⊂Method)∊'   ' 'ABC' 'SUR' 'NOT' 'DEF' 'PEN' 'PPA' 'PPD' 'PPP')[77]                  (parent,'fRunOpt.ckaggopt') ⎕wi 'enabled' ((~z)^bAggBen^~(⊂Method)∊'ABC' 'SUR' 'NOT' 'DEF' 'PEN' 'PPA' 'PPD' 'PPP')[78]                  (parent,'fOutOpt.cksummopt') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'PEN' 'PPA' 'PPD' 'PPP')[79]                  (parent,'fOutOpt.ckmemsumm') ⎕wi 'enabled' ((~z)^Method≡'PEN')[80]                  (parent,'fOutOpt.ckKeepResult') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'ABC' 'SUR')[81]                  (parent,'fOutOpt.ckIndCashFlow') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'PPA' 'PPD' 'PPP')[82]                  (parent,'fOutOpt.ckVFtables') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'PEN' 'PPA' 'PPD' 'PPP')[83]  ⍝⍝⍝                (parent,'fOutOpt.ckfscopt') ⎕wi 'enabled' ((~z)^bALMLDI^~(⊂Method)∊'   ' 'ABC' 'SUR' 'PPA' 'PPD' 'PPP')[84]                  (parent,'fOutOpt.ckSSexport') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'SUR' 'PPA' 'PPD' 'PPP')[85]                  :if z[86]                      ((⊂parent),¨'fRunOpt.cknewent' 'fOutOpt.cksummopt' 'fOutOpt.ckKeepResult') MultiWI 'value' 0[87]                  :endif[88]                  0 0⍴(⊂'ckKeepResult') Batch_Define 'Change'[89]              :endif[90]  [91]          :case 'ckAgeInterp'[92]              z←(parent,'fRunOpt.ckAgeInterp') ⎕wi 'value'[93]              (parent,'fRunOpt.ckaggopt') ⎕wi 'enabled' ((~z)^(1=(parent,'fRunOpt.cbtest') ⎕wi 'value')^bAggBen^~(⊂Method)∊'   ' 'ABC' 'SUR' 'NOT' 'DEF' 'PEN' 'PPA' 'PPD' 'PPP')[94]              (parent,'fRunOpt.ckaosind') ⎕wi 'enabled' ((~z)^aosenabled^((parent,'fRunOpt.cbvDATEind') ⎕wi 'enabled')^(1=(parent,'fRunOpt.cbvDATEind') ⎕wi 'value')^~(⊂Method)∊'   ' 'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP')[95]  ⍝⍝⍝            (parent,'fOutOpt.ckVFtables') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'PEN' 'PPA' 'PPD' 'PPP')[96]  [97]          :case 'ckaggopt'[98]              z←(parent,'fRunOpt.ckaggopt') ⎕wi 'value'[99]              (parent,'fRunOpt.ckAgeInterp') ⎕wi 'enabled' ((~z)^~Method≡'   ')[100] [101]         :case 'ckaosind'[102]             z←(parent,'fRunOpt.ckaosind') ⎕wi 'value'[103]             (parent,'fRunOpt.ckAgeInterp') ⎕wi 'enabled' ((~z)^~Method≡'   ')[104] [105]         :case 'cknewent'[106]             z←(parent,'fRunOpt.cknewent') ⎕wi 'enabled'[107]             ((parent,'fRunOpt.') 'cbNEparms') Win∆SetRelated 'enabled' (z^(parent,'fRunOpt.cknewent') ⎕wi 'value')[108] [109]         :case 'ckmemsumm'[110] ⍝⍝⍝            (parent,'fOutOpt.cksummopt') ⎕wi 'enabled' ((~(parent,'fOutOpt.ckmemsumm') ⎕wi 'value')^~(⊂Method)∊'   ' 'PEN' 'PPA' 'PPD' 'PPP')[111] [112]         :case 'cksummopt'[113] ⍝⍝⍝            z←~(parent,'fOutOpt.cksummopt') ⎕wi 'value'[114] ⍝⍝⍝            (parent,'fOutOpt.ckmemsumm') ⎕wi 'enabled' (z^(⊂Method)∊(⊂'PEN'),(uk≠1)/⊂'DEF')[115] [116]         :case 'ckKeepResult'[117]             z←((parent,'fOutOpt.ckKeepResult') ⎕wi 'value')^(1=(parent,'fRunOpt.cbtest') ⎕wi 'value')[118]             (parent,'fOutOpt.ckfscopt') ⎕wi 'enabled' (z^bALMLDI^~(⊂Method)∊'   ' 'PPA' 'PPD' 'PPP')[119] [120]         :case 'ckvalout'[121]            :if (parent,'fOutOpt') ⎕wi 'enabled'[122]            :andif (parent,'fOutOpt.ckvalout') ⎕wi 'enabled'[123]            :andif Method≡'NOT'[124]                 z←(parent,'fOutOpt.ckvalout') ⎕wi 'value'[125]                 ((⊂parent,'fOutOpt.'),¨'ckdecopt' 'ckpbens' 'ckdataind' 'cksummopt') MultiWI 'enabled' z[126]            :endif[127] [128]         :case 'ckSSexport'[129]             :if uk=2[130]                 z←(parent,'fOutOpt.ckSSexport') ⎕wi 'value'[131]                 (parent,'fOutOpt.ckSSexpparms') ⎕wi 'enabled' z[132]                 (parent,'fOutOpt.ckSSexpparms') ⎕wi 'value' (z⌊(parent,'fOutOpt.ckSSexpparms') ⎕wi 'value')[133]             :endif[134] [135]         :case 'lvBases'[136]             (parent,'bnBatch_DefineSave') ⎕wi 'enabled' (~⍬≡(parent,'lvBases') ⎕wi 'value')[137] [138]         :endselect[139]     :until mt field←1↓field[140] [141] :case 'Run'[142]     res←'Quit'[143] [144] :case 'Quit' ⍝ Deleting "other" variables[145] [146]     0 0⍴⎕ex 'InputsType'[147] [148] :endselect    ∇
+    ∇ res←field Batch_Define parm;parent;value;Module;z;Method
+[1]   ⍝ OVERWIN.sf#20
+[2]   ⍝ Function to allow user control on Batch Define
+[3]   
+[4]   parent←'fmBatchDefine.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Prepare'  ⍝ Preparatory Routines
+[9]       InputsType←'BasisFile'
+[10]  
+[11]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[12]  
+[13]      parent ⎕wi '∆parm' 1
+[14]      ValMeth←''
+[15]      :if 0≠⎕nc 'BatchRow' ⋄ BatchVars ⋄ :endif
+[16]  
+[17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[18]  
+[19]      (parent,'lvBases') ⎕wi 'onClick' (((parent,'lvBases') ⎕wi 'onClick'),' ⋄ ',(parent,'lvBases') ⎕wi 'onExit')
+[20]      (parent,'lvBases') ⎕wi 'onExit' ''
+[21]      (parent,'bnBatch_DefineSave') ⎕wi 'caption' 'Add'
+[22]      (parent,'bnBatch_DefineSave') ⎕wi 'imageindex' 0
+[23]      (parent,'bnBatch_DefineSave') ⎕wi 'tooltip' 'Add Defined Valuation Run(s) to Batch'
+[24]  
+[25]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[26]  
+[27]      Method←3↑,((parent,'lsValMeth') ⎕wi 'list')[(parent,'lsValMeth') ⎕wi 'value';]
+[28]      :repeat
+[29]          :select ↑field
+[30]          :case 'lsValMeth'
+[31]              :if ⍬≡value←(parent,'lsValMeth') ⎕wi 'value'
+[32]                  (parent 'lvBases') Win∆SetRelated 'enabled' 0
+[33]                  (parent,'bnBatch_DefineSave') ⎕wi 'enabled' 0
+[34]                  ((parent,'fRunOpt') ⎕wi 'children') MultiWI 'enabled' 0
+[35]                  ((parent,'fOutOpt') ⎕wi 'children') MultiWI 'enabled' 0
+[36]                  (parent 'lsValMeth') Win∆SetRelated 'enabled' 1
+[37]              :else
+[38]                  ((parent,'fRunOpt') ⎕wi 'children') MultiWI 'enabled' 1
+[39]                  ((parent,'fOutOpt') ⎕wi 'children') MultiWI 'enabled' 1
+[40]                  OptionsEnabled ⊂Method
+[41]                  (parent,'bnBatch_DefineSave') ⎕wi 'enabled' 1
+[42]                  ((parent) ('lsValMeth' 'lvBases')) Win∆SetRelated 'enabled' (0=⎕nc 'BatchRow')
+[43]                  ((parent,'fRunOpt.') 'cbSexSel') Win∆SetRelated 'enabled' (0=⎕nc 'BatchRow')
+[44]                  0 0⍴('cbvDATEind' ('c',('kb'[1+uk=1]),'test')) Batch_Define 'Change'
+[45]              :endif
+[46]  
+[47]              :select Method
+[48]              :case '   '           ⋄ Module←''
+[49]              :caselist 'PEN' 'PPP' ⋄ Module←'Pensioners_Basis'
+[50]              :caselist 'DEF' 'PPD' ⋄ Module←'Deferreds_Basis'
+[51]              :else                 ⋄ Module←'Actives_Basis'
+[52]              :endselect
+[53]              ((parent,'lvBases') 'Batch_Define') Win∆UpdateListview Module GetParmDesc 'BasisFile'
+[54]  
+[55]          :case 'cbvDATEind'
+[56]             (parent,'fRunOpt.ckaosind') ⎕wi 'enabled' (aosenabled^((parent,'fRunOpt.cbvDATEind') ⎕wi 'enabled')^(1=(parent,'fRunOpt.cbvDATEind') ⎕wi 'value')^~(⊂Method)∊'   ' 'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP')
+[57]  
+[58]          :case 'cktest'
+[59]              :if (parent,'fRunOpt') ⎕wi 'enabled'
+[60]              :andif (parent,'fRunOpt.cktest') ⎕wi 'enabled'
+[61]                  z←(parent,'fRunOpt.cktest') ⎕wi 'value'
+[62]                  ((⊂parent,'fOutOpt.'),¨'ckdataind' 'cksummopt') MultiWI 'enabled' (~z)
+[63]                  (parent,'fOutOpt.ckKeepResult') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'ABC' 'SUR')
+[64]                  (parent,'fOutOpt.ckSSexport') ⎕wi 'enabled' (z←(~z)^~(⊂Method)∊'   ' 'SUR',⊂(gmc^uk=2)/'ABC')
+[65]                  :if uk=2
+[66]                      (parent,'fOutOpt.ckSSexpparms') ⎕wi 'enabled' z
+[67]                  :endif
+[68]                  ((⊂parent),¨'fRunOpt.cknewent' 'fOutOpt.ckdataind' 'fOutOpt.cksummopt' 'fOutOpt.ckKeepResult') MultiWI 'value' 0
+[69]              :endif
+[70]  
+[71]          :case 'cbtest'
+[72]              :if (parent,'fRunOpt') ⎕wi 'enabled'
+[73]              :andif (parent,'fRunOpt.cbtest') ⎕wi 'enabled'
+[74]                  z←'N'≠↑(parent,'fRunOpt.cbtest') ⎕wi 'text'
+[75]                  ((parent,'fOutOpt.') 'cbdataind') Win∆SetRelated 'enabled' (~z)
+[76]                  ((parent,'fRunOpt.') 'cknewent') Win∆SetRelated 'enabled' ((~z)^~(⊂Method)∊'   ' 'ABC' 'SUR' 'NOT' 'DEF' 'PEN' 'PPA' 'PPD' 'PPP')
+[77]                  (parent,'fRunOpt.ckaggopt') ⎕wi 'enabled' ((~z)^bAggBen^~(⊂Method)∊'ABC' 'SUR' 'NOT' 'DEF' 'PEN' 'PPA' 'PPD' 'PPP')
+[78]                  (parent,'fOutOpt.cksummopt') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'PEN' 'PPA' 'PPD' 'PPP')
+[79]                  (parent,'fOutOpt.ckmemsumm') ⎕wi 'enabled' ((~z)^Method≡'PEN')
+[80]                  (parent,'fOutOpt.ckKeepResult') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'ABC' 'SUR')
+[81]                  (parent,'fOutOpt.ckIndCashFlow') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'PPA' 'PPD' 'PPP')
+[82]                  (parent,'fOutOpt.ckVFtables') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'PEN' 'PPA' 'PPD' 'PPP')
+[83]  ⍝⍝⍝                (parent,'fOutOpt.ckfscopt') ⎕wi 'enabled' ((~z)^bALMLDI^~(⊂Method)∊'   ' 'ABC' 'SUR' 'PPA' 'PPD' 'PPP')
+[84]                  (parent,'fOutOpt.ckSSexport') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'SUR' 'PPA' 'PPD' 'PPP')
+[85]                  :if z
+[86]                      ((⊂parent),¨'fRunOpt.cknewent' 'fOutOpt.cksummopt' 'fOutOpt.ckKeepResult') MultiWI 'value' 0
+[87]                  :endif
+[88]                  0 0⍴(⊂'ckKeepResult') Batch_Define 'Change'
+[89]              :endif
+[90]  
+[91]          :case 'ckAgeInterp'
+[92]              z←(parent,'fRunOpt.ckAgeInterp') ⎕wi 'value'
+[93]              (parent,'fRunOpt.ckaggopt') ⎕wi 'enabled' ((~z)^(1=(parent,'fRunOpt.cbtest') ⎕wi 'value')^bAggBen^~(⊂Method)∊'   ' 'ABC' 'SUR' 'NOT' 'DEF' 'PEN' 'PPA' 'PPD' 'PPP')
+[94]              (parent,'fRunOpt.ckaosind') ⎕wi 'enabled' ((~z)^aosenabled^((parent,'fRunOpt.cbvDATEind') ⎕wi 'enabled')^(1=(parent,'fRunOpt.cbvDATEind') ⎕wi 'value')^~(⊂Method)∊'   ' 'ABC' 'SUR' 'NOT' 'NEC' 'PPA' 'PPD' 'PPP')
+[95]  ⍝⍝⍝            (parent,'fOutOpt.ckVFtables') ⎕wi 'enabled' ((~z)^~(⊂Method)∊'   ' 'PEN' 'PPA' 'PPD' 'PPP')
+[96]  
+[97]          :case 'ckaggopt'
+[98]              z←(parent,'fRunOpt.ckaggopt') ⎕wi 'value'
+[99]              (parent,'fRunOpt.ckAgeInterp') ⎕wi 'enabled' ((~z)^~Method≡'   ')
+[100] 
+[101]         :case 'ckaosind'
+[102]             z←(parent,'fRunOpt.ckaosind') ⎕wi 'value'
+[103]             (parent,'fRunOpt.ckAgeInterp') ⎕wi 'enabled' ((~z)^~Method≡'   ')
+[104] 
+[105]         :case 'cknewent'
+[106]             z←(parent,'fRunOpt.cknewent') ⎕wi 'enabled'
+[107]             ((parent,'fRunOpt.') 'cbNEparms') Win∆SetRelated 'enabled' (z^(parent,'fRunOpt.cknewent') ⎕wi 'value')
+[108] 
+[109]         :case 'ckmemsumm'
+[110] ⍝⍝⍝            (parent,'fOutOpt.cksummopt') ⎕wi 'enabled' ((~(parent,'fOutOpt.ckmemsumm') ⎕wi 'value')^~(⊂Method)∊'   ' 'PEN' 'PPA' 'PPD' 'PPP')
+[111] 
+[112]         :case 'cksummopt'
+[113] ⍝⍝⍝            z←~(parent,'fOutOpt.cksummopt') ⎕wi 'value'
+[114] ⍝⍝⍝            (parent,'fOutOpt.ckmemsumm') ⎕wi 'enabled' (z^(⊂Method)∊(⊂'PEN'),(uk≠1)/⊂'DEF')
+[115] 
+[116]         :case 'ckKeepResult'
+[117]             z←((parent,'fOutOpt.ckKeepResult') ⎕wi 'value')^(1=(parent,'fRunOpt.cbtest') ⎕wi 'value')
+[118]             (parent,'fOutOpt.ckfscopt') ⎕wi 'enabled' (z^bALMLDI^~(⊂Method)∊'   ' 'PPA' 'PPD' 'PPP')
+[119] 
+[120]         :case 'ckvalout'
+[121]            :if (parent,'fOutOpt') ⎕wi 'enabled'
+[122]            :andif (parent,'fOutOpt.ckvalout') ⎕wi 'enabled'
+[123]            :andif Method≡'NOT'
+[124]                 z←(parent,'fOutOpt.ckvalout') ⎕wi 'value'
+[125]                 ((⊂parent,'fOutOpt.'),¨'ckdecopt' 'ckpbens' 'ckdataind' 'cksummopt') MultiWI 'enabled' z
+[126]            :endif
+[127] 
+[128]         :case 'ckSSexport'
+[129]             :if uk=2
+[130]                 z←(parent,'fOutOpt.ckSSexport') ⎕wi 'value'
+[131]                 (parent,'fOutOpt.ckSSexpparms') ⎕wi 'enabled' z
+[132]                 (parent,'fOutOpt.ckSSexpparms') ⎕wi 'value' (z⌊(parent,'fOutOpt.ckSSexpparms') ⎕wi 'value')
+[133]             :endif
+[134] 
+[135]         :case 'lvBases'
+[136]             (parent,'bnBatch_DefineSave') ⎕wi 'enabled' (~⍬≡(parent,'lvBases') ⎕wi 'value')
+[137] 
+[138]         :endselect
+[139]     :until mt field←1↓field
+[140] 
+[141] :case 'Run'
+[142]     res←'Quit'
+[143] 
+[144] :case 'Quit' ⍝ Deleting "other" variables
+[145] 
+[146]     0 0⍴⎕ex 'InputsType'
+[147] 
+[148] :endselect
+    ∇

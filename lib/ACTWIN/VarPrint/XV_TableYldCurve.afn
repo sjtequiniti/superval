@@ -1,1 +1,41 @@
-    ∇ Z←tid XV_TableYldCurve lines;fyr;isTbl;next;∆;pts;cap;cmmt;thd;tbd;cnt;rws;ttl;tid∆;toc[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag a yield-curve' table in lines, if there. SJT 13feb10[3]   ⍝ Return number of lines read and rws of an HTML table.[4]   ⍝ Reads ext vars: STYLE_TH[5]   [6]   :If isTbl←'A<'^.=2↑↑lines[7]   :AndIf isTbl←∨/∨/¨lines[1] ⎕SS¨'.csv' '.CSV'[8]   [9]       next←(¯1+(' '^.=¨lines,⊂'')⍳1)↑lines                                        ⍝ candidate table rows[10]      fyr←'YEAR'^.=⍉⊃4↑¨next[11]      isTbl←(1=+/fyr)^(fyr⍳1)<⍴next                                               ⍝ TEST: 'YEAR' appears once and not on last line[12]  [13]  :EndIf[14]  [15]  :If isTbl[16]  [17]      cmmt←⊂'<!-- XV_TableYldCurve -->'[18]  [19]      ttl←'List of yield curves'[20]      tid∆←⍕tid←tid+1[21]      cap←xtag/'h2' ('a name="', tid∆,'"') ttl[22]      toc←xtag/'li' ('a href="#',tid∆,'"') ttl[23]  [24]      cap←cap,'p' xtag¨ xmlEscape¨ (^\~fyr)/next[25]  [26]      ∆←DLTB¨(+⌿1000 2∘.∣+\1,1↓≠⌿⊃0 ¯1⌽¨⊂' '≠∆)⊂∆←(fyr⍳1)⊃next[27]      thd←'thead' xtag ⊂'tr' xtag ⊃,/(⊂'th',STYLE_TH)xtag¨∆[28]  [29]      pts←1,¯1↓1 0^.=⊃0 1⌽¨⊂' '≠(1+fyr⍳1)⊃next[30]      tbd←'tbody' xtag (⊂'tr')xtag¨,/(⊂'td')xtag¨DLTB¨(+\pts)⊂[2]⊃(fyr⍳1)↓next[31]  [32]      rws←cap,'table' xtag cmmt,thd,tbd[33]      cnt←⍴next[34]  [35]  :Else[36]      (cnt rws toc)←0 '' ''                                                       ⍝ no table found[37]  :EndIf[38]  [39]  Z←cnt rws toc tid    ∇
+    ∇ Z←tid XV_TableYldCurve lines;fyr;isTbl;next;∆;pts;cap;cmmt;thd;tbd;cnt;rws;ttl;tid∆;toc
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag a yield-curve' table in lines, if there. SJT 13feb10
+[3]   ⍝ Return number of lines read and rws of an HTML table.
+[4]   ⍝ Reads ext vars: STYLE_TH
+[5]   
+[6]   :If isTbl←'A<'^.=2↑↑lines
+[7]   :AndIf isTbl←∨/∨/¨lines[1] ⎕SS¨'.csv' '.CSV'
+[8]   
+[9]       next←(¯1+(' '^.=¨lines,⊂'')⍳1)↑lines                                        ⍝ candidate table rows
+[10]      fyr←'YEAR'^.=⍉⊃4↑¨next
+[11]      isTbl←(1=+/fyr)^(fyr⍳1)<⍴next                                               ⍝ TEST: 'YEAR' appears once and not on last line
+[12]  
+[13]  :EndIf
+[14]  
+[15]  :If isTbl
+[16]  
+[17]      cmmt←⊂'<!-- XV_TableYldCurve -->'
+[18]  
+[19]      ttl←'List of yield curves'
+[20]      tid∆←⍕tid←tid+1
+[21]      cap←xtag/'h2' ('a name="', tid∆,'"') ttl
+[22]      toc←xtag/'li' ('a href="#',tid∆,'"') ttl
+[23]  
+[24]      cap←cap,'p' xtag¨ xmlEscape¨ (^\~fyr)/next
+[25]  
+[26]      ∆←DLTB¨(+⌿1000 2∘.∣+\1,1↓≠⌿⊃0 ¯1⌽¨⊂' '≠∆)⊂∆←(fyr⍳1)⊃next
+[27]      thd←'thead' xtag ⊂'tr' xtag ⊃,/(⊂'th',STYLE_TH)xtag¨∆
+[28]  
+[29]      pts←1,¯1↓1 0^.=⊃0 1⌽¨⊂' '≠(1+fyr⍳1)⊃next
+[30]      tbd←'tbody' xtag (⊂'tr')xtag¨,/(⊂'td')xtag¨DLTB¨(+\pts)⊂[2]⊃(fyr⍳1)↓next
+[31]  
+[32]      rws←cap,'table' xtag cmmt,thd,tbd
+[33]      cnt←⍴next
+[34]  
+[35]  :Else
+[36]      (cnt rws toc)←0 '' ''                                                       ⍝ no table found
+[37]  :EndIf
+[38]  
+[39]  Z←cnt rws toc tid
+    ∇

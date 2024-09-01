@@ -1,0 +1,114 @@
+    ∇ ⍙DBRateTables ⍙tables;IDs;TableID;z;ts;desc;RATES;no;values;t;x;rates;ind;tieno;namecol;tscol;desccol;compcol;filename;tab;name;timestamps;∆;dates;namrecs;valrecs;msk;recs;type;Dir
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Output all Table (Rate Tables or ASCII File Tables) out to Database
+[3]   
+[4]   :if ¯1=BasisCategoryID ⍝ Get current Tables
+[5]   :orif mt IDs←,1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE BasisCategoryID = ",⍕DatabaseID+BasisCategoryID
+[6]       IDs←⍳0
+[7]   :endif
+[8]   
+[9]   namrecs←0 4⍴0 0 '' ''
+[10]  valrecs←0 5⍴msk←MATRIX 1 3 1/0 ('#' ⎕wi 'null') 0
+[11]  
+[12]  :if ×rowsIn ⍙tables
+[13]      :if 'T'∊⍙tables at 'Type' ⋄ (compcol namecol desccol tscol)←DESC[0;]⍳'∆_CompNo' '∆_Name' '∆_Description' '∆_TSModified' ⋄ :endif
+[14]  
+[15]      :for tab :in nub (⍙tables for 'Type' 'T') at 'Name'
+[16]          ts←↑DESC[no←DESC[;namecol]⍳⊂tab;tscol]
+[17]          ⍝ Update "Tables" Tables (for auditing purposes)
+[18]          desc←255↑⎕av[156 163] REPL tab,' - ',↑DESC[no;desccol]
+[19]          :if ~(⊂desc ts)∊⎕split namrecs[;2 3]
+[20]              :if    mt DLTB TableID←↑1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE (TableName = ",(1 ⍙DBString desc),") AND (TableTimeStamp = ",(sqlDatabase ⍙DBString ts),") AND (BasisCategoryID = ",(⍕∣DatabaseID+BasisCategoryID),")"
+[21]              :andif mt DLTB TableID←↑1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE (TableName = ",(1 ⍙DBString desc),") AND (TableTimeStamp = ",(sqlDatabase ⍙DBString ts),")"
+[22]                  TableID←1 ⍙DBNextID 'TableID'
+[23]                  RATES←DECRFile ReadFile DESC[no;compcol] ⋄ ind←^/0=RATES←(1⌈⍴RATES)↑RATES
+[24]                  :if 2=⍴⍴RATES
+[25]                      values←0 3⍴0
+[26]                      :for x :in ⍳↑⍴RATES
+[27]                          t←(ind[x]/ind[x]),ind[x]↓0≠rates←RATES[x;]
+[28]                          values←values⍪t⌿x,(⍳↑⍴rates),[0.5]rates
+[29]                      :endfor
+[30]                      recs←(↑⍴values)⌿msk ⋄ recs[;0 1 2 4]←TableID,values
+[31]                      valrecs←valrecs⍪recs
+[32]                  :else
+[33]                      RATES←((ind/ind),ind↓0≠RATES)⌿(⍳⍴RATES),[0.5]RATES
+[34]                      recs←(↑⍴RATES)⌿msk ⋄ recs[;0 (1+'T'=desc[1]) 4]←TableID,RATES
+[35]                      valrecs←valrecs⍪recs
+[36]                  :endif
+[37]              :endif
+[38]              namrecs←namrecs⍪(DatabaseID+BasisCategoryID) TableID desc ts
+[39]          :endif
+[40]      :endfor
+[41]  
+[42]      :for ∆ :in nub ⎕split valsIn ⍙tables for ('T'≠⍙tables at 'Type') ⋄ (type desc ts Dir)←∆
+[43]          filename←DLTB Dir,desc←255↑desc
+[44]          :if sqlDatabase ⍝ Convert Dates to acceptable format
+[45]              ts←,1 DATESPELL (⌽'YYYY/MM/DD' DATEEXP ts),MatrixZWB SStoMAT ':',' ' Win∆Child ts
+[46]          :endif
+[47]          :if ~(⊂desc ts)∊⎕split namrecs[;2 3]
+[48]              :if    mt DLTB TableID←↑1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE (TableName = ",(1 ⍙DBString desc),") AND (TableTimeStamp = ",(sqlDatabase ⍙DBString ts),") AND (BasisCategoryID = ",(⍕∣DatabaseID+BasisCategoryID),")"
+[49]              :andif mt DLTB TableID←↑1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE (TableName = ",(1 ⍙DBString desc),") AND (TableTimeStamp = ",(sqlDatabase ⍙DBString ts),")"
+[50]                  :if 0=filename NTIE tieno←'Native' TieNumber filename ⋄ :continue ⋄ :endif
+[51]                  TableID←1 ⍙DBNextID 'TableID'
+[52]                  RATES←'ASCII' Read∆DataFile tieno,¯1,0,(⎕nsize tieno),0 ⋄ ⎕nuntie tieno
+[53]                  RATES←SStoMAT '⍺',(⎕tcnl,'⍺') REPL (⎕tclf,' ') REPL ', ' REPL RATES
+[54]                  :select type
+[55]                  :case 'M' ⍝ Mortality Improvement Tables
+[56]                      values←0 3⍴0
+[57]                      :for x :in ⍳↑⍴RATES
+[58]                          values←values⍪x,(⍳↑⍴rates),[0.5]rates←⎕fi RATES[x;]
+[59]                      :endfor
+[60]                      values←(0≠values[;2])⌿values
+[61]                      recs←(↑⍴values)⌿msk ⋄ recs[;0 1 2 4]←TableID,values
+[62]                      valrecs←valrecs⍪recs
+[63]                  :case 'Y'
+[64]                      rates←(⍳↑⍴rates),[0.5]rates←0.00001×⌊0.5+100000×⎕fi RATES[0;] ⍝ Round to 5dp
+[65]                      recs←(↑⍴rates)⌿msk ⋄ recs[;0 2 4]←TableID,rates
+[66]                      valrecs←valrecs⍪recs
+[67]                  :endselect
+[68]              :endif
+[69]              namrecs←namrecs⍪(DatabaseID+BasisCategoryID) TableID desc ts
+[70]          :endif
+[71]      :endfor
+[72]  :endif
+[73]  
+[74]  ⍝⍝⍝ FIXME: Allow for extra rate to be added
+[75]  :if 0≠⎕nc 'FactorsTable'
+[76]      :for z :in ⎕split z∘.=z←⍳rowsIn FactorsTable
+[77]          tab←FactorsTable for z
+[78]          desc←' - ' join ↑¨tab at 'Factor' 'Description'
+[79]          ts←↑tab at 'Timestamp'
+[80]          :if ~(⊂desc ts)∊⎕split namrecs[;2 3]
+[81]              :if    mt DLTB TableID←↑1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE (TableName = ",(1 ⍙DBString desc),") AND (TableTimeStamp = ",(sqlDatabase ⍙DBString ts),") AND (BasisCategoryID = ",(⍕∣DatabaseID+BasisCategoryID),")"
+[82]              :andif mt DLTB TableID←↑1 ⍙DBadoCONCommand "SELECT TableID FROM TableNames WHERE (TableName = ",(1 ⍙DBString desc),") AND (TableTimeStamp = ",(sqlDatabase ⍙DBString ts),")"
+[83]                  TableID←1 ⍙DBNextID 'TableID'
+[84]                  rates←(m2n ↑(⊂'G<9999/99/99>') ⎕fmt¨tab at 'Dates'),[0.5]↑tab at 'Rates'
+[85]                  recs←(↑⍴rates)⌿msk ⋄ recs[;0 3 4]←TableID,rates
+[86]                  valrecs←valrecs⍪recs
+[87]              :endif
+[88]              namrecs←namrecs⍪(DatabaseID+BasisCategoryID) TableID desc ts
+[89]          :endif
+[90]      :endfor
+[91]  :endif
+[92]  
+[93]  :if ∨/z←~namrecs[;1]∊IDs
+[94]      'ADOrst' ⎕wi 'XOpen' 'TableNames' ('ADOcon' ⎕wi 'obj') cursor lock
+[95]      ⍙DBInsertData (~sqlDatabase)↓[⎕io+1]DatabaseID,z⌿namrecs
+[96]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[97]  :endif
+[98]  :if ~mt valrecs
+[99]      'ADOrst' ⎕wi 'XOpen' 'TableValues' ('ADOcon' ⎕wi 'obj') cursor lock
+[100]     ⍙DBInsertData valrecs
+[101]     0 0⍴'ADOrst' ⎕wi 'XClose'
+[102] :endif
+[103] 
+[104] :if ~mt IDs←IDs~namrecs[;⎕io+1] ⍝ Clean Up of "Tables" Tables
+[105]     0 0⍴0 ⍙DBadoCONCommand "DELETE FROM TableNames WHERE BasisCategoryID = ",(⍕DatabaseID+BasisCategoryID),"AND TableID IN (",(0 ⍙DBNumList IDs),")"
+[106]     :for TableID :in IDs
+[107]         IDs←IDs~(0≠,1 ⍙DBadoCONCommand "SELECT COUNT(BasisCategoryID) FROM TableNames WHERE TableID = ",⍕TableID)/TableID
+[108]     :endfor
+[109]     :if ~mt IDs
+[110]         0 0⍴0 ⍙DBadoCONCommand "DELETE FROM TableValues WHERE TableID IN (",(0 ⍙DBNumList IDs),")"
+[111]     :endif
+[112] :endif
+    ∇

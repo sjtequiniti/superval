@@ -1,1 +1,32 @@
-    ∇ Z←XV_TableValues lines;nxt;pts;cnt;tgs;nc;htgs;cmmt;thd;tbd;rws[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag a 'Cartesian' table in lines, if there. SJT 09feb10[3]   ⍝ Col 1 L-aligned, remainder R-aligned numerics[4]   ⍝ Return number of lines read and rws of an HTML table.[5]   ⍝ Reads ext vars: STYLE_TH STYLE_THR[6]   [7]   :If   'Past Service Values of:'≡23↑↑lines[8]   :OrIf 'Liability Values of:'   ≡20↑↑lines[9]   [10]      cnt←↑('Total '^.=⍉⊃6↑¨lines)⍳1[11]      nxt←⊃cnt↑lines[12]      pts←1 0^.=⊃0 ¯1↓¨⍬ 0,¨⊂∨⌿nxt≠' '[13]  [14]      cmmt←⊂'<!-- XV_TablePsv2 -->'[15]  [16]      nc←+/pts[17]      htgs←(⊂'th '),¨(1,nc-1)/STYLE_TH STYLE_THR[18]      tgs←(cnt nc-1 0)⍴(1,nc-1)/'td class="lbl"' 'td style="text-align: right"'[19]  [20]      thd←'thead' xtag  ⊂'tr' xtag↑,/htgs xtag¨DLTB¨(+\pts)⊂nxt[1;][21]      tbd←'tbody' xtag (⊂'tr')xtag¨,/ tgs xtag¨DLTB¨(+\pts)⊂1 0↓nxt[22]  [23]      rws←'table' xtag cmmt,thd,tbd[24]  [25]  :Else[26]      (cnt rws)←0 ''                                                              ⍝ no table found[27]  [28]  :EndIf[29]  [30]  Z←cnt rws    ∇
+    ∇ Z←XV_TableValues lines;nxt;pts;cnt;tgs;nc;htgs;cmmt;thd;tbd;rws
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag a 'Cartesian' table in lines, if there. SJT 09feb10
+[3]   ⍝ Col 1 L-aligned, remainder R-aligned numerics
+[4]   ⍝ Return number of lines read and rws of an HTML table.
+[5]   ⍝ Reads ext vars: STYLE_TH STYLE_THR
+[6]   
+[7]   :If   'Past Service Values of:'≡23↑↑lines
+[8]   :OrIf 'Liability Values of:'   ≡20↑↑lines
+[9]   
+[10]      cnt←↑('Total '^.=⍉⊃6↑¨lines)⍳1
+[11]      nxt←⊃cnt↑lines
+[12]      pts←1 0^.=⊃0 ¯1↓¨⍬ 0,¨⊂∨⌿nxt≠' '
+[13]  
+[14]      cmmt←⊂'<!-- XV_TablePsv2 -->'
+[15]  
+[16]      nc←+/pts
+[17]      htgs←(⊂'th '),¨(1,nc-1)/STYLE_TH STYLE_THR
+[18]      tgs←(cnt nc-1 0)⍴(1,nc-1)/'td class="lbl"' 'td style="text-align: right"'
+[19]  
+[20]      thd←'thead' xtag  ⊂'tr' xtag↑,/htgs xtag¨DLTB¨(+\pts)⊂nxt[1;]
+[21]      tbd←'tbody' xtag (⊂'tr')xtag¨,/ tgs xtag¨DLTB¨(+\pts)⊂1 0↓nxt
+[22]  
+[23]      rws←'table' xtag cmmt,thd,tbd
+[24]  
+[25]  :Else
+[26]      (cnt rws)←0 ''                                                              ⍝ no table found
+[27]  
+[28]  :EndIf
+[29]  
+[30]  Z←cnt rws
+    ∇

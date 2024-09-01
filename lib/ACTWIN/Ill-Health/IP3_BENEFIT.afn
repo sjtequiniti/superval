@@ -1,1 +1,47 @@
-    ∇ IP3∆BENEFIT;BenType∆pp;IncType∆pp;Inc∆pp;Start∆pp;End∆pp;GP∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;WILLPRESPAN;FWILLPRESPAN;Dec∆pp[1]   ⍝ ACTWIN.sf#7[2]   ⍝ CLAYBROOK VALUATION SYSTEM[3]   ⍝ Special Pension[4]   [5]   ⍝ Total Pension[6]   ILLPENN←(+/[⎕io+1]+/[⎕io+2]TILLPEN)[⎕io;][7]   ILLSPAN←(+/[⎕io+1]+/[⎕io+2]TILLSPA)[⎕io;][8]   :if PreSPASplit[9]       (WILLSPAN WILLPRESPAN)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]TWILLSPA)[⎕io;;][10]  :else[11]       WILLSPAN                          ←(+/[⎕io+1]+/[⎕io+2]TWILLSPA)[⎕io; ][12]       WILLPENN                          ←(+/[⎕io+1]+/[⎕io+2]TWILLPEN)[⎕io; ][13]  :endif[14]  ⍝[15]  ⍝ Future Pension[16]  FILLPENN←(+/[⎕io+2]TILLPEN)[⎕io;⎕io+2;][17]  FILLSPAN←(+/[⎕io+2]TILLSPA)[⎕io;⎕io+2;][18]  :if PreSPASplit[19]      (FWILLSPAN FWILLPRESPAN)←0 SpouseBens (+/[⎕io+2]TWILLSPA)[⎕io;⎕io+2;;][20]  :else[21]       FWILLSPAN                           ←(+/[⎕io+2]TWILLSPA)[⎕io;⎕io+2; ][22]       FWILLPENN                           ←(+/[⎕io+2]TWILLPEN)[⎕io;⎕io+2; ][23]  :endif[24]  ⍝[25]  ⍝ Pension Projector Variables[26]  BenType∆pp←'P' ⋄ IncType∆pp←'S' ⋄ Inc∆pp←NDYNINC[27]  [28]  :if STYPE ⍝ Prospective Benefits have been separated out[29]      IP3∆SelfInsured[30]  :elseif ~STYPE ⋄ :andif ~IHCARESpread ⋄ :andif CAREFutAcc[31]      IP3∆CAREServSplit[32]  :endif[33]  [34]  End∆pp←,SPA⌈Start∆pp←Age∆pp ⋄ GP∆pp←,NX⍴GPeriod[35]  SL∆pp←,ILLPENN ⋄ FSL∆pp←,FILLPENN[36]  :if PreSPASplit ⋄ Dec∆pp←'I2' ⋄ Con∆pp← WILLPRESPAN ⋄ FCon∆pp← FWILLPRESPAN[37]  :else           ⋄ Dec∆pp←'I'  ⋄ Con∆pp←,WILLPENN    ⋄ FCon∆pp←,FWILLPENN[38]  :endif[39]  [40]  PP∆CreateInterface[41]  [42]  Dec∆pp←'I' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←,0⌈GPeriod-0⌈Start∆pp-Age∆pp[43]  SL∆pp←,ILLSPAN ⋄ FSL∆pp←,FILLSPAN ⋄ Con∆pp←,WILLSPAN ⋄ FCon∆pp←,FWILLSPAN[44]  [45]  PP∆CreateInterface    ∇
+    ∇ IP3∆BENEFIT;BenType∆pp;IncType∆pp;Inc∆pp;Start∆pp;End∆pp;GP∆pp;SL∆pp;FSL∆pp;Con∆pp;FCon∆pp;WILLPRESPAN;FWILLPRESPAN;Dec∆pp
+[1]   ⍝ ACTWIN.sf#7
+[2]   ⍝ CLAYBROOK VALUATION SYSTEM
+[3]   ⍝ Special Pension
+[4]   
+[5]   ⍝ Total Pension
+[6]   ILLPENN←(+/[⎕io+1]+/[⎕io+2]TILLPEN)[⎕io;]
+[7]   ILLSPAN←(+/[⎕io+1]+/[⎕io+2]TILLSPA)[⎕io;]
+[8]   :if PreSPASplit
+[9]       (WILLSPAN WILLPRESPAN)←0 SpouseBens (+/[⎕io+1]+/[⎕io+2]TWILLSPA)[⎕io;;]
+[10]  :else
+[11]       WILLSPAN                          ←(+/[⎕io+1]+/[⎕io+2]TWILLSPA)[⎕io; ]
+[12]       WILLPENN                          ←(+/[⎕io+1]+/[⎕io+2]TWILLPEN)[⎕io; ]
+[13]  :endif
+[14]  ⍝
+[15]  ⍝ Future Pension
+[16]  FILLPENN←(+/[⎕io+2]TILLPEN)[⎕io;⎕io+2;]
+[17]  FILLSPAN←(+/[⎕io+2]TILLSPA)[⎕io;⎕io+2;]
+[18]  :if PreSPASplit
+[19]      (FWILLSPAN FWILLPRESPAN)←0 SpouseBens (+/[⎕io+2]TWILLSPA)[⎕io;⎕io+2;;]
+[20]  :else
+[21]       FWILLSPAN                           ←(+/[⎕io+2]TWILLSPA)[⎕io;⎕io+2; ]
+[22]       FWILLPENN                           ←(+/[⎕io+2]TWILLPEN)[⎕io;⎕io+2; ]
+[23]  :endif
+[24]  ⍝
+[25]  ⍝ Pension Projector Variables
+[26]  BenType∆pp←'P' ⋄ IncType∆pp←'S' ⋄ Inc∆pp←NDYNINC
+[27]  
+[28]  :if STYPE ⍝ Prospective Benefits have been separated out
+[29]      IP3∆SelfInsured
+[30]  :elseif ~STYPE ⋄ :andif ~IHCARESpread ⋄ :andif CAREFutAcc
+[31]      IP3∆CAREServSplit
+[32]  :endif
+[33]  
+[34]  End∆pp←,SPA⌈Start∆pp←Age∆pp ⋄ GP∆pp←,NX⍴GPeriod
+[35]  SL∆pp←,ILLPENN ⋄ FSL∆pp←,FILLPENN
+[36]  :if PreSPASplit ⋄ Dec∆pp←'I2' ⋄ Con∆pp← WILLPRESPAN ⋄ FCon∆pp← FWILLPRESPAN
+[37]  :else           ⋄ Dec∆pp←'I'  ⋄ Con∆pp←,WILLPENN    ⋄ FCon∆pp←,FWILLPENN
+[38]  :endif
+[39]  
+[40]  PP∆CreateInterface
+[41]  
+[42]  Dec∆pp←'I' ⋄ Start∆pp←End∆pp ⋄ End∆pp←⍬ ⋄ GP∆pp←,0⌈GPeriod-0⌈Start∆pp-Age∆pp
+[43]  SL∆pp←,ILLSPAN ⋄ FSL∆pp←,FILLSPAN ⋄ Con∆pp←,WILLSPAN ⋄ FCon∆pp←,FWILLSPAN
+[44]  
+[45]  PP∆CreateInterface
+    ∇

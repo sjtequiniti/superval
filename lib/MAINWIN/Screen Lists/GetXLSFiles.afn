@@ -1,0 +1,13 @@
+    ∇ res←exclude GetXLSFiles Dir
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a list of Excel files
+[3]   
+[4]   res←m2n ⎕xlib Dir,'*.xls*'
+[5]   res←((UPPERCASE¨Win∆Child¨res)∊'XLS' 'XLSX' 'XLSM')/res
+[6]   :if 0≠⎕nc 'exclude' ⋄ :andif ~mt res
+[7]       exclude←~(UPPERCASE¨res)∊(⊂UPPERCASE exclude),¨'.XLS' '.XLSX'  '.XLSM'
+[8]       res←exclude/res
+[9]   :endif
+[10]  
+[11]  res←'Excel Files' OVER ⊃res
+    ∇

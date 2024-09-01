@@ -1,1 +1,34 @@
-    ∇ Consolid_Delete;cn;list;Desc;Index;tieno;i[1]   ⍝ CONSWIN.sf#3[2]   ⍝ Delete the currently selected Saved Valuation Results[3]   [4]   :if ~XLCtl[5]       :if 0∊⍴cn←'fmSV.sConsolidation.pgSelection.lvrunslist' ⎕wi 'value' ⋄ :return ⋄ :endif[6]       list←'fmSV.sConsolidation.pgSelection.lvrunslist' ⎕wi 'list'[7]   [8]       →(0=(ConsolidDir,'VALRES') FTIE tieno←TieNumber ConsolidDir,'VALRES')/0[9]       Index←⎕fread tieno,1 ⋄ ⎕funtie tieno[10]  [11]      :for i :in cn ⍝ Find any children who must also go!![12]          :if 'N'=Index[i;51][13]              cn←cn,(Index[;466+⍳26] TLU Index[i;466+⍳26])~i[14]          :endif[15]      :endfor[16]  [17]      Desc←(list[;1]∊cn)⌿list[;3][18]      :for i :in ⍳⍴Desc[19]          :if ':...........'≡12↑⊃Desc[i][20]              Desc[i]←⊂'<NEM> ',12↓⊃Desc[i][21]          :endif[22]      :endfor[23]      Desc←,⎕tcnl,'/-' REPL (⊃Desc),' ','<',(⊃(list[;1]∊cn)⌿list[;4]),'>'[24]  [25]      :if 'N'='YN' ASK 'DeleteInvRes' Desc ⋄ :return ⋄ :endif[26]  [27]      →(0=(ConsolidDir,'VALRES') FTIE tieno←TieNumber ConsolidDir,'VALRES')/0[28]      Index←⎕fread tieno,1 ⋄ Index[cn;⍳10]←'∇',Index[cn;⍳9][29]      Index ⎕freplace tieno,1 ⋄ ⎕funtie tieno[30]  [31]      0 0⍴(⊂'cbvalind') Consolidation 'Change'[32]  :endif    ∇
+    ∇ Consolid_Delete;cn;list;Desc;Index;tieno;i
+[1]   ⍝ CONSWIN.sf#3
+[2]   ⍝ Delete the currently selected Saved Valuation Results
+[3]   
+[4]   :if ~XLCtl
+[5]       :if 0∊⍴cn←'fmSV.sConsolidation.pgSelection.lvrunslist' ⎕wi 'value' ⋄ :return ⋄ :endif
+[6]       list←'fmSV.sConsolidation.pgSelection.lvrunslist' ⎕wi 'list'
+[7]   
+[8]       →(0=(ConsolidDir,'VALRES') FTIE tieno←TieNumber ConsolidDir,'VALRES')/0
+[9]       Index←⎕fread tieno,1 ⋄ ⎕funtie tieno
+[10]  
+[11]      :for i :in cn ⍝ Find any children who must also go!!
+[12]          :if 'N'=Index[i;51]
+[13]              cn←cn,(Index[;466+⍳26] TLU Index[i;466+⍳26])~i
+[14]          :endif
+[15]      :endfor
+[16]  
+[17]      Desc←(list[;1]∊cn)⌿list[;3]
+[18]      :for i :in ⍳⍴Desc
+[19]          :if ':...........'≡12↑⊃Desc[i]
+[20]              Desc[i]←⊂'<NEM> ',12↓⊃Desc[i]
+[21]          :endif
+[22]      :endfor
+[23]      Desc←,⎕tcnl,'/-' REPL (⊃Desc),' ','<',(⊃(list[;1]∊cn)⌿list[;4]),'>'
+[24]  
+[25]      :if 'N'='YN' ASK 'DeleteInvRes' Desc ⋄ :return ⋄ :endif
+[26]  
+[27]      →(0=(ConsolidDir,'VALRES') FTIE tieno←TieNumber ConsolidDir,'VALRES')/0
+[28]      Index←⎕fread tieno,1 ⋄ Index[cn;⍳10]←'∇',Index[cn;⍳9]
+[29]      Index ⎕freplace tieno,1 ⋄ ⎕funtie tieno
+[30]  
+[31]      0 0⍴(⊂'cbvalind') Consolidation 'Change'
+[32]  :endif
+    ∇

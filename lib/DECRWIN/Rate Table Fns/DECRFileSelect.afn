@@ -1,1 +1,16 @@
-    ∇ DECRFileSelect parm;File[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Select the "Decrement" File to be displayed in the Rate Table Form[3]   [4]   :if parm[1]=1 ⍝ File Name (topmost) node[5]   :andif parm[6]=2 ⍝ Right Click pressed[6]   :andif 1='fmRateTables.trTABLE' ⎕wi 'value' ⍝ current Selected Node[7]       File←DECRFile ⋄ Decrupdated←0[8]       'DECRWIN' CallModule 'Select_Rates'[9]       :if ~File≡DECRFile[10]      :andif ~Decrupdated[11]           DECRIndex←DECRFile ReadFile 'Index'[12]           UpdateDecrTree[13]      :endif[14]  :endif    ∇
+    ∇ DECRFileSelect parm;File
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Select the "Decrement" File to be displayed in the Rate Table Form
+[3]   
+[4]   :if parm[1]=1 ⍝ File Name (topmost) node
+[5]   :andif parm[6]=2 ⍝ Right Click pressed
+[6]   :andif 1='fmRateTables.trTABLE' ⎕wi 'value' ⍝ current Selected Node
+[7]       File←DECRFile ⋄ Decrupdated←0
+[8]       'DECRWIN' CallModule 'Select_Rates'
+[9]       :if ~File≡DECRFile
+[10]      :andif ~Decrupdated
+[11]           DECRIndex←DECRFile ReadFile 'Index'
+[12]           UpdateDecrTree
+[13]      :endif
+[14]  :endif
+    ∇

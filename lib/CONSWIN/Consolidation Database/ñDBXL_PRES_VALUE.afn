@@ -1,1 +1,147 @@
-    ∇ ⍙DBXL_PRES∆VALUE;N;sql;tab;z;INS;rows;rowsA;table;runslist[1]   ⍝ CONSWIN.sf#11[2]   ⍝[3]   ⍝[4]   ⍝[5]   ⍝[6]   1 XL_ActivateWorksheet 'BalSheet'[7]   rows←0 ⍝ Number of Inserted/Deleted Rows (to correctly align FS Liabilities)[8]   table←'ResultsData_NoIndex'[9]   [10]  :if dab[11]      0 0⍴(-1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ",table," WHERE SVYear=1 AND LiabilityTypeID IN (",(⍕10-×abNO),", 11)")XL_Data RCtoA1 30 17[12]  :else[13]      'U' XL_RangeDelete 30 ⍬ 30 ⍬ ⋄ 'L' XL_RangeDelete ⍬ 18 ⍬ 18[14]  :endif[15]  [16]  0 0⍴(1↑ASSETS) XL_Data RCtoA1 (30+dab) 17[17]  :if ^/0=AdditConts[18]      'U' XL_RangeDelete (32+dab) ⍬ (34+dab) ⍬ ⋄ rows←¯3[19]  :else[20]      :if 0≠AdditConts[1][21]          0 0⍴('Amortisation 1 - ',1 ⍙DBXL_AMORT∆OUT PSC) XL_Data RCtoA1 (33+dab) 4 ⋄ 0 0⍴(-AdditConts[1]) XL_Data RCtoA1 (33+dab) 17[22]      :else[23]          'U' XL_RangeDelete 4⍴(33+dab) ⍬ ⋄ rows←¯1[24]      :endif[25]      :if 0≠AdditConts[2][26]          0 0⍴('Amortisation 2 - ',2 ⍙DBXL_AMORT∆OUT PSC1) XL_Data RCtoA1 (34+dab) 4 ⋄ 0 0⍴(-AdditConts[2]) XL_Data RCtoA1 (34+dab) 17[27]      :else[28]          'U' XL_RangeDelete 4⍴(34+dab) ⍬ ⋄ rows←¯1[29]      :endif[30]  :endif[31]  [32]  (1 3 'Actives') Win∆ProgressBar 'MemberUpdate'[33]  [34]  rowsA←⍬⍴⍴,runsA~runsNE[35]  :select N←⍬⍴⍴,runsA[36]  :case 0 ⋄ 'U' XL_RangeDelete 4⍴40+dab+rows ⍬ ⋄ 'U' XL_RangeDelete 4⍴13 ⍬ ⋄ →Lab[37]  :case 1 ⋄[38]  :else   ⋄ 'D↑' XL_RangeInsert (40+dab+rows) ⍬ (38+dab+rows+N) ⍬ ⋄ ((39+dab+rows+N) ⍬) XL_PasteAll (40+dab+rows) ⍬ (38+dab+rows+N) ⍬[39]            :if 1<rowsA ⋄ 'D↑' XL_RangeInsert 13 ⍬ (11+rowsA) ⍬ ⋄ ((12+rowsA) ⍬) XL_PasteAll 13 ⍬ (11+rowsA) ⍬ ⋄ :endif[40]  :endselect[41]  [42]  runslist←0 ⍙DBNumList runsA[43]  tab←0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, ClassID, Sex, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"[44]  tab←⍉MATRIX m2n (⊃('Males' 'Females')[⎕io+tab[;⎕io+1]='F']),' ',(⊃DLTB¨tab[;⎕io+2]),⊃('' ' New Entrants')[tab[;⎕io]-~⎕io][45]  0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) 4 (38+dab+rows+rowsA+N) 4[46]  0 0⍴((~runsA∊runsNE)⌿tab) XL_Data RCtoA1 13 4 (12+rowsA) 4[47]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 5)[48]  [49]  tab←0 1↓runsA XL_Pivot sql 0[50]  0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) 5 (38+dab+rows+rowsA+N) 6[51]  0 0⍴((~runsA∊runsNE)⌿tab) XL_Data RCtoA1 13 5 (12+rowsA) 6[52]  [53]  z←⍬⍴12×insind^~NotPUC ⍝ For PUC, Insureds can be part of Normal Cost[54]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=3 AND DataItemID=13 AND SVYear=0 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (10 9)[55]  tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) (23+dab-z) (38+dab+rows+rowsA+N) (24+dab-z) ⋄ INS←+/tab[56]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=4 AND DataItemID=13 AND SVYear=0 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (10 9)[57]  tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) (25+dab-z) (38+dab+rows+rowsA+N) (26+dab-z) ⋄ INS←INS,[1.5]+/tab[58]  :if z=12 ⋄ 0 0⍴0 XL_Data RCtoA1 13 10 (12+rowsA) 13 ⋄ :endif[59]  [60]  :if dab ⋄ :andif ×abNO ⍝ Target Accrued Benefit at start of Control Period[61]      sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=",(⍕9+abNO=0)," AND ResultsCategoryID IN (",(0 ⍙DBNumList runsA~runsNE),")") "ResultsCategoryID" "SVYear" (1)[62]      tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 13 18 (12+rowsA) 18[63]  :endif[64]  [65]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (1 2 7 12 21 22 3 23 4 13 5 14 6)[66]  [67]  tab←(~runsA∊runsNE)⌿-0 1↓runsA XL_Pivot sql 0 ⍝ Past Service Liabilities[68]  tab←DIFF 0,(+\tab)[;⎕io+5 7 9 11 12] ⋄ 0 0⍴(tab[;⍳3]) XL_Data RCtoA1 13 7 (12+rowsA) 9 ⋄ 0 0⍴(tab[;3+⍳2]) XL_Data RCtoA1 13 14 (12+rowsA) 15[69]  [70]  :if approx ⍝ "Approximate" figures for DAB method[71]      ⍙DBXL_DAB∆VALUES[72]  :else[73]      sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=2 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (1 2 7 12 21 22 3 23 4 13 5 14 6)[74]      tab←-0 1↓runsA XL_Pivot sql 0 ⍝ Future Service Liabilities[75]      tab←DIFF 0,(+\tab)[;⎕io+5 7 9 11 12] ⋄ tab←tab-0,(INS,0),0[76]      0 0⍴(tab[;⍳3]) XL_Data RCtoA1 (39+dab+rows+rowsA) 7 (38+dab+rows+rowsA+N) 9 ⋄ 0 0⍴(tab[;3+⍳2]) XL_Data RCtoA1 (39+dab+rows+rowsA) 14 (38+dab+rows+rowsA+N) 15[77]  [78]      :if dab ⍝ Target Accrued Benefit at end of Control Period[79]          sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=",(⍕9+abNO=0)," AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "SVYear" (contper)[80]          tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) 18 (38+dab+rows+rowsA+N) 18[81]      :endif[82]  [83]      sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=12 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (32)[84]  [85]      tab←(-0 1↓runsA XL_Pivot sql 0)+[⎕io]ExpSFMAT[86]      0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) (18+dab) (38+dab+rows+rowsA+N) (18+dab)[87]  [88]      sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=6 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (8 9 11 15)[89]      tab←0 1↓runsA XL_Pivot sql 0 ⋄ tab[;⎕io+1]←tab[;⎕io+1]+[⎕io]ExpSFMAT ⋄ 0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) (19+dab) (38+dab+rows+rowsA+N) (21+dab)[90]  :endif[91]  [92]  Lab:[93]  ⍝ Additional Liabilties[94]  N←⍴,LTOT ⋄ rows←¯1+rowsA[95]  0 0⍴((N,1)⍴m2n LTAB) XL_Data RCtoA1 (22+rows) 4 (21+rows+N) 4 ⋄ 0 0⍴((N,1)⍴LTOT) XL_Data RCtoA1 (22+rows) 17 (21+rows+N) 17[96]  :if N<6 ⋄ 'U' XL_RangeDelete (22+rows+N) ⍬ (27+rows) ⍬ ⋄ :endif ⍝ Delete unused rows!![97]  [98]  ⍝ Pensioners[99]  (2 3 'Pensioners') Win∆ProgressBar 'MemberUpdate'[100] [101] :select N←⍬⍴⍴,runsP[102] :case 0 ⋄ 'U' XL_RangeDelete 4⍴(19+rows) ⍬ ⋄ →Def[103] :case 1 ⋄[104] :else   ⋄ 'D↑' XL_RangeInsert (19+rows) ⍬ (17+rows+N) ⍬ ⋄ ((18+rows+N) ⍬) XL_PasteAll (19+rows) ⍬ (17+rows+N) ⍬[105] :endselect[106] [107] runslist←0 ⍙DBNumList runsP[108] tab←DLTB¨0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"[109] 0 0⍴tab XL_Data RCtoA1 (19+rows) 4 (18+rows+N) 4[110] [111] sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 9 10)[112] tab←0 1↓runsP XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (19+rows) 5 (18+rows+N) 6[113] [114] sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (1 2 7 12 6)[115] tab←-0 1↓runsP XL_Pivot sql 0 ⋄ tab←DIFF 0,(+\tab)[;⎕io+3 4][116] 0 0⍴(tab[;⍳1]) XL_Data RCtoA1 (19+rows) 7 (18+rows+N) 7 ⋄ 0 0⍴(tab[;1+⍳1]) XL_Data RCtoA1 (19+rows) 15 (18+rows+N) 15[117] [118] ⍝ Deferreds[119] Def:(3 3 'Deferreds') Win∆ProgressBar 'MemberUpdate'[120] :select N←⍬⍴⍴,runsD[121] :case 0 ⋄ 'U' XL_RangeDelete 4⍴(16+rows) ⍬ ⋄ →end[122] :case 1 ⋄[123] :else   ⋄ 'D↑' XL_RangeInsert (16+rows) ⍬ (14+rows+N) ⍬ ⋄ ((15+rows+N) ⍬) XL_PasteAll (16+rows) ⍬ (14+rows+N) ⍬[124] :endselect[125] [126] runslist←0 ⍙DBNumList runsD[127] tab←DLTB¨0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"[128] 0 0⍴tab XL_Data RCtoA1 (16+rows) 4 (15+rows+N) 4[129] [130] sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 25)[131] tab←0 1↓runsD XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (16+rows) 5 (15+rows+N) 6[132] [133] sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (1 2 7 12 6 31 32 37 38 34 35 40 41)[134] tab←-0 1↓runsD XL_Pivot sql 0 ⋄ tab←DIFF 0,(+\tab)[;⎕io+3 4 12][135] 0 0⍴(tab[;⍳1]) XL_Data RCtoA1 (16+rows) 7 (15+rows+N) 7 ⋄ 0 0⍴(tab[;1+⍳2]) XL_Data RCtoA1 (16+rows) 15 (15+rows+N) 16[136] [137] end:[138] 0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on[139] XL_AutoFit 9 6 (45+2×⍴runs) 27[140] 0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off[141] [142] :if insind^~NotPUC ⋄ 'L' XL_RangeDelete ⍬ 23 ⍬ 26 ⍝ Delete "unused" Insured benefits[143] :else              ⋄ 'L' XL_RangeDelete ⍬ 10 ⍬ 13[144] :endif[145] 'BalSheet' XL_ProtectSheet 1    ∇
+    ∇ ⍙DBXL_PRES∆VALUE;N;sql;tab;z;INS;rows;rowsA;table;runslist
+[1]   ⍝ CONSWIN.sf#11
+[2]   ⍝
+[3]   ⍝
+[4]   ⍝
+[5]   ⍝
+[6]   1 XL_ActivateWorksheet 'BalSheet'
+[7]   rows←0 ⍝ Number of Inserted/Deleted Rows (to correctly align FS Liabilities)
+[8]   table←'ResultsData_NoIndex'
+[9]   
+[10]  :if dab
+[11]      0 0⍴(-1 ⍙DBadoCONCommand "SELECT SUM(SVValue) FROM ",table," WHERE SVYear=1 AND LiabilityTypeID IN (",(⍕10-×abNO),", 11)")XL_Data RCtoA1 30 17
+[12]  :else
+[13]      'U' XL_RangeDelete 30 ⍬ 30 ⍬ ⋄ 'L' XL_RangeDelete ⍬ 18 ⍬ 18
+[14]  :endif
+[15]  
+[16]  0 0⍴(1↑ASSETS) XL_Data RCtoA1 (30+dab) 17
+[17]  :if ^/0=AdditConts
+[18]      'U' XL_RangeDelete (32+dab) ⍬ (34+dab) ⍬ ⋄ rows←¯3
+[19]  :else
+[20]      :if 0≠AdditConts[1]
+[21]          0 0⍴('Amortisation 1 - ',1 ⍙DBXL_AMORT∆OUT PSC) XL_Data RCtoA1 (33+dab) 4 ⋄ 0 0⍴(-AdditConts[1]) XL_Data RCtoA1 (33+dab) 17
+[22]      :else
+[23]          'U' XL_RangeDelete 4⍴(33+dab) ⍬ ⋄ rows←¯1
+[24]      :endif
+[25]      :if 0≠AdditConts[2]
+[26]          0 0⍴('Amortisation 2 - ',2 ⍙DBXL_AMORT∆OUT PSC1) XL_Data RCtoA1 (34+dab) 4 ⋄ 0 0⍴(-AdditConts[2]) XL_Data RCtoA1 (34+dab) 17
+[27]      :else
+[28]          'U' XL_RangeDelete 4⍴(34+dab) ⍬ ⋄ rows←¯1
+[29]      :endif
+[30]  :endif
+[31]  
+[32]  (1 3 'Actives') Win∆ProgressBar 'MemberUpdate'
+[33]  
+[34]  rowsA←⍬⍴⍴,runsA~runsNE
+[35]  :select N←⍬⍴⍴,runsA
+[36]  :case 0 ⋄ 'U' XL_RangeDelete 4⍴40+dab+rows ⍬ ⋄ 'U' XL_RangeDelete 4⍴13 ⍬ ⋄ →Lab
+[37]  :case 1 ⋄
+[38]  :else   ⋄ 'D↑' XL_RangeInsert (40+dab+rows) ⍬ (38+dab+rows+N) ⍬ ⋄ ((39+dab+rows+N) ⍬) XL_PasteAll (40+dab+rows) ⍬ (38+dab+rows+N) ⍬
+[39]            :if 1<rowsA ⋄ 'D↑' XL_RangeInsert 13 ⍬ (11+rowsA) ⍬ ⋄ ((12+rowsA) ⍬) XL_PasteAll 13 ⍬ (11+rowsA) ⍬ ⋄ :endif
+[40]  :endselect
+[41]  
+[42]  runslist←0 ⍙DBNumList runsA
+[43]  tab←0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, ClassID, Sex, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"
+[44]  tab←⍉MATRIX m2n (⊃('Males' 'Females')[⎕io+tab[;⎕io+1]='F']),' ',(⊃DLTB¨tab[;⎕io+2]),⊃('' ' New Entrants')[tab[;⎕io]-~⎕io]
+[45]  0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) 4 (38+dab+rows+rowsA+N) 4
+[46]  0 0⍴((~runsA∊runsNE)⌿tab) XL_Data RCtoA1 13 4 (12+rowsA) 4
+[47]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 5)
+[48]  
+[49]  tab←0 1↓runsA XL_Pivot sql 0
+[50]  0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) 5 (38+dab+rows+rowsA+N) 6
+[51]  0 0⍴((~runsA∊runsNE)⌿tab) XL_Data RCtoA1 13 5 (12+rowsA) 6
+[52]  
+[53]  z←⍬⍴12×insind^~NotPUC ⍝ For PUC, Insureds can be part of Normal Cost
+[54]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=3 AND DataItemID=13 AND SVYear=0 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (10 9)
+[55]  tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) (23+dab-z) (38+dab+rows+rowsA+N) (24+dab-z) ⋄ INS←+/tab
+[56]  sql←⍙DBPivot "SUM" "SVValue" table ("ContingencyID=4 AND DataItemID=13 AND SVYear=0 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (10 9)
+[57]  tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) (25+dab-z) (38+dab+rows+rowsA+N) (26+dab-z) ⋄ INS←INS,[1.5]+/tab
+[58]  :if z=12 ⋄ 0 0⍴0 XL_Data RCtoA1 13 10 (12+rowsA) 13 ⋄ :endif
+[59]  
+[60]  :if dab ⋄ :andif ×abNO ⍝ Target Accrued Benefit at start of Control Period
+[61]      sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=",(⍕9+abNO=0)," AND ResultsCategoryID IN (",(0 ⍙DBNumList runsA~runsNE),")") "ResultsCategoryID" "SVYear" (1)
+[62]      tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 13 18 (12+rowsA) 18
+[63]  :endif
+[64]  
+[65]  sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (1 2 7 12 21 22 3 23 4 13 5 14 6)
+[66]  
+[67]  tab←(~runsA∊runsNE)⌿-0 1↓runsA XL_Pivot sql 0 ⍝ Past Service Liabilities
+[68]  tab←DIFF 0,(+\tab)[;⎕io+5 7 9 11 12] ⋄ 0 0⍴(tab[;⍳3]) XL_Data RCtoA1 13 7 (12+rowsA) 9 ⋄ 0 0⍴(tab[;3+⍳2]) XL_Data RCtoA1 13 14 (12+rowsA) 15
+[69]  
+[70]  :if approx ⍝ "Approximate" figures for DAB method
+[71]      ⍙DBXL_DAB∆VALUES
+[72]  :else
+[73]      sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=2 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (1 2 7 12 21 22 3 23 4 13 5 14 6)
+[74]      tab←-0 1↓runsA XL_Pivot sql 0 ⍝ Future Service Liabilities
+[75]      tab←DIFF 0,(+\tab)[;⎕io+5 7 9 11 12] ⋄ tab←tab-0,(INS,0),0
+[76]      0 0⍴(tab[;⍳3]) XL_Data RCtoA1 (39+dab+rows+rowsA) 7 (38+dab+rows+rowsA+N) 9 ⋄ 0 0⍴(tab[;3+⍳2]) XL_Data RCtoA1 (39+dab+rows+rowsA) 14 (38+dab+rows+rowsA+N) 15
+[77]  
+[78]      :if dab ⍝ Target Accrued Benefit at end of Control Period
+[79]          sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=",(⍕9+abNO=0)," AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "SVYear" (contper)
+[80]          tab←-0 1↓runsA XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) 18 (38+dab+rows+rowsA+N) 18
+[81]      :endif
+[82]  
+[83]      sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=12 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "BenefitTypeID" (32)
+[84]  
+[85]      tab←(-0 1↓runsA XL_Pivot sql 0)+[⎕io]ExpSFMAT
+[86]      0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) (18+dab) (38+dab+rows+rowsA+N) (18+dab)
+[87]  
+[88]      sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=6 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (8 9 11 15)
+[89]      tab←0 1↓runsA XL_Pivot sql 0 ⋄ tab[;⎕io+1]←tab[;⎕io+1]+[⎕io]ExpSFMAT ⋄ 0 0⍴tab XL_Data RCtoA1 (39+dab+rows+rowsA) (19+dab) (38+dab+rows+rowsA+N) (21+dab)
+[90]  :endif
+[91]  
+[92]  Lab:
+[93]  ⍝ Additional Liabilties
+[94]  N←⍴,LTOT ⋄ rows←¯1+rowsA
+[95]  0 0⍴((N,1)⍴m2n LTAB) XL_Data RCtoA1 (22+rows) 4 (21+rows+N) 4 ⋄ 0 0⍴((N,1)⍴LTOT) XL_Data RCtoA1 (22+rows) 17 (21+rows+N) 17
+[96]  :if N<6 ⋄ 'U' XL_RangeDelete (22+rows+N) ⍬ (27+rows) ⍬ ⋄ :endif ⍝ Delete unused rows!!
+[97]  
+[98]  ⍝ Pensioners
+[99]  (2 3 'Pensioners') Win∆ProgressBar 'MemberUpdate'
+[100] 
+[101] :select N←⍬⍴⍴,runsP
+[102] :case 0 ⋄ 'U' XL_RangeDelete 4⍴(19+rows) ⍬ ⋄ →Def
+[103] :case 1 ⋄
+[104] :else   ⋄ 'D↑' XL_RangeInsert (19+rows) ⍬ (17+rows+N) ⍬ ⋄ ((18+rows+N) ⍬) XL_PasteAll (19+rows) ⍬ (17+rows+N) ⍬
+[105] :endselect
+[106] 
+[107] runslist←0 ⍙DBNumList runsP
+[108] tab←DLTB¨0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"
+[109] 0 0⍴tab XL_Data RCtoA1 (19+rows) 4 (18+rows+N) 4
+[110] 
+[111] sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 9 10)
+[112] tab←0 1↓runsP XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (19+rows) 5 (18+rows+N) 6
+[113] 
+[114] sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (1 2 7 12 6)
+[115] tab←-0 1↓runsP XL_Pivot sql 0 ⋄ tab←DIFF 0,(+\tab)[;⎕io+3 4]
+[116] 0 0⍴(tab[;⍳1]) XL_Data RCtoA1 (19+rows) 7 (18+rows+N) 7 ⋄ 0 0⍴(tab[;1+⍳1]) XL_Data RCtoA1 (19+rows) 15 (18+rows+N) 15
+[117] 
+[118] ⍝ Deferreds
+[119] Def:(3 3 'Deferreds') Win∆ProgressBar 'MemberUpdate'
+[120] :select N←⍬⍴⍴,runsD
+[121] :case 0 ⋄ 'U' XL_RangeDelete 4⍴(16+rows) ⍬ ⋄ →end
+[122] :case 1 ⋄
+[123] :else   ⋄ 'D↑' XL_RangeInsert (16+rows) ⍬ (14+rows+N) ⍬ ⋄ ((15+rows+N) ⍬) XL_PasteAll (16+rows) ⍬ (14+rows+N) ⍬
+[124] :endselect
+[125] 
+[126] runslist←0 ⍙DBNumList runsD
+[127] tab←DLTB¨0 1↓1 ⍙DBadoCONCommand "SELECT ResultsCategoryID, BasisDescription FROM ResultsCategory WHERE ResultsCategoryID IN (",runslist,") ORDER BY ResultsCategoryID"
+[128] 0 0⍴tab XL_Data RCtoA1 (16+rows) 4 (15+rows+N) 4
+[129] 
+[130] sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=7 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "DataItemID" (1 25)
+[131] tab←0 1↓runsD XL_Pivot sql 0 ⋄ 0 0⍴tab XL_Data RCtoA1 (16+rows) 5 (15+rows+N) 6
+[132] 
+[133] sql←⍙DBPivot "SUM" "SVValue" table ("LiabilityTypeID=1 AND DataItemID=13 AND ResultsCategoryID IN (",runslist,")") "ResultsCategoryID" "ContingencyID" (1 2 7 12 6 31 32 37 38 34 35 40 41)
+[134] tab←-0 1↓runsD XL_Pivot sql 0 ⋄ tab←DIFF 0,(+\tab)[;⎕io+3 4 12]
+[135] 0 0⍴(tab[;⍳1]) XL_Data RCtoA1 (16+rows) 7 (15+rows+N) 7 ⋄ 0 0⍴(tab[;1+⍳2]) XL_Data RCtoA1 (16+rows) 15 (15+rows+N) 16
+[136] 
+[137] end:
+[138] 0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationSemiautomatic') ⍝ Turn Calculation back on
+[139] XL_AutoFit 9 6 (45+2×⍴runs) 27
+[140] 0 0⍴'XL' ⎕wi 'xCalculation' (↑⍙XL at '=xlCalculationManual') ⍝ Turn calculation off
+[141] 
+[142] :if insind^~NotPUC ⋄ 'L' XL_RangeDelete ⍬ 23 ⍬ 26 ⍝ Delete "unused" Insured benefits
+[143] :else              ⋄ 'L' XL_RangeDelete ⍬ 10 ⍬ 13
+[144] :endif
+[145] 'BalSheet' XL_ProtectSheet 1
+    ∇

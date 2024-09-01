@@ -1,0 +1,24 @@
+    ∇ res←head Compind R;⎕io;key;idx;sort;sorted;cols;row
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝  Group the Interface records according to the key
+[3]   ⎕io←1
+[4]   
+[5]   res←0⌿R
+[6]   :if 0∊⍴R ⋄ :return ⋄ :endif
+[7]   
+[8]   ⍝ Columns to be summed
+[9]   cols←1+head⍳'SL' 'FSL' 'Con' 'FCon' 'PrSL' 'PrFSL' 'PrCon' 'PrFCon' 'ProRate'
+[10]  
+[11]  sorted←key[sort←⍋key←R[;1]]
+[12]  :if 0∊idx←1,(1↓sorted)≠¯1↓sorted
+[13]      :for idx :in idx ⎕penclose sort
+[14]          row←R[↑idx;]
+[15]          :if 1<⍴idx
+[16]              row[cols]←+⌿(1⌈⍴¨R[idx;cols])↑¨R[idx;cols]
+[17]          :endif
+[18]          res←res OVER row
+[19]      :endfor
+[20]  :else
+[21]      res←R
+[22]  :endif
+    ∇

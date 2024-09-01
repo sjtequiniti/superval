@@ -1,1 +1,22 @@
-    ∇ Update_scheme_details;list;file;∆;vDATE;Actsfile;FormatA;FormatD;Defsfile;Pensfile;FormatP;pvDATE[1]   ⍝ DATAWIN.sf#23[2]   ⍝ Update the Scheme Details with Parameters from the Data Build[3]   [4]   list← 'vDATE pvDATE '[5]   file← OutFile asExt 'dat'[6]   pvDATE←↑⌽'Date' SwapRelFields lrEDate  EDate[7]    vDATE←↑⌽'Date' SwapRelFields lrRFDate RFDate[8]   [9]   ∆←'Data Build of ',OutFile[10]  [11]  :select RF_membtype  ⍝ Replace Data File[12]  :case 'Actives'[13]      Actsfile←file  ⋄ FormatA←'<Act> ',∆ ⋄ list←list,'Actsfile FormatA'[14]  :case 'Deferreds'[15]      Defsfile←file  ⋄ FormatD←'<Def> ',∆ ⋄ list←list,'Defsfile FormatD'[16]  :case 'Pensioners'[17]      Pensfile←file  ⋄ FormatP←'<Pen> ',∆ ⋄ list←list,'Pensfile FormatP'[18]  :endselect[19]  [20]  0 0⍴ClientFile SaveToFile 'Client' '' (pack list) 1    ∇
+    ∇ Update_scheme_details;list;file;∆;vDATE;Actsfile;FormatA;FormatD;Defsfile;Pensfile;FormatP;pvDATE
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ Update the Scheme Details with Parameters from the Data Build
+[3]   
+[4]   list← 'vDATE pvDATE '
+[5]   file← OutFile asExt 'dat'
+[6]   pvDATE←↑⌽'Date' SwapRelFields lrEDate  EDate
+[7]    vDATE←↑⌽'Date' SwapRelFields lrRFDate RFDate
+[8]   
+[9]   ∆←'Data Build of ',OutFile
+[10]  
+[11]  :select RF_membtype  ⍝ Replace Data File
+[12]  :case 'Actives'
+[13]      Actsfile←file  ⋄ FormatA←'<Act> ',∆ ⋄ list←list,'Actsfile FormatA'
+[14]  :case 'Deferreds'
+[15]      Defsfile←file  ⋄ FormatD←'<Def> ',∆ ⋄ list←list,'Defsfile FormatD'
+[16]  :case 'Pensioners'
+[17]      Pensfile←file  ⋄ FormatP←'<Pen> ',∆ ⋄ list←list,'Pensfile FormatP'
+[18]  :endselect
+[19]  
+[20]  0 0⍴ClientFile SaveToFile 'Client' '' (pack list) 1
+    ∇

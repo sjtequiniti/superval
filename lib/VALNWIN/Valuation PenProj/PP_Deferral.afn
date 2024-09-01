@@ -1,0 +1,145 @@
+    ∇ PP∆Deferral pp∆cash;ratio
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Calculate the Deferral Period Survival(s), Discounter and Increases
+[3]   ⍝ Deferral refers to the period up to payment commencing (whether that is
+[4]   ⍝   "true" deferral or just delayed commencement eg SPA)
+[5]   ⍝ Return (globally) pp∆defLX pp∆LXdef pp∆defdisc pp∆defInc and pp∆Incdef
+[6]   
+[7]   ⍝ If required, blend in pre-retirement mortality at retirement age
+[8]   ⍝    ratio by pp∆lx's at retirement age to blend
+[9]   :if 0≠pp∆def[0]
+[10]      :if pp∆midret ⋄ ratio←pp∆lxexit[pp∆xret] CDIV pp∆lxpre[pp∆xret]
+[11]      :else         ⋄ ratio←pp∆LXexit[pp∆Xret] CDIV pp∆LXpre[pp∆Xret]
+[12]      :endif
+[13]      pp∆LX←(ratio×pp∆xret↑pp∆LXpre),pp∆xret↓pp∆LXexit
+[14]      pp∆lx←(ratio×pp∆xret↑pp∆lxpre),pp∆xret↓pp∆lxexit
+[15]  ⍝⍝⍝ :elseif pp∆DD ⋄ :andif pp∆WRetAge>pp∆Xexit ⍝⍝⍝ If you want pre-Ret mort in Deferral
+[16]  ⍝⍝⍝     ratio←pp∆LXexit[pp∆WRetAge] CDIV pp∆LXpre[pp∆WRetAge]
+[17]  ⍝⍝⍝     pp∆LX←(ratio×pp∆WRetAge↑pp∆LXpre),pp∆WRetAge↓pp∆LXexit
+[18]  ⍝⍝⍝     pp∆lx←(ratio×pp∆WRetAge↑pp∆lxpre),pp∆WRetAge↓pp∆lxexit
+[19]  :else
+[20]      pp∆LX←pp∆LXexit ⋄ pp∆lx←pp∆lxexit
+[21]  :endif
+[22]  ⍝⍀⍝ '' PP∆TestUpdate ((0≠pp∆def[0])/'pp∆LXpre←' 'pp∆LXexit←' 'pp∆lxpre←' 'pp∆lxexit←'),'pp∆LX←' 'pp∆lx←'
+[23]  
+[24]  :if 0≠pp∆def[1] ⋄ :andif ~pp∆2Dbens ⋄ :andif 'P'≠↑pp∆exit ⍝ PHI Benefits probs include Mortality to Start point
+[25]      ⍝ pp∆lx at exit and anniversaries thereafter
+[26]      :if pp∆midexit ⋄ pp∆LXdef←pp∆lx[pp∆xexit],pp∆LX[pp∆xexit+1+⍳⌊pp∆def[1]]
+[27]      :else          ⋄ pp∆LXdef←                pp∆LX[pp∆Xexit  +⍳⌈pp∆def[1]]
+[28]      :endif
+[29]  
+[30]      ⍝ pp∆lx at commencement
+[31]      :if pp∆midstart ⋄ pp∆LXdef←pp∆LXdef,pp∆lx[pp∆xstart]
+[32]      :else           ⋄ pp∆LXdef←pp∆LXdef,pp∆LX[pp∆Xstart]
+[33]      :endif
+[34]      pp∆defLX←¯1↑pp∆LXdef←pp∆LXdef CDIV 1↑pp∆LXdef
+[35]  
+[36]      ⍝ Increases in Deferral
+[37]      :if uk=1 ⍝ UK specify benefit at payment date rather than exit date
+[38]          pp∆defInc←1
+[39]      :else
+[40]  ⍝⍝⍝        pp∆defInc←¯1↑ ??
+[41]      :endif
+[42]  ⍝⍀⍝     '' PP∆TestUpdate 'pp∆LXdef←' 'pp∆lxdef←' 'pp∆defLX←'
+[43]  :else
+[44]      pp∆defLX←pp∆LXdef←pp∆defInc←1
+[45]  :endif
+[46]  
+[47]  ⍝ pp∆defdisc is the discount factor at payment commencement
+[48]  ⍝ pp∆discSY is the discounter at each anniversary (for Reserves)
+[49]  ⍝⍝⍝ Also Create pp∆??? discdef - a vector of discounts in deferral for DID??
+[50]  
+[51]  :if pp∆midexit ⋄ pp∆exitdisc←pp∆vMPPre[pp∆Texit]
+[52]  :else          ⋄ pp∆exitdisc←  pp∆vPre[pp∆Texit]
+[53]  :endif
+[54]  
+[55]  :select pp∆SWindic
+[56]  :case 0 ⍝ Pre-Retirement Interest Rate only up to Exit
+[57]      :if pp∆midexit
+[58]          pp∆discSY←((pp∆Texit+1)↑pp∆vPre),((pp∆Texit+1)↓pp∆vPost)×pp∆exitdisc CDIV pp∆vMPPost[pp∆Texit]
+[59]          :if pp∆midstart
+[60]              pp∆defdisc←pp∆exitdisc×pp∆vMPPost[pp∆Tstart] CDIV pp∆vMPPost[pp∆Texit]
+[61]          :else
+[62]              pp∆defdisc←pp∆exitdisc×  pp∆vPost[pp∆Tstart] CDIV pp∆vMPPost[pp∆Texit]
+[63]          :endif
+[64]      :else
+[65]          pp∆discSY←((pp∆Texit+1)↑pp∆vPre),((pp∆Texit+1)↓pp∆vPost)×pp∆exitdisc CDIV   pp∆vPost[pp∆Texit]
+[66]          :if pp∆midstart
+[67]              pp∆defdisc←pp∆exitdisc×pp∆vMPPost[pp∆Tstart] CDIV   pp∆vPost[pp∆Texit]
+[68]          :else
+[69]              pp∆defdisc←pp∆exitdisc×  pp∆vPost[pp∆Tstart] CDIV   pp∆vPost[pp∆Texit]
+[70]          :endif
+[71]      :endif
+[72]  :case 1 ⍝ Pre-Retirement Interest Rate up to Retirement
+[73]      :if pp∆midprestart
+[74]          pp∆discSY←((pp∆Tprestart+1)↑pp∆vPre),((pp∆Tprestart+1)↓pp∆vPost)×pp∆vMPPre[pp∆Tprestart] CDIV pp∆vMPPost[pp∆Tprestart]
+[75]          :if pp∆midstart
+[76]              pp∆defdisc←pp∆vMPPre[pp∆Tprestart]×pp∆vMPPost[pp∆Tstart] CDIV pp∆vMPPost[pp∆Tprestart]
+[77]          :else
+[78]              pp∆defdisc←pp∆vMPPre[pp∆Tprestart]×  pp∆vPost[pp∆Tstart] CDIV pp∆vMPPost[pp∆Tprestart]
+[79]          :endif
+[80]      :else
+[81]          pp∆discSY←((pp∆Tprestart+1)↑pp∆vPre),((pp∆Tprestart+1)↓pp∆vPost)×  pp∆vPre[pp∆Tprestart] CDIV   pp∆vPost[pp∆Tprestart]
+[82]          :if pp∆midstart
+[83]              pp∆defdisc←  pp∆vPre[pp∆Tprestart]×pp∆vMPPost[pp∆Tstart] CDIV   pp∆vPost[pp∆Tprestart]
+[84]          :else
+[85]              pp∆defdisc←  pp∆vPre[pp∆Tprestart]×  pp∆vPost[pp∆Tstart] CDIV   pp∆vPost[pp∆Tprestart]
+[86]          :endif
+[87]      :endif
+[88]  :case 2 ⍝ Pre-Retirement Interest Rate up to Exit, TV Pre-Retirement Interest Rate up to Retirement
+[89]      :if pp∆midexit
+[90]          :if pp∆midstart
+[91]              pp∆discSY←((pp∆Texit+1)↑pp∆vPre),(((pp∆Texit+1)↓(pp∆Tstart+1)↑pp∆vTVPre),((pp∆Tstart+1)↓pp∆vPost)×pp∆vMPTVPre[pp∆Tstart] CDIV pp∆vMPPost[pp∆Tstart])×pp∆exitdisc CDIV pp∆vMPTVPre[pp∆Texit]
+[92]              :if pp∆midstart
+[93]                  pp∆defdisc←pp∆exitdisc×pp∆vMPTVPre[pp∆Tstart]×pp∆vMPPost[pp∆Tstart] CDIV pp∆vMPTVPre[pp∆Texit]×pp∆vMPPost[pp∆Tstart]
+[94]              :else
+[95]                  pp∆defdisc←pp∆exitdisc×pp∆vMPTVPre[pp∆Tstart]×  pp∆vPost[pp∆Tstart] CDIV pp∆vMPTVPre[pp∆Texit]×pp∆vMPPost[pp∆Tstart]
+[96]              :endif
+[97]          :else
+[98]              pp∆discSY←((pp∆Texit+1)↑pp∆vPre),(((pp∆Texit+1)↓(pp∆Tstart+1)↑pp∆vTVPre),((pp∆Tstart+1)↓pp∆vPost)×  pp∆vTVPre[pp∆Tstart] CDIV   pp∆vPost[pp∆Tstart])×pp∆exitdisc CDIV pp∆vMPTVPre[pp∆Texit]
+[99]              :if pp∆midstart
+[100]                 pp∆defdisc←pp∆exitdisc×  pp∆vTVPre[pp∆Tstart]×pp∆vMPPost[pp∆Tstart] CDIV pp∆vMPTVPre[pp∆Texit]×  pp∆vPost[pp∆Tstart]
+[101]             :else
+[102]                 pp∆defdisc←pp∆exitdisc×  pp∆vTVPre[pp∆Tstart]×  pp∆vPost[pp∆Tstart] CDIV pp∆vMPTVPre[pp∆Texit]×  pp∆vPost[pp∆Tstart]
+[103]             :endif
+[104]         :endif
+[105]     :else
+[106]         :if pp∆midstart
+[107]             pp∆discSY←((pp∆Texit+1)↑pp∆vPre),(((pp∆Texit+1)↓(pp∆Tstart+1)↑pp∆vTVPre),((pp∆Tstart+1)↓pp∆vPost)×pp∆vMPTVPre[pp∆Tstart] CDIV pp∆vMPPost[pp∆Tstart])×pp∆exitdisc CDIV   pp∆vTVPre[pp∆Texit]
+[108]             :if pp∆midstart
+[109]                 pp∆defdisc←pp∆exitdisc×pp∆vMPTVPre[pp∆Tstart]×pp∆vMPPost[pp∆Tstart] CDIV   pp∆vTVPre[pp∆Texit]×pp∆vMPPost[pp∆Tstart]
+[110]             :else
+[111]                 pp∆defdisc←pp∆exitdisc×pp∆vMPTVPre[pp∆Tstart]×  pp∆vPost[pp∆Tstart] CDIV   pp∆vTVPre[pp∆Texit]×pp∆vMPPost[pp∆Tstart]
+[112]             :endif
+[113]         :else
+[114]             pp∆discSY←((pp∆Texit+1)↑pp∆vPre),(((pp∆Texit+1)↓(pp∆Tstart+1)↑pp∆vTVPre),((pp∆Tstart+1)↓pp∆vPost)×  pp∆vTVPre[pp∆Tstart] CDIV   pp∆vPost[pp∆Tstart])×pp∆exitdisc CDIV   pp∆vTVPre[pp∆Texit]
+[115]             :if pp∆midstart
+[116]                 pp∆defdisc←pp∆exitdisc×  pp∆vTVPre[pp∆Tstart]×pp∆vMPPost[pp∆Tstart] CDIV   pp∆vTVPre[pp∆Texit]×  pp∆vPost[pp∆Tstart]
+[117]             :else
+[118]                 pp∆defdisc←pp∆exitdisc×  pp∆vTVPre[pp∆Tstart]×  pp∆vPost[pp∆Tstart] CDIV   pp∆vTVPre[pp∆Texit]×  pp∆vPost[pp∆Tstart]
+[119]             :endif
+[120]         :endif
+[121]     :endif
+[122] :endselect
+[123] ⍝⍀⍝ '' PP∆TestUpdate 'pp∆vPre←' 'pp∆vMPPre←' 'pp∆vPost←' 'pp∆vMPPost←' 'pp∆discSY←',(ClassID≠4)/⊂'pp∆SWindic⊃'
+[124] ⍝⍀⍝ 'M' PP∆TestUpdate 'pp∆exitdisc←' 'pp∆defdisc←'
+[125] 
+[126] :if pp∆capind ⋄ :andif ~pp∆cash
+[127]     pp∆retpad←(pp∆Tprestart-pp∆Texit)⍴0
+[128]     :if pp∆SWindic=2 ⍝ Pre-Retirement Interest Rate up to Exit, TV Pre-Retirement Interest Rate up to Retirement
+[129]         :if pp∆midexit ⋄ pp∆startdisc←pp∆vMPTVPre[pp∆Texit]
+[130]         :else          ⋄ pp∆startdisc←  pp∆vTVPre[pp∆Texit]
+[131]         :endif
+[132]         :if pp∆midstart ⋄ pp∆startdisc←pp∆vMPTVPre[pp∆Tstart] CDIV pp∆startdisc
+[133]         :else           ⋄ pp∆startdisc←  pp∆vTVPre[pp∆Tstart] CDIV pp∆startdisc
+[134]         :endif
+[135]     :else
+[136]         :if pp∆midprestart ⋄ pp∆startdisc←pp∆vMPPost[pp∆Tprestart]
+[137]         :else              ⋄ pp∆startdisc←  pp∆vPost[pp∆Tprestart]
+[138]         :endif
+[139]         :if pp∆midstart ⋄ pp∆startdisc←pp∆vMPPost[pp∆Tstart] CDIV pp∆startdisc
+[140]         :else           ⋄ pp∆startdisc←  pp∆vPost[pp∆Tstart] CDIV pp∆startdisc
+[141]         :endif
+[142]     :endif
+[143] :endif
+    ∇

@@ -1,1 +1,105 @@
-    ∇ Z←rechead ExtractPenFin ResIDs;penno;adj;val;notes;∆;BenID;rec;z;ben;intrec;ContID;tab;ContIDs;cont;rows;row;tbl;contid;PropMarr;TabID;REC;gmprev2;gmprev1;presparev;catrecs;benrecs;BasID;ClassName;liab;csorp;benbasis;pentab;BenDesc;benID;sql;msk[1]   ⍝ CONSWIN.sf#18[2]   ⍝ Get a summary of the Financial Assumptions for Pensioners Basis[3]   [4]   (BasID ClassName)←rechead[5]   catrecs←ResIDs,¨BasID,¨⎕split 1 ⍙DBadoCONCommand "SELECT Sex, AltScenSpouseCF FROM ResultsCategory WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") ORDER BY ResultsCategoryID"[6]   PropMarr←         ⊂' ',↑lmt (⊂' - ') join¨DLTB¨¨'<' partition¨'>' StripText¨0 GetBasisData¨'m_HXX1' 'm_PropMarr'[7]   PropMarr←PropMarr,⊂' ',↑lmt (⊂' - ') join¨DLTB¨¨'<' partition¨'>' StripText¨0 GetBasisData¨'f_HXX1' 'f_PropMarr'[8]   TabID←↑¨,¨1 ⍙DBadoCONCommand¨(⊂"SELECT TableID FROM TableNames",where," AND TableName="),¨1 ⍙DBString¨255↑¨PropMarr[9]   ((^/¨⎕vi ¨PropMarr)/TabID)←0[10]  PropMarr←(⊂'M' 'F'),,⊃⎕split spin PropMarr TabID[11]  catrecs←catrecs,¨↑¨(⊂PropMarr) at¨↑¨3⊃¨catrecs[12]  [13]  rec←    ⊂0 GetBasisData 'SPMethod'  ⍝ Spouse Definition[14]  rec←rec,⊂0 GetBasisData 'FREQ'      ⍝ Pension Frequency[15]  rec←rec,⊂0 GetBasisData 'MODE'      ⍝ Pension Mode[16]  rec←rec,⊂'Default'                  ⍝ First Year Increase[17]  rec←rec,⊂0 GetBasisData 'INCDAT'    ⍝ Review Date[18]  catrecs←catrecs,¨⊂rec[19]  catrecs←catrecs,¨⊂¨,1 ⍙DBadoCONCommand "SELECT ExactAge FROM ResultsCategory WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") ORDER BY ResultsCategoryID"[20]  [21]  catrecs←⊃catrecs,¨⊂'' 0 '' ⍝ Transfers Proportion Married[22]  [23]  ContIDs←(,1 ⍙DBadoCONCommand "SELECT DISTINCT ContingencyID FROM ResultsData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),")")~0[24]  notes←noteshdr ⋄ benrecs←(0 benFLDS)⍴0[25]  [26]  intrec←1,12⍴1 GetBasisData 'pi'             ⍝ Switch, Pre- and Post-Retirement Interest[27]  intrec←intrec,'' 0,mtFin                    ⍝ Inflation[28]  :if ~gmprev2←'Y'=↑0 GetBasisData 'GMPREV2' ⋄ gmprev1←1 GetBasisData 'GMPREV1' ⋄ :endif[29]  presparev←1 GetBasisData 'PRESPAREV'[30]  [31]  pentab←(19 0⍴'') amend 'Pension' (2 3,13+⍳16)[32]  pentab←pentab amend 'ConsDyn' (0 GetBasisRelated 'CONSB88GMPINC' 'CONSA88GMPINC',(⊂'CONSPAYINC'),¨⍕¨⍳16)[33]  [34]  :for cont :in nub ContTable at 'Contingency'[35]      tab←ContTable for 'Contingency' cont[36]      :if mt ContID←(∊tab at 'Member' 'Spouse') intersect ContIDs ⋄ :continue ⋄ :endif ⍝ Only Contingencies in results[37]  [38]      :for BenID :in (,1 ⍙DBadoCONCommand "SELECT DISTINCT BenefitTypeID FROM ResultsData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),")"," AND ContingencyID IN (",(0 ⍙DBNumList ContID),")"," ORDER BY BenefitTypeID")~0[39]  [40]          :if 100<benID←∣BenID[41]              BenDesc←↑(benTypes for (⊂'BenNo'),⊂,BenID) at 'BenName'[42]              benID←↑(pentab for 'ConsDyn' BenDesc) at 'Pension'[43]          :endif[44]  [45]          benbasis←'' ⋄ csorp←'P'[46]          :if 0<∆←benID-13[47]              penno←⍕∆[48]              :if 'C'=csorp←↑0 GetBasisData 'CSORP',penno ⋄ benbasis←'Cash' ⋄ :endif ⍝ Cash Benefits[49]          :endif[50]  [51]          rec←1 BenID benbasis ''                 ⍝ Past Service, BenID, Benefit Basis and Comm Rate[52]  ⍝⍝⍝        :if 'C'=csorp[53]  ⍝⍝⍝            rec←rec,(7↑intrec),mtFin,'' 0,mtFin[54]  ⍝⍝⍝        :else[55]          rec←rec,intrec                          ⍝ Append Interest (can be deferred cash which needs post-retirement int) and Inflation[56]  ⍝⍝⍝        :endif[57]  [58]          ⍝ Revaluation[59]          :if benID∊2 3 ⍝ GMPs[60]              :if gmprev2 ⋄ val←'GMP Fixed' 'GMP Fixed' 'Fixed Revaluation' '' '' 0[61]              :else       ⋄ val←gmprev1[62]              :endif[63]              ben←(2 3⍳benID)⊃'Pre 1988 GMP' 'Post 1988 GMP'[64]              notes←notes OVER ResIDs,(⍴ResIDs)⌿MATRIX ben benID 'Revaluation',val,'GMP Revaluation Rate To SPA' 0[65]              :if ~mt ↑∆←presparev[66]                  notes←notes OVER ResIDs,(⍴ResIDs)⌿MATRIX ben benID 'Revaluation',∆,'GMP Revaluation Rate when BAGE<SPA' 1[67]              :endif[68]          :else[69]              val←1 GetBasisData 'DEFINC',penno[70]          :endif[71]          rec←rec,val[72]  [73]          ⍝ Increase[74]          :select benID[75]          :case 1 ⋄ val←mtFin,⊂'' ⍝ Cash (not used)[76]          :case 2 ⋄ val←¯1 GetBasisData 'B88GMPINC' ⍝ Pre 88 GMP[77]          :case 3 ⋄ val←¯1 GetBasisData 'A88GMPINC' ⍝ Post 88 GMP[78]          :else   ⋄ val←¯1 GetBasisData 'PAYINC',penno[79]          :endselect[80]          rec←rec,val[81]  [82]          ⍝ Includes GMP indicators[83]          :if benID∊1 2 3 ⍝ GMPs[84]              rec←rec,0 0[85]          :else[86]              adj←       'Y'=↑0 GetBasisData 'GMPADJ',penno[87]              rec←rec,adj∨~mt 0 GetBasisData 'PreVD',penno[88]              rec←rec,adj∨~mt 0 GetBasisData 'PostVD',penno[89]          :endif[90]  [91]          :for row :in ⍳rows←rowsIn tab[92]              tbl←tab for row=⍳rows[93]              :if ∨/ContID∊contid←(∊tbl at 'Member' 'Spouse')~0[94]                  REC←(⊂ClassName),(IncContID×↑contid),(tbl at 'StartYear'),rec[95]                  sql←"SELECT SUM(SVValue) FROM ResultsData WHERE BenefitTypeID=",(DLTB 'M<->I3' ⎕fmt BenID)," AND LiabilityTypeID=1 AND ContingencyID IN (",(0 ⍙DBNumList contid),") AND DataItemID=%1 AND ResultsCategoryID="[96]                  ⍝ Append Liability Figures[97]                  msk←0.5<∣liab←0 ⍙DBRemoveNulls ,↑¨1 ⍙DBadoCONCommand¨(⊂'/%1/93' TEXTREPL sql),¨⍕¨ResIDs[98]                  benrecs←benrecs⍪msk⌿⊃ResIDs,¨(⎕split MATRIX REC),¨-liab[99]              :endif[100]         :endfor[101]     :endfor[102] :endfor[103] Z←catrecs benrecs notes    ∇
+    ∇ Z←rechead ExtractPenFin ResIDs;penno;adj;val;notes;∆;BenID;rec;z;ben;intrec;ContID;tab;ContIDs;cont;rows;row;tbl;contid;PropMarr;TabID;REC;gmprev2;gmprev1;presparev;catrecs;benrecs;BasID;ClassName;liab;csorp;benbasis;pentab;BenDesc;benID;sql;msk
+[1]   ⍝ CONSWIN.sf#18
+[2]   ⍝ Get a summary of the Financial Assumptions for Pensioners Basis
+[3]   
+[4]   (BasID ClassName)←rechead
+[5]   catrecs←ResIDs,¨BasID,¨⎕split 1 ⍙DBadoCONCommand "SELECT Sex, AltScenSpouseCF FROM ResultsCategory WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") ORDER BY ResultsCategoryID"
+[6]   PropMarr←         ⊂' ',↑lmt (⊂' - ') join¨DLTB¨¨'<' partition¨'>' StripText¨0 GetBasisData¨'m_HXX1' 'm_PropMarr'
+[7]   PropMarr←PropMarr,⊂' ',↑lmt (⊂' - ') join¨DLTB¨¨'<' partition¨'>' StripText¨0 GetBasisData¨'f_HXX1' 'f_PropMarr'
+[8]   TabID←↑¨,¨1 ⍙DBadoCONCommand¨(⊂"SELECT TableID FROM TableNames",where," AND TableName="),¨1 ⍙DBString¨255↑¨PropMarr
+[9]   ((^/¨⎕vi ¨PropMarr)/TabID)←0
+[10]  PropMarr←(⊂'M' 'F'),,⊃⎕split spin PropMarr TabID
+[11]  catrecs←catrecs,¨↑¨(⊂PropMarr) at¨↑¨3⊃¨catrecs
+[12]  
+[13]  rec←    ⊂0 GetBasisData 'SPMethod'  ⍝ Spouse Definition
+[14]  rec←rec,⊂0 GetBasisData 'FREQ'      ⍝ Pension Frequency
+[15]  rec←rec,⊂0 GetBasisData 'MODE'      ⍝ Pension Mode
+[16]  rec←rec,⊂'Default'                  ⍝ First Year Increase
+[17]  rec←rec,⊂0 GetBasisData 'INCDAT'    ⍝ Review Date
+[18]  catrecs←catrecs,¨⊂rec
+[19]  catrecs←catrecs,¨⊂¨,1 ⍙DBadoCONCommand "SELECT ExactAge FROM ResultsCategory WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),") ORDER BY ResultsCategoryID"
+[20]  
+[21]  catrecs←⊃catrecs,¨⊂'' 0 '' ⍝ Transfers Proportion Married
+[22]  
+[23]  ContIDs←(,1 ⍙DBadoCONCommand "SELECT DISTINCT ContingencyID FROM ResultsData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),")")~0
+[24]  notes←noteshdr ⋄ benrecs←(0 benFLDS)⍴0
+[25]  
+[26]  intrec←1,12⍴1 GetBasisData 'pi'             ⍝ Switch, Pre- and Post-Retirement Interest
+[27]  intrec←intrec,'' 0,mtFin                    ⍝ Inflation
+[28]  :if ~gmprev2←'Y'=↑0 GetBasisData 'GMPREV2' ⋄ gmprev1←1 GetBasisData 'GMPREV1' ⋄ :endif
+[29]  presparev←1 GetBasisData 'PRESPAREV'
+[30]  
+[31]  pentab←(19 0⍴'') amend 'Pension' (2 3,13+⍳16)
+[32]  pentab←pentab amend 'ConsDyn' (0 GetBasisRelated 'CONSB88GMPINC' 'CONSA88GMPINC',(⊂'CONSPAYINC'),¨⍕¨⍳16)
+[33]  
+[34]  :for cont :in nub ContTable at 'Contingency'
+[35]      tab←ContTable for 'Contingency' cont
+[36]      :if mt ContID←(∊tab at 'Member' 'Spouse') intersect ContIDs ⋄ :continue ⋄ :endif ⍝ Only Contingencies in results
+[37]  
+[38]      :for BenID :in (,1 ⍙DBadoCONCommand "SELECT DISTINCT BenefitTypeID FROM ResultsData WHERE ResultsCategoryID IN (",(0 ⍙DBNumList ResIDs),")"," AND ContingencyID IN (",(0 ⍙DBNumList ContID),")"," ORDER BY BenefitTypeID")~0
+[39]  
+[40]          :if 100<benID←∣BenID
+[41]              BenDesc←↑(benTypes for (⊂'BenNo'),⊂,BenID) at 'BenName'
+[42]              benID←↑(pentab for 'ConsDyn' BenDesc) at 'Pension'
+[43]          :endif
+[44]  
+[45]          benbasis←'' ⋄ csorp←'P'
+[46]          :if 0<∆←benID-13
+[47]              penno←⍕∆
+[48]              :if 'C'=csorp←↑0 GetBasisData 'CSORP',penno ⋄ benbasis←'Cash' ⋄ :endif ⍝ Cash Benefits
+[49]          :endif
+[50]  
+[51]          rec←1 BenID benbasis ''                 ⍝ Past Service, BenID, Benefit Basis and Comm Rate
+[52]  ⍝⍝⍝        :if 'C'=csorp
+[53]  ⍝⍝⍝            rec←rec,(7↑intrec),mtFin,'' 0,mtFin
+[54]  ⍝⍝⍝        :else
+[55]          rec←rec,intrec                          ⍝ Append Interest (can be deferred cash which needs post-retirement int) and Inflation
+[56]  ⍝⍝⍝        :endif
+[57]  
+[58]          ⍝ Revaluation
+[59]          :if benID∊2 3 ⍝ GMPs
+[60]              :if gmprev2 ⋄ val←'GMP Fixed' 'GMP Fixed' 'Fixed Revaluation' '' '' 0
+[61]              :else       ⋄ val←gmprev1
+[62]              :endif
+[63]              ben←(2 3⍳benID)⊃'Pre 1988 GMP' 'Post 1988 GMP'
+[64]              notes←notes OVER ResIDs,(⍴ResIDs)⌿MATRIX ben benID 'Revaluation',val,'GMP Revaluation Rate To SPA' 0
+[65]              :if ~mt ↑∆←presparev
+[66]                  notes←notes OVER ResIDs,(⍴ResIDs)⌿MATRIX ben benID 'Revaluation',∆,'GMP Revaluation Rate when BAGE<SPA' 1
+[67]              :endif
+[68]          :else
+[69]              val←1 GetBasisData 'DEFINC',penno
+[70]          :endif
+[71]          rec←rec,val
+[72]  
+[73]          ⍝ Increase
+[74]          :select benID
+[75]          :case 1 ⋄ val←mtFin,⊂'' ⍝ Cash (not used)
+[76]          :case 2 ⋄ val←¯1 GetBasisData 'B88GMPINC' ⍝ Pre 88 GMP
+[77]          :case 3 ⋄ val←¯1 GetBasisData 'A88GMPINC' ⍝ Post 88 GMP
+[78]          :else   ⋄ val←¯1 GetBasisData 'PAYINC',penno
+[79]          :endselect
+[80]          rec←rec,val
+[81]  
+[82]          ⍝ Includes GMP indicators
+[83]          :if benID∊1 2 3 ⍝ GMPs
+[84]              rec←rec,0 0
+[85]          :else
+[86]              adj←       'Y'=↑0 GetBasisData 'GMPADJ',penno
+[87]              rec←rec,adj∨~mt 0 GetBasisData 'PreVD',penno
+[88]              rec←rec,adj∨~mt 0 GetBasisData 'PostVD',penno
+[89]          :endif
+[90]  
+[91]          :for row :in ⍳rows←rowsIn tab
+[92]              tbl←tab for row=⍳rows
+[93]              :if ∨/ContID∊contid←(∊tbl at 'Member' 'Spouse')~0
+[94]                  REC←(⊂ClassName),(IncContID×↑contid),(tbl at 'StartYear'),rec
+[95]                  sql←"SELECT SUM(SVValue) FROM ResultsData WHERE BenefitTypeID=",(DLTB 'M<->I3' ⎕fmt BenID)," AND LiabilityTypeID=1 AND ContingencyID IN (",(0 ⍙DBNumList contid),") AND DataItemID=%1 AND ResultsCategoryID="
+[96]                  ⍝ Append Liability Figures
+[97]                  msk←0.5<∣liab←0 ⍙DBRemoveNulls ,↑¨1 ⍙DBadoCONCommand¨(⊂'/%1/93' TEXTREPL sql),¨⍕¨ResIDs
+[98]                  benrecs←benrecs⍪msk⌿⊃ResIDs,¨(⎕split MATRIX REC),¨-liab
+[99]              :endif
+[100]         :endfor
+[101]     :endfor
+[102] :endfor
+[103] Z←catrecs benrecs notes
+    ∇

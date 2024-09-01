@@ -1,0 +1,213 @@
+    ∇ field Act_AltSlices parm;page;no;SSName;Sliceget;Sliceput;headings;desc;list;parent;z;∆
+[1]   ⍝ UPARMWIN.sf#3
+[2]   ⍝ Do Initialisation, Changes and Validation of Alternate Slices
+[3]   
+[4]   parent←'fmSV.sActives_Basis.' ⋄ page←'pgAltSlices.' ⋄ SSName←parent,page,'fAltSlices.ssAltSlices'
+[5]   headings←⊃(⊂'Alternate Slice '),¨⍕¨⍳no←↑⍴AltSliceDesc
+[6]   
+[7]   :select parm
+[8]   :case 'Vars'
+[9]       Slices_Vars 'AltSlices'
+[10]      :if no≠0
+[11]          AltSTDATE   ←AltSTDATE    UpdateGridField lrAltSTDATE
+[12]          AltFNDATE   ←AltFNDATE    UpdateGridField lrAltFNDATE
+[13]          AltPENADJ1  ←AltPENADJ1   UpdateGridField lrAltPENADJ1
+[14]          AltPENADJ2  ←AltPENADJ2   UpdateGridField lrAltPENADJ2
+[15]          AltPENADJ3  ←AltPENADJ3   UpdateGridField lrAltPENADJ3
+[16]          m_AltPPFADJ1←m_AltPPFADJ1 UpdateGridField lrm_AltPPFADJ1
+[17]          m_AltPPFADJ2←m_AltPPFADJ2 UpdateGridField lrm_AltPPFADJ2
+[18]          m_AltPPFADJ3←m_AltPPFADJ3 UpdateGridField lrm_AltPPFADJ3
+[19]          f_AltPPFADJ1←f_AltPPFADJ1 UpdateGridField lrf_AltPPFADJ1
+[20]          f_AltPPFADJ2←f_AltPPFADJ2 UpdateGridField lrf_AltPPFADJ2
+[21]          f_AltPPFADJ3←f_AltPPFADJ3 UpdateGridField lrf_AltPPFADJ3
+[22]      :endif
+[23]  
+[24]      z←~'Ignore'≡6↑(parent,'pgMain.fAltBens.cbAltSw') ⎕wi 'text'
+[25]      :for no :in ⍳1⌈no
+[26]          SSName ⎕wi 'xColHidden' no (~z)
+[27]      :endfor
+[28]      :if 0=no ⋄ SSName ⎕wi 'xColHidden' 1 (~z) ⋄ :endif
+[29]      (parent,page,'fButtons.bnActives_BasisDelete') ⎕wi 'enabled' (z^(1<no)^        (ClntCode=3)^ basAccess[2]≤accesslevel)
+[30]      (parent,page,'fButtons.bnActives_BasisInsert') ⎕wi 'enabled' (z^(1<no)^(16>no)^(ClntCode=3)^ basAccess[2]≤accesslevel)
+[31]      (parent,page,'fButtons.bnActives_BasisAdd'   ) ⎕wi 'enabled' (z^       (16>no)^(ClntCode=3)^(basAccess[2]≤accesslevel)^(∨/' '≠,AltSliceDesc))
+[32]      (parent,page,'fButtons.bnActives_BasisEdit'  ) ⎕wi 'enabled' (z^               (ClntCode=3)^ basAccess[2]≤accesslevel)
+[33]      AltFirstSlice←no↑1
+[34]  
+[35]  :case 'Init'
+[36]      SSName ⎕wi '∆VarsInWS' 1
+[37]      Act_AltSlices 'Vars'
+[38]      0 0⍴(⊂'ssAltSlices') Actives_Basis 'Change'
+[39]  
+[40]  :case 'Change'
+[41]      :select field
+[42]      :case 'ssAltSlices'
+[43]          :for no :in ⍳no
+[44]              SSName ⎕wi 'ColText' no (AltSliceDesc[no;])
+[45]              SSName Win∆F1SSSetSelection 1 no 9 no
+[46]              z←∨/' '≠AltSliceDesc[no;]
+[47]              :if (¯1↑SSName ⎕wi 'GetPattern')≠∆←1+z×¯1+SSName ⎕wi 'xBackColor'
+[48]                  SSName ⎕wi 'SetPattern' 1 (1+z×¯1+SSName ⎕wi 'xExtraColor') ∆
+[49]              :endif
+[50]          :endfor
+[51]          SSName Win∆F1SSSetSelection 1 1 1 1
+[52]          ⍙CACHE←UpdateCache
+[53]          0 0⍴(lmt qtrim¨m2n SSName ⎕wi '∆name') Actives_Basis 'Change'
+[54]          AltFirstSlice←no↑1
+[55]      :endselect
+[56]  
+[57]  :case 'Valid'
+[58]  
+[59]  :caselist 'Add' 'Edit' 'Insert' ⍝ Add/Edit/Insert a Slice Definition
+[60]  
+[61]      :if 1=SSName ⎕wi 'SelectionCount'
+[62]      :andif =/(∆←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[63]      :andif ~∆≡1 1 1 1
+[64]          Sliceget←∆[2]
+[65]      :else
+[66]          Sliceget←0
+[67]      :endif
+[68]  
+[69]      :if parm≡'Insert'
+[70]          :if Sliceget∊ 0 1
+[71]              :if 1=↑⍴desc←AltSliceDesc ⋄ :return
+[72]              :else
+[73]                  list←⊃(⊂'Insert Slice before '),¨m2n 1 0 ↓headings
+[74]                  :if mt Sliceput←Win∆SelectionBox  (1 0↓desc) list ⋄ :return ⋄ :endif
+[75]                  Sliceput←0.5+↑list ExactTLU ,Sliceput
+[76]              :endif
+[77]          :else
+[78]              Sliceput←Sliceget-0.5
+[79]          :endif
+[80]          Sliceget←0
+[81]      :endif
+[82]  
+[83]      :if Sliceget=0
+[84]          desc←AltSliceDesc ⋄ list←headings
+[85]          :if   parm≡'Edit'                                   ⋄ list←⊃(⊂'Edit '),¨m2n list
+[86]          :else             ⋄ desc←desc OVER 'Default Values' ⋄ list←⊃(⊂'Use '),¨(m2n list OVER 'Default'),¨⊂' Values'
+[87]          :endif
+[88]          :if 1=↑⍴desc ⋄ Sliceget←list
+[89]          :elseif mt Sliceget←Win∆SelectionBox desc list ⋄ :return
+[90]          :endif
+[91]          Sliceget←↑((-~parm≡'Edit')↓[⎕io]list) ExactTLU ,Sliceget
+[92]      :endif
+[93]      :if ~parm≡'Insert' ⋄ Sliceput←Sliceget×parm≡'Edit' ⋄ :endif
+[94]  
+[95]      Win∆AssignVars ControlName ⍝ Trap current field entries
+[96]      Format←HyphenSwap Format
+[97]  
+[98]      SSName UKSliceRun 'Alt'
+[99]  
+[100]     :if parm≡'Insert'
+[101]         'Actives_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Insert' Sliceput
+[102]     :endif
+[103]     Act_AltSlices 'Vars'
+[104]     openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[105]     0 0⍴(⊂'ssAltSlices') Actives_Basis 'Change'
+[106] 
+[107] :case 'Delete' ⍝ Delete a Slice Definition
+[108] 
+[109]     :if 1=SSName ⎕wi 'SelectionCount'
+[110]     :andif =/(Sliceget←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[111]     :andif ~Sliceget≡1 1 1 1
+[112]     :andif 1≠Sliceget←Sliceget[2]
+[113]     :else
+[114]         :if mt Sliceget←Win∆SelectionBox (1 0↓AltSliceDesc) (list←⊃(⊂'Delete '),¨⎕split 1 0↓headings) ⋄ :return ⋄ :endif
+[115]         Sliceget←1+↑list ExactTLU ,Sliceget
+[116]     :endif
+[117] 
+[118]     :if 'Y'='YN' ASK 'Delete' (headings[Sliceget;] ConcatLabel AltSliceDesc[Sliceget;])
+[119]         Win∆AssignVars ControlName ⍝ Trap current field entries
+[120]         Sliceput←(⍳no)~Sliceget
+[121]         AltSliceDesc← AltSliceDesc[Sliceput;]
+[122]         AltSTDATE←    AltSTDATE[Sliceput;]
+[123]         lrAltSTDATE←  lrAltSTDATE[Sliceput;]
+[124]         AltMINSDAT←   AltMINSDAT[Sliceput;]
+[125]         AltFNDATE←    AltFNDATE[Sliceput;]
+[126]         lrAltFNDATE←  lrAltFNDATE[Sliceput;]
+[127]         AltMAXFDAT←   AltMAXFDAT[Sliceput;]
+[128]         AltSERVRND←   AltSERVRND[Sliceput;]
+[129]         AltADDYRS←    AltADDYRS[Sliceput;]
+[130]         AltSERVINDM←  AltSERVINDM[Sliceput;]
+[131]         AltREVDEFIND← AltREVDEFIND[Sliceput;]
+[132]         AltDYNIND←    AltDYNIND[Sliceput;]
+[133]         AltIRIND←     AltIRIND[Sliceput;]
+[134]         AltUPINSLIND← AltUPINSLIND[Sliceput;]
+[135]         AltACCBASIS←  AltACCBASIS[Sliceput;]
+[136]         AltBARBIND←   AltBARBIND[Sliceput;]
+[137]         AltCAREInc←   AltCAREInc[Sliceput;]
+[138]         AltWARFRAC2←  AltWARFRAC2[Sliceput;]
+[139]         AltTier2Defined←AltTier2Defined[Sliceput;]
+[140]         AltTier3Defined←AltTier3Defined[Sliceput;]
+[141]         m_AltPPFNRA←  m_AltPPFNRA[Sliceput;]
+[142]         f_AltPPFNRA←  f_AltPPFNRA[Sliceput;]
+[143]         AltPPFPAYINCA←AltPPFPAYINCA[Sliceput;]
+[144] 
+[145]         AltSALCOD1←   AltSALCOD1[Sliceput;]
+[146]         AltACCMLT1←   AltACCMLT1[Sliceput;]
+[147]         AltACCDIV1←   AltACCDIV1[Sliceput;]
+[148]         AltACCDATA1←  AltACCDATA1[Sliceput;]
+[149]         AltASTAB1←    AltASTAB1[Sliceput;]
+[150]         AltARTAB1←    AltARTAB1[Sliceput;]
+[151]         AltSRATAB1←   AltSRATAB1[Sliceput;]
+[152]         AltFIXPEN1←   AltFIXPEN1[Sliceput;]
+[153]         AltMINPEN1←   AltMINPEN1[Sliceput;]
+[154]         AltMAXPEN1←   AltMAXPEN1[Sliceput;]
+[155]         AltPENADJ1←   AltPENADJ1[Sliceput;]
+[156]         lrAltPENADJ1← lrAltPENADJ1[Sliceput;]
+[157] ⍝⍝⍝        AltDeductTier11←AltDeductTier11[Sliceput;]
+[158] ⍝⍝⍝        AltDeductTier21←AltDeductTier21[Sliceput;]
+[159]         m_AltPPFADJ1← m_AltPPFADJ1[Sliceput;]
+[160]         lrm_AltPPFADJ1←lrm_AltPPFADJ1[Sliceput;]
+[161]         f_AltPPFADJ1← f_AltPPFADJ1[Sliceput;]
+[162]         lrf_AltPPFADJ1←lrf_AltPPFADJ1[Sliceput;]
+[163] 
+[164]         AltSALCOD2←   AltSALCOD2[Sliceput;]
+[165]         AltACCMLT2←   AltACCMLT2[Sliceput;]
+[166]         AltACCDIV2←   AltACCDIV2[Sliceput;]
+[167]         AltACCDATA2←  AltACCDATA2[Sliceput;]
+[168]         AltASTAB2←    AltASTAB2[Sliceput;]
+[169]         AltARTAB2←    AltARTAB2[Sliceput;]
+[170]         AltSRATAB2←   AltSRATAB2[Sliceput;]
+[171]         AltFIXPEN2←   AltFIXPEN2[Sliceput;]
+[172]         AltMINPEN2←   AltMINPEN2[Sliceput;]
+[173]         AltMAXPEN2←   AltMAXPEN2[Sliceput;]
+[174]         AltPENADJ2←   AltPENADJ2[Sliceput;]
+[175]         lrAltPENADJ2← lrAltPENADJ2[Sliceput;]
+[176]         AltDeductTier12←AltDeductTier12[Sliceput;]
+[177] ⍝⍝⍝        AltDeductTier22←AltDeductTier22[Sliceput;]
+[178]         m_AltPPFADJ2← m_AltPPFADJ2[Sliceput;]
+[179]         lrm_AltPPFADJ2←lrm_AltPPFADJ2[Sliceput;]
+[180]         f_AltPPFADJ2← f_AltPPFADJ2[Sliceput;]
+[181]         lrf_AltPPFADJ2←lrf_AltPPFADJ2[Sliceput;]
+[182] 
+[183]         AltSALCOD3←   AltSALCOD3[Sliceput;]
+[184]         AltACCMLT3←   AltACCMLT3[Sliceput;]
+[185]         AltACCDIV3←   AltACCDIV3[Sliceput;]
+[186]         AltACCDATA3←  AltACCDATA3[Sliceput;]
+[187]         AltASTAB3←    AltASTAB3[Sliceput;]
+[188]         AltARTAB3←    AltARTAB3[Sliceput;]
+[189]         AltSRATAB3←   AltSRATAB3[Sliceput;]
+[190]         AltFIXPEN3←   AltFIXPEN3[Sliceput;]
+[191]         AltMINPEN3←   AltMINPEN3[Sliceput;]
+[192]         AltMAXPEN3←   AltMAXPEN3[Sliceput;]
+[193]         AltPENADJ3←   AltPENADJ3[Sliceput;]
+[194]         lrAltPENADJ3← lrAltPENADJ3[Sliceput;]
+[195]         AltDeductTier13←AltDeductTier13[Sliceput;]
+[196]         AltDeductTier23←AltDeductTier23[Sliceput;]
+[197]         m_AltPPFADJ3← m_AltPPFADJ3[Sliceput;]
+[198]         lrm_AltPPFADJ3←lrm_AltPPFADJ3[Sliceput;]
+[199]         f_AltPPFADJ3← f_AltPPFADJ3[Sliceput;]
+[200]         lrf_AltPPFADJ3←lrf_AltPPFADJ3[Sliceput;]
+[201] 
+[202]         SSName ⎕wi 'MaxCol' (¯1+SSName ⎕wi 'MaxCol')
+[203]         SSName ⎕wi 'xSetSelection' 1 1 1 1
+[204] 
+[205]         'Actives_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Delete' Sliceget
+[206]         Act_AltSlices 'Vars'
+[207]         openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[208]         0 0⍴(⊂'ssAltSlices') Actives_Basis 'Change'
+[209]     :endif
+[210] 
+[211] :endselect
+    ∇

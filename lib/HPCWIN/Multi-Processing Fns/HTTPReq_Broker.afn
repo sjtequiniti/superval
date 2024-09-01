@@ -1,1 +1,126 @@
-    ∇ HTTPReq_Broker type;HTTPnames;HTTPipaddr;HTTPport;HTTPfolder;httpno;dir;HTTPmaxproc;unattended;brokers;ini;defn;HTTPresplimit;HTTPwssize;HTTPabandon;HTTPcheck;HTTPshutdown;HTTPactive;⍙⍙hpcuSER;⍙⍙hpcLogTie;maxtries;tries;response;LogLevel;LogHistory[1]   ⍝ HPCWIN.sf#2[2]   ⍝ Initialise the SuperVal HTTP Request Broker[3]   ⍝  type is either "SuperVal" (load in this SuperVal session) or "External" (open new APL session)[4]   [5]   0 0⍴PrefFile ReadFile 'Config_MultiProc' '' (⊃'HTTPnames' 'HTTPipaddr' 'HTTPport' 'HTTPresplimit' 'HTTPmaxproc' 'HTTPfolder' 'HTTPwssize' 'HTTPabandon' 'HTTPcheck' 'HTTPshutdown' 'HTTPactive' 'LogLevel' 'LogHistory')[6]   unattended←0[7]   [8]   :select type[9]   :case 'SuperVal'[10]      brokers←'Local IP Address' 'My Local IP Address' 'My Machine'[11]      :if 0=httpno←↑(brokers∊m2n HTTPipaddr)×(m2n HTTPipaddr)⍳brokers[12]          MDISPLAY 'No "Local IP Address" or "My Machine" Broker defintion created'[13]          :return[14]      :endif[15]      :if ~mt ⎕NI 'Sockets'[16]          :if 'Y'='YN' ASK 'SuperVal Request Broker already established.',⎕tcnl,'Do you want to shut this Broker down and establish a new Broker?'[17]              0 0⍴(⎕NI 'Sockets') ⎕NI 'Close'[18]          :else[19]              :return[20]          :endif[21]      :endif[22]        httpNAME     ←DLTB  HTTPnames    [httpno;][23]      ⍙⍙httpIPADDR   ←DLTB  HTTPipaddr   [httpno;][24]      ⍙⍙httpPORT     ← ⎕fi ,HTTPport     [httpno;][25]      ⍙⍙httpRESPLIMIT←(⎕fi ,HTTPresplimit[httpno;])   ×1000 ⍝ Convert to milliseconds[26]        httpMAXPROC  ← ⎕fi ,HTTPmaxproc  [httpno;][27]      ⍙⍙httpWSSIZE   ←DLTB  HTTPwssize   [httpno;][28]      ⍙⍙httpABANDON  ←(⎕fi ,HTTPabandon  [httpno;])×60×1000 ⍝ Convert to milliseconds[29]      ⍙⍙httpCHECK    ←(⎕fi ,HTTPcheck    [httpno;])   ×1000 ⍝ Convert to milliseconds[30]      ⍙⍙httpSHUTDOWN ←(⎕fi ,HTTPshutdown [httpno;])×60×1000 ⍝ Convert to milliseconds[31]        httpFOLDER   ←FolderToUNC DLTB HTTPfolder[httpno;][32]      ⍙⍙hpcLogLEVEL  ←zwb LogLevel[33]  [34]      0 0⍴⎕pcopy HPCDir,'HTTP_Broker',runtime/'R'[35]      0 0⍴(InputDir 80) FolderHeld 'End' ⍝ Release Directory temporarily to avoid it being locked until Broker closed[36]  [37]      SvrbInitialise[38]  [39]      HTTPactive[httpno;]←'1'[40]      0 0⍴PrefFile SaveToFile 'Config_MultiProc' '' (pack 'HTTPactive') 1[41]  [42]      0 0⍴(InputDir uSER) FolderHeld 'Start'[43]      FormName ⎕wi 'Paint'[44]  :case 'External'[45]      :if accesslevel<9[46]          brokers←⊂'My Machine'[47]          :if 0=httpno←↑(brokers∊m2n HTTPipaddr)×(m2n HTTPipaddr)⍳brokers[48]              MDISPLAY 'No "My Machine" Broker defintion created'[49]              :return[50]          :endif[51]      :else[52]          httpno←0[53]          'HPCWIN' CallModule 'HTTP_Select'[54]          :if 0=↑httpno ⋄ :return ⋄ :endif[55]      :endif[56]  [57]      ⍙⍙httpIPADDR←DLTB HTTPipaddr[httpno;][58]      :if (⊂⍙⍙httpIPADDR)∊'My Machine' 'Local IP Address' 'My Local IP Address' ⍝ Get the current local address[59]          :if 'My Machine'≡⍙⍙httpIPADDR ⋄ ⍙⍙httpIPADDR←'127.0.0.1' ⍝ Could also be "localhost"[60]          :else                         ⋄ ⍙⍙httpIPADDR←MyAddress[61]          :endif[62]          httpFOLDER←FolderToUNC DLTB HTTPfolder[httpno;][63]          defn←,¨DLTB¨⍙⍙httpIPADDR (HTTPport[httpno;]) (HTTPmaxproc[httpno;]) httpFOLDER (HTTPresplimit[httpno;]) (HTTPwssize[httpno;]) (HTTPabandon[httpno;]) (HTTPcheck[httpno;]) (HTTPshutdown[httpno;]) (HTTPnames[httpno;])[64]          :if (↑⍴HTTPnames)<httpno←(spin m2n¨HTTPipaddr HTTPport HTTPmaxproc)⍳⊂3↑defn[65]                     ModifyReq_Broker defn[66]          :elseif ~^/(3↓¯1↓defn)≡¨,¨DLTB¨(HTTPfolder[httpno;]) (HTTPresplimit[httpno;]) (HTTPwssize[httpno;]) (HTTPabandon[httpno;]) (HTTPcheck[httpno;]) (HTTPshutdown[httpno;])[67]              httpno ModifyReq_Broker defn[68]          :endif[69]      :endif[70]      ⍙⍙httpPORT     ← ⎕fi ,HTTPport     [httpno;][71]      ⍙⍙httpRESPLIMIT←(⎕fi ,HTTPresplimit[httpno;])×1000 ⍝ Convert to milliseconds[72]  [73]      ⍝ Write System, Library Folder to ini file so Broker knows where to find the SuperVal files and HPC Configuration[74]      ini←HPCDir,'log\HTTP_Broker.ini'[75]      :if 'http_worker\'≡caseDn DLTB HTTPfolder [httpno;][76]          dir←FolderToUNC InputDir[77]          :repeat[78]                 dir INIString 'Folders' 'InputFolder'    ini[79]          :until dir≡INIString 'Folders' 'InputFolder' '' ini[80]      :endif[81]      dir←FolderToUNC LibraryDir[82]      :repeat[83]             dir INIString 'Folders' 'LibraryFolder'    ini[84]      :until dir≡INIString 'Folders' 'LibraryFolder' '' ini[85]      dir←FolderToUNC SystemDir[86]      :repeat[87]             dir INIString 'Folders' 'SystemFolder'    ini[88]      :until dir≡INIString 'Folders' 'SystemFolder' '' ini[89]  [90]      :repeat[91]             (⍕LogLevel) INIString 'Logging' 'Level'    ini[92]      :until (⍕LogLevel)≡INIString 'Logging' 'Level' '' ini[93]      :repeat[94]             (⍕LogHistory) INIString 'Logging' 'History'    ini[95]      :until (⍕LogHistory)≡INIString 'Logging' 'History' '' ini[96]  [97]      0 0⍴(InputDir 80) FolderHeld 'End' ⍝ Release Directory temporarily to avoid it being locked until Broker closed[98]  [99]      dir←(Win∆IsDirectory dir)/dir←SystemDir,'APLWIN\'[100]     0 0⍴2 ⎕cmd dir,'APLW',(runtime/'R'),'.exe 10M user=',(⍕httpno),' ',HPCDir,'HTTP_Broker',(runtime/'R'),'.w3'[101] [102]     0 0⍴(InputDir uSER) FolderHeld 'Start'[103] [104]     ⍙⍙hpcLogTie←(HPCDir,'log\') HPC_Log_Start ⍙⍙hpcuSER←'SuperVal ','[]' embrace uSER[105] [106]     maxtries←10 ⋄ tries←1[107]     ('Task:' 'Try:') Win∆ProgressBar 'SetLabels'[108]     'Testing Request Broker Connection' Win∆ProgressBar 'Open'[109]     (1 1 'Testing Request Broker Connection') Win∆ProgressBar 'FileUpdate'[110]     :repeat[111]         (tries maxtries (⍕tries)) Win∆ProgressBar 'MemberUpdate'[112]         response←eis 1 1 BrokerRequest 'sta?tid=0'[113]     :until ~∨/'Nothing'⍷↑¯1↑response ⋄ :orif maxtries<tries←tries+1[114]     Win∆ProgressBar 'Close'[115] [116]     :if ∨/'Nothing'⍷↑¯1↑response[117]         MDISPLAY 'HTTP Valuation Broker failed to be activated'[118]     :else[119]         HTTPactive[httpno;]←'1'[120]         0 0⍴PrefFile SaveToFile 'Config_MultiProc' '' (pack 'HTTPactive') 1[121]         MDISPLAY 'HTTP Valuation Broker referred to as "',(DLTB HTTPnames[httpno;]),'" has been activated'[122]     :endif[123]     ⎕nuntie ⍙⍙hpcLogTie[124] :endselect    ∇
+    ∇ HTTPReq_Broker type;HTTPnames;HTTPipaddr;HTTPport;HTTPfolder;httpno;dir;HTTPmaxproc;unattended;brokers;ini;defn;HTTPresplimit;HTTPwssize;HTTPabandon;HTTPcheck;HTTPshutdown;HTTPactive;⍙⍙hpcuSER;⍙⍙hpcLogTie;maxtries;tries;response;LogLevel;LogHistory
+[1]   ⍝ HPCWIN.sf#2
+[2]   ⍝ Initialise the SuperVal HTTP Request Broker
+[3]   ⍝  type is either "SuperVal" (load in this SuperVal session) or "External" (open new APL session)
+[4]   
+[5]   0 0⍴PrefFile ReadFile 'Config_MultiProc' '' (⊃'HTTPnames' 'HTTPipaddr' 'HTTPport' 'HTTPresplimit' 'HTTPmaxproc' 'HTTPfolder' 'HTTPwssize' 'HTTPabandon' 'HTTPcheck' 'HTTPshutdown' 'HTTPactive' 'LogLevel' 'LogHistory')
+[6]   unattended←0
+[7]   
+[8]   :select type
+[9]   :case 'SuperVal'
+[10]      brokers←'Local IP Address' 'My Local IP Address' 'My Machine'
+[11]      :if 0=httpno←↑(brokers∊m2n HTTPipaddr)×(m2n HTTPipaddr)⍳brokers
+[12]          MDISPLAY 'No "Local IP Address" or "My Machine" Broker defintion created'
+[13]          :return
+[14]      :endif
+[15]      :if ~mt ⎕NI 'Sockets'
+[16]          :if 'Y'='YN' ASK 'SuperVal Request Broker already established.',⎕tcnl,'Do you want to shut this Broker down and establish a new Broker?'
+[17]              0 0⍴(⎕NI 'Sockets') ⎕NI 'Close'
+[18]          :else
+[19]              :return
+[20]          :endif
+[21]      :endif
+[22]        httpNAME     ←DLTB  HTTPnames    [httpno;]
+[23]      ⍙⍙httpIPADDR   ←DLTB  HTTPipaddr   [httpno;]
+[24]      ⍙⍙httpPORT     ← ⎕fi ,HTTPport     [httpno;]
+[25]      ⍙⍙httpRESPLIMIT←(⎕fi ,HTTPresplimit[httpno;])   ×1000 ⍝ Convert to milliseconds
+[26]        httpMAXPROC  ← ⎕fi ,HTTPmaxproc  [httpno;]
+[27]      ⍙⍙httpWSSIZE   ←DLTB  HTTPwssize   [httpno;]
+[28]      ⍙⍙httpABANDON  ←(⎕fi ,HTTPabandon  [httpno;])×60×1000 ⍝ Convert to milliseconds
+[29]      ⍙⍙httpCHECK    ←(⎕fi ,HTTPcheck    [httpno;])   ×1000 ⍝ Convert to milliseconds
+[30]      ⍙⍙httpSHUTDOWN ←(⎕fi ,HTTPshutdown [httpno;])×60×1000 ⍝ Convert to milliseconds
+[31]        httpFOLDER   ←FolderToUNC DLTB HTTPfolder[httpno;]
+[32]      ⍙⍙hpcLogLEVEL  ←zwb LogLevel
+[33]  
+[34]      0 0⍴⎕pcopy HPCDir,'HTTP_Broker',runtime/'R'
+[35]      0 0⍴(InputDir 80) FolderHeld 'End' ⍝ Release Directory temporarily to avoid it being locked until Broker closed
+[36]  
+[37]      SvrbInitialise
+[38]  
+[39]      HTTPactive[httpno;]←'1'
+[40]      0 0⍴PrefFile SaveToFile 'Config_MultiProc' '' (pack 'HTTPactive') 1
+[41]  
+[42]      0 0⍴(InputDir uSER) FolderHeld 'Start'
+[43]      FormName ⎕wi 'Paint'
+[44]  :case 'External'
+[45]      :if accesslevel<9
+[46]          brokers←⊂'My Machine'
+[47]          :if 0=httpno←↑(brokers∊m2n HTTPipaddr)×(m2n HTTPipaddr)⍳brokers
+[48]              MDISPLAY 'No "My Machine" Broker defintion created'
+[49]              :return
+[50]          :endif
+[51]      :else
+[52]          httpno←0
+[53]          'HPCWIN' CallModule 'HTTP_Select'
+[54]          :if 0=↑httpno ⋄ :return ⋄ :endif
+[55]      :endif
+[56]  
+[57]      ⍙⍙httpIPADDR←DLTB HTTPipaddr[httpno;]
+[58]      :if (⊂⍙⍙httpIPADDR)∊'My Machine' 'Local IP Address' 'My Local IP Address' ⍝ Get the current local address
+[59]          :if 'My Machine'≡⍙⍙httpIPADDR ⋄ ⍙⍙httpIPADDR←'127.0.0.1' ⍝ Could also be "localhost"
+[60]          :else                         ⋄ ⍙⍙httpIPADDR←MyAddress
+[61]          :endif
+[62]          httpFOLDER←FolderToUNC DLTB HTTPfolder[httpno;]
+[63]          defn←,¨DLTB¨⍙⍙httpIPADDR (HTTPport[httpno;]) (HTTPmaxproc[httpno;]) httpFOLDER (HTTPresplimit[httpno;]) (HTTPwssize[httpno;]) (HTTPabandon[httpno;]) (HTTPcheck[httpno;]) (HTTPshutdown[httpno;]) (HTTPnames[httpno;])
+[64]          :if (↑⍴HTTPnames)<httpno←(spin m2n¨HTTPipaddr HTTPport HTTPmaxproc)⍳⊂3↑defn
+[65]                     ModifyReq_Broker defn
+[66]          :elseif ~^/(3↓¯1↓defn)≡¨,¨DLTB¨(HTTPfolder[httpno;]) (HTTPresplimit[httpno;]) (HTTPwssize[httpno;]) (HTTPabandon[httpno;]) (HTTPcheck[httpno;]) (HTTPshutdown[httpno;])
+[67]              httpno ModifyReq_Broker defn
+[68]          :endif
+[69]      :endif
+[70]      ⍙⍙httpPORT     ← ⎕fi ,HTTPport     [httpno;]
+[71]      ⍙⍙httpRESPLIMIT←(⎕fi ,HTTPresplimit[httpno;])×1000 ⍝ Convert to milliseconds
+[72]  
+[73]      ⍝ Write System, Library Folder to ini file so Broker knows where to find the SuperVal files and HPC Configuration
+[74]      ini←HPCDir,'log\HTTP_Broker.ini'
+[75]      :if 'http_worker\'≡caseDn DLTB HTTPfolder [httpno;]
+[76]          dir←FolderToUNC InputDir
+[77]          :repeat
+[78]                 dir INIString 'Folders' 'InputFolder'    ini
+[79]          :until dir≡INIString 'Folders' 'InputFolder' '' ini
+[80]      :endif
+[81]      dir←FolderToUNC LibraryDir
+[82]      :repeat
+[83]             dir INIString 'Folders' 'LibraryFolder'    ini
+[84]      :until dir≡INIString 'Folders' 'LibraryFolder' '' ini
+[85]      dir←FolderToUNC SystemDir
+[86]      :repeat
+[87]             dir INIString 'Folders' 'SystemFolder'    ini
+[88]      :until dir≡INIString 'Folders' 'SystemFolder' '' ini
+[89]  
+[90]      :repeat
+[91]             (⍕LogLevel) INIString 'Logging' 'Level'    ini
+[92]      :until (⍕LogLevel)≡INIString 'Logging' 'Level' '' ini
+[93]      :repeat
+[94]             (⍕LogHistory) INIString 'Logging' 'History'    ini
+[95]      :until (⍕LogHistory)≡INIString 'Logging' 'History' '' ini
+[96]  
+[97]      0 0⍴(InputDir 80) FolderHeld 'End' ⍝ Release Directory temporarily to avoid it being locked until Broker closed
+[98]  
+[99]      dir←(Win∆IsDirectory dir)/dir←SystemDir,'APLWIN\'
+[100]     0 0⍴2 ⎕cmd dir,'APLW',(runtime/'R'),'.exe 10M user=',(⍕httpno),' ',HPCDir,'HTTP_Broker',(runtime/'R'),'.w3'
+[101] 
+[102]     0 0⍴(InputDir uSER) FolderHeld 'Start'
+[103] 
+[104]     ⍙⍙hpcLogTie←(HPCDir,'log\') HPC_Log_Start ⍙⍙hpcuSER←'SuperVal ','[]' embrace uSER
+[105] 
+[106]     maxtries←10 ⋄ tries←1
+[107]     ('Task:' 'Try:') Win∆ProgressBar 'SetLabels'
+[108]     'Testing Request Broker Connection' Win∆ProgressBar 'Open'
+[109]     (1 1 'Testing Request Broker Connection') Win∆ProgressBar 'FileUpdate'
+[110]     :repeat
+[111]         (tries maxtries (⍕tries)) Win∆ProgressBar 'MemberUpdate'
+[112]         response←eis 1 1 BrokerRequest 'sta?tid=0'
+[113]     :until ~∨/'Nothing'⍷↑¯1↑response ⋄ :orif maxtries<tries←tries+1
+[114]     Win∆ProgressBar 'Close'
+[115] 
+[116]     :if ∨/'Nothing'⍷↑¯1↑response
+[117]         MDISPLAY 'HTTP Valuation Broker failed to be activated'
+[118]     :else
+[119]         HTTPactive[httpno;]←'1'
+[120]         0 0⍴PrefFile SaveToFile 'Config_MultiProc' '' (pack 'HTTPactive') 1
+[121]         MDISPLAY 'HTTP Valuation Broker referred to as "',(DLTB HTTPnames[httpno;]),'" has been activated'
+[122]     :endif
+[123]     ⎕nuntie ⍙⍙hpcLogTie
+[124] :endselect
+    ∇

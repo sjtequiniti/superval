@@ -1,0 +1,25 @@
+    ∇ field Def_Mortality parm;page
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Mortality Page
+[3]   
+[4]   page←'pgMortality.'
+[5]   
+[6]   :select parm
+[7]   :case 'Init'
+[8]   
+[9]   :case 'PageChange'
+[10]      'Deferreds' TVBasisUpdate 'TVDPreSame' 'TVDPostSame' 'TVSDPostSame'
+[11]  
+[12]  :case 'Change'
+[13]      :select field
+[14]      :caselist 'cbm_miDPRE' 'cbm_miDPOST' 'cbm_miSDPOST' 'cbf_miDPRE' 'cbf_miDPOST' 'cbf_miSDPOST'
+[15]          :if 'CMI 17 '≡7↑⍎'lr',field←2↓field
+[16]              field←↑(relRules for 'Field' field) at 'Desc'
+[17]              MDISPLAY field,' uses a CMI 17 Mortality Improvement definition which is no longer supported'
+[18]          :endif
+[19]      :endselect
+[20]  
+[21]  :case 'Valid'
+[22]  
+[23]  :endselect
+    ∇

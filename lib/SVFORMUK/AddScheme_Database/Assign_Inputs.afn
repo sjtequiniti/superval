@@ -1,1 +1,36 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "AddScheme_Database" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "AddScheme_Database" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmAddSchemeDB.cbDBFile" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB DBFile[11]  :if mt selection[12]      :if ~mt DLTB DBFile[13]          warnings←warnings OVER "Previous Selection for 'SQL Server Database File' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmAddSchemeDB.cbDBFile" ⎕wi "value" (¯1↑1,selection)[18]  "sCHEME" Win∆Inherits "ClientName"[19]  "fmAddSchemeDB.edsCHEME" ⎕wi "text" (DLTB sCHEME)[20]  "TaskVDate" Win∆Inherits "vDATE"[21]  "fmAddSchemeDB.edTaskVDate" ⎕wi "text" (DLTB TaskVDate)[22]  "fmAddSchemeDB.edTaskDesc" ⎕wi "text" (DLTB TaskDesc)[23]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_AddScheme_Database[24]      :for var :in spin Comment_AddScheme_Database at "variable" "row" ⋄ (var row)←var[25]          "AddScheme_Database" ParmColor ((FormFields for "variable" var) at "control"),var row 1[26]      :endfor[27]  :endif[28]  :if ~0∊⍴,warnings[29]      MDISPLAY DLTMB warnings,⎕tcnl[30]      Win∆AssignVars "fmAddSchemeDB"[31]  :endif[32]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "AddScheme_Database" "" "Names"[33]      "fmAddSchemeDB" ⎕wi "modified" 0[34]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "AddScheme_Database" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "AddScheme_Database" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmAddSchemeDB.cbDBFile" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB DBFile
+[11]  :if mt selection
+[12]      :if ~mt DLTB DBFile
+[13]          warnings←warnings OVER "Previous Selection for 'SQL Server Database File' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmAddSchemeDB.cbDBFile" ⎕wi "value" (¯1↑1,selection)
+[18]  "sCHEME" Win∆Inherits "ClientName"
+[19]  "fmAddSchemeDB.edsCHEME" ⎕wi "text" (DLTB sCHEME)
+[20]  "TaskVDate" Win∆Inherits "vDATE"
+[21]  "fmAddSchemeDB.edTaskVDate" ⎕wi "text" (DLTB TaskVDate)
+[22]  "fmAddSchemeDB.edTaskDesc" ⎕wi "text" (DLTB TaskDesc)
+[23]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_AddScheme_Database
+[24]      :for var :in spin Comment_AddScheme_Database at "variable" "row" ⋄ (var row)←var
+[25]          "AddScheme_Database" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[26]      :endfor
+[27]  :endif
+[28]  :if ~0∊⍴,warnings
+[29]      MDISPLAY DLTMB warnings,⎕tcnl
+[30]      Win∆AssignVars "fmAddSchemeDB"
+[31]  :endif
+[32]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "AddScheme_Database" "" "Names"
+[33]      "fmAddSchemeDB" ⎕wi "modified" 0
+[34]  :endif
+    ∇

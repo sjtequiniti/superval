@@ -1,0 +1,18 @@
+    ∇ Module ValidationToggle menu;openParameters
+[1]   ⍝ UTILSWIN.sf#5
+[2]   ⍝ Toggle whether Form Validation and/or Relevance is enabled or disabled
+[3]   
+[4]   :select Win∆Child menu
+[5]   :case 'mToggleValid'
+[6]       :if Validation_enabled←~Validation_enabled ⋄ Relevance_enabled←1 ⋄ :endif
+[7]       menu ⎕wi 'caption' (((⎕io+Validation_enabled)⊃'En' 'Dis'),'able Validation')
+[8]       ((Win∆Parent menu),'.mToggleRel') ⎕wi 'visible' (~Validation_enabled)
+[9]       ((Win∆Parent menu),'.mToggleRel') ⎕wi 'caption' (((⎕io+Relevance_enabled)⊃'En' 'Dis'),'able Relevance')
+[10]  :case 'mToggleRel'
+[11]      Relevance_enabled←~Relevance_enabled
+[12]      menu ⎕wi 'caption' (((⎕io+Relevance_enabled)⊃'En' 'Dis'),'able Relevance')
+[13]  :endselect
+[14]  
+[15]  (FormName,'.lParmDesc') ⎕wi 'color' ((~Relevance_enabled)⌽¯1,⊂(⎕io+Validation_enabled)⊃(255 0 0) ¯1)
+[16]  openParameters←1 ⋄ Module Win∆FormValidation 'SetRelevance'
+    ∇

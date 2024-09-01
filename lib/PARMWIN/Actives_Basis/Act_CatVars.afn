@@ -1,1 +1,122 @@
-    ∇ field Act_CatVars parm;i;TABLE;page;SSName;MaxRow;list;size;VarList;NameList;Error[1]   ⍝ PARMWIN.sf#6[2]   ⍝ Do Initialisation, Changes and Validation of Category Variables[3]   [4]   :select parm[5]   :case 'Vars'[6]       'Num' ASSIGN∆Vars (NumName NumValue)[7]       'Date' ASSIGN∆Vars (DateName DateValue)[8]       'Num' ASSIGN∆Vars (CatNumName CatNumValue)[9]       'Date' ASSIGN∆Vars (CatDateName CatDateValue)[10]      ValYear←¯1↑vDATE[11]      :for i :in ⍳1↑⍴MiscTab[12]          :if ∨/' '≠TABLE←¯5↑DLTB MiscTab[i;][13]              ⍎TABLE,'←DEC∆CHECK TABLE'[14]              :if '0'=TABLE[3][15]                  ⍎TABLE[1 2 4 5],'←',TABLE[16]              :endif[17]          :endif[18]      :endfor[19]  :case 'Init'[20]  [21]  :case 'Change'[22]      :select field[23]      :case 'ssMiscTab' ⍝ Create Misc Table Variables[24]         :if Win∆F1SSFilled SSName←parent,'pgVariables.fMiscTab.ssMiscTab'[25]             MaxRow←SSName ⎕wi 'xMaxRow'[26]             :for i :in ⍳1↑⍴NameList←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1[27]                 :if ∨/' '≠TABLE←¯5↑DLTB NameList[i;][28]                     ⍎TABLE,'←DEC∆CHECK TABLE'[29]                     :if '0'=TABLE[3][30]                         ⍎TABLE[1 2 4 5],'←',TABLE[31]                     :endif[32]                 :endif[33]             :endfor[34]         :endif[35]  [36]      :case 'ssNumConst' ⍝ Reassign Category Variables[37]         :if Win∆F1SSFilled SSName←parent,'pgVariables.fNumConst.ssNumConst'[38]             MaxRow←SSName ⎕wi 'xMaxRow'[39]             NameList←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1[40]             VarList←⊃,SSName Win∆F1SSGetTextArray 1 2,MaxRow,1[41]             'Num' ASSIGN∆Vars (NameList VarList)[42]         :endif[43]  [44]      :case 'ssDateConst' ⍝ Reassign Category Variables[45]         :if Win∆F1SSFilled SSName←parent,'pgVariables.fDateConst.ssDateConst'[46]             MaxRow←SSName ⎕wi 'xMaxRow'[47]             NameList←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1[48]             VarList←⊃,SSName Win∆F1SSGetTextArray 1 2,MaxRow,1[49]             'Date' ASSIGN∆Vars (NameList VarList)[50]         :endif[51]  [52]      :endselect[53]  [54]  :case 'Valid'[55]  [56]      page←'pgVariables' ⍝ Validation of Numeric Variables in here!!![57]      :select field[58]      :case 'pgVariables'[59]          :if ~0∊⍴res←(⊂'ssNumConst') Actives_Basis 'Valid' ⋄ :return ⋄ :endif[60]          :if ~0∊⍴res←(⊂'ssDateConst') Actives_Basis 'Valid' ⋄ :return ⋄ :endif[61]  [62]      :case 'ssNumConst' ⍝ Validation of Numeric Constants in here!!![63]          :if Win∆F1SSFilled SSName←parent,page,'.fNumConst.ssNumConst'[64]              MaxRow←SSName ⎕wi 'xMaxRow'[65]              size←1↑⍴NameList←NumName OVER DateName[66]              NameList←NameList OVER list←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1[67]              ⍝ Check Variable Names are valid!![68]              :for i :in ⍳MaxRow[69]                  :if ~0∊⍴res←VALID∆Variable DLTB list[i;][70]                      SSName ⎕wi 'xSetActiveCell' i 1[71]                      Win∆SetFocus SSName ⋄ :return[72]                  :endif[73]                  ⍝ Check Variable Names are unique[74]                  :if ~(,i+size)≡1↑NameList ExactTLU list[i;][75]                      res←'UniqueName' (list[i;])[76]                      SSName ⎕wi 'xSetActiveCell' i 1[77]                      Win∆SetFocus SSName ⋄ :return[78]                  :endif[79]              :endfor[80]              'Num' ASSIGN∆Vars (NumName NumValue)[81]              'Num' ASSIGN∆Vars (CatNumName CatNumValue)[82]         :endif[83]  [84]      :case 'ssDateConst' ⍝ Validation of Date Constants in here!!![85]          :if Win∆F1SSFilled SSName←parent,page,'.fDateConst.ssDateConst'[86]              MaxRow←(parent,page,'.fNumConst.ssNumConst') ⎕wi 'xMaxRow'[87]              NameList←NumName OVER DateName[88]              size←1↑⍴NameList←NameList OVER ⊃,(parent,page,'.fNumConst.ssNumConst') Win∆F1SSGetTextArray 1 1,MaxRow,1[89]              MaxRow←SSName ⎕wi 'xMaxRow'[90]              NameList←NameList OVER list←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1[91]              ⍝ Check Variable Names are valid!![92]              :for i :in ⍳MaxRow[93]                  :if ~0∊⍴res←VALID∆Variable DLTB list[i;][94]                      SSName ⎕wi 'xSetActiveCell' i 1[95]                      Win∆SetFocus SSName ⋄ :return[96]                  :endif[97]                  ⍝ Check Variable Names are unique[98]                  :if ~(,i+size)≡1↑NameList ExactTLU list[i;][99]                      res←'UniqueName' (list[i;])[100]                     SSName ⎕wi 'xSetActiveCell' i 1[101]                     Win∆SetFocus SSName ⋄ :return[102]                 :endif[103]             :endfor[104]             size←1↑⍴VarList←DateValue[105]             VarList←VarList OVER list←⊃,SSName Win∆F1SSGetTextArray 1 2,MaxRow,1[106]             :for i :in ⍳MaxRow[107]                 ⍝ Check Variable Values are unique[108]                 :if ~(,i+size)≡VarList ExactTLU list[i;][109]                     res←'UniqueValue'[110]                     SSName ⎕wi 'xSetActiveCell' i 2[111]                     Win∆SetFocus SSName ⋄ :return[112]                 :endif[113]             :endfor[114]             'Date' ASSIGN∆Vars (DateName DateValue)[115]             'Date' ASSIGN∆Vars (CatDateName CatDateValue)[116]         :endif[117]     :endselect[118]     :return[119] [120] :endselect    ∇
+    ∇ field Act_CatVars parm;i;TABLE;page;SSName;MaxRow;list;size;VarList;NameList;Error
+[1]   ⍝ PARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Category Variables
+[3]   
+[4]   :select parm
+[5]   :case 'Vars'
+[6]       'Num' ASSIGN∆Vars (NumName NumValue)
+[7]       'Date' ASSIGN∆Vars (DateName DateValue)
+[8]       'Num' ASSIGN∆Vars (CatNumName CatNumValue)
+[9]       'Date' ASSIGN∆Vars (CatDateName CatDateValue)
+[10]      ValYear←¯1↑vDATE
+[11]      :for i :in ⍳1↑⍴MiscTab
+[12]          :if ∨/' '≠TABLE←¯5↑DLTB MiscTab[i;]
+[13]              ⍎TABLE,'←DEC∆CHECK TABLE'
+[14]              :if '0'=TABLE[3]
+[15]                  ⍎TABLE[1 2 4 5],'←',TABLE
+[16]              :endif
+[17]          :endif
+[18]      :endfor
+[19]  :case 'Init'
+[20]  
+[21]  :case 'Change'
+[22]      :select field
+[23]      :case 'ssMiscTab' ⍝ Create Misc Table Variables
+[24]         :if Win∆F1SSFilled SSName←parent,'pgVariables.fMiscTab.ssMiscTab'
+[25]             MaxRow←SSName ⎕wi 'xMaxRow'
+[26]             :for i :in ⍳1↑⍴NameList←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1
+[27]                 :if ∨/' '≠TABLE←¯5↑DLTB NameList[i;]
+[28]                     ⍎TABLE,'←DEC∆CHECK TABLE'
+[29]                     :if '0'=TABLE[3]
+[30]                         ⍎TABLE[1 2 4 5],'←',TABLE
+[31]                     :endif
+[32]                 :endif
+[33]             :endfor
+[34]         :endif
+[35]  
+[36]      :case 'ssNumConst' ⍝ Reassign Category Variables
+[37]         :if Win∆F1SSFilled SSName←parent,'pgVariables.fNumConst.ssNumConst'
+[38]             MaxRow←SSName ⎕wi 'xMaxRow'
+[39]             NameList←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1
+[40]             VarList←⊃,SSName Win∆F1SSGetTextArray 1 2,MaxRow,1
+[41]             'Num' ASSIGN∆Vars (NameList VarList)
+[42]         :endif
+[43]  
+[44]      :case 'ssDateConst' ⍝ Reassign Category Variables
+[45]         :if Win∆F1SSFilled SSName←parent,'pgVariables.fDateConst.ssDateConst'
+[46]             MaxRow←SSName ⎕wi 'xMaxRow'
+[47]             NameList←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1
+[48]             VarList←⊃,SSName Win∆F1SSGetTextArray 1 2,MaxRow,1
+[49]             'Date' ASSIGN∆Vars (NameList VarList)
+[50]         :endif
+[51]  
+[52]      :endselect
+[53]  
+[54]  :case 'Valid'
+[55]  
+[56]      page←'pgVariables' ⍝ Validation of Numeric Variables in here!!!
+[57]      :select field
+[58]      :case 'pgVariables'
+[59]          :if ~0∊⍴res←(⊂'ssNumConst') Actives_Basis 'Valid' ⋄ :return ⋄ :endif
+[60]          :if ~0∊⍴res←(⊂'ssDateConst') Actives_Basis 'Valid' ⋄ :return ⋄ :endif
+[61]  
+[62]      :case 'ssNumConst' ⍝ Validation of Numeric Constants in here!!!
+[63]          :if Win∆F1SSFilled SSName←parent,page,'.fNumConst.ssNumConst'
+[64]              MaxRow←SSName ⎕wi 'xMaxRow'
+[65]              size←1↑⍴NameList←NumName OVER DateName
+[66]              NameList←NameList OVER list←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1
+[67]              ⍝ Check Variable Names are valid!!
+[68]              :for i :in ⍳MaxRow
+[69]                  :if ~0∊⍴res←VALID∆Variable DLTB list[i;]
+[70]                      SSName ⎕wi 'xSetActiveCell' i 1
+[71]                      Win∆SetFocus SSName ⋄ :return
+[72]                  :endif
+[73]                  ⍝ Check Variable Names are unique
+[74]                  :if ~(,i+size)≡1↑NameList ExactTLU list[i;]
+[75]                      res←'UniqueName' (list[i;])
+[76]                      SSName ⎕wi 'xSetActiveCell' i 1
+[77]                      Win∆SetFocus SSName ⋄ :return
+[78]                  :endif
+[79]              :endfor
+[80]              'Num' ASSIGN∆Vars (NumName NumValue)
+[81]              'Num' ASSIGN∆Vars (CatNumName CatNumValue)
+[82]         :endif
+[83]  
+[84]      :case 'ssDateConst' ⍝ Validation of Date Constants in here!!!
+[85]          :if Win∆F1SSFilled SSName←parent,page,'.fDateConst.ssDateConst'
+[86]              MaxRow←(parent,page,'.fNumConst.ssNumConst') ⎕wi 'xMaxRow'
+[87]              NameList←NumName OVER DateName
+[88]              size←1↑⍴NameList←NameList OVER ⊃,(parent,page,'.fNumConst.ssNumConst') Win∆F1SSGetTextArray 1 1,MaxRow,1
+[89]              MaxRow←SSName ⎕wi 'xMaxRow'
+[90]              NameList←NameList OVER list←⊃,SSName Win∆F1SSGetTextArray 1 1,MaxRow,1
+[91]              ⍝ Check Variable Names are valid!!
+[92]              :for i :in ⍳MaxRow
+[93]                  :if ~0∊⍴res←VALID∆Variable DLTB list[i;]
+[94]                      SSName ⎕wi 'xSetActiveCell' i 1
+[95]                      Win∆SetFocus SSName ⋄ :return
+[96]                  :endif
+[97]                  ⍝ Check Variable Names are unique
+[98]                  :if ~(,i+size)≡1↑NameList ExactTLU list[i;]
+[99]                      res←'UniqueName' (list[i;])
+[100]                     SSName ⎕wi 'xSetActiveCell' i 1
+[101]                     Win∆SetFocus SSName ⋄ :return
+[102]                 :endif
+[103]             :endfor
+[104]             size←1↑⍴VarList←DateValue
+[105]             VarList←VarList OVER list←⊃,SSName Win∆F1SSGetTextArray 1 2,MaxRow,1
+[106]             :for i :in ⍳MaxRow
+[107]                 ⍝ Check Variable Values are unique
+[108]                 :if ~(,i+size)≡VarList ExactTLU list[i;]
+[109]                     res←'UniqueValue'
+[110]                     SSName ⎕wi 'xSetActiveCell' i 2
+[111]                     Win∆SetFocus SSName ⋄ :return
+[112]                 :endif
+[113]             :endfor
+[114]             'Date' ASSIGN∆Vars (DateName DateValue)
+[115]             'Date' ASSIGN∆Vars (CatDateName CatDateValue)
+[116]         :endif
+[117]     :endselect
+[118]     :return
+[119] 
+[120] :endselect
+    ∇

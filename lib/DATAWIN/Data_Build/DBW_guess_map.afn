@@ -1,1 +1,74 @@
-    ∇ MESS←DBW_guess_map excluded;fld;flds;∆;udefs;fmt;drop;maps;stdfmt[1]   ⍝ DATAWIN.sf#21[2]   ⍝ Try to help with the field mapping process[3]   [4]   maps←0 2⍴⊂MESS←''[5]   [6]   :for fld :in excluded[7]       :if mt udefs←udef/nams ⋄ :leave ⋄ :endif[8]                fmt←udef/fmts[9]       :select fld[10]      :case LASTCOLPN ⍝ Map last column as Last Column if it has no name or format[11]          ∆←1⌽(+/udef)↑1[12]          ∆←∆×(∨/(⊂'Column')⍷¯1↑udefs)∨'U'=↑↑¯1↑fmt[13]      :caselist 'NAME' 'PNAME'[14]          ∆←∨/¨(⊂'NAME')⍷¨udefs[15]      :caselist 'PSEX' 'SEX'[16]          ∆←∨/¨(⊂'SEX')⍷¨udefs[17]      :caselist 'CAT' 'PCAT'[18]          ∆←∨/¨(⊂'CATEGORY')⍷¨udefs[19]      :case 'TOP'[20]          ∆←∨/¨(⊂'TYPE')⍷¨udefs[21]      :case 'MS'[22]          ∆←∨/¨(⊂'MARITAL')⍷¨udefs[23]      :caselist 'DOB' 'PDOB' 'SDOB' ⍝ Assume Member DOB is before Spouse DOB (in both lists)[24]          ∆←∨/¨(⊂'BIRTH')⍷¨udefs[25]      :case 'LD'[26]          ∆←∨/¨(⊂'LEAVING')⍷¨udefs[27]      :case 'DJF'[28]          ∆←(∨/¨(⊂'SCHEME')⍷¨udefs)∨∨/¨(⊂'FUND')⍷¨udefs[29]      :case 'DJS'[30]          ∆←(∨/¨(⊂'COMPANY')⍷¨udefs)∨∨/¨(⊂'SERVICE')⍷¨udefs[31]      :case 'DPC'[32]          ∆←∨/¨(⊂'COMMENCE')⍷¨udefs[33]      :case 'NOM'[34]          ∆←∨/¨(⊂'NUMBER')⍷¨udefs[35]      :caselist 'PSAL' 'SAL'[36]          ∆←∨/¨(⊂'SALARY')⍷¨udefs[37]      :case 'GMP0'[38]          ∆←(∨/¨(⊂'GMP')⍷¨udefs)^∨/¨(⊂'PRE')⍷¨udefs[39]      :case 'GMPE0'[40]          ∆←(∨/¨(⊂'GMP')⍷¨udefs)^∨/¨(⊂'POST')⍷¨udefs[41]      :case 'DCR'[42]          ∆←∨/¨(⊂'DEEMED')⍷¨udefs[43]      :case 'BM'[44]          ∆←∨/¨(⊂'MULTIPLE')⍷¨udefs[45]      :caselist 'DOE' 'DOT' 'MOE' 'MOT'[46]          ∆←∨/¨(⊂'EXIT')⍷¨udefs[47]      :case 'TPP'[48]          ∆←∨/¨(⊂'PAID')⍷¨udefs[49]      :caselist 'BOE' 'BOT'[50]          ∆←∨/¨(⊂'BENEFIT')⍷¨udefs[51]      :else[52]          ∆←0[53]      :endselect[54]      :if ∨/∆[55]          :if 'D'=↑stdfmt←(snms∊⊂fld)/styp ⋄ stdfmt←stdfmt,'MY'[56]          :else                            ⋄ stdfmt←stdfmt,'U'[57]          :endif[58]          drop←↑+/^\~(∊∆/fmt)∊stdfmt ⍝ Make sure it is the correct format[59]          :if ~mt flds←DLTB ↑drop↓∆/udefs[60]              flds←flds fld[61]              mappings←(↑∨/unique¨mappings)/¨mappings←(⊂¨flds),¨mappings[62]              0 0⍴DBW_mapfield ⊂flds[63]              maps←maps OVER flds[64]          :endif[65]      :endif[66]  :endfor[67]  [68]  :if ~mt maps[69]      MESS←'Suggested Mappings for the following Standard Fields:',2/⎕tcnl[70]      maps[;2]←maps[;2],¨(⊂' - '),¨sdsc[snms⍳maps[;2]][71]      MESS←MESS,(⎕tcnl join (⊂' suggested for ') join¨⎕split maps),2/⎕tcnl[72]  :endif    ∇
+    ∇ MESS←DBW_guess_map excluded;fld;flds;∆;udefs;fmt;drop;maps;stdfmt
+[1]   ⍝ DATAWIN.sf#21
+[2]   ⍝ Try to help with the field mapping process
+[3]   
+[4]   maps←0 2⍴⊂MESS←''
+[5]   
+[6]   :for fld :in excluded
+[7]       :if mt udefs←udef/nams ⋄ :leave ⋄ :endif
+[8]                fmt←udef/fmts
+[9]       :select fld
+[10]      :case LASTCOLPN ⍝ Map last column as Last Column if it has no name or format
+[11]          ∆←1⌽(+/udef)↑1
+[12]          ∆←∆×(∨/(⊂'Column')⍷¯1↑udefs)∨'U'=↑↑¯1↑fmt
+[13]      :caselist 'NAME' 'PNAME'
+[14]          ∆←∨/¨(⊂'NAME')⍷¨udefs
+[15]      :caselist 'PSEX' 'SEX'
+[16]          ∆←∨/¨(⊂'SEX')⍷¨udefs
+[17]      :caselist 'CAT' 'PCAT'
+[18]          ∆←∨/¨(⊂'CATEGORY')⍷¨udefs
+[19]      :case 'TOP'
+[20]          ∆←∨/¨(⊂'TYPE')⍷¨udefs
+[21]      :case 'MS'
+[22]          ∆←∨/¨(⊂'MARITAL')⍷¨udefs
+[23]      :caselist 'DOB' 'PDOB' 'SDOB' ⍝ Assume Member DOB is before Spouse DOB (in both lists)
+[24]          ∆←∨/¨(⊂'BIRTH')⍷¨udefs
+[25]      :case 'LD'
+[26]          ∆←∨/¨(⊂'LEAVING')⍷¨udefs
+[27]      :case 'DJF'
+[28]          ∆←(∨/¨(⊂'SCHEME')⍷¨udefs)∨∨/¨(⊂'FUND')⍷¨udefs
+[29]      :case 'DJS'
+[30]          ∆←(∨/¨(⊂'COMPANY')⍷¨udefs)∨∨/¨(⊂'SERVICE')⍷¨udefs
+[31]      :case 'DPC'
+[32]          ∆←∨/¨(⊂'COMMENCE')⍷¨udefs
+[33]      :case 'NOM'
+[34]          ∆←∨/¨(⊂'NUMBER')⍷¨udefs
+[35]      :caselist 'PSAL' 'SAL'
+[36]          ∆←∨/¨(⊂'SALARY')⍷¨udefs
+[37]      :case 'GMP0'
+[38]          ∆←(∨/¨(⊂'GMP')⍷¨udefs)^∨/¨(⊂'PRE')⍷¨udefs
+[39]      :case 'GMPE0'
+[40]          ∆←(∨/¨(⊂'GMP')⍷¨udefs)^∨/¨(⊂'POST')⍷¨udefs
+[41]      :case 'DCR'
+[42]          ∆←∨/¨(⊂'DEEMED')⍷¨udefs
+[43]      :case 'BM'
+[44]          ∆←∨/¨(⊂'MULTIPLE')⍷¨udefs
+[45]      :caselist 'DOE' 'DOT' 'MOE' 'MOT'
+[46]          ∆←∨/¨(⊂'EXIT')⍷¨udefs
+[47]      :case 'TPP'
+[48]          ∆←∨/¨(⊂'PAID')⍷¨udefs
+[49]      :caselist 'BOE' 'BOT'
+[50]          ∆←∨/¨(⊂'BENEFIT')⍷¨udefs
+[51]      :else
+[52]          ∆←0
+[53]      :endselect
+[54]      :if ∨/∆
+[55]          :if 'D'=↑stdfmt←(snms∊⊂fld)/styp ⋄ stdfmt←stdfmt,'MY'
+[56]          :else                            ⋄ stdfmt←stdfmt,'U'
+[57]          :endif
+[58]          drop←↑+/^\~(∊∆/fmt)∊stdfmt ⍝ Make sure it is the correct format
+[59]          :if ~mt flds←DLTB ↑drop↓∆/udefs
+[60]              flds←flds fld
+[61]              mappings←(↑∨/unique¨mappings)/¨mappings←(⊂¨flds),¨mappings
+[62]              0 0⍴DBW_mapfield ⊂flds
+[63]              maps←maps OVER flds
+[64]          :endif
+[65]      :endif
+[66]  :endfor
+[67]  
+[68]  :if ~mt maps
+[69]      MESS←'Suggested Mappings for the following Standard Fields:',2/⎕tcnl
+[70]      maps[;2]←maps[;2],¨(⊂' - '),¨sdsc[snms⍳maps[;2]]
+[71]      MESS←MESS,(⎕tcnl join (⊂' suggested for ') join¨⎕split maps),2/⎕tcnl
+[72]  :endif
+    ∇

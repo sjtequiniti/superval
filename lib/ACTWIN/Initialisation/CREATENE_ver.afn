@@ -1,1 +1,20 @@
-    ∇ res←CREATENE∆ver;list;i;n;var;FLDS[1]   ⍝ ACTWIN.sf#2[2]   ⍝ Filling new entrant records using column numbers actives data format.[3]   ⍝ Fields specific to Country Specific Version[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   res←⍳0[8]   [9]   list←'Pre 1988 GMP' OVER 'Post 1988 GMP'[10]  var←'fGMP0' OVER 'fGMPE0'[11]  [12]  :for i :in ⍳1↑⍴list[13]      :if 0∊⍴n←¯1+DataNumVars ExactTLU DLTB list[i;] ⋄ :continue ⋄ :endif[14]      res←res,n ⋄ FLDS←⍎var[i;][15]      :if ~0∊⍴DLTMB DataNumValue[n;][16]          REC[FLDS]←((⍴FLDS),ZWB DataNumDecP[n;])⍕FormulaZWB DataNumValue[n;][17]      :endif[18]  :endfor    ∇
+    ∇ res←CREATENE∆ver;list;i;n;var;FLDS
+[1]   ⍝ ACTWIN.sf#2
+[2]   ⍝ Filling new entrant records using column numbers actives data format.
+[3]   ⍝ Fields specific to Country Specific Version
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   res←⍳0
+[8]   
+[9]   list←'Pre 1988 GMP' OVER 'Post 1988 GMP'
+[10]  var←'fGMP0' OVER 'fGMPE0'
+[11]  
+[12]  :for i :in ⍳1↑⍴list
+[13]      :if 0∊⍴n←¯1+DataNumVars ExactTLU DLTB list[i;] ⋄ :continue ⋄ :endif
+[14]      res←res,n ⋄ FLDS←⍎var[i;]
+[15]      :if ~0∊⍴DLTMB DataNumValue[n;]
+[16]          REC[FLDS]←((⍴FLDS),ZWB DataNumDecP[n;])⍕FormulaZWB DataNumValue[n;]
+[17]      :endif
+[18]  :endfor
+    ∇

@@ -1,0 +1,29 @@
+    ∇ res←arg GetSQLDB schemeID;cursor;lock;PickList;NameList;sortorder;sqlDatabase
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get list of SQL Server Databases for the Scheme ID
+[3]   
+[4]   sqlDatabase←1
+[5]   0 0⍴'ADOcon' ⎕wi 'Create' 'ADODB.Connection'
+[6]   'ADOcon' ⎕wi 'xConnectionTimeout' sqlTimeout
+[7]   'ADOcon' ⎕wi 'xCommandTimeout' sqlTimeout
+[8]   :if ~2↓ValnResultsDB ⍙DBOpen ¯1
+[9]       MDISPLAY 'Unable to Open ',ValnResultsDB,' Database.' ⋄ PickList←0 6⍴''
+[10]  :else
+[11]      PickList←'' ⍙DBRemoveNulls 1 ⍙DBadoCONCommand "SELECT DatabaseID, DataBaseType, DatabaseName, RunDescription, RunUserName, ",('RunTimeStamp' ⍙DBDateFormat 'dd/mm/yyyy hh:mm:ss')," FROM Identification WHERE SchemeID=",(⍕schemeID),arg/" AND DataBaseType <> 'Client'"
+[12]  :endif
+[13]  0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[14]  0 0⍴(⊂'ADOcon') ⎕WI¨'XClose' 'Close' 'Delete'
+[15]  
+[16]  PickList←1 0 1 1 1 1 1\DLTB¨PickList
+[17]  PickList[;2]←⊂1 0 ¯2
+[18]  
+[19]  NameList←         MATRIX 'Database Type'   (¯1↑Win∆TextSize ⊃PickList[;3]) 'left'  1 1 0 1
+[20]  NameList←NameList⍪MATRIX 'Database Name'   (¯1↑Win∆TextSize ⊃PickList[;4]) 'left'  2 2 0 1
+[21]  NameList←NameList⍪MATRIX 'Run Description' (¯1↑Win∆TextSize ⊃PickList[;5]) 'left'  3 3 0 1
+[22]  NameList←NameList⍪MATRIX 'User'            (¯1↑Win∆TextSize ⊃PickList[;6]) 'left'  4 4 0 1
+[23]  NameList←NameList⍪MATRIX 'Run Timestamp'   (¯1↑Win∆TextSize ⊃PickList[;7]) 'right' 5 5 0 1
+[24]  
+[25]  sortorder←'⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺SortList'
+[26]  
+[27]  res←PickList NameList sortorder (PickList[;1])
+    ∇

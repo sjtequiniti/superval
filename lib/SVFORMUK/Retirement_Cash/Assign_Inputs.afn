@@ -1,1 +1,60 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Retirement_Cash" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Retirement_Cash" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   [10]  :if ClntCode≠3[11]  PickList←"fmRetCash.cbgrcCTYPE" ⎕wi "list"[12]  selection←PickList ExactTLU DLTB grcCTYPE[13]  :if mt selection[14]      :if ~mt DLTB grcCTYPE[15]          warnings←warnings OVER "Previous Selection for 'Benefit Basis' is no longer available"[16]      :endif[17]      modified←⌈/modified,1[18]  :endif[19]  "fmRetCash.cbgrcCTYPE" ⎕wi "value" (¯1↑1,selection)[20]  :endif[21]  [22]  :if ClntCode=3[23]  PickList←"fmRetCash.cbgrcCTYPE" ⎕wi "list"[24]  selection←PickList ExactTLU DLTB grcCTYPE[25]  :if mt selection[26]      :if ~mt DLTB grcCTYPE[27]          warnings←warnings OVER "Previous Selection for 'Benefit Basis' is no longer available"[28]      :endif[29]      modified←⌈/modified,1[30]  :endif[31]  "fmRetCash.cbgrcCTYPE" ⎕wi "value" (¯1↑1,selection)[32]  :endif[33]  "fmRetCash.edgrcCOMACC" ⎕wi "text" (DLTB grcCOMACC)[34]  PickList←"fmRetCash.cbgrcCOMDAT" ⎕wi "list"[35]  selection←PickList ExactTLU DLTB grcCOMDAT[36]  :if mt selection[37]      :if ~mt DLTB grcCOMDAT[38]          warnings←warnings OVER "Previous Selection for 'Service' is no longer available"[39]      :endif[40]      modified←⌈/modified,1[41]  :endif[42]  "fmRetCash.cbgrcCOMDAT" ⎕wi "value" (¯1↑1,selection)[43]  "fmRetCash.edgrcCOMMULT" ⎕wi "text" (DLTB grcCOMMULT)[44]  "fmRetCash.edgrcCOMPER" ⎕wi "text" (DLTB grcCOMPER)[45]  "fmRetCash.ckgrcCOMADaySep" ⎕wi "value" (zwb grcCOMADaySep)[46]  "fmRetCash.ckgrcCOMADayInd" ⎕wi "value" (zwb grcCOMADayInd)[47]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Retirement_Cash[48]      :for var :in spin Comment_Retirement_Cash at "variable" "row" ⋄ (var row)←var[49]          "Retirement_Cash" ParmColor ((FormFields for "variable" var) at "control"),var row 1[50]      :endfor[51]  :endif[52]  :if ~0∊⍴,warnings[53]      MDISPLAY DLTMB warnings,⎕tcnl[54]      Win∆AssignVars "fmRetCash"[55]  :endif[56]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Retirement_Cash" "" "Names"[57]      "fmRetCash" ⎕wi "modified" 0[58]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Retirement_Cash" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Retirement_Cash" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   
+[10]  :if ClntCode≠3
+[11]  PickList←"fmRetCash.cbgrcCTYPE" ⎕wi "list"
+[12]  selection←PickList ExactTLU DLTB grcCTYPE
+[13]  :if mt selection
+[14]      :if ~mt DLTB grcCTYPE
+[15]          warnings←warnings OVER "Previous Selection for 'Benefit Basis' is no longer available"
+[16]      :endif
+[17]      modified←⌈/modified,1
+[18]  :endif
+[19]  "fmRetCash.cbgrcCTYPE" ⎕wi "value" (¯1↑1,selection)
+[20]  :endif
+[21]  
+[22]  :if ClntCode=3
+[23]  PickList←"fmRetCash.cbgrcCTYPE" ⎕wi "list"
+[24]  selection←PickList ExactTLU DLTB grcCTYPE
+[25]  :if mt selection
+[26]      :if ~mt DLTB grcCTYPE
+[27]          warnings←warnings OVER "Previous Selection for 'Benefit Basis' is no longer available"
+[28]      :endif
+[29]      modified←⌈/modified,1
+[30]  :endif
+[31]  "fmRetCash.cbgrcCTYPE" ⎕wi "value" (¯1↑1,selection)
+[32]  :endif
+[33]  "fmRetCash.edgrcCOMACC" ⎕wi "text" (DLTB grcCOMACC)
+[34]  PickList←"fmRetCash.cbgrcCOMDAT" ⎕wi "list"
+[35]  selection←PickList ExactTLU DLTB grcCOMDAT
+[36]  :if mt selection
+[37]      :if ~mt DLTB grcCOMDAT
+[38]          warnings←warnings OVER "Previous Selection for 'Service' is no longer available"
+[39]      :endif
+[40]      modified←⌈/modified,1
+[41]  :endif
+[42]  "fmRetCash.cbgrcCOMDAT" ⎕wi "value" (¯1↑1,selection)
+[43]  "fmRetCash.edgrcCOMMULT" ⎕wi "text" (DLTB grcCOMMULT)
+[44]  "fmRetCash.edgrcCOMPER" ⎕wi "text" (DLTB grcCOMPER)
+[45]  "fmRetCash.ckgrcCOMADaySep" ⎕wi "value" (zwb grcCOMADaySep)
+[46]  "fmRetCash.ckgrcCOMADayInd" ⎕wi "value" (zwb grcCOMADayInd)
+[47]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Retirement_Cash
+[48]      :for var :in spin Comment_Retirement_Cash at "variable" "row" ⋄ (var row)←var
+[49]          "Retirement_Cash" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[50]      :endfor
+[51]  :endif
+[52]  :if ~0∊⍴,warnings
+[53]      MDISPLAY DLTMB warnings,⎕tcnl
+[54]      Win∆AssignVars "fmRetCash"
+[55]  :endif
+[56]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Retirement_Cash" "" "Names"
+[57]      "fmRetCash" ⎕wi "modified" 0
+[58]  :endif
+    ∇

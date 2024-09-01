@@ -1,1 +1,17 @@
-    ∇ res←res CHECKCOLS arg;df;parent;field;cols[1]   ⍝ DATAWIN.sf#2[2]   ⍝ Function to check whether the date format lines up with the columns specifications[3]   ⍝ arg defines the parent and the "variable" name[4]   ⍝  then relies on consistent naming convention of f???1, f???2 & df???[5]   ⍝ res is the error to display[6]   ⍝ V2.50u RE 3/00 Windowised[7]   (parent field)←DLTMB ¨arg[8]   cols←((parent,'.ed',field,'1') ⎕wi 'text') OVER (parent,'.ed',field,'2') ⎕wi 'text'[9]   →(^/' '=,cols)/0 ⍝ Date Field not defined[10]  df←DLTB (parent,'.edd',field) ⎕wi 'text'[11]  →(~0∊⍴,res←res CHECKDateFmt df)/0[12]  :if 0≥DIFF MatrixZWB cols[13]     res←'1st>2nd' ⋄ :return[14]  :endif[15]  →((⍴COLS cols)=⍴df)/0 ⋄ res←'InvDateSpec'    ∇
+    ∇ res←res CHECKCOLS arg;df;parent;field;cols
+[1]   ⍝ DATAWIN.sf#2
+[2]   ⍝ Function to check whether the date format lines up with the columns specifications
+[3]   ⍝ arg defines the parent and the "variable" name
+[4]   ⍝  then relies on consistent naming convention of f???1, f???2 & df???
+[5]   ⍝ res is the error to display
+[6]   ⍝ V2.50u RE 3/00 Windowised
+[7]   (parent field)←DLTMB ¨arg
+[8]   cols←((parent,'.ed',field,'1') ⎕wi 'text') OVER (parent,'.ed',field,'2') ⎕wi 'text'
+[9]   →(^/' '=,cols)/0 ⍝ Date Field not defined
+[10]  df←DLTB (parent,'.edd',field) ⎕wi 'text'
+[11]  →(~0∊⍴,res←res CHECKDateFmt df)/0
+[12]  :if 0≥DIFF MatrixZWB cols
+[13]     res←'1st>2nd' ⋄ :return
+[14]  :endif
+[15]  →((⍴COLS cols)=⍴df)/0 ⋄ res←'InvDateSpec'
+    ∇

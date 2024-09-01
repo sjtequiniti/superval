@@ -1,0 +1,34 @@
+    ∇ field Pen_Spouse parm;page;MESS
+[1]   ⍝ UPARMWIN.sf#9
+[2]   ⍝ Do Initialisation, Changes and Validation of Spouse
+[3]   
+[4]   page←'pgSpouse.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]       (parent,page,'fSpouse.edm_AGEDIF' ) ⎕wi 'onChange' ((parent,page,'fSpouse.edm_AGEDIF' ) ⎕wi 'onExit')
+[9]       (parent,page,'fSpouse.edf_AGEDIF' ) ⎕wi 'onChange' ((parent,page,'fSpouse.edf_AGEDIF' ) ⎕wi 'onExit')
+[10]  
+[11]  :case 'Init'
+[12]      (parent,page,'fButtons.bnPensioners_BasisEditSP') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[13]  
+[14]  :case 'Change'
+[15]      :select field
+[16]      :case 'cbSpouseParm'
+[17]          :if ~mt SpouseParm←DLTB (parent,page,'fSpouse.cbSpouseParm') ⎕wi 'text'
+[18]              MESS←2⊃('Spouse Parameters Set' 0) GET∆SpouseGlobals 2↓field
+[19]              :if ~openParameters∨changedParm
+[20]                  changedParm←1
+[21]                  (parent,page,'fSpouse.cbSpouseParm') ⎕wi 'suppress' 1
+[22]                  Assign_Inputs 1
+[23]                  (parent,page,'fSpouse.cbSpouseParm') ⎕wi 'suppress' 0
+[24]                  changedParm←0
+[25]              :endif
+[26]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[27]          :endif
+[28]      :endselect
+[29]  
+[30]  :case 'Valid'
+[31]  
+[32]  :endselect
+    ∇

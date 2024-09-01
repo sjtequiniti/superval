@@ -1,0 +1,43 @@
+    ∇ res←field FileIO parm;parent;htmpath;timeout
+[1]   ⍝ UTILSWIN.sf#7
+[2]   ⍝ Function to allow user control on File IO Testing
+[3]   
+[4]   parent←'fmFileIO.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]  
+[12]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[13]  
+[14]      :repeat
+[15]          :select ↑field
+[16]          :case ' '
+[17]          :endselect
+[18]      :until mt field←1↓field
+[19]  
+[20]  :case 'Valid' ⍝ Routine specific validation
+[21]  
+[22]      ⍝ Check the folder exists and is empty
+[23]      :if ~FileExist testDir←FullFolder testDir
+[24]          res←'NotFolder' testDir
+[25]          Win∆SetFocus parent,'edtestDir' ⋄ :return
+[26]      :endif
+[27]      :if ~mt ⎕XLIB testDir,'*.*'
+[28]          res←'File(s) found in Test Folder.  The Test Folder must be empty.'
+[29]          Win∆SetFocus parent,'edtestDir' ⋄ :return
+[30]      :endif
+[31]  
+[32]  :case 'Run'
+[33]  
+[34]      htmpath←(zwb NumTests) FileIOTests testDir
+[35]      timeout←2 ⋄ unattended←1 ⋄ MDISPLAY 'Loading Report in your Browser' ⋄ unattended←0
+[36]      0 Win∆EditFile htmpath
+[37]      res←'Quit'
+[38]  
+[39]  :case 'Quit' ⍝ Deleting "other" variables
+[40]  
+[41]  :endselect
+    ∇

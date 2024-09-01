@@ -1,1 +1,169 @@
-    ∇ res←field Financials_Export parm;parent;list;SSName;rns;msk;k;red;∆;diff;rn;cn;z;selections;tbl;AuditLog;packold;packnew;AuditCN;SaveCN;Savedescription;saveVersion;PickList;NameList;sortorder;SortList;xxx;a;b;newtbl;value;SavedModule;col[1]   ⍝ PARMWIN.sf#36[2]   ⍝ Function to allow user control on Financials Export Module[3]   [4]   parent←'fmFinExport.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   :case 'Prepare'[8]       Groupflag←Varflag←Consflag←0 ⋄ prfx←↑ExportTable[9]       :select ↑¯1↑⍴ExportTable      ⍝ Set Flags for the Type of Grid[10]      :case 7 ⋄ Consflag←1  ⋄ prfx←3↑prfx ⍝ Increases[11]      :case 6               ⋄ prfx←3↑prfx ⍝ Rest[12]      :case 3 ⋄ Varflag←1   ⋄ prfx←6↑prfx ⍝ Constants[13]      :case 2 ⋄ Groupflag←1 ⋄ prfx←5↑prfx ⍝ Groups[14]      :endselect[15]  [16]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[17]      OldName←⊃1↓ExportTable[;1][18]      :if Groupflag[19]          OldDesc←⊃1↓ExportTable[;2][20]      :elseif Varflag[21]          OldValue←⊃1↓ExportTable[;2][22]          OldDesc←⊃1↓ExportTable[;3][23]      :else[24]          OldValue←⊃1↓ExportTable[;2][25]          OldCap←⊃1↓ExportTable[;3][26]          OldCollar←⊃1↓ExportTable[;4][27]          :if Consflag[28]              OldConsDyn←⊃1↓ExportTable[;5][29]          :endif[30]          OldGroup←⊃1↓ExportTable[;5+Consflag][31]          OldDesc←⊃1↓ExportTable[;6+Consflag][32]      :endif[33]  [34]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[35]      :if mt (parent,'lvSavedParms') ⎕wi 'list'[36]          res←'No other Saved Financial Sets to Export to'[37]          :return[38]      :endif[39]      0 0⍴Financials_Export 'Lock'[40]      :for col :in (Groupflag/2 3 4 5 6),(Varflag/3 4 5 6),Consflag/5[41]          (parent,'ssOldParms') ⎕wi 'xColHidden' col 1[42]          (parent,'ssNewParms') ⎕wi 'xColHidden' col 1[43]      :endfor[44]      (parent,'ssOldParms') ⎕wi 'onXTopLeftChanged' ('Win∆F1SSsync "',parent,'ssNewParms"')[45]      (parent,'ssNewParms') ⎕wi 'onXTopLeftChanged' ('Win∆F1SSsync "',parent,'ssOldParms"')[46]      (parent,'bnFinancials_ExportSave') ⎕wi 'caption' 'Export'[47]  [48]  :case 'Lock'[49]      (parent,'ssNewParms') Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1)[50]      SSName←parent,'ssOldParms'[51]      SSName Win∆F1SSSetSelection ¯1 ¯1 ¯1 ¯1[52]      SSName ⎕wi 'xSetProtection' 1 1[53]      SSName ⎕wi 'xEnableProtection' 1[54]      SSName Win∆F1SSSetSelection 1 1 1 1[55]  [56]  :case 'Unlock'[57]      (parent,'ssOldParms') Win∆F1SSProtectCells 'Unlock'[58]      (parent,'ssNewParms') Win∆F1SSProtectCells 'Unlock'[59]  [60]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[61]  [62]      :repeat[63]          :select ↑field[64]          :case 'lvSavedParms'[65]              list←(parent,'lvSavedParms') ⎕wi 'list'[66]              SavedParms←'⍺',↑(((parent,'lvSavedParms') ⎕wi 'value')=list[;1])⌿list[;3][67]  [68]              0 0⍴⍙VALUESdict ReadDictFile 'Financials'[69]              0 0⍴ClientFile ReadFile 'Financials' (1↓SavedParms) ⍝ Get Saved parameters[70]              MigrateFinancials[71]  [72]              ⍝ Populate New... Variables (empty rows where no match)[73]              rns←(m2n ⍎prfx,'Name')⍳(k←ExportTable at prfx,'Name')                       ⍝ can the global names being exported be found in other sets? Where?[74]              NewName← ((⍎prfx,'Name'),[1]⊂' ')[rns;]                                     ⍝ extract matching global names from the target param sets[75]              NewDesc←((⍎prfx,'Desc'),[1]⊂' ')[rns;][76]              :if ~Groupflag[77]                  NewValue←((⍎prfx,'Value'),[1]⊂' ')[rns;][78]                  :if ~Varflag[79]                      NewCap←((⍎prfx,'Cap'),[1]⊂' ')[rns;][80]                      NewCollar←((⍎prfx,'Collar'),[1]⊂' ')[rns;][81]                      NewGroup←((⍎prfx,'Group'),[1]⊂' ')[rns;][82]                      :if Consflag[83]                          NewConsDyn←((⍎prfx,'ConsDyn'),[1]⊂' ')[rns;][84]                      :endif[85]                  :endif[86]              :endif[87]              Assign_Inputs 1[88]  [89]              ⍝ Highlight cells that are different[90]              (parent,'ssOldParms') Win∆F1SSSetSelection 4⍴¯1[91]              (parent,'ssOldParms') ⎕wi 'XFontColor' 0                                    ⍝ Restore all cells to "black"[92]              msk←1,(~Groupflag),(2/~Groupflag∨Varflag),Consflag,(bQSM^~Groupflag∨Varflag),1 ⍝ a mask. ssNewParms has 7 cols, so mask is used to expand the diff table to 7 cols when we consider param tables with less than 7 (i.e. param tables without the consdyn col).[93]              red←256⊥0 0 255                                                             ⍝ roses[94]              ∆← ⍎¨¨⎕split ⊃(⊂'Old' 'New')∘.,¨ ⊂msk/'Name' 'Value' 'Cap' 'Collar' 'ConsDyn' 'Group' 'Desc' ⍝ creates 2 tables: old values and new values[95]              diff←WHERE, msk\ ⍉⎕mix ⊃∨/¨¨≠/(⌈/2⊃¨¨⍴¨¨∆)↑[2]¨¨∆                           ⍝ finds differences between old values and new values.[96]              :for z :in diff                                                             ⍝ Color "diff" in red[97]                  rn←⌈z÷7 ⋄ cn←1+7∣z-1[98]                  (parent,'ssOldParms') Win∆F1SSSetSelection 4⍴rn cn[99]                  (parent,'ssOldParms') ⎕wi 'XFontColor' red[100]             :endfor[101]         :endselect[102]     :until mt field←1↓field[103] [104] :case 'Valid' ⍝ Routine specific validation[105] [106] :case 'Run'[107] [108]     ⍝⍝⍝ Selections could be made even more useful if done by cells eg just export the Descriptions[109]     value←(parent,'lvSavedParms') ⎕wi 'value'[110] [111]     :if 1≠(parent,'ssOldParms') ⎕wi 'SelectionCount'                                    ⍝ Allow row selections[112]     :orif ∨/0≠-⌿2 2⍴(parent,'ssOldParms') ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬[113]         selections←0 4⍴0[114]         :for z :in ¯1+⍳(parent,'ssOldParms')  ⎕wi 'SelectionCount'[115]             selections←selections⍪4⍴(parent,'ssOldParms') ⎕wi 'GetSelection' z ⍬ ⍬ ⍬ ⍬[116]         :endfor[117] [118]         tbl←ExportTable for (⍳rowsIn ExportTable)∊⎕io+∊COLS¨⍕¨⍉¨MATRIX¨⎕split selections[;1 3] ⍝ Get Selected Rows[119]     :else[120]         tbl←ExportTable[121]     :endif[122] [123]     list←⍙VALUESdict ReadDictFile 'Financials' '' 'Names'[124]     0 0⍴⍙VALUESdict ReadDictFile 'Financials'[125]     SaveCN←ClientFile ReadFile 'Financials' (Savedescription←1↓SavedParms) ⍝ Get Saved parameters[126]     MigrateFinancials[127] [128]     packold←pack list[129] [130]     ⍝⍝⍝⍝ Make amendments in tbl to ws variables - prfx,'Name', prfx,'Value', etc[131]     :if ^/mt¨b←⍎¨tbl[1;] ⋄ newtbl←(0,⍴b)⍴''[132]     :else                ⋄ newtbl←⍉⎕mix m2n¨b[133]     :endif[134]     newtbl←newtbl⍪(unique a[;1])⌿a←1↓[1]tbl[135]     newtbl←(⌽unique ⌽newtbl[;1])⌿newtbl[136]     ⍎'(', ⍕tbl[1;],')', '← ⊃¨⎕split[1] newtbl'[137]     ⍝⍝⍝⍝[138] [139]     :if ~packold≡packnew←pack list[140]         0 0⍴ClientFile SaveToFile SaveCN Savedescription packnew 0                          ⍝ Save Back to File[141] [142]         ⍝ Audit Changes[143]         saveVersion←↑ClientFile ReadFile SaveCN '' 'VERSION'                                ⍝ Required by Audit[144]         SavedModule←'Financials'[145]         :if 1<↑⍴AuditLog←packold Win∆AuditLog packnew[146]             AuditCN←ClientFile AddToFile ('⊂',(⍕SaveCN),'⊃') Savedescription[147]             0 0⍴ClientFile SaveToFile AuditCN Savedescription (pack 'AuditLog') 0[148]         :endif[149] [150]         MDISPLAY 'New Parameters successfully exported to "',Savedescription,'"'[151] [152]         (PickList NameList xxx SortList)←4↑GetFinancials                                    ⍝ Update Listview for ts changes[153]         (parent,'lvSavedParms') ⎕wi "list" PickList[154]         (parent,'lvSavedParms') ⎕wi "columndisplay" NameList[155]         (parent,'lvSavedParms') ⎕wi "AutoFit" "header" "all"[156]         (parent,'lvSavedParms') ⎕wi "∆sortlist" SortList[157]     :else[158]         MDISPLAY 'No differences in Parameters found'[159]     :endif[160] [161]     (parent,'lvSavedParms') ⎕wi 'value' value[162]     res←(1=↑⍴(parent,'lvSavedParms') ⎕wi 'list')/'Quit'[163] [164] :case 'Quit' ⍝ Deleting "other" variables[165]     0 0⍴⎕ex 'Groupflag Varflag Consflag prfx'[166] [167] :endselect    ∇
+    ∇ res←field Financials_Export parm;parent;list;SSName;rns;msk;k;red;∆;diff;rn;cn;z;selections;tbl;AuditLog;packold;packnew;AuditCN;SaveCN;Savedescription;saveVersion;PickList;NameList;sortorder;SortList;xxx;a;b;newtbl;value;SavedModule;col
+[1]   ⍝ PARMWIN.sf#36
+[2]   ⍝ Function to allow user control on Financials Export Module
+[3]   
+[4]   parent←'fmFinExport.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]       Groupflag←Varflag←Consflag←0 ⋄ prfx←↑ExportTable
+[9]       :select ↑¯1↑⍴ExportTable      ⍝ Set Flags for the Type of Grid
+[10]      :case 7 ⋄ Consflag←1  ⋄ prfx←3↑prfx ⍝ Increases
+[11]      :case 6               ⋄ prfx←3↑prfx ⍝ Rest
+[12]      :case 3 ⋄ Varflag←1   ⋄ prfx←6↑prfx ⍝ Constants
+[13]      :case 2 ⋄ Groupflag←1 ⋄ prfx←5↑prfx ⍝ Groups
+[14]      :endselect
+[15]  
+[16]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[17]      OldName←⊃1↓ExportTable[;1]
+[18]      :if Groupflag
+[19]          OldDesc←⊃1↓ExportTable[;2]
+[20]      :elseif Varflag
+[21]          OldValue←⊃1↓ExportTable[;2]
+[22]          OldDesc←⊃1↓ExportTable[;3]
+[23]      :else
+[24]          OldValue←⊃1↓ExportTable[;2]
+[25]          OldCap←⊃1↓ExportTable[;3]
+[26]          OldCollar←⊃1↓ExportTable[;4]
+[27]          :if Consflag
+[28]              OldConsDyn←⊃1↓ExportTable[;5]
+[29]          :endif
+[30]          OldGroup←⊃1↓ExportTable[;5+Consflag]
+[31]          OldDesc←⊃1↓ExportTable[;6+Consflag]
+[32]      :endif
+[33]  
+[34]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[35]      :if mt (parent,'lvSavedParms') ⎕wi 'list'
+[36]          res←'No other Saved Financial Sets to Export to'
+[37]          :return
+[38]      :endif
+[39]      0 0⍴Financials_Export 'Lock'
+[40]      :for col :in (Groupflag/2 3 4 5 6),(Varflag/3 4 5 6),Consflag/5
+[41]          (parent,'ssOldParms') ⎕wi 'xColHidden' col 1
+[42]          (parent,'ssNewParms') ⎕wi 'xColHidden' col 1
+[43]      :endfor
+[44]      (parent,'ssOldParms') ⎕wi 'onXTopLeftChanged' ('Win∆F1SSsync "',parent,'ssNewParms"')
+[45]      (parent,'ssNewParms') ⎕wi 'onXTopLeftChanged' ('Win∆F1SSsync "',parent,'ssOldParms"')
+[46]      (parent,'bnFinancials_ExportSave') ⎕wi 'caption' 'Export'
+[47]  
+[48]  :case 'Lock'
+[49]      (parent,'ssNewParms') Win∆F1SSProtectCells (⊂¯1 ¯1 ¯1 ¯1)
+[50]      SSName←parent,'ssOldParms'
+[51]      SSName Win∆F1SSSetSelection ¯1 ¯1 ¯1 ¯1
+[52]      SSName ⎕wi 'xSetProtection' 1 1
+[53]      SSName ⎕wi 'xEnableProtection' 1
+[54]      SSName Win∆F1SSSetSelection 1 1 1 1
+[55]  
+[56]  :case 'Unlock'
+[57]      (parent,'ssOldParms') Win∆F1SSProtectCells 'Unlock'
+[58]      (parent,'ssNewParms') Win∆F1SSProtectCells 'Unlock'
+[59]  
+[60]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[61]  
+[62]      :repeat
+[63]          :select ↑field
+[64]          :case 'lvSavedParms'
+[65]              list←(parent,'lvSavedParms') ⎕wi 'list'
+[66]              SavedParms←'⍺',↑(((parent,'lvSavedParms') ⎕wi 'value')=list[;1])⌿list[;3]
+[67]  
+[68]              0 0⍴⍙VALUESdict ReadDictFile 'Financials'
+[69]              0 0⍴ClientFile ReadFile 'Financials' (1↓SavedParms) ⍝ Get Saved parameters
+[70]              MigrateFinancials
+[71]  
+[72]              ⍝ Populate New... Variables (empty rows where no match)
+[73]              rns←(m2n ⍎prfx,'Name')⍳(k←ExportTable at prfx,'Name')                       ⍝ can the global names being exported be found in other sets? Where?
+[74]              NewName← ((⍎prfx,'Name'),[1]⊂' ')[rns;]                                     ⍝ extract matching global names from the target param sets
+[75]              NewDesc←((⍎prfx,'Desc'),[1]⊂' ')[rns;]
+[76]              :if ~Groupflag
+[77]                  NewValue←((⍎prfx,'Value'),[1]⊂' ')[rns;]
+[78]                  :if ~Varflag
+[79]                      NewCap←((⍎prfx,'Cap'),[1]⊂' ')[rns;]
+[80]                      NewCollar←((⍎prfx,'Collar'),[1]⊂' ')[rns;]
+[81]                      NewGroup←((⍎prfx,'Group'),[1]⊂' ')[rns;]
+[82]                      :if Consflag
+[83]                          NewConsDyn←((⍎prfx,'ConsDyn'),[1]⊂' ')[rns;]
+[84]                      :endif
+[85]                  :endif
+[86]              :endif
+[87]              Assign_Inputs 1
+[88]  
+[89]              ⍝ Highlight cells that are different
+[90]              (parent,'ssOldParms') Win∆F1SSSetSelection 4⍴¯1
+[91]              (parent,'ssOldParms') ⎕wi 'XFontColor' 0                                    ⍝ Restore all cells to "black"
+[92]              msk←1,(~Groupflag),(2/~Groupflag∨Varflag),Consflag,(bQSM^~Groupflag∨Varflag),1 ⍝ a mask. ssNewParms has 7 cols, so mask is used to expand the diff table to 7 cols when we consider param tables with less than 7 (i.e. param tables without the consdyn col).
+[93]              red←256⊥0 0 255                                                             ⍝ roses
+[94]              ∆← ⍎¨¨⎕split ⊃(⊂'Old' 'New')∘.,¨ ⊂msk/'Name' 'Value' 'Cap' 'Collar' 'ConsDyn' 'Group' 'Desc' ⍝ creates 2 tables: old values and new values
+[95]              diff←WHERE, msk\ ⍉⎕mix ⊃∨/¨¨≠/(⌈/2⊃¨¨⍴¨¨∆)↑[2]¨¨∆                           ⍝ finds differences between old values and new values.
+[96]              :for z :in diff                                                             ⍝ Color "diff" in red
+[97]                  rn←⌈z÷7 ⋄ cn←1+7∣z-1
+[98]                  (parent,'ssOldParms') Win∆F1SSSetSelection 4⍴rn cn
+[99]                  (parent,'ssOldParms') ⎕wi 'XFontColor' red
+[100]             :endfor
+[101]         :endselect
+[102]     :until mt field←1↓field
+[103] 
+[104] :case 'Valid' ⍝ Routine specific validation
+[105] 
+[106] :case 'Run'
+[107] 
+[108]     ⍝⍝⍝ Selections could be made even more useful if done by cells eg just export the Descriptions
+[109]     value←(parent,'lvSavedParms') ⎕wi 'value'
+[110] 
+[111]     :if 1≠(parent,'ssOldParms') ⎕wi 'SelectionCount'                                    ⍝ Allow row selections
+[112]     :orif ∨/0≠-⌿2 2⍴(parent,'ssOldParms') ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬
+[113]         selections←0 4⍴0
+[114]         :for z :in ¯1+⍳(parent,'ssOldParms')  ⎕wi 'SelectionCount'
+[115]             selections←selections⍪4⍴(parent,'ssOldParms') ⎕wi 'GetSelection' z ⍬ ⍬ ⍬ ⍬
+[116]         :endfor
+[117] 
+[118]         tbl←ExportTable for (⍳rowsIn ExportTable)∊⎕io+∊COLS¨⍕¨⍉¨MATRIX¨⎕split selections[;1 3] ⍝ Get Selected Rows
+[119]     :else
+[120]         tbl←ExportTable
+[121]     :endif
+[122] 
+[123]     list←⍙VALUESdict ReadDictFile 'Financials' '' 'Names'
+[124]     0 0⍴⍙VALUESdict ReadDictFile 'Financials'
+[125]     SaveCN←ClientFile ReadFile 'Financials' (Savedescription←1↓SavedParms) ⍝ Get Saved parameters
+[126]     MigrateFinancials
+[127] 
+[128]     packold←pack list
+[129] 
+[130]     ⍝⍝⍝⍝ Make amendments in tbl to ws variables - prfx,'Name', prfx,'Value', etc
+[131]     :if ^/mt¨b←⍎¨tbl[1;] ⋄ newtbl←(0,⍴b)⍴''
+[132]     :else                ⋄ newtbl←⍉⎕mix m2n¨b
+[133]     :endif
+[134]     newtbl←newtbl⍪(unique a[;1])⌿a←1↓[1]tbl
+[135]     newtbl←(⌽unique ⌽newtbl[;1])⌿newtbl
+[136]     ⍎'(', ⍕tbl[1;],')', '← ⊃¨⎕split[1] newtbl'
+[137]     ⍝⍝⍝⍝
+[138] 
+[139]     :if ~packold≡packnew←pack list
+[140]         0 0⍴ClientFile SaveToFile SaveCN Savedescription packnew 0                          ⍝ Save Back to File
+[141] 
+[142]         ⍝ Audit Changes
+[143]         saveVersion←↑ClientFile ReadFile SaveCN '' 'VERSION'                                ⍝ Required by Audit
+[144]         SavedModule←'Financials'
+[145]         :if 1<↑⍴AuditLog←packold Win∆AuditLog packnew
+[146]             AuditCN←ClientFile AddToFile ('⊂',(⍕SaveCN),'⊃') Savedescription
+[147]             0 0⍴ClientFile SaveToFile AuditCN Savedescription (pack 'AuditLog') 0
+[148]         :endif
+[149] 
+[150]         MDISPLAY 'New Parameters successfully exported to "',Savedescription,'"'
+[151] 
+[152]         (PickList NameList xxx SortList)←4↑GetFinancials                                    ⍝ Update Listview for ts changes
+[153]         (parent,'lvSavedParms') ⎕wi "list" PickList
+[154]         (parent,'lvSavedParms') ⎕wi "columndisplay" NameList
+[155]         (parent,'lvSavedParms') ⎕wi "AutoFit" "header" "all"
+[156]         (parent,'lvSavedParms') ⎕wi "∆sortlist" SortList
+[157]     :else
+[158]         MDISPLAY 'No differences in Parameters found'
+[159]     :endif
+[160] 
+[161]     (parent,'lvSavedParms') ⎕wi 'value' value
+[162]     res←(1=↑⍴(parent,'lvSavedParms') ⎕wi 'list')/'Quit'
+[163] 
+[164] :case 'Quit' ⍝ Deleting "other" variables
+[165]     0 0⍴⎕ex 'Groupflag Varflag Consflag prfx'
+[166] 
+[167] :endselect
+    ∇

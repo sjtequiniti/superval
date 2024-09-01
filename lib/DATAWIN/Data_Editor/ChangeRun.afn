@@ -1,1 +1,29 @@
-    ∇ ChangeRun;col;changetext;limit;recnos;recno;Total[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Run the Change Block Routine[3]   [4]   col←block[1] ⋄ limit←colnos[col;2][5]   'DATAWIN' CallModule 'Change_Block'[6]   [7]   :if 0=⎕nc 'changetext' ⋄ :return ⋄ :endif[8]   [9]   Data_SavePage ⍝ Save Changes[10]  [11]  recnos←¯1+block[2]+0,⍳block[3]-block[2] ⋄ Total←0[12]  ('Changing File:' 'Current Record Number:') Win∆ProgressBar 'SetLabels'[13]  'Changing Records' Win∆ProgressBar 'Open'[14]  (1 1 ((edttie=⎕xnnums)⌿⎕xnnames)) Win∆ProgressBar 'FileUpdate'[15]  :for recno :in recnos[16]      ((recnos⍳recno) (⍴recnos)) Win∆ProgressBar 'MemberUpdate'[17]      :if ~changetext≡⎕NREAD edttie,82,limit,colnos[col;1]+RECL×recno[18]          changetext ⎕NREPLACE edttie,colnos[col;1]+RECL×recno[19]          Total←Total+1[20]      :endif[21]  :endfor[22]  Win∆ProgressBar 'Close'[23]  [24]  Reset_File (-×Total),MDEpage,xrow,xcol[25]  [26]  MDISPLAY DLTMB '<Changed >,CI10,< Occurrences changed in >,CI10,< Blocked Cells.>' ⎕FMT MATRIX Total,1+block[3]-block[2][27]  0 Win∆SetFocus hSS    ∇
+    ∇ ChangeRun;col;changetext;limit;recnos;recno;Total
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Run the Change Block Routine
+[3]   
+[4]   col←block[1] ⋄ limit←colnos[col;2]
+[5]   'DATAWIN' CallModule 'Change_Block'
+[6]   
+[7]   :if 0=⎕nc 'changetext' ⋄ :return ⋄ :endif
+[8]   
+[9]   Data_SavePage ⍝ Save Changes
+[10]  
+[11]  recnos←¯1+block[2]+0,⍳block[3]-block[2] ⋄ Total←0
+[12]  ('Changing File:' 'Current Record Number:') Win∆ProgressBar 'SetLabels'
+[13]  'Changing Records' Win∆ProgressBar 'Open'
+[14]  (1 1 ((edttie=⎕xnnums)⌿⎕xnnames)) Win∆ProgressBar 'FileUpdate'
+[15]  :for recno :in recnos
+[16]      ((recnos⍳recno) (⍴recnos)) Win∆ProgressBar 'MemberUpdate'
+[17]      :if ~changetext≡⎕NREAD edttie,82,limit,colnos[col;1]+RECL×recno
+[18]          changetext ⎕NREPLACE edttie,colnos[col;1]+RECL×recno
+[19]          Total←Total+1
+[20]      :endif
+[21]  :endfor
+[22]  Win∆ProgressBar 'Close'
+[23]  
+[24]  Reset_File (-×Total),MDEpage,xrow,xcol
+[25]  
+[26]  MDISPLAY DLTMB '<Changed >,CI10,< Occurrences changed in >,CI10,< Blocked Cells.>' ⎕FMT MATRIX Total,1+block[3]-block[2]
+[27]  0 Win∆SetFocus hSS
+    ∇

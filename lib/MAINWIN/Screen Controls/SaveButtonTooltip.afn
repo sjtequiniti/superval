@@ -1,0 +1,39 @@
+    ∇ SaveButtonTooltip INPUTSFile;SaveButton;text;caption;page;pages;Index;label
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Modify the Save Button Tooltip as appropriate
+[3]   
+[4]   :if 'Multi'≡ControlName ⎕wi '∆inputsentry'
+[5]   :andif ~0∊⍴SaveButton←Win∆SaveButton ⍝ If is a "real" Save Button
+[6]       text←DLTB '-' Win∆Child FormName ⎕wi 'caption'
+[7]       :if 0∊⍴SaveCN
+[8]           caption←'[unnamed]'
+[9]           SaveButton ⎕wi 'tooltip' ('Save [unnamed] ',text,' Parameters')
+[10]      :else
+[11]          caption←(1+caption='&')/caption←ControlName ⎕wi '∆savedesc' ⍝ Double Ampersands
+[12]          SaveButton ⎕wi 'tooltip' ('Save ',text,' Parameters as "',caption,'"')
+[13]      :endif
+[14]  
+[15]      caption←(((⊂INPUTSFile)∊'{Library}' GlobalsFile)/'{Library} '),caption
+[16]  
+[17]      :if ~FormName≡'.' StripText ControlName ⋄ label←('.' StripText ControlName),'.lParmDesc'
+[18]      :else                                   ⋄ label←FormName,'.lParmDesc'
+[19]      :endif
+[20]      :if ~mt label ⎕wi 'self'
+[21]          label ⎕wi 'visible' 1
+[22]          :if (⊂Module)∊'Actives_Basis' 'Deferreds_Basis' 'Pensioners_Basis' ⍝ Bases
+[23]              label ⎕wi 'caption' (caption,' «',('\' Win∆Child BasisFile),'»')
+[24]          :elseif Module≡'Quick_Scenario' ⍝ QSM
+[25]              label ⎕wi 'caption' (caption,' «',('\' Win∆Child QSMFile),'»')
+[26]          :else
+[27]              label ⎕wi 'caption' caption
+[28]          :endif
+[29]      :endif
+[30]  :endif
+[31]  
+[32]  :if ControlName ⎕wi '∆dots'
+[33]      pages←ControlName ⎕wi 'pages'
+[34]      :for page :in pages~⊂(ControlName ⎕wi 'value')⊃pages
+[35]          (ControlName,'.',page) ⎕wi 'imageindex' 1
+[36]      :endfor
+[37]  :endif
+    ∇

@@ -1,1 +1,142 @@
-    ∇ res←field Batch_Display parm;parent;arg;ScenarioDesc;scenario;tpL;VALN∆Errors;AbortedRuns;MESS;ClassID;Sex;Desc;list;value;rest;order;rows;NoScenario;Reason;tab;groups;run;ScenValnRun;TermAdjFin;OrigValnRun;ValuationRunList;ScenAbs;ScenRel;row;progid;ScenarioID;z;runtab;MethSubProc;hpcenabled[1]   ⍝ OVERWIN.sf#19[2]   ⍝ Function to allow user control on Batch Display[3]   [4]   parent←'fmBatchDisplay.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Prepare'  ⍝ Preparatory Routines[9]       0 0⍴⎕ex 'BatchRow'[10]      gmc←(uk≠2)∨×⍴,SystemFiles ExactTLU 'GMCWIN'[11]      ⍙⍙hpcLogTie←⍳0[12]  [13]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[14]  [15]      :if mt ClientFile ReadFile 'Financials_Display'[16]          FinDefault←''[17]      :endif[18]      finCurrent←FinDefault[19]      excelMonitor←0[20]  [21]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[22]  [23]      parent ⎕wi '∆file' 1 ⍝ File Field Lists and Descriptions[24]      parent ⎕wi '∆parm' 1 ⍝ Parameter File Lists and Descriptions[25]      (parent,'fDisplay.lvRuns') ⎕wi 'onClick' (((parent,'fDisplay.lvRuns') ⎕wi 'onClick'),' ⋄ ',(parent,'fDisplay.lvRuns') ⎕wi 'onExit')[26]      (parent,'fDisplay.lvRuns') ⎕wi 'onExit' ''[27]      (parent,'edBatchtrick') ⎕wi 'onChange' '0 0⍴(⊂"edBatchtrick") Batch_Display "Change"'[28]      BatchSize←¯1+1↑⍴BatchedNest[29]      0 0⍴(⊂'edBatchtrick') Batch_Display 'Change'[30]      :if 0≠⎕nc 'ShowRunButtons'[31]          ((⊂parent),¨'bnBatch_DisplayUnattend' 'mBatch_DisplayFile.mUnattend') MultiWI 'visible' ShowRunButtons[32]          ((⊂parent),¨'bnBatch_DisplayRun'      'mBatch_DisplayFile.mRun'     ) MultiWI 'visible' ShowRunButtons[33]          (parent,'mBatch_DisplayFile.mSep3') ⎕wi 'visible' ShowRunButtons[34]      :endif[35]  [36]      :if mt finCurrent[37]      :orif ~↑ClientFile ReadModule 'Financials' finCurrent[38]          res←'Please select a Global Financials Parameters Set before running Valuation Batch'[39]      :endif[40]      (parent,'fConsolid.ckconsolidate') ⎕wi 'enabled' (~mt (parent,'fConsolid.cbConsolidParms') ⎕wi 'list')[41]  [42]  :case 'Spin'[43]  [44]      (parent,'fDisplay.lvRuns') Sel∆Spin field[45]  [46]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[47]  [48]      :repeat[49]          :select ↑field[50]          :case 'lvRuns'[51]  ⍝⍝⍝            ((⊂parent),¨'bnBatch_DisplayUnattend'           'mBatch_DisplayFile.mUnattend' ) MultiWI 'enabled' (1<↑⍴(parent,'fDisplay.lvRuns') ⎕wi 'list')[52]              ((⊂parent),¨'fDisplay.bnBatch_DisplayEdit'      'mBatch_DisplayBatch.mEdit'    ) MultiWI 'enabled' (1=⍴,(parent,'fDisplay.lvRuns') ⎕wi 'value')[53]              ((⊂parent),¨'fDisplay.bnBatch_DisplayDelete'    'mBatch_DisplayBatch.mDelete'  ) MultiWI 'enabled' (0≠⍴,(parent,'fDisplay.lvRuns') ⎕wi 'value')[54]              ((⊂parent),¨'fDisplay.bnBatch_DisplayOverrides' 'mBatch_DisplayBatch.mOverride') MultiWI 'enabled' (1<⍴,(parent,'fDisplay.lvRuns') ⎕wi 'value')[55]              :if ∣bHPC[56]                  runtab←BatchedNest[1,1+⍋⍋((parent,'fDisplay.lvRuns') ⎕wi 'list')[;1];][57]                  z←0 ⍝⍝⍝ ∨/'=&'∊InputDir[58]                  z←z∨∨/'N'≠↑¨runtab at 'Test'[59]                  z←z∨'Y'∊↑¨runtab at 'New Entrants'[60]                  z←z∨'Y'∊↑¨runtab at 'AOS'[61]                  z←z∨'N'∊↑¨runtab at 'Store Results'[62]                  z←z∨'Y'∊↑¨runtab at 'Aggregate Benefits'[63]                  z←z∨'Y'∊↑¨runtab at 'Results Extract'[64]      ⍝? Age Summary[65]      ⍝? Member Summary[66]                  z←~z[67]                  (parent,'fDisplay.ckHPCenabled') ⎕wi 'enabled' z[68]                  (parent,'fDisplay.ckHPCenabled') ⎕wi 'value' (z⌊(parent,'fDisplay.ckHPCenabled') ⎕wi 'value')[69]              :endif[70]          :case 'ckexcelOutput'[71]              (parent,'fDisplay.ckexcelDelay') ⎕wi 'enabled' ((parent,'fDisplay.ckexcelOutput') ⎕wi 'value')[72]          :case 'ckHPCenabled'[73]              MethSubProc←'' ⋄ 0 0⍴PrefFile ReadFile 'Config_LoadShare' '' 'MethSubProc'[74]              :if mt MethSubProc ⋄ ((parent,'fDisplay.') ('ckHPCenabled' 'cbHPCbroker')) Win∆SetRelated 'enabled' 0[75]              :else              ⋄ (parent,'fDisplay.cbHPCbroker') ⎕wi 'enabled' ((∣bHPC)^('H'=↑MethSubProc)^(parent,'fDisplay.ckHPCenabled') ⎕wi 'value')[76]              :endif[77]          :case 'edBatchtrick'[78]              ((parent,'fDisplay.lvRuns') 'Batch_Display') Win∆UpdateListview arg←BatchedRuns[79]              parent ⎕wi 'modified' (1⌊(∣parent ⎕wi 'modified')⌈BatchSize≠1↑⍴↑arg)[80]              0 0⍴(⊂'lvRuns') Batch_Display 'Change'[81]          :case 'ckconsolidate'[82]              ((parent,'fConsolid.') ('cbConsolidParms' 'edconsDBName')) Win∆SetRelated 'enabled' ((parent,'fConsolid.ckconsolidate') ⎕wi 'value')[83]          :case 'cbConsolidParms'[84]              :if (parent,'fConsolid.cbConsolidParms') ⎕wi 'enabled'[85]              :andif mt (parent,'fConsolid.edconsDBName') ⎕wi 'text'[86]                  ConsDBName←''[87]                  ConsolidParms←(parent,'fConsolid.cbConsolidParms') ⎕wi 'text'[88]                  0 0⍴ClientFile ReadFile 'Consolidation' ConsolidParms 'ConsDBName'[89]                  (parent,'fConsolid.edconsDBName') ⎕wi 'text' ConsDBName[90]              :endif[91]          :endselect[92]      :until mt field←1↓field[93]  [94]  :case 'Valid'[95]      :if ~mt res←Batch_Display_Valid ⋄ :return ⋄ :endif[96]  [97]      BatchedNest←BatchedNest[1,1+⍋⍋((parent,'fDisplay.lvRuns') ⎕wi 'list')[;1];][98]  [99]  :case 'Run'[100]     :if ~sqlDatabase ⋄ :andif mt progid←⍙DBAccessProvider 0 ⍝ Determine the Access Provider string[101]         MDISPLAY 'Unable to determine the Microsoft Access Provider in use on this machine'[102]         res←'' ⋄ :return[103]     :endif[104] [105]     ScenValnRun←scenario←ScenAbs←ScenRel←0 ⋄ ScenarioDesc←'Primary Basis' ⋄ NoScenario←0 1 ⋄ OrigValnRun←zwb origValnRun ⋄ TermAdjFin←0[106]     ValuationRunList←MATRIX 'BatchRow' 'ResultsCategoryID' 'BasisCategoryID' 'ScenarioID' 'ClassID' 'vDATE' 'ExcelDelay' 'VFmissing' 'Skipped'[107]     AbortedRuns←MATRIX 'ClassID' 'Sex' 'Desc' 'ScenarioDesc' 'Reason'[108]     hpcenabled←(zwb HPCenabled)×(parent,'fDisplay.ckHPCenabled') ⎕wi 'enabled'[109]     excelOutput←zwb excelOutput[110]     excelDelay←(~excelOutput)∨hpcenabled⌈zwb excelDelay[111] [112]     VALN∆LOG 'Create' ⍝ Create Valuation Log tied to tpL[113] [114]     ('Valuation Run:' 'Record Number:') Win∆ProgressBar 'SetLabels'[115]     ('Running ',(scenario/ScenarioDesc),' Valuations') Win∆ProgressBar 'Open'[116] [117]     "InputDir BatchRun field" Win∆ProgressBar 'Start'[118] [119]     :if 0≠rowsIn AbortedRuns[120]         MESS←'The following runs were skipped (see VALN.$LOG file for more detail):',⎕tcnl[121]         :for run :in nub groups←spin AbortedRuns at 'ClassID' 'Sex' 'Desc' 'ScenarioDesc'[122]             tab←AbortedRuns for (⊂run)≡¨groups[123]             ClassID←↑tab at 'ClassID' ⋄ Sex←↑tab at 'Sex' ⋄ Desc←↑tab at 'Desc' ⋄ Reason←nub tab at 'Reason'[124]             MESS←MESS,⎕tcnl,' ' join (↑('MF'=↑Sex)/'Male' 'Female') (↑(ClassID=1 3 4)/'Actives' 'Deferreds' 'Pensioners') 'in' Desc ('{}' embrace '/' join Reason)[125]         :endfor[126]         unattended←0 ⋄ MDISPLAY MESS[127]     :endif[128]     BROWSE 'ß',InputDir,'VALN.$LOG' ⋄ ⎕nuntie tpL[129] [130]     res←'Quit'[131] [132] :case 'Quit' ⍝ Deleting "other" variables[133] [134]     ⎕nuntie ⍙⍙hpcLogTie[135]     0 0⍴⎕ex 'InputsType BatchRow BatchSize gmc excelMonitor ConsDBName'[136]     0 0⍴(SystemDir,'OVERWIN') DeleteModule 'Batch_Define'[137]     0 0⍴DeleteVars¨'Financials_Display' 'Financials'[138]     0 0⍴⎕ex '⍙⍙hpcLogTie ⍙⍙hpcLOGLEVEL ⍙⍙hpcuSER'[139] [140] :endselect    ∇
+    ∇ res←field Batch_Display parm;parent;arg;ScenarioDesc;scenario;tpL;VALN∆Errors;AbortedRuns;MESS;ClassID;Sex;Desc;list;value;rest;order;rows;NoScenario;Reason;tab;groups;run;ScenValnRun;TermAdjFin;OrigValnRun;ValuationRunList;ScenAbs;ScenRel;row;progid;ScenarioID;z;runtab;MethSubProc;hpcenabled
+[1]   ⍝ OVERWIN.sf#19
+[2]   ⍝ Function to allow user control on Batch Display
+[3]   
+[4]   parent←'fmBatchDisplay.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Prepare'  ⍝ Preparatory Routines
+[9]       0 0⍴⎕ex 'BatchRow'
+[10]      gmc←(uk≠2)∨×⍴,SystemFiles ExactTLU 'GMCWIN'
+[11]      ⍙⍙hpcLogTie←⍳0
+[12]  
+[13]  :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[14]  
+[15]      :if mt ClientFile ReadFile 'Financials_Display'
+[16]          FinDefault←''
+[17]      :endif
+[18]      finCurrent←FinDefault
+[19]      excelMonitor←0
+[20]  
+[21]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[22]  
+[23]      parent ⎕wi '∆file' 1 ⍝ File Field Lists and Descriptions
+[24]      parent ⎕wi '∆parm' 1 ⍝ Parameter File Lists and Descriptions
+[25]      (parent,'fDisplay.lvRuns') ⎕wi 'onClick' (((parent,'fDisplay.lvRuns') ⎕wi 'onClick'),' ⋄ ',(parent,'fDisplay.lvRuns') ⎕wi 'onExit')
+[26]      (parent,'fDisplay.lvRuns') ⎕wi 'onExit' ''
+[27]      (parent,'edBatchtrick') ⎕wi 'onChange' '0 0⍴(⊂"edBatchtrick") Batch_Display "Change"'
+[28]      BatchSize←¯1+1↑⍴BatchedNest
+[29]      0 0⍴(⊂'edBatchtrick') Batch_Display 'Change'
+[30]      :if 0≠⎕nc 'ShowRunButtons'
+[31]          ((⊂parent),¨'bnBatch_DisplayUnattend' 'mBatch_DisplayFile.mUnattend') MultiWI 'visible' ShowRunButtons
+[32]          ((⊂parent),¨'bnBatch_DisplayRun'      'mBatch_DisplayFile.mRun'     ) MultiWI 'visible' ShowRunButtons
+[33]          (parent,'mBatch_DisplayFile.mSep3') ⎕wi 'visible' ShowRunButtons
+[34]      :endif
+[35]  
+[36]      :if mt finCurrent
+[37]      :orif ~↑ClientFile ReadModule 'Financials' finCurrent
+[38]          res←'Please select a Global Financials Parameters Set before running Valuation Batch'
+[39]      :endif
+[40]      (parent,'fConsolid.ckconsolidate') ⎕wi 'enabled' (~mt (parent,'fConsolid.cbConsolidParms') ⎕wi 'list')
+[41]  
+[42]  :case 'Spin'
+[43]  
+[44]      (parent,'fDisplay.lvRuns') Sel∆Spin field
+[45]  
+[46]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[47]  
+[48]      :repeat
+[49]          :select ↑field
+[50]          :case 'lvRuns'
+[51]  ⍝⍝⍝            ((⊂parent),¨'bnBatch_DisplayUnattend'           'mBatch_DisplayFile.mUnattend' ) MultiWI 'enabled' (1<↑⍴(parent,'fDisplay.lvRuns') ⎕wi 'list')
+[52]              ((⊂parent),¨'fDisplay.bnBatch_DisplayEdit'      'mBatch_DisplayBatch.mEdit'    ) MultiWI 'enabled' (1=⍴,(parent,'fDisplay.lvRuns') ⎕wi 'value')
+[53]              ((⊂parent),¨'fDisplay.bnBatch_DisplayDelete'    'mBatch_DisplayBatch.mDelete'  ) MultiWI 'enabled' (0≠⍴,(parent,'fDisplay.lvRuns') ⎕wi 'value')
+[54]              ((⊂parent),¨'fDisplay.bnBatch_DisplayOverrides' 'mBatch_DisplayBatch.mOverride') MultiWI 'enabled' (1<⍴,(parent,'fDisplay.lvRuns') ⎕wi 'value')
+[55]              :if ∣bHPC
+[56]                  runtab←BatchedNest[1,1+⍋⍋((parent,'fDisplay.lvRuns') ⎕wi 'list')[;1];]
+[57]                  z←0 ⍝⍝⍝ ∨/'=&'∊InputDir
+[58]                  z←z∨∨/'N'≠↑¨runtab at 'Test'
+[59]                  z←z∨'Y'∊↑¨runtab at 'New Entrants'
+[60]                  z←z∨'Y'∊↑¨runtab at 'AOS'
+[61]                  z←z∨'N'∊↑¨runtab at 'Store Results'
+[62]                  z←z∨'Y'∊↑¨runtab at 'Aggregate Benefits'
+[63]                  z←z∨'Y'∊↑¨runtab at 'Results Extract'
+[64]      ⍝? Age Summary
+[65]      ⍝? Member Summary
+[66]                  z←~z
+[67]                  (parent,'fDisplay.ckHPCenabled') ⎕wi 'enabled' z
+[68]                  (parent,'fDisplay.ckHPCenabled') ⎕wi 'value' (z⌊(parent,'fDisplay.ckHPCenabled') ⎕wi 'value')
+[69]              :endif
+[70]          :case 'ckexcelOutput'
+[71]              (parent,'fDisplay.ckexcelDelay') ⎕wi 'enabled' ((parent,'fDisplay.ckexcelOutput') ⎕wi 'value')
+[72]          :case 'ckHPCenabled'
+[73]              MethSubProc←'' ⋄ 0 0⍴PrefFile ReadFile 'Config_LoadShare' '' 'MethSubProc'
+[74]              :if mt MethSubProc ⋄ ((parent,'fDisplay.') ('ckHPCenabled' 'cbHPCbroker')) Win∆SetRelated 'enabled' 0
+[75]              :else              ⋄ (parent,'fDisplay.cbHPCbroker') ⎕wi 'enabled' ((∣bHPC)^('H'=↑MethSubProc)^(parent,'fDisplay.ckHPCenabled') ⎕wi 'value')
+[76]              :endif
+[77]          :case 'edBatchtrick'
+[78]              ((parent,'fDisplay.lvRuns') 'Batch_Display') Win∆UpdateListview arg←BatchedRuns
+[79]              parent ⎕wi 'modified' (1⌊(∣parent ⎕wi 'modified')⌈BatchSize≠1↑⍴↑arg)
+[80]              0 0⍴(⊂'lvRuns') Batch_Display 'Change'
+[81]          :case 'ckconsolidate'
+[82]              ((parent,'fConsolid.') ('cbConsolidParms' 'edconsDBName')) Win∆SetRelated 'enabled' ((parent,'fConsolid.ckconsolidate') ⎕wi 'value')
+[83]          :case 'cbConsolidParms'
+[84]              :if (parent,'fConsolid.cbConsolidParms') ⎕wi 'enabled'
+[85]              :andif mt (parent,'fConsolid.edconsDBName') ⎕wi 'text'
+[86]                  ConsDBName←''
+[87]                  ConsolidParms←(parent,'fConsolid.cbConsolidParms') ⎕wi 'text'
+[88]                  0 0⍴ClientFile ReadFile 'Consolidation' ConsolidParms 'ConsDBName'
+[89]                  (parent,'fConsolid.edconsDBName') ⎕wi 'text' ConsDBName
+[90]              :endif
+[91]          :endselect
+[92]      :until mt field←1↓field
+[93]  
+[94]  :case 'Valid'
+[95]      :if ~mt res←Batch_Display_Valid ⋄ :return ⋄ :endif
+[96]  
+[97]      BatchedNest←BatchedNest[1,1+⍋⍋((parent,'fDisplay.lvRuns') ⎕wi 'list')[;1];]
+[98]  
+[99]  :case 'Run'
+[100]     :if ~sqlDatabase ⋄ :andif mt progid←⍙DBAccessProvider 0 ⍝ Determine the Access Provider string
+[101]         MDISPLAY 'Unable to determine the Microsoft Access Provider in use on this machine'
+[102]         res←'' ⋄ :return
+[103]     :endif
+[104] 
+[105]     ScenValnRun←scenario←ScenAbs←ScenRel←0 ⋄ ScenarioDesc←'Primary Basis' ⋄ NoScenario←0 1 ⋄ OrigValnRun←zwb origValnRun ⋄ TermAdjFin←0
+[106]     ValuationRunList←MATRIX 'BatchRow' 'ResultsCategoryID' 'BasisCategoryID' 'ScenarioID' 'ClassID' 'vDATE' 'ExcelDelay' 'VFmissing' 'Skipped'
+[107]     AbortedRuns←MATRIX 'ClassID' 'Sex' 'Desc' 'ScenarioDesc' 'Reason'
+[108]     hpcenabled←(zwb HPCenabled)×(parent,'fDisplay.ckHPCenabled') ⎕wi 'enabled'
+[109]     excelOutput←zwb excelOutput
+[110]     excelDelay←(~excelOutput)∨hpcenabled⌈zwb excelDelay
+[111] 
+[112]     VALN∆LOG 'Create' ⍝ Create Valuation Log tied to tpL
+[113] 
+[114]     ('Valuation Run:' 'Record Number:') Win∆ProgressBar 'SetLabels'
+[115]     ('Running ',(scenario/ScenarioDesc),' Valuations') Win∆ProgressBar 'Open'
+[116] 
+[117]     "InputDir BatchRun field" Win∆ProgressBar 'Start'
+[118] 
+[119]     :if 0≠rowsIn AbortedRuns
+[120]         MESS←'The following runs were skipped (see VALN.$LOG file for more detail):',⎕tcnl
+[121]         :for run :in nub groups←spin AbortedRuns at 'ClassID' 'Sex' 'Desc' 'ScenarioDesc'
+[122]             tab←AbortedRuns for (⊂run)≡¨groups
+[123]             ClassID←↑tab at 'ClassID' ⋄ Sex←↑tab at 'Sex' ⋄ Desc←↑tab at 'Desc' ⋄ Reason←nub tab at 'Reason'
+[124]             MESS←MESS,⎕tcnl,' ' join (↑('MF'=↑Sex)/'Male' 'Female') (↑(ClassID=1 3 4)/'Actives' 'Deferreds' 'Pensioners') 'in' Desc ('{}' embrace '/' join Reason)
+[125]         :endfor
+[126]         unattended←0 ⋄ MDISPLAY MESS
+[127]     :endif
+[128]     BROWSE 'ß',InputDir,'VALN.$LOG' ⋄ ⎕nuntie tpL
+[129] 
+[130]     res←'Quit'
+[131] 
+[132] :case 'Quit' ⍝ Deleting "other" variables
+[133] 
+[134]     ⎕nuntie ⍙⍙hpcLogTie
+[135]     0 0⍴⎕ex 'InputsType BatchRow BatchSize gmc excelMonitor ConsDBName'
+[136]     0 0⍴(SystemDir,'OVERWIN') DeleteModule 'Batch_Define'
+[137]     0 0⍴DeleteVars¨'Financials_Display' 'Financials'
+[138]     0 0⍴⎕ex '⍙⍙hpcLogTie ⍙⍙hpcLOGLEVEL ⍙⍙hpcuSER'
+[139] 
+[140] :endselect
+    ∇

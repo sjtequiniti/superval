@@ -1,1 +1,111 @@
-    ∇ res←field User_Preferences parm;parent;MESS[1]   ⍝ OVERWIN.sf#8[2]   ⍝ Function to allow user control on User Preferences[3]   [4]   parent←'fmUserPref.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]       parent ⎕wi '∆savecn' (PrefFile ReadFile uSER)[10]      access←82 ⎕dr ⌽access[11]      :if 2=⎕nc 'pAGE' ⋄ :andif 82=⎕dr pAGE[12]          pAGE←zwb '55 ',textlines←pAGE[13]      :endif[14]      SQLtabswarn←0[15]      HelpDir←FixHelpurl HelpDir[16]  [17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[18]      SQLtabswarn←1[19]  [20]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[21]  [22]      :repeat[23]          :select ↑field[24]          :case 'ckAccessSQLtabs'[25]              :if SQLtabswarn ⋄ :andif (parent,'fOutput.ckAccessSQLtabs') ⎕wi 'value'[26]                  MESS←'This option uses the Access application to create an empty Database so you must:',2/⎕tcnl[27]                  MESS←MESS,'.    have Access installed on your machine',⎕tcnl[28]                  MESS←MESS,'.    select the Access Provider applicable to your version of Access',⎕tcnl[29]                  MESS←MESS,'.    have the Access redistributable insstalled on your machine (if applicable).'[30]                  MDISPLAY MESS[31]                  SQLtabswarn←0[32]              :endif[33]          :endselect[34]      :until mt field←1↓field[35]  [36]  :case 'Valid' ⍝ Routine specific validation[37]  [38]      :if ~mt HelpDir ⋄ :andif ~'HTTP'≡UPPERCASE 4↑HelpDir ⋄ :andif ~FolderExist HelpDir←FullFolder HelpDir ⍝ Check Existence of Help Folder[39]  ⍝⍝⍝        elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ →invalid' ⍝ Check Existence of Help Folder[40]  ⍝⍝⍝        0 0⍴⎕xlib HelpDir←FullFolder HelpDir ⋄ ⎕elx←elx ⋄ →next ⍝⍝⍝ Could use FileExist?[41]  ⍝⍝⍝ invalid:[42]          Win∆SetFocus parent,'fFolders.edHelpDir'[43]          res←MESS∆TRANS 'NotFolder' (¯1↓HelpDir) ⋄ :return[44]      :endif[45]  [46]  ⍝⍝⍝ next:[47]      :select accessProvider[48]      :case '' ⍝ Program selects[49]      :case 'Jet 4.0'[50]          :if mt ProcRegRead 'HKey_Classes_Root\','Microsoft.Jet.OLEDB.4.0' ⋄ →error ⋄ :endif ⍝ Access 2003[51]      :case 'ACE 12.0'[52]          :if mt ProcRegRead 'HKey_Classes_Root\','Microsoft.ACE.OLEDB.12.0' ⋄ →error ⋄ :endif ⍝ Access 2007[53]      :case 'ACE 16.0'[54]          :if mt ProcRegRead 'HKey_Classes_Root\','Microsoft.ACE.OLEDB.16.0' ⋄ →error ⋄ :endif[55]      :else[56]  error:  Win∆SetFocus parent,'fOutput.cbaccessProvider'[57]          res←'Microsoft Access Provider "Microsoft.',('/ /.OLEDB.' TEXTREPL accessProvider),'" not installed on this machine' ⋄ :return[58]      :endselect[59]  [60]      :if zwb AccessSQLtabs ⋄ :andif mt accessProvider[61]          res←'The Access Provider applicable to your version of Access must be selected if you use SQL to create Data Tables.' ⋄ :return[62]      :endif[63]  [64]  :case 'Run'[65]      0 0⍴ReadModule 'User_Preferences' 'None' ⍝ Read DEFAULTS for Conversion Purposes[66]      0 0⍴PrefFile ReadFile uSER[67]      :if 2=⎕nc 'pAGE' ⋄ :andif 82=⎕dr pAGE[68]          textlines←pAGE[69]      :endif[70]  [71]      accessSQLtabs←zwb AccessSQLtabs[72]      basisTabOrder←zwb BasisTabOrder[73]      basisTabAll←zwb BasisTabAll[74]  [75]      :if mt HelpFolder←FixHelpurl HelpDir[76]          Helpurl←HelpFolder←SystemDir,'HELP\'[77]      :elseif 'HTTP'≡UPPERCASE 4↑Helpurl←HelpFolder[78]          HelpFolder←SystemDir,'HELP\'[79]      :elseif ~(HelpFolder←FullFolder HelpFolder) FileExist 'RLHELP',Win∆CountryCode,'.sf'[80]          Helpurl←HelpFolder←SystemDir,'HELP\'[81]      :endif[82]  [83]      pAGE←zwb '55 ',textlines ⋄ wIDTH←zwb '132 ',width[84]      bhistory←zwb '20 ',BHistory[85]      timeout←10×⌈0.1×zwb '20 ',TimeOut ⍝ Multiple of 10![86]      :if 82=⎕dr accesslevel[87]          :if 1↑⎕vi accesslevel[88]              accesslevel←zwb accesslevel ⍝ Aust Level stored incorrectly!![89]          :else[90]              accesslevel←(0 5 7 9 8)[('LEVEL2' 'LEVEL1' 'DECADMIN' 'SYSTEM')⍳⊂accesslevel] ⍝ Change to Aust!![91]          :endif[92]      :endif[93]      buttonimage←zwb ButtonImage ⋄ menuimage←zwb MenuImage ⋄ commandbar←zwb ToolBar[94]  [95]      :if 'APLHELP'≡DLTB APLScreen[96]          APLScrCharSet←'ansi' ⋄ :else ⋄ APLScrCharSet←'symbol'[97]      :endif[98]      :if 'APLHELP'≡DLTB APLGrid[99]          APLGrCharSet←'ansi' ⋄ :else ⋄ APLGrCharSet←'symbol'[100]     :endif[101]     :if 'APLHELP'≡DLTB APLPrint[102]         APLPrCharSet←'ansi' ⋄ :else ⋄ APLPrCharSet←'symbol'[103]     :endif[104]     res←'CreateVars'[105] [106] :case 'Quit' ⍝ Deleting "other" variables[107]     0 0⍴⎕ex 'SQLtabswarn'[108] [109] :endselect    ∇
+    ∇ res←field User_Preferences parm;parent;MESS
+[1]   ⍝ OVERWIN.sf#8
+[2]   ⍝ Function to allow user control on User Preferences
+[3]   
+[4]   parent←'fmUserPref.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       parent ⎕wi '∆savecn' (PrefFile ReadFile uSER)
+[10]      access←82 ⎕dr ⌽access
+[11]      :if 2=⎕nc 'pAGE' ⋄ :andif 82=⎕dr pAGE
+[12]          pAGE←zwb '55 ',textlines←pAGE
+[13]      :endif
+[14]      SQLtabswarn←0
+[15]      HelpDir←FixHelpurl HelpDir
+[16]  
+[17]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[18]      SQLtabswarn←1
+[19]  
+[20]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[21]  
+[22]      :repeat
+[23]          :select ↑field
+[24]          :case 'ckAccessSQLtabs'
+[25]              :if SQLtabswarn ⋄ :andif (parent,'fOutput.ckAccessSQLtabs') ⎕wi 'value'
+[26]                  MESS←'This option uses the Access application to create an empty Database so you must:',2/⎕tcnl
+[27]                  MESS←MESS,'.    have Access installed on your machine',⎕tcnl
+[28]                  MESS←MESS,'.    select the Access Provider applicable to your version of Access',⎕tcnl
+[29]                  MESS←MESS,'.    have the Access redistributable insstalled on your machine (if applicable).'
+[30]                  MDISPLAY MESS
+[31]                  SQLtabswarn←0
+[32]              :endif
+[33]          :endselect
+[34]      :until mt field←1↓field
+[35]  
+[36]  :case 'Valid' ⍝ Routine specific validation
+[37]  
+[38]      :if ~mt HelpDir ⋄ :andif ~'HTTP'≡UPPERCASE 4↑HelpDir ⋄ :andif ~FolderExist HelpDir←FullFolder HelpDir ⍝ Check Existence of Help Folder
+[39]  ⍝⍝⍝        elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ →invalid' ⍝ Check Existence of Help Folder
+[40]  ⍝⍝⍝        0 0⍴⎕xlib HelpDir←FullFolder HelpDir ⋄ ⎕elx←elx ⋄ →next ⍝⍝⍝ Could use FileExist?
+[41]  ⍝⍝⍝ invalid:
+[42]          Win∆SetFocus parent,'fFolders.edHelpDir'
+[43]          res←MESS∆TRANS 'NotFolder' (¯1↓HelpDir) ⋄ :return
+[44]      :endif
+[45]  
+[46]  ⍝⍝⍝ next:
+[47]      :select accessProvider
+[48]      :case '' ⍝ Program selects
+[49]      :case 'Jet 4.0'
+[50]          :if mt ProcRegRead 'HKey_Classes_Root\','Microsoft.Jet.OLEDB.4.0' ⋄ →error ⋄ :endif ⍝ Access 2003
+[51]      :case 'ACE 12.0'
+[52]          :if mt ProcRegRead 'HKey_Classes_Root\','Microsoft.ACE.OLEDB.12.0' ⋄ →error ⋄ :endif ⍝ Access 2007
+[53]      :case 'ACE 16.0'
+[54]          :if mt ProcRegRead 'HKey_Classes_Root\','Microsoft.ACE.OLEDB.16.0' ⋄ →error ⋄ :endif
+[55]      :else
+[56]  error:  Win∆SetFocus parent,'fOutput.cbaccessProvider'
+[57]          res←'Microsoft Access Provider "Microsoft.',('/ /.OLEDB.' TEXTREPL accessProvider),'" not installed on this machine' ⋄ :return
+[58]      :endselect
+[59]  
+[60]      :if zwb AccessSQLtabs ⋄ :andif mt accessProvider
+[61]          res←'The Access Provider applicable to your version of Access must be selected if you use SQL to create Data Tables.' ⋄ :return
+[62]      :endif
+[63]  
+[64]  :case 'Run'
+[65]      0 0⍴ReadModule 'User_Preferences' 'None' ⍝ Read DEFAULTS for Conversion Purposes
+[66]      0 0⍴PrefFile ReadFile uSER
+[67]      :if 2=⎕nc 'pAGE' ⋄ :andif 82=⎕dr pAGE
+[68]          textlines←pAGE
+[69]      :endif
+[70]  
+[71]      accessSQLtabs←zwb AccessSQLtabs
+[72]      basisTabOrder←zwb BasisTabOrder
+[73]      basisTabAll←zwb BasisTabAll
+[74]  
+[75]      :if mt HelpFolder←FixHelpurl HelpDir
+[76]          Helpurl←HelpFolder←SystemDir,'HELP\'
+[77]      :elseif 'HTTP'≡UPPERCASE 4↑Helpurl←HelpFolder
+[78]          HelpFolder←SystemDir,'HELP\'
+[79]      :elseif ~(HelpFolder←FullFolder HelpFolder) FileExist 'RLHELP',Win∆CountryCode,'.sf'
+[80]          Helpurl←HelpFolder←SystemDir,'HELP\'
+[81]      :endif
+[82]  
+[83]      pAGE←zwb '55 ',textlines ⋄ wIDTH←zwb '132 ',width
+[84]      bhistory←zwb '20 ',BHistory
+[85]      timeout←10×⌈0.1×zwb '20 ',TimeOut ⍝ Multiple of 10!
+[86]      :if 82=⎕dr accesslevel
+[87]          :if 1↑⎕vi accesslevel
+[88]              accesslevel←zwb accesslevel ⍝ Aust Level stored incorrectly!!
+[89]          :else
+[90]              accesslevel←(0 5 7 9 8)[('LEVEL2' 'LEVEL1' 'DECADMIN' 'SYSTEM')⍳⊂accesslevel] ⍝ Change to Aust!!
+[91]          :endif
+[92]      :endif
+[93]      buttonimage←zwb ButtonImage ⋄ menuimage←zwb MenuImage ⋄ commandbar←zwb ToolBar
+[94]  
+[95]      :if 'APLHELP'≡DLTB APLScreen
+[96]          APLScrCharSet←'ansi' ⋄ :else ⋄ APLScrCharSet←'symbol'
+[97]      :endif
+[98]      :if 'APLHELP'≡DLTB APLGrid
+[99]          APLGrCharSet←'ansi' ⋄ :else ⋄ APLGrCharSet←'symbol'
+[100]     :endif
+[101]     :if 'APLHELP'≡DLTB APLPrint
+[102]         APLPrCharSet←'ansi' ⋄ :else ⋄ APLPrCharSet←'symbol'
+[103]     :endif
+[104]     res←'CreateVars'
+[105] 
+[106] :case 'Quit' ⍝ Deleting "other" variables
+[107]     0 0⍴⎕ex 'SQLtabswarn'
+[108] 
+[109] :endselect
+    ∇

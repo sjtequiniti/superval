@@ -1,0 +1,40 @@
+    ∇ res←field Configure_RF parm;parent;∆
+[1]   ⍝ QSMWIN.sf#4
+[2]   ⍝ Function to allow user control on Roll Forward Configuration
+[3]   
+[4]   parent←'fmRFConfig.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   :case 'Prepare'
+[8]   
+[9]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[10]  
+[11]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[12]  
+[13]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[14]  
+[15]      :repeat
+[16]          :select ↑field
+[17]          :case 'cbDiscOrig'
+[18]              (parent,'fDiscount.cbDiscAdj') ⎕wi 'enabled' (∆←'V'=↑(parent,'fDiscount.cbDiscOrig') ⎕wi 'text')
+[19]              :if ~∆ ⋄ (parent,'fDiscount.cbDiscAdj') ⎕wi 'text' 'Roll-Forward Date' ⋄ :endif
+[20]          :case 'cbEscOrig'
+[21]              (parent,'fEscalation.cbEscAdj') ⎕wi 'enabled' (∆←'V'=↑(parent,'fEscalation.cbEscOrig') ⎕wi 'text')
+[22]              :if ~∆ ⋄ (parent,'fEscalation.cbEscAdj') ⎕wi 'text' 'Roll-Forward Date' ⋄ :endif
+[23]          :endselect
+[24]      :until mt field←1↓field
+[25]  
+[26]  :case 'Valid' ⍝ Routine specific validation
+[27]  
+[28]  :case 'Run'
+[29]      0 0⍴ReadModule 'Configure_RF' 'None' ⍝ Read Defaults
+[30]      0 0⍴ClientFile ReadFile 'Configure_RF'
+[31]      discRF←'R'=↑¨DiscOrig DiscAdj
+[32]      escRF ←'R'=↑¨EscOrig  EscAdj
+[33]      res←'Quit'
+[34]  
+[35]  :case 'Quit' ⍝ Deleting "other" variables
+[36]      0 0⍴⎕ex 'discRF escRF'
+[37]  
+[38]  :endselect
+    ∇

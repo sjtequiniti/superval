@@ -1,1 +1,180 @@
-    ∇ wPUP_LOOP2∆PPF;⎕IO;INDEX;TOTPUP;STOTPUP;CASH;LIST;captot;capall;capvector;capratio;PRE97;PRE97W;POST97W;EXCESS;DIDPRE97;DIDPOST97;DID∆PRECOST;ms∆L;NRA∆L;PRE97∆DID;POST97∆DID;CASH∆DID;WARFRAC∆PRE;CASHPRE;CASHPRE∆DID;Xlast;maxNRA;done;s143mort;∆;mult;msk;CASHPOST09;POST97;POST09;POST09W;DIDPOST09;POST09∆DID;CASHPOST97∆DID;CASHPOST09∆DID;DID∆POST97COST;DID∆POST09COST;WARFRAC∆POST97;WARFRAC∆POST09;CASHPOST97;idx;temp;temp2;prms[1]   ⍝ DEFWIN.sf#8[2]   ⎕IO←1[3]   done←0[4]   ⍝ Axes correspond to:[5]   ⍝ 1: 4 retirement ages; 5th is for GMP if multiple NRAs are required[6]   ⍝ 2: split: pre97, 1997-2009, post 2009[7]   ⍝ 3: cash pre/post[8]   ⍝ 4: death before/after retirement[9]    STOTPUP←TOTPUP←(5 3 2 2)⍴0 ⍝ 5th is for GMP if multiple NRAs are required[10]  :if ∨/0≠pups[11]      INDEX←⍳⍴pups ⍝ INDEX of where field contains a variable name[12]      :for INDEX :in INDEX[13]          wPUP_LOOP3∆PPF[14]      :endfor[15]  :endif[16]  [17]  :If ∨/0≠Indpups[18]      prms←wDEFINE_IndPUP¨⍳⍴Indpups[19]      prms IndPUP∆OUTPUT¨+/¨(⊂'PPF')wPUP_EVAL¨prms                                ⍝ ¨[IUTDXFPN][20]  :EndIf[21]  [22]  ⍝ Now do the GMPS[23]  ⍝ NB IGNOREPre and IGNOREPost are set to 'Y' for s143 Valuations[24]  [25]  ⍝ Exclude GMP from DID at this stage[26]  idx←5[27]  :if FID ⋄ :andif 0<GMP0+GMPE0[28]      EXCESS←(0⌈GMP0+GMPE0-+/+/+/TOTPUP[;1;;]) CDIV GMP0+GMPE0 ⍝ Only Pre97 in comparison[29]      TOTPUP[idx;1;(1+~COOPre );1]←TOTPUP[idx;1;(1+~COOPre );1]+GMP0 ×EXCESS[30]      TOTPUP[idx;1;(1+~COOPost);1]←TOTPUP[idx;1;(1+~COOPost);1]+GMPE0×EXCESS[31]      :if ClntCode=3[32]          STOTPUP[idx;1;(1+~COOPre );1]←STOTPUP[idx;1;(1+~COOPre );1]+WARFRAC∆l×GMP0 ×EXCESS[33]          STOTPUP[idx;1;(1+~COOPost);1]←STOTPUP[idx;1;(1+~COOPost);1]+WARFRAC∆l×GMPE0×EXCESS[34]      :endif[35]  :else[36]      TOTPUP[idx;1;(1+~COOPre );1]←TOTPUP[idx;1;(1+~COOPre );1]+GMP0[37]      TOTPUP[idx;1;(1+~COOPost);1]←TOTPUP[idx;1;(1+~COOPost);1]+GMPE0[38]      :if ClntCode=3[39]          STOTPUP[idx;1;(1+~COOPre );1]←STOTPUP[idx;1;(1+~COOPre );1]+WARFRAC∆l×GMP0[40]          STOTPUP[idx;1;(1+~COOPost);1]←STOTPUP[idx;1;(1+~COOPost);1]+WARFRAC∆l×GMPE0[41]      :endif[42]  :endif[43]  ⍝[44]  ⍝ Cash - only if Cash on Top and Multiple of Pension[45]  :If     bBuck ∨ ClntCode=3[46]  :AndIf CASHTYPE2='M'[47]      mult←MultPENCASH2[48]  :ElseIf CASHIND='O'[49]  :AndIf CASHTYPE='M'[50]      mult←MultPENCASH[51]  :Else[52]      mult←0[53]  :EndIf[54]  (CASHPRE CASHPOST97 CASHPOST09)←⊂[1]mult×+/TOTPUP[;;2;][55]  :If 0≠COTData[56]      ∆← (×∆) × ∆÷[⎕IO] +/∆←TOTPUP[;;2;2]                                             ⍝ [NP][57]      (CASHPRE CASHPOST97 CASHPOST09)←CASHPRE CASHPOST97 CASHPOST09 + ⊂[2]⍉COTData × ∆[58]  :EndIf[59]  CASH←CASHPRE+CASHPOST97+CASHPOST09[60]  (PRE97 POST97 POST09)←⊂[1]+/+/TOTPUP[61]  (WARFRAC∆PRE WARFRAC∆POST97 WARFRAC∆POST09)←(⊂[1]+/+/STOTPUP)CDIV¨PRE97 POST97 POST09[62]  LIST←PPFNRAALL[⍋PPFNRAALL][63]  LIST←(1,~(1↓LIST)=¯1 ↓LIST)/LIST ⍝ List of NRAs in ascending order[64]  [65]  captot←OffCap[66]  [67]  capvector←100⍴1[68]  capall←5 100⍴1[69]  ⍝ Store figues before cap for DID cap[70]  (PRE97∆DID POST97∆DID POST09∆DID)←PRE97 POST97 POST09[71]  (CASH∆DID CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID)←CASH CASHPRE CASHPOST97 CASHPOST09[72]  :if s143[73]      ⍝ Need pension compared to cap at 65 for mortality loading[74]      s143mort←(+⌿PRE97+POST97+POST09+↑+/CASHPRE CASHPOST97 CASHPOST09 CDIV¨(65+⎕io)⊃¨1 2/PPFCASHFAC2 PPFCASHFAC) CDIV ,PPFCAP×PPFCAPADJ[65+⎕io][75]  ⍝:endif[76]  :Else ⍝ Find max NRA where the member has a benefit[77]      :for NRA∆L :in LIST[78]          :If 0≠(NRA∆L=PPFNRAALL)+.×PRE97+POST97+POST09+CASH[79]             maxNRA←NRA∆L[80]          :endif[81]      :endfor[82]  :endif[83]  ⍝ Now cap retirement pension[84]  capratio←1[85]  capvector←100⍴1[86]  :for NRA∆L :in LIST[87]      msk←NRA∆L=PPFNRAALL[88]      :if (∨/⊃,/msk/¨PRE97 POST97 POST09 CASH≠0)^NRA∆L≥X0+PPF∆ageadj ⍝ Don't include any tranches where NRA is passed[89]          ⍝ ⎕io is 1 here[90]          :if s143[91]              :if done ⍝ Already at cap - ignore rest[92]              :else[93]                  captot←captot+(+/msk/PRE97+POST97+POST09+↑+/CASHPRE CASHPOST97 CASHPOST09 CDIV¨1 2/(NRA∆L+⎕io)⊃¨PPFCASHFAC2 PPFCASHFAC) CDIV ,PPFCAP×PPFCAPADJ[NRA∆L+⎕io]×s143capinc*0⌈NRA∆L-X0[94]              :endif[95]          :else[96]              ⍝ Cap to be used is for highest NRA[97]              captot←captot+(+/msk/PRE97+POST97+POST09+↑+/CASHPRE CASHPOST97 CASHPOST09 CDIV¨1 2/(NRA∆L+⎕io)⊃¨PPFCASHFAC2 PPFCASHFAC) CDIV ,PPFCAP×PPFCAPADJ[maxNRA+⎕io][98]          :endif[99]          capratio←0⌈1⌊1 CDIV captot[100]         :if s143[101]             :if done[102]                 (PRE97 POST97 POST09 CASH)←PRE97 POST97 POST09 CASH×¨⊂~msk[103]             :else[104]                 ∆←∆+0=∆←×/msk capratio 0.9[105]                 (PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09)←PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09×¨∆[106]                 capvector←((NRA∆L-1)↑capvector),(100-NRA∆L-1)⍴capratio[107]                 done←captot≥1[108]             :endif[109]         :endif[110]     :endif[111] :endfor[112] [113] :if ~s143[114]     ⍝ Cap to be applied pro rata so use final figure for all[115]     :for NRA∆L :in LIST[116]         :if NRA∆L≥X0+PPF∆ageadj[117]             ∆←0.9×capratio×NRA∆L=PPFNRAALL[118]             (PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09)←PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09×¨⊂∆+∆=0[119]         :endif[120]     :endfor[121]     capvector←100⍴capratio[122] :endif[123] :for NRA∆L :in LIST[124]     idx←(NRA∆L=PPFNRAALL)/⍳5[125]     :if NRA∆L≥X0+PPF∆ageadj ⍝ Want all 1s if NRA has passed[126]         capall[idx;]←((⍴idx),100)⍴100 OVERTAKE (NRA∆L-1)↓capvector CDIV capvector[NRA∆L][127]     :endif[128] :endfor[129] [130] capflag←captot>1[131] ⍝ Expand all accumulators[132] (PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09)←PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09∘.+¨⊂X×0[133] ⍝[134] (PRE97W POST97W POST09W)←0.5×PRE97 POST97 POST09[135] (DIDPRE97 DIDPOST97 DIDPOST09)←0.5×⊂[1]+/TOTPUP[;;;2][136] :if s143[137]     PRELIM∆s143[138] :endif[139] :If (ClntCode=3)^(0 0≡GMP0,GMPE0)^^/0=WARFRAC∆PRE,WARFRAC∆POST97,WARFRAC∆POST09[140] :OrIf 0^.=GMP0,GMPE0,WARFRAC∆l[141]     (PRE97W POST97W POST09W)←PRE97W POST97W POST09W×0[142] :EndIf[143] [144] :If 0^.=WOFRAC,GMP0,GMPE0[145]     (DIDPRE97 DIDPOST97 DIDPOST09)←DIDPRE97 DIDPOST97 DIDPOST09×0[146] :endif[147] DIDPRE97[5]←0⌈(+/(GMP0,GMPE0)÷2)-(FID^∨/(GMP0,GMPE0)>0)×+/DIDPRE97 ⍝ Only Pre97 in comparison[148] ⍝ Capping here based on gross member's pension stored above[149] captot←NX⍴0[150] (PRE97∆DID POST97∆DID POST09∆DID)←PRE97∆DID POST97∆DID POST09∆DID∘.+¨⊂X×0[151] (CASH∆DID CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID)←CASH∆DID CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID∘.+¨⊂X×0[152] :if 0≠+/DIDPRE97,DIDPOST97,DIDPOST09 ⍝ Do unless no DID benefits[153]     :for NRA∆L :in LIST[154]         msk←NRA∆L=PPFNRAALL[155]         :if NRA∆L≥X0+PPF∆ageadj[156]             ⍝ ⎕io is 1 here[157]             :if s143 ⍝ Line below allow for cap at date of death[158]                 captot←captot+(msk+.×PRE97∆DID+POST97∆DID+POST09∆DID+↑+/CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID CDIV¨(⊂5,NX)⍴¨1 2/(PPFCASHFAC2[X+⎕io])(PPFCASHFAC[X+⎕io])) CDIV PPFCAP×PPFCAPADJ[X+⎕io]×s143capinc*0⌈X-X0[159]             :else[160]                 Xlast←X0⌊⌊⍬⍴16⌈100∣DOB YDAYS ValDATE[161]                 captot←captot+(msk+.×PRE97∆DID+POST97∆DID+POST09∆DID+↑+/CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID CDIV¨(⊂5,NX)⍴¨1 2/(PPFCASHFAC2[X0+⎕io])(PPFCASHFAC2[X0+⎕io])) CDIV PPFCAP×PPFCAPADJ[Xlast+⎕io][162]             :endif[163]         :endif[164]     :endfor[165]     capflag←capflag∨∨/captot>1[166] :endif[167] ⍝ 0.9 put here for consistency with Actives[168] capratio←0.9×0⌈1⌊1 CDIV captot+0.0000000001 ⍝ Avoid zero divisor[169] DID∆PRECOST←   NX↑0 DID∆COST ⍉(NX,5)⍴DIDPRE97[170] DID∆POST97COST←NX↑1 DID∆COST ⍉(NX,5)⍴DIDPOST97[171] temp←v    ⍝ Different value needed in DDTAB∆PPF[172] temp2←vMP[173] v←v09[174] vMP←v09MP[175] DID∆POST09COST←NX↑1 DID∆COST ⍉(NX,5)⍴DIDPOST09[176] v←temp[177] vMP←temp2[178] OUTPUT∆PPF∆PUP    ∇
+    ∇ wPUP_LOOP2∆PPF;⎕IO;INDEX;TOTPUP;STOTPUP;CASH;LIST;captot;capall;capvector;capratio;PRE97;PRE97W;POST97W;EXCESS;DIDPRE97;DIDPOST97;DID∆PRECOST;ms∆L;NRA∆L;PRE97∆DID;POST97∆DID;CASH∆DID;WARFRAC∆PRE;CASHPRE;CASHPRE∆DID;Xlast;maxNRA;done;s143mort;∆;mult;msk;CASHPOST09;POST97;POST09;POST09W;DIDPOST09;POST09∆DID;CASHPOST97∆DID;CASHPOST09∆DID;DID∆POST97COST;DID∆POST09COST;WARFRAC∆POST97;WARFRAC∆POST09;CASHPOST97;idx;temp;temp2;prms
+[1]   ⍝ DEFWIN.sf#8
+[2]   ⎕IO←1
+[3]   done←0
+[4]   ⍝ Axes correspond to:
+[5]   ⍝ 1: 4 retirement ages; 5th is for GMP if multiple NRAs are required
+[6]   ⍝ 2: split: pre97, 1997-2009, post 2009
+[7]   ⍝ 3: cash pre/post
+[8]   ⍝ 4: death before/after retirement
+[9]    STOTPUP←TOTPUP←(5 3 2 2)⍴0 ⍝ 5th is for GMP if multiple NRAs are required
+[10]  :if ∨/0≠pups
+[11]      INDEX←⍳⍴pups ⍝ INDEX of where field contains a variable name
+[12]      :for INDEX :in INDEX
+[13]          wPUP_LOOP3∆PPF
+[14]      :endfor
+[15]  :endif
+[16]  
+[17]  :If ∨/0≠Indpups
+[18]      prms←wDEFINE_IndPUP¨⍳⍴Indpups
+[19]      prms IndPUP∆OUTPUT¨+/¨(⊂'PPF')wPUP_EVAL¨prms                                ⍝ ¨[IUTDXFPN]
+[20]  :EndIf
+[21]  
+[22]  ⍝ Now do the GMPS
+[23]  ⍝ NB IGNOREPre and IGNOREPost are set to 'Y' for s143 Valuations
+[24]  
+[25]  ⍝ Exclude GMP from DID at this stage
+[26]  idx←5
+[27]  :if FID ⋄ :andif 0<GMP0+GMPE0
+[28]      EXCESS←(0⌈GMP0+GMPE0-+/+/+/TOTPUP[;1;;]) CDIV GMP0+GMPE0 ⍝ Only Pre97 in comparison
+[29]      TOTPUP[idx;1;(1+~COOPre );1]←TOTPUP[idx;1;(1+~COOPre );1]+GMP0 ×EXCESS
+[30]      TOTPUP[idx;1;(1+~COOPost);1]←TOTPUP[idx;1;(1+~COOPost);1]+GMPE0×EXCESS
+[31]      :if ClntCode=3
+[32]          STOTPUP[idx;1;(1+~COOPre );1]←STOTPUP[idx;1;(1+~COOPre );1]+WARFRAC∆l×GMP0 ×EXCESS
+[33]          STOTPUP[idx;1;(1+~COOPost);1]←STOTPUP[idx;1;(1+~COOPost);1]+WARFRAC∆l×GMPE0×EXCESS
+[34]      :endif
+[35]  :else
+[36]      TOTPUP[idx;1;(1+~COOPre );1]←TOTPUP[idx;1;(1+~COOPre );1]+GMP0
+[37]      TOTPUP[idx;1;(1+~COOPost);1]←TOTPUP[idx;1;(1+~COOPost);1]+GMPE0
+[38]      :if ClntCode=3
+[39]          STOTPUP[idx;1;(1+~COOPre );1]←STOTPUP[idx;1;(1+~COOPre );1]+WARFRAC∆l×GMP0
+[40]          STOTPUP[idx;1;(1+~COOPost);1]←STOTPUP[idx;1;(1+~COOPost);1]+WARFRAC∆l×GMPE0
+[41]      :endif
+[42]  :endif
+[43]  ⍝
+[44]  ⍝ Cash - only if Cash on Top and Multiple of Pension
+[45]  :If     bBuck ∨ ClntCode=3
+[46]  :AndIf CASHTYPE2='M'
+[47]      mult←MultPENCASH2
+[48]  :ElseIf CASHIND='O'
+[49]  :AndIf CASHTYPE='M'
+[50]      mult←MultPENCASH
+[51]  :Else
+[52]      mult←0
+[53]  :EndIf
+[54]  (CASHPRE CASHPOST97 CASHPOST09)←⊂[1]mult×+/TOTPUP[;;2;]
+[55]  :If 0≠COTData
+[56]      ∆← (×∆) × ∆÷[⎕IO] +/∆←TOTPUP[;;2;2]                                             ⍝ [NP]
+[57]      (CASHPRE CASHPOST97 CASHPOST09)←CASHPRE CASHPOST97 CASHPOST09 + ⊂[2]⍉COTData × ∆
+[58]  :EndIf
+[59]  CASH←CASHPRE+CASHPOST97+CASHPOST09
+[60]  (PRE97 POST97 POST09)←⊂[1]+/+/TOTPUP
+[61]  (WARFRAC∆PRE WARFRAC∆POST97 WARFRAC∆POST09)←(⊂[1]+/+/STOTPUP)CDIV¨PRE97 POST97 POST09
+[62]  LIST←PPFNRAALL[⍋PPFNRAALL]
+[63]  LIST←(1,~(1↓LIST)=¯1 ↓LIST)/LIST ⍝ List of NRAs in ascending order
+[64]  
+[65]  captot←OffCap
+[66]  
+[67]  capvector←100⍴1
+[68]  capall←5 100⍴1
+[69]  ⍝ Store figues before cap for DID cap
+[70]  (PRE97∆DID POST97∆DID POST09∆DID)←PRE97 POST97 POST09
+[71]  (CASH∆DID CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID)←CASH CASHPRE CASHPOST97 CASHPOST09
+[72]  :if s143
+[73]      ⍝ Need pension compared to cap at 65 for mortality loading
+[74]      s143mort←(+⌿PRE97+POST97+POST09+↑+/CASHPRE CASHPOST97 CASHPOST09 CDIV¨(65+⎕io)⊃¨1 2/PPFCASHFAC2 PPFCASHFAC) CDIV ,PPFCAP×PPFCAPADJ[65+⎕io]
+[75]  ⍝:endif
+[76]  :Else ⍝ Find max NRA where the member has a benefit
+[77]      :for NRA∆L :in LIST
+[78]          :If 0≠(NRA∆L=PPFNRAALL)+.×PRE97+POST97+POST09+CASH
+[79]             maxNRA←NRA∆L
+[80]          :endif
+[81]      :endfor
+[82]  :endif
+[83]  ⍝ Now cap retirement pension
+[84]  capratio←1
+[85]  capvector←100⍴1
+[86]  :for NRA∆L :in LIST
+[87]      msk←NRA∆L=PPFNRAALL
+[88]      :if (∨/⊃,/msk/¨PRE97 POST97 POST09 CASH≠0)^NRA∆L≥X0+PPF∆ageadj ⍝ Don't include any tranches where NRA is passed
+[89]          ⍝ ⎕io is 1 here
+[90]          :if s143
+[91]              :if done ⍝ Already at cap - ignore rest
+[92]              :else
+[93]                  captot←captot+(+/msk/PRE97+POST97+POST09+↑+/CASHPRE CASHPOST97 CASHPOST09 CDIV¨1 2/(NRA∆L+⎕io)⊃¨PPFCASHFAC2 PPFCASHFAC) CDIV ,PPFCAP×PPFCAPADJ[NRA∆L+⎕io]×s143capinc*0⌈NRA∆L-X0
+[94]              :endif
+[95]          :else
+[96]              ⍝ Cap to be used is for highest NRA
+[97]              captot←captot+(+/msk/PRE97+POST97+POST09+↑+/CASHPRE CASHPOST97 CASHPOST09 CDIV¨1 2/(NRA∆L+⎕io)⊃¨PPFCASHFAC2 PPFCASHFAC) CDIV ,PPFCAP×PPFCAPADJ[maxNRA+⎕io]
+[98]          :endif
+[99]          capratio←0⌈1⌊1 CDIV captot
+[100]         :if s143
+[101]             :if done
+[102]                 (PRE97 POST97 POST09 CASH)←PRE97 POST97 POST09 CASH×¨⊂~msk
+[103]             :else
+[104]                 ∆←∆+0=∆←×/msk capratio 0.9
+[105]                 (PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09)←PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09×¨∆
+[106]                 capvector←((NRA∆L-1)↑capvector),(100-NRA∆L-1)⍴capratio
+[107]                 done←captot≥1
+[108]             :endif
+[109]         :endif
+[110]     :endif
+[111] :endfor
+[112] 
+[113] :if ~s143
+[114]     ⍝ Cap to be applied pro rata so use final figure for all
+[115]     :for NRA∆L :in LIST
+[116]         :if NRA∆L≥X0+PPF∆ageadj
+[117]             ∆←0.9×capratio×NRA∆L=PPFNRAALL
+[118]             (PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09)←PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09×¨⊂∆+∆=0
+[119]         :endif
+[120]     :endfor
+[121]     capvector←100⍴capratio
+[122] :endif
+[123] :for NRA∆L :in LIST
+[124]     idx←(NRA∆L=PPFNRAALL)/⍳5
+[125]     :if NRA∆L≥X0+PPF∆ageadj ⍝ Want all 1s if NRA has passed
+[126]         capall[idx;]←((⍴idx),100)⍴100 OVERTAKE (NRA∆L-1)↓capvector CDIV capvector[NRA∆L]
+[127]     :endif
+[128] :endfor
+[129] 
+[130] capflag←captot>1
+[131] ⍝ Expand all accumulators
+[132] (PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09)←PRE97 POST97 POST09 CASH CASHPRE CASHPOST97 CASHPOST09∘.+¨⊂X×0
+[133] ⍝
+[134] (PRE97W POST97W POST09W)←0.5×PRE97 POST97 POST09
+[135] (DIDPRE97 DIDPOST97 DIDPOST09)←0.5×⊂[1]+/TOTPUP[;;;2]
+[136] :if s143
+[137]     PRELIM∆s143
+[138] :endif
+[139] :If (ClntCode=3)^(0 0≡GMP0,GMPE0)^^/0=WARFRAC∆PRE,WARFRAC∆POST97,WARFRAC∆POST09
+[140] :OrIf 0^.=GMP0,GMPE0,WARFRAC∆l
+[141]     (PRE97W POST97W POST09W)←PRE97W POST97W POST09W×0
+[142] :EndIf
+[143] 
+[144] :If 0^.=WOFRAC,GMP0,GMPE0
+[145]     (DIDPRE97 DIDPOST97 DIDPOST09)←DIDPRE97 DIDPOST97 DIDPOST09×0
+[146] :endif
+[147] DIDPRE97[5]←0⌈(+/(GMP0,GMPE0)÷2)-(FID^∨/(GMP0,GMPE0)>0)×+/DIDPRE97 ⍝ Only Pre97 in comparison
+[148] ⍝ Capping here based on gross member's pension stored above
+[149] captot←NX⍴0
+[150] (PRE97∆DID POST97∆DID POST09∆DID)←PRE97∆DID POST97∆DID POST09∆DID∘.+¨⊂X×0
+[151] (CASH∆DID CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID)←CASH∆DID CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID∘.+¨⊂X×0
+[152] :if 0≠+/DIDPRE97,DIDPOST97,DIDPOST09 ⍝ Do unless no DID benefits
+[153]     :for NRA∆L :in LIST
+[154]         msk←NRA∆L=PPFNRAALL
+[155]         :if NRA∆L≥X0+PPF∆ageadj
+[156]             ⍝ ⎕io is 1 here
+[157]             :if s143 ⍝ Line below allow for cap at date of death
+[158]                 captot←captot+(msk+.×PRE97∆DID+POST97∆DID+POST09∆DID+↑+/CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID CDIV¨(⊂5,NX)⍴¨1 2/(PPFCASHFAC2[X+⎕io])(PPFCASHFAC[X+⎕io])) CDIV PPFCAP×PPFCAPADJ[X+⎕io]×s143capinc*0⌈X-X0
+[159]             :else
+[160]                 Xlast←X0⌊⌊⍬⍴16⌈100∣DOB YDAYS ValDATE
+[161]                 captot←captot+(msk+.×PRE97∆DID+POST97∆DID+POST09∆DID+↑+/CASHPRE∆DID CASHPOST97∆DID CASHPOST09∆DID CDIV¨(⊂5,NX)⍴¨1 2/(PPFCASHFAC2[X0+⎕io])(PPFCASHFAC2[X0+⎕io])) CDIV PPFCAP×PPFCAPADJ[Xlast+⎕io]
+[162]             :endif
+[163]         :endif
+[164]     :endfor
+[165]     capflag←capflag∨∨/captot>1
+[166] :endif
+[167] ⍝ 0.9 put here for consistency with Actives
+[168] capratio←0.9×0⌈1⌊1 CDIV captot+0.0000000001 ⍝ Avoid zero divisor
+[169] DID∆PRECOST←   NX↑0 DID∆COST ⍉(NX,5)⍴DIDPRE97
+[170] DID∆POST97COST←NX↑1 DID∆COST ⍉(NX,5)⍴DIDPOST97
+[171] temp←v    ⍝ Different value needed in DDTAB∆PPF
+[172] temp2←vMP
+[173] v←v09
+[174] vMP←v09MP
+[175] DID∆POST09COST←NX↑1 DID∆COST ⍉(NX,5)⍴DIDPOST09
+[176] v←temp
+[177] vMP←temp2
+[178] OUTPUT∆PPF∆PUP
+    ∇

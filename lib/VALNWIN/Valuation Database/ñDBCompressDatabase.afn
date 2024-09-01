@@ -1,0 +1,38 @@
+    ∇ ⍙DBCompressDatabase newrecsize;xxx;dbsize;bloat;⍙DBCompactDatabase
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Check if sufficient room in Acces to accept records and compact Database, if required
+[3]   
+[4]   :if ~sqlDatabase ⍝ Check Access Database has room for records
+[5]       ((5+2×aosind) (10+4×aosind) 'Checking if Compressing Access Database is required') Win∆ProgressBar2 'MemberUpdate'
+[6]       ⍙dbname←↑ValnResultsDB ⍙DBExists ¯1
+[7]       dbsize←WGetFileSize ⍙dbname
+[8]   
+[9]       bloat←8 ⍝ Assume 8 times bloat when loading records (rate applies to large number of records)
+[10]      :if 2E9<dbsize+bloat×newrecsize ⍝ Determine if it will breach 2Gb limit
+[11]  ⍝⍝⍝        ⍝ Calculate the "compressed" size of the database
+[12]  ⍝⍝⍝        compsize←(AccessSizeTable for 'Table' 'Overhead') at 'Jet'
+[13]  ⍝⍝⍝        :for table :in (AOSCtl/'AOSMember' 'AOSResults' 'AOSType'),'AltScenData' 'BasisData' 'BasisItem' 'CharMemberData' 'FinancialsGroups' 'FinancialsValues' 'MemberFields' 'MemberResults' 'NumMemberData' 'ResultsCategory' 'ResultsData' 'TableNames' 'TableValues'
+[14]  ⍝⍝⍝            compsize←compsize+(↑1 ⍙DBadoCONCommand 'SELECT COUNT(*) FROM ',table)×(AccessSizeTable for 'Table' table) at 'Jet'
+[15]  ⍝⍝⍝            ⎕wgive 0
+[16]  ⍝⍝⍝        :endfor
+[17]  ⍝⍝⍝
+[18]  ⍝⍝⍝        :if 0.1<¯1+dbsize÷compsize ⍝ If we can retrieve at least 10% of space
+[19]          xxx←(SystemDir,'CONSWIN') ReadFile 'Compact_Database' '' '⍙DBCompactDatabase'
+[20]          'ADOcon' ⎕wi 'XClose'
+[21]          ('Note:  Access Database required Compression to avoid breaching File Size Limit') VALN∆LOG 'Add'
+[22]          ((5+2×aosind) (10+4×aosind) 'Compressing Access Database') Win∆ProgressBar2 'MemberUpdate'
+[23]          1 ⍙DBCompactDatabase ⍙dbname
+[24]          :if ecflag
+[25]              ('Access Database size pre Compress was ',DLTB 'CI20,< bytes>' ⎕fmt dbsize) VALN∆LOG 'Add'
+[26]  ⍝⍝⍝                ('Estimated Access Database compressed size was calculated as ',DLTB 'CI20,< bytes>' ⎕fmt compsize) VALN∆LOG 'Add'
+[27]              dbsize←WGetFileSize ⍙dbname
+[28]              ('Actual Access Database compressed size was ',DLTB 'CI20,< bytes>' ⎕fmt dbsize) VALN∆LOG 'Add'
+[29]          :endif
+[30]          xxx←ValnResultsDB ⍙DBOpen ¯1
+[31]  ⍝⍝⍝        :endif
+[32]      :elseif ecflag
+[33]          ('Access Database size before inserting records was ',DLTB 'CI20,< bytes>' ⎕fmt dbsize) VALN∆LOG 'Add'
+[34]          ('Estimated Access Database size after inserting records was ',DLTB 'CI20,< bytes>' ⎕fmt dbsize+bloat×newrecsize) VALN∆LOG 'Add'
+[35]      :endif
+[36]  :endif
+    ∇

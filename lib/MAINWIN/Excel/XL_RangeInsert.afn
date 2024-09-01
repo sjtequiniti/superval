@@ -1,0 +1,52 @@
+    ∇ arg XL_RangeInsert range;⎕elx;elx;snk;fmt;rng
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Insert the range and shift down or right
+[3]   ⍝ shift is from the enum "XlInsertShiftDirection":
+[4]   ⍝     xlShiftToRight = ¯4161
+[5]   ⍝     xlShiftDown    = ¯4121
+[6]   ⍝ fmt is from the enum "XlInsertFormatOrigin" (Excel 2003 or later)
+[7]   ⍝     xlFormatFromLeftOrAbove = 0
+[8]   ⍝     xlFormatFromRightOrBelow = 1
+[9]   ⍝ If arg is omitted, Excel will decide shift/fmt based on shape of range.  This is NOT recommended.
+[10]  ⍝ We will use shortcuts R (right) and D (down) for shift and ↑↓←→ for fmt
+[11]  ⍝ Return 0 for success.
+[12]  
+[13]  :if 0=⎕nc 'arg' ⋄ arg←'' ⋄ :endif
+[14]  
+[15]  fmt←''
+[16]  :if 10<ExcelVersion ⍝ Ater Excel 2002
+[17]      :select ↑1↓arg
+[18]      :caselist '→' '↓' ⋄ fmt←↑⍙XL at '=xlFormatFromRightOrBelow'
+[19]      :caselist '←' '↑' ⋄ fmt←↑⍙XL at '=xlFormatFromLeftOrAbove'
+[20]      :endselect
+[21]  :endif
+[22]  
+[23]  'XL' ⎕wi 'Range>.Rng' (RCtoA1 range)
+[24]  
+[25]  elx←⎕elx ⋄ ⎕elx←'"XL" ⎕wi "xCutCopyMode" 0 ⋄ ⎕elx←"⎕elx←elx ⋄ →retry" ⋄ →top'   ⍝ Fix for Excel 2016
+[26]  top:
+[27]  :if ~mt,fmt
+[28]      :select ↑arg
+[29]      :case 'D' ⋄ snk←'XL.Rng' ⎕wi 'XInsert' (↑⍙XL at '=xlShiftDown') fmt
+[30]      :case 'R' ⋄ snk←'XL.Rng' ⎕wi 'XInsert' (↑⍙XL at '=xlShiftToRight') fmt
+[31]      :else     ⋄ snk←'XL.Rng' ⎕wi 'XInsert'
+[32]      :endselect
+[33]  :else
+[34]  retry:
+[35]      :select ↑arg
+[36]      :case 'D' ⋄ snk←'XL.Rng' ⎕wi 'XInsert' (↑⍙XL at '=xlShiftDown')
+[37]      :case 'R' ⋄ snk←'XL.Rng' ⎕wi 'XInsert' (↑⍙XL at '=xlShiftToRight')
+[38]      :else     ⋄ snk←'XL.Rng' ⎕wi 'XInsert'
+[39]      :endselect
+[40]  
+[41]      rng←range ⍝ Insert the format copy in here!
+[42]      :select ↑1↓arg
+[43]      :case '↑' ⋄ rng[⎕io+0 2]←range[⎕io]-1
+[44]      :case '←' ⋄ rng[⎕io+1 3]←range[⎕io+1]-1
+[45]      :case '↓' ⋄ rng[⎕io+0 2]←range[⎕io+2]+1
+[46]      :case '→' ⋄ rng[⎕io+1 3]←range[⎕io+3]+1
+[47]      :else     ⋄ :return ⍝ No Formatting specified
+[48]      :endselect
+[49]      rng XL_PasteFormats range
+[50]  :endif
+    ∇

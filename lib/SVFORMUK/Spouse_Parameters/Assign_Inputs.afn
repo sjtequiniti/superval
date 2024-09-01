@@ -1,1 +1,51 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Spouse_Parameters" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Spouse_Parameters" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   PickList←"fmSpouseParm.fSpouse.cbgspSPMethod" ⎕wi "list"[10]  selection←PickList ExactTLU DLTB gspSPMethod[11]  :if mt selection[12]      :if ~mt DLTB gspSPMethod[13]          warnings←warnings OVER "Previous Selection for 'Spouse Definition' is no longer available"[14]      :endif[15]      modified←⌈/modified,1[16]  :endif[17]  "fmSpouseParm.fSpouse.cbgspSPMethod" ⎕wi "value" (¯1↑1,selection)[18]  0 0⍴GetDecrList "List"[19]  warnings←warnings OVER "Male Proportion Married Table" Win∆CheckDecr (gspm_HXX[1;]) (lrgspm_HXX1)[20]  "fmSpouseParm.fSpouse.edgspm_HXX1" ⎕wi "text" (DLTB gspm_HXX[1;])[21]  "fmSpouseParm.fSpouse.edgspm_HXX2" ⎕wi "text" (DLTB gspm_HXX[2;])[22]  "fmSpouseParm.fSpouse.edgspm_HXX3" ⎕wi "text" (DLTB gspm_HXX[3;])[23]  "fmSpouseParm.fSpouse.edgspm_PropMarr" ⎕wi "text" (DLTB gspm_PropMarr)[24]  0 0⍴GetDecrList "List"[25]  warnings←warnings OVER "Female Proportion Married Table" Win∆CheckDecr (gspf_HXX[1;]) (lrgspf_HXX1)[26]  "fmSpouseParm.fSpouse.edgspf_HXX1" ⎕wi "text" (DLTB gspf_HXX[1;])[27]  "fmSpouseParm.fSpouse.edgspf_HXX2" ⎕wi "text" (DLTB gspf_HXX[2;])[28]  "fmSpouseParm.fSpouse.edgspf_HXX3" ⎕wi "text" (DLTB gspf_HXX[3;])[29]  "fmSpouseParm.fSpouse.edgspf_PropMarr" ⎕wi "text" (DLTB gspf_PropMarr)[30]  0 0⍴GetDecrList "List"[31]  warnings←warnings OVER "Male Age Difference Table (m-f)" Win∆CheckDecr (gspm_AGEDIFT) (lrgspm_AGEDIFT)[32]  "fmSpouseParm.fSpouse.edgspm_AGEDIFT" ⎕wi "text" (DLTB gspm_AGEDIFT)[33]  "fmSpouseParm.fSpouse.edgspm_AGEDIF" ⎕wi "text" (DLTB gspm_AGEDIF)[34]  0 0⍴GetDecrList "List"[35]  warnings←warnings OVER "Female Age Difference Table (f-m)" Win∆CheckDecr (gspf_AGEDIFT) (lrgspf_AGEDIFT)[36]  "fmSpouseParm.fSpouse.edgspf_AGEDIFT" ⎕wi "text" (DLTB gspf_AGEDIFT)[37]  "fmSpouseParm.fSpouse.edgspf_AGEDIF" ⎕wi "text" (DLTB gspf_AGEDIF)[38]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Spouse_Parameters[39]      :for var :in spin Comment_Spouse_Parameters at "variable" "row" ⋄ (var row)←var[40]          "Spouse_Parameters" ParmColor ((FormFields for "variable" var) at "control"),var row 1[41]      :endfor[42]  :endif[43]  :if ~0∊⍴,warnings[44]      MDISPLAY DLTMB warnings,⎕tcnl[45]      Win∆AssignVars "fmSpouseParm"[46]  :endif[47]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Spouse_Parameters" "" "Names"[48]      "fmSpouseParm" ⎕wi "modified" 0[49]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Spouse_Parameters" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Spouse_Parameters" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   PickList←"fmSpouseParm.fSpouse.cbgspSPMethod" ⎕wi "list"
+[10]  selection←PickList ExactTLU DLTB gspSPMethod
+[11]  :if mt selection
+[12]      :if ~mt DLTB gspSPMethod
+[13]          warnings←warnings OVER "Previous Selection for 'Spouse Definition' is no longer available"
+[14]      :endif
+[15]      modified←⌈/modified,1
+[16]  :endif
+[17]  "fmSpouseParm.fSpouse.cbgspSPMethod" ⎕wi "value" (¯1↑1,selection)
+[18]  0 0⍴GetDecrList "List"
+[19]  warnings←warnings OVER "Male Proportion Married Table" Win∆CheckDecr (gspm_HXX[1;]) (lrgspm_HXX1)
+[20]  "fmSpouseParm.fSpouse.edgspm_HXX1" ⎕wi "text" (DLTB gspm_HXX[1;])
+[21]  "fmSpouseParm.fSpouse.edgspm_HXX2" ⎕wi "text" (DLTB gspm_HXX[2;])
+[22]  "fmSpouseParm.fSpouse.edgspm_HXX3" ⎕wi "text" (DLTB gspm_HXX[3;])
+[23]  "fmSpouseParm.fSpouse.edgspm_PropMarr" ⎕wi "text" (DLTB gspm_PropMarr)
+[24]  0 0⍴GetDecrList "List"
+[25]  warnings←warnings OVER "Female Proportion Married Table" Win∆CheckDecr (gspf_HXX[1;]) (lrgspf_HXX1)
+[26]  "fmSpouseParm.fSpouse.edgspf_HXX1" ⎕wi "text" (DLTB gspf_HXX[1;])
+[27]  "fmSpouseParm.fSpouse.edgspf_HXX2" ⎕wi "text" (DLTB gspf_HXX[2;])
+[28]  "fmSpouseParm.fSpouse.edgspf_HXX3" ⎕wi "text" (DLTB gspf_HXX[3;])
+[29]  "fmSpouseParm.fSpouse.edgspf_PropMarr" ⎕wi "text" (DLTB gspf_PropMarr)
+[30]  0 0⍴GetDecrList "List"
+[31]  warnings←warnings OVER "Male Age Difference Table (m-f)" Win∆CheckDecr (gspm_AGEDIFT) (lrgspm_AGEDIFT)
+[32]  "fmSpouseParm.fSpouse.edgspm_AGEDIFT" ⎕wi "text" (DLTB gspm_AGEDIFT)
+[33]  "fmSpouseParm.fSpouse.edgspm_AGEDIF" ⎕wi "text" (DLTB gspm_AGEDIF)
+[34]  0 0⍴GetDecrList "List"
+[35]  warnings←warnings OVER "Female Age Difference Table (f-m)" Win∆CheckDecr (gspf_AGEDIFT) (lrgspf_AGEDIFT)
+[36]  "fmSpouseParm.fSpouse.edgspf_AGEDIFT" ⎕wi "text" (DLTB gspf_AGEDIFT)
+[37]  "fmSpouseParm.fSpouse.edgspf_AGEDIF" ⎕wi "text" (DLTB gspf_AGEDIF)
+[38]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Spouse_Parameters
+[39]      :for var :in spin Comment_Spouse_Parameters at "variable" "row" ⋄ (var row)←var
+[40]          "Spouse_Parameters" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[41]      :endfor
+[42]  :endif
+[43]  :if ~0∊⍴,warnings
+[44]      MDISPLAY DLTMB warnings,⎕tcnl
+[45]      Win∆AssignVars "fmSpouseParm"
+[46]  :endif
+[47]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Spouse_Parameters" "" "Names"
+[48]      "fmSpouseParm" ⎕wi "modified" 0
+[49]  :endif
+    ∇

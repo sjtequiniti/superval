@@ -1,1 +1,46 @@
-    ∇ comtabs←comtabs CommTabMIAdj arg;mat;MORTIMPR;MortImp;lx;numerator;denominator;mort;type;mimat;x[1]   ⍝ UVALNWIN.sf#3[2]   ⍝ Calculate adjustments to (single-life) Commutation Factors using[3]   ⍝  "the ratio of the total expectation of life of a member at this age on the date of retirement to that on the valuation date, based on the current best estimate assumptions of future mortality improvements"[4]   ⍝  arg is the Mortality Improvement method and Mortality Improvement array (used in the valuation)[5]   ⍝  mort is the member's mortality[6]   ⍝⍝⍝ Does not Only work for C and S Mortality Improvement definitions (implicit in method)[7]   [8]   :if NX>1[9]       (type mort MORTIMPR MortImp)←arg[10]      :if 'A'=MORTIMPR[11]          MortImp[5]←⊂'(¯1↑VDATE)-X0+⍳NX'                                     ⍝ Force an array of Mortality Improvement factors[12]      :endif[13]      mimat←120↑[1]MATRIX (MORTIMPR (aosterm+term)) RedFactCalc MortImp,⊂X0+⍳NX ⍝ Array of Mortality rates[14]      :if 2=⍴⍴mort ⍝ IH Select Mortality[15]          mort←⊃((X0+⍳NX),¨ 0) Dec∆Select¨⊂mort[16]          mort←mort÷[1]mimat[0;][17]          mat←mort×mimat                                                      ⍝ matrix of improved mortality[18]      :else[19]          mort←mort CDIV mimat[0;]                                            ⍝ Unimproved mortality (with individual loading)[20]          mat←mort×[1]mimat                                                   ⍝ matrix of improved mortality[21]      :endif[22]  [23]  :if ecflag ⋄ :andif 2≠⍴⍴mort ⍝⍝⍝[24]      'Age     ',⍕x←¯1↑X[25]      'QX      ',⍕x↓mort[26]      'MI Exit ',⍕x↓mimat[0;][27]      'MI VD   ',⍕x↓mimat[↑NX_1;][28]  :endif[29]  [30]      lx←1,×\1-mat[0;] ⋄ numerator  ←¯0.5+(NX↑    X0↓           ⌽+\⌽lx) ZDIV NX↑X0↓lx      ⋄ numerator  ←(MID ENX↑numerator  ),ENX_1↓numerator[31]      lx←1,×\1-mat     ⋄ denominator←¯0.5+ NX↑((0,X0) Adjust2D (⌽+\⌽lx) ZDIV       lx)[0;] ⋄ denominator←(MID ENX↑denominator),ENX_1↓denominator[32]  [33]      comtabs←comtabs×¨⊂numerator÷denominator[34]  [35]      :if ~test ⋄ :andif basischanged∨CFmissing ⋄ :andif ~neIND ⍝ Only for non-New Entrants and w/o any individual Mortality Loading[36]          :if     type≡'R' ⋄ :andif mt PPOSTMEMB ⍝ Retirement[37]              :if uSERisRSE ⋄ :andif ∨/0≠,RETcomfacs[99⌊X0;;⍳NX] ⋄ :andif ~RETcomfacs[↑99⌊X0;;⍳NX]≡⊃comtabs ⋄ crash ⋄ :endif[38]              RETcomfacs[99⌊X0;;⍳NX]←⊃comtabs[39]          :elseif type≡'I' ⋄ :andif mt ILLMEMB   ⍝ Ill-Health[40]              :if uSERisRSE ⋄ :andif ∨/0≠,ILLcomfacs[   X0;;⍳NX] ⋄ :andif ~ILLcomfacs[↑   X0;;⍳NX]≡⊃comtabs ⋄ crash ⋄ :endif[41]              ILLcomfacs[   X0;;⍳NX]←⊃comtabs[42]          :endif[43]      :endif[44]  :endif    ∇
+    ∇ comtabs←comtabs CommTabMIAdj arg;mat;MORTIMPR;MortImp;lx;numerator;denominator;mort;type;mimat;x
+[1]   ⍝ UVALNWIN.sf#3
+[2]   ⍝ Calculate adjustments to (single-life) Commutation Factors using
+[3]   ⍝  "the ratio of the total expectation of life of a member at this age on the date of retirement to that on the valuation date, based on the current best estimate assumptions of future mortality improvements"
+[4]   ⍝  arg is the Mortality Improvement method and Mortality Improvement array (used in the valuation)
+[5]   ⍝  mort is the member's mortality
+[6]   ⍝⍝⍝ Does not Only work for C and S Mortality Improvement definitions (implicit in method)
+[7]   
+[8]   :if NX>1
+[9]       (type mort MORTIMPR MortImp)←arg
+[10]      :if 'A'=MORTIMPR
+[11]          MortImp[5]←⊂'(¯1↑VDATE)-X0+⍳NX'                                     ⍝ Force an array of Mortality Improvement factors
+[12]      :endif
+[13]      mimat←120↑[1]MATRIX (MORTIMPR (aosterm+term)) RedFactCalc MortImp,⊂X0+⍳NX ⍝ Array of Mortality rates
+[14]      :if 2=⍴⍴mort ⍝ IH Select Mortality
+[15]          mort←⊃((X0+⍳NX),¨ 0) Dec∆Select¨⊂mort
+[16]          mort←mort÷[1]mimat[0;]
+[17]          mat←mort×mimat                                                      ⍝ matrix of improved mortality
+[18]      :else
+[19]          mort←mort CDIV mimat[0;]                                            ⍝ Unimproved mortality (with individual loading)
+[20]          mat←mort×[1]mimat                                                   ⍝ matrix of improved mortality
+[21]      :endif
+[22]  
+[23]  :if ecflag ⋄ :andif 2≠⍴⍴mort ⍝⍝⍝
+[24]      'Age     ',⍕x←¯1↑X
+[25]      'QX      ',⍕x↓mort
+[26]      'MI Exit ',⍕x↓mimat[0;]
+[27]      'MI VD   ',⍕x↓mimat[↑NX_1;]
+[28]  :endif
+[29]  
+[30]      lx←1,×\1-mat[0;] ⋄ numerator  ←¯0.5+(NX↑    X0↓           ⌽+\⌽lx) ZDIV NX↑X0↓lx      ⋄ numerator  ←(MID ENX↑numerator  ),ENX_1↓numerator
+[31]      lx←1,×\1-mat     ⋄ denominator←¯0.5+ NX↑((0,X0) Adjust2D (⌽+\⌽lx) ZDIV       lx)[0;] ⋄ denominator←(MID ENX↑denominator),ENX_1↓denominator
+[32]  
+[33]      comtabs←comtabs×¨⊂numerator÷denominator
+[34]  
+[35]      :if ~test ⋄ :andif basischanged∨CFmissing ⋄ :andif ~neIND ⍝ Only for non-New Entrants and w/o any individual Mortality Loading
+[36]          :if     type≡'R' ⋄ :andif mt PPOSTMEMB ⍝ Retirement
+[37]              :if uSERisRSE ⋄ :andif ∨/0≠,RETcomfacs[99⌊X0;;⍳NX] ⋄ :andif ~RETcomfacs[↑99⌊X0;;⍳NX]≡⊃comtabs ⋄ crash ⋄ :endif
+[38]              RETcomfacs[99⌊X0;;⍳NX]←⊃comtabs
+[39]          :elseif type≡'I' ⋄ :andif mt ILLMEMB   ⍝ Ill-Health
+[40]              :if uSERisRSE ⋄ :andif ∨/0≠,ILLcomfacs[   X0;;⍳NX] ⋄ :andif ~ILLcomfacs[↑   X0;;⍳NX]≡⊃comtabs ⋄ crash ⋄ :endif
+[41]              ILLcomfacs[   X0;;⍳NX]←⊃comtabs
+[42]          :endif
+[43]      :endif
+[44]  :endif
+    ∇

@@ -1,1 +1,74 @@
-    ∇ bbar_ok←Browser_Bar;elx;fm;pinx;where;Printer[1]   ⍝ OVERWIN.sf#15[2]   ⍝ Create Commandbar for Browser[3]   [4]   elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ →bbar_ok←0' ⍝ Trap if unable to have CommandBar[5]   ⎕wself←fm←'fmBrowser.barBrowser' ⎕wi 'New' 'CommandBar'[6]   ⎕elx←elx[7]       ⎕wi 'captionfloat' 'Page Change/Printing Options'[8]       ⎕wi 'scale' 5[9]       ⎕wi 'imagelist' 'fmSV.iButtons'[10]      ⎕wi 'showtext'  0[11]      ⎕wi 'style' 1 256[12]      ⎕wi 'dockable' 1 2 16[13]      ⎕wi 'dock' (INIString uSER 'Bar_dock%' 1 PrefINI)[14]      ⎕wi 'floatlayout' (INIString uSER 'Bar_layout%' 1 PrefINI)[15]      :if ~(,0)≡,where←⎕fi INIString uSER 'Bar_floatwhere' '0' PrefINI[16]           ⎕wi 'floatwhere' (where⌊¯2.5+¯2↑workarea)[17]      :endif[18]  [19]  ⎕wself←(fm,'.bFirst') ⎕wi 'New' 'CommandButton'[20]      ⎕wi 'tooltip' 'Go to Top of File'[21]      ⎕wi 'style' 16[22]      ⎕wi 'image' 6[23]      ⎕wi 'caption' 'Top'[24]      ⎕wi 'onClick' 'ChangePage ''First'''[25]  [26]  ⎕wself←(fm,'.bPrevious') ⎕wi 'New' 'CommandButton'[27]      ⎕wi 'tooltip' 'Go to Previous Page'[28]      ⎕wi 'style' 16[29]      ⎕wi 'image' 7[30]      ⎕wi 'caption' 'Prev'[31]      ⎕wi 'onClick' 'ChangePage ''Previous'''[32]  [33]  ⎕wself←(fm,'.bNext') ⎕wi 'New' 'CommandButton'[34]      ⎕wi 'tooltip' 'Go to Next page'[35]      ⎕wi 'style' 16[36]      ⎕wi 'image' 8[37]      ⎕wi 'caption' 'Next'[38]      ⎕wi 'onClick' 'ChangePage ''Next'''[39]  [40]  ⎕wself←(fm,'.bLast') ⎕wi 'New' 'CommandButton'[41]      ⎕wi 'tooltip' 'Go to End of File'[42]      ⎕wi 'style' 16[43]      ⎕wi 'image' 9[44]      ⎕wi 'caption' 'End'[45]      ⎕wi 'onClick' 'ChangePage ''Last'''[46]  [47]  ⎕wself←(fm,'.bspacer1') ⎕wi 'New' 'CommandButton'[48]      ⎕wi 'style' 1[49]  [50]  ⎕wself←(fm,'.bPrintPage') ⎕wi 'New' 'CommandButton'[51]      ⎕wi 'tooltip' 'Print Current Page'[52]      ⎕wi 'style' 16[53]      ⎕wi 'image' 2[54]      ⎕wi 'caption' 'Page'[55]      ⎕wi 'onClick' 'PrintFile ''Page'''[56]  [57]  ⎕wself←(fm,'.bPrintAll') ⎕wi 'New' 'CommandButton'[58]      ⎕wi 'tooltip' 'Print Entire File'[59]      ⎕wi 'style' 16[60]      ⎕wi 'image' 3[61]      ⎕wi 'caption' 'All'[62]      ⎕wi 'onClick' 'PrintFile ''All'''[63]  [64]  Printer←INIString uSER 'PrinterName' '' PrefINI[65]  ⎕wself←(fm,'.cbPrinter') ⎕wi 'New' 'Combo'[66]      ⎕wi 'style' 2 16 128[67]      ⎕wi 'list' (1 0↓PrinterList)[68]      ⎕wi 'value' (¯1↑1,(1 0↓PrinterList) ExactTLU Printer)[69]      ⎕wi 'extent' (150,25+¯1↑Win∆TextSize ⎕wi 'list')[70]      ⎕wi 'onClick' ('("fmBrowser.barBrowser.cbPrinter" ⎕wi "text") INIString uSER "PrinterName" ("',PrefINI,'")')[71]  [72]  bbar_ok←1    ∇
+    ∇ bbar_ok←Browser_Bar;elx;fm;pinx;where;Printer
+[1]   ⍝ OVERWIN.sf#15
+[2]   ⍝ Create Commandbar for Browser
+[3]   
+[4]   elx←⎕elx ⋄ ⎕elx←'⎕elx←elx ⋄ →bbar_ok←0' ⍝ Trap if unable to have CommandBar
+[5]   ⎕wself←fm←'fmBrowser.barBrowser' ⎕wi 'New' 'CommandBar'
+[6]   ⎕elx←elx
+[7]       ⎕wi 'captionfloat' 'Page Change/Printing Options'
+[8]       ⎕wi 'scale' 5
+[9]       ⎕wi 'imagelist' 'fmSV.iButtons'
+[10]      ⎕wi 'showtext'  0
+[11]      ⎕wi 'style' 1 256
+[12]      ⎕wi 'dockable' 1 2 16
+[13]      ⎕wi 'dock' (INIString uSER 'Bar_dock%' 1 PrefINI)
+[14]      ⎕wi 'floatlayout' (INIString uSER 'Bar_layout%' 1 PrefINI)
+[15]      :if ~(,0)≡,where←⎕fi INIString uSER 'Bar_floatwhere' '0' PrefINI
+[16]           ⎕wi 'floatwhere' (where⌊¯2.5+¯2↑workarea)
+[17]      :endif
+[18]  
+[19]  ⎕wself←(fm,'.bFirst') ⎕wi 'New' 'CommandButton'
+[20]      ⎕wi 'tooltip' 'Go to Top of File'
+[21]      ⎕wi 'style' 16
+[22]      ⎕wi 'image' 6
+[23]      ⎕wi 'caption' 'Top'
+[24]      ⎕wi 'onClick' 'ChangePage ''First'''
+[25]  
+[26]  ⎕wself←(fm,'.bPrevious') ⎕wi 'New' 'CommandButton'
+[27]      ⎕wi 'tooltip' 'Go to Previous Page'
+[28]      ⎕wi 'style' 16
+[29]      ⎕wi 'image' 7
+[30]      ⎕wi 'caption' 'Prev'
+[31]      ⎕wi 'onClick' 'ChangePage ''Previous'''
+[32]  
+[33]  ⎕wself←(fm,'.bNext') ⎕wi 'New' 'CommandButton'
+[34]      ⎕wi 'tooltip' 'Go to Next page'
+[35]      ⎕wi 'style' 16
+[36]      ⎕wi 'image' 8
+[37]      ⎕wi 'caption' 'Next'
+[38]      ⎕wi 'onClick' 'ChangePage ''Next'''
+[39]  
+[40]  ⎕wself←(fm,'.bLast') ⎕wi 'New' 'CommandButton'
+[41]      ⎕wi 'tooltip' 'Go to End of File'
+[42]      ⎕wi 'style' 16
+[43]      ⎕wi 'image' 9
+[44]      ⎕wi 'caption' 'End'
+[45]      ⎕wi 'onClick' 'ChangePage ''Last'''
+[46]  
+[47]  ⎕wself←(fm,'.bspacer1') ⎕wi 'New' 'CommandButton'
+[48]      ⎕wi 'style' 1
+[49]  
+[50]  ⎕wself←(fm,'.bPrintPage') ⎕wi 'New' 'CommandButton'
+[51]      ⎕wi 'tooltip' 'Print Current Page'
+[52]      ⎕wi 'style' 16
+[53]      ⎕wi 'image' 2
+[54]      ⎕wi 'caption' 'Page'
+[55]      ⎕wi 'onClick' 'PrintFile ''Page'''
+[56]  
+[57]  ⎕wself←(fm,'.bPrintAll') ⎕wi 'New' 'CommandButton'
+[58]      ⎕wi 'tooltip' 'Print Entire File'
+[59]      ⎕wi 'style' 16
+[60]      ⎕wi 'image' 3
+[61]      ⎕wi 'caption' 'All'
+[62]      ⎕wi 'onClick' 'PrintFile ''All'''
+[63]  
+[64]  Printer←INIString uSER 'PrinterName' '' PrefINI
+[65]  ⎕wself←(fm,'.cbPrinter') ⎕wi 'New' 'Combo'
+[66]      ⎕wi 'style' 2 16 128
+[67]      ⎕wi 'list' (1 0↓PrinterList)
+[68]      ⎕wi 'value' (¯1↑1,(1 0↓PrinterList) ExactTLU Printer)
+[69]      ⎕wi 'extent' (150,25+¯1↑Win∆TextSize ⎕wi 'list')
+[70]      ⎕wi 'onClick' ('("fmBrowser.barBrowser.cbPrinter" ⎕wi "text") INIString uSER "PrinterName" ("',PrefINI,'")')
+[71]  
+[72]  bbar_ok←1
+    ∇

@@ -1,0 +1,66 @@
+    ∇ res←field Edit_UKPension parm;parent
+[1]   ⍝ UPARMWIN.sf#10
+[2]   ⍝ Function to allow user control on UK Pensions Details
+[3]   ⍝ Revn: sjt10apr15
+[4]   
+[5]   parent←'fmEditUKPension.' ⋄ res←0⍴'' ⍝ Default response
+[6]   
+[7]   :select parm
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       :if PENget≥1 ⋄ PenValues ⋄ :endif
+[10]      Formattrick←HyphenSwap 'fmSV.sPenBasis.pgMain.fData.cbFormat' ⎕wi 'text' ⍝ Trick to get Format-related variables
+[11]      FormFields←Win∆GetControlList parent
+[12]      ReviseCacheFor FormFields
+[13]      :if PENput≠⌊penput←PENput ⋄ PENput←99.5 ⋄ :endif ⍝ Signal failure
+[14]  
+[15]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[16]      :if PENget=PENput
+[17]          (parent,'fButtons.bnEdit_UKPensionPrevious') ⎕wi 'enabled' (PENget≠1)
+[18]          (parent,'fButtons.bnEdit_UKPensionNext') ⎕wi 'enabled' (PENget≠↑⍴PenDesc)
+[19]          parent ⎕wi 'onModified' "ControlName ⎕wi '∆modified' 0"
+[20]          parent ⎕wi 'modified' 0
+[21]          parent ⎕wi '∆modified' 1
+[22]      :endif
+[23]  
+[24]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[25]  
+[26]      :repeat
+[27]          :select ↑field
+[28]          :case 'cbFormattrick'
+[29]          :else
+[30]              (↑field) Win∆FormValidation 'Change'
+[31]          :endselect
+[32]      :until mt field←1↓field
+[33]  
+[34]  :case 'Valid' ⍝ Routine specific validation
+[35]      res←(FormFields at 'variable') Win∆FormValidation 'Valid' ⍝ fields on this form
+[36]  
+[37]      :if ~mt PENDESC
+[38]      :andif ~mt PenDesc[(⍳1↑⍴PenDesc)~PENput;] ExactTLU PENDESC
+[39]           res←'AlreadyDesc' ⋄ Win∆SetFocus parent,'edPENDESC' ⋄ :return
+[40]      :endif
+[41]      :if 'P'=↑csorp ⋄ :andif ^/^/¨⎕vi¨bage eage
+[42]          :if (zwb bage)>zwb eage
+[43]              res←'Commencing Age is greater than Ceasing Age'
+[44]              Win∆SetFocus parent,'edbage' ⋄ :return
+[45]          :endif
+[46]          :if ((zwb eage)-zwb bage)<zwb GPeriod
+[47]              res←'Commencing Age plus Guarantee Period is greater than Ceasing Age'
+[48]              Win∆SetFocus parent,'edbage' ⋄ :return
+[49]          :endif
+[50]      :endif
+[51]  
+[52]  :case 'Run'
+[53]      PENput←penput
+[54]      PenAssign
+[55]      :if mt res←(PENget≠PENput)/'Quit'
+[56]          parent ⎕wi 'modified' 0
+[57]          MDISPLAY 'Pension ',(⍕PENput),' parameters changed'
+[58]      :endif
+[59]      parent ⎕wi '∆modified' 1
+[60]  
+[61]  :case 'Quit' ⍝ Deleting "other" variables
+[62]      0 0⍴⎕ex 'penput'
+[63]  
+[64]  :endselect
+    ∇

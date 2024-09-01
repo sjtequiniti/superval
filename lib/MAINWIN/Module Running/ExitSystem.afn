@@ -1,1 +1,34 @@
-    ∇ source ExitSystem parm;Button[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Function to be run main form "onClose"[3]   [4]   :select parm[5]   :case '' ⍝ Exit from System Menu[6]       :if ''≡ControlName[7]           :if ⎕wres←'Y'=ASK 'ConfirmExit'[8]               0 0⍴(InputDir 80) FolderHeld 'End' ⍝ Release Directory[9]               TrackUser 'Exited from ',InputDir[10]              UpdateListviewDict 1[11]              (FormName ⎕wi 'where') INIString uSER 'Form_where' PrefINI[12]          :endif[13]      :else[14]          :if 0≡ControlName ⎕wi '∆quitbutton' ⋄ ⎕wres←0 ⋄ :return ⋄ :endif[15]          (ControlName ⎕wi '∆quitbutton') ⎕wi 'Click'[16]          ⎕wres←0[17]      :endif[18]  :case 'Exit' ⍝ Exit from File Menu[19]      (FormName ⎕wi 'where') INIString uSER 'Form_where' PrefINI[20]      0 0⍴FormName ⎕wi 'Close'[21]  :case 'ExitLogon' ⍝ Exit from Log On Form[22]      :if 'Y'=ASK 'ConfirmExit'[23]          'fmLogOn.bnLog_OnQuit' ⎕wi 'Delete'[24]          '' ExitSystem 'ForceLogoff' ⍝ No uSER at this time[25]      :endif[26]  :case 'ForceLogoff' ⍝ Forced Exit due to password validation[27]      ⎕elx←'⎕sa←"OFF" ⋄ ⎕nuntie ⎕nnums,⎕xnnums ⋄ ⎕funtie ⎕fnums,⎕xfnums'[28]      :if ~mt source ⋄ TrackUser 'Exited from ',source ⋄ :endif[29]      'fmLogOn' ⎕wi 'Delete'[30]      FormName ⎕wi 'onClose' ''[31]      FormName ⎕wi 'Delete'[32]  :endselect    ∇
+    ∇ source ExitSystem parm;Button
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Function to be run main form "onClose"
+[3]   
+[4]   :select parm
+[5]   :case '' ⍝ Exit from System Menu
+[6]       :if ''≡ControlName
+[7]           :if ⎕wres←'Y'=ASK 'ConfirmExit'
+[8]               0 0⍴(InputDir 80) FolderHeld 'End' ⍝ Release Directory
+[9]               TrackUser 'Exited from ',InputDir
+[10]              UpdateListviewDict 1
+[11]              (FormName ⎕wi 'where') INIString uSER 'Form_where' PrefINI
+[12]          :endif
+[13]      :else
+[14]          :if 0≡ControlName ⎕wi '∆quitbutton' ⋄ ⎕wres←0 ⋄ :return ⋄ :endif
+[15]          (ControlName ⎕wi '∆quitbutton') ⎕wi 'Click'
+[16]          ⎕wres←0
+[17]      :endif
+[18]  :case 'Exit' ⍝ Exit from File Menu
+[19]      (FormName ⎕wi 'where') INIString uSER 'Form_where' PrefINI
+[20]      0 0⍴FormName ⎕wi 'Close'
+[21]  :case 'ExitLogon' ⍝ Exit from Log On Form
+[22]      :if 'Y'=ASK 'ConfirmExit'
+[23]          'fmLogOn.bnLog_OnQuit' ⎕wi 'Delete'
+[24]          '' ExitSystem 'ForceLogoff' ⍝ No uSER at this time
+[25]      :endif
+[26]  :case 'ForceLogoff' ⍝ Forced Exit due to password validation
+[27]      ⎕elx←'⎕sa←"OFF" ⋄ ⎕nuntie ⎕nnums,⎕xnnums ⋄ ⎕funtie ⎕fnums,⎕xfnums'
+[28]      :if ~mt source ⋄ TrackUser 'Exited from ',source ⋄ :endif
+[29]      'fmLogOn' ⎕wi 'Delete'
+[30]      FormName ⎕wi 'onClose' ''
+[31]      FormName ⎕wi 'Delete'
+[32]  :endselect
+    ∇

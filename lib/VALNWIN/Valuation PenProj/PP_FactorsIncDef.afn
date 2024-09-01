@@ -1,0 +1,14 @@
+    ∇ pp∆incdef←PP∆FactorsIncDef
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Calculate the Increase while in "notional" Deferment for Valuation Factors
+[3]   
+[4]   ⍝ 1 for        GMPs,                                 Transfers Out and              no deferral
+[5]   :if ~pp∆incdef←BenefitTypeID∊2 3 ⋄ :andif ~pp∆incdef←ContingencyID∊31+⍳12 ⋄ :andif ~pp∆incdef←0=pp∆def[2]
+[6]       :if pp∆midstart ⋄ pp∆incdef←pp∆postIncMP[pp∆Tstart]
+[7]       :else           ⋄ pp∆incdef←pp∆postInc  [pp∆Tstart]
+[8]       :endif
+[9]       :if pp∆midexit  ⋄ pp∆incdef←pp∆incdef÷pp∆postIncMP[pp∆Texit]
+[10]      :else           ⋄ pp∆incdef←pp∆incdef÷pp∆postInc  [pp∆Texit]
+[11]      :endif
+[12]  :endif
+    ∇

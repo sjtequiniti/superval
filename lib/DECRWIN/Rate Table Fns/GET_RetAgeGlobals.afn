@@ -1,1 +1,39 @@
-    ∇ res←larg GET∆RetAgeGlobals varname;flds;success;MESS;desc;errflag;var;tab;old;new;vars;descs;∆;parms;idx;parmlist[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Extract the Retirement Age Global parameters using the "description" pointer "varname"[3]   ⍝ larg is the description of the Retirement Ages set and a valuation flag[4]   [5]   (desc errflag)←larg ⋄ var←DLTB ⍎varname[6]   [7]   :if ↑res←(success MESS)←2↑ClientFile ReadModule 'Retirement_Age' var 'Retirement Age' desc errflag varname[8]       tab←⍙RULESdict ReadDictFile 'Retirement_Age'[9]       tab←tab for ⍎¨tab at 'Editable' ⍝ Exclude those not required[10]      flds←tab at 'Field'[11]  [12]      old←DLTB¨⍎¨vars←(⊂2↑varname),¨3↓¨flds ⍝ Currently set Variables[13]  [14]      ∆←~(⍎comment_var,' at "variable"')∊(⊂'/gra/',2↑varname) TEXTREPL¨flds[15]      ⍎comment_var,'←',comment_var,' for ∆'[16]      :if ×rowsIn Comment_Retirement_Age←Comment_Retirement_Age for (⊂'variable'),flds ⍝ Add Retirement_Age comments[17]          Comment_Retirement_Age←Comment_Retirement_Age amend 'variable' ((⊂'/gra/',2↑varname) TEXTREPL¨Comment_Retirement_Age at 'variable')[18]          ⍎comment_var,'←',comment_var,' append Comment_Retirement_Age'[19]      :endif[20]  [21]      (flds←⊃flds) RenameVars 'gra' (2↑varname)[22]      0 0⍴⎕ex ⍙VALUESdict ReadDictFile 'Retirement_Age' '' 'NAMES'[23]  [24]      :if ∨/∆←~old≡¨new←DLTB¨⍎¨vars[25]          new←∆/new ⋄ vars←∆/vars[26]  [27]          parms←⊃spin (tab for (⊂'Field'),parmlist←(⊂'gra'),¨2↓¨vars) at 'Field' 'Type' 'Desc'[28]          idx←parmlist⍳parms[;1][29]          parms[;1]←vars[idx] ⋄ parms[;2]←new[idx][30]  [31]          :for ∆ :in ⎕split parms ⋄ (vars new descs)←∆[32]              MESS←MESS OVER vars ⍬ ((errflag/'Warning:  '),'Value for "',descs,'" in ',desc,' has changed to "',new,'"')[33]          :endfor[34]      :endif[35]  [36]      res←success MESS[37]  :endif    ∇
+    ∇ res←larg GET∆RetAgeGlobals varname;flds;success;MESS;desc;errflag;var;tab;old;new;vars;descs;∆;parms;idx;parmlist
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Extract the Retirement Age Global parameters using the "description" pointer "varname"
+[3]   ⍝ larg is the description of the Retirement Ages set and a valuation flag
+[4]   
+[5]   (desc errflag)←larg ⋄ var←DLTB ⍎varname
+[6]   
+[7]   :if ↑res←(success MESS)←2↑ClientFile ReadModule 'Retirement_Age' var 'Retirement Age' desc errflag varname
+[8]       tab←⍙RULESdict ReadDictFile 'Retirement_Age'
+[9]       tab←tab for ⍎¨tab at 'Editable' ⍝ Exclude those not required
+[10]      flds←tab at 'Field'
+[11]  
+[12]      old←DLTB¨⍎¨vars←(⊂2↑varname),¨3↓¨flds ⍝ Currently set Variables
+[13]  
+[14]      ∆←~(⍎comment_var,' at "variable"')∊(⊂'/gra/',2↑varname) TEXTREPL¨flds
+[15]      ⍎comment_var,'←',comment_var,' for ∆'
+[16]      :if ×rowsIn Comment_Retirement_Age←Comment_Retirement_Age for (⊂'variable'),flds ⍝ Add Retirement_Age comments
+[17]          Comment_Retirement_Age←Comment_Retirement_Age amend 'variable' ((⊂'/gra/',2↑varname) TEXTREPL¨Comment_Retirement_Age at 'variable')
+[18]          ⍎comment_var,'←',comment_var,' append Comment_Retirement_Age'
+[19]      :endif
+[20]  
+[21]      (flds←⊃flds) RenameVars 'gra' (2↑varname)
+[22]      0 0⍴⎕ex ⍙VALUESdict ReadDictFile 'Retirement_Age' '' 'NAMES'
+[23]  
+[24]      :if ∨/∆←~old≡¨new←DLTB¨⍎¨vars
+[25]          new←∆/new ⋄ vars←∆/vars
+[26]  
+[27]          parms←⊃spin (tab for (⊂'Field'),parmlist←(⊂'gra'),¨2↓¨vars) at 'Field' 'Type' 'Desc'
+[28]          idx←parmlist⍳parms[;1]
+[29]          parms[;1]←vars[idx] ⋄ parms[;2]←new[idx]
+[30]  
+[31]          :for ∆ :in ⎕split parms ⋄ (vars new descs)←∆
+[32]              MESS←MESS OVER vars ⍬ ((errflag/'Warning:  '),'Value for "',descs,'" in ',desc,' has changed to "',new,'"')
+[33]          :endfor
+[34]      :endif
+[35]  
+[36]      res←success MESS
+[37]  :endif
+    ∇

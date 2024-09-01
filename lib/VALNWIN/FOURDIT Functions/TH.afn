@@ -1,0 +1,20 @@
+    ∇ Z←class TH R;tag
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Syntax sweetener
+[3]   ⍝ Vern sjt21sep15
+[4]   ⍝ Renv dnp05oct15 - added unit tests and removed indentation
+[5]   ⍝ Renv dnp06oct15 - simplification
+[6]   ⍝
+[7]   ⍝?⍝ '<th>txt</th>'               ≡ '' TH 'txt'
+[8]   ⍝?⍝ '<th class="table">txt</th>' ≡ 'table' TH 'txt'
+[9]   ⍝?⍝ '<th>txt</th>'               ≡ TH 'txt'
+[10]  ⍝?⍝ '<th></th>'                  ≡ TH ''
+[11]  
+[12]  :if (2=⎕NC 'class') ⋄ :andif ~mt class
+[13]      tag←'th' xattr 'class' class
+[14]  :else
+[15]      tag←'th'
+[16]  :endif
+[17]  Z←'<',tag,'>',(aplEscape R),'</th>'  ⍝ FIXME substitute xtag when refactored
+[18]  ⍝Z←⊃,/ (⊃,/0 ((~mt R)/2) 0)↓¨ tag xtag ⊂ aplEscape R ⍝ removes the indentation '  ' and flattens the result
+    ∇

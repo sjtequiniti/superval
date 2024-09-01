@@ -1,1 +1,111 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Actives_AOS" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Actives_AOS" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmSV.fActAOS.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)[10]  "FILES" Win∆Inherits "Actsfile"[11]  GetAbsFileList "Fund"[12]  warnings←warnings OVER "Active Member Data File" Win∆FileRelative "FILES" "lrFILES"[13]  "fmSV.fActAOS.fData.edFILES" ⎕wi "text" (DLTB FILES)[14]  GetAbsFileList "Fund"[15]  warnings←warnings OVER "Active Member Data File" Win∆FileRelative "fILENAME" "lrfILENAME"[16]  "fmSV.fActAOS.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)[17]  "Format" Win∆Inherits "FormatA"[18]  PickList←"fmSV.fActAOS.fData.cbFormat" ⎕wi "list"[19]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"[20]  selection←(StripText PickList) ExactTLU DLTB StripText Format[21]  :if mt selection[22]      modified←⌈/modified,1[23]  :endif[24]  "fmSV.fActAOS.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)[25]  "fmSV.fActAOS.fData.ckUseSex" ⎕wi "value" (zwb UseSex)[26]  "fmSV.fActAOS.fData.ckUseCat" ⎕wi "value" (zwb UseCat)[27]  PickList←"fmSV.fActAOS.fData.lsCatSels" ⎕wi "list"[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels[29]      "fmSV.fActAOS.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)[30]      modified←⌈/modified,"fmSV.fActAOS.fData.lsCatSels" ⎕wi "value"[31]  :else[32]      "fmSV.fActAOS.fData.lsCatSels" ⎕wi "visible" ¯1[33]      "fmSV.fActAOS.fData.lsCatSels" ⎕wi "value" selection[34]      "fmSV.fActAOS.fData.lsCatSels" ⎕wi "visible" (¯1+2×0)[35]  :endif[36]  "fmSV.fActAOS.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)[37]  "fmSV.fActAOS.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)[38]  PickList←"fmSV.fActAOS.fCriteria.cbEntryInd" ⎕wi "list"[39]  selection←PickList ExactTLU DLTB EntryInd[40]  :if mt selection[41]      :if ~mt DLTB EntryInd[42]          warnings←warnings OVER "Previous Selection for 'Entry Based on Date of Joining' is no longer available"[43]      :endif[44]      modified←⌈/modified,1[45]  :endif[46]  "fmSV.fActAOS.fCriteria.cbEntryInd" ⎕wi "value" (¯1↑1,selection)[47]  "fmSV.fActAOS.fCriteria.ckZeroRes" ⎕wi "value" (zwb ZeroRes)[48]  PickList←"fmSV.fActAOS.fCriteria.cbNoPData" ⎕wi "list"[49]  selection←(StripText PickList) ExactTLU DLTB StripText NoPData[50]  :if mt selection[51]          "fmSV.fActAOS.fCriteria.cbNoPData" ⎕wi "text" (DLTB NoPData)[52]  :else[53]      "fmSV.fActAOS.fCriteria.cbNoPData" ⎕wi "value" selection[54]  :endif[55]  PickList←"fmSV.fActAOS.fCriteria.cbNoCData" ⎕wi "list"[56]  selection←(StripText PickList) ExactTLU DLTB StripText NoCData[57]  :if mt selection[58]          "fmSV.fActAOS.fCriteria.cbNoCData" ⎕wi "text" (DLTB NoCData)[59]  :else[60]      "fmSV.fActAOS.fCriteria.cbNoCData" ⎕wi "value" selection[61]  :endif[62]  PickList←"fmSV.fActAOS.fExit.lsRetCode" ⎕wi "list"[63]  :if 0∊⍴selection←PickList ExactTLU SStoMAT RetCode[64]      "fmSV.fActAOS.fExit.lsRetCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)[65]      modified←⌈/modified,"fmSV.fActAOS.fExit.lsRetCode" ⎕wi "value"[66]  :else[67]      "fmSV.fActAOS.fExit.lsRetCode" ⎕wi "visible" ¯1[68]      "fmSV.fActAOS.fExit.lsRetCode" ⎕wi "value" selection[69]      "fmSV.fActAOS.fExit.lsRetCode" ⎕wi "visible" 1[70]  :endif[71]  PickList←"fmSV.fActAOS.fExit.lsDISCode" ⎕wi "list"[72]  :if 0∊⍴selection←PickList ExactTLU SStoMAT DISCode[73]      "fmSV.fActAOS.fExit.lsDISCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)[74]      modified←⌈/modified,"fmSV.fActAOS.fExit.lsDISCode" ⎕wi "value"[75]  :else[76]      "fmSV.fActAOS.fExit.lsDISCode" ⎕wi "visible" ¯1[77]      "fmSV.fActAOS.fExit.lsDISCode" ⎕wi "value" selection[78]      "fmSV.fActAOS.fExit.lsDISCode" ⎕wi "visible" 1[79]  :endif[80]  PickList←"fmSV.fActAOS.fExit.lsIllCode" ⎕wi "list"[81]  :if 0∊⍴selection←PickList ExactTLU SStoMAT IllCode[82]      "fmSV.fActAOS.fExit.lsIllCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)[83]      modified←⌈/modified,"fmSV.fActAOS.fExit.lsIllCode" ⎕wi "value"[84]  :else[85]      "fmSV.fActAOS.fExit.lsIllCode" ⎕wi "visible" ¯1[86]      "fmSV.fActAOS.fExit.lsIllCode" ⎕wi "value" selection[87]      "fmSV.fActAOS.fExit.lsIllCode" ⎕wi "visible" 1[88]  :endif[89]  PickList←"fmSV.fActAOS.fExit.lsWthCode" ⎕wi "list"[90]  :if 0∊⍴selection←PickList ExactTLU SStoMAT WthCode[91]      "fmSV.fActAOS.fExit.lsWthCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)[92]      modified←⌈/modified,"fmSV.fActAOS.fExit.lsWthCode" ⎕wi "value"[93]  :else[94]      "fmSV.fActAOS.fExit.lsWthCode" ⎕wi "visible" ¯1[95]      "fmSV.fActAOS.fExit.lsWthCode" ⎕wi "value" selection[96]      "fmSV.fActAOS.fExit.lsWthCode" ⎕wi "visible" 1[97]  :endif[98]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Actives_AOS[99]      :for var :in spin Comment_Actives_AOS at "variable" "row" ⋄ (var row)←var[100]         "Actives_AOS" ParmColor ((FormFields for "variable" var) at "control"),var row 1[101]     :endfor[102] :endif[103] :if ~0∊⍴,warnings[104]     MDISPLAY DLTMB warnings,⎕tcnl[105]     Win∆AssignVars "fmSV.fActAOS"[106] :endif[107] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Actives_AOS" "" "Names"[108]     "fmSV.fActAOS" ⎕wi "modified" 0[109] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Actives_AOS" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Actives_AOS" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmSV.fActAOS.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)
+[10]  "FILES" Win∆Inherits "Actsfile"
+[11]  GetAbsFileList "Fund"
+[12]  warnings←warnings OVER "Active Member Data File" Win∆FileRelative "FILES" "lrFILES"
+[13]  "fmSV.fActAOS.fData.edFILES" ⎕wi "text" (DLTB FILES)
+[14]  GetAbsFileList "Fund"
+[15]  warnings←warnings OVER "Active Member Data File" Win∆FileRelative "fILENAME" "lrfILENAME"
+[16]  "fmSV.fActAOS.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[17]  "Format" Win∆Inherits "FormatA"
+[18]  PickList←"fmSV.fActAOS.fData.cbFormat" ⎕wi "list"
+[19]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"
+[20]  selection←(StripText PickList) ExactTLU DLTB StripText Format
+[21]  :if mt selection
+[22]      modified←⌈/modified,1
+[23]  :endif
+[24]  "fmSV.fActAOS.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)
+[25]  "fmSV.fActAOS.fData.ckUseSex" ⎕wi "value" (zwb UseSex)
+[26]  "fmSV.fActAOS.fData.ckUseCat" ⎕wi "value" (zwb UseCat)
+[27]  PickList←"fmSV.fActAOS.fData.lsCatSels" ⎕wi "list"
+[28]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels
+[29]      "fmSV.fActAOS.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)
+[30]      modified←⌈/modified,"fmSV.fActAOS.fData.lsCatSels" ⎕wi "value"
+[31]  :else
+[32]      "fmSV.fActAOS.fData.lsCatSels" ⎕wi "visible" ¯1
+[33]      "fmSV.fActAOS.fData.lsCatSels" ⎕wi "value" selection
+[34]      "fmSV.fActAOS.fData.lsCatSels" ⎕wi "visible" (¯1+2×0)
+[35]  :endif
+[36]  "fmSV.fActAOS.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)
+[37]  "fmSV.fActAOS.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)
+[38]  PickList←"fmSV.fActAOS.fCriteria.cbEntryInd" ⎕wi "list"
+[39]  selection←PickList ExactTLU DLTB EntryInd
+[40]  :if mt selection
+[41]      :if ~mt DLTB EntryInd
+[42]          warnings←warnings OVER "Previous Selection for 'Entry Based on Date of Joining' is no longer available"
+[43]      :endif
+[44]      modified←⌈/modified,1
+[45]  :endif
+[46]  "fmSV.fActAOS.fCriteria.cbEntryInd" ⎕wi "value" (¯1↑1,selection)
+[47]  "fmSV.fActAOS.fCriteria.ckZeroRes" ⎕wi "value" (zwb ZeroRes)
+[48]  PickList←"fmSV.fActAOS.fCriteria.cbNoPData" ⎕wi "list"
+[49]  selection←(StripText PickList) ExactTLU DLTB StripText NoPData
+[50]  :if mt selection
+[51]          "fmSV.fActAOS.fCriteria.cbNoPData" ⎕wi "text" (DLTB NoPData)
+[52]  :else
+[53]      "fmSV.fActAOS.fCriteria.cbNoPData" ⎕wi "value" selection
+[54]  :endif
+[55]  PickList←"fmSV.fActAOS.fCriteria.cbNoCData" ⎕wi "list"
+[56]  selection←(StripText PickList) ExactTLU DLTB StripText NoCData
+[57]  :if mt selection
+[58]          "fmSV.fActAOS.fCriteria.cbNoCData" ⎕wi "text" (DLTB NoCData)
+[59]  :else
+[60]      "fmSV.fActAOS.fCriteria.cbNoCData" ⎕wi "value" selection
+[61]  :endif
+[62]  PickList←"fmSV.fActAOS.fExit.lsRetCode" ⎕wi "list"
+[63]  :if 0∊⍴selection←PickList ExactTLU SStoMAT RetCode
+[64]      "fmSV.fActAOS.fExit.lsRetCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[65]      modified←⌈/modified,"fmSV.fActAOS.fExit.lsRetCode" ⎕wi "value"
+[66]  :else
+[67]      "fmSV.fActAOS.fExit.lsRetCode" ⎕wi "visible" ¯1
+[68]      "fmSV.fActAOS.fExit.lsRetCode" ⎕wi "value" selection
+[69]      "fmSV.fActAOS.fExit.lsRetCode" ⎕wi "visible" 1
+[70]  :endif
+[71]  PickList←"fmSV.fActAOS.fExit.lsDISCode" ⎕wi "list"
+[72]  :if 0∊⍴selection←PickList ExactTLU SStoMAT DISCode
+[73]      "fmSV.fActAOS.fExit.lsDISCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[74]      modified←⌈/modified,"fmSV.fActAOS.fExit.lsDISCode" ⎕wi "value"
+[75]  :else
+[76]      "fmSV.fActAOS.fExit.lsDISCode" ⎕wi "visible" ¯1
+[77]      "fmSV.fActAOS.fExit.lsDISCode" ⎕wi "value" selection
+[78]      "fmSV.fActAOS.fExit.lsDISCode" ⎕wi "visible" 1
+[79]  :endif
+[80]  PickList←"fmSV.fActAOS.fExit.lsIllCode" ⎕wi "list"
+[81]  :if 0∊⍴selection←PickList ExactTLU SStoMAT IllCode
+[82]      "fmSV.fActAOS.fExit.lsIllCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[83]      modified←⌈/modified,"fmSV.fActAOS.fExit.lsIllCode" ⎕wi "value"
+[84]  :else
+[85]      "fmSV.fActAOS.fExit.lsIllCode" ⎕wi "visible" ¯1
+[86]      "fmSV.fActAOS.fExit.lsIllCode" ⎕wi "value" selection
+[87]      "fmSV.fActAOS.fExit.lsIllCode" ⎕wi "visible" 1
+[88]  :endif
+[89]  PickList←"fmSV.fActAOS.fExit.lsWthCode" ⎕wi "list"
+[90]  :if 0∊⍴selection←PickList ExactTLU SStoMAT WthCode
+[91]      "fmSV.fActAOS.fExit.lsWthCode" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[92]      modified←⌈/modified,"fmSV.fActAOS.fExit.lsWthCode" ⎕wi "value"
+[93]  :else
+[94]      "fmSV.fActAOS.fExit.lsWthCode" ⎕wi "visible" ¯1
+[95]      "fmSV.fActAOS.fExit.lsWthCode" ⎕wi "value" selection
+[96]      "fmSV.fActAOS.fExit.lsWthCode" ⎕wi "visible" 1
+[97]  :endif
+[98]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Actives_AOS
+[99]      :for var :in spin Comment_Actives_AOS at "variable" "row" ⋄ (var row)←var
+[100]         "Actives_AOS" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[101]     :endfor
+[102] :endif
+[103] :if ~0∊⍴,warnings
+[104]     MDISPLAY DLTMB warnings,⎕tcnl
+[105]     Win∆AssignVars "fmSV.fActAOS"
+[106] :endif
+[107] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Actives_AOS" "" "Names"
+[108]     "fmSV.fActAOS" ⎕wi "modified" 0
+[109] :endif
+    ∇

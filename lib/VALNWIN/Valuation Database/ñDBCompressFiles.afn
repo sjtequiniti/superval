@@ -1,0 +1,62 @@
+    ∇ newrecsize←⍙DBCompressFiles zip;prefix;filename;file;recs;xxx;tie
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Summarise Database records native files
+[3]   
+[4]   (3 6 'Updating Database Results Tables') Win∆ProgressBar2 'FileUpdate'
+[5]   
+[6]   (1 (10+4×aosind) 'Summarising ResultsData Records') Win∆ProgressBar2 'MemberUpdate'
+[7]   ⍙DBWriteTempDB 1 ⍝ Write any remaining records to Temp DB
+[8]   :if ~mt prefix←⍙dbfundprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[9]   recs←('⍙dbfund' prefix) ⍙DBSummarise ⍙dbfundtie ⍙dbfundcols 17 1 zip
+[10]  newrecsize←recs×(AccessSizeTable for 'Table' 'ResultsData') at 'Jet'
+[11]  
+[12]  :if ~neIND
+[13]      (2 (10+4×aosind) 'Summarising MemberResults Records') Win∆ProgressBar2 'MemberUpdate'
+[14]      :if ~mt prefix←xl_membprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[15]      recs←('xl_memb' prefix) ⍙DBSummarise xl_membtie xl_membcols 17 1 zip
+[16]      newrecsize←newrecsize+recs×(AccessSizeTable for 'Table' 'MemberResults') at 'Jet'
+[17]  
+[18]      (3 (10+4×aosind) 'Summarising MemberData Records') Win∆ProgressBar2 'MemberUpdate'
+[19]      :if ~mt prefix←xl_ndataprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[20]      recs←('xl_ndata' prefix) ⍙DBSummarise xl_ndatatie xl_ndatacols 17 (summopt∨csvind∨aggopt[0]) zip
+[21]      newrecsize←newrecsize+recs×(AccessSizeTable for 'Table' 'NumMemberData') at 'Jet'
+[22]  
+[23]      :if ~mt prefix←xl_cdataprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[24]      recs←('xl_cdata' prefix) ⍙DBSummarise xl_cdatatie xl_cdatacols 20 0 zip
+[25]      newrecsize←newrecsize+recs×(AccessSizeTable for 'Table' 'CharMemberData') at 'Jet'
+[26]  
+[27]      :if aosind
+[28]          (4 14 'Summarising AOSMember Records') Win∆ProgressBar2 'MemberUpdate'
+[29]          :if ~mt prefix←xl_maosprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[30]          ('xl_maos' prefix) ⍙DBSummarise xl_maostie xl_maoscols 17 1 zip
+[31]          newrecsize←newrecsize+recs×(AccessSizeTable for 'Table' 'AOSMember') at 'Jet'
+[32]  
+[33]          (5 14 'Summarising AOSResults Records') Win∆ProgressBar2 'MemberUpdate'
+[34]          :if ~mt prefix←⍙dbaosprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[35]          recs←('⍙dbaos' prefix) ⍙DBSummarise ⍙dbaostie ⍙dbaoscols 17 1 zip
+[36]          newrecsize←newrecsize+recs×(AccessSizeTable for 'Table' 'AOSResults') at 'Jet'
+[37]      :endif
+[38]  :endif
+[39]  
+[40]  :if fscopt
+[41]      ((4+2×aosind) (10+4×aosind) 'Summarising AltScenData Records') Win∆ProgressBar2 'MemberUpdate'
+[42]      :if 0≠⍙dbscenrow ⋄ XL_StoreScen ⋄ :endif ⍝ Write any remaining records to Temp DB
+[43]      :if ~mt prefix←⍙dbscenprefix ⋄ prefix←⍎¨prefix ⋄ :endif
+[44]      :if ~inMemory ⋄ :andif ~parallel
+[45]          :if ~mt ⍙dbscenlist
+[46]              :if 1800000000<⎕nsize ⍙dbscentie ⍝ New File if over 1.8 Gig
+[47]                  filename←InputDir,'SVscenDB {',(⍕1+↑⍴⍙dbscenlist),'}.csv'
+[48]                  filename ⎕xnrename ⍙dbscentie ⋄ ⎕nuntie ⍙dbscentie
+[49]                  ⍙dbscenlist←⍙dbscenlist OVER filename
+[50]                  ⍙dbscentie←⍙DBCreateTempDB ⍙dbscenfile
+[51]              :endif
+[52]              :for file :in ⎕split ⍙dbscenlist
+[53]                  :if ~file NTIE (tie←'Native' TieNumber file),2 ⋄ →⎕lc ⋄ :endif
+[54]                  xxx←('⍙dbscen' prefix) ⍙DBSummarise tie ⍙dbscencols 17 1 zip ⍙dbscentie
+[55]              :endfor
+[56]          :endif
+[57]      :endif
+[58]      recs←('⍙dbscen' prefix) ⍙DBSummarise ⍙dbscentie ⍙dbscencols 17 1 zip
+[59]      newrecsize←newrecsize+recs×(AccessSizeTable for 'Table' 'AltScenData') at 'Jet'
+[60]  :endif
+    ∇

@@ -1,0 +1,31 @@
+    ∇ ctx DumpInterface array;tno;stack;rws;xxx;table;lineate;PP;cpn;thd;tbd;tbl;long;XTAG_NO_ESCAPE;row;tr;th;join
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝  dump Ind∆Output array to XHTML document SJT Dec2010
+[3]   tno←OPEN∆HTM∆FILE OutputDir,'Interface_',ctx
+[4]   INTERFACE_HTML_HDR ⎕NAPPEND tno
+[5]    XTAG_NO_ESCAPE←1                                                               ⍝ allow <br/> in table cells
+[6]   
+[7]    xxx←⎕FX⊃"Z←L join    R"   "Z←(-⍴L)↓↑,/R,¨⊂L"
+[8]    xxx←⎕FX⊃"Z←  lineate Z"   ":If 2=⍴⍴Z ⋄ :AndIf ×↑⍴Z ⋄ Z←'<br/>' join ⊂[⎕IO+1]Z ⋄ :Else ⋄ Z←,Z ⋄ :EndIf"
+[9]    xxx←⎕FX⊃"Z←L stack   Z"   ":If 1=⍴⍴Z ⋄ :AndIf L=⍴Z ⋄ Z←,[⎕IO+.5] Z ⋄ :EndIf"   ⍝ long vectors into columns
+[10]  
+[11]   cpn←⊂'caption' xtag 'Member data'
+[12]   thd← 'thead' xtag 'tr' xtag (⊂'th')xtag¨ 'Name' 'Sex' 'DOB'
+[13]   tbd← 'tbody' xtag 'tr' xtag (⊂'th')xtag¨⍕¨NAME   SEX   DOB
+[14]   tbl← 'table class="member"' xtag cpn,thd,tbd
+[15]   (↑,/tbl,¨⎕TCNL) ⎕NAPPEND tno
+[16]  
+[17]   th←(⊂'th')xtag¨array[⎕IO;]
+[18]   rws←''
+[19]   :For row :In 1↓⍳↑⍴array
+[20]      tr←'tr class="',(↑(2⊤row)⌽'plain' 'shaded'),'"'
+[21]      long←⌈/↑¨⍴¨(1=↑¨⍴¨⍴¨array[row;])/array[row;]                                ⍝ length of 'long' vectors
+[22]      rws←rws,tr xtag th
+[23]      rws←rws,tr xtag (⊂'td')xtag¨lineate¨Dumpfmt¨long stack¨array[row;]         ⍝ SV5000146
+[24]   :EndFor
+[25]   table←'table' xtag rws
+[26]   (↑,/table,¨⎕TCNL) ⎕NAPPEND tno
+[27]  
+[28]   (↑,/'  </body>' '</html>',¨⎕TCNL) ⎕NAPPEND tno
+[29]   ⎕NUNTIE tno
+    ∇

@@ -1,0 +1,41 @@
+    ∇ obj←indexed ⍙DBCreateTable arg;table;lookup;tab;∆;field;null;type;size
+[1]   ⍝ MAINWIN.sf#11
+[2]   ⍝ Create an Access Table
+[3]   ⍝  indexed indices if table has to be indexed
+[4]   ⍝  arg is the name of the table and the lookup into ⍙SCHEMADict (which contains details of the table)
+[5]   ⍝  uses ⍙SCHEMAdict
+[6]   
+[7]   :if 2=≡arg ⋄ (lookup table)←arg
+[8]   :else      ⋄  lookup←table ←arg
+[9]   :endif
+[10]  
+[11]  tab←⍙SCHEMADict at lookup
+[12]  tab←tab for ∊ZWB¨(⊂'()') embrace¨tab at 'Alternate' ⍝ Alternate Fields for different licences
+[13]  tab←tab for ∊ZWB¨(⊂'()') embrace¨tab at 'Relevant'  ⍝ Relevant Fields for different options
+[14]  
+[15]  0 0⍴'ADOtbl' ⎕wi 'Create' 'ADOX.Table'
+[16]  'ADOtbl' ⎕wi 'xName' table
+[17]  
+[18]  :for ∆ :in spin tab at 'Fields' 'Null' 'ADOType' 'Size' ⋄ (field null type size)←∆
+[19]      0 0⍴'ADOcol' ⎕wi 'Create' 'ADOX.Column'
+[20]      'ADOcol' ⎕wi 'xName' field
+[21]      'ADOcol' ⎕wi 'xType' ('ADOcol' ⎕wi type)
+[22]      :if 0≠size←zwb size ⋄ 'ADOcol' ⎕wi 'xDefinedSize' size ⋄ :endif
+[23]      :if 'Y'=↑null ⋄ 'ADOcol' ⎕wi 'xAttributes' ('ADOcol' ⎕wi 'adColNullable') ⋄ :endif
+[24]      ('ADOtbl' ⎕wi 'xColumns') ⎕wi 'xAppend' ('ADOcol' ⎕wi 'obj')
+[25]      0 0⍴'ADOcol' ⎕wi 'Delete'
+[26]  :endfor
+[27]  
+[28]  :if indexed ⋄ :andif ∨/indexed←'Y'=↑¨tab at 'Indexed' ⍝ Table has an Index
+[29]      0 0⍴'ADOkey' ⎕wi 'Create' 'ADOX.Key'
+[30]      'ADOkey' ⎕wi 'xName' 'PrimaryKey'
+[31]      'ADOkey' ⎕wi 'xType' ('ADOkey' ⎕wi 'adKeyPrimary')
+[32]      :for field :in indexed/tab at 'Fields'
+[33]          ('ADOkey' ⎕wi 'xColumns') ⎕wi 'xAppend' field
+[34]      :endfor
+[35]      ('ADOtbl' ⎕wi 'xKeys') ⎕wi 'xAppend' ('ADOkey' ⎕wi 'obj')
+[36]      0 0⍴'ADOkey' ⎕wi 'Delete'
+[37]  :endif
+[38]  
+[39]  obj←'ADOtbl' ⎕wi 'obj' ⋄ 0 0⍴'ADOtbl' ⎕wi 'Delete'
+    ∇

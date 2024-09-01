@@ -1,0 +1,46 @@
+    ∇ FOURDITclose type;xxx;body;title;css;js
+[1]   ⍝ VALNWIN.sf#19
+[2]   ⍝ Close Audit file and produce Varprint for Member
+[3]   ⍝ type is either 'Basis' or 'Member'
+[4]   ⍝ Reads: AuditBTie AuditMTie AuditFile AuditTie cLIENT StyleDir
+[5]   ⍝ Sets: AuditBFile AuditBTie AuditMFile AuditMTie AuditFile AuditTie
+[6]   ⍝ Vern: sjt22sep15
+[7]   ⍝ Revn: sjt17nov15 * JavaScript
+[8]   ⍝       sjt12oct17 * banner header
+[9]   
+[10]  :select type
+[11]  :case 'Basis'
+[12]      ⍝ Leave AuditBFile to be erased at next valuation
+[13]      (1 3⍴0 ¯1) ⎕FSTAC AuditBTie
+[14]      ⎕FUNTIE AuditBTie
+[15]  
+[16]      ⍝ Expunge semiglobals
+[17]      xxx←⎕EX 'AuditBFile AuditBTie'
+[18]  
+[19]  :case 'Member'
+[20]  
+[21]      ⍝ Leave AuditMFile to be erased at next valuation
+[22]      (1 3⍴0 ¯1) ⎕FSTAC AuditMTie
+[23]      ⎕FUNTIE AuditMTie
+[24]  
+[25]      ⍝ Expunge semiglobals
+[26]      xxx←⎕EX 'AuditMFile AuditMTie'
+[27]  
+[28]  :case 'Benefits'
+[29]  ⍝⍝  title←'Audit report for valuation of ',cLIENT,' at ',DLTB 0 DATESPELL ⎕TS
+[30]      title←'Audit report at ',(DLTB 0 DATESPELL ⎕TS),' for valuation of ',cLIENT,' with SuperVal ',aplEscape version
+[31]      ∆←( ('img' xattr 'src' (StyleDir,'superval.ico') ) xtag '' ),title
+[32]      ∆←  ('div' xattr ('id' 'banner')('class' 'small')) xtag ⊂∆
+[33]      body←join ∆, FOURDITToHtml AuditBTie AuditMTie AuditTie
+[34]      (css js)←(⊂StyleDir),¨'audit.css' 'varprint4.js'
+[35]      (body title css js) writeHtmlFile OutputDir,'\' Win∆Child AuditFile asExt 'HTM'
+[36]  
+[37]      ⍝ Leave AuditFile to be erased at next valuation
+[38]      (1 3⍴0 ¯1) ⎕FSTAC AuditTie
+[39]      ⎕FUNTIE AuditTie
+[40]  
+[41]      ⍝ Expunge semiglobals
+[42]      xxx←⎕EX 'AuditFile AuditTie'
+[43]  
+[44]  :endselect
+    ∇

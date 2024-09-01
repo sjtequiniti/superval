@@ -1,1 +1,27 @@
-    ∇ Z←wDBR_EVAL R;pupd;pct;adj;revn;yrs;inc;pup;fRev;fInc;ttl;revf;amt[1]   ⍝ DEFWIN.sf#4[2]   ⍝ Evaluate DBR pensions 1 and 2. (See DATADBR1 DATADBR2 et al,)[3]   ⍝ V8.50 [EnhDef] DT/SJT summer 2010[4]   ⍝ reads ext vars: lI NX[5]   ⍝ ⎕IO=1[6]    (pupd amt revf revn yrs pct inc adj ttl)←R[7]   [8]    :If 0≠pup←×/amt pct adj revf[9]       fRev←revn wDEF_INCDBR yrs 'YN'                                                 ⍝ [X][10]      fInc←'SM34'=↑inc                                                            ⍝ no exit rounding [I][11]  [12]      Z←pup × fRev ∘.× fInc                                                       ⍝ [XI][13]  [14]  ⍝⍝⍝    :If test[15]  ⍝⌿⍝    TRACE_Def 'h1' xtag ttl,' from NS PUPs'[16]  ⍝⌿⍝    TRACE_Def 'p'  xtag 'Data field: ',pupd,'= ',(⍕amt),' * ',(⍕100×pct),'% (',(↑(×adj)⌽'ex' 'in'),'cluded)'[17]  ⍝⌿⍝    TRACE_Def 'p'  xtag 'Increase rate: ',('SM34'⍳↑inc)⊃'Special' 'Main' '3' '4'[18]  ⍝⌿⍝    'Revaluation' TRACE_Def 'Age' 'fRev'⍪ X,[.5] PP rnd fRev[19]  ⍝⌿⍝    'Contribution to spouse&rsquo;s pension' TRACE_Def IHEAD⍪X, rnd Z[20]  ⍝⍝⍝    :EndIf[21]  [22]   :Else[23]      Z←lX lI⍴0                                                                   ⍝ [XI][24]   :EndIf[25]      ∇
+    ∇ Z←wDBR_EVAL R;pupd;pct;adj;revn;yrs;inc;pup;fRev;fInc;ttl;revf;amt
+[1]   ⍝ DEFWIN.sf#4
+[2]   ⍝ Evaluate DBR pensions 1 and 2. (See DATADBR1 DATADBR2 et al,)
+[3]   ⍝ V8.50 [EnhDef] DT/SJT summer 2010
+[4]   ⍝ reads ext vars: lI NX
+[5]   ⍝ ⎕IO=1
+[6]    (pupd amt revf revn yrs pct inc adj ttl)←R
+[7]   
+[8]    :If 0≠pup←×/amt pct adj revf
+[9]       fRev←revn wDEF_INCDBR yrs 'YN'                                                 ⍝ [X]
+[10]      fInc←'SM34'=↑inc                                                            ⍝ no exit rounding [I]
+[11]  
+[12]      Z←pup × fRev ∘.× fInc                                                       ⍝ [XI]
+[13]  
+[14]  ⍝⍝⍝    :If test
+[15]  ⍝⌿⍝    TRACE_Def 'h1' xtag ttl,' from NS PUPs'
+[16]  ⍝⌿⍝    TRACE_Def 'p'  xtag 'Data field: ',pupd,'= ',(⍕amt),' * ',(⍕100×pct),'% (',(↑(×adj)⌽'ex' 'in'),'cluded)'
+[17]  ⍝⌿⍝    TRACE_Def 'p'  xtag 'Increase rate: ',('SM34'⍳↑inc)⊃'Special' 'Main' '3' '4'
+[18]  ⍝⌿⍝    'Revaluation' TRACE_Def 'Age' 'fRev'⍪ X,[.5] PP rnd fRev
+[19]  ⍝⌿⍝    'Contribution to spouse&rsquo;s pension' TRACE_Def IHEAD⍪X, rnd Z
+[20]  ⍝⍝⍝    :EndIf
+[21]  
+[22]   :Else
+[23]      Z←lX lI⍴0                                                                   ⍝ [XI]
+[24]   :EndIf
+[25]  
+    ∇

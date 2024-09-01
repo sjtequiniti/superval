@@ -1,0 +1,22 @@
+    ∇ res←GetLibraryFiles;⎕elx;File;z;tieno;index;n
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Get a list of Parameter Library Files
+[3]   
+[4]   z←⍳0 ⋄ ⎕elx←'n←0 ⋄ →end'
+[5]   
+[6]   res←UPPERCASE ⎕xlib LibraryDir,'*.sf'
+[7]   
+[8]   :for File :in res←m2n res
+[9]       File←LibraryDir,File
+[10]      :if n←0=File FSTIE tieno←TieNumber File ⍝ Can tie it!
+[11]      :andif n←1<(⎕fsize tieno)[2] ⍝ Has at least 1 component
+[12]      :andif n←2=⍴⍴index←⎕fread tieno,1 ⍝ 2 dimensional index
+[13]      :andif n←2=≡index ⍝ with nested Index - any country
+[14]      :andif n←index[2;index[1;]⍳⊂'∆_Name']≡⊂'ClientFile' ⍝ of the right type
+[15]      :andif n←index[2;index[1;]⍳⊂'∆_Code']≡⊂(3 2⍴'AUUKSA')[1+uk;] ⍝ of the right Country
+[16]      :endif
+[17]  end:z←z,n ⋄ ⎕funtie tieno
+[18]  :endfor
+[19]  
+[20]  res←'Library Files' OVER z⌿⊃res
+    ∇

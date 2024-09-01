@@ -1,1 +1,20 @@
-    ∇ Error←Error VALID∆FILE tieno;data;X;size;recl[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Validates the Structure of an Input Data File[3]   ⍝ ie Fixed Record Lengths, No TABS[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 3/2000 Windowised[7]   size←⍴data←'ASCII' Read∆DataFile tieno,size,0,(size←⎕NSIZE tieno),0 ⍝ Check first Chunk![8]   [9]   :if ⎕tcnul∊data ⋄ Error←'NotASCII' ⋄ :return ⋄ :endif ⍝ Not an ASCII File[10]  :if 10≥size ⋄ Error←'FileEmpty' ⋄ :return ⋄ :endif ⍝ Assume at least 10 chars[11]  [12]  :if (⎕io+size)≠data⍳⎕AV[9+⎕io] ⋄ Error←'FileTABS' ⋄ :return ⋄ :endif ⍝ Check for TABS[13]  [14]  X←⎕av[13+⎕io]=data ⍝ Find record end - first NL[15]  :if ~X≡(1↓⎕av[10+⎕io]=data),0 ⋄ Error←'InvEOR' ⋄ :return ⋄ :endif[16]  0 0⍴⎕ex 'data' ⍝⍝ Free up some memory[17]  :if 1=recl←1+1↑X←(~⎕io)+X/⍳size ⋄ Error←'InvEOR' ⋄ :return ⋄ :endif[18]  :if ~^/recl=DIFF X ⋄ Error←'VaryLength' ⋄ :return ⋄ :endif ⍝ Are Records the Same Length    ∇
+    ∇ Error←Error VALID∆FILE tieno;data;X;size;recl
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Validates the Structure of an Input Data File
+[3]   ⍝ ie Fixed Record Lengths, No TABS
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 3/2000 Windowised
+[7]   size←⍴data←'ASCII' Read∆DataFile tieno,size,0,(size←⎕NSIZE tieno),0 ⍝ Check first Chunk!
+[8]   
+[9]   :if ⎕tcnul∊data ⋄ Error←'NotASCII' ⋄ :return ⋄ :endif ⍝ Not an ASCII File
+[10]  :if 10≥size ⋄ Error←'FileEmpty' ⋄ :return ⋄ :endif ⍝ Assume at least 10 chars
+[11]  
+[12]  :if (⎕io+size)≠data⍳⎕AV[9+⎕io] ⋄ Error←'FileTABS' ⋄ :return ⋄ :endif ⍝ Check for TABS
+[13]  
+[14]  X←⎕av[13+⎕io]=data ⍝ Find record end - first NL
+[15]  :if ~X≡(1↓⎕av[10+⎕io]=data),0 ⋄ Error←'InvEOR' ⋄ :return ⋄ :endif
+[16]  0 0⍴⎕ex 'data' ⍝⍝ Free up some memory
+[17]  :if 1=recl←1+1↑X←(~⎕io)+X/⍳size ⋄ Error←'InvEOR' ⋄ :return ⋄ :endif
+[18]  :if ~^/recl=DIFF X ⋄ Error←'VaryLength' ⋄ :return ⋄ :endif ⍝ Are Records the Same Length
+    ∇

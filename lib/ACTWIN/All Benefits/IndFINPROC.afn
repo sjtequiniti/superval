@@ -1,1 +1,193 @@
-    ∇ IndFINPROC;escfact;DYNRAT;IndILLFACT;RetStart;RetEnd;REVPERIOD;REVMULT;IndREVPEN;IndSREVPEN;IndTStart;IndSTStart;IndTERPEN;IndSTERPEN;IndPUPNRA;IndPUWNRA;IndPUPStart;IndPUWStart;IndFREVPEN;IndSFREVPEN;IndFStart;IndSFStart;IndFERPEN;IndSFERPEN;IndFPUPNRA;IndFPUWNRA;IndFPUPStart;IndFPUWStart;PUPStart;PUPEnd;DYNINC∆L;Type∆l;RetAge;IndTILLPEN;IndFILLPEN;IndTILLERPEN;IndFILLERPEN;IndSTILLPEN;IndSFILLPEN;IndSTILLERPEN;IndSFILLERPEN;IndTILLStart;IndFILLStart;IndSTILLStart;IndSFILLStart;IndCASH;IndILLCASH;IndFCASH;IndFILLCASH;IndPUCASH;IndFPUCASH;IERFAC;∆A;∆B;SEXCESS;FSEXCESS;BARBADJ∆L;COMPFACT;NoRF;IndPHITERPEN;IndPHISTERPEN;IndPHISFERPEN;IndPHIFERPEN;IndPHICASH;IndPHIFCASH;IndPHITStart;IndPHIFStart;IndPHISTStart;IndPHISFStart;LRFdedn[1]   ⍝ ACTWIN.sf#4[2]   ⍝ Processing Pensions from NRA and Start Age[3]   ⍝ Pension escalation from retirement to Start Age[4]   ⍝[5]   ⍝⍝⍝ :if test ⋄ ∆A←,↑¯2↑'0',⍕1+slice ⋄ ∆B←,¯1↑⍕1+slice ⋄ :endif[6]   ⍝⌿⍝ ∆A←,↑¯2↑'0',⍕1+slice ⋄ ∆B←,¯1↑⍕1+slice[7]   :if barbind[8]       :if revdefind=1 ⋄ IERFAC←IndCASH∆Ind⊃BARBFACF BARBFACFC[9]       :else           ⋄ IERFAC←IndCASH∆Ind⊃BARBFAC  BARBFACC[10]      :endif[11]  :else[12]      :if revdefind=1 ⋄ IERFAC←IndCASH∆Ind⊃ERFACF ERFACFC[13]      :else           ⋄ IERFAC←IndCASH∆Ind⊃ERFAC  ERFACC[14]      :endif[15]  :endif[16]  [17]  NoRF←(ENX,LNX)/(~WARERFind),~WARLRFind ⍝ Apply Early/Late Retirement Factors[18]  IndTERPEN ←IndTPEN ×     IERFAC       ⋄ IndFERPEN ←IndFPEN ×     IERFAC[19]  IndSTERPEN←IndSTPEN×NoRF+IERFAC×~NoRF ⋄ IndSFERPEN←IndSFPEN×NoRF+IERFAC×~NoRF[20]  :if PHI[21]      IndPHITERPEN ←IndPHITPEN ×(NX,NX)⍴     IERFAC       ⋄ IndPHIFERPEN ←IndPHIFPEN ×(NX,NX)⍴     IERFAC[22]      IndPHISTERPEN←IndPHISTPEN×(NX,NX)⍴NoRF+IERFAC×~NoRF ⋄ IndPHISFERPEN←IndPHISFPEN×(NX,NX)⍴NoRF+IERFAC×~NoRF[23]  :endif[24]  ⍝ 8.47.05 did not allow for LRF not applying on post NRA accrual[25]  :if servind ⋄ :andif LRFApplies ⍝ LRF only to Pre NRA Pension[26]                            IndTERPEN←    IndTERPEN-    IndTPEN∆Post×        LRFdedn←IERFAC -×IERFAC[27]      :if PHI ⋄          IndPHITERPEN← IndPHITERPEN- IndPHITPEN∆Post×(NX,NX)⍴LRFdedn ⋄ :endif[28]      :if WARLRFind[29]                           IndSTERPEN←   IndSTERPEN-   IndSTPEN∆Post×        LRFdedn[30]          :if PHI ⋄     IndPHISTERPEN←IndPHISTERPEN-IndPHISTPEN∆Post×(NX,NX)⍴LRFdedn ⋄ :endif[31]      :endif[32]      :if slice=0[33]                            IndFERPEN←    IndFERPEN-    IndTPEN∆Post×        LRFdedn[34]          :if PHI ⋄      IndPHIFERPEN← IndPHIFERPEN- IndPHITPEN∆Post×(NX,NX)⍴LRFdedn ⋄ :endif[35]          :if WARLRFind ⋄  IndSFERPEN←   IndSFERPEN-   IndSTPEN∆Post×        LRFdedn[36]              :if PHI ⋄ IndPHISFERPEN←IndPHISFERPEN-IndPHISTPEN∆Post×(NX,NX)⍴LRFdedn ⋄ :endif[37]          :endif[38]      :endif[39]  :endif[40]  :if IndCASH←IndFCASH←IndPHICASH←IndPHIFCASH←,IndCASH∆Ind[41]                   IndCASH←IndTERPEN    ⋄    IndFCASH←IndFERPEN    ⋄    IndTERPEN←   IndFERPEN←   IndSTERPEN←   IndSFERPEN←0[42]                   IndCASHONTOP[dynind; ]←   IndCASHONTOP[dynind; ]+   IndCASH[43]      :if PHI ⋄ IndPHICASH←IndPHITERPEN ⋄ IndPHIFCASH←IndPHIFERPEN ⋄ IndPHITERPEN←IndPHIFERPEN←IndPHISTERPEN←IndPHISFERPEN←0[44]                IndPHICASHONTOP[dynind;;]←IndPHICASHONTOP[dynind;;]+IndPHICASH ⋄ :endif[45]  :endif[46]  :if ILLIND≠0 ⋄ :andif ~ppf ⍝ Apply Ill Health Reduction Factors[47]      IndILLFACT←IndCASH∆Ind⊃ILLFACT ILLFACTC[48]      IndTILLPEN← IndILLTPEN+IndPROSPEN ×ILLFRAC×(ILLIND=2) ⍝⍝⍝ FIXME: Allow for ILLIND=3[49]      IndFILLPEN←IndFILLTPEN+IndFPROSPEN×ILLFRAC×(ILLIND=2)[50]  [51]  ⍝⍝⍝ Split Prospective according to Spreading Method (STYPE or STYPEC)[52]  [53]      IndTILLERPEN←IndTILLPEN×IndILLFACT ⋄ IndFILLERPEN←IndFILLPEN×IndILLFACT[54]      IndSTILLPEN← IndILLSTPEN+ SEXCESS←IndSPROSPEN ×ILLFRAC×(ILLIND=2)[55]      IndSFILLPEN←IndSFILLTPEN+FSEXCESS←IndSFPROSPEN×ILLFRAC×(ILLIND=2)[56]      :if WIHERFind ⋄ IndSTILLERPEN←IndSTILLPEN×IndILLFACT ⋄ IndSFILLERPEN←IndSFILLPEN×IndILLFACT[57]      :else         ⋄ IndSTILLERPEN←IndSTILLPEN            ⋄ IndSFILLERPEN←IndSFILLPEN[58]      :endif[59]      :if IndILLCASH←IndFILLCASH←IndCASH∆Ind[60]          IndILLCASH←IndTILLERPEN ⋄ IndFILLCASH←IndFILLERPEN[61]          IndTILLERPEN←IndFILLERPEN←IndSTILLERPEN←IndSFILLERPEN←0[62]          IndILLCASHONTOP[dynind;]←IndILLCASHONTOP[dynind;]+IndILLCASH[63]      :endif[64]  :endif[65]  ⍝ Pension escalation between retirement and start[66]  :if ppf ⍝ Special treated as no increases - all the rest trested as increasing[67]      :if sliceup=0 ⋄ DYNRAT←201⍴1[68]      :else         ⋄ DYNRAT←DYNRATPPF[69]      :endif[70]  :else[71]      :if isNPCR ⍝ Overwrite for capped Accrued Benefits[72]          ⍝ Special treated as Pre 97 - all the rest trested as Post 97[73]          :if dynind2=0 ⋄ DYNRAT←DYNRATPre[74]          :else         ⋄ DYNRAT←DYNRATPost[75]          :endif[76]      :else[77]          :select dynind2[78]          :case 0 ⋄ DYNRAT←DYNRAT2[79]          :case 1 ⋄ DYNRAT←DYNRAT1[80]          :case 2 ⋄ DYNRAT←DYNRAT3[81]          :case 3 ⋄ DYNRAT←DYNRAT4[82]          :endselect[83]      :endif[84]  :endif[85]  RetStart←Xret⌈ IndPayStart[86]  RetEnd  ←Xret⌈↑IndPayEnd[87]  :if ~IsAccrued ⍝ Only do PUPs for accrued[88]      escfact←1⌈DYNRAT[⎕io+2×term+0⌈RetStart-↑X] CDIV DYNRAT[⎕io+2×term+0⌈Xret-↑X][89]      ⍝ Retirement pensions from Start Age[90]      IndTStart←IndTERPEN×escfact ⋄ IndSTStart←IndSTERPEN×escfact[91]      IndFStart←IndFERPEN×escfact ⋄ IndSFStart←IndSFERPEN×escfact[92]      :if PHI[93]          IndPHITStart←IndPHITERPEN×(NX,NX)⍴escfact ⋄ IndPHISTStart←IndPHISTERPEN×(NX,NX)⍴escfact[94]          IndPHIFStart←IndPHIFERPEN×(NX,NX)⍴escfact ⋄ IndPHISFStart←IndPHISFERPEN×(NX,NX)⍴escfact[95]      :endif[96]  ⍝⍝⍝    :if test[97]  ⍝⌿⍝        :if IndCASH∆Ind ⋄ AUDIT 'I0⍺ßb'[98]  ⍝⌿⍝        :else           ⋄ AUDIT 'I0⍺ßa' ⋄ AUDIT 'I1⍺ßa'[99]  ⍝⌿⍝        :endif[100] ⍝⍝⍝    :endif[101]     :if ILLIND≠0[102]         ⍝ Ill Health pensions from Start Age[103]         IndTILLStart←IndTILLERPEN×escfact ⋄ IndSTILLStart←IndSTILLERPEN×escfact[104]         IndFILLStart←IndFILLERPEN×escfact ⋄ IndSFILLStart←IndSFILLERPEN×escfact[105] ⍝⍝⍝        :if test[106] ⍝⌿⍝            :if IndCASH∆Ind[107] ⍝⌿⍝                AUDIT 'I2⍺ßb'[108] ⍝⌿⍝                :if slice=0 ⋄ AUDIT 'I3⍺ßb' ⋄ :endif[109] ⍝⌿⍝            :else[110] ⍝⌿⍝                AUDIT 'I2⍺ßa'[111] ⍝⌿⍝                :if slice=0 ⋄ AUDIT 'I3⍺ßa' ⋄ :endif[112] ⍝⌿⍝                AUDIT 'I4⍺ßa'[113] ⍝⌿⍝                :if slice=0 ⋄ AUDIT 'I5⍺ßa' ⋄ :endif[114] ⍝⌿⍝            :endif[115] ⍝⍝⍝        :endif[116]     :endif[117] :endif[118] :select dynind[119] :case 0 ⋄ BARBADJ∆L←SBARBADJ ⋄ DYNINC∆L←NDYNINC[120] :case 1 ⋄ BARBADJ∆L←MBARBADJ ⋄ DYNINC∆L←DYNINC[121] :case 2 ⋄ BARBADJ∆L←LBARBADJ ⋄ DYNINC∆L←DYNINC3[122] :case 3 ⋄ BARBADJ∆L←BARBADJ4 ⋄ DYNINC∆L←DYNINC4[123] :endselect[124] :if isNPCR ⍝ Overwrite for capped Accrued Benefits[125]     ⍝ Special treated as Pre 97 - all the rest trested as Post 97[126]     :if dynind=0 ⋄ DYNINC∆L←DYNINCPre[127]     :else        ⋄ DYNINC∆L←DYNINCPost[128]     :endif[129] :endif[130] :if ppf ⍝ Overwrite for PPF[131]     :if sliceup=0 ⋄ DYNINC∆L←1[132]     :else         ⋄ DYNINC∆L←PPFINC[133]     :endif[134] :endif[135] ⍝ Revalue pensions to NRA[136] :if RevPeriod ⋄ REVPERIOD←0⌈'YD' DURN LDATE TO NRD∆G[137] :else         ⋄ REVPERIOD←0⌈NRA∆G-XMP[138] :endif[139] :if REVMULT←~ppf[140]     :select revdefind[141]     :case 0 ⋄ REVMULT←(1⌈REVRAT   [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV REVRAT   [⎕io+2×term+0⌈XMP-↑X])-1[142]     :case 1 ⋄ REVMULT←(1⌈AUXREVRAT[⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV AUXREVRAT[⎕io+2×term+0⌈XMP-↑X])-1[143]     :case 2 ⋄ REVMULT←(1⌈REVRAT3  [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV REVRAT3  [⎕io+2×term+0⌈XMP-↑X])-1[144]     :endselect[145] :endif[146] IndREVPEN ←IndTPEN×1+REVMULT ⋄ IndSREVPEN ←IndSTPEN×1+REVMULT[147] IndFREVPEN←IndFPEN×1+REVMULT ⋄ IndSFREVPEN←IndSFPEN×1+REVMULT[148] ⍝[149] ⍝ Barber PUP Adjustments[150] ⍝ Paid-Up Pensions from NRA[151] IndPUPNRA ←IndREVPEN  ⋄ IndPUWNRA ←IndSREVPEN ⍝ Initialise[152] IndFPUPNRA←IndFREVPEN ⋄ IndFPUWNRA←IndSFREVPEN[153] :if barbind=0[154]     IndPUPNRA ←IndPUPNRA ×BARBADJ∆L ⋄ IndPUWNRA ←IndPUWNRA ×BARBADJ∆L[155]     IndFPUPNRA←IndFPUPNRA×BARBADJ∆L ⋄ IndFPUWNRA←IndFPUWNRA×BARBADJ∆L[156] :endif[157] :if IndPUCASH←IndFPUCASH←IndCASH∆Ind[158]     IndPUCASH←IndPUPNRA ⋄ IndFPUCASH←IndFPUPNRA[159]     IndPUPNRA←IndFPUPNRA←IndPUWNRA←IndFPUWNRA←0[160]     IndPUCASHONTOP[dynind;]←IndPUCASHONTOP[dynind;]+IndPUCASH[161] :endif[162] ⍝ Pension escalation between retirement and start[163] PUPStart←NRA∆G⌈Xret⌈IndPayStart ⍝ PUPs are not paid before NRA[164] PUPEnd  ←NRA∆G⌈Xret⌈IndPayEnd ⍝ If field is blank there is no end age[165] [166] ⍝ Paid-Up Pensions from Start Age[167] escfact←1⌈DYNRAT[⎕io+2×term+0⌈RetStart-↑X] CDIV DYNRAT[⎕io+2×term+0⌈(NRA∆G⌈XMP)-↑X][168] IndPUPStart ←IndPUPNRA ×escfact ⋄ IndPUWStart ←IndPUWNRA ×escfact[169] IndFPUPStart←IndFPUPNRA×escfact ⋄ IndFPUWStart←IndFPUWNRA×escfact[170] ⍝⍝⍝ :if test[171] ⍝⌿⍝    :if IndCASH∆Ind ⋄ AUDIT 'I6⍺ßb'[172] ⍝⌿⍝    :else           ⋄ AUDIT 'I6⍺ßa' ⋄ AUDIT 'I7⍺ß'[173] ⍝⌿⍝    :endif[174] ⍝⌿⍝    :if ~IsAccrued[175] ⍝⌿⍝        ⍎('IPEN',¯2↑'0',⍕1+slice),'←IndTStart'[176] ⍝⌿⍝        ⍎('ISPEN',¯2↑'0',⍕1+slice),'←IndSTStart'[177] ⍝⌿⍝        ⍎('IFPEN',¯2↑'0',⍕1+slice),'←IndFStart'[178] ⍝⌿⍝        ⍎('ISFPEN',¯2↑'0',⍕1+slice),'←IndSFStart'[179] ⍝⌿⍝        :if ~ILLIND=0[180] ⍝⌿⍝            ⍎('IIPEN',¯2↑'0',⍕1+slice),'←IndTILLStart'[181] ⍝⌿⍝            ⍎('IISPEN',¯2↑'0',⍕1+slice),'←IndSTILLStart'[182] ⍝⌿⍝            ⍎('IIFPEN',¯2↑'0',⍕1+slice),'←IndFILLStart'[183] ⍝⌿⍝            ⍎('IISFPEN',¯2↑'0',⍕1+slice),'←IndSFILLStart'[184] ⍝⌿⍝        :endif[185] ⍝⌿⍝    :endif[186] ⍝⌿⍝    ⍎('IPUP',¯2↑'0',⍕1+slice),'←IndPUPStart'[187] ⍝⌿⍝    ⍎('ISPUP',¯2↑'0',⍕1+slice),'←IndPUWStart'[188] ⍝⌿⍝    ⍎('IFPUP',¯2↑'0',⍕1+slice),'←IndFPUPStart'[189] ⍝⌿⍝    ⍎('ISFPUP',¯2↑'0',⍕1+slice),'←IndFPUWStart'[190] ⍝⍝⍝ :endif[191] IndOUTPUT ProRate∆pp    ∇
+    ∇ IndFINPROC;escfact;DYNRAT;IndILLFACT;RetStart;RetEnd;REVPERIOD;REVMULT;IndREVPEN;IndSREVPEN;IndTStart;IndSTStart;IndTERPEN;IndSTERPEN;IndPUPNRA;IndPUWNRA;IndPUPStart;IndPUWStart;IndFREVPEN;IndSFREVPEN;IndFStart;IndSFStart;IndFERPEN;IndSFERPEN;IndFPUPNRA;IndFPUWNRA;IndFPUPStart;IndFPUWStart;PUPStart;PUPEnd;DYNINC∆L;Type∆l;RetAge;IndTILLPEN;IndFILLPEN;IndTILLERPEN;IndFILLERPEN;IndSTILLPEN;IndSFILLPEN;IndSTILLERPEN;IndSFILLERPEN;IndTILLStart;IndFILLStart;IndSTILLStart;IndSFILLStart;IndCASH;IndILLCASH;IndFCASH;IndFILLCASH;IndPUCASH;IndFPUCASH;IERFAC;∆A;∆B;SEXCESS;FSEXCESS;BARBADJ∆L;COMPFACT;NoRF;IndPHITERPEN;IndPHISTERPEN;IndPHISFERPEN;IndPHIFERPEN;IndPHICASH;IndPHIFCASH;IndPHITStart;IndPHIFStart;IndPHISTStart;IndPHISFStart;LRFdedn
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝ Processing Pensions from NRA and Start Age
+[3]   ⍝ Pension escalation from retirement to Start Age
+[4]   ⍝
+[5]   ⍝⍝⍝ :if test ⋄ ∆A←,↑¯2↑'0',⍕1+slice ⋄ ∆B←,¯1↑⍕1+slice ⋄ :endif
+[6]   ⍝⌿⍝ ∆A←,↑¯2↑'0',⍕1+slice ⋄ ∆B←,¯1↑⍕1+slice
+[7]   :if barbind
+[8]       :if revdefind=1 ⋄ IERFAC←IndCASH∆Ind⊃BARBFACF BARBFACFC
+[9]       :else           ⋄ IERFAC←IndCASH∆Ind⊃BARBFAC  BARBFACC
+[10]      :endif
+[11]  :else
+[12]      :if revdefind=1 ⋄ IERFAC←IndCASH∆Ind⊃ERFACF ERFACFC
+[13]      :else           ⋄ IERFAC←IndCASH∆Ind⊃ERFAC  ERFACC
+[14]      :endif
+[15]  :endif
+[16]  
+[17]  NoRF←(ENX,LNX)/(~WARERFind),~WARLRFind ⍝ Apply Early/Late Retirement Factors
+[18]  IndTERPEN ←IndTPEN ×     IERFAC       ⋄ IndFERPEN ←IndFPEN ×     IERFAC
+[19]  IndSTERPEN←IndSTPEN×NoRF+IERFAC×~NoRF ⋄ IndSFERPEN←IndSFPEN×NoRF+IERFAC×~NoRF
+[20]  :if PHI
+[21]      IndPHITERPEN ←IndPHITPEN ×(NX,NX)⍴     IERFAC       ⋄ IndPHIFERPEN ←IndPHIFPEN ×(NX,NX)⍴     IERFAC
+[22]      IndPHISTERPEN←IndPHISTPEN×(NX,NX)⍴NoRF+IERFAC×~NoRF ⋄ IndPHISFERPEN←IndPHISFPEN×(NX,NX)⍴NoRF+IERFAC×~NoRF
+[23]  :endif
+[24]  ⍝ 8.47.05 did not allow for LRF not applying on post NRA accrual
+[25]  :if servind ⋄ :andif LRFApplies ⍝ LRF only to Pre NRA Pension
+[26]                            IndTERPEN←    IndTERPEN-    IndTPEN∆Post×        LRFdedn←IERFAC -×IERFAC
+[27]      :if PHI ⋄          IndPHITERPEN← IndPHITERPEN- IndPHITPEN∆Post×(NX,NX)⍴LRFdedn ⋄ :endif
+[28]      :if WARLRFind
+[29]                           IndSTERPEN←   IndSTERPEN-   IndSTPEN∆Post×        LRFdedn
+[30]          :if PHI ⋄     IndPHISTERPEN←IndPHISTERPEN-IndPHISTPEN∆Post×(NX,NX)⍴LRFdedn ⋄ :endif
+[31]      :endif
+[32]      :if slice=0
+[33]                            IndFERPEN←    IndFERPEN-    IndTPEN∆Post×        LRFdedn
+[34]          :if PHI ⋄      IndPHIFERPEN← IndPHIFERPEN- IndPHITPEN∆Post×(NX,NX)⍴LRFdedn ⋄ :endif
+[35]          :if WARLRFind ⋄  IndSFERPEN←   IndSFERPEN-   IndSTPEN∆Post×        LRFdedn
+[36]              :if PHI ⋄ IndPHISFERPEN←IndPHISFERPEN-IndPHISTPEN∆Post×(NX,NX)⍴LRFdedn ⋄ :endif
+[37]          :endif
+[38]      :endif
+[39]  :endif
+[40]  :if IndCASH←IndFCASH←IndPHICASH←IndPHIFCASH←,IndCASH∆Ind
+[41]                   IndCASH←IndTERPEN    ⋄    IndFCASH←IndFERPEN    ⋄    IndTERPEN←   IndFERPEN←   IndSTERPEN←   IndSFERPEN←0
+[42]                   IndCASHONTOP[dynind; ]←   IndCASHONTOP[dynind; ]+   IndCASH
+[43]      :if PHI ⋄ IndPHICASH←IndPHITERPEN ⋄ IndPHIFCASH←IndPHIFERPEN ⋄ IndPHITERPEN←IndPHIFERPEN←IndPHISTERPEN←IndPHISFERPEN←0
+[44]                IndPHICASHONTOP[dynind;;]←IndPHICASHONTOP[dynind;;]+IndPHICASH ⋄ :endif
+[45]  :endif
+[46]  :if ILLIND≠0 ⋄ :andif ~ppf ⍝ Apply Ill Health Reduction Factors
+[47]      IndILLFACT←IndCASH∆Ind⊃ILLFACT ILLFACTC
+[48]      IndTILLPEN← IndILLTPEN+IndPROSPEN ×ILLFRAC×(ILLIND=2) ⍝⍝⍝ FIXME: Allow for ILLIND=3
+[49]      IndFILLPEN←IndFILLTPEN+IndFPROSPEN×ILLFRAC×(ILLIND=2)
+[50]  
+[51]  ⍝⍝⍝ Split Prospective according to Spreading Method (STYPE or STYPEC)
+[52]  
+[53]      IndTILLERPEN←IndTILLPEN×IndILLFACT ⋄ IndFILLERPEN←IndFILLPEN×IndILLFACT
+[54]      IndSTILLPEN← IndILLSTPEN+ SEXCESS←IndSPROSPEN ×ILLFRAC×(ILLIND=2)
+[55]      IndSFILLPEN←IndSFILLTPEN+FSEXCESS←IndSFPROSPEN×ILLFRAC×(ILLIND=2)
+[56]      :if WIHERFind ⋄ IndSTILLERPEN←IndSTILLPEN×IndILLFACT ⋄ IndSFILLERPEN←IndSFILLPEN×IndILLFACT
+[57]      :else         ⋄ IndSTILLERPEN←IndSTILLPEN            ⋄ IndSFILLERPEN←IndSFILLPEN
+[58]      :endif
+[59]      :if IndILLCASH←IndFILLCASH←IndCASH∆Ind
+[60]          IndILLCASH←IndTILLERPEN ⋄ IndFILLCASH←IndFILLERPEN
+[61]          IndTILLERPEN←IndFILLERPEN←IndSTILLERPEN←IndSFILLERPEN←0
+[62]          IndILLCASHONTOP[dynind;]←IndILLCASHONTOP[dynind;]+IndILLCASH
+[63]      :endif
+[64]  :endif
+[65]  ⍝ Pension escalation between retirement and start
+[66]  :if ppf ⍝ Special treated as no increases - all the rest trested as increasing
+[67]      :if sliceup=0 ⋄ DYNRAT←201⍴1
+[68]      :else         ⋄ DYNRAT←DYNRATPPF
+[69]      :endif
+[70]  :else
+[71]      :if isNPCR ⍝ Overwrite for capped Accrued Benefits
+[72]          ⍝ Special treated as Pre 97 - all the rest trested as Post 97
+[73]          :if dynind2=0 ⋄ DYNRAT←DYNRATPre
+[74]          :else         ⋄ DYNRAT←DYNRATPost
+[75]          :endif
+[76]      :else
+[77]          :select dynind2
+[78]          :case 0 ⋄ DYNRAT←DYNRAT2
+[79]          :case 1 ⋄ DYNRAT←DYNRAT1
+[80]          :case 2 ⋄ DYNRAT←DYNRAT3
+[81]          :case 3 ⋄ DYNRAT←DYNRAT4
+[82]          :endselect
+[83]      :endif
+[84]  :endif
+[85]  RetStart←Xret⌈ IndPayStart
+[86]  RetEnd  ←Xret⌈↑IndPayEnd
+[87]  :if ~IsAccrued ⍝ Only do PUPs for accrued
+[88]      escfact←1⌈DYNRAT[⎕io+2×term+0⌈RetStart-↑X] CDIV DYNRAT[⎕io+2×term+0⌈Xret-↑X]
+[89]      ⍝ Retirement pensions from Start Age
+[90]      IndTStart←IndTERPEN×escfact ⋄ IndSTStart←IndSTERPEN×escfact
+[91]      IndFStart←IndFERPEN×escfact ⋄ IndSFStart←IndSFERPEN×escfact
+[92]      :if PHI
+[93]          IndPHITStart←IndPHITERPEN×(NX,NX)⍴escfact ⋄ IndPHISTStart←IndPHISTERPEN×(NX,NX)⍴escfact
+[94]          IndPHIFStart←IndPHIFERPEN×(NX,NX)⍴escfact ⋄ IndPHISFStart←IndPHISFERPEN×(NX,NX)⍴escfact
+[95]      :endif
+[96]  ⍝⍝⍝    :if test
+[97]  ⍝⌿⍝        :if IndCASH∆Ind ⋄ AUDIT 'I0⍺ßb'
+[98]  ⍝⌿⍝        :else           ⋄ AUDIT 'I0⍺ßa' ⋄ AUDIT 'I1⍺ßa'
+[99]  ⍝⌿⍝        :endif
+[100] ⍝⍝⍝    :endif
+[101]     :if ILLIND≠0
+[102]         ⍝ Ill Health pensions from Start Age
+[103]         IndTILLStart←IndTILLERPEN×escfact ⋄ IndSTILLStart←IndSTILLERPEN×escfact
+[104]         IndFILLStart←IndFILLERPEN×escfact ⋄ IndSFILLStart←IndSFILLERPEN×escfact
+[105] ⍝⍝⍝        :if test
+[106] ⍝⌿⍝            :if IndCASH∆Ind
+[107] ⍝⌿⍝                AUDIT 'I2⍺ßb'
+[108] ⍝⌿⍝                :if slice=0 ⋄ AUDIT 'I3⍺ßb' ⋄ :endif
+[109] ⍝⌿⍝            :else
+[110] ⍝⌿⍝                AUDIT 'I2⍺ßa'
+[111] ⍝⌿⍝                :if slice=0 ⋄ AUDIT 'I3⍺ßa' ⋄ :endif
+[112] ⍝⌿⍝                AUDIT 'I4⍺ßa'
+[113] ⍝⌿⍝                :if slice=0 ⋄ AUDIT 'I5⍺ßa' ⋄ :endif
+[114] ⍝⌿⍝            :endif
+[115] ⍝⍝⍝        :endif
+[116]     :endif
+[117] :endif
+[118] :select dynind
+[119] :case 0 ⋄ BARBADJ∆L←SBARBADJ ⋄ DYNINC∆L←NDYNINC
+[120] :case 1 ⋄ BARBADJ∆L←MBARBADJ ⋄ DYNINC∆L←DYNINC
+[121] :case 2 ⋄ BARBADJ∆L←LBARBADJ ⋄ DYNINC∆L←DYNINC3
+[122] :case 3 ⋄ BARBADJ∆L←BARBADJ4 ⋄ DYNINC∆L←DYNINC4
+[123] :endselect
+[124] :if isNPCR ⍝ Overwrite for capped Accrued Benefits
+[125]     ⍝ Special treated as Pre 97 - all the rest trested as Post 97
+[126]     :if dynind=0 ⋄ DYNINC∆L←DYNINCPre
+[127]     :else        ⋄ DYNINC∆L←DYNINCPost
+[128]     :endif
+[129] :endif
+[130] :if ppf ⍝ Overwrite for PPF
+[131]     :if sliceup=0 ⋄ DYNINC∆L←1
+[132]     :else         ⋄ DYNINC∆L←PPFINC
+[133]     :endif
+[134] :endif
+[135] ⍝ Revalue pensions to NRA
+[136] :if RevPeriod ⋄ REVPERIOD←0⌈'YD' DURN LDATE TO NRD∆G
+[137] :else         ⋄ REVPERIOD←0⌈NRA∆G-XMP
+[138] :endif
+[139] :if REVMULT←~ppf
+[140]     :select revdefind
+[141]     :case 0 ⋄ REVMULT←(1⌈REVRAT   [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV REVRAT   [⎕io+2×term+0⌈XMP-↑X])-1
+[142]     :case 1 ⋄ REVMULT←(1⌈AUXREVRAT[⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV AUXREVRAT[⎕io+2×term+0⌈XMP-↑X])-1
+[143]     :case 2 ⋄ REVMULT←(1⌈REVRAT3  [⎕io+2×term+0⌈XMP+REVPERIOD-↑X] CDIV REVRAT3  [⎕io+2×term+0⌈XMP-↑X])-1
+[144]     :endselect
+[145] :endif
+[146] IndREVPEN ←IndTPEN×1+REVMULT ⋄ IndSREVPEN ←IndSTPEN×1+REVMULT
+[147] IndFREVPEN←IndFPEN×1+REVMULT ⋄ IndSFREVPEN←IndSFPEN×1+REVMULT
+[148] ⍝
+[149] ⍝ Barber PUP Adjustments
+[150] ⍝ Paid-Up Pensions from NRA
+[151] IndPUPNRA ←IndREVPEN  ⋄ IndPUWNRA ←IndSREVPEN ⍝ Initialise
+[152] IndFPUPNRA←IndFREVPEN ⋄ IndFPUWNRA←IndSFREVPEN
+[153] :if barbind=0
+[154]     IndPUPNRA ←IndPUPNRA ×BARBADJ∆L ⋄ IndPUWNRA ←IndPUWNRA ×BARBADJ∆L
+[155]     IndFPUPNRA←IndFPUPNRA×BARBADJ∆L ⋄ IndFPUWNRA←IndFPUWNRA×BARBADJ∆L
+[156] :endif
+[157] :if IndPUCASH←IndFPUCASH←IndCASH∆Ind
+[158]     IndPUCASH←IndPUPNRA ⋄ IndFPUCASH←IndFPUPNRA
+[159]     IndPUPNRA←IndFPUPNRA←IndPUWNRA←IndFPUWNRA←0
+[160]     IndPUCASHONTOP[dynind;]←IndPUCASHONTOP[dynind;]+IndPUCASH
+[161] :endif
+[162] ⍝ Pension escalation between retirement and start
+[163] PUPStart←NRA∆G⌈Xret⌈IndPayStart ⍝ PUPs are not paid before NRA
+[164] PUPEnd  ←NRA∆G⌈Xret⌈IndPayEnd ⍝ If field is blank there is no end age
+[165] 
+[166] ⍝ Paid-Up Pensions from Start Age
+[167] escfact←1⌈DYNRAT[⎕io+2×term+0⌈RetStart-↑X] CDIV DYNRAT[⎕io+2×term+0⌈(NRA∆G⌈XMP)-↑X]
+[168] IndPUPStart ←IndPUPNRA ×escfact ⋄ IndPUWStart ←IndPUWNRA ×escfact
+[169] IndFPUPStart←IndFPUPNRA×escfact ⋄ IndFPUWStart←IndFPUWNRA×escfact
+[170] ⍝⍝⍝ :if test
+[171] ⍝⌿⍝    :if IndCASH∆Ind ⋄ AUDIT 'I6⍺ßb'
+[172] ⍝⌿⍝    :else           ⋄ AUDIT 'I6⍺ßa' ⋄ AUDIT 'I7⍺ß'
+[173] ⍝⌿⍝    :endif
+[174] ⍝⌿⍝    :if ~IsAccrued
+[175] ⍝⌿⍝        ⍎('IPEN',¯2↑'0',⍕1+slice),'←IndTStart'
+[176] ⍝⌿⍝        ⍎('ISPEN',¯2↑'0',⍕1+slice),'←IndSTStart'
+[177] ⍝⌿⍝        ⍎('IFPEN',¯2↑'0',⍕1+slice),'←IndFStart'
+[178] ⍝⌿⍝        ⍎('ISFPEN',¯2↑'0',⍕1+slice),'←IndSFStart'
+[179] ⍝⌿⍝        :if ~ILLIND=0
+[180] ⍝⌿⍝            ⍎('IIPEN',¯2↑'0',⍕1+slice),'←IndTILLStart'
+[181] ⍝⌿⍝            ⍎('IISPEN',¯2↑'0',⍕1+slice),'←IndSTILLStart'
+[182] ⍝⌿⍝            ⍎('IIFPEN',¯2↑'0',⍕1+slice),'←IndFILLStart'
+[183] ⍝⌿⍝            ⍎('IISFPEN',¯2↑'0',⍕1+slice),'←IndSFILLStart'
+[184] ⍝⌿⍝        :endif
+[185] ⍝⌿⍝    :endif
+[186] ⍝⌿⍝    ⍎('IPUP',¯2↑'0',⍕1+slice),'←IndPUPStart'
+[187] ⍝⌿⍝    ⍎('ISPUP',¯2↑'0',⍕1+slice),'←IndPUWStart'
+[188] ⍝⌿⍝    ⍎('IFPUP',¯2↑'0',⍕1+slice),'←IndFPUPStart'
+[189] ⍝⌿⍝    ⍎('ISFPUP',¯2↑'0',⍕1+slice),'←IndFPUWStart'
+[190] ⍝⍝⍝ :endif
+[191] IndOUTPUT ProRate∆pp
+    ∇

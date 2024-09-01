@@ -1,1 +1,421 @@
-    ∇ visible Menu_Make Form;⎕wself;ObjectName;parent;childlist;list;HelpObject[1]   childlist←0 0⍴""[2]   ObjectName←Form,".mConfig_LoadShareFile"[3]   ⎕wself←ObjectName ⎕wi "New" "Menu"[4]   childlist←childlist OVER ObjectName[5]   ⎕wi "visible" visible[6]   ⎕wi "enabled" 0[7]   ⎕wi "caption" "&File"[8]   ⎕wi "prompt" "Load Sharing Configuration Parameters"[9]   [10]  ObjectName←Form,".mConfig_LoadShareFile.mAdd"[11]  ⎕wself←ObjectName ⎕wi "New" "Menu"[12]  ⎕wi "caption" "&Add HTTP Broker"[13]  ⎕wi "visible" (visible×0)[14]  ⎕wi "prompt" "Add a HTTP Broker"[15]  ⎕wi "onClick" "AddBroker"[16]  [17]  ObjectName←Form,".mConfig_LoadShareFile.mEdit"[18]  ⎕wself←ObjectName ⎕wi "New" "Menu"[19]  ⎕wi "caption" "&Edit HTTP Broker"[20]  ⎕wi "visible" (visible×0)[21]  ⎕wi "prompt" "Edit a HTTP Broker"[22]  ⎕wi "onClick" "EditBroker"[23]  [24]  ObjectName←Form,".mConfig_LoadShareFile.mDelete"[25]  ⎕wself←ObjectName ⎕wi "New" "Menu"[26]  ⎕wi "caption" "&Delete HTTP Broker"[27]  ⎕wi "visible" (visible×0)[28]  ⎕wi "prompt" "Delete a HTTP Broker"[29]  ⎕wi "onClick" "DelBroker"[30]  [31]  ObjectName←Form,".mConfig_LoadShareFile.mSave"[32]  parent←Win∆Parent ObjectName[33]  ⎕wself←(parent,".mSep1") ⎕wi "New" "Menu"[34]  ⎕wi "separator" 1[35]  [36]  ⎕wself←ObjectName ⎕wi "New" "Menu"[37]  ⎕wi "caption" "&Save"[38]  ⎕wi "shortcut" 'S' 2[39]  ⎕wi "prompt" "Save Parameters"[40]  ⎕wi "onClick" "'Run' RunModule 'Config_LoadShare'"[41]  :if menuimage[42]      ⎕wi "imagelist" "fmSV.iStandard"[43]      ⎕wi "imageindex" 9[44]  :endif[45]  [46]  ObjectName←Form,".mConfig_LoadShareFile.mQuit"[47]  parent←Win∆Parent ObjectName[48]  ⎕wself←(parent,".mSep2") ⎕wi "New" "Menu"[49]  ⎕wi "separator" 1[50]  [51]  ⎕wself←ObjectName ⎕wi "New" "Menu"[52]  ⎕wi "caption" "&Quit"[53]  ⎕wi "shortcut" 115 2[54]  ⎕wi "prompt" "Quit and Return"[55]  ⎕wi "onClick" "'Quit' EndModule 'Config_LoadShare'"[56]  [57]  HelpObject←Form,".mConfig_LoadShare"[58]  ObjectName←HelpObject,"Help"[59]  ⎕wself←ObjectName ⎕wi "New" "Menu"[60]  childlist←childlist OVER ObjectName[61]  ⎕wi "visible" visible[62]  ⎕wi "enabled" 0[63]  ⎕wi "caption" "&Help"[64]  ⎕wi "prompt" "SuperVal Help"[65]  [66]  ObjectName←HelpObject,"Help.mIndex"[67]  ⎕wself←ObjectName ⎕wi "New" "Menu"[68]  ⎕wi "caption" "&Index"[69]  ⎕wi "shortcut" 112 0[70]  ⎕wi "prompt" "Index of SuperVal Help Topics"[71]  ⎕wi "onClick" "Win∆HelpChoice 0"[72]  [73]  ObjectName←HelpObject,"Help.mContext"[74]  ⎕wself←ObjectName ⎕wi "New" "Menu"[75]  ⎕wi "caption" "&Context Help"[76]  ⎕wi "shortcut" 112 2[77]  ⎕wi "prompt" "Context Sensitive Help"[78]  ⎕wi "onClick" "Win∆HelpChoice '#' ⎕wi 'focus'"[79]  [80]  ObjectName←HelpObject,"Help.mComments"[81]  parent←Win∆Parent ObjectName[82]  ⎕wself←(parent,".mSep1") ⎕wi "New" "Menu"[83]  ⎕wi "separator" 1[84]  ⎕wi "visible" (visible×1=relTests)[85]  [86]  ⎕wself←ObjectName ⎕wi "New" "Menu"[87]  ⎕wi "caption" "&User Comments"[88]  ⎕wi "visible" (visible×1=relTests)[89]  ⎕wi "prompt" "User Parameter Comments"[90]  [91]  ObjectName←HelpObject,"Help.mComments.mView"[92]  ⎕wself←ObjectName ⎕wi "New" "Menu"[93]  ⎕wi "caption" "&View Comment"[94]  ⎕wi "shortcut" 112 4[95]  ⎕wi "prompt" "View Current Field Comment"[96]  ⎕wi "onClick" "ParmComments 'View'"[97]  [98]  ObjectName←HelpObject,"Help.mComments.mAdd"[99]  parent←Win∆Parent ObjectName[100] ⎕wself←(parent,".mSep2") ⎕wi "New" "Menu"[101] ⎕wi "separator" 1[102] ⎕wi "visible" (visible×basAccess[2]≤accesslevel)[103] [104] ⎕wself←ObjectName ⎕wi "New" "Menu"[105] ⎕wi "caption" "&Add Comment"[106] ⎕wi "visible" (visible×basAccess[2]≤accesslevel)[107] ⎕wi "prompt" "Add Parameter Comment"[108] ⎕wi "onClick" "ParmComments 'Add'"[109] [110] ObjectName←HelpObject,"Help.mComments.mEdit"[111] ⎕wself←ObjectName ⎕wi "New" "Menu"[112] ⎕wi "caption" "&Edit Comment"[113] ⎕wi "visible" (visible×basAccess[1]≤accesslevel)[114] ⎕wi "prompt" "Edit Parameter Comment"[115] ⎕wi "onClick" "ParmComments 'Edit'"[116] [117] ObjectName←HelpObject,"Help.mComments.mDelete"[118] parent←Win∆Parent ObjectName[119] ⎕wself←(parent,".mSep3") ⎕wi "New" "Menu"[120] ⎕wi "separator" 1[121] ⎕wi "visible" (visible×basAccess[1]≤accesslevel)[122] [123] ⎕wself←ObjectName ⎕wi "New" "Menu"[124] ⎕wi "caption" "&Delete Comment"[125] ⎕wi "visible" (visible×basAccess[1]≤accesslevel)[126] ⎕wi "prompt" "Delete Parameter Comment"[127] ⎕wi "onClick" "ParmComments 'Delete'"[128] [129] ObjectName←HelpObject,"Help.mComments.mAll"[130] parent←Win∆Parent ObjectName[131] ⎕wself←(parent,".mSep4") ⎕wi "New" "Menu"[132] ⎕wi "separator" 1[133] [134] ⎕wself←ObjectName ⎕wi "New" "Menu"[135] ⎕wi "caption" "View All &Comments"[136] ⎕wi "prompt" "View All Parameter Comments"[137] ⎕wi "onClick" "ParmComments 'ViewAll'"[138] [139] ObjectName←HelpObject,"Help.mDocuments"[140] parent←Win∆Parent ObjectName[141] ⎕wself←(parent,".mSep5") ⎕wi "New" "Menu"[142] ⎕wi "separator" 1[143] [144] ⎕wself←ObjectName ⎕wi "New" "Menu"[145] ⎕wi "caption" "&Documents"[146] ⎕wi "prompt" "SuperVal V9 Documents"[147] [148] ObjectName←HelpObject,"Help.mDocuments.mRelease"[149] ⎕wself←ObjectName ⎕wi "New" "Menu"[150] ⎕wi "caption" "&Release Notes"[151] ⎕wi "prompt" "Load a Release Note"[152] [153] ObjectName←HelpObject,"Help.mDocuments.mRelease.m840"[154] ⎕wself←ObjectName ⎕wi "New" "Menu"[155] ⎕wi "caption" "8.40"[156] ⎕wi "prompt" "Load 8.40 Release Note"[157] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V8.40.pdf'"[158] [159] ObjectName←HelpObject,"Help.mDocuments.mRelease.m842"[160] ⎕wself←ObjectName ⎕wi "New" "Menu"[161] ⎕wi "caption" "8.42"[162] ⎕wi "prompt" "Load 8.42 Release Note"[163] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V8.42.pdf'"[164] [165] ObjectName←HelpObject,"Help.mDocuments.mRelease.m84704"[166] parent←Win∆Parent ObjectName[167] ⎕wself←(parent,".mSep6") ⎕wi "New" "Menu"[168] ⎕wi "separator" 1[169] ⎕wi "visible" (visible×bGAD)[170] [171] ⎕wself←ObjectName ⎕wi "New" "Menu"[172] ⎕wi "caption" "8.47.04"[173] ⎕wi "visible" (visible×bGAD)[174] ⎕wi "prompt" "Load 8.47.04 Release Note"[175] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note 8.47.04.pdf'"[176] [177] ObjectName←HelpObject,"Help.mDocuments.mRelease.m84705"[178] ⎕wself←ObjectName ⎕wi "New" "Menu"[179] ⎕wi "caption" "8.47.05"[180] ⎕wi "visible" (visible×bGAD)[181] ⎕wi "prompt" "Load 8.47.05 Release Note"[182] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note 8.47.05.pdf'"[183] [184] ObjectName←HelpObject,"Help.mDocuments.mRelease.m84705v2"[185] ⎕wself←ObjectName ⎕wi "New" "Menu"[186] ⎕wi "caption" "8.47.05 v2"[187] ⎕wi "visible" (visible×bGAD)[188] ⎕wi "prompt" "Load 8.47.05 v2 Release Note"[189] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note 8.47.05 v2.pdf'"[190] [191] ObjectName←HelpObject,"Help.mDocuments.mRelease.m84705v3"[192] ⎕wself←ObjectName ⎕wi "New" "Menu"[193] ⎕wi "caption" "8.47.05 v3"[194] ⎕wi "visible" (visible×bGAD)[195] ⎕wi "prompt" "Load 8.47.05 v3 Release Note"[196] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note 8.47.05 v3.pdf'"[197] [198] ObjectName←HelpObject,"Help.mDocuments.mRelease.m850"[199] parent←Win∆Parent ObjectName[200] ⎕wself←(parent,".mSep7") ⎕wi "New" "Menu"[201] ⎕wi "separator" 1[202] ⎕wi "visible" (visible×~bGAD)[203] [204] ⎕wself←ObjectName ⎕wi "New" "Menu"[205] ⎕wi "caption" "8.50"[206] ⎕wi "visible" (visible×~bGAD)[207] ⎕wi "prompt" "Load 8.50 Release Note"[208] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V8.50.pdf'"[209] [210] ObjectName←HelpObject,"Help.mDocuments.mRelease.m85003"[211] ⎕wself←ObjectName ⎕wi "New" "Menu"[212] ⎕wi "caption" "8.50.03"[213] ⎕wi "visible" (visible×~bGAD)[214] ⎕wi "prompt" "Load 8.50.03 Release Note"[215] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Patch Release Note V8.50.03.pdf'"[216] [217] ObjectName←HelpObject,"Help.mDocuments.mRelease.m900"[218] parent←Win∆Parent ObjectName[219] ⎕wself←(parent,".mSep8") ⎕wi "New" "Menu"[220] ⎕wi "separator" 1[221] ⎕wi "visible" (visible×~bGAD)[222] [223] ⎕wself←ObjectName ⎕wi "New" "Menu"[224] ⎕wi "caption" "9.00"[225] ⎕wi "visible" (visible×~bGAD)[226] ⎕wi "prompt" "Load 9.00 Release Note"[227] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\SuperVal V9.00 Release Note.pdf'"[228] [229] ObjectName←HelpObject,"Help.mDocuments.mRelease.mGAD900"[230] parent←Win∆Parent ObjectName[231] ⎕wself←(parent,".mSep9") ⎕wi "New" "Menu"[232] ⎕wi "separator" 1[233] ⎕wi "visible" (visible×bGAD)[234] [235] ⎕wself←ObjectName ⎕wi "New" "Menu"[236] ⎕wi "caption" "9.00"[237] ⎕wi "visible" (visible×bGAD)[238] ⎕wi "prompt" "Load 9.00 Release Note"[239] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\SuperVal V9.00 Release Note GAD.pdf'"[240] [241] ObjectName←HelpObject,"Help.mDocuments.mRelease.m901"[242] ⎕wself←ObjectName ⎕wi "New" "Menu"[243] ⎕wi "caption" "9.01"[244] ⎕wi "visible" (visible×bGAD)[245] ⎕wi "prompt" "Load 9.01 Release Note"[246] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.01.00.pdf'"[247] [248] ObjectName←HelpObject,"Help.mDocuments.mRelease.m90101"[249] ⎕wself←ObjectName ⎕wi "New" "Menu"[250] ⎕wi "caption" "9.01"[251] ⎕wi "visible" (visible×~bGAD)[252] ⎕wi "prompt" "Load 9.01 Release Note"[253] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Patch Release Note V9.01.01.pdf'"[254] [255] ObjectName←HelpObject,"Help.mDocuments.mRelease.m902"[256] ⎕wself←ObjectName ⎕wi "New" "Menu"[257] ⎕wi "caption" "9.02"[258] ⎕wi "prompt" "Load 9.02 Release Note"[259] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Patch Release Note V9.02.00.pdf'"[260] [261] ObjectName←HelpObject,"Help.mDocuments.mRelease.m903"[262] ⎕wself←ObjectName ⎕wi "New" "Menu"[263] ⎕wi "caption" "9.03"[264] ⎕wi "prompt" "Load 9.03 Release Note"[265] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Patch Release Note V9.03.00.pdf'"[266] [267] ObjectName←HelpObject,"Help.mDocuments.mRelease.m90301"[268] ⎕wself←ObjectName ⎕wi "New" "Menu"[269] ⎕wi "caption" "9.03.01"[270] ⎕wi "visible" (visible×bGAD)[271] ⎕wi "prompt" "Load 9.03.01 Release Note"[272] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.03.01.pdf'"[273] [274] ObjectName←HelpObject,"Help.mDocuments.mRelease.m90302"[275] ⎕wself←ObjectName ⎕wi "New" "Menu"[276] ⎕wi "caption" "9.03.02"[277] ⎕wi "prompt" "Load 9.03.02 Release Note"[278] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.03.02.pdf'"[279] [280] ObjectName←HelpObject,"Help.mDocuments.mRelease.m904"[281] ⎕wself←ObjectName ⎕wi "New" "Menu"[282] ⎕wi "caption" "9.04"[283] ⎕wi "prompt" "Load 9.04 Release Note"[284] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.04.00.pdf'"[285] [286] ObjectName←HelpObject,"Help.mDocuments.mRelease.m90401"[287] ⎕wself←ObjectName ⎕wi "New" "Menu"[288] ⎕wi "caption" "9.04.01"[289] ⎕wi "prompt" "Load 9.04.01 Release Note"[290] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.04.01.pdf'"[291] [292] ObjectName←HelpObject,"Help.mDocuments.mRelease.m910"[293] parent←Win∆Parent ObjectName[294] ⎕wself←(parent,".mSep10") ⎕wi "New" "Menu"[295] ⎕wi "separator" 1[296] [297] ⎕wself←ObjectName ⎕wi "New" "Menu"[298] ⎕wi "caption" "9.10"[299] ⎕wi "prompt" "Load 9.10 Release Note"[300] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.10.00.pdf'"[301] [302] ObjectName←HelpObject,"Help.mDocuments.mRelease.m911"[303] ⎕wself←ObjectName ⎕wi "New" "Menu"[304] ⎕wi "caption" "9.11"[305] ⎕wi "prompt" "Load 9.11 Release Note"[306] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.11.00.pdf'"[307] [308] ObjectName←HelpObject,"Help.mDocuments.mRelease.m91101"[309] ⎕wself←ObjectName ⎕wi "New" "Menu"[310] ⎕wi "caption" "9.11.01"[311] ⎕wi "prompt" "Load 9.11.01 Release Note"[312] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.11.01.pdf'"[313] [314] ObjectName←HelpObject,"Help.mDocuments.mRelease.m912"[315] ⎕wself←ObjectName ⎕wi "New" "Menu"[316] ⎕wi "caption" "9.12"[317] ⎕wi "prompt" "Load 9.12 Release Note"[318] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.12.00.pdf'"[319] [320] ObjectName←HelpObject,"Help.mDocuments.mRelease.m920"[321] ⎕wself←ObjectName ⎕wi "New" "Menu"[322] ⎕wi "caption" "9.20"[323] ⎕wi "prompt" "Load 9.20 Release Note"[324] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.20.00.pdf'"[325] [326] ObjectName←HelpObject,"Help.mDocuments.mRelease.m925"[327] ⎕wself←ObjectName ⎕wi "New" "Menu"[328] ⎕wi "caption" "9.25"[329] ⎕wi "prompt" "Load 9.25 Release Note"[330] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.25.00.pdf'"[331] [332] ObjectName←HelpObject,"Help.mDocuments.mRelease.m926"[333] ⎕wself←ObjectName ⎕wi "New" "Menu"[334] ⎕wi "caption" "9.26"[335] ⎕wi "prompt" "Load 9.26 Release Note"[336] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.26.00.pdf'"[337] [338] ObjectName←HelpObject,"Help.mDocuments.mRelease.m927"[339] ⎕wself←ObjectName ⎕wi "New" "Menu"[340] ⎕wi "caption" "9.27"[341] ⎕wi "prompt" "Load 9.27 Release Note"[342] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.27.00.pdf'"[343] [344] ObjectName←HelpObject,"Help.mDocuments.mRelease.m928"[345] ⎕wself←ObjectName ⎕wi "New" "Menu"[346] ⎕wi "caption" "9.28"[347] ⎕wi "prompt" "Load 9.28 Release Note"[348] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.28.00.pdf'"[349] [350] ObjectName←HelpObject,"Help.mDocuments.mRelease.m929"[351] ⎕wself←ObjectName ⎕wi "New" "Menu"[352] ⎕wi "caption" "9.29"[353] ⎕wi "prompt" "Load 9.29 Release Note"[354] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.29.00.pdf'"[355] [356] ObjectName←HelpObject,"Help.mDocuments.mRelease.m930"[357] ⎕wself←ObjectName ⎕wi "New" "Menu"[358] ⎕wi "caption" "9.30"[359] ⎕wi "prompt" "Load 9.30 Release Note"[360] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.30.00.pdf'"[361] [362] ObjectName←HelpObject,"Help.mDocuments.mRelease.m93001"[363] ⎕wself←ObjectName ⎕wi "New" "Menu"[364] ⎕wi "caption" "9.30.01"[365] ⎕wi "prompt" "Load 9.30.01 Release Note"[366] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.30.01.pdf'"[367] [368] ObjectName←HelpObject,"Help.mDocuments.mInstall"[369] ⎕wself←ObjectName ⎕wi "New" "Menu"[370] ⎕wi "caption" "&Installation Note"[371] ⎕wi "prompt" "Load V9 Installation Note"[372] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\SuperVal V9.00 Installation Note.pdf'"[373] [374] ObjectName←HelpObject,"Help.mDocuments.mMigration"[375] ⎕wself←ObjectName ⎕wi "New" "Menu"[376] ⎕wi "caption" "&Migration Note"[377] ⎕wi "prompt" "Load V9 Migration Note"[378] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\SuperVal V9.00 Migration Note.pdf'"[379] [380] ObjectName←HelpObject,"Help.mDocuments.mInFocus"[381] ⎕wself←ObjectName ⎕wi "New" "Menu"[382] ⎕wi "caption" "&InFocus"[383] ⎕wi "prompt" "Browse InFocus Documents"[384] ⎕wi "onClick" "IF_Browse"[385] [386] ObjectName←HelpObject,"Help.mReleases"[387] ⎕wself←ObjectName ⎕wi "New" "Menu"[388] ⎕wi "caption" "&Releases"[389] ⎕wi "prompt" "History of Changes in SuperVal Releases"[390] ⎕wi "onClick" "Win∆ReleaseHelp ''"[391] [392] ObjectName←HelpObject,"Help.mAbout"[393] parent←Win∆Parent ObjectName[394] ⎕wself←(parent,".mSep11") ⎕wi "New" "Menu"[395] ⎕wi "separator" 1[396] [397] ⎕wself←ObjectName ⎕wi "New" "Menu"[398] ⎕wi "caption" "&About SuperVal"[399] ⎕wi "prompt" "Version & System Identification"[400] ⎕wi "onClick" "'OVERWIN' CallModule 'Help_About'"[401] [402] ObjectName←Form,".mConfig_LoadShareFile.Browser"[403] ⎕wself←ObjectName ⎕wi "New" "Menu"[404] ⎕wi "visible" 0[405] ⎕wi "shortcut" "B" 3[406] ⎕wi "onClick" "BROWSE '' "[407] ObjectName←Form,".mConfig_LoadShareFile.Excel"[408] ⎕wself←ObjectName ⎕wi "New" "Menu"[409] ⎕wi "visible" 0[410] ⎕wi "shortcut" "O" 3[411] ⎕wi "onClick" "XL_Browse"[412] :if Form≡"fmSV"[413]     "fmSV" ⎕wi "∆childlist" (("fmSV" ⎕wi "∆childlist"),⊂childlist)[414] :else[415]     list←"fmSV" ⎕wi "∆childlist"[416]     childlist←(⊃¯1↑list) OVER childlist[417]     list[⍴list]←⊂childlist[418]     "fmSV" ⎕wi "∆childlist" list[419] :endif    ∇
+    ∇ visible Menu_Make Form;⎕wself;ObjectName;parent;childlist;list;HelpObject
+[1]   childlist←0 0⍴""
+[2]   ObjectName←Form,".mConfig_LoadShareFile"
+[3]   ⎕wself←ObjectName ⎕wi "New" "Menu"
+[4]   childlist←childlist OVER ObjectName
+[5]   ⎕wi "visible" visible
+[6]   ⎕wi "enabled" 0
+[7]   ⎕wi "caption" "&File"
+[8]   ⎕wi "prompt" "Load Sharing Configuration Parameters"
+[9]   
+[10]  ObjectName←Form,".mConfig_LoadShareFile.mAdd"
+[11]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[12]  ⎕wi "caption" "&Add HTTP Broker"
+[13]  ⎕wi "visible" (visible×0)
+[14]  ⎕wi "prompt" "Add a HTTP Broker"
+[15]  ⎕wi "onClick" "AddBroker"
+[16]  
+[17]  ObjectName←Form,".mConfig_LoadShareFile.mEdit"
+[18]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[19]  ⎕wi "caption" "&Edit HTTP Broker"
+[20]  ⎕wi "visible" (visible×0)
+[21]  ⎕wi "prompt" "Edit a HTTP Broker"
+[22]  ⎕wi "onClick" "EditBroker"
+[23]  
+[24]  ObjectName←Form,".mConfig_LoadShareFile.mDelete"
+[25]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[26]  ⎕wi "caption" "&Delete HTTP Broker"
+[27]  ⎕wi "visible" (visible×0)
+[28]  ⎕wi "prompt" "Delete a HTTP Broker"
+[29]  ⎕wi "onClick" "DelBroker"
+[30]  
+[31]  ObjectName←Form,".mConfig_LoadShareFile.mSave"
+[32]  parent←Win∆Parent ObjectName
+[33]  ⎕wself←(parent,".mSep1") ⎕wi "New" "Menu"
+[34]  ⎕wi "separator" 1
+[35]  
+[36]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[37]  ⎕wi "caption" "&Save"
+[38]  ⎕wi "shortcut" 'S' 2
+[39]  ⎕wi "prompt" "Save Parameters"
+[40]  ⎕wi "onClick" "'Run' RunModule 'Config_LoadShare'"
+[41]  :if menuimage
+[42]      ⎕wi "imagelist" "fmSV.iStandard"
+[43]      ⎕wi "imageindex" 9
+[44]  :endif
+[45]  
+[46]  ObjectName←Form,".mConfig_LoadShareFile.mQuit"
+[47]  parent←Win∆Parent ObjectName
+[48]  ⎕wself←(parent,".mSep2") ⎕wi "New" "Menu"
+[49]  ⎕wi "separator" 1
+[50]  
+[51]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[52]  ⎕wi "caption" "&Quit"
+[53]  ⎕wi "shortcut" 115 2
+[54]  ⎕wi "prompt" "Quit and Return"
+[55]  ⎕wi "onClick" "'Quit' EndModule 'Config_LoadShare'"
+[56]  
+[57]  HelpObject←Form,".mConfig_LoadShare"
+[58]  ObjectName←HelpObject,"Help"
+[59]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[60]  childlist←childlist OVER ObjectName
+[61]  ⎕wi "visible" visible
+[62]  ⎕wi "enabled" 0
+[63]  ⎕wi "caption" "&Help"
+[64]  ⎕wi "prompt" "SuperVal Help"
+[65]  
+[66]  ObjectName←HelpObject,"Help.mIndex"
+[67]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[68]  ⎕wi "caption" "&Index"
+[69]  ⎕wi "shortcut" 112 0
+[70]  ⎕wi "prompt" "Index of SuperVal Help Topics"
+[71]  ⎕wi "onClick" "Win∆HelpChoice 0"
+[72]  
+[73]  ObjectName←HelpObject,"Help.mContext"
+[74]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[75]  ⎕wi "caption" "&Context Help"
+[76]  ⎕wi "shortcut" 112 2
+[77]  ⎕wi "prompt" "Context Sensitive Help"
+[78]  ⎕wi "onClick" "Win∆HelpChoice '#' ⎕wi 'focus'"
+[79]  
+[80]  ObjectName←HelpObject,"Help.mComments"
+[81]  parent←Win∆Parent ObjectName
+[82]  ⎕wself←(parent,".mSep1") ⎕wi "New" "Menu"
+[83]  ⎕wi "separator" 1
+[84]  ⎕wi "visible" (visible×1=relTests)
+[85]  
+[86]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[87]  ⎕wi "caption" "&User Comments"
+[88]  ⎕wi "visible" (visible×1=relTests)
+[89]  ⎕wi "prompt" "User Parameter Comments"
+[90]  
+[91]  ObjectName←HelpObject,"Help.mComments.mView"
+[92]  ⎕wself←ObjectName ⎕wi "New" "Menu"
+[93]  ⎕wi "caption" "&View Comment"
+[94]  ⎕wi "shortcut" 112 4
+[95]  ⎕wi "prompt" "View Current Field Comment"
+[96]  ⎕wi "onClick" "ParmComments 'View'"
+[97]  
+[98]  ObjectName←HelpObject,"Help.mComments.mAdd"
+[99]  parent←Win∆Parent ObjectName
+[100] ⎕wself←(parent,".mSep2") ⎕wi "New" "Menu"
+[101] ⎕wi "separator" 1
+[102] ⎕wi "visible" (visible×basAccess[2]≤accesslevel)
+[103] 
+[104] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[105] ⎕wi "caption" "&Add Comment"
+[106] ⎕wi "visible" (visible×basAccess[2]≤accesslevel)
+[107] ⎕wi "prompt" "Add Parameter Comment"
+[108] ⎕wi "onClick" "ParmComments 'Add'"
+[109] 
+[110] ObjectName←HelpObject,"Help.mComments.mEdit"
+[111] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[112] ⎕wi "caption" "&Edit Comment"
+[113] ⎕wi "visible" (visible×basAccess[1]≤accesslevel)
+[114] ⎕wi "prompt" "Edit Parameter Comment"
+[115] ⎕wi "onClick" "ParmComments 'Edit'"
+[116] 
+[117] ObjectName←HelpObject,"Help.mComments.mDelete"
+[118] parent←Win∆Parent ObjectName
+[119] ⎕wself←(parent,".mSep3") ⎕wi "New" "Menu"
+[120] ⎕wi "separator" 1
+[121] ⎕wi "visible" (visible×basAccess[1]≤accesslevel)
+[122] 
+[123] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[124] ⎕wi "caption" "&Delete Comment"
+[125] ⎕wi "visible" (visible×basAccess[1]≤accesslevel)
+[126] ⎕wi "prompt" "Delete Parameter Comment"
+[127] ⎕wi "onClick" "ParmComments 'Delete'"
+[128] 
+[129] ObjectName←HelpObject,"Help.mComments.mAll"
+[130] parent←Win∆Parent ObjectName
+[131] ⎕wself←(parent,".mSep4") ⎕wi "New" "Menu"
+[132] ⎕wi "separator" 1
+[133] 
+[134] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[135] ⎕wi "caption" "View All &Comments"
+[136] ⎕wi "prompt" "View All Parameter Comments"
+[137] ⎕wi "onClick" "ParmComments 'ViewAll'"
+[138] 
+[139] ObjectName←HelpObject,"Help.mDocuments"
+[140] parent←Win∆Parent ObjectName
+[141] ⎕wself←(parent,".mSep5") ⎕wi "New" "Menu"
+[142] ⎕wi "separator" 1
+[143] 
+[144] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[145] ⎕wi "caption" "&Documents"
+[146] ⎕wi "prompt" "SuperVal V9 Documents"
+[147] 
+[148] ObjectName←HelpObject,"Help.mDocuments.mRelease"
+[149] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[150] ⎕wi "caption" "&Release Notes"
+[151] ⎕wi "prompt" "Load a Release Note"
+[152] 
+[153] ObjectName←HelpObject,"Help.mDocuments.mRelease.m840"
+[154] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[155] ⎕wi "caption" "8.40"
+[156] ⎕wi "prompt" "Load 8.40 Release Note"
+[157] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V8.40.pdf'"
+[158] 
+[159] ObjectName←HelpObject,"Help.mDocuments.mRelease.m842"
+[160] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[161] ⎕wi "caption" "8.42"
+[162] ⎕wi "prompt" "Load 8.42 Release Note"
+[163] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V8.42.pdf'"
+[164] 
+[165] ObjectName←HelpObject,"Help.mDocuments.mRelease.m84704"
+[166] parent←Win∆Parent ObjectName
+[167] ⎕wself←(parent,".mSep6") ⎕wi "New" "Menu"
+[168] ⎕wi "separator" 1
+[169] ⎕wi "visible" (visible×bGAD)
+[170] 
+[171] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[172] ⎕wi "caption" "8.47.04"
+[173] ⎕wi "visible" (visible×bGAD)
+[174] ⎕wi "prompt" "Load 8.47.04 Release Note"
+[175] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note 8.47.04.pdf'"
+[176] 
+[177] ObjectName←HelpObject,"Help.mDocuments.mRelease.m84705"
+[178] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[179] ⎕wi "caption" "8.47.05"
+[180] ⎕wi "visible" (visible×bGAD)
+[181] ⎕wi "prompt" "Load 8.47.05 Release Note"
+[182] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note 8.47.05.pdf'"
+[183] 
+[184] ObjectName←HelpObject,"Help.mDocuments.mRelease.m84705v2"
+[185] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[186] ⎕wi "caption" "8.47.05 v2"
+[187] ⎕wi "visible" (visible×bGAD)
+[188] ⎕wi "prompt" "Load 8.47.05 v2 Release Note"
+[189] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note 8.47.05 v2.pdf'"
+[190] 
+[191] ObjectName←HelpObject,"Help.mDocuments.mRelease.m84705v3"
+[192] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[193] ⎕wi "caption" "8.47.05 v3"
+[194] ⎕wi "visible" (visible×bGAD)
+[195] ⎕wi "prompt" "Load 8.47.05 v3 Release Note"
+[196] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note 8.47.05 v3.pdf'"
+[197] 
+[198] ObjectName←HelpObject,"Help.mDocuments.mRelease.m850"
+[199] parent←Win∆Parent ObjectName
+[200] ⎕wself←(parent,".mSep7") ⎕wi "New" "Menu"
+[201] ⎕wi "separator" 1
+[202] ⎕wi "visible" (visible×~bGAD)
+[203] 
+[204] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[205] ⎕wi "caption" "8.50"
+[206] ⎕wi "visible" (visible×~bGAD)
+[207] ⎕wi "prompt" "Load 8.50 Release Note"
+[208] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V8.50.pdf'"
+[209] 
+[210] ObjectName←HelpObject,"Help.mDocuments.mRelease.m85003"
+[211] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[212] ⎕wi "caption" "8.50.03"
+[213] ⎕wi "visible" (visible×~bGAD)
+[214] ⎕wi "prompt" "Load 8.50.03 Release Note"
+[215] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Patch Release Note V8.50.03.pdf'"
+[216] 
+[217] ObjectName←HelpObject,"Help.mDocuments.mRelease.m900"
+[218] parent←Win∆Parent ObjectName
+[219] ⎕wself←(parent,".mSep8") ⎕wi "New" "Menu"
+[220] ⎕wi "separator" 1
+[221] ⎕wi "visible" (visible×~bGAD)
+[222] 
+[223] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[224] ⎕wi "caption" "9.00"
+[225] ⎕wi "visible" (visible×~bGAD)
+[226] ⎕wi "prompt" "Load 9.00 Release Note"
+[227] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\SuperVal V9.00 Release Note.pdf'"
+[228] 
+[229] ObjectName←HelpObject,"Help.mDocuments.mRelease.mGAD900"
+[230] parent←Win∆Parent ObjectName
+[231] ⎕wself←(parent,".mSep9") ⎕wi "New" "Menu"
+[232] ⎕wi "separator" 1
+[233] ⎕wi "visible" (visible×bGAD)
+[234] 
+[235] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[236] ⎕wi "caption" "9.00"
+[237] ⎕wi "visible" (visible×bGAD)
+[238] ⎕wi "prompt" "Load 9.00 Release Note"
+[239] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\SuperVal V9.00 Release Note GAD.pdf'"
+[240] 
+[241] ObjectName←HelpObject,"Help.mDocuments.mRelease.m901"
+[242] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[243] ⎕wi "caption" "9.01"
+[244] ⎕wi "visible" (visible×bGAD)
+[245] ⎕wi "prompt" "Load 9.01 Release Note"
+[246] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.01.00.pdf'"
+[247] 
+[248] ObjectName←HelpObject,"Help.mDocuments.mRelease.m90101"
+[249] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[250] ⎕wi "caption" "9.01"
+[251] ⎕wi "visible" (visible×~bGAD)
+[252] ⎕wi "prompt" "Load 9.01 Release Note"
+[253] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Patch Release Note V9.01.01.pdf'"
+[254] 
+[255] ObjectName←HelpObject,"Help.mDocuments.mRelease.m902"
+[256] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[257] ⎕wi "caption" "9.02"
+[258] ⎕wi "prompt" "Load 9.02 Release Note"
+[259] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Patch Release Note V9.02.00.pdf'"
+[260] 
+[261] ObjectName←HelpObject,"Help.mDocuments.mRelease.m903"
+[262] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[263] ⎕wi "caption" "9.03"
+[264] ⎕wi "prompt" "Load 9.03 Release Note"
+[265] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Patch Release Note V9.03.00.pdf'"
+[266] 
+[267] ObjectName←HelpObject,"Help.mDocuments.mRelease.m90301"
+[268] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[269] ⎕wi "caption" "9.03.01"
+[270] ⎕wi "visible" (visible×bGAD)
+[271] ⎕wi "prompt" "Load 9.03.01 Release Note"
+[272] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.03.01.pdf'"
+[273] 
+[274] ObjectName←HelpObject,"Help.mDocuments.mRelease.m90302"
+[275] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[276] ⎕wi "caption" "9.03.02"
+[277] ⎕wi "prompt" "Load 9.03.02 Release Note"
+[278] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.03.02.pdf'"
+[279] 
+[280] ObjectName←HelpObject,"Help.mDocuments.mRelease.m904"
+[281] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[282] ⎕wi "caption" "9.04"
+[283] ⎕wi "prompt" "Load 9.04 Release Note"
+[284] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.04.00.pdf'"
+[285] 
+[286] ObjectName←HelpObject,"Help.mDocuments.mRelease.m90401"
+[287] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[288] ⎕wi "caption" "9.04.01"
+[289] ⎕wi "prompt" "Load 9.04.01 Release Note"
+[290] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.04.01.pdf'"
+[291] 
+[292] ObjectName←HelpObject,"Help.mDocuments.mRelease.m910"
+[293] parent←Win∆Parent ObjectName
+[294] ⎕wself←(parent,".mSep10") ⎕wi "New" "Menu"
+[295] ⎕wi "separator" 1
+[296] 
+[297] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[298] ⎕wi "caption" "9.10"
+[299] ⎕wi "prompt" "Load 9.10 Release Note"
+[300] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.10.00.pdf'"
+[301] 
+[302] ObjectName←HelpObject,"Help.mDocuments.mRelease.m911"
+[303] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[304] ⎕wi "caption" "9.11"
+[305] ⎕wi "prompt" "Load 9.11 Release Note"
+[306] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.11.00.pdf'"
+[307] 
+[308] ObjectName←HelpObject,"Help.mDocuments.mRelease.m91101"
+[309] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[310] ⎕wi "caption" "9.11.01"
+[311] ⎕wi "prompt" "Load 9.11.01 Release Note"
+[312] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.11.01.pdf'"
+[313] 
+[314] ObjectName←HelpObject,"Help.mDocuments.mRelease.m912"
+[315] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[316] ⎕wi "caption" "9.12"
+[317] ⎕wi "prompt" "Load 9.12 Release Note"
+[318] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.12.00.pdf'"
+[319] 
+[320] ObjectName←HelpObject,"Help.mDocuments.mRelease.m920"
+[321] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[322] ⎕wi "caption" "9.20"
+[323] ⎕wi "prompt" "Load 9.20 Release Note"
+[324] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.20.00.pdf'"
+[325] 
+[326] ObjectName←HelpObject,"Help.mDocuments.mRelease.m925"
+[327] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[328] ⎕wi "caption" "9.25"
+[329] ⎕wi "prompt" "Load 9.25 Release Note"
+[330] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.25.00.pdf'"
+[331] 
+[332] ObjectName←HelpObject,"Help.mDocuments.mRelease.m926"
+[333] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[334] ⎕wi "caption" "9.26"
+[335] ⎕wi "prompt" "Load 9.26 Release Note"
+[336] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.26.00.pdf'"
+[337] 
+[338] ObjectName←HelpObject,"Help.mDocuments.mRelease.m927"
+[339] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[340] ⎕wi "caption" "9.27"
+[341] ⎕wi "prompt" "Load 9.27 Release Note"
+[342] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.27.00.pdf'"
+[343] 
+[344] ObjectName←HelpObject,"Help.mDocuments.mRelease.m928"
+[345] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[346] ⎕wi "caption" "9.28"
+[347] ⎕wi "prompt" "Load 9.28 Release Note"
+[348] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.28.00.pdf'"
+[349] 
+[350] ObjectName←HelpObject,"Help.mDocuments.mRelease.m929"
+[351] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[352] ⎕wi "caption" "9.29"
+[353] ⎕wi "prompt" "Load 9.29 Release Note"
+[354] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.29.00.pdf'"
+[355] 
+[356] ObjectName←HelpObject,"Help.mDocuments.mRelease.m930"
+[357] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[358] ⎕wi "caption" "9.30"
+[359] ⎕wi "prompt" "Load 9.30 Release Note"
+[360] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.30.00.pdf'"
+[361] 
+[362] ObjectName←HelpObject,"Help.mDocuments.mRelease.m93001"
+[363] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[364] ⎕wi "caption" "9.30.01"
+[365] ⎕wi "prompt" "Load 9.30.01 Release Note"
+[366] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\Release Note V9.30.01.pdf'"
+[367] 
+[368] ObjectName←HelpObject,"Help.mDocuments.mInstall"
+[369] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[370] ⎕wi "caption" "&Installation Note"
+[371] ⎕wi "prompt" "Load V9 Installation Note"
+[372] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\SuperVal V9.00 Installation Note.pdf'"
+[373] 
+[374] ObjectName←HelpObject,"Help.mDocuments.mMigration"
+[375] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[376] ⎕wi "caption" "&Migration Note"
+[377] ⎕wi "prompt" "Load V9 Migration Note"
+[378] ⎕wi "onClick" "0 Win∆EditFile SystemDir,'HELP\SuperVal V9.00 Migration Note.pdf'"
+[379] 
+[380] ObjectName←HelpObject,"Help.mDocuments.mInFocus"
+[381] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[382] ⎕wi "caption" "&InFocus"
+[383] ⎕wi "prompt" "Browse InFocus Documents"
+[384] ⎕wi "onClick" "IF_Browse"
+[385] 
+[386] ObjectName←HelpObject,"Help.mReleases"
+[387] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[388] ⎕wi "caption" "&Releases"
+[389] ⎕wi "prompt" "History of Changes in SuperVal Releases"
+[390] ⎕wi "onClick" "Win∆ReleaseHelp ''"
+[391] 
+[392] ObjectName←HelpObject,"Help.mAbout"
+[393] parent←Win∆Parent ObjectName
+[394] ⎕wself←(parent,".mSep11") ⎕wi "New" "Menu"
+[395] ⎕wi "separator" 1
+[396] 
+[397] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[398] ⎕wi "caption" "&About SuperVal"
+[399] ⎕wi "prompt" "Version & System Identification"
+[400] ⎕wi "onClick" "'OVERWIN' CallModule 'Help_About'"
+[401] 
+[402] ObjectName←Form,".mConfig_LoadShareFile.Browser"
+[403] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[404] ⎕wi "visible" 0
+[405] ⎕wi "shortcut" "B" 3
+[406] ⎕wi "onClick" "BROWSE '' "
+[407] ObjectName←Form,".mConfig_LoadShareFile.Excel"
+[408] ⎕wself←ObjectName ⎕wi "New" "Menu"
+[409] ⎕wi "visible" 0
+[410] ⎕wi "shortcut" "O" 3
+[411] ⎕wi "onClick" "XL_Browse"
+[412] :if Form≡"fmSV"
+[413]     "fmSV" ⎕wi "∆childlist" (("fmSV" ⎕wi "∆childlist"),⊂childlist)
+[414] :else
+[415]     list←"fmSV" ⎕wi "∆childlist"
+[416]     childlist←(⊃¯1↑list) OVER childlist
+[417]     list[⍴list]←⊂childlist
+[418]     "fmSV" ⎕wi "∆childlist" list
+[419] :endif
+    ∇

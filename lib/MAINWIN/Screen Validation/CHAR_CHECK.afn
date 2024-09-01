@@ -1,1 +1,33 @@
-    ∇ Error←CHAR∆CHECK valid;Folder[1]   ⍝ MAINWIN.sf#4[2]   ⍝ Fn to carry out standard character validations on the Global variable "text"[3]   ⍝  "valid" contains a list of validation parameters[4]   ⍝[5]   ⍝[6]   ⍝ V2.50u RE 3/00 Windowised[7]   Error←0⍴''[8]   [9]   :if ~0≡valid[10]      valid←eis valid[11]      :if (⊂'DateFmt')∊valid ⍝ Check Date Format[12]          :if ~0∊⍴,Error←Error CHECKDateFmt UPPERCASE text ⋄ :return ⋄ :endif[13]          text←' /' char_replace DLTB text[14]      :elseif (⊂'File')∊valid ⍝ Illegal Filename Characters[15]  ⍝⍝⍝        :if ∨/,text∊'\/:*?<>∣|`'[16]          :if ∨/,text∊illegals,((⊂'mdb')∊valid)/';'[17]              Error←'InvFileName' text ⋄ :return[18]          :endif[19]          :if (⊂'Library')∊valid ⋄ Folder←LibraryDir[20]          :elseif (⊂'mdb')∊valid ⋄ Folder←ConsolidDir[21]          :else                  ⋄ Folder←InputDir[22]          :endif[23]          :if 259<⍴Folder,text[24]              Error←'FileNameTooLong' text ⋄ :return[25]          :endif[26]          :if (⊂'xls')∊valid[27]          :andif 218<⍴OutputDir,text,'.xls',(12≤ExcelVersion)/XLtype[28]              Error←'FileNameTooLong' text ⋄ :return[29]          :endif[30]      :endif[31]  :endif    ∇
+    ∇ Error←CHAR∆CHECK valid;Folder
+[1]   ⍝ MAINWIN.sf#4
+[2]   ⍝ Fn to carry out standard character validations on the Global variable "text"
+[3]   ⍝  "valid" contains a list of validation parameters
+[4]   ⍝
+[5]   ⍝
+[6]   ⍝ V2.50u RE 3/00 Windowised
+[7]   Error←0⍴''
+[8]   
+[9]   :if ~0≡valid
+[10]      valid←eis valid
+[11]      :if (⊂'DateFmt')∊valid ⍝ Check Date Format
+[12]          :if ~0∊⍴,Error←Error CHECKDateFmt UPPERCASE text ⋄ :return ⋄ :endif
+[13]          text←' /' char_replace DLTB text
+[14]      :elseif (⊂'File')∊valid ⍝ Illegal Filename Characters
+[15]  ⍝⍝⍝        :if ∨/,text∊'\/:*?<>∣|`'
+[16]          :if ∨/,text∊illegals,((⊂'mdb')∊valid)/';'
+[17]              Error←'InvFileName' text ⋄ :return
+[18]          :endif
+[19]          :if (⊂'Library')∊valid ⋄ Folder←LibraryDir
+[20]          :elseif (⊂'mdb')∊valid ⋄ Folder←ConsolidDir
+[21]          :else                  ⋄ Folder←InputDir
+[22]          :endif
+[23]          :if 259<⍴Folder,text
+[24]              Error←'FileNameTooLong' text ⋄ :return
+[25]          :endif
+[26]          :if (⊂'xls')∊valid
+[27]          :andif 218<⍴OutputDir,text,'.xls',(12≤ExcelVersion)/XLtype
+[28]              Error←'FileNameTooLong' text ⋄ :return
+[29]          :endif
+[30]      :endif
+[31]  :endif
+    ∇

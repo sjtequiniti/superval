@@ -1,1 +1,40 @@
-    ∇ res←field System_Preferences parm;parent[1]   ⍝ OVERWIN.sf#5[2]   ⍝ Function to allow user control on System Preferences[3]   [4]   parent←'fmSysPref.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[11]      (parent,'fProcessing.ckParallel') ⎕wi 'enabled' WSEngine[12]  [13]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[14]  [15]  :case 'Valid' ⍝ Routine specific validation[16]  [17]  :case 'Run'[18]      0 0⍴ReadModule 'System_Preferences' 'None' ⍝ Read Defaults[19]      0 0⍴PrefFile ReadFile 'System_Preferences'[20]  [21]      cOMPANY←cOMPANY,(×⍴lOCATION)/' - ',lOCATION[22]      asciidec←zwb asciidec[23]      RTProtect←zwb RTProtect[24]      MandPass←zwb MandPass[25]      enablePIs←zwb EnablePIs[26]      ShortFilenames←zwb ShortFilenames[27]      CloseExcel←zwb CloseExcel[28]      XLtype←(1+zwb UseXLSB)⊃'m' 'b'[29]      basisIdentifier←zwb BasisIdentifier[30]      suppresstext←zwb suppresstext[31]      parallel←WSEngine×zwb Parallel[32]      inMemory←zwb InMemory[33]  [34]      res←'CreateVars'[35]  [36]  :case 'Quit' ⍝ Deleting "other" variables[37]  [38]  :endselect    ∇
+    ∇ res←field System_Preferences parm;parent
+[1]   ⍝ OVERWIN.sf#5
+[2]   ⍝ Function to allow user control on System Preferences
+[3]   
+[4]   parent←'fmSysPref.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]      (parent,'fProcessing.ckParallel') ⎕wi 'enabled' WSEngine
+[12]  
+[13]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[14]  
+[15]  :case 'Valid' ⍝ Routine specific validation
+[16]  
+[17]  :case 'Run'
+[18]      0 0⍴ReadModule 'System_Preferences' 'None' ⍝ Read Defaults
+[19]      0 0⍴PrefFile ReadFile 'System_Preferences'
+[20]  
+[21]      cOMPANY←cOMPANY,(×⍴lOCATION)/' - ',lOCATION
+[22]      asciidec←zwb asciidec
+[23]      RTProtect←zwb RTProtect
+[24]      MandPass←zwb MandPass
+[25]      enablePIs←zwb EnablePIs
+[26]      ShortFilenames←zwb ShortFilenames
+[27]      CloseExcel←zwb CloseExcel
+[28]      XLtype←(1+zwb UseXLSB)⊃'m' 'b'
+[29]      basisIdentifier←zwb BasisIdentifier
+[30]      suppresstext←zwb suppresstext
+[31]      parallel←WSEngine×zwb Parallel
+[32]      inMemory←zwb InMemory
+[33]  
+[34]      res←'CreateVars'
+[35]  
+[36]  :case 'Quit' ⍝ Deleting "other" variables
+[37]  
+[38]  :endselect
+    ∇

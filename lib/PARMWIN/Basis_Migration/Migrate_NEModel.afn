@@ -1,1 +1,39 @@
-    ∇ Migrate_NEModel;data;n;PickList;list[1]   ⍝ PARMWIN.sf#2[2]   ⍝ Migrate New Entrant Model Parameters[3]   [4]   data←13 CONV∆BASIS ⎕fread tieno,13[5]   [6]   :if ~0∊⍴DLTMB data[1;][7]   :andif ~'00'≡DLTMB data[4;][8]       neSALS←SStoMAT DLTMB '⍺',('NS0',data[4;]) OVER data[5 6;][9]   :endif[10]  [11]  data←⊃m2n ((1↑⍴data) OVERTAKE 3 3 1/1 0 1)⌿data[12]  [13]  :if 0=⎕nc 'NEModels'[14]      NEModels←,⊂data ⋄ n←1[15]  :else[16]      :if (⍴NEModels)<n←NEModels⍳⊂data[17]          NEModels←NEModels,⊂data[18]      :else[19]          :return[20]      :endif[21]  :endif[22]  [23]  list←⍙VALUESdict ReadDictFile 'NE_Model' '' 'NAMES'[24]  0 0⍴ReadModule 'NE_Model' 'None'[25]  [26]  nOM←SStoMAT DLTMB '⍺',('NE0',data[2;]) OVER data[3;][27]  RepMeth←'Number of Members'[28]  :if 0∊⍴ImmedNE←DLTMB data[4;] ⋄ ImmedNE←'0' ⋄ :endif[29]  [30]  FUNDTOT←DLTMB data[5;][31]  PickList←1 0↓SStoMAT 1↓((SystemDir,'POPUPS') ReadFile 'IndGrow') SSINDEX (1+uk)[32]  GrowthInd←DLTMB PickList[¯1↑1,PickList[;,1] TLU data[6;1];][33]  ProjTerm←DLTMB data[7;] ⋄ MaxTerm←DLTMB data[8;][34]  [35]  desc←ClientFile Win∆ReplaceParms ('NE_Model') ((DLTB data[1;]),' [',(⍕n),'] - ',ParmDesc)[36]  0 0⍴ClientFile SaveToFile 'NE_Model' desc (pack list) 1[37]  0 0⍴⎕ex list    ∇
+    ∇ Migrate_NEModel;data;n;PickList;list
+[1]   ⍝ PARMWIN.sf#2
+[2]   ⍝ Migrate New Entrant Model Parameters
+[3]   
+[4]   data←13 CONV∆BASIS ⎕fread tieno,13
+[5]   
+[6]   :if ~0∊⍴DLTMB data[1;]
+[7]   :andif ~'00'≡DLTMB data[4;]
+[8]       neSALS←SStoMAT DLTMB '⍺',('NS0',data[4;]) OVER data[5 6;]
+[9]   :endif
+[10]  
+[11]  data←⊃m2n ((1↑⍴data) OVERTAKE 3 3 1/1 0 1)⌿data
+[12]  
+[13]  :if 0=⎕nc 'NEModels'
+[14]      NEModels←,⊂data ⋄ n←1
+[15]  :else
+[16]      :if (⍴NEModels)<n←NEModels⍳⊂data
+[17]          NEModels←NEModels,⊂data
+[18]      :else
+[19]          :return
+[20]      :endif
+[21]  :endif
+[22]  
+[23]  list←⍙VALUESdict ReadDictFile 'NE_Model' '' 'NAMES'
+[24]  0 0⍴ReadModule 'NE_Model' 'None'
+[25]  
+[26]  nOM←SStoMAT DLTMB '⍺',('NE0',data[2;]) OVER data[3;]
+[27]  RepMeth←'Number of Members'
+[28]  :if 0∊⍴ImmedNE←DLTMB data[4;] ⋄ ImmedNE←'0' ⋄ :endif
+[29]  
+[30]  FUNDTOT←DLTMB data[5;]
+[31]  PickList←1 0↓SStoMAT 1↓((SystemDir,'POPUPS') ReadFile 'IndGrow') SSINDEX (1+uk)
+[32]  GrowthInd←DLTMB PickList[¯1↑1,PickList[;,1] TLU data[6;1];]
+[33]  ProjTerm←DLTMB data[7;] ⋄ MaxTerm←DLTMB data[8;]
+[34]  
+[35]  desc←ClientFile Win∆ReplaceParms ('NE_Model') ((DLTB data[1;]),' [',(⍕n),'] - ',ParmDesc)
+[36]  0 0⍴ClientFile SaveToFile 'NE_Model' desc (pack list) 1
+[37]  0 0⍴⎕ex list
+    ∇

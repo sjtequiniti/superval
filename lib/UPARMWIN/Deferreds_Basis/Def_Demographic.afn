@@ -1,0 +1,38 @@
+    ∇ field Def_Demographic parm;page;isActive;MESS;sex;control
+[1]   ⍝ UPARMWIN.sf#6
+[2]   ⍝ Do Initialisation, Changes and Validation of Demographic
+[3]   
+[4]   page←'pgDemographic.'
+[5]   
+[6]   :select parm
+[7]   :case 'Vars'
+[8]   
+[9]   :case 'Init'
+[10]      (parent,page,'fButtons.bnDeferreds_BasisEditDR') ⎕wi 'onMouseEnter' '⎕wself ⎕wi "∆focusfield" ("#" ⎕wi "focus")'
+[11]  
+[12]  :case 'Change'
+[13]      :select field
+[14]      :caselist 'cbm_DRateParm' 'cbf_DRateParm'
+[15]          sex←(↑('M' 'Fem')[1+'f'=field[3]]),'ale '
+[16]          control←parent,page,'f',(↑sex),'DRates.',field
+[17]          :if ~mt ⍎(2↓field),'←"',(DLTB control ⎕wi 'text'),'"'
+[18]              isActive←0
+[19]              MESS←2⊃((sex,'Decrement Rate Parameter Set') 0) GET∆DecRateGlobals 2↓field
+[20]              :if ~openParameters∨changedParm
+[21]                  changedParm←1
+[22]                  control ⎕wi 'suppress' 1
+[23]                  Assign_Inputs 1
+[24]                  control ⎕wi 'suppress' 0
+[25]                  changedParm←0
+[26]              :endif
+[27]              :if ~mt MESS ⋄ MDISPLAY ((⊃MESS[;3]),⎕tcnl),⎕tcnl ⋄ :endif
+[28]          :endif
+[29]      :caselist 'edm_TOXX1' 'edm_TPXX1'  'edf_TOXX1' 'edf_TPXX1'
+[30]          'Deferreds' TVBasisUpdate 'All'
+[31]          ('ckTVCFSame' 'ckTVIntSame' 'ckTVEscSame' 'ckTVSpouseSame' 'ckTVDPreSame' 'ckTVDPostSame' 'ckTVSDPostSame') Win∆FormValidation¨⊂'Change' ⍝⍝⍝ 'ckTVRevSame'
+[32]      :endselect
+[33]  
+[34]  :case 'Valid'
+[35]  
+[36]  :endselect
+    ∇

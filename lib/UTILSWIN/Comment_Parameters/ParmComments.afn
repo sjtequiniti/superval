@@ -1,0 +1,75 @@
+    ∇ ParmComments arg;class;field;tab;var;CurrentComment;NewComment;desc;action;user;ts;selection;module;row;Parameters_Comment;rowdesc
+[1]   ⍝ UTILSWIN.sf#9
+[2]   ⍝ Function to handle Parameter Comments
+[3]   ⍝ arg can be one of 'Add' 'Edit' 'Delete' 'ViewAll' 'View'
+[4]   
+[5]   :if 0=⎕nc 'Module' ⋄ module←ControlName ⎕wi '∆module'
+[6]   :else              ⋄ module←Module
+[7]   :endif
+[8]   
+[9]   :if 0≠⎕nc Parameters_Comment←'Comment_',module
+[10]      Parameters_Comment←⍎Parameters_Comment
+[11]  
+[12]      :if arg≡'ViewAll'
+[13]          :if ×rowsIn Parameters_Comment
+[14]              'PARMWIN' CallModule 'Comment_View'
+[15]          :else
+[16]              MDISPLAY 'There are no comments to be Viewed'
+[17]          :endif
+[18]      :else
+[19]          :if 0=⎕nc 'FormFields' ⋄ :return ⋄ :endif
+[20]          action←((-'e'=¯1↑arg)↓arg),'ed'
+[21]  
+[22]          class←(field←'#' ⎕wi 'focus') ⎕wi 'class'
+[23]          :if (⊂class)∊'Form' 'Button' 'Menu' 'Frame' 'Picture' 'Microsoft Web Browser'
+[24]              MDISPLAY 'Select Parameter Field of the Comment to be ',action ⋄ :return
+[25]          :elseif class≡'ActiveControl ',⍙⍙classID,⍙⍙licenceKey ⍝ F1SS
+[26]              :if 1≠field ⎕wi 'SelectionCount'
+[27]              :orif ~^/=⌿2 2⍴selection←field ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬
+[28]                  MDISPLAY 'Select a Single Cell of the Comment to be ',action ⋄ :return
+[29]              :endif
+[30]              (selection row)←('Col'≡field ⎕wi '∆roworcol')⌽2↑selection
+[31]              :if mt var←DLTB qtrim (field ⎕wi '∆name')[selection;]
+[32]                  MDISPLAY 'Select the Parameter Cell of the Comment to be ',action ⋄ :return
+[33]              :endif
+[34]              rowdesc←' (row ',(⍕row),')'
+[35]          :else
+[36]              :if mt var←DLTB ↑(FormFields for 'control' field) at 'variable'
+[37]                  MDISPLAY 'Select Parameter Field of the Comment to be ',action ⋄ :return
+[38]              :endif
+[39]              row←⍬ ⋄ rowdesc←''
+[40]          :endif
+[41]  
+[42]          desc←↑(relRules for 'Field' var) at 'Desc'
+[43]          :if 0=rowsIn tab←(Parameters_Comment for 'variable' var) for 'row' row ⋄ :andif ~arg≡'Add'
+[44]              MDISPLAY 'There is no Comment to be ',action,' for the "',desc,rowdesc,'" field' ⋄ :return
+[45]          :elseif ×rowsIn tab ⋄ :andif arg≡'Add'
+[46]              MDISPLAY 'There is already a Comment for the "',desc,rowdesc,'" field' ⋄ :return
+[47]          :endif
+[48]          (CurrentComment user ts)←DLTB¨↑¨tab at 'comment' 'user' 'timestamp'
+[49]  
+[50]          :select arg
+[51]          :caselist 'Add' 'Edit'
+[52]              'PARMWIN' CallModule 'Comment_Edit'
+[53]              :if 0≠⎕nc 'NewComment' ⋄ :andif ~mt NewComment
+[54]                  Parameters_Comment←Parameters_Comment for (~((Parameters_Comment at 'variable')∊⊂var)^(Parameters_Comment at 'row')∊⊂row)
+[55]                  Parameters_Comment←Parameters_Comment OVER var row desc NewComment uSER (,1 DATESPELL ⎕ts)
+[56]                  ⍎'Comment_',module,'←Parameters_Comment'
+[57]                  module ParmColor field var row 1
+[58]                  ControlName ⎕wi "modified" 1
+[59]              :endif
+[60]          :case 'Delete'
+[61]              :if 'Y'='YN' ASK 'Do you want to delete the Comment',⎕tcnl,⎕tcnl,CurrentComment,⎕tcnl,⎕tcnl,' for "',desc,'"',rowdesc,' by ',user,' on ',ts,'?'
+[62]                  Parameters_Comment←Parameters_Comment for (~((Parameters_Comment at 'variable')∊⊂var)^(Parameters_Comment at 'row')∊⊂row)
+[63]                  ⍎'Comment_',module,'←Parameters_Comment'
+[64]                  module ParmColor field var row 0
+[65]                  ControlName ⎕wi "modified" 1
+[66]              :endif
+[67]          :case 'View'
+[68]              MDISPLAY desc,rowdesc,⎕tcnl,⎕tcnl,CurrentComment,⎕tcnl,⎕tcnl,' by ',user,' on ',ts
+[69]          :endselect
+[70]      :endif
+[71]  :else
+[72]      MDISPLAY 'User Comments not found for this Module'
+[73]  :endif
+    ∇

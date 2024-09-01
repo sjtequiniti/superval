@@ -1,1 +1,45 @@
-    ∇ TableDesc DecrIndPrint code;⎕io;Index;values;tpr1;H1;File;SUMMREC;ind;cn;OldTable;size;H2;DPAGE;n;tab;cncol[1]   ⍝ DECRWIN.sf#3[2]   ⍝ Print out of an Individual Rate Table "code"[3]   ⍝ Relies on Global rtCODE, rtInt and rtDecP[4]   ⎕io←1[5]   [6]   cncol←DECRIndex[1;]⍳⊂'∆_CompNo'[7]   [8]   cn←DECRIndex[(⊃DECRIndex[;DECRIndex[1;]⍳⊂'∆_Name']) TLU code;cncol][9]   :if ~Decrupdated←DECRIndex≡Index←DECRFile ReadFile 'Index'[10]      :if ~ind←~cn≡Index[(⊃Index[;Index[1;]⍳⊂'∆_Name']) TLU code;cncol][11]          ind←~(DLTB DECRIndex[DECRIndex[;cncol]⍳⊂cn;])≡Index[Index[;cncol]⍳⊂cn;][12]      :endif[13]      DECRIndex←Index[14]      OldTable←code ⋄ UpdateDecrTree[15]      :if ind ⋄ MDISPLAY 'RateChanged' code ⋄ :return ⋄ :endif[16]  :endif[17]  [18]  :if 0∊⍴,values←DECRFile ReadFile cn[19]      MDISPLAY 'NoRateFound' code ⋄ :return ⍝ Deleted by another user!![20]  :endif[21]  [22]  SUMMREC←(code (code,' - ',TableDesc)) DecrPrint values[23]  [24]  tpr1←OPEN∆TPR∆FILE 'DECPRINT' ⍝ Open print file[25]  File←DLTB (tpr1=⎕xnnums)⌿⎕xnnames[26]  H1←(wIDTH WRITE∆HEAD 'INDIVIDUAL RATE TABLE PRINTOUT') OVER ' '[27]  [28]  :if TwoDTable code ⍝ 2D Tables[29]      (size tab)←SUMMREC ⋄ H2←1 0↓tab[;⍳3] ⋄ tab←0 3↓tab ⋄ H1←H1 OVER ' '[30]      DPAGE←0 ⋄ size←size×⌊(wIDTH-3)÷size ⋄ tab←(size×⌈(¯1↑⍴tab)÷size)↑[2]tab[31]      :for n :in ⍳(¯1↑⍴tab)÷size[32]          H1←(¯1 0↓H1) OVER '   ',,(1,size)↑(0,size×n-1)↓tab[33]          SUMMREC←H2,((1,size×n-1)↓tab)[;⍳size][34]          DPAGE←1↑H1 OUTPUT tpr1,DPAGE ⍝ Print headings and descriptions[35]      :endfor[36]  :else[37]      0 0⍴H1 OUTPUT tpr1,0[38]  :endif[39]  ⎕nuntie tpr1[40]  [41]  MDISPLAY 'OutputFile' File[42]  [43]  ('Individual Rate Table Printout of ',code,' at ',DLTMB 1 DATESPELL ⎕ts) UpdateBrowserHistory File    ∇
+    ∇ TableDesc DecrIndPrint code;⎕io;Index;values;tpr1;H1;File;SUMMREC;ind;cn;OldTable;size;H2;DPAGE;n;tab;cncol
+[1]   ⍝ DECRWIN.sf#3
+[2]   ⍝ Print out of an Individual Rate Table "code"
+[3]   ⍝ Relies on Global rtCODE, rtInt and rtDecP
+[4]   ⎕io←1
+[5]   
+[6]   cncol←DECRIndex[1;]⍳⊂'∆_CompNo'
+[7]   
+[8]   cn←DECRIndex[(⊃DECRIndex[;DECRIndex[1;]⍳⊂'∆_Name']) TLU code;cncol]
+[9]   :if ~Decrupdated←DECRIndex≡Index←DECRFile ReadFile 'Index'
+[10]      :if ~ind←~cn≡Index[(⊃Index[;Index[1;]⍳⊂'∆_Name']) TLU code;cncol]
+[11]          ind←~(DLTB DECRIndex[DECRIndex[;cncol]⍳⊂cn;])≡Index[Index[;cncol]⍳⊂cn;]
+[12]      :endif
+[13]      DECRIndex←Index
+[14]      OldTable←code ⋄ UpdateDecrTree
+[15]      :if ind ⋄ MDISPLAY 'RateChanged' code ⋄ :return ⋄ :endif
+[16]  :endif
+[17]  
+[18]  :if 0∊⍴,values←DECRFile ReadFile cn
+[19]      MDISPLAY 'NoRateFound' code ⋄ :return ⍝ Deleted by another user!!
+[20]  :endif
+[21]  
+[22]  SUMMREC←(code (code,' - ',TableDesc)) DecrPrint values
+[23]  
+[24]  tpr1←OPEN∆TPR∆FILE 'DECPRINT' ⍝ Open print file
+[25]  File←DLTB (tpr1=⎕xnnums)⌿⎕xnnames
+[26]  H1←(wIDTH WRITE∆HEAD 'INDIVIDUAL RATE TABLE PRINTOUT') OVER ' '
+[27]  
+[28]  :if TwoDTable code ⍝ 2D Tables
+[29]      (size tab)←SUMMREC ⋄ H2←1 0↓tab[;⍳3] ⋄ tab←0 3↓tab ⋄ H1←H1 OVER ' '
+[30]      DPAGE←0 ⋄ size←size×⌊(wIDTH-3)÷size ⋄ tab←(size×⌈(¯1↑⍴tab)÷size)↑[2]tab
+[31]      :for n :in ⍳(¯1↑⍴tab)÷size
+[32]          H1←(¯1 0↓H1) OVER '   ',,(1,size)↑(0,size×n-1)↓tab
+[33]          SUMMREC←H2,((1,size×n-1)↓tab)[;⍳size]
+[34]          DPAGE←1↑H1 OUTPUT tpr1,DPAGE ⍝ Print headings and descriptions
+[35]      :endfor
+[36]  :else
+[37]      0 0⍴H1 OUTPUT tpr1,0
+[38]  :endif
+[39]  ⎕nuntie tpr1
+[40]  
+[41]  MDISPLAY 'OutputFile' File
+[42]  
+[43]  ('Individual Rate Table Printout of ',code,' at ',DLTMB 1 DATESPELL ⎕ts) UpdateBrowserHistory File
+    ∇

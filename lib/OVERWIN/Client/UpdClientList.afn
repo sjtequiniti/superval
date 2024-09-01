@@ -1,1 +1,28 @@
-    ∇ UpdClientList;list;n;field;i;menu;Dir[1]   ⍝ OVERWIN.sf#10[2]   ⍝ Update the user's list of recent Clients[3]   [4]   :if 0∊⍴n←(list←1 0↓GetFolderHistory uSER) ExactTLU InputDir[5]       list←InputDir OVER list[6]   :else[7]       list←list[n,(⍳1↑⍴list)~n;][8]   :endif[9]   [10]  list←(10 0⌈⍴list)↑list[11]  (list[1;]) INIString uSER 'Open1' PrefINI[12]  field←(FormName,'.mMainFile') ⎕wi 'children'[13]  field←⊃field[¯1+field⍳⊂FormName,'.mMainFile.mOpen2'][14]  :for i :in 1+⍳9[15]      menu←FormName,'.mMainFile.mOpen',⍕i[16]      :if ∨/' '≠list[i;][17]          (UPPERCASE FullFolder list[i;]) INIString uSER ('Open',⍕i) PrefINI[18]          :if i=2 ⋄ field ⎕wi 'visible' 1 ⋄ :endif[19]          menu ⎕wi 'visible' 1[20]          menu ⎕wi 'caption' ('&',(⍕i-1),' ',(150 (Dir←UPPERCASE FullFolder list[i;])) ConvertDir 'ShortDir')[21]          menu ⎕wi 'prompt' ('Open ',Dir)[22]      :else[23]          :if i=2 ⋄ field ⎕wi 'visible' 0 ⋄ :endif[24]          menu ⎕wi 'visible' 0[25]      :endif[26]  :endfor    ∇
+    ∇ UpdClientList;list;n;field;i;menu;Dir
+[1]   ⍝ OVERWIN.sf#10
+[2]   ⍝ Update the user's list of recent Clients
+[3]   
+[4]   :if 0∊⍴n←(list←1 0↓GetFolderHistory uSER) ExactTLU InputDir
+[5]       list←InputDir OVER list
+[6]   :else
+[7]       list←list[n,(⍳1↑⍴list)~n;]
+[8]   :endif
+[9]   
+[10]  list←(10 0⌈⍴list)↑list
+[11]  (list[1;]) INIString uSER 'Open1' PrefINI
+[12]  field←(FormName,'.mMainFile') ⎕wi 'children'
+[13]  field←⊃field[¯1+field⍳⊂FormName,'.mMainFile.mOpen2']
+[14]  :for i :in 1+⍳9
+[15]      menu←FormName,'.mMainFile.mOpen',⍕i
+[16]      :if ∨/' '≠list[i;]
+[17]          (UPPERCASE FullFolder list[i;]) INIString uSER ('Open',⍕i) PrefINI
+[18]          :if i=2 ⋄ field ⎕wi 'visible' 1 ⋄ :endif
+[19]          menu ⎕wi 'visible' 1
+[20]          menu ⎕wi 'caption' ('&',(⍕i-1),' ',(150 (Dir←UPPERCASE FullFolder list[i;])) ConvertDir 'ShortDir')
+[21]          menu ⎕wi 'prompt' ('Open ',Dir)
+[22]      :else
+[23]          :if i=2 ⋄ field ⎕wi 'visible' 0 ⋄ :endif
+[24]          menu ⎕wi 'visible' 0
+[25]      :endif
+[26]  :endfor
+    ∇

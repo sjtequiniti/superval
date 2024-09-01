@@ -1,0 +1,19 @@
+    ∇ ⍙⍙res←HPC_HTTPWorker ⍙⍙File;⍙⍙response;⍙⍙tid;⍙⍙tt;∆;tries;⍙⍙httpRESPLIMIT
+[1]   ⍝ WLSWIN.sf#5
+[2]   ⍝ Send the job off to the Broker and return task ID
+[3]   
+[4]   ⍙⍙httpRESPLIMIT←1000                     ⍝ Speed up response to 1 sec
+[5]   :if ∨/(⊂'Broker running')≡¨eis 1 10 ⍙⍙httpRESPLIMIT BrokerRequest 'sta?tid=0'
+[6]       ⍙⍙tt←↑1↓⎕ai
+[7]       tries←0
+[8]       ⍙⍙httpRESPLIMIT←30000                ⍝ Give Broker 30 seconds response time (in effect, 15 seconds to respond)
+[9]       :repeat
+[10]          ⍙⍙response←1 1 ⍙⍙httpRESPLIMIT BrokerRequest 'new?workfile=',⍙⍙File,'&inpdir=',(htmlEscape ⍙⍙InputDirUNC),'&r1=',(⍕1+recn),'&r2=',(⍕NUMRECS),'&try=',⍕tries+1
+[11]          ⍙⍙tid←'tid' ProcessResponse ⍙⍙response
+[12]      :until ~∆←mt ⍙⍙tid ⋄ :orif ∆←100<(↑1↓⎕ai)-⍙⍙tt  ⍝ Limit wait for tid to 100 sec
+[13]      :if ∆ ⋄ →err ⋄ :endif
+[14]      ⍙⍙res←⍙⍙tid ''
+[15]  :else
+[16]  err:⍙⍙res←'0' 'Broker is not responding'
+[17]  :endif
+    ∇

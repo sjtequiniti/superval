@@ -1,0 +1,25 @@
+    ∇ Z←B900CreateTable tbl;f;F;t;cns;bases;d;vernos;index;V9Basis;packold;pkg;MembGroup;verno;saveVersion;compnos;∆
+[1]   ⍝ UPARMWIN.sf#13
+[2]   ⍝ Vern: dnp20mar16
+[3]   compnos←V9Basis←bases←vernos←''
+[4]   d←tbl groupby 'File'
+[5]   :for ∆ :in spin pop d ⋄ (f t)←∆
+[6]       F←InputDir,f,'.SF'
+[7]       index←F ReadFile 'Index'
+[8]       ∆←(spin index at '∆_Description' '∆_Name')(index at '∆_CompNo') ⍝ a map
+[9]       compnos←compnos,cns←∆ map spin t at 'Name' 'memtyp'
+[10]      vernos←vernos,verno←(index for (⊂'∆_CompNo'),cns) at '∆_VersModified'
+[11]      packold←''
+[12]      :for ∆ :in spin (t at 'Memtype') (cns file_get_cns F) verno ⋄ (MembGroup pkg saveVersion)←∆
+[13]          saveVersion←+/(10*-0 2 4)×MatrixZWB SStoMAT '.',saveVersion
+[14]          packold←packold,⊂pkg pevalz '⍙pkg FixPackage "',MembGroup,'"'
+[15]      :endfor
+[16]      V9Basis←V9Basis,packold
+[17]      bases←bases,p2d¨packold
+[18]  :endfor
+[19]  Z←tbl sortedBy ⍋ (keysIn d)⍳tbl at 'File'
+[20]  Z←Z amend 'cn' compnos
+[21]  Z←Z amend 'V9Basis' V9Basis
+[22]  Z←Z amend 'bases'   bases
+[23]  Z←Z amend 'vernos'  vernos
+    ∇

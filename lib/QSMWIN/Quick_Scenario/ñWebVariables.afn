@@ -1,1 +1,35 @@
-    ∇ Z←⍙WebVariables arg;maxyr;maxpay;premsk;penfymsk;incmsk;groupings;mortadj;∆;amortmsk;amortmaxterm;decadj[1]   ⍝ QSMWIN.sf#2[2]   ⍝ Create Variables for Processing adjustments[3]   [4]   :if 0=↑(maxyr maxpay)←arg[5]       (maxpay maxyr)←↑⌈/⍴¨restab at 'RawMemberCF'[6]   :endif[7]   premsk←(⍳maxpay)∘.≥⍳maxyr ⋄ penfymsk←(⍳maxpay)∘.=⍳maxyr ⋄ incmsk←~premsk-penfymsk[8]   amortmaxterm←50⌊maxyr ⋄ amortmsk←0⍪(⍳amortmaxterm)∘.≥⍳maxyr[9]   [10]  ⍝ Groupings used in each row and overall[11]  groupings←restab at 'PreInterestGroup' 'PostInterestGroup' 'InflationGroup' 'RevaluationGroup' 'IncreaseGroup'[12]  groupings←(nub lmt ,⊃groupings)~'GMP None' 'GMP Fixed' 'GMP Limited 5%' '⍙Not Used'[13]  :if group10 ⍝ Previous version with only 10 Financial groups[14]      groupings←DLTB¨15↑(¯10↑groupings,(0⌈⌊0.5×10-⍴groupings)/⊂''),⊂'' ⋄ group10←0[15]  :else ⍝ Now 15 Financial groups[16]      groupings←DLTB¨¯15↑groupings,(0⌈⌊0.5×15-⍴groupings)/⊂''[17]  :endif[18]  [19]  mortadj←^/∊restab at 'SepSpouseCF'[20]  decadj←0 ⍝⍝⍝ ~0∊∊restab at 'ContingencyID'[21]  GraphTerm←zwb graphterm[22]  accruallimit←zwb accrual[23]  Capind←zwb capind[24]  Profit←1+0.01×Capind×zwb profit[25]  finMethod←zwb ¨finRelative finAbsolute finPCChange finPerCent[26]  fundind←zwb funding[27]  ContPer←(maxpay-1)⌊zwb contper[28]  VDATEtxt←' ','()' embrace 'DD/MM/YYYY' DATE∆FMT ValDATE[29]  RFDatetxt←' ','()' embrace RFDate[30]  rfperiod←0⌈'DN' DURN ValDATE,'DD/MM/YYYY' DATEEXP RFDate[31]  rfAssets←zwb RFASSETS[32]  [33]  Z←maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk    ∇
+    ∇ Z←⍙WebVariables arg;maxyr;maxpay;premsk;penfymsk;incmsk;groupings;mortadj;∆;amortmsk;amortmaxterm;decadj
+[1]   ⍝ QSMWIN.sf#2
+[2]   ⍝ Create Variables for Processing adjustments
+[3]   
+[4]   :if 0=↑(maxyr maxpay)←arg
+[5]       (maxpay maxyr)←↑⌈/⍴¨restab at 'RawMemberCF'
+[6]   :endif
+[7]   premsk←(⍳maxpay)∘.≥⍳maxyr ⋄ penfymsk←(⍳maxpay)∘.=⍳maxyr ⋄ incmsk←~premsk-penfymsk
+[8]   amortmaxterm←50⌊maxyr ⋄ amortmsk←0⍪(⍳amortmaxterm)∘.≥⍳maxyr
+[9]   
+[10]  ⍝ Groupings used in each row and overall
+[11]  groupings←restab at 'PreInterestGroup' 'PostInterestGroup' 'InflationGroup' 'RevaluationGroup' 'IncreaseGroup'
+[12]  groupings←(nub lmt ,⊃groupings)~'GMP None' 'GMP Fixed' 'GMP Limited 5%' '⍙Not Used'
+[13]  :if group10 ⍝ Previous version with only 10 Financial groups
+[14]      groupings←DLTB¨15↑(¯10↑groupings,(0⌈⌊0.5×10-⍴groupings)/⊂''),⊂'' ⋄ group10←0
+[15]  :else ⍝ Now 15 Financial groups
+[16]      groupings←DLTB¨¯15↑groupings,(0⌈⌊0.5×15-⍴groupings)/⊂''
+[17]  :endif
+[18]  
+[19]  mortadj←^/∊restab at 'SepSpouseCF'
+[20]  decadj←0 ⍝⍝⍝ ~0∊∊restab at 'ContingencyID'
+[21]  GraphTerm←zwb graphterm
+[22]  accruallimit←zwb accrual
+[23]  Capind←zwb capind
+[24]  Profit←1+0.01×Capind×zwb profit
+[25]  finMethod←zwb ¨finRelative finAbsolute finPCChange finPerCent
+[26]  fundind←zwb funding
+[27]  ContPer←(maxpay-1)⌊zwb contper
+[28]  VDATEtxt←' ','()' embrace 'DD/MM/YYYY' DATE∆FMT ValDATE
+[29]  RFDatetxt←' ','()' embrace RFDate
+[30]  rfperiod←0⌈'DN' DURN ValDATE,'DD/MM/YYYY' DATEEXP RFDate
+[31]  rfAssets←zwb RFASSETS
+[32]  
+[33]  Z←maxyr maxpay groupings premsk penfymsk incmsk mortadj decadj amortmaxterm amortmsk
+    ∇

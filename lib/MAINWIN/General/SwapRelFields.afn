@@ -1,0 +1,20 @@
+    ∇ vars←type SwapRelFields vars;label;parm
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Swapping label and field of Relative Fields, if required
+[3]   ⍝ Copes with conversion of Previous version as well as Current functionality for Dates (gave up on Numbers!)
+[4]   
+[5]   (parm label)←DLTB¨vars
+[6]   
+[7]   :select type
+[8]   :case 'Date'
+[9]       :if ~mt label ⋄ :andif ~mt parm ⋄ :andif ~DATECHECK 'DD/MM/YYYY' DATEEXP label
+[10]          vars←⌽vars
+[11]      :endif
+[12]  
+[13]  :case 'Num'
+[14]      :if ~mt label ⋄ :andif ~mt parm ⋄ :andif ^/⎕vi parm
+[15]          vars←⌽vars
+[16]      :endif
+[17]  
+[18]  :endselect
+    ∇

@@ -1,0 +1,17 @@
+    ∇ Z←L TAXYEARS R;∆
+[1]   ⍝ MAINWIN.sf#7
+[2]   ⍝ Return complete tax years between dates L and R
+[3]   ⍝ Assume that BOTH L & R are in DD MM YY or DD MM YYYY format
+[4]   ⍝ start of tax year is held in taxdate AUS UK SA
+[5]   
+[6]   L←(1 1 0/L),(0 0 1/L)+1900×1900>0 0 1/L
+[7]   R←(1 1 0/R),(0 0 1/R)+1900×1900>0 0 1/R
+[8]   Z←(100⊥⍉⌽L)>100⊥⍉⌽R
+[9]   
+[10]  L←(Z⍀Z⌿R)+(~Z)⍀(~Z)⌿∆←L
+[11]  R←(Z⍀Z⌿∆)+(~Z)⍀(~Z)⌿R
+[12]  
+[13]  L←(0 0 1/L)+((100⊥⌽taxdate)<100⊥⍉⌽1 1 0/L)∘.×,1
+[14]  R←(0 0 1/R)-((100⊥⌽taxdate)>100⊥⍉⌽1 1 0/R)∘.×,1
+[15]  Z←((R-L)+(0>R-L))×((-Z)+×~Z)∘.×,1
+    ∇

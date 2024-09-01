@@ -1,1 +1,81 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "User_Preferences" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "User_Preferences" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmUserPref.fEditing.ckBasisTabOrder" ⎕wi "value" (zwb BasisTabOrder)[10]  "fmUserPref.fEditing.ckBasisTabAll" ⎕wi "value" (zwb BasisTabAll)[11]  PickList←"fmUserPref.fFolders.cbHelpType" ⎕wi "list"[12]  selection←PickList ExactTLU DLTB HelpType[13]  :if mt selection[14]      :if ~mt DLTB HelpType[15]          warnings←warnings OVER "Previous Selection for 'Preferred Help Format' is no longer available"[16]      :endif[17]      modified←⌈/modified,1[18]  :endif[19]  "fmUserPref.fFolders.cbHelpType" ⎕wi "value" (¯1↑1,selection)[20]  "fmUserPref.fFolders.edHelpDir" ⎕wi "text" (DLTB HelpDir)[21]  PickList←"fmUserPref.fOutput.cbaccessProvider" ⎕wi "list"[22]  selection←PickList ExactTLU DLTB accessProvider[23]  :if mt selection[24]      :if ~mt DLTB accessProvider[25]          warnings←warnings OVER "Previous Selection for 'Preferred Access Provider' is no longer available"[26]      :endif[27]      modified←⌈/modified,0[28]  :endif[29]  "fmUserPref.fOutput.cbaccessProvider" ⎕wi "value" (¯1↑0,selection)[30]  "fmUserPref.fOutput.ckAccessSQLtabs" ⎕wi "value" (zwb AccessSQLtabs)[31]  "fmUserPref.fOutput.edpound" ⎕wi "text" (DLTB pound)[32]  "fmUserPref.fOutput.edtextlines" ⎕wi "text" (DLTB textlines)[33]  "fmUserPref.fOutput.edwidth" ⎕wi "text" (DLTB width)[34]  "fmUserPref.fOutput.edBHistory" ⎕wi "text" (DLTB BHistory)[35]  "fmUserPref.fOutput.ededitor" ⎕wi "text" (DLTB editor)[36]  "fmUserPref.fDelay.edTimeOut" ⎕wi "text" (DLTB TimeOut)[37]  "fmUserPref.fImages.ckButtonImage" ⎕wi "value" (zwb ButtonImage)[38]  "fmUserPref.fImages.ckMenuImage" ⎕wi "value" (zwb MenuImage)[39]  "fmUserPref.fImages.ckToolBar" ⎕wi "value" (zwb ToolBar)[40]  PickList←"fmUserPref.fAPL.cbAPLScreen" ⎕wi "list"[41]  selection←PickList ExactTLU DLTB APLScreen[42]  :if mt selection[43]      :if ~mt DLTB APLScreen[44]          warnings←warnings OVER "Previous Selection for 'APL Screen Font' is no longer available"[45]      :endif[46]      modified←⌈/modified,1[47]  :endif[48]  "fmUserPref.fAPL.cbAPLScreen" ⎕wi "value" (¯1↑1,selection)[49]  PickList←"fmUserPref.fAPL.cbAPLGrid" ⎕wi "list"[50]  selection←PickList ExactTLU DLTB APLGrid[51]  :if mt selection[52]      :if ~mt DLTB APLGrid[53]          warnings←warnings OVER "Previous Selection for 'APL Grid Font' is no longer available"[54]      :endif[55]      modified←⌈/modified,1[56]  :endif[57]  "fmUserPref.fAPL.cbAPLGrid" ⎕wi "value" (¯1↑1,selection)[58]  PickList←"fmUserPref.fAPL.cbAPLPrint" ⎕wi "list"[59]  selection←PickList ExactTLU DLTB APLPrint[60]  :if mt selection[61]      :if ~mt DLTB APLPrint[62]          warnings←warnings OVER "Previous Selection for 'APL Printer Font' is no longer available"[63]      :endif[64]      modified←⌈/modified,1[65]  :endif[66]  "fmUserPref.fAPL.cbAPLPrint" ⎕wi "value" (¯1↑1,selection)[67]  "fmUserPref.edaccess" ⎕wi "text" (DLTB access)[68]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_User_Preferences[69]      :for var :in spin Comment_User_Preferences at "variable" "row" ⋄ (var row)←var[70]          "User_Preferences" ParmColor ((FormFields for "variable" var) at "control"),var row 1[71]      :endfor[72]  :endif[73]  :if ~0∊⍴,warnings[74]      MDISPLAY DLTMB warnings,⎕tcnl[75]      Win∆AssignVars "fmUserPref"[76]  :endif[77]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "User_Preferences" "" "Names"[78]      "fmUserPref" ⎕wi "modified" 0[79]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "User_Preferences" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "User_Preferences" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmUserPref.fEditing.ckBasisTabOrder" ⎕wi "value" (zwb BasisTabOrder)
+[10]  "fmUserPref.fEditing.ckBasisTabAll" ⎕wi "value" (zwb BasisTabAll)
+[11]  PickList←"fmUserPref.fFolders.cbHelpType" ⎕wi "list"
+[12]  selection←PickList ExactTLU DLTB HelpType
+[13]  :if mt selection
+[14]      :if ~mt DLTB HelpType
+[15]          warnings←warnings OVER "Previous Selection for 'Preferred Help Format' is no longer available"
+[16]      :endif
+[17]      modified←⌈/modified,1
+[18]  :endif
+[19]  "fmUserPref.fFolders.cbHelpType" ⎕wi "value" (¯1↑1,selection)
+[20]  "fmUserPref.fFolders.edHelpDir" ⎕wi "text" (DLTB HelpDir)
+[21]  PickList←"fmUserPref.fOutput.cbaccessProvider" ⎕wi "list"
+[22]  selection←PickList ExactTLU DLTB accessProvider
+[23]  :if mt selection
+[24]      :if ~mt DLTB accessProvider
+[25]          warnings←warnings OVER "Previous Selection for 'Preferred Access Provider' is no longer available"
+[26]      :endif
+[27]      modified←⌈/modified,0
+[28]  :endif
+[29]  "fmUserPref.fOutput.cbaccessProvider" ⎕wi "value" (¯1↑0,selection)
+[30]  "fmUserPref.fOutput.ckAccessSQLtabs" ⎕wi "value" (zwb AccessSQLtabs)
+[31]  "fmUserPref.fOutput.edpound" ⎕wi "text" (DLTB pound)
+[32]  "fmUserPref.fOutput.edtextlines" ⎕wi "text" (DLTB textlines)
+[33]  "fmUserPref.fOutput.edwidth" ⎕wi "text" (DLTB width)
+[34]  "fmUserPref.fOutput.edBHistory" ⎕wi "text" (DLTB BHistory)
+[35]  "fmUserPref.fOutput.ededitor" ⎕wi "text" (DLTB editor)
+[36]  "fmUserPref.fDelay.edTimeOut" ⎕wi "text" (DLTB TimeOut)
+[37]  "fmUserPref.fImages.ckButtonImage" ⎕wi "value" (zwb ButtonImage)
+[38]  "fmUserPref.fImages.ckMenuImage" ⎕wi "value" (zwb MenuImage)
+[39]  "fmUserPref.fImages.ckToolBar" ⎕wi "value" (zwb ToolBar)
+[40]  PickList←"fmUserPref.fAPL.cbAPLScreen" ⎕wi "list"
+[41]  selection←PickList ExactTLU DLTB APLScreen
+[42]  :if mt selection
+[43]      :if ~mt DLTB APLScreen
+[44]          warnings←warnings OVER "Previous Selection for 'APL Screen Font' is no longer available"
+[45]      :endif
+[46]      modified←⌈/modified,1
+[47]  :endif
+[48]  "fmUserPref.fAPL.cbAPLScreen" ⎕wi "value" (¯1↑1,selection)
+[49]  PickList←"fmUserPref.fAPL.cbAPLGrid" ⎕wi "list"
+[50]  selection←PickList ExactTLU DLTB APLGrid
+[51]  :if mt selection
+[52]      :if ~mt DLTB APLGrid
+[53]          warnings←warnings OVER "Previous Selection for 'APL Grid Font' is no longer available"
+[54]      :endif
+[55]      modified←⌈/modified,1
+[56]  :endif
+[57]  "fmUserPref.fAPL.cbAPLGrid" ⎕wi "value" (¯1↑1,selection)
+[58]  PickList←"fmUserPref.fAPL.cbAPLPrint" ⎕wi "list"
+[59]  selection←PickList ExactTLU DLTB APLPrint
+[60]  :if mt selection
+[61]      :if ~mt DLTB APLPrint
+[62]          warnings←warnings OVER "Previous Selection for 'APL Printer Font' is no longer available"
+[63]      :endif
+[64]      modified←⌈/modified,1
+[65]  :endif
+[66]  "fmUserPref.fAPL.cbAPLPrint" ⎕wi "value" (¯1↑1,selection)
+[67]  "fmUserPref.edaccess" ⎕wi "text" (DLTB access)
+[68]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_User_Preferences
+[69]      :for var :in spin Comment_User_Preferences at "variable" "row" ⋄ (var row)←var
+[70]          "User_Preferences" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[71]      :endfor
+[72]  :endif
+[73]  :if ~0∊⍴,warnings
+[74]      MDISPLAY DLTMB warnings,⎕tcnl
+[75]      Win∆AssignVars "fmUserPref"
+[76]  :endif
+[77]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "User_Preferences" "" "Names"
+[78]      "fmUserPref" ⎕wi "modified" 0
+[79]  :endif
+    ∇

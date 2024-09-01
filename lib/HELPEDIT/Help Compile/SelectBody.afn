@@ -1,1 +1,28 @@
-    ∇ Z←SelectBody html;lb4;∆[1]   ⍝ HELPEDIT.sf#4[2]   [3]   :if mt html ⋄ Z←''[4]   :else[5]       Z←html keep 0 1 1 0/'BODY' startEnd html            ⍝ select content of BODY element of html[6]   [7]       Z←Z lose 1 0 0 1/'TITLE' startEnd Z                 ⍝ remove one <TITLE> element[8]       Z←Z lose 1 0 0 1/'OBJECT' startEnd Z                ⍝ remove one <OBJECT> element[9]       Z←Z lose 1 0 0 1/'A name=' startEnd Z               ⍝ remove one <A NAME="..."> element[10]  [11]      :while (tally Z) > lb4←¯1+('<LINK'⍷UPPERCASE Z)⍳1   ⍝ remove <LINK> elements[12]          Z←(lb4↑Z),(∆⍳'>')↓∆←lb4↓Z[13]      :endwhile[14]  [15]      :while (tally Z) > lb4←¯1+('<META'⍷UPPERCASE Z)⍳1   ⍝ remove <META> elements[16]          Z←(lb4↑Z),(∆⍳'>')↓∆←lb4↓Z[17]      :endwhile[18]  [19]      :while </2↑∆←1 0 0 1/'STYLE' startEnd Z             ⍝ remove <STYLE> elements[20]          Z←Z lose ∆[21]      :endwhile[22]  [23]      Z←(~∆∨≠\∆←('<!--'⍷Z)∨0 0,¯2↓'-->'⍷Z)/Z              ⍝ remove HTML comments, inc. Word formats[24]      Z←↑exposeContent/ 'font' 'span' Z                   ⍝ remove Word formats[25]  [26]  :endif    ∇
+    ∇ Z←SelectBody html;lb4;∆
+[1]   ⍝ HELPEDIT.sf#4
+[2]   
+[3]   :if mt html ⋄ Z←''
+[4]   :else
+[5]       Z←html keep 0 1 1 0/'BODY' startEnd html            ⍝ select content of BODY element of html
+[6]   
+[7]       Z←Z lose 1 0 0 1/'TITLE' startEnd Z                 ⍝ remove one <TITLE> element
+[8]       Z←Z lose 1 0 0 1/'OBJECT' startEnd Z                ⍝ remove one <OBJECT> element
+[9]       Z←Z lose 1 0 0 1/'A name=' startEnd Z               ⍝ remove one <A NAME="..."> element
+[10]  
+[11]      :while (tally Z) > lb4←¯1+('<LINK'⍷UPPERCASE Z)⍳1   ⍝ remove <LINK> elements
+[12]          Z←(lb4↑Z),(∆⍳'>')↓∆←lb4↓Z
+[13]      :endwhile
+[14]  
+[15]      :while (tally Z) > lb4←¯1+('<META'⍷UPPERCASE Z)⍳1   ⍝ remove <META> elements
+[16]          Z←(lb4↑Z),(∆⍳'>')↓∆←lb4↓Z
+[17]      :endwhile
+[18]  
+[19]      :while </2↑∆←1 0 0 1/'STYLE' startEnd Z             ⍝ remove <STYLE> elements
+[20]          Z←Z lose ∆
+[21]      :endwhile
+[22]  
+[23]      Z←(~∆∨≠\∆←('<!--'⍷Z)∨0 0,¯2↓'-->'⍷Z)/Z              ⍝ remove HTML comments, inc. Word formats
+[24]      Z←↑exposeContent/ 'font' 'span' Z                   ⍝ remove Word formats
+[25]  
+[26]  :endif
+    ∇

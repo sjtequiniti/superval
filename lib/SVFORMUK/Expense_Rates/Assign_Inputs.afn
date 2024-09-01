@@ -1,1 +1,34 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Expense_Rates" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Expense_Rates" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   "fmExpRates.edEXPSF" ⎕wi "text" (DLTB EXPSF)[10]  PickList←"fmExpRates.cbEXPf" ⎕wi "list"[11]  warnings←warnings OVER "Scheme Fee Inflation Rate (% p.a.)" Win∆FinRelative "EXPf" "lrEXPf" 0[12]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText EXPf[13]  :if mt selection[14]      modified←⌈/modified,1[15]  :endif[16]  "fmExpRates.cbEXPf" ⎕wi "value" (¯1↑1,selection)[17]  "fmExpRates.edPMEXP" ⎕wi "text" (DLTB PMEXP)[18]  "fmExpRates.edEXPCC" ⎕wi "text" (DLTB EXPCC)[19]  "fmExpRates.edEXPMC" ⎕wi "text" (DLTB EXPMC)[20]  "fmExpRates.edEXPSAL" ⎕wi "text" (DLTB EXPSAL)[21]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Expense_Rates[22]      :for var :in spin Comment_Expense_Rates at "variable" "row" ⋄ (var row)←var[23]          "Expense_Rates" ParmColor ((FormFields for "variable" var) at "control"),var row 1[24]      :endfor[25]  :endif[26]  :if ~0∊⍴,warnings[27]      MDISPLAY DLTMB warnings,⎕tcnl[28]      Win∆AssignVars "fmExpRates"[29]  :endif[30]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Expense_Rates" "" "Names"[31]      "fmExpRates" ⎕wi "modified" 0[32]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Expense_Rates" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Expense_Rates" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   "fmExpRates.edEXPSF" ⎕wi "text" (DLTB EXPSF)
+[10]  PickList←"fmExpRates.cbEXPf" ⎕wi "list"
+[11]  warnings←warnings OVER "Scheme Fee Inflation Rate (% p.a.)" Win∆FinRelative "EXPf" "lrEXPf" 0
+[12]  selection←(⎕av[209] StripText PickList) ExactTLU DLTB ⎕av[209] StripText EXPf
+[13]  :if mt selection
+[14]      modified←⌈/modified,1
+[15]  :endif
+[16]  "fmExpRates.cbEXPf" ⎕wi "value" (¯1↑1,selection)
+[17]  "fmExpRates.edPMEXP" ⎕wi "text" (DLTB PMEXP)
+[18]  "fmExpRates.edEXPCC" ⎕wi "text" (DLTB EXPCC)
+[19]  "fmExpRates.edEXPMC" ⎕wi "text" (DLTB EXPMC)
+[20]  "fmExpRates.edEXPSAL" ⎕wi "text" (DLTB EXPSAL)
+[21]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Expense_Rates
+[22]      :for var :in spin Comment_Expense_Rates at "variable" "row" ⋄ (var row)←var
+[23]          "Expense_Rates" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[24]      :endfor
+[25]  :endif
+[26]  :if ~0∊⍴,warnings
+[27]      MDISPLAY DLTMB warnings,⎕tcnl
+[28]      Win∆AssignVars "fmExpRates"
+[29]  :endif
+[30]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Expense_Rates" "" "Names"
+[31]      "fmExpRates" ⎕wi "modified" 0
+[32]  :endif
+    ∇

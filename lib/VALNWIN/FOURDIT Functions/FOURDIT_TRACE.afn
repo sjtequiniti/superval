@@ -1,0 +1,173 @@
+    ∇ FOURDIT_TRACE;∆;data;flds;title;⍙indbenres;N;pentitle;r;take;NPV;NPV1;NPV2
+[1]   ⍝ VALNWIN.sf#19
+[2]   
+[3]   ⍝ Total Liability ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝
+[4]   
+[5]   ⍙indbenres←0 1↓(⍙indmembres[;0]∊ 2 3,14+⍳16)⌿⍙indmembres
+[6]   data←+/⍙indbenres[;2]+.×  ⍙indbenres[;0]∘.= 41 42 43
+[7]   title←'Liability'
+[8]   flds← ⊂'Total_Liab'
+[9]   FOURDIT title (push flds data)
+[10]  
+[11]  ⍝ Liability Breakdown ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝
+[12]  data←0 5⍴''
+[13]  :for BenID :in 2 3,14+⍳16    ⍝ FIXME Replace loop with inner products
+[14]      :if 0∊⍴⍙indbenres←0 1↓(⍙indmembres[;0]=BenID)⌿⍙indmembres ⋄ :continue ⋄ :endif
+[15]      N←1+(2 3,14+⍳16)⍳BenID
+[16]      pentitle←(⊃0 Pens∆Title 1)[N;]
+[17]      ∆←pentitle push PP rnd r,+/r←⍙indbenres[;2]+.×  ⍙indbenres[;0]∘.= 41 42 43
+[18]      data←data⍪∆
+[19]  :endfor
+[20]  data←⎕split[0]data
+[21]  title←'Liabilities'
+[22]  flds← 'Benefit' 'Member_Liab' 'Spouse_in_Deferment_Liab' 'Spouse_post_Retirement_Liab' 'Total_Liab'
+[23]  FOURDIT title (push flds data)
+[24]  
+[25]  ⍝ Liability and Cashflow ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝
+[26]  
+[27]  ⍙indbenres←0 1↓(⍙indmembres[;0]∊ 2 3,14+⍳16)⌿⍙indmembres
+[28]  data←⍙indbenres[;2]+.×  ⍙indbenres[;0]∘.= 41
+[29]  flds← ⊂'Member_Liab'
+[30]  
+[31]  ⍙indbenres←0 1↓⍙indmembres
+[32]  data←data,⊂⍉MATRIX AGES
+[33]  take←1
+[34]  :for z :in 51+⍳1
+[35]      res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[36]      take←⌈/take,⍴res←,PP rnd DTZ (1+⌈/0,res[;0]) ⍙DBCrossTab res
+[37]      data←data,⊂⍉MATRIX res
+[38]  :endfor
+[39]  flds←flds,'Age' 'Member_CF'
+[40]  
+[41]  :for z :in 14
+[42]      res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[43]      data←data,⊂⍉MATRIX rnd DTZ (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[44]  :endfor
+[45]  flds←flds,⊂'pp∆vMPPostAdj'
+[46]  
+[47]  title←'Member Liability = Sum (Member CF x Payment_MP)'
+[48]  FOURDIT title (push flds data)
+[49]  
+[50]  ⍝ CF Breakdown ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝
+[51]  
+[52]  ⍙indbenres←0 1↓⍙indmembres
+[53]  data←1↑(⍙indbenres[;0]=1)/⍙indbenres[;2]
+[54]  data←data,⊂⍉MATRIX AGES
+[55]  
+[56]  flds←'Annual Pension' 'Age'  ⍝ 'Spouse_in_Deferment_CF' 'Spouse_post_Retirement_CF'
+[57]  
+[58]  ∆←''
+[59]  :for z :in 15 17
+[60]      res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[61]      ∆←∆,⊂⍉MATRIX rnd DTZ ((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[62]  :endfor
+[63]  ∆←1↓∆÷↑↑∆
+[64]  data←data,∆
+[65]  ⍝:for z :in 19 20
+[66]  ⍝    res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[67]  ⍝    data←data,⊂⍉MATRIX rnd (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[68]  ⍝:endfor
+[69]  flds←flds,⊂'tPx_Member'⍝ 'Proportion_Married_MP' 'Age_Difference'
+[70]  ⍝ Process each Pension in turn
+[71]  :for BenID :in 2 3,14+⍳16
+[72]      :if 0∊⍴⍙indbenres←0 1↓(⍙indmembres[;0]=BenID)⌿⍙indmembres ⋄ :continue ⋄ :endif
+[73]  
+[74]      N←1+(2 3,14+⍳16)⍳BenID
+[75]  
+[76]      pentitle←(⊃0 Pens∆Title 1)[N;]
+[77]      N←0⌈¯13+BenID
+[78]  
+[79]      :if BenID∊2 3 ⋄ :orif PENind[N]
+[80]          flds←flds,⊂'Pen_Inc_Member_MP'⍝ 'Pen_Inc_Spouse_MP'
+[81]          ⍝ data←data,⊂⍉MATRIX AGES
+[82]          :for z :in 31+(1↓⍳2)
+[83]              res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[84]              data←data,⊂⍉MATRIX rnd DTZ (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[85]          :endfor
+[86]      :endif
+[87]  
+[88]  take←1
+[89]  :for z :in 51+⍳1
+[90]      res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[91]      take←⌈/take,⍴res←,PP rnd DTZ (1+⌈/0,res[;0]) ⍙DBCrossTab res
+[92]      data←data,⊂⍉MATRIX res
+[93]  :endfor
+[94]  flds←flds,⊂'Member_CF'
+[95]      title←⍕('Cash Flows= (tPx) x (Pen Incs) x (', DLTB pentitle,')')
+[96]      FOURDIT title  (push flds data)
+[97]  :endfor
+[98]  
+[99]  ⍝ CF Breakdown ⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝⍝
+[100] 
+[101] ⍙indbenres←0 1↓⍙indmembres
+[102] 
+[103] data←⊂⍉MATRIX AGES
+[104] data←data,⊂⍉MATRIX (⍴AGES)⍴1↑(⍙indbenres[;0]=1)/⍙indbenres[;2]
+[105] flds← 'Age' 'qPRE97TOT' ⍝ 'Spouse_in_Deferment_CF' 'Spouse_post_Retirement_CF'
+[106] 
+[107] 
+[108] ⍝ Process each Pension in turn
+[109] :for BenID :in 2 3,14+⍳16
+[110]     :if 0∊⍴⍙indbenres←0 1↓(⍙indmembres[;0]=BenID)⌿⍙indmembres ⋄ :continue ⋄ :endif
+[111] 
+[112]     N←1+(2 3,14+⍳16)⍳BenID
+[113] 
+[114]     pentitle←(⊃0 Pens∆Title 1)[N;]
+[115]     N←0⌈¯13+BenID
+[116] 
+[117]     :if BenID∊2 3 ⋄ :orif PENind[N]
+[118]         flds←flds,⊂'Pen_Inc_Member_MP'⍝ 'Pen_Inc_Spouse_MP'
+[119]         ⍝ data←data,⊂⍉MATRIX AGES
+[120]         :for z :in 31+(1↓⍳2)
+[121]             res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[122]             data←data,⊂⍉MATRIX rnd DTZ (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[123]         :endfor
+[124]     :endif
+[125] :endfor
+[126] 
+[127] ⍙indbenres←0 1↓⍙indmembres
+[128] ∆←''
+[129] :for z :in 15 17
+[130]         res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[131]         ∆←∆,⊂⍉MATRIX rnd DTZ ((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[132] :endfor
+[133] ∆←1↓∆÷↑↑∆
+[134] data←data,∆
+[135] flds←flds,⊂'tPx_Member'⍝ 'Proportion_Married_MP' 'Age_Difference'
+[136] 
+[137] :for BenID :in 2 3,14+⍳16
+[138]     :if 0∊⍴⍙indbenres←0 1↓(⍙indmembres[;0]=BenID)⌿⍙indmembres ⋄ :continue ⋄ :endif
+[139] 
+[140]     N←1+(2 3,14+⍳16)⍳BenID
+[141]     N←0⌈¯13+BenID
+[142] 
+[143]     take←1
+[144]     ∆←''
+[145]     :for z :in 51+⍳1
+[146]         res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[147]         take←⌈/take,⍴res←,PP rnd DTZ (1+⌈/0,res[;0]) ⍙DBCrossTab res
+[148]         ∆←∆,⊂⍉MATRIX res
+[149]     :endfor
+[150]     NPV1←∆
+[151]     data←data,∆
+[152]     flds←flds,⊂'Member_CF'
+[153] 
+[154] :endfor
+[155] 
+[156] ∆←''
+[157] ⍙indbenres←0 1↓⍙indmembres
+[158] :for z :in 14
+[159]     res←0 1↓(⍙indbenres[;0]=z)⌿⍙indbenres
+[160]     ∆←∆,⊂⍉MATRIX rnd DTZ (⍴AGES)↑((res[;0]⍳res[;0])=⍳⍴res[;0])⌿res[;1]
+[161] :endfor
+[162] NPV2←∆
+[163] data←data,∆
+[164] flds←flds,⊂'pp∆vMPPostAdj'
+[165] 
+[166] NPV  ←NPV1×NPV2
+[167] data ←data,NPV
+[168] flds ←flds,⊂'NPV Cashflows'
+[169] 
+[170] title←⍕('Liability = Sum (A x B x C x E)')
+[171] FOURDIT title  (push flds data)
+    ∇

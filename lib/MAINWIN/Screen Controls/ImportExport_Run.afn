@@ -1,0 +1,45 @@
+    ∇ Direction ImportExport_Run arg;Exp_CurrBasis;Exp_BasisDesc;list;Bens_package;z;selections;class;SavedModule;Fields;exportfield;PageName;OpenedModule;InputsFile;InputsType;Assign_Inputs;Convert_Vars;i
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Run the Basis Import or Export Module
+[3]   ⍝ SavedModule is the Module for Importing/Exporting
+[4]   ⍝ Direction is either Import or Export
+[5]   
+[6]   (SavedModule Fields)←arg
+[7]   
+[8]   class←(exportfield←'#' ⎕wi 'focus') ⎕wi 'class'
+[9]   :if (⊂class)∊'Form' 'Button' 'Menu' 'Frame' 'Picture' 'Microsoft Web Browser'
+[10]      MDISPLAY 'Select Parameter Field to be ',Direction,'ed' ⋄ :return
+[11]  :elseif class≡'ActiveControl ',⍙⍙classID,⍙⍙licenceKey ⍝ F1SS
+[12]      selections←0 4⍴0
+[13]      :for i :in ¯1+⍳exportfield ⎕wi 'SelectionCount'
+[14]          selections←selections⍪4⍴exportfield ⎕wi 'GetSelection' i ⍬ ⍬ ⍬ ⍬
+[15]      :endfor
+[16]  :endif
+[17]  
+[18]  :if Direction≡'Export' ⍝ Validate exported parameters
+[19]      :if 'Selector'≡ControlName ⎕wi 'class'
+[20]          PageName←(ControlName ⎕wi 'value')⊃ControlName ⎕wi 'pages'
+[21]          :if res←~0∊⍴,1 Win∆ValidForm ControlName,'.',PageName ⋄ :return ⋄ :endif
+[22]      :else
+[23]          :if res←~0∊⍴,1 Win∆ValidForm ControlName              ⋄ :return ⋄ :endif
+[24]      :endif
+[25]  :endif
+[26]  
+[27]  Win∆AssignVars ControlName
+[28]  
+[29]  list←⍙VALUESdict ReadDictFile SavedModule '' 'NAMES'
+[30]  :if ∨/z←3=⎕nc list ⍝ Store Benefit Functions
+[31]      Bens_package←pack z⌿list ⋄ list←(~z)⌿list
+[32]  :endif
+[33]  list RenameVars '' '⍙_'
+[34]  
+[35]  Exp_CurrBasis←BasisFile ⋄ Exp_BasisDesc←DLTB '«' StripText '/&&/&' TEXTREPL (FormName,'.lParmDesc') ⎕wi 'caption'
+[36]  
+[37]  InputsType←'BasisFile' ⋄ InputsFile←BasisFile ⋄ OpenedModule←SavedModule
+[38]  'PARMWIN' StartModule 'Basis_ImportExport'
+[39]  
+[40]  ⍝ Recreate Variables of displayed basis
+[41]  (list←'⍙','_',list) RenameVars '⍙_' ''
+[42]  :if 0≠⎕nc 'Bens_package' ⋄ pdef Bens_package ⋄ :endif
+[43]  0 0⍴⎕ex list
+    ∇

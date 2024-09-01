@@ -1,1 +1,348 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "Decrements" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "Decrements" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   :if (⊂"pgGeneral")∊"fmSV.sDecrements" ⎕wi "pages"[10]  "FileSelections" Win∆Inherits "fILESelections"[11]  "fmSV.sDecrements.pgGeneral.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)[12]  "FILES" Win∆Inherits "Actsfile"[13]  "fmSV.sDecrements.pgGeneral.fData.edFILES" ⎕wi "text" (DLTB FILES)[14]  "fILENAME" Win∆Inherits "Actsfile"[15]  GetAbsFileList "Fund"[16]  warnings←warnings OVER "Investigation Data File" Win∆FileRelative "fILENAME" "lrfILENAME"[17]  "fmSV.sDecrements.pgGeneral.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)[18]  "Format" Win∆Inherits "FormatA"[19]  PickList←"fmSV.sDecrements.pgGeneral.fData.cbFormat" ⎕wi "list"[20]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"[21]  selection←(StripText PickList) ExactTLU DLTB StripText Format[22]  :if mt selection[23]      modified←⌈/modified,1[24]  :endif[25]  "fmSV.sDecrements.pgGeneral.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)[26]  "fmSV.sDecrements.pgGeneral.fData.ckUseSex" ⎕wi "value" (zwb UseSex)[27]  "fmSV.sDecrements.pgGeneral.fData.ckUseCat" ⎕wi "value" (zwb UseCat)[28]  PickList←"fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "list"[29]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels[30]      "fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)[31]      modified←⌈/modified,"fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "value"[32]  :else[33]      "fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "visible" ¯1[34]      "fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "value" selection[35]      "fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "visible" 1[36]  :endif[37]  "fmSV.sDecrements.pgGeneral.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)[38]  "fmSV.sDecrements.pgGeneral.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)[39]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbBDATE" ⎕wi "list"[40]  warnings←warnings OVER "Start Date" Win∆DateRelative "BDATE" "lrBDATE"[41]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE[42]  :if mt selection[43]          "fmSV.sDecrements.pgGeneral.fParms.cbBDATE" ⎕wi "text" (DLTB BDATE)[44]  :else[45]      "fmSV.sDecrements.pgGeneral.fParms.cbBDATE" ⎕wi "value" selection[46]  :endif[47]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbEDATE" ⎕wi "list"[48]  warnings←warnings OVER "End Date" Win∆DateRelative "EDATE" "lrEDATE"[49]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE[50]  :if mt selection[51]          "fmSV.sDecrements.pgGeneral.fParms.cbEDATE" ⎕wi "text" (DLTB EDATE)[52]  :else[53]      "fmSV.sDecrements.pgGeneral.fParms.cbEDATE" ⎕wi "value" selection[54]  :endif[55]  no←1↑⍴PickList←SStoMAT ("fmSV.sDecrements.pgGeneral.fParms.fservind.opservind_1" ⎕wi "∆lastoption") ⎕wi "∆options"[56]  value←¯1↑1,selection←PickList ExactTLU servind[57]  :if 0∊⍴selection[58]      modified←⌈/modified,×value[59]  :endif[60]  :for nn :in ⍳no[61]      ("fmSV.sDecrements.pgGeneral.fParms.fservind.opservind_",⍕nn) ⎕wi "value" (value=nn)[62]  :endfor[63]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbexpind" ⎕wi "list"[64]  selection←PickList ExactTLU DLTB expind[65]  :if mt selection[66]      :if ~mt DLTB expind[67]          warnings←warnings OVER "Previous Selection for 'Exposure Weighting' is no longer available"[68]      :endif[69]      modified←⌈/modified,1[70]  :endif[71]  "fmSV.sDecrements.pgGeneral.fParms.cbexpind" ⎕wi "value" (¯1↑1,selection)[72]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbexpindn" ⎕wi "list"[73]  selection←PickList ExactTLU DLTB expindn[74]  :if mt selection[75]      :if ~mt DLTB expindn[76]          warnings←warnings OVER "Previous Selection for 'Exposure Weighting' is no longer available"[77]      :endif[78]      modified←⌈/modified,1[79]  :endif[80]  "fmSV.sDecrements.pgGeneral.fParms.cbexpindn" ⎕wi "value" (¯1↑1,selection)[81]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbexpindp" ⎕wi "list"[82]  selection←PickList ExactTLU DLTB expindp[83]  :if mt selection[84]      :if ~mt DLTB expindp[85]          warnings←warnings OVER "Previous Selection for 'Exposure Weighting' is no longer available"[86]      :endif[87]      modified←⌈/modified,1[88]  :endif[89]  "fmSV.sDecrements.pgGeneral.fParms.cbexpindp" ⎕wi "value" (¯1↑1,selection)[90]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect1" ⎕wi "value" (zwb DecSelect[1;])[91]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName1" ⎕wi "text" (DLTB DecName[1;])[92]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect2" ⎕wi "value" (zwb DecSelect[2;])[93]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName2" ⎕wi "text" (DLTB DecName[2;])[94]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect3" ⎕wi "value" (zwb DecSelect[3;])[95]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName3" ⎕wi "text" (DLTB DecName[3;])[96]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect4" ⎕wi "value" (zwb DecSelect[4;])[97]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName4" ⎕wi "text" (DLTB DecName[4;])[98]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect5" ⎕wi "value" (zwb DecSelect[5;])[99]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName5" ⎕wi "text" (DLTB DecName[5;])[100] "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect6" ⎕wi "value" (zwb DecSelect[6;])[101] "fmSV.sDecrements.pgGeneral.fSelection.edDecName6" ⎕wi "text" (DLTB DecName[6;])[102] "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect7" ⎕wi "value" (zwb DecSelect[7;])[103] "fmSV.sDecrements.pgGeneral.fSelection.edDecName7" ⎕wi "text" (DLTB DecName[7;])[104] "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect8" ⎕wi "value" (zwb DecSelect[8;])[105] "fmSV.sDecrements.pgGeneral.fSelection.edDecName8" ⎕wi "text" (DLTB DecName[8;])[106] "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect9" ⎕wi "value" (zwb DecSelect[9;])[107] "fmSV.sDecrements.pgGeneral.fSelection.edDecName9" ⎕wi "text" (DLTB DecName[9;])[108] :endif[109] :if (⊂"pgDecrement1")∊"fmSV.sDecrements" ⎕wi "pages"[110] "fmSV.sDecrements.pgDecrement1.fParms.edeXITDESC1" ⎕wi "text" (DLTB eXITDESC[1;])[111] PickList←"fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "list"[112] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[1;][113]     "fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "value" ((×1↑⍴PickList)⍴0)[114]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "value"[115] :else[116]     "fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "visible" ¯1[117]     "fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "value" selection[118]     "fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "visible" 1[119] :endif[120] "fmSV.sDecrements.pgDecrement1.fParms.edBAGE1" ⎕wi "text" (DLTB BAGE[1;])[121] "fmSV.sDecrements.pgDecrement1.fParms.edEAGE1" ⎕wi "text" (DLTB EAGE[1;])[122] "fmSV.sDecrements.pgDecrement1.fParms.edGROUP1" ⎕wi "text" (DLTB GROUP[1;])[123] "fmSV.sDecrements.pgDecrement1.fParms.edPS1" ⎕wi "text" (DLTB PS[1;])[124] "fmSV.sDecrements.pgDecrement1.fParms.cksave1" ⎕wi "value" (zwb save[1;])[125] 0 0⍴GetDecrList "List"[126] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[1;]) (lrExpTable1)[127] "fmSV.sDecrements.pgDecrement1.fTable.edExpTable1" ⎕wi "text" (DLTB ExpTable[1;])[128] "fmSV.sDecrements.pgDecrement1.fTable.edAgeRate1" ⎕wi "text" (DLTB AgeRate[1;])[129] "fmSV.sDecrements.pgDecrement1.fTable.edpcRate1" ⎕wi "text" (DLTB pcRate[1;])[130] 0 0⍴GetDecrList "List"[131] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[1;]) (lrTXX1)[132] "fmSV.sDecrements.pgDecrement1.fTable.edTXX1" ⎕wi "text" (DLTB TXX[1;])[133] :endif[134] :if (⊂"pgDecrement2")∊"fmSV.sDecrements" ⎕wi "pages"[135] "fmSV.sDecrements.pgDecrement2.fParms.edeXITDESC2" ⎕wi "text" (DLTB eXITDESC[2;])[136] PickList←"fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "list"[137] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[2;][138]     "fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "value" ((×1↑⍴PickList)⍴0)[139]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "value"[140] :else[141]     "fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "visible" ¯1[142]     "fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "value" selection[143]     "fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "visible" 1[144] :endif[145] "fmSV.sDecrements.pgDecrement2.fParms.edBAGE2" ⎕wi "text" (DLTB BAGE[2;])[146] "fmSV.sDecrements.pgDecrement2.fParms.edEAGE2" ⎕wi "text" (DLTB EAGE[2;])[147] "fmSV.sDecrements.pgDecrement2.fParms.edGROUP2" ⎕wi "text" (DLTB GROUP[2;])[148] "fmSV.sDecrements.pgDecrement2.fParms.edPS2" ⎕wi "text" (DLTB PS[2;])[149] "fmSV.sDecrements.pgDecrement2.fParms.cksave2" ⎕wi "value" (zwb save[2;])[150] 0 0⍴GetDecrList "List"[151] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[2;]) (lrExpTable2)[152] "fmSV.sDecrements.pgDecrement2.fTable.edExpTable2" ⎕wi "text" (DLTB ExpTable[2;])[153] "fmSV.sDecrements.pgDecrement2.fTable.edAgeRate2" ⎕wi "text" (DLTB AgeRate[2;])[154] "fmSV.sDecrements.pgDecrement2.fTable.edpcRate2" ⎕wi "text" (DLTB pcRate[2;])[155] 0 0⍴GetDecrList "List"[156] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[2;]) (lrTXX2)[157] "fmSV.sDecrements.pgDecrement2.fTable.edTXX2" ⎕wi "text" (DLTB TXX[2;])[158] :endif[159] :if (⊂"pgDecrement3")∊"fmSV.sDecrements" ⎕wi "pages"[160] "fmSV.sDecrements.pgDecrement3.fParms.edeXITDESC3" ⎕wi "text" (DLTB eXITDESC[3;])[161] PickList←"fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "list"[162] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[3;][163]     "fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "value" ((×1↑⍴PickList)⍴0)[164]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "value"[165] :else[166]     "fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "visible" ¯1[167]     "fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "value" selection[168]     "fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "visible" 1[169] :endif[170] "fmSV.sDecrements.pgDecrement3.fParms.edBAGE3" ⎕wi "text" (DLTB BAGE[3;])[171] "fmSV.sDecrements.pgDecrement3.fParms.edEAGE3" ⎕wi "text" (DLTB EAGE[3;])[172] "fmSV.sDecrements.pgDecrement3.fParms.edGROUP3" ⎕wi "text" (DLTB GROUP[3;])[173] "fmSV.sDecrements.pgDecrement3.fParms.edPS3" ⎕wi "text" (DLTB PS[3;])[174] "fmSV.sDecrements.pgDecrement3.fParms.cksave3" ⎕wi "value" (zwb save[3;])[175] 0 0⍴GetDecrList "List"[176] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[3;]) (lrExpTable3)[177] "fmSV.sDecrements.pgDecrement3.fTable.edExpTable3" ⎕wi "text" (DLTB ExpTable[3;])[178] "fmSV.sDecrements.pgDecrement3.fTable.edAgeRate3" ⎕wi "text" (DLTB AgeRate[3;])[179] "fmSV.sDecrements.pgDecrement3.fTable.edpcRate3" ⎕wi "text" (DLTB pcRate[3;])[180] 0 0⍴GetDecrList "List"[181] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[3;]) (lrTXX3)[182] "fmSV.sDecrements.pgDecrement3.fTable.edTXX3" ⎕wi "text" (DLTB TXX[3;])[183] :endif[184] :if (⊂"pgDecrement4")∊"fmSV.sDecrements" ⎕wi "pages"[185] "fmSV.sDecrements.pgDecrement4.fParms.edeXITDESC4" ⎕wi "text" (DLTB eXITDESC[4;])[186] PickList←"fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "list"[187] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[4;][188]     "fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "value" ((×1↑⍴PickList)⍴0)[189]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "value"[190] :else[191]     "fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "visible" ¯1[192]     "fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "value" selection[193]     "fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "visible" 1[194] :endif[195] "fmSV.sDecrements.pgDecrement4.fParms.edBAGE4" ⎕wi "text" (DLTB BAGE[4;])[196] "fmSV.sDecrements.pgDecrement4.fParms.edEAGE4" ⎕wi "text" (DLTB EAGE[4;])[197] "fmSV.sDecrements.pgDecrement4.fParms.edGROUP4" ⎕wi "text" (DLTB GROUP[4;])[198] "fmSV.sDecrements.pgDecrement4.fParms.edPS4" ⎕wi "text" (DLTB PS[4;])[199] "fmSV.sDecrements.pgDecrement4.fParms.cksave4" ⎕wi "value" (zwb save[4;])[200] 0 0⍴GetDecrList "List"[201] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[4;]) (lrExpTable4)[202] "fmSV.sDecrements.pgDecrement4.fTable.edExpTable4" ⎕wi "text" (DLTB ExpTable[4;])[203] "fmSV.sDecrements.pgDecrement4.fTable.edAgeRate4" ⎕wi "text" (DLTB AgeRate[4;])[204] "fmSV.sDecrements.pgDecrement4.fTable.edpcRate4" ⎕wi "text" (DLTB pcRate[4;])[205] 0 0⍴GetDecrList "List"[206] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[4;]) (lrTXX4)[207] "fmSV.sDecrements.pgDecrement4.fTable.edTXX4" ⎕wi "text" (DLTB TXX[4;])[208] :endif[209] :if (⊂"pgDecrement5")∊"fmSV.sDecrements" ⎕wi "pages"[210] "fmSV.sDecrements.pgDecrement5.fParms.edeXITDESC5" ⎕wi "text" (DLTB eXITDESC[5;])[211] PickList←"fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "list"[212] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[5;][213]     "fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "value" ((×1↑⍴PickList)⍴0)[214]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "value"[215] :else[216]     "fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "visible" ¯1[217]     "fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "value" selection[218]     "fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "visible" 1[219] :endif[220] "fmSV.sDecrements.pgDecrement5.fParms.edBAGE5" ⎕wi "text" (DLTB BAGE[5;])[221] "fmSV.sDecrements.pgDecrement5.fParms.edEAGE5" ⎕wi "text" (DLTB EAGE[5;])[222] "fmSV.sDecrements.pgDecrement5.fParms.edGROUP5" ⎕wi "text" (DLTB GROUP[5;])[223] "fmSV.sDecrements.pgDecrement5.fParms.edPS5" ⎕wi "text" (DLTB PS[5;])[224] "fmSV.sDecrements.pgDecrement5.fParms.cksave5" ⎕wi "value" (zwb save[5;])[225] 0 0⍴GetDecrList "List"[226] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[5;]) (lrExpTable5)[227] "fmSV.sDecrements.pgDecrement5.fTable.edExpTable5" ⎕wi "text" (DLTB ExpTable[5;])[228] "fmSV.sDecrements.pgDecrement5.fTable.edAgeRate5" ⎕wi "text" (DLTB AgeRate[5;])[229] "fmSV.sDecrements.pgDecrement5.fTable.edpcRate5" ⎕wi "text" (DLTB pcRate[5;])[230] 0 0⍴GetDecrList "List"[231] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[5;]) (lrTXX5)[232] "fmSV.sDecrements.pgDecrement5.fTable.edTXX5" ⎕wi "text" (DLTB TXX[5;])[233] :endif[234] :if (⊂"pgDecrement6")∊"fmSV.sDecrements" ⎕wi "pages"[235] "fmSV.sDecrements.pgDecrement6.fParms.edeXITDESC6" ⎕wi "text" (DLTB eXITDESC[6;])[236] PickList←"fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "list"[237] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[6;][238]     "fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "value" ((×1↑⍴PickList)⍴0)[239]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "value"[240] :else[241]     "fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "visible" ¯1[242]     "fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "value" selection[243]     "fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "visible" 1[244] :endif[245] "fmSV.sDecrements.pgDecrement6.fParms.edBAGE6" ⎕wi "text" (DLTB BAGE[6;])[246] "fmSV.sDecrements.pgDecrement6.fParms.edEAGE6" ⎕wi "text" (DLTB EAGE[6;])[247] "fmSV.sDecrements.pgDecrement6.fParms.edGROUP6" ⎕wi "text" (DLTB GROUP[6;])[248] "fmSV.sDecrements.pgDecrement6.fParms.edPS6" ⎕wi "text" (DLTB PS[6;])[249] "fmSV.sDecrements.pgDecrement6.fParms.cksave6" ⎕wi "value" (zwb save[6;])[250] 0 0⍴GetDecrList "List"[251] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[6;]) (lrExpTable6)[252] "fmSV.sDecrements.pgDecrement6.fTable.edExpTable6" ⎕wi "text" (DLTB ExpTable[6;])[253] "fmSV.sDecrements.pgDecrement6.fTable.edAgeRate6" ⎕wi "text" (DLTB AgeRate[6;])[254] "fmSV.sDecrements.pgDecrement6.fTable.edpcRate6" ⎕wi "text" (DLTB pcRate[6;])[255] 0 0⍴GetDecrList "List"[256] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[6;]) (lrTXX6)[257] "fmSV.sDecrements.pgDecrement6.fTable.edTXX6" ⎕wi "text" (DLTB TXX[6;])[258] :endif[259] :if (⊂"pgDecrement7")∊"fmSV.sDecrements" ⎕wi "pages"[260] "fmSV.sDecrements.pgDecrement7.fParms.edeXITDESC7" ⎕wi "text" (DLTB eXITDESC[7;])[261] PickList←"fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "list"[262] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[7;][263]     "fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "value" ((×1↑⍴PickList)⍴0)[264]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "value"[265] :else[266]     "fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "visible" ¯1[267]     "fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "value" selection[268]     "fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "visible" 1[269] :endif[270] "fmSV.sDecrements.pgDecrement7.fParms.edBAGE7" ⎕wi "text" (DLTB BAGE[7;])[271] "fmSV.sDecrements.pgDecrement7.fParms.edEAGE7" ⎕wi "text" (DLTB EAGE[7;])[272] "fmSV.sDecrements.pgDecrement7.fParms.edGROUP7" ⎕wi "text" (DLTB GROUP[7;])[273] "fmSV.sDecrements.pgDecrement7.fParms.edPS7" ⎕wi "text" (DLTB PS[7;])[274] "fmSV.sDecrements.pgDecrement7.fParms.cksave7" ⎕wi "value" (zwb save[7;])[275] 0 0⍴GetDecrList "List"[276] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[7;]) (lrExpTable7)[277] "fmSV.sDecrements.pgDecrement7.fTable.edExpTable7" ⎕wi "text" (DLTB ExpTable[7;])[278] "fmSV.sDecrements.pgDecrement7.fTable.edAgeRate7" ⎕wi "text" (DLTB AgeRate[7;])[279] "fmSV.sDecrements.pgDecrement7.fTable.edpcRate7" ⎕wi "text" (DLTB pcRate[7;])[280] 0 0⍴GetDecrList "List"[281] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[7;]) (lrTXX7)[282] "fmSV.sDecrements.pgDecrement7.fTable.edTXX7" ⎕wi "text" (DLTB TXX[7;])[283] :endif[284] :if (⊂"pgDecrement8")∊"fmSV.sDecrements" ⎕wi "pages"[285] "fmSV.sDecrements.pgDecrement8.fParms.edeXITDESC8" ⎕wi "text" (DLTB eXITDESC[8;])[286] PickList←"fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "list"[287] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[8;][288]     "fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "value" ((×1↑⍴PickList)⍴0)[289]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "value"[290] :else[291]     "fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "visible" ¯1[292]     "fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "value" selection[293]     "fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "visible" 1[294] :endif[295] "fmSV.sDecrements.pgDecrement8.fParms.edBAGE8" ⎕wi "text" (DLTB BAGE[8;])[296] "fmSV.sDecrements.pgDecrement8.fParms.edEAGE8" ⎕wi "text" (DLTB EAGE[8;])[297] "fmSV.sDecrements.pgDecrement8.fParms.edGROUP8" ⎕wi "text" (DLTB GROUP[8;])[298] "fmSV.sDecrements.pgDecrement8.fParms.edPS8" ⎕wi "text" (DLTB PS[8;])[299] "fmSV.sDecrements.pgDecrement8.fParms.cksave8" ⎕wi "value" (zwb save[8;])[300] 0 0⍴GetDecrList "List"[301] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[8;]) (lrExpTable8)[302] "fmSV.sDecrements.pgDecrement8.fTable.edExpTable8" ⎕wi "text" (DLTB ExpTable[8;])[303] "fmSV.sDecrements.pgDecrement8.fTable.edAgeRate8" ⎕wi "text" (DLTB AgeRate[8;])[304] "fmSV.sDecrements.pgDecrement8.fTable.edpcRate8" ⎕wi "text" (DLTB pcRate[8;])[305] 0 0⍴GetDecrList "List"[306] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[8;]) (lrTXX8)[307] "fmSV.sDecrements.pgDecrement8.fTable.edTXX8" ⎕wi "text" (DLTB TXX[8;])[308] :endif[309] :if (⊂"pgDecrement9")∊"fmSV.sDecrements" ⎕wi "pages"[310] "fmSV.sDecrements.pgDecrement9.fParms.edeXITDESC9" ⎕wi "text" (DLTB eXITDESC[9;])[311] PickList←"fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "list"[312] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[9;][313]     "fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "value" ((×1↑⍴PickList)⍴0)[314]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "value"[315] :else[316]     "fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "visible" ¯1[317]     "fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "value" selection[318]     "fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "visible" 1[319] :endif[320] "fmSV.sDecrements.pgDecrement9.fParms.edBAGE9" ⎕wi "text" (DLTB BAGE[9;])[321] "fmSV.sDecrements.pgDecrement9.fParms.edEAGE9" ⎕wi "text" (DLTB EAGE[9;])[322] "fmSV.sDecrements.pgDecrement9.fParms.edGROUP9" ⎕wi "text" (DLTB GROUP[9;])[323] "fmSV.sDecrements.pgDecrement9.fParms.edPS9" ⎕wi "text" (DLTB PS[9;])[324] "fmSV.sDecrements.pgDecrement9.fParms.cksave9" ⎕wi "value" (zwb save[9;])[325] 0 0⍴GetDecrList "List"[326] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[9;]) (lrExpTable9)[327] "fmSV.sDecrements.pgDecrement9.fTable.edExpTable9" ⎕wi "text" (DLTB ExpTable[9;])[328] "fmSV.sDecrements.pgDecrement9.fTable.edAgeRate9" ⎕wi "text" (DLTB AgeRate[9;])[329] "fmSV.sDecrements.pgDecrement9.fTable.edpcRate9" ⎕wi "text" (DLTB pcRate[9;])[330] 0 0⍴GetDecrList "List"[331] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[9;]) (lrTXX9)[332] "fmSV.sDecrements.pgDecrement9.fTable.edTXX9" ⎕wi "text" (DLTB TXX[9;])[333] :endif[334] "fmSV.ckpagetrick" ⎕wi "value" (zwb pagetrick)[335] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Decrements[336]     :for var :in spin Comment_Decrements at "variable" "row" ⋄ (var row)←var[337]         "Decrements" ParmColor ((FormFields for "variable" var) at "control"),var row 1[338]     :endfor[339] :endif[340] :if ~0∊⍴,warnings[341]     MDISPLAY DLTMB warnings,⎕tcnl[342]     Win∆AssignVars "fmSV.sDecrements"[343] :endif[344] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Decrements" "" "Names"[345]     "fmSV.sDecrements" ⎕wi "modified" 0[346] :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "Decrements" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "Decrements" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   :if (⊂"pgGeneral")∊"fmSV.sDecrements" ⎕wi "pages"
+[10]  "FileSelections" Win∆Inherits "fILESelections"
+[11]  "fmSV.sDecrements.pgGeneral.fData.ckFileSelections" ⎕wi "value" (zwb FileSelections)
+[12]  "FILES" Win∆Inherits "Actsfile"
+[13]  "fmSV.sDecrements.pgGeneral.fData.edFILES" ⎕wi "text" (DLTB FILES)
+[14]  "fILENAME" Win∆Inherits "Actsfile"
+[15]  GetAbsFileList "Fund"
+[16]  warnings←warnings OVER "Investigation Data File" Win∆FileRelative "fILENAME" "lrfILENAME"
+[17]  "fmSV.sDecrements.pgGeneral.fData.edfILENAME" ⎕wi "text" (DLTB fILENAME)
+[18]  "Format" Win∆Inherits "FormatA"
+[19]  PickList←"fmSV.sDecrements.pgGeneral.fData.cbFormat" ⎕wi "list"
+[20]  warnings←warnings OVER "Data Format" Win∆FormatRelative "Format" "lrFormat"
+[21]  selection←(StripText PickList) ExactTLU DLTB StripText Format
+[22]  :if mt selection
+[23]      modified←⌈/modified,1
+[24]  :endif
+[25]  "fmSV.sDecrements.pgGeneral.fData.cbFormat" ⎕wi "value" (¯1↑1,selection)
+[26]  "fmSV.sDecrements.pgGeneral.fData.ckUseSex" ⎕wi "value" (zwb UseSex)
+[27]  "fmSV.sDecrements.pgGeneral.fData.ckUseCat" ⎕wi "value" (zwb UseCat)
+[28]  PickList←"fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "list"
+[29]  :if 0∊⍴selection←PickList ExactTLU SStoMAT CatSels
+[30]      "fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "value" ((×1↑⍴PickList)⍴1)
+[31]      modified←⌈/modified,"fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "value"
+[32]  :else
+[33]      "fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "visible" ¯1
+[34]      "fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "value" selection
+[35]      "fmSV.sDecrements.pgGeneral.fData.lsCatSels" ⎕wi "visible" 1
+[36]  :endif
+[37]  "fmSV.sDecrements.pgGeneral.fData.ckUseSubs" ⎕wi "value" (zwb UseSubs)
+[38]  "fmSV.sDecrements.pgGeneral.fData.ckDeleteSubs" ⎕wi "value" (zwb DeleteSubs)
+[39]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbBDATE" ⎕wi "list"
+[40]  warnings←warnings OVER "Start Date" Win∆DateRelative "BDATE" "lrBDATE"
+[41]  selection←(StripText PickList) ExactTLU DLTB StripText BDATE
+[42]  :if mt selection
+[43]          "fmSV.sDecrements.pgGeneral.fParms.cbBDATE" ⎕wi "text" (DLTB BDATE)
+[44]  :else
+[45]      "fmSV.sDecrements.pgGeneral.fParms.cbBDATE" ⎕wi "value" selection
+[46]  :endif
+[47]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbEDATE" ⎕wi "list"
+[48]  warnings←warnings OVER "End Date" Win∆DateRelative "EDATE" "lrEDATE"
+[49]  selection←(StripText PickList) ExactTLU DLTB StripText EDATE
+[50]  :if mt selection
+[51]          "fmSV.sDecrements.pgGeneral.fParms.cbEDATE" ⎕wi "text" (DLTB EDATE)
+[52]  :else
+[53]      "fmSV.sDecrements.pgGeneral.fParms.cbEDATE" ⎕wi "value" selection
+[54]  :endif
+[55]  no←1↑⍴PickList←SStoMAT ("fmSV.sDecrements.pgGeneral.fParms.fservind.opservind_1" ⎕wi "∆lastoption") ⎕wi "∆options"
+[56]  value←¯1↑1,selection←PickList ExactTLU servind
+[57]  :if 0∊⍴selection
+[58]      modified←⌈/modified,×value
+[59]  :endif
+[60]  :for nn :in ⍳no
+[61]      ("fmSV.sDecrements.pgGeneral.fParms.fservind.opservind_",⍕nn) ⎕wi "value" (value=nn)
+[62]  :endfor
+[63]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbexpind" ⎕wi "list"
+[64]  selection←PickList ExactTLU DLTB expind
+[65]  :if mt selection
+[66]      :if ~mt DLTB expind
+[67]          warnings←warnings OVER "Previous Selection for 'Exposure Weighting' is no longer available"
+[68]      :endif
+[69]      modified←⌈/modified,1
+[70]  :endif
+[71]  "fmSV.sDecrements.pgGeneral.fParms.cbexpind" ⎕wi "value" (¯1↑1,selection)
+[72]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbexpindn" ⎕wi "list"
+[73]  selection←PickList ExactTLU DLTB expindn
+[74]  :if mt selection
+[75]      :if ~mt DLTB expindn
+[76]          warnings←warnings OVER "Previous Selection for 'Exposure Weighting' is no longer available"
+[77]      :endif
+[78]      modified←⌈/modified,1
+[79]  :endif
+[80]  "fmSV.sDecrements.pgGeneral.fParms.cbexpindn" ⎕wi "value" (¯1↑1,selection)
+[81]  PickList←"fmSV.sDecrements.pgGeneral.fParms.cbexpindp" ⎕wi "list"
+[82]  selection←PickList ExactTLU DLTB expindp
+[83]  :if mt selection
+[84]      :if ~mt DLTB expindp
+[85]          warnings←warnings OVER "Previous Selection for 'Exposure Weighting' is no longer available"
+[86]      :endif
+[87]      modified←⌈/modified,1
+[88]  :endif
+[89]  "fmSV.sDecrements.pgGeneral.fParms.cbexpindp" ⎕wi "value" (¯1↑1,selection)
+[90]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect1" ⎕wi "value" (zwb DecSelect[1;])
+[91]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName1" ⎕wi "text" (DLTB DecName[1;])
+[92]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect2" ⎕wi "value" (zwb DecSelect[2;])
+[93]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName2" ⎕wi "text" (DLTB DecName[2;])
+[94]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect3" ⎕wi "value" (zwb DecSelect[3;])
+[95]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName3" ⎕wi "text" (DLTB DecName[3;])
+[96]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect4" ⎕wi "value" (zwb DecSelect[4;])
+[97]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName4" ⎕wi "text" (DLTB DecName[4;])
+[98]  "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect5" ⎕wi "value" (zwb DecSelect[5;])
+[99]  "fmSV.sDecrements.pgGeneral.fSelection.edDecName5" ⎕wi "text" (DLTB DecName[5;])
+[100] "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect6" ⎕wi "value" (zwb DecSelect[6;])
+[101] "fmSV.sDecrements.pgGeneral.fSelection.edDecName6" ⎕wi "text" (DLTB DecName[6;])
+[102] "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect7" ⎕wi "value" (zwb DecSelect[7;])
+[103] "fmSV.sDecrements.pgGeneral.fSelection.edDecName7" ⎕wi "text" (DLTB DecName[7;])
+[104] "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect8" ⎕wi "value" (zwb DecSelect[8;])
+[105] "fmSV.sDecrements.pgGeneral.fSelection.edDecName8" ⎕wi "text" (DLTB DecName[8;])
+[106] "fmSV.sDecrements.pgGeneral.fSelection.ckDecSelect9" ⎕wi "value" (zwb DecSelect[9;])
+[107] "fmSV.sDecrements.pgGeneral.fSelection.edDecName9" ⎕wi "text" (DLTB DecName[9;])
+[108] :endif
+[109] :if (⊂"pgDecrement1")∊"fmSV.sDecrements" ⎕wi "pages"
+[110] "fmSV.sDecrements.pgDecrement1.fParms.edeXITDESC1" ⎕wi "text" (DLTB eXITDESC[1;])
+[111] PickList←"fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "list"
+[112] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[1;]
+[113]     "fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[114]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "value"
+[115] :else
+[116]     "fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "visible" ¯1
+[117]     "fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "value" selection
+[118]     "fmSV.sDecrements.pgDecrement1.fParms.lsCODE1" ⎕wi "visible" 1
+[119] :endif
+[120] "fmSV.sDecrements.pgDecrement1.fParms.edBAGE1" ⎕wi "text" (DLTB BAGE[1;])
+[121] "fmSV.sDecrements.pgDecrement1.fParms.edEAGE1" ⎕wi "text" (DLTB EAGE[1;])
+[122] "fmSV.sDecrements.pgDecrement1.fParms.edGROUP1" ⎕wi "text" (DLTB GROUP[1;])
+[123] "fmSV.sDecrements.pgDecrement1.fParms.edPS1" ⎕wi "text" (DLTB PS[1;])
+[124] "fmSV.sDecrements.pgDecrement1.fParms.cksave1" ⎕wi "value" (zwb save[1;])
+[125] 0 0⍴GetDecrList "List"
+[126] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[1;]) (lrExpTable1)
+[127] "fmSV.sDecrements.pgDecrement1.fTable.edExpTable1" ⎕wi "text" (DLTB ExpTable[1;])
+[128] "fmSV.sDecrements.pgDecrement1.fTable.edAgeRate1" ⎕wi "text" (DLTB AgeRate[1;])
+[129] "fmSV.sDecrements.pgDecrement1.fTable.edpcRate1" ⎕wi "text" (DLTB pcRate[1;])
+[130] 0 0⍴GetDecrList "List"
+[131] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[1;]) (lrTXX1)
+[132] "fmSV.sDecrements.pgDecrement1.fTable.edTXX1" ⎕wi "text" (DLTB TXX[1;])
+[133] :endif
+[134] :if (⊂"pgDecrement2")∊"fmSV.sDecrements" ⎕wi "pages"
+[135] "fmSV.sDecrements.pgDecrement2.fParms.edeXITDESC2" ⎕wi "text" (DLTB eXITDESC[2;])
+[136] PickList←"fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "list"
+[137] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[2;]
+[138]     "fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[139]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "value"
+[140] :else
+[141]     "fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "visible" ¯1
+[142]     "fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "value" selection
+[143]     "fmSV.sDecrements.pgDecrement2.fParms.lsCODE2" ⎕wi "visible" 1
+[144] :endif
+[145] "fmSV.sDecrements.pgDecrement2.fParms.edBAGE2" ⎕wi "text" (DLTB BAGE[2;])
+[146] "fmSV.sDecrements.pgDecrement2.fParms.edEAGE2" ⎕wi "text" (DLTB EAGE[2;])
+[147] "fmSV.sDecrements.pgDecrement2.fParms.edGROUP2" ⎕wi "text" (DLTB GROUP[2;])
+[148] "fmSV.sDecrements.pgDecrement2.fParms.edPS2" ⎕wi "text" (DLTB PS[2;])
+[149] "fmSV.sDecrements.pgDecrement2.fParms.cksave2" ⎕wi "value" (zwb save[2;])
+[150] 0 0⍴GetDecrList "List"
+[151] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[2;]) (lrExpTable2)
+[152] "fmSV.sDecrements.pgDecrement2.fTable.edExpTable2" ⎕wi "text" (DLTB ExpTable[2;])
+[153] "fmSV.sDecrements.pgDecrement2.fTable.edAgeRate2" ⎕wi "text" (DLTB AgeRate[2;])
+[154] "fmSV.sDecrements.pgDecrement2.fTable.edpcRate2" ⎕wi "text" (DLTB pcRate[2;])
+[155] 0 0⍴GetDecrList "List"
+[156] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[2;]) (lrTXX2)
+[157] "fmSV.sDecrements.pgDecrement2.fTable.edTXX2" ⎕wi "text" (DLTB TXX[2;])
+[158] :endif
+[159] :if (⊂"pgDecrement3")∊"fmSV.sDecrements" ⎕wi "pages"
+[160] "fmSV.sDecrements.pgDecrement3.fParms.edeXITDESC3" ⎕wi "text" (DLTB eXITDESC[3;])
+[161] PickList←"fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "list"
+[162] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[3;]
+[163]     "fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[164]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "value"
+[165] :else
+[166]     "fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "visible" ¯1
+[167]     "fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "value" selection
+[168]     "fmSV.sDecrements.pgDecrement3.fParms.lsCODE3" ⎕wi "visible" 1
+[169] :endif
+[170] "fmSV.sDecrements.pgDecrement3.fParms.edBAGE3" ⎕wi "text" (DLTB BAGE[3;])
+[171] "fmSV.sDecrements.pgDecrement3.fParms.edEAGE3" ⎕wi "text" (DLTB EAGE[3;])
+[172] "fmSV.sDecrements.pgDecrement3.fParms.edGROUP3" ⎕wi "text" (DLTB GROUP[3;])
+[173] "fmSV.sDecrements.pgDecrement3.fParms.edPS3" ⎕wi "text" (DLTB PS[3;])
+[174] "fmSV.sDecrements.pgDecrement3.fParms.cksave3" ⎕wi "value" (zwb save[3;])
+[175] 0 0⍴GetDecrList "List"
+[176] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[3;]) (lrExpTable3)
+[177] "fmSV.sDecrements.pgDecrement3.fTable.edExpTable3" ⎕wi "text" (DLTB ExpTable[3;])
+[178] "fmSV.sDecrements.pgDecrement3.fTable.edAgeRate3" ⎕wi "text" (DLTB AgeRate[3;])
+[179] "fmSV.sDecrements.pgDecrement3.fTable.edpcRate3" ⎕wi "text" (DLTB pcRate[3;])
+[180] 0 0⍴GetDecrList "List"
+[181] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[3;]) (lrTXX3)
+[182] "fmSV.sDecrements.pgDecrement3.fTable.edTXX3" ⎕wi "text" (DLTB TXX[3;])
+[183] :endif
+[184] :if (⊂"pgDecrement4")∊"fmSV.sDecrements" ⎕wi "pages"
+[185] "fmSV.sDecrements.pgDecrement4.fParms.edeXITDESC4" ⎕wi "text" (DLTB eXITDESC[4;])
+[186] PickList←"fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "list"
+[187] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[4;]
+[188]     "fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[189]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "value"
+[190] :else
+[191]     "fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "visible" ¯1
+[192]     "fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "value" selection
+[193]     "fmSV.sDecrements.pgDecrement4.fParms.lsCODE4" ⎕wi "visible" 1
+[194] :endif
+[195] "fmSV.sDecrements.pgDecrement4.fParms.edBAGE4" ⎕wi "text" (DLTB BAGE[4;])
+[196] "fmSV.sDecrements.pgDecrement4.fParms.edEAGE4" ⎕wi "text" (DLTB EAGE[4;])
+[197] "fmSV.sDecrements.pgDecrement4.fParms.edGROUP4" ⎕wi "text" (DLTB GROUP[4;])
+[198] "fmSV.sDecrements.pgDecrement4.fParms.edPS4" ⎕wi "text" (DLTB PS[4;])
+[199] "fmSV.sDecrements.pgDecrement4.fParms.cksave4" ⎕wi "value" (zwb save[4;])
+[200] 0 0⍴GetDecrList "List"
+[201] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[4;]) (lrExpTable4)
+[202] "fmSV.sDecrements.pgDecrement4.fTable.edExpTable4" ⎕wi "text" (DLTB ExpTable[4;])
+[203] "fmSV.sDecrements.pgDecrement4.fTable.edAgeRate4" ⎕wi "text" (DLTB AgeRate[4;])
+[204] "fmSV.sDecrements.pgDecrement4.fTable.edpcRate4" ⎕wi "text" (DLTB pcRate[4;])
+[205] 0 0⍴GetDecrList "List"
+[206] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[4;]) (lrTXX4)
+[207] "fmSV.sDecrements.pgDecrement4.fTable.edTXX4" ⎕wi "text" (DLTB TXX[4;])
+[208] :endif
+[209] :if (⊂"pgDecrement5")∊"fmSV.sDecrements" ⎕wi "pages"
+[210] "fmSV.sDecrements.pgDecrement5.fParms.edeXITDESC5" ⎕wi "text" (DLTB eXITDESC[5;])
+[211] PickList←"fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "list"
+[212] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[5;]
+[213]     "fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[214]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "value"
+[215] :else
+[216]     "fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "visible" ¯1
+[217]     "fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "value" selection
+[218]     "fmSV.sDecrements.pgDecrement5.fParms.lsCODE5" ⎕wi "visible" 1
+[219] :endif
+[220] "fmSV.sDecrements.pgDecrement5.fParms.edBAGE5" ⎕wi "text" (DLTB BAGE[5;])
+[221] "fmSV.sDecrements.pgDecrement5.fParms.edEAGE5" ⎕wi "text" (DLTB EAGE[5;])
+[222] "fmSV.sDecrements.pgDecrement5.fParms.edGROUP5" ⎕wi "text" (DLTB GROUP[5;])
+[223] "fmSV.sDecrements.pgDecrement5.fParms.edPS5" ⎕wi "text" (DLTB PS[5;])
+[224] "fmSV.sDecrements.pgDecrement5.fParms.cksave5" ⎕wi "value" (zwb save[5;])
+[225] 0 0⍴GetDecrList "List"
+[226] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[5;]) (lrExpTable5)
+[227] "fmSV.sDecrements.pgDecrement5.fTable.edExpTable5" ⎕wi "text" (DLTB ExpTable[5;])
+[228] "fmSV.sDecrements.pgDecrement5.fTable.edAgeRate5" ⎕wi "text" (DLTB AgeRate[5;])
+[229] "fmSV.sDecrements.pgDecrement5.fTable.edpcRate5" ⎕wi "text" (DLTB pcRate[5;])
+[230] 0 0⍴GetDecrList "List"
+[231] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[5;]) (lrTXX5)
+[232] "fmSV.sDecrements.pgDecrement5.fTable.edTXX5" ⎕wi "text" (DLTB TXX[5;])
+[233] :endif
+[234] :if (⊂"pgDecrement6")∊"fmSV.sDecrements" ⎕wi "pages"
+[235] "fmSV.sDecrements.pgDecrement6.fParms.edeXITDESC6" ⎕wi "text" (DLTB eXITDESC[6;])
+[236] PickList←"fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "list"
+[237] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[6;]
+[238]     "fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[239]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "value"
+[240] :else
+[241]     "fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "visible" ¯1
+[242]     "fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "value" selection
+[243]     "fmSV.sDecrements.pgDecrement6.fParms.lsCODE6" ⎕wi "visible" 1
+[244] :endif
+[245] "fmSV.sDecrements.pgDecrement6.fParms.edBAGE6" ⎕wi "text" (DLTB BAGE[6;])
+[246] "fmSV.sDecrements.pgDecrement6.fParms.edEAGE6" ⎕wi "text" (DLTB EAGE[6;])
+[247] "fmSV.sDecrements.pgDecrement6.fParms.edGROUP6" ⎕wi "text" (DLTB GROUP[6;])
+[248] "fmSV.sDecrements.pgDecrement6.fParms.edPS6" ⎕wi "text" (DLTB PS[6;])
+[249] "fmSV.sDecrements.pgDecrement6.fParms.cksave6" ⎕wi "value" (zwb save[6;])
+[250] 0 0⍴GetDecrList "List"
+[251] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[6;]) (lrExpTable6)
+[252] "fmSV.sDecrements.pgDecrement6.fTable.edExpTable6" ⎕wi "text" (DLTB ExpTable[6;])
+[253] "fmSV.sDecrements.pgDecrement6.fTable.edAgeRate6" ⎕wi "text" (DLTB AgeRate[6;])
+[254] "fmSV.sDecrements.pgDecrement6.fTable.edpcRate6" ⎕wi "text" (DLTB pcRate[6;])
+[255] 0 0⍴GetDecrList "List"
+[256] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[6;]) (lrTXX6)
+[257] "fmSV.sDecrements.pgDecrement6.fTable.edTXX6" ⎕wi "text" (DLTB TXX[6;])
+[258] :endif
+[259] :if (⊂"pgDecrement7")∊"fmSV.sDecrements" ⎕wi "pages"
+[260] "fmSV.sDecrements.pgDecrement7.fParms.edeXITDESC7" ⎕wi "text" (DLTB eXITDESC[7;])
+[261] PickList←"fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "list"
+[262] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[7;]
+[263]     "fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[264]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "value"
+[265] :else
+[266]     "fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "visible" ¯1
+[267]     "fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "value" selection
+[268]     "fmSV.sDecrements.pgDecrement7.fParms.lsCODE7" ⎕wi "visible" 1
+[269] :endif
+[270] "fmSV.sDecrements.pgDecrement7.fParms.edBAGE7" ⎕wi "text" (DLTB BAGE[7;])
+[271] "fmSV.sDecrements.pgDecrement7.fParms.edEAGE7" ⎕wi "text" (DLTB EAGE[7;])
+[272] "fmSV.sDecrements.pgDecrement7.fParms.edGROUP7" ⎕wi "text" (DLTB GROUP[7;])
+[273] "fmSV.sDecrements.pgDecrement7.fParms.edPS7" ⎕wi "text" (DLTB PS[7;])
+[274] "fmSV.sDecrements.pgDecrement7.fParms.cksave7" ⎕wi "value" (zwb save[7;])
+[275] 0 0⍴GetDecrList "List"
+[276] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[7;]) (lrExpTable7)
+[277] "fmSV.sDecrements.pgDecrement7.fTable.edExpTable7" ⎕wi "text" (DLTB ExpTable[7;])
+[278] "fmSV.sDecrements.pgDecrement7.fTable.edAgeRate7" ⎕wi "text" (DLTB AgeRate[7;])
+[279] "fmSV.sDecrements.pgDecrement7.fTable.edpcRate7" ⎕wi "text" (DLTB pcRate[7;])
+[280] 0 0⍴GetDecrList "List"
+[281] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[7;]) (lrTXX7)
+[282] "fmSV.sDecrements.pgDecrement7.fTable.edTXX7" ⎕wi "text" (DLTB TXX[7;])
+[283] :endif
+[284] :if (⊂"pgDecrement8")∊"fmSV.sDecrements" ⎕wi "pages"
+[285] "fmSV.sDecrements.pgDecrement8.fParms.edeXITDESC8" ⎕wi "text" (DLTB eXITDESC[8;])
+[286] PickList←"fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "list"
+[287] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[8;]
+[288]     "fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[289]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "value"
+[290] :else
+[291]     "fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "visible" ¯1
+[292]     "fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "value" selection
+[293]     "fmSV.sDecrements.pgDecrement8.fParms.lsCODE8" ⎕wi "visible" 1
+[294] :endif
+[295] "fmSV.sDecrements.pgDecrement8.fParms.edBAGE8" ⎕wi "text" (DLTB BAGE[8;])
+[296] "fmSV.sDecrements.pgDecrement8.fParms.edEAGE8" ⎕wi "text" (DLTB EAGE[8;])
+[297] "fmSV.sDecrements.pgDecrement8.fParms.edGROUP8" ⎕wi "text" (DLTB GROUP[8;])
+[298] "fmSV.sDecrements.pgDecrement8.fParms.edPS8" ⎕wi "text" (DLTB PS[8;])
+[299] "fmSV.sDecrements.pgDecrement8.fParms.cksave8" ⎕wi "value" (zwb save[8;])
+[300] 0 0⍴GetDecrList "List"
+[301] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[8;]) (lrExpTable8)
+[302] "fmSV.sDecrements.pgDecrement8.fTable.edExpTable8" ⎕wi "text" (DLTB ExpTable[8;])
+[303] "fmSV.sDecrements.pgDecrement8.fTable.edAgeRate8" ⎕wi "text" (DLTB AgeRate[8;])
+[304] "fmSV.sDecrements.pgDecrement8.fTable.edpcRate8" ⎕wi "text" (DLTB pcRate[8;])
+[305] 0 0⍴GetDecrList "List"
+[306] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[8;]) (lrTXX8)
+[307] "fmSV.sDecrements.pgDecrement8.fTable.edTXX8" ⎕wi "text" (DLTB TXX[8;])
+[308] :endif
+[309] :if (⊂"pgDecrement9")∊"fmSV.sDecrements" ⎕wi "pages"
+[310] "fmSV.sDecrements.pgDecrement9.fParms.edeXITDESC9" ⎕wi "text" (DLTB eXITDESC[9;])
+[311] PickList←"fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "list"
+[312] :if 0∊⍴selection←PickList ExactTLU SStoMAT CODE[9;]
+[313]     "fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "value" ((×1↑⍴PickList)⍴0)
+[314]     modified←⌈/modified,"fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "value"
+[315] :else
+[316]     "fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "visible" ¯1
+[317]     "fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "value" selection
+[318]     "fmSV.sDecrements.pgDecrement9.fParms.lsCODE9" ⎕wi "visible" 1
+[319] :endif
+[320] "fmSV.sDecrements.pgDecrement9.fParms.edBAGE9" ⎕wi "text" (DLTB BAGE[9;])
+[321] "fmSV.sDecrements.pgDecrement9.fParms.edEAGE9" ⎕wi "text" (DLTB EAGE[9;])
+[322] "fmSV.sDecrements.pgDecrement9.fParms.edGROUP9" ⎕wi "text" (DLTB GROUP[9;])
+[323] "fmSV.sDecrements.pgDecrement9.fParms.edPS9" ⎕wi "text" (DLTB PS[9;])
+[324] "fmSV.sDecrements.pgDecrement9.fParms.cksave9" ⎕wi "value" (zwb save[9;])
+[325] 0 0⍴GetDecrList "List"
+[326] warnings←warnings OVER "Expected Table" Win∆CheckDecr (ExpTable[9;]) (lrExpTable9)
+[327] "fmSV.sDecrements.pgDecrement9.fTable.edExpTable9" ⎕wi "text" (DLTB ExpTable[9;])
+[328] "fmSV.sDecrements.pgDecrement9.fTable.edAgeRate9" ⎕wi "text" (DLTB AgeRate[9;])
+[329] "fmSV.sDecrements.pgDecrement9.fTable.edpcRate9" ⎕wi "text" (DLTB pcRate[9;])
+[330] 0 0⍴GetDecrList "List"
+[331] warnings←warnings OVER "Durational Weight Table" Win∆CheckDecr (TXX[9;]) (lrTXX9)
+[332] "fmSV.sDecrements.pgDecrement9.fTable.edTXX9" ⎕wi "text" (DLTB TXX[9;])
+[333] :endif
+[334] "fmSV.ckpagetrick" ⎕wi "value" (zwb pagetrick)
+[335] :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_Decrements
+[336]     :for var :in spin Comment_Decrements at "variable" "row" ⋄ (var row)←var
+[337]         "Decrements" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[338]     :endfor
+[339] :endif
+[340] :if ~0∊⍴,warnings
+[341]     MDISPLAY DLTMB warnings,⎕tcnl
+[342]     Win∆AssignVars "fmSV.sDecrements"
+[343] :endif
+[344] :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "Decrements" "" "Names"
+[345]     "fmSV.sDecrements" ⎕wi "modified" 0
+[346] :endif
+    ∇

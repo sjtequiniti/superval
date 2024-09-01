@@ -1,1 +1,18 @@
-    ∇ res←ParmFile IRR_RunDesc SaveCN;⎕io;PickList;value;CHeader[1]   ⍝ CALCWIN.sf#2[2]   ⎕io←1[3]   res←0 2⍴""[4]   [5]   res←res OVER 'Parameter File' (DLTB ParmFile)[6]   CHeader←ParmFile ReadFile "Index"[7]   res←res OVER 'Parameter File Description' (↑(CHeader for 1=⍳rowsIn CHeader) at '∆_Description')[8]   res←res OVER 'Parameters Description' (gROUP←↑(CHeader for '∆_CompNo' (↑SaveCN)) at '∆_Description')[9]   res←res OVER ParametersSaved 'IRR' gROUP[10]  res←res OVER "" ""[11]  res←res OVER 'Cash Flow File' ((DLTB fILENAME)," ",0 1 WGetFileTime InputDir,fILENAME)[12]  res←res OVER 'Format of Dates in File' (DLTMB df)[13]  res←res OVER 'Estimated Return' (DLTMB Guess," % p.a.")[14]  [15]  CHeader←(CHeader,' '),(∨/' '≠(CHeader←⊃res[;1]),⊃res[;2])\':'[16]  res←CHeader," ",⊃res[;2]    ∇
+    ∇ res←ParmFile IRR_RunDesc SaveCN;⎕io;PickList;value;CHeader
+[1]   ⍝ CALCWIN.sf#2
+[2]   ⎕io←1
+[3]   res←0 2⍴""
+[4]   
+[5]   res←res OVER 'Parameter File' (DLTB ParmFile)
+[6]   CHeader←ParmFile ReadFile "Index"
+[7]   res←res OVER 'Parameter File Description' (↑(CHeader for 1=⍳rowsIn CHeader) at '∆_Description')
+[8]   res←res OVER 'Parameters Description' (gROUP←↑(CHeader for '∆_CompNo' (↑SaveCN)) at '∆_Description')
+[9]   res←res OVER ParametersSaved 'IRR' gROUP
+[10]  res←res OVER "" ""
+[11]  res←res OVER 'Cash Flow File' ((DLTB fILENAME)," ",0 1 WGetFileTime InputDir,fILENAME)
+[12]  res←res OVER 'Format of Dates in File' (DLTMB df)
+[13]  res←res OVER 'Estimated Return' (DLTMB Guess," % p.a.")
+[14]  
+[15]  CHeader←(CHeader,' '),(∨/' '≠(CHeader←⊃res[;1]),⊃res[;2])\':'
+[16]  res←CHeader," ",⊃res[;2]
+    ∇

@@ -1,1 +1,22 @@
-    ∇ str←maScenColValue R;MortScenRating;MortScenDesc;MortDesc;MortScenAge;MortScenLifeExp[1]   ⍝ PARMWIN.sf#41[2]   ⍝ Scenario column value for Mortality Assumptions table[3]   ⍝ R: 5 strings[4]   ⍝ Vern: sjt14apr16[5]   ⍝ Tests:[6]   ⍝?⍝ 'MortScenDesc {adjusted by MortScenRating%}' ≡ maScenColValue 'MortScenDesc' 'MortScenRating' 'MortDesc' 'MortScenAge' 'MortScenLifeExp'[7]   ⍝?⍝ 'MortDesc {adjusted by MortScenRating%}'     ≡ maScenColValue '' 'MortScenRating' 'MortDesc' 'MortScenAge' 'MortScenLifeExp'[8]   ⍝?⍝ 'MortScenDesc {life expectancy adjusted by MortScenLifeExp years at age MortScenAge}' ≡ maScenColValue 'MortScenDesc' '' 'MortDesc' 'MortScenAge' 'MortScenLifeExp'[9]   ⍝?⍝ 'MortDesc {life expectancy adjusted by MortScenLifeExp years at age MortScenAge}' ≡ maScenColValue '' '' 'MortDesc' 'MortScenAge' 'MortScenLifeExp'[10]  ⍝?⍝ 'MortScenDesc' ≡ maScenColValue 'MortScenDesc' '' 'MortDesc' '' 'MortScenLifeExp'[11]  ⍝?⍝ '' ≡ maScenColValue '' '' 'MortDesc' '' 'MortScenLifeExp'[12]  (MortScenDesc MortScenRating MortDesc MortScenAge MortScenLifeExp)←DLTB¨R[13]  [14]  :if ~mt MortScenRating[15]      str←(fnonmt MortScenDesc MortDesc),' {adjusted by ',MortScenRating,'%}'[16]  :elseif ~mt MortScenAge[17]      str←(fnonmt MortScenDesc MortDesc),' {life expectancy adjusted by ',MortScenLifeExp,' years at age ',MortScenAge,'}'[18]  :else[19]      str←MortScenDesc[20]  :endif    ∇
+    ∇ str←maScenColValue R;MortScenRating;MortScenDesc;MortDesc;MortScenAge;MortScenLifeExp
+[1]   ⍝ PARMWIN.sf#41
+[2]   ⍝ Scenario column value for Mortality Assumptions table
+[3]   ⍝ R: 5 strings
+[4]   ⍝ Vern: sjt14apr16
+[5]   ⍝ Tests:
+[6]   ⍝?⍝ 'MortScenDesc {adjusted by MortScenRating%}' ≡ maScenColValue 'MortScenDesc' 'MortScenRating' 'MortDesc' 'MortScenAge' 'MortScenLifeExp'
+[7]   ⍝?⍝ 'MortDesc {adjusted by MortScenRating%}'     ≡ maScenColValue '' 'MortScenRating' 'MortDesc' 'MortScenAge' 'MortScenLifeExp'
+[8]   ⍝?⍝ 'MortScenDesc {life expectancy adjusted by MortScenLifeExp years at age MortScenAge}' ≡ maScenColValue 'MortScenDesc' '' 'MortDesc' 'MortScenAge' 'MortScenLifeExp'
+[9]   ⍝?⍝ 'MortDesc {life expectancy adjusted by MortScenLifeExp years at age MortScenAge}' ≡ maScenColValue '' '' 'MortDesc' 'MortScenAge' 'MortScenLifeExp'
+[10]  ⍝?⍝ 'MortScenDesc' ≡ maScenColValue 'MortScenDesc' '' 'MortDesc' '' 'MortScenLifeExp'
+[11]  ⍝?⍝ '' ≡ maScenColValue '' '' 'MortDesc' '' 'MortScenLifeExp'
+[12]  (MortScenDesc MortScenRating MortDesc MortScenAge MortScenLifeExp)←DLTB¨R
+[13]  
+[14]  :if ~mt MortScenRating
+[15]      str←(fnonmt MortScenDesc MortDesc),' {adjusted by ',MortScenRating,'%}'
+[16]  :elseif ~mt MortScenAge
+[17]      str←(fnonmt MortScenDesc MortDesc),' {life expectancy adjusted by ',MortScenLifeExp,' years at age ',MortScenAge,'}'
+[18]  :else
+[19]      str←MortScenDesc
+[20]  :endif
+    ∇

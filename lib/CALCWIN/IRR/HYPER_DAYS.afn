@@ -1,1 +1,24 @@
-    ∇ i←arg HYPER∆DAYS i;CF;DAYS;v;D;res;vNEW;⎕CT;⎕ELX;N[1]   ⍝ CALCWIN.sf#2[2]   ⍝ The actual algorithm employing the Hyperbolic method to find the[3]   ⍝ internal rate(s) of return of a cash flow (CF). CF[1] is at t=0.[4]   ⍝ If multiple roots exist, they can be picked up by setting appropriate i[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   ⍝ arg has dates in column 1 and amounts in column 2[8]   ⍝ This is an attempt to do this on a days basis[9]   ⎕ELX←'i←⍳0 ⋄ →0' ⍝ Error Latent Expression[10]  DAYS←+\0,DIFF,JUL (df ¯100) DATEEXP((⍴df),0)⍕arg[;,⎕IO][11]  CF←(3,⍴DAYS)⍴arg[;1+⎕IO] ⋄ N←0[12]  v←÷1+ 0.9 1 1.1 ×i÷365 ⋄ ⎕CT←1E¯10 ⍝ Arbitrary choice for ⎕CT[13]  LOOP:res←+/CF×v∘.*DAYS ⋄ ⍎(100=N←N+1)/'⍎⎕ELX' ⍝ Limit of 100 Loops[14]  ⍝ Now calculate a closer approximation to the IRR[15]  i←¯1+÷vNEW←(+/(¯1⌽v)×D)÷+/D←(res×1⌽res)×(1⌽v)-v[16]  ⍝ Compare this with the I (from the 3 previous v's) which produced[17]  ⍝ the res with lowest absolute value.[18]  →(i=¯1+÷v[1↑⍋∣res])/END[19]  ⍝ If not finished, replace the v which produced the res of greatest[20]  ⍝ absolute value with vNEW, and iterate.[21]  v[1↑⍒∣res]←vNEW ⋄ →LOOP[22]  END:i←¯1+(1+i)*365.25    ∇
+    ∇ i←arg HYPER∆DAYS i;CF;DAYS;v;D;res;vNEW;⎕CT;⎕ELX;N
+[1]   ⍝ CALCWIN.sf#2
+[2]   ⍝ The actual algorithm employing the Hyperbolic method to find the
+[3]   ⍝ internal rate(s) of return of a cash flow (CF). CF[1] is at t=0.
+[4]   ⍝ If multiple roots exist, they can be picked up by setting appropriate i
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   ⍝ arg has dates in column 1 and amounts in column 2
+[8]   ⍝ This is an attempt to do this on a days basis
+[9]   ⎕ELX←'i←⍳0 ⋄ →0' ⍝ Error Latent Expression
+[10]  DAYS←+\0,DIFF,JUL (df ¯100) DATEEXP((⍴df),0)⍕arg[;,⎕IO]
+[11]  CF←(3,⍴DAYS)⍴arg[;1+⎕IO] ⋄ N←0
+[12]  v←÷1+ 0.9 1 1.1 ×i÷365 ⋄ ⎕CT←1E¯10 ⍝ Arbitrary choice for ⎕CT
+[13]  LOOP:res←+/CF×v∘.*DAYS ⋄ ⍎(100=N←N+1)/'⍎⎕ELX' ⍝ Limit of 100 Loops
+[14]  ⍝ Now calculate a closer approximation to the IRR
+[15]  i←¯1+÷vNEW←(+/(¯1⌽v)×D)÷+/D←(res×1⌽res)×(1⌽v)-v
+[16]  ⍝ Compare this with the I (from the 3 previous v's) which produced
+[17]  ⍝ the res with lowest absolute value.
+[18]  →(i=¯1+÷v[1↑⍋∣res])/END
+[19]  ⍝ If not finished, replace the v which produced the res of greatest
+[20]  ⍝ absolute value with vNEW, and iterate.
+[21]  v[1↑⍒∣res]←vNEW ⋄ →LOOP
+[22]  END:i←¯1+(1+i)*365.25
+    ∇

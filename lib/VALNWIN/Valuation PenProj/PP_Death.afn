@@ -1,0 +1,39 @@
+    ∇ PP∆Death;pp∆size;pp∆LYrev;pp∆lyadj;pp∆VF;pp∆FutPV;pp∆PastPV;pp∆TotPV;pp∆FVstart;pp∆PVstart;pp∆FutCF;pp∆PastCF;pp∆TotCF;pp∆Y0;pp∆Rev;pp∆paid;pp∆ResPV;ann;DataItemID;ID;indiv
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ For Death, skip the primary pension and set up vars for reversion
+[3]   ⍝ Just set variables to do spouse's pension
+[4]   ⍝ Calculations similar to PP∆Pen_Spouse (except just one dimension)
+[5]   
+[6]   :if ∨/0≠pp∆MarrProp×pp∆Rev←pp∆TotBen[pp∆benyear]
+[7]       pp∆Y0←pp∆Xret-pp∆∆
+[8]   
+[9]       :if pp∆midret ⋄ pp∆LYrev←1,((⌈pp∆Y0)↓pp∆LY) CDIV pp∆ly[⌊pp∆Y0]
+[10]      :else         ⋄ pp∆LYrev←  (  pp∆Y0 ↓pp∆LY) CDIV pp∆LY[ pp∆Y0]
+[11]      :endif
+[12]  
+[13]      :if pp∆midstart ⋄ pp∆paid←((⌈pp∆def[1])/0),(pp∆def[1]=⌊pp∆def[1])/1-pp∆FreqAdj
+[14]      :else           ⋄ pp∆paid← (⌊pp∆def[1])/0
+[15]      :endif
+[16]  
+[17]      pp∆size←⍴pp∆lyadj←pp∆startpad,pp∆FreqAdj PP∆FreqAdjust pp∆LYrev,0
+[18]      pp∆paid←pp∆size OVERTAKE pp∆paid,1
+[19]  
+[20]      pp∆VF←pp∆ppfRatio[(pp∆Texit-term)+⍳pp∆size]×pp∆MarrProp×pp∆paid×pp∆lyadj×(pp∆size OVERTAKE pp∆LYgpmult)×pp∆size↑pp∆SIncpost
+[21]  
+[22]      1 SPOSTMEMB PP∆ValuationFactors pp∆VF
+[23]  
+[24]      :if neIND
+[25]          pp∆FutPV← pp∆defdisc×pp∆FVstart←(pp∆FutCF←  pp∆TotCF←pp∆VF×pp∆Rev  )             ×pp∆size↑pp∆discpost
+[26]          pp∆PastPV←0 ⋄ pp∆PVstart←0×pp∆FVstart ⋄ pp∆PastCF←0×pp∆FutCF
+[27]      :else
+[28]          pp∆FutPV← pp∆defdisc×pp∆FVstart←(pp∆FutCF←           pp∆VF×pp∆FutBen[pp∆benyear])×pp∆size↑pp∆discpost
+[29]          pp∆PastPV←pp∆defdisc×pp∆PVstart←(pp∆PastCF←(pp∆TotCF←pp∆VF×pp∆Rev     )-pp∆FutCF)×pp∆size↑pp∆discpost
+[30]      :endif
+[31]      pp∆ResPV←pp∆PastPV+pp∆FutPV
+[32]      pp∆TotPV←(pp∆PastPV←+/pp∆PastPV)+(pp∆FutPV←+/pp∆FutPV)
+[33]  
+[34]      :if test ⋄ :andif ClassID≠4 ⋄ pp∆Rev PP∆StoreAnn 0 ⋄ :endif
+[35]  
+[36]      0 PP∆StoreRes 0
+[37]  :endif
+    ∇

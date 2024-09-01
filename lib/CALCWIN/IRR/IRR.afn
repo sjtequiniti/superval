@@ -1,1 +1,42 @@
-    ∇ res←field IRR parm;parent;⎕elx;elx;tpr1;N;SaveCN[1]   ⍝ CALCWIN.sf#2[2]   ⍝ Function to allow user control on Internal Rate of Return Calculator[3]   [4]   parent←'fmIRR.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[11]  [12]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[13]  [14]  :case 'Valid' ⍝ Routine specific validation[15]  [16]      :if ~(InputDir,fILENAME) NTIE tpr1←'Native' TieNumber '' ⋄ res←'FileNotFound' fILENAME ⋄ →err ⋄ :endif[17]      data←'ASCII' Read∆DataFile tpr1,¯1,0,(⎕NSIZE tpr1),0 ⋄ ⎕NUNTIE tpr1[18]      data[(data∊⎕AV[10 11 13 14 27])/⍳⍴data]←' ' ⍝ Clean the data (remove EOF markers, TAB's, CR/LF's)[19]      data←data[(~data∊'/')/⍳⍴data] ⍝ and /'s in Dates[20]      elx←⎕elx ⋄ ⎕elx←'res←''InvStructure'' fILENAME ⋄ →err' ⍝ res if any problem with File[21]      data←⍎'-¯' REPL data ⋄ ⎕elx←elx ⍝ Replace - with ¯ and turn into a numeric matrix[22]      :if N≠⌊N←0.5×⍴data ⋄ res←'InvStructure' fILENAME ⋄ →err ⋄ :endif[23]      data←(N,2)⍴data ⍝ Check all dates are Valid[24]      df←df[(~df∊'/')/⍳⍴df][25]      :if ∨/~DATECHECK (df ¯100) DATEEXP (N,-⍴df)↑⍕data[;,1] ⋄ res←'InvFileDate' fILENAME ⋄ →err ⋄ :endif[26]      :return ⍝ Success[27]  [28]  err:Win∆SetFocus parent,'edfILENAME'[29]  [30]  :case 'Run'[31]  [32]      SaveCN←parent ⎕wi '∆savecn'[33]      'IRR∆CALC' Win∆ProgressBar 'Start'[34]      res←'Quit'[35]  [36]  :case 'Quit' ⍝ Deleting "other" variables[37]  [38]      0 0⍴⎕EX 'data df'[39]  [40]  :endselect    ∇
+    ∇ res←field IRR parm;parent;⎕elx;elx;tpr1;N;SaveCN
+[1]   ⍝ CALCWIN.sf#2
+[2]   ⍝ Function to allow user control on Internal Rate of Return Calculator
+[3]   
+[4]   parent←'fmIRR.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]  
+[12]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[13]  
+[14]  :case 'Valid' ⍝ Routine specific validation
+[15]  
+[16]      :if ~(InputDir,fILENAME) NTIE tpr1←'Native' TieNumber '' ⋄ res←'FileNotFound' fILENAME ⋄ →err ⋄ :endif
+[17]      data←'ASCII' Read∆DataFile tpr1,¯1,0,(⎕NSIZE tpr1),0 ⋄ ⎕NUNTIE tpr1
+[18]      data[(data∊⎕AV[10 11 13 14 27])/⍳⍴data]←' ' ⍝ Clean the data (remove EOF markers, TAB's, CR/LF's)
+[19]      data←data[(~data∊'/')/⍳⍴data] ⍝ and /'s in Dates
+[20]      elx←⎕elx ⋄ ⎕elx←'res←''InvStructure'' fILENAME ⋄ →err' ⍝ res if any problem with File
+[21]      data←⍎'-¯' REPL data ⋄ ⎕elx←elx ⍝ Replace - with ¯ and turn into a numeric matrix
+[22]      :if N≠⌊N←0.5×⍴data ⋄ res←'InvStructure' fILENAME ⋄ →err ⋄ :endif
+[23]      data←(N,2)⍴data ⍝ Check all dates are Valid
+[24]      df←df[(~df∊'/')/⍳⍴df]
+[25]      :if ∨/~DATECHECK (df ¯100) DATEEXP (N,-⍴df)↑⍕data[;,1] ⋄ res←'InvFileDate' fILENAME ⋄ →err ⋄ :endif
+[26]      :return ⍝ Success
+[27]  
+[28]  err:Win∆SetFocus parent,'edfILENAME'
+[29]  
+[30]  :case 'Run'
+[31]  
+[32]      SaveCN←parent ⎕wi '∆savecn'
+[33]      'IRR∆CALC' Win∆ProgressBar 'Start'
+[34]      res←'Quit'
+[35]  
+[36]  :case 'Quit' ⍝ Deleting "other" variables
+[37]  
+[38]      0 0⍴⎕EX 'data df'
+[39]  
+[40]  :endselect
+    ∇

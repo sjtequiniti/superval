@@ -1,1 +1,28 @@
-    ∇ Z←XV_TableArsl lines;pts;cap;thd;tbd;rws;cnt;∆;cmmt;ttl[1]   ⍝ ACTWIN.sf#12[2]   ⍝ [ExcelVarprint] Find and tag the "Average Remaining Service Life" table in lines, if there. SJT 18jan10[3]   ⍝ Return number of lines read and rws of an HTML table.[4]   ⍝ Reads ext vars: STYLE_TH[5]   [6]   :If (30↑↑lines)≡ttl←'Average Remaining Service Life'                            ⍝ special case[7]   :AndIf ' '^.=2⊃lines[8]   [9]       cmmt←⊂'<!-- XV_TableArsl -->'[10]  [11]      pts←∆+2∣∆←+\∆≠0,¯1↓∆←∨⌿' '≠∆←⊃lines[3 5 6]                                  ⍝ numeric columns, no headers[12]  [13]      tbd←'tbody' xtag (⊂'tr') xtag¨,/(⊂'td')xtag¨DLTB¨pts⊂[2]⊃lines[5 6][14]  [15]      cap←'h2' 'p' xtag¨(ttl)(DLTB(⍴ttl)↓↑lines)[16]  [17]      thd←'thead' xtag ⊂'tr' xtag ↑,/ (⊂'th ',STYLE_TH) xtag¨DLTB¨pts⊂3⊃lines[18]  [19]      rws←cap,'table' xtag cmmt,thd,tbd[20]      cnt←6[21]  [22]  :Else[23]      (cnt rws)←0 ''                                                              ⍝ no table found[24]  :EndIf[25]  [26]  Z←cnt rws    ∇
+    ∇ Z←XV_TableArsl lines;pts;cap;thd;tbd;rws;cnt;∆;cmmt;ttl
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ [ExcelVarprint] Find and tag the "Average Remaining Service Life" table in lines, if there. SJT 18jan10
+[3]   ⍝ Return number of lines read and rws of an HTML table.
+[4]   ⍝ Reads ext vars: STYLE_TH
+[5]   
+[6]   :If (30↑↑lines)≡ttl←'Average Remaining Service Life'                            ⍝ special case
+[7]   :AndIf ' '^.=2⊃lines
+[8]   
+[9]       cmmt←⊂'<!-- XV_TableArsl -->'
+[10]  
+[11]      pts←∆+2∣∆←+\∆≠0,¯1↓∆←∨⌿' '≠∆←⊃lines[3 5 6]                                  ⍝ numeric columns, no headers
+[12]  
+[13]      tbd←'tbody' xtag (⊂'tr') xtag¨,/(⊂'td')xtag¨DLTB¨pts⊂[2]⊃lines[5 6]
+[14]  
+[15]      cap←'h2' 'p' xtag¨(ttl)(DLTB(⍴ttl)↓↑lines)
+[16]  
+[17]      thd←'thead' xtag ⊂'tr' xtag ↑,/ (⊂'th ',STYLE_TH) xtag¨DLTB¨pts⊂3⊃lines
+[18]  
+[19]      rws←cap,'table' xtag cmmt,thd,tbd
+[20]      cnt←6
+[21]  
+[22]  :Else
+[23]      (cnt rws)←0 ''                                                              ⍝ no table found
+[24]  :EndIf
+[25]  
+[26]  Z←cnt rws
+    ∇

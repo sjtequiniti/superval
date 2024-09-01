@@ -1,1 +1,68 @@
-    ∇ Decrements∆Valid page;NO;bdate;edate[1]   ⍝ INVWIN.sf#2[2]   ⍝ Validation of Decrements Form[3]   [4]   :select page[5]   :case 'pgGeneral'[6]       ⍝ Check dates are in right order[7]       bdate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrBDATE BDATE[8]       edate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrEDATE EDATE[9]       :if 0≥'MN' DURN bdate,edate[10]          Win∆SetFocus parent,page,'.fParms.cbBDATE'[11]          res←'DateOrder' ⋄ :return[12]      :endif[13]  [14]      ⍝ Check that at least 1 decerement is defined[15]      :if ~∨/MatrixZWB DecSelect[16]          DecSelect[1;]←'1'[17]          1 Dec∆AdjustPages 'Reset'[18]          (parent,page,'.fSelection.ckDecSelect1') ⎕wi 'value' 1[19]          Win∆SetFocus parent,page,'.fSelection.edDecName1'[20]          res←'NoDec' ⋄ :return[21]      :endif[22]  [23]      CREATEDATADESC Format ⍝ Create data format[24]      :if FormatType≡'Act' ⍝ Check Service field specified for Actives[25]          :if ~(1↑servind)∊((0≠⍴fDJF)/'FS'[⎕io+×uk]),(0≠⍴fDJS)/'SC'[⎕io+×uk][26]              Win∆SetFocus parent,page,'fParms.fservind.opservind_1'[27]              res←'NoDJS' ⋄ :return[28]          :endif[29]          :if ('G'=1↑expind)^0=⍴fPSAL,fSAL[30]          :orif ('C'=1↑expind)^0=⍴fSAL[31]          :orif ('P'=1↑expind)^0=⍴fPSAL[32]              Win∆SetFocus parent,page,'fParms.cbexpind'[33]              res←'InvExpWeight' ⋄ :return[34]          :endif[35]  [36]      :elseif  FormatType≡'Def'[37]          :if 0∊⍴fLD ⍝ Check Leaving Service Date Specified[38]              Win∆SetFocus parent,page,'fData.cbFormat'[39]              res←'NoLSD' ⋄ :return[40]          :endif[41]          :if uk≠1 ⋄ :andif ('P'=1↑expind)^0=⍴fANP1[42]              Win∆SetFocus parent,page,'fParms.cbexpindp'[43]              res←'InvExpWeight' ⋄ :return[44]          :endif[45]  [46]      :elseif uk=1 ⋄ :andif FormatType≡'Pen'[47]          :if 0∊⍴fDPC ⍝ Check Leaving Service Date Specified[48]              Win∆SetFocus parent,page,'fData.cbFormat'[49]              res←'NoDPC' ⋄ :return[50]          :endif[51]          :if uk≠1 ⋄ :andif ('P'=1↑expind)^0=⍴fANP1[52]              Win∆SetFocus parent,page,'fParms.cbexpindp'[53]              res←'InvExpWeight' ⋄ :return[54]          :endif[55]  [56]      :endif[57]  [58]  :caselist (⊂'pgDecrement'),¨(⍕⍳9)~' '[59]      NO←zwb ¯1↑page[60]      ⍝ Check Begin and end ages are in order[61]      :if 0.5>((zwb EAGE[NO;])-zwb BAGE[NO;])÷zwb GROUP[NO;][62]         Win∆SetFocus parent,page,'.fParms.edBAGE'[63]          res←'AgeOrder' ⋄ :return[64]      :endif[65]  [66]  :endselect    ∇
+    ∇ Decrements∆Valid page;NO;bdate;edate
+[1]   ⍝ INVWIN.sf#2
+[2]   ⍝ Validation of Decrements Form
+[3]   
+[4]   :select page
+[5]   :case 'pgGeneral'
+[6]       ⍝ Check dates are in right order
+[7]       bdate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrBDATE BDATE
+[8]       edate←'DD/MM/YYYY' DATEEXP ↑⌽'Date' SwapRelFields lrEDATE EDATE
+[9]       :if 0≥'MN' DURN bdate,edate
+[10]          Win∆SetFocus parent,page,'.fParms.cbBDATE'
+[11]          res←'DateOrder' ⋄ :return
+[12]      :endif
+[13]  
+[14]      ⍝ Check that at least 1 decerement is defined
+[15]      :if ~∨/MatrixZWB DecSelect
+[16]          DecSelect[1;]←'1'
+[17]          1 Dec∆AdjustPages 'Reset'
+[18]          (parent,page,'.fSelection.ckDecSelect1') ⎕wi 'value' 1
+[19]          Win∆SetFocus parent,page,'.fSelection.edDecName1'
+[20]          res←'NoDec' ⋄ :return
+[21]      :endif
+[22]  
+[23]      CREATEDATADESC Format ⍝ Create data format
+[24]      :if FormatType≡'Act' ⍝ Check Service field specified for Actives
+[25]          :if ~(1↑servind)∊((0≠⍴fDJF)/'FS'[⎕io+×uk]),(0≠⍴fDJS)/'SC'[⎕io+×uk]
+[26]              Win∆SetFocus parent,page,'fParms.fservind.opservind_1'
+[27]              res←'NoDJS' ⋄ :return
+[28]          :endif
+[29]          :if ('G'=1↑expind)^0=⍴fPSAL,fSAL
+[30]          :orif ('C'=1↑expind)^0=⍴fSAL
+[31]          :orif ('P'=1↑expind)^0=⍴fPSAL
+[32]              Win∆SetFocus parent,page,'fParms.cbexpind'
+[33]              res←'InvExpWeight' ⋄ :return
+[34]          :endif
+[35]  
+[36]      :elseif  FormatType≡'Def'
+[37]          :if 0∊⍴fLD ⍝ Check Leaving Service Date Specified
+[38]              Win∆SetFocus parent,page,'fData.cbFormat'
+[39]              res←'NoLSD' ⋄ :return
+[40]          :endif
+[41]          :if uk≠1 ⋄ :andif ('P'=1↑expind)^0=⍴fANP1
+[42]              Win∆SetFocus parent,page,'fParms.cbexpindp'
+[43]              res←'InvExpWeight' ⋄ :return
+[44]          :endif
+[45]  
+[46]      :elseif uk=1 ⋄ :andif FormatType≡'Pen'
+[47]          :if 0∊⍴fDPC ⍝ Check Leaving Service Date Specified
+[48]              Win∆SetFocus parent,page,'fData.cbFormat'
+[49]              res←'NoDPC' ⋄ :return
+[50]          :endif
+[51]          :if uk≠1 ⋄ :andif ('P'=1↑expind)^0=⍴fANP1
+[52]              Win∆SetFocus parent,page,'fParms.cbexpindp'
+[53]              res←'InvExpWeight' ⋄ :return
+[54]          :endif
+[55]  
+[56]      :endif
+[57]  
+[58]  :caselist (⊂'pgDecrement'),¨(⍕⍳9)~' '
+[59]      NO←zwb ¯1↑page
+[60]      ⍝ Check Begin and end ages are in order
+[61]      :if 0.5>((zwb EAGE[NO;])-zwb BAGE[NO;])÷zwb GROUP[NO;]
+[62]         Win∆SetFocus parent,page,'.fParms.edBAGE'
+[63]          res←'AgeOrder' ⋄ :return
+[64]      :endif
+[65]  
+[66]  :endselect
+    ∇

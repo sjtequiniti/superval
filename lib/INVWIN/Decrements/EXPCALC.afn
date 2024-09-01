@@ -1,1 +1,61 @@
-    ∇ Error←bDATE EXPCALC eDATE;⎕IO;DOB;DJF;DOE;sAGE;fAGE;TOTEXP;EXIT;NOM;sDURN;fDURN;lAGE;lDURN;EXP;MOE;SAL[1]   ⍝ INVWIN.sf#2[2]   ⍝ Calculation of the exposure-to-risk for a decrement investigation.  It[3]   ⍝ adjusts begin and end dates to allow for the duration selected for (a[4]   ⍝ select) analysis.[5]   ⍝[6]   ⍝ V2.50u RE 1/11/93 Standardised[7]   Error←'' ⋄ ⎕IO←0[8]   DOB←(DFDOB (vDATE- 0 0,120-20×Active)) DATEEXP REC[FDOB][9]   ⍝ Validate Date of Birth[10]  :if ~DATECHECK DOB ⋄ Error←'InvFileDate' ⋄ :return ⋄ :endif[11]  [12]  DJF←(DFDJF DOB) DATEEXP REC[FDJF][13]  ⍝ Validate Date Joined[14]  :if ~DATECHECK DJF ⋄ Error←'InvFileDate' ⋄ :return ⋄ :endif[15]  [16]  :if ∨/' '≠NOM←REC[FNOM] ⍝ Numbers must be valid and scalar[17]  :andif ~(,1)≡⎕VI NOM[18]      Error←'InvFileNum' ⋄ :return[19]  :endif[20]  NOM←1⌈zwb NOM[21]  [22]  →(~EXIT←∨/' '≠DOE←REC[FDOE])/LAB[23]  DOE←(DFDOE (DOB+0 0,20×~Active)) DATEEXP DOE[24]  ⍝ Validate Date of Exit[25]  :if ~DATECHECK DOE ⋄ Error←'InvFileDate' ⋄ :return ⋄ :endif[26]  EXIT←eDATE≥ 1 100 100 ⊥⌽DOE[27]  [28]  ⍝ Begin date is date of entry and End date is exit date if appropriate[29]  LAB:bDATE←¯3↑BDATE,(bDATE< 1 100 100 ⊥⌽DJF)/DJF[30]  eDATE←¯3↑EDATE,EXIT/DOE ⋄ EXIT←EXIT^∨/' '≠MOE←REC[FMOE] ⋄ SAL←EXP∆WEIGHT[31]  [32]  →(0≥TOTEXP←SAL×-/,JUL eDATE,[¯0.5]bDATE)/0 ⍝ Drop out if exposure is < 0[33]  [34]  SFAC←SFAC+(^/0<NOM,SAL)×NOM,SAL[35]  fAGE←JUL DOB+ 0 0 ,1+sAGE←'YD' DURN DOB,bDATE ⍝ Start age[36]  fDURN←JUL DJF+ 0 0 ,1+sDURN←'YD' DURN DJF,bDATE ⍝ Start durn[37]  sAGE←120⌊sAGE+100×(sAGE≤10)^0>sAGE-sDURN←20⌊sDURN ⍝ Over 100 y.o.[38]  [39]  →(fAGE>fDURN)/L1[40]  lAGE←(SAL×365.25)-lDURN←SAL×fDURN-fAGE ⋄ fAGE←SAL×fAGE-JUL bDATE[41]  MAT[0;sAGE;sDURN]←MAT[0;sAGE;sDURN]+EXP←TOTEXP⌊fAGE ⍝ First age exposure[42]  →(0≥TOTEXP←TOTEXP-fAGE)/END ⋄ fAGE←SAL×365.25 ⋄ →L2[43]  [44]  L1:lDURN←(SAL×365.25)-lAGE←SAL×fAGE-fDURN ⋄ fAGE←fDURN←SAL×fDURN-JUL bDATE[45]  MAT[0;sAGE;sDURN]←MAT[0;sAGE;sDURN]+EXP←TOTEXP⌊fDURN ⍝ First durn expose[46]  →(0≥TOTEXP←TOTEXP-fDURN)/END ⋄ fAGE←SAL×365.25[47]  [48]  ⍝ Loop to add exposure days[49]  loop:MAT[0;sAGE;sDURN]←MAT[0;sAGE;sDURN←20⌊sDURN+1]+EXP←TOTEXP⌊lAGE[50]  →(0≥TOTEXP←TOTEXP-lAGE)/END[51]  [52]  L2:MAT[0;sAGE;sDURN]←MAT[0;sAGE←120⌊sAGE+1;sDURN]+EXP←TOTEXP⌊lDURN[53]  →(0≥TOTEXP←TOTEXP-lDURN)/END ⋄ →loop[54]  [55]  END:→(~EXIT)/0[56]  ⍝ Check if an investigated exit and Give full year in year of exit[57]  →(^/0=MOE←∨/exitcode^.=MOE)/0 ⋄ MOE←MOE/⍳1↑⍴exitcode[58]  EX[MOE;sAGE;sDURN]←EX[MOE;sAGE;sDURN]+SAL[59]  MAT[MOE+1;sAGE;sDURN]←MAT[MOE+1;sAGE;sDURN]+fAGE-EXP    ∇
+    ∇ Error←bDATE EXPCALC eDATE;⎕IO;DOB;DJF;DOE;sAGE;fAGE;TOTEXP;EXIT;NOM;sDURN;fDURN;lAGE;lDURN;EXP;MOE;SAL
+[1]   ⍝ INVWIN.sf#2
+[2]   ⍝ Calculation of the exposure-to-risk for a decrement investigation.  It
+[3]   ⍝ adjusts begin and end dates to allow for the duration selected for (a
+[4]   ⍝ select) analysis.
+[5]   ⍝
+[6]   ⍝ V2.50u RE 1/11/93 Standardised
+[7]   Error←'' ⋄ ⎕IO←0
+[8]   DOB←(DFDOB (vDATE- 0 0,120-20×Active)) DATEEXP REC[FDOB]
+[9]   ⍝ Validate Date of Birth
+[10]  :if ~DATECHECK DOB ⋄ Error←'InvFileDate' ⋄ :return ⋄ :endif
+[11]  
+[12]  DJF←(DFDJF DOB) DATEEXP REC[FDJF]
+[13]  ⍝ Validate Date Joined
+[14]  :if ~DATECHECK DJF ⋄ Error←'InvFileDate' ⋄ :return ⋄ :endif
+[15]  
+[16]  :if ∨/' '≠NOM←REC[FNOM] ⍝ Numbers must be valid and scalar
+[17]  :andif ~(,1)≡⎕VI NOM
+[18]      Error←'InvFileNum' ⋄ :return
+[19]  :endif
+[20]  NOM←1⌈zwb NOM
+[21]  
+[22]  →(~EXIT←∨/' '≠DOE←REC[FDOE])/LAB
+[23]  DOE←(DFDOE (DOB+0 0,20×~Active)) DATEEXP DOE
+[24]  ⍝ Validate Date of Exit
+[25]  :if ~DATECHECK DOE ⋄ Error←'InvFileDate' ⋄ :return ⋄ :endif
+[26]  EXIT←eDATE≥ 1 100 100 ⊥⌽DOE
+[27]  
+[28]  ⍝ Begin date is date of entry and End date is exit date if appropriate
+[29]  LAB:bDATE←¯3↑BDATE,(bDATE< 1 100 100 ⊥⌽DJF)/DJF
+[30]  eDATE←¯3↑EDATE,EXIT/DOE ⋄ EXIT←EXIT^∨/' '≠MOE←REC[FMOE] ⋄ SAL←EXP∆WEIGHT
+[31]  
+[32]  →(0≥TOTEXP←SAL×-/,JUL eDATE,[¯0.5]bDATE)/0 ⍝ Drop out if exposure is < 0
+[33]  
+[34]  SFAC←SFAC+(^/0<NOM,SAL)×NOM,SAL
+[35]  fAGE←JUL DOB+ 0 0 ,1+sAGE←'YD' DURN DOB,bDATE ⍝ Start age
+[36]  fDURN←JUL DJF+ 0 0 ,1+sDURN←'YD' DURN DJF,bDATE ⍝ Start durn
+[37]  sAGE←120⌊sAGE+100×(sAGE≤10)^0>sAGE-sDURN←20⌊sDURN ⍝ Over 100 y.o.
+[38]  
+[39]  →(fAGE>fDURN)/L1
+[40]  lAGE←(SAL×365.25)-lDURN←SAL×fDURN-fAGE ⋄ fAGE←SAL×fAGE-JUL bDATE
+[41]  MAT[0;sAGE;sDURN]←MAT[0;sAGE;sDURN]+EXP←TOTEXP⌊fAGE ⍝ First age exposure
+[42]  →(0≥TOTEXP←TOTEXP-fAGE)/END ⋄ fAGE←SAL×365.25 ⋄ →L2
+[43]  
+[44]  L1:lDURN←(SAL×365.25)-lAGE←SAL×fAGE-fDURN ⋄ fAGE←fDURN←SAL×fDURN-JUL bDATE
+[45]  MAT[0;sAGE;sDURN]←MAT[0;sAGE;sDURN]+EXP←TOTEXP⌊fDURN ⍝ First durn expose
+[46]  →(0≥TOTEXP←TOTEXP-fDURN)/END ⋄ fAGE←SAL×365.25
+[47]  
+[48]  ⍝ Loop to add exposure days
+[49]  loop:MAT[0;sAGE;sDURN]←MAT[0;sAGE;sDURN←20⌊sDURN+1]+EXP←TOTEXP⌊lAGE
+[50]  →(0≥TOTEXP←TOTEXP-lAGE)/END
+[51]  
+[52]  L2:MAT[0;sAGE;sDURN]←MAT[0;sAGE←120⌊sAGE+1;sDURN]+EXP←TOTEXP⌊lDURN
+[53]  →(0≥TOTEXP←TOTEXP-lDURN)/END ⋄ →loop
+[54]  
+[55]  END:→(~EXIT)/0
+[56]  ⍝ Check if an investigated exit and Give full year in year of exit
+[57]  →(^/0=MOE←∨/exitcode^.=MOE)/0 ⋄ MOE←MOE/⍳1↑⍴exitcode
+[58]  EX[MOE;sAGE;sDURN]←EX[MOE;sAGE;sDURN]+SAL
+[59]  MAT[MOE+1;sAGE;sDURN]←MAT[MOE+1;sAGE;sDURN]+fAGE-EXP
+    ∇

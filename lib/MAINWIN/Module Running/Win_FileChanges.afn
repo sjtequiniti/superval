@@ -1,1 +1,86 @@
-    ∇ parent Win∆FileChanges field;FileSelections;z;value;settings;list;use;prefix;z;flag[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Handle the onChange callbacks for file related fields[3]   [4]   :if 0=⎕nc 'Format' ⋄ :return ⋄ :endif[5]   [6]   settings←⍕FileSelections←(parent,'ckFileSelections') ⎕wi 'value'[7]   settings←settings OVER DLTB DTDot (parent,'edfILENAME') ⎕wi 'text'[8]   settings←settings OVER DLTB (parent,'edFILES') ⎕wi 'text'[9]   settings←settings OVER DLTB (parent,'cbFormat') ⎕wi 'text'[10]  settings←settings OVER ⍕use←(parent,'ckUseSex') ⎕wi 'value'[11]  settings←settings OVER ⍕¯1↑use←use,(parent,'ckUseCat') ⎕wi 'value'[12]  [13]  :if 0=⎕nc 'Filesettings' ⋄ Filesettings←'' ⋄ :endif[14]  [15]  :select field[16]  :case 'ckFileSelections'[17]      :if ~settings≡Filesettings[18]          parent MakeFileSelections 'Enable'[19]      :endif[20]      parent Win∆FileChanges 'edfILENAME'[21]      :if FileSelections[22]          parent Win∆FileChanges 'ckUseSubs'[23]      :endif[24]  [25]  :case 'cbFormat'[26]      :if uk≠1 ⋄ :orif ~∨/,⊃(⊂parent) ⎕ss ¨'sActives_Basis' 'sDefBasis' 'sPenBasis'[27]          :if 0≠⎕nc 'ControlName' ⋄ ControlName ⎕wi '∆formatcreated' 0 ⋄ :endif[28]          :if 0∊⍴DLTMB Format ⋄ FormatType←'' ⋄ fSEX←fPSEX←fCAT←fPCAT←⍳0[29]          :else               ⋄ CREATEDATADESC Format[30]          :endif[31]          prefix←((uk≠1)^(⊂FormatType)∊'Pen' 'Def')/'P'[32]          ⍝ Disable UseSex/UseCat as appropriate[33]          z←,⊃0≠⍴¨⍎¨('f',prefix,'SEX') ('f',prefix,'CAT')[34]          ((⊂parent,'ckUse'),¨'Sex' 'Cat') MultiWI 'enabled' (^/z)[35]          :if ^/z[36]          :andif ∨/((⊂parent,'ckUse'),¨'Sex' 'Cat') MultiWI 'value'[37]              (parent,'ckUseSex') ⎕wi 'value' (z[1]⌊(parent,'ckUseSex') ⎕wi 'value')[38]              (parent,'ckUseCat') ⎕wi 'value' (z[2]⌊(parent,'ckUseCat') ⎕wi 'value')[39]          :else[40]              (parent,'ckUseSex') ⎕wi 'value' (z[1])[41]              (parent,'ckUseCat') ⎕wi 'value' (z[2])[42]          :endif[43]      :endif[44]      parent Win∆FileChanges 'edfILENAME'[45]  [46]  :caselist 'ckUseSex' 'ckUseCat'[47]      :if uk≠1 ⋄ :orif ~∨/,⊃(⊂parent) ⎕ss ¨'sActives_Basis' 'sDefBasis' 'sPenBasis'[48]          ⍝ Disable fields to make sure at least one selected (if available)[49]          prefix←((uk≠1)^(⊂3↑1↓Format)∊'Pen' 'Def')/'P'[50]          :if ^/z←,⊃0≠⍴¨⍎¨('f',prefix,'SEX') ('f',prefix,'CAT')[51]              (parent,'ckUseSex') ⎕wi 'enabled' ((parent,'ckUseCat') ⎕wi 'value')[52]              (parent,'ckUseCat') ⎕wi 'enabled' ((parent,'ckUseSex') ⎕wi 'value')[53]          :endif[54]      :endif[55]      parent Win∆FileChanges 'edfILENAME'[56]  [57]  :case 'edfILENAME'[58]      :if ~settings≡Filesettings[59]      :andif FileSelections[60]          flag←(uk=1)^∨/∊(⊂parent) ⎕ss ¨'sActives_Basis' 'sDefBasis' 'sPenBasis'[61]          list←1 0↓flag UniqueDataSel ,'/',use⌿2 3⍴'SexCat'[62]          (parent,'lsCatSels') MakeSelections list (SStoMAT CatSels)[63]      :endif[64]  [65]  :case 'lsCatSels'[66]      :if ~0∊⍴value←,'⍺',((parent,field) ⎕wi 'list')[(parent,field) ⎕wi 'value';][67]          CatSels←value[68]      :endif[69]      parent Win∆FileChanges 'ckUseSubs'[70]  [71]  :case 'ckUseSubs' ⍝ Not activated for UK[72]      z←(uk≠1)^FileSelections^~(parent,'ckUseSubs') ⎕wi 'value'[73]      z←z^1<⍴,(parent,'lsCatSels') ⎕wi 'value'[74]      (parent,'ckDeleteSubs') ⎕wi 'visible' z[75]  [76]  :case 'MOE'[77]      parent ⎕wi '∆moe' (1 0↓UniqueDataSel 'MOE')[78]  [79]  :case 'TOP'[80]      parent ⎕wi '∆top' (1 0↓UniqueDataSel 'TOP')[81]  [82]  :endselect[83]  [84]  Filesettings←settings    ∇
+    ∇ parent Win∆FileChanges field;FileSelections;z;value;settings;list;use;prefix;z;flag
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Handle the onChange callbacks for file related fields
+[3]   
+[4]   :if 0=⎕nc 'Format' ⋄ :return ⋄ :endif
+[5]   
+[6]   settings←⍕FileSelections←(parent,'ckFileSelections') ⎕wi 'value'
+[7]   settings←settings OVER DLTB DTDot (parent,'edfILENAME') ⎕wi 'text'
+[8]   settings←settings OVER DLTB (parent,'edFILES') ⎕wi 'text'
+[9]   settings←settings OVER DLTB (parent,'cbFormat') ⎕wi 'text'
+[10]  settings←settings OVER ⍕use←(parent,'ckUseSex') ⎕wi 'value'
+[11]  settings←settings OVER ⍕¯1↑use←use,(parent,'ckUseCat') ⎕wi 'value'
+[12]  
+[13]  :if 0=⎕nc 'Filesettings' ⋄ Filesettings←'' ⋄ :endif
+[14]  
+[15]  :select field
+[16]  :case 'ckFileSelections'
+[17]      :if ~settings≡Filesettings
+[18]          parent MakeFileSelections 'Enable'
+[19]      :endif
+[20]      parent Win∆FileChanges 'edfILENAME'
+[21]      :if FileSelections
+[22]          parent Win∆FileChanges 'ckUseSubs'
+[23]      :endif
+[24]  
+[25]  :case 'cbFormat'
+[26]      :if uk≠1 ⋄ :orif ~∨/,⊃(⊂parent) ⎕ss ¨'sActives_Basis' 'sDefBasis' 'sPenBasis'
+[27]          :if 0≠⎕nc 'ControlName' ⋄ ControlName ⎕wi '∆formatcreated' 0 ⋄ :endif
+[28]          :if 0∊⍴DLTMB Format ⋄ FormatType←'' ⋄ fSEX←fPSEX←fCAT←fPCAT←⍳0
+[29]          :else               ⋄ CREATEDATADESC Format
+[30]          :endif
+[31]          prefix←((uk≠1)^(⊂FormatType)∊'Pen' 'Def')/'P'
+[32]          ⍝ Disable UseSex/UseCat as appropriate
+[33]          z←,⊃0≠⍴¨⍎¨('f',prefix,'SEX') ('f',prefix,'CAT')
+[34]          ((⊂parent,'ckUse'),¨'Sex' 'Cat') MultiWI 'enabled' (^/z)
+[35]          :if ^/z
+[36]          :andif ∨/((⊂parent,'ckUse'),¨'Sex' 'Cat') MultiWI 'value'
+[37]              (parent,'ckUseSex') ⎕wi 'value' (z[1]⌊(parent,'ckUseSex') ⎕wi 'value')
+[38]              (parent,'ckUseCat') ⎕wi 'value' (z[2]⌊(parent,'ckUseCat') ⎕wi 'value')
+[39]          :else
+[40]              (parent,'ckUseSex') ⎕wi 'value' (z[1])
+[41]              (parent,'ckUseCat') ⎕wi 'value' (z[2])
+[42]          :endif
+[43]      :endif
+[44]      parent Win∆FileChanges 'edfILENAME'
+[45]  
+[46]  :caselist 'ckUseSex' 'ckUseCat'
+[47]      :if uk≠1 ⋄ :orif ~∨/,⊃(⊂parent) ⎕ss ¨'sActives_Basis' 'sDefBasis' 'sPenBasis'
+[48]          ⍝ Disable fields to make sure at least one selected (if available)
+[49]          prefix←((uk≠1)^(⊂3↑1↓Format)∊'Pen' 'Def')/'P'
+[50]          :if ^/z←,⊃0≠⍴¨⍎¨('f',prefix,'SEX') ('f',prefix,'CAT')
+[51]              (parent,'ckUseSex') ⎕wi 'enabled' ((parent,'ckUseCat') ⎕wi 'value')
+[52]              (parent,'ckUseCat') ⎕wi 'enabled' ((parent,'ckUseSex') ⎕wi 'value')
+[53]          :endif
+[54]      :endif
+[55]      parent Win∆FileChanges 'edfILENAME'
+[56]  
+[57]  :case 'edfILENAME'
+[58]      :if ~settings≡Filesettings
+[59]      :andif FileSelections
+[60]          flag←(uk=1)^∨/∊(⊂parent) ⎕ss ¨'sActives_Basis' 'sDefBasis' 'sPenBasis'
+[61]          list←1 0↓flag UniqueDataSel ,'/',use⌿2 3⍴'SexCat'
+[62]          (parent,'lsCatSels') MakeSelections list (SStoMAT CatSels)
+[63]      :endif
+[64]  
+[65]  :case 'lsCatSels'
+[66]      :if ~0∊⍴value←,'⍺',((parent,field) ⎕wi 'list')[(parent,field) ⎕wi 'value';]
+[67]          CatSels←value
+[68]      :endif
+[69]      parent Win∆FileChanges 'ckUseSubs'
+[70]  
+[71]  :case 'ckUseSubs' ⍝ Not activated for UK
+[72]      z←(uk≠1)^FileSelections^~(parent,'ckUseSubs') ⎕wi 'value'
+[73]      z←z^1<⍴,(parent,'lsCatSels') ⎕wi 'value'
+[74]      (parent,'ckDeleteSubs') ⎕wi 'visible' z
+[75]  
+[76]  :case 'MOE'
+[77]      parent ⎕wi '∆moe' (1 0↓UniqueDataSel 'MOE')
+[78]  
+[79]  :case 'TOP'
+[80]      parent ⎕wi '∆top' (1 0↓UniqueDataSel 'TOP')
+[81]  
+[82]  :endselect
+[83]  
+[84]  Filesettings←settings
+    ∇

@@ -1,0 +1,34 @@
+    ∇ z←A1toRC g;⎕io;a;d;f;i;t
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Convert from Excel A1 notation to RC notation
+[3]   ⍝ A1toRC 'B5'      --> 5 2
+[4]   ⍝ A1toRC 'B5:AB21' --> 5 2 21 28
+[5]   ⍝ A1toRC 'B:AB'    --> 1 2 65536 28
+[6]   ⍝ A1toRC '5:21'    --> 5 1 21 256
+[7]   ⍝ 02 Sep 2004  Rex Swain, Independent Consultant, www.rexswain.com
+[8]   ⎕io←1
+[9]   
+[10]  a←'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+[11]  d←'1234567890'
+[12]  g←g~'$ '
+[13]  ⍝Assert ^/g∊a,d,':'       ⍝ valid characters
+[14]  ⍝Assert (+/g=':')∊0 1     ⍝ no more than one colon
+[15]  :if ':'∊g                 ⍝ range
+[16]     i←g⍳':'
+[17]     ⍝Assert ~i∊1,⍴g        ⍝ colon not at beginning or end
+[18]     f←(i-1)↑g              ⍝ from
+[19]     t←i↓g                  ⍝ to
+[20]     :if ~∨/g∊d             ⍝ no digits?
+[21]        z←1,(26⊥a⍳f),65536,26⊥a⍳t  ⍝ 'A:B' selects entire columns (rows 1 to 65536)
+[22]     :elseif ~∨/g∊a         ⍝ no letters?
+[23]        z←(⎕FI f),1,(⎕FI t),256    ⍝ '1:2' selects entire rows (columns A to IV)
+[24]     :else                  ⍝ normal case
+[25]        z←(A1toRC f),A1toRC t
+[26]     :end
+[27]  :else                     ⍝ single cell address
+[28]     i←¯1+(g∊a)⍳0           ⍝ number of leading letters
+[29]     ⍝Assert ~i∊0,⍴g        ⍝ some letters and some numbers
+[30]     z←(⎕FI i↓g),26⊥a⍳i↑g   ⍝ row, column
+[31]  :end
+[32]  ⍝Assert ~0∊z              ⍝ check for A0
+    ∇

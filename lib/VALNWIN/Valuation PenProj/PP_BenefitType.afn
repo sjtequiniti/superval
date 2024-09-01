@@ -1,0 +1,13 @@
+    ∇ BenefitTypeID←PP∆BenefitType pp∆inctype
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Translate the IncType provided to the Database BenefitTypeID
+[3]   
+[4]   :if ClassID=4 ⍝ Pensioners
+[5]       BenefitTypeID←⍬⍴((2↑¨'L' 'LC' 'LT' 'G1' 'G2' '1' '2' '3' '4' '5' '6' '7' '8' '9' '10' '11' '12' '13' '14' '15' '16' 'F ')∊⊂pp∆inctype)/1 35 36 2 3,(14+⍳16),37
+[6]       :if ppf
+[7]           :if BenefitTypeID∊2 3 ⋄ BenefitTypeID←12 ⋄ :else ⋄ BenefitTypeID←⍬⍴(1 2 3=PPFPAYINC[BenefitTypeID-14])/¯3↑12 13 34,pp∆cash/38 39 40 ⋄ :endif
+[8]       :endif
+[9]   :else ⍝ Actives and Deferreds
+[10]      BenefitTypeID←⍬⍴(('L ' 'LC' 'LM' 'LS' 'L3' 'L4' 'LT' 'Lm' 'Ls' 'Lt' 'Lf' 'DD' 'G1' 'G2' 'M ' 'S ' 'P3' 'P4' 'U ' 'UF' 'P5' 'P ' 'C ' 'F ')∊⊂pp∆inctype)/1 35 44 45 46 47 36 54 55 56 57 30 2 3 4 5 6 7 8 8 31 9 10 37
+[11]  :endif
+    ∇

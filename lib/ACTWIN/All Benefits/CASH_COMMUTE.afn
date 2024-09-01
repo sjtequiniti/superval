@@ -1,1 +1,51 @@
-    ∇ CASH∆COMMUTE;CASHIR;MAXCASH;XSERACCPN;CASHT;∆C;T1[1]   ⍝ ACTWIN.sf#4[2]   ⍝[3]   ⍝ Commuted retirement pension[4]   XSERACCPN←ERACCPEN ⍝ Initialise as whole[5]   :if ~CGMP ⍝ If GMP is ignored the XS is taken to be the whole[6]       T1←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]ERACCPEN)[⎕io;]  ⍝ T1 is a temp var[7]       XSERACCPN[;⎕io;;;;;]←XSERACCPN[;⎕io;;;;;]×[⎕io+5](0⌈T1-GMPR) CDIV T1[8]   :endif[9]   COMT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]XSERACCPN  ⍝ Sum over all but Dyn Time and Term[10]  CASHT←COMT×(⍴COMT)⍴4⌿cfs[11]  MAXCASH←+/[⎕io]+/[⎕io+1]CASHT[12]  ⍝⍝⍝ :if test[13]  ⍝⌿⍝    ∆C←'Priority:',CASHP[14]  ⍝⌿⍝    AUDIT '1400' ⋄ AUDIT '1401' ⋄ AUDIT '1402a'[15]  ⍝⍝⍝ :endif[16]  :if ~CTYPE∆L∊2 8 9[17]      CASHIR←IRCASH⌊CALCCASH⌊MAXCASH[18]      1 CASH∆SPLIT ''[19]  :else   ⍝ Calculate the lower of Commutable pension and 0.25×Pen, taking priorities into account[20]      1 CASH∆SPLIT2 ''[21]  :endif[22]  ⍝ Put numbers in full matrix[23]  COMPEN[⎕io  ;⎕io  ;;;;;]←XSERACCPN[⎕io  ;⎕io  ;;;;;]×[⎕io+4]CASH1S CDIV CASHT[⎕io  ;⎕io  ;][24]  COMPEN[⎕io+1;⎕io  ;;;;;]←XSERACCPN[⎕io+1;⎕io  ;;;;;]×[⎕io+4]CASH1M CDIV CASHT[⎕io+1;⎕io  ;][25]  COMPEN[⎕io+2;⎕io  ;;;;;]←XSERACCPN[⎕io+2;⎕io  ;;;;;]×[⎕io+4]CASH1L CDIV CASHT[⎕io+2;⎕io  ;][26]  COMPEN[⎕io+3;⎕io  ;;;;;]←XSERACCPN[⎕io+3;⎕io  ;;;;;]×[⎕io+4]CASH14 CDIV CASHT[⎕io+3;⎕io  ;][27]  COMPEN[⎕io  ;⎕io+1;;;;;]←XSERACCPN[⎕io  ;⎕io+1;;;;;]×[⎕io+4]CASH2S CDIV CASHT[⎕io  ;⎕io+1;][28]  COMPEN[⎕io+1;⎕io+1;;;;;]←XSERACCPN[⎕io+1;⎕io+1;;;;;]×[⎕io+4]CASH2M CDIV CASHT[⎕io+1;⎕io+1;][29]  COMPEN[⎕io+2;⎕io+1;;;;;]←XSERACCPN[⎕io+2;⎕io+1;;;;;]×[⎕io+4]CASH2L CDIV CASHT[⎕io+2;⎕io+1;][30]  COMPEN[⎕io+3;⎕io+1;;;;;]←XSERACCPN[⎕io+3;⎕io+1;;;;;]×[⎕io+4]CASH24 CDIV CASHT[⎕io+3;⎕io+1;][31]  COMPEN[⎕io  ;⎕io+2;;;;;]←XSERACCPN[⎕io  ;⎕io+2;;;;;]×[⎕io+4]CASH3S CDIV CASHT[⎕io  ;⎕io+2;][32]  COMPEN[⎕io+1;⎕io+2;;;;;]←XSERACCPN[⎕io+1;⎕io+2;;;;;]×[⎕io+4]CASH3M CDIV CASHT[⎕io+1;⎕io+2;][33]  COMPEN[⎕io+2;⎕io+2;;;;;]←XSERACCPN[⎕io+2;⎕io+2;;;;;]×[⎕io+4]CASH3L CDIV CASHT[⎕io+2;⎕io+2;][34]  COMPEN[⎕io+3;⎕io+2;;;;;]←XSERACCPN[⎕io+3;⎕io+2;;;;;]×[⎕io+4]CASH34 CDIV CASHT[⎕io+3;⎕io+2;][35]  ⍝ Create totals[36]  COMPENNDYN←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[⎕io  ;;;;;;][37]  COMPENDYN ←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[⎕io+1;;;;;;][38]  COMPENLDYN←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[⎕io+2;;;;;;][39]  COMPENDYN4←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[⎕io+3;;;;;;][40]  :if ClntCode=4[41]      COMPEN∆GEC←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[;;;⎕io;;;]  ⍝ Sum of bits in Underpin[42]  :endif[43]  COMT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]COMPEN  ⍝ Sum over all but Dyn Time and Term[44]   CASH← CASH+ comCASH←+⌿ splitcomCASH←⊃+/(⊂[⎕io+0 2]COMT        )×⊂cfs[45]  FCASH←FCASH+comFCASH←+⌿splitcomFCASH←              COMT[;⎕io+2;]× cfs[46]  ⍝[47]  ⍝⍝⍝ :if test[48]  ⍝⌿⍝ AUDIT '1420' ⋄ AUDIT '1430'[49]  ⍝⍝⍝ :endif    ∇
+    ∇ CASH∆COMMUTE;CASHIR;MAXCASH;XSERACCPN;CASHT;∆C;T1
+[1]   ⍝ ACTWIN.sf#4
+[2]   ⍝
+[3]   ⍝ Commuted retirement pension
+[4]   XSERACCPN←ERACCPEN ⍝ Initialise as whole
+[5]   :if ~CGMP ⍝ If GMP is ignored the XS is taken to be the whole
+[6]       T1←(+/[⎕io]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]ERACCPEN)[⎕io;]  ⍝ T1 is a temp var
+[7]       XSERACCPN[;⎕io;;;;;]←XSERACCPN[;⎕io;;;;;]×[⎕io+5](0⌈T1-GMPR) CDIV T1
+[8]   :endif
+[9]   COMT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]XSERACCPN  ⍝ Sum over all but Dyn Time and Term
+[10]  CASHT←COMT×(⍴COMT)⍴4⌿cfs
+[11]  MAXCASH←+/[⎕io]+/[⎕io+1]CASHT
+[12]  ⍝⍝⍝ :if test
+[13]  ⍝⌿⍝    ∆C←'Priority:',CASHP
+[14]  ⍝⌿⍝    AUDIT '1400' ⋄ AUDIT '1401' ⋄ AUDIT '1402a'
+[15]  ⍝⍝⍝ :endif
+[16]  :if ~CTYPE∆L∊2 8 9
+[17]      CASHIR←IRCASH⌊CALCCASH⌊MAXCASH
+[18]      1 CASH∆SPLIT ''
+[19]  :else   ⍝ Calculate the lower of Commutable pension and 0.25×Pen, taking priorities into account
+[20]      1 CASH∆SPLIT2 ''
+[21]  :endif
+[22]  ⍝ Put numbers in full matrix
+[23]  COMPEN[⎕io  ;⎕io  ;;;;;]←XSERACCPN[⎕io  ;⎕io  ;;;;;]×[⎕io+4]CASH1S CDIV CASHT[⎕io  ;⎕io  ;]
+[24]  COMPEN[⎕io+1;⎕io  ;;;;;]←XSERACCPN[⎕io+1;⎕io  ;;;;;]×[⎕io+4]CASH1M CDIV CASHT[⎕io+1;⎕io  ;]
+[25]  COMPEN[⎕io+2;⎕io  ;;;;;]←XSERACCPN[⎕io+2;⎕io  ;;;;;]×[⎕io+4]CASH1L CDIV CASHT[⎕io+2;⎕io  ;]
+[26]  COMPEN[⎕io+3;⎕io  ;;;;;]←XSERACCPN[⎕io+3;⎕io  ;;;;;]×[⎕io+4]CASH14 CDIV CASHT[⎕io+3;⎕io  ;]
+[27]  COMPEN[⎕io  ;⎕io+1;;;;;]←XSERACCPN[⎕io  ;⎕io+1;;;;;]×[⎕io+4]CASH2S CDIV CASHT[⎕io  ;⎕io+1;]
+[28]  COMPEN[⎕io+1;⎕io+1;;;;;]←XSERACCPN[⎕io+1;⎕io+1;;;;;]×[⎕io+4]CASH2M CDIV CASHT[⎕io+1;⎕io+1;]
+[29]  COMPEN[⎕io+2;⎕io+1;;;;;]←XSERACCPN[⎕io+2;⎕io+1;;;;;]×[⎕io+4]CASH2L CDIV CASHT[⎕io+2;⎕io+1;]
+[30]  COMPEN[⎕io+3;⎕io+1;;;;;]←XSERACCPN[⎕io+3;⎕io+1;;;;;]×[⎕io+4]CASH24 CDIV CASHT[⎕io+3;⎕io+1;]
+[31]  COMPEN[⎕io  ;⎕io+2;;;;;]←XSERACCPN[⎕io  ;⎕io+2;;;;;]×[⎕io+4]CASH3S CDIV CASHT[⎕io  ;⎕io+2;]
+[32]  COMPEN[⎕io+1;⎕io+2;;;;;]←XSERACCPN[⎕io+1;⎕io+2;;;;;]×[⎕io+4]CASH3M CDIV CASHT[⎕io+1;⎕io+2;]
+[33]  COMPEN[⎕io+2;⎕io+2;;;;;]←XSERACCPN[⎕io+2;⎕io+2;;;;;]×[⎕io+4]CASH3L CDIV CASHT[⎕io+2;⎕io+2;]
+[34]  COMPEN[⎕io+3;⎕io+2;;;;;]←XSERACCPN[⎕io+3;⎕io+2;;;;;]×[⎕io+4]CASH34 CDIV CASHT[⎕io+3;⎕io+2;]
+[35]  ⍝ Create totals
+[36]  COMPENNDYN←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[⎕io  ;;;;;;]
+[37]  COMPENDYN ←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[⎕io+1;;;;;;]
+[38]  COMPENLDYN←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[⎕io+2;;;;;;]
+[39]  COMPENDYN4←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[⎕io+3;;;;;;]
+[40]  :if ClntCode=4
+[41]      COMPEN∆GEC←+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]COMPEN[;;;⎕io;;;]  ⍝ Sum of bits in Underpin
+[42]  :endif
+[43]  COMT←+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]COMPEN  ⍝ Sum over all but Dyn Time and Term
+[44]   CASH← CASH+ comCASH←+⌿ splitcomCASH←⊃+/(⊂[⎕io+0 2]COMT        )×⊂cfs
+[45]  FCASH←FCASH+comFCASH←+⌿splitcomFCASH←              COMT[;⎕io+2;]× cfs
+[46]  ⍝
+[47]  ⍝⍝⍝ :if test
+[48]  ⍝⌿⍝ AUDIT '1420' ⋄ AUDIT '1430'
+[49]  ⍝⍝⍝ :endif
+    ∇

@@ -1,0 +1,24 @@
+    ∇ ID←recn XL_MemberID field
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Return the Member ID used for in Excel files
+[3]   ⍝  Different for Grouped members and according to whether the AOS is performed
+[4]   ⍝  "field" denotes the columns containing the Exit Code
+[5]   
+[6]   :if summopt∨csvind∨aggopt[0]
+[7]       :if aosind
+[8]           :select EXIT⍳1
+[9]           :case 0 ⋄ ID←'' ⍝ Pre Previous Valuation Exits (should never get here)
+[10]          :case 1 ⋄ ID←'S/End',,'I3' ⎕fmt X0 ⍝ Starter Enders
+[11]          :case 2 ⋄ ID←'N/End',,'I3' ⎕fmt X0 ⍝ New Entrant Enders
+[12]          :case 3 ⋄ ID←'S/Ex ',REC[field] ⍝ Starter Exits
+[13]          :case 4 ⋄ ID←'N/Ex ',REC[field] ⍝ New Entrant Exits
+[14]          :case 5 ⋄ ID←'' ⍝ Post Current Valuation Entrants (should never get here)
+[15]          :endselect
+[16]          ID←12↑ID
+[17]      :else
+[18]          ID←,'<Age >,LI8' ⎕fmt X0
+[19]      :endif
+[20]  :else
+[21]      ID←,'I12' ⎕fmt recn
+[22]  :endif
+    ∇

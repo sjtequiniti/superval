@@ -1,0 +1,56 @@
+    ∇ recn ⍙DBTempDBFiles hpcenabled;z;File;tie;∆;data;xxx;ResID
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Create temporary variables/CSV files to store DB records
+[3]   ⍝ Variables are (to be) used for Text output even if no Database
+[4]   ⍝ Revn: sjt01sep15
+[5]   
+[6]   :if ~sqlDatabase ⋄ :andif File NTIE tie←'Native' TieNumber File←InputDir,'schema.ini' ⋄ File NERASE tie ⋄ :endif ⍝ Delete any "schema.ini"
+[7]   ResID←hpcenabled/'_',DLTB 'I15' ⎕fmt ResultsCategoryID
+[8]   
+[9]   ⍝ Category Level Database records file
+[10]  ⍙dbfundtie←(parallel/'⍙dbfund') ⍙DBCreateTempDB ⍙dbfundfile←InputDir,'SVfundDB',ResID,'.csv' ⍝ 28aug15
+[11]  
+[12]  :if fscopt ⍝ ALM/LDI/Scenario records
+[13]      (⍙dbscenflds ⍙dbscenkeymask ⍙dbscenmask ⍙dbscencols ⍙dbscenfmt ⍙dbscenprefix ⍙dbscennokeys)←⍙DBTableVars 'AltScenData'
+[14]      ⍙dbscentie←(parallel/'⍙dbscen') ⍙DBCreateTempDB ⍙dbscenfile←InputDir,'SVscenDB',ResID,'.csv' ⍝ 01sep15
+[15]      ⍙dbscendata←((⍙dbscenmax←50000),1+⍙dbscennokeys)⍴⍙dbscenrow←0
+[16]      :if      inMemory ⋄ '⍙dbscen' ⍙DBCacheVars ⍙dbscencols
+[17]      :elseif ~parallel ⋄ ⍙dbscenlist←0 0⍴''
+[18]      :endif
+[19]      :if CPbreakdown ⋄ ALMLDIterm←nub 0,99⌊contper,99 ⋄ :endif
+[20]      FSbreakdown←(⍳100)∊ALMLDIterm
+[21]  :else
+[22]      ⍙dbscenfile←''
+[23]  :endif
+[24]  
+[25]  :if ~neIND ⍝ Member Level, Current Member Data and AOS Database records files
+[26]      xl_membtie←(parallel/'xl_memb') ⍙DBCreateTempDB xl_membfile←InputDir,'SVmembXL',ResID,'.csv' ⍝ 01sep15
+[27]      ∆←parallel^summopt∨csvind∨aggopt[0]
+[28]      xl_ndatatie←(∆/'xl_ndata') ⍙DBCreateTempDB xl_ndatafile←InputDir,'SVndataXL',ResID,'.csv' ⍝ 01sep15
+[29]  
+[30]      (xl_ndataflds xl_ndatakeymask xl_ndatamask xl_ndatacols xxx xl_ndataprefix xxx)←⍙DBTableVars 'NumMemberData'
+[31]  
+[32]      xl_cdatatie←               ⍙DBCreateTempDB xl_cdatafile←InputDir,'SVcdataXL',ResID,'.csv'
+[33]      (xl_cdataflds xl_cdatakeymask xl_cdatamask xl_cdatacols xxx xl_cdataprefix xxx)←⍙DBTableVars 'CharMemberData'
+[34]      :if 0=recn ⍝ Only for first tranche of a run
+[35]          :select ClassID
+[36]          :case 1 ⋄ data←salfreq ⍝ Actives
+[37]          :case 3 ⋄ data←pupfreq ⍝ Deferreds
+[38]          :case 4 ⋄ data←penfreq ⍝ Pensioners
+[39]          :endselect
+[40]          ((¯12↑'0'),(5↑freqID),((-3+3×AgeInterp)↑'0'),20↑data)APPEND xl_cdatatie
+[41]      :endif
+[42]  
+[43]      :if aosind
+[44]          (xl_maosflds xl_maoskeymask xl_maosmask xl_maoscols xxx xl_maosprefix xxx)←⍙DBTableVars 'AOSMember'
+[45]          xl_maostie←(parallel/'xl_maos') ⍙DBCreateTempDB xl_maosfile←InputDir,'SVmaosXL',ResID,'.csv' ⍝ 01sep15
+[46]          :if inMemory ⋄ 'xl_maos'  ⍙DBCacheVars xl_maoscols ⋄ :endif
+[47]  
+[48]          (⍙dbaosflds  ⍙dbaoskeymask  ⍙dbaosmask  ⍙dbaoscols  xxx ⍙dbaosprefix  xxx)←⍙DBTableVars 'AOSResults'
+[49]          ⍙dbaostie ←(parallel/'⍙dbaos' ) ⍙DBCreateTempDB ⍙dbaosfile ←InputDir,'SVaosDB',ResID,'.csv' ⍝ 01sep15
+[50]          :if inMemory ⋄ '⍙dbaos'  ⍙DBCacheVars ⍙dbaoscols ⋄ :endif
+[51]      :else
+[52]          xl_maosfile←⍙dbaosfile←''
+[53]      :endif
+[54]  :endif
+    ∇

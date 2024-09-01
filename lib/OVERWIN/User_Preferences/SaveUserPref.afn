@@ -1,1 +1,18 @@
-    ∇ SaveUserPref;list;Error;Exit[1]   ⍝ OVERWIN.sf#8[2]   ⍝ Save User Preferences[3]   [4]   :if ~0∊⍴,1 Win∆ValidForm 'fmUserPref' ⋄ :return ⋄ :endif[5]   Win∆AssignVars 'fmUserPref'[6]   :if ~0∊⍴,Error←(⊂'All') User_Preferences 'Valid' ⍝ Specific (Cross) Validation Module[7]       MDISPLAY Error ⋄ :return[8]   :endif[9]   [10]  list←⍙VALUESdict ReadDictFile 'User_Preferences' '' 'Names'[11]  access←⌽11 ⎕dr access ⍝ Encrypt Password[12]  0 0⍴PrefFile SaveToFile ('fmUserPref' ⎕wi '∆savecn') '' (pack list) 0[13]  'fmUserPref' ⎕wi 'modified' 0 ⍝ Reset "modified" flag[14]  [15]  Exit←User_Preferences 'Run'[16]  Exit EndModule 'User_Preferences'    ∇
+    ∇ SaveUserPref;list;Error;Exit
+[1]   ⍝ OVERWIN.sf#8
+[2]   ⍝ Save User Preferences
+[3]   
+[4]   :if ~0∊⍴,1 Win∆ValidForm 'fmUserPref' ⋄ :return ⋄ :endif
+[5]   Win∆AssignVars 'fmUserPref'
+[6]   :if ~0∊⍴,Error←(⊂'All') User_Preferences 'Valid' ⍝ Specific (Cross) Validation Module
+[7]       MDISPLAY Error ⋄ :return
+[8]   :endif
+[9]   
+[10]  list←⍙VALUESdict ReadDictFile 'User_Preferences' '' 'Names'
+[11]  access←⌽11 ⎕dr access ⍝ Encrypt Password
+[12]  0 0⍴PrefFile SaveToFile ('fmUserPref' ⎕wi '∆savecn') '' (pack list) 0
+[13]  'fmUserPref' ⎕wi 'modified' 0 ⍝ Reset "modified" flag
+[14]  
+[15]  Exit←User_Preferences 'Run'
+[16]  Exit EndModule 'User_Preferences'
+    ∇

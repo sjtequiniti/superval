@@ -1,0 +1,280 @@
+    ∇ S21Migration MembGroup;z
+[1]   ⍝ MAINWIN.sf#6
+[2]   ⍝ Update S21 parameters to match V9 (covering legacy issues)
+[3]   ⍝ Make changes to Bases for new parameters added to the system (where the default value is another basis parameter value)
+[4]   
+[5]   :if ^/' '=m_SDPOST ⍝ Introduction of separate Spouse Mortality
+[6]       m_SDPOST←f_DPOST ⋄ m_SDPOSTMEMB←f_DPOSTMEMB ⋄ m_miSDPOST←f_miDPOST
+[7]       f_SDPOST←m_DPOST ⋄ f_SDPOSTMEMB←m_DPOSTMEMB ⋄ f_miSDPOST←m_miDPOST
+[8]       :if MembGroup≡'Deferreds'
+[9]           TVSDPostSame←TVDPostSame
+[10]          m_TVSDPOST←f_TVDPOST ⋄ m_TVSDPOSTMEMB←f_TVDPOSTMEMB ⋄ m_TVmiSDPOST←f_TVmiDPOST
+[11]          f_TVSDPOST←m_TVDPOST ⋄ f_TVSDPOSTMEMB←m_TVDPOSTMEMB ⋄ f_TVmiSDPOST←m_TVmiDPOST
+[12]      :endif
+[13]  :endif
+[14]  
+[15]  :select MembGroup
+[16]  :case 'Actives'
+[17]  
+[18]       CASHP←'/Pro-rata/Pro Rata' TEXTREPL  CASHP ⍝ Consistency
+[19]      ICASHP←'/Pro-rata/Pro Rata' TEXTREPL ICASHP ⍝ Consistency
+[20]       CASHP←'/No Priority/Priority' TEXTREPL  CASHP ⍝ Change
+[21]      ICASHP←'/No Priority/Priority' TEXTREPL ICASHP ⍝ Change
+[22]      :if ClntCode=3 ⋄ :andif 'C'≠↑ CONTOP ⋄  CONTOP←'Commuted' ⋄ :endif
+[23]      :if ClntCode=3 ⋄ :andif 'C'≠↑ICONTOP ⋄ ICONTOP←'Commuted' ⋄ :endif
+[24]      ⍝ FLDOPT CommType1
+[25]       CTYPE ←'⊂3/80ths⊂Accrual x Salary' TEXTREPL ⎕av[⎕io+146 120] REPL  CTYPE
+[26]       CTYPE2←'⊂3/80ths⊂Accrual x Salary' TEXTREPL ⎕av[⎕io+146 120] REPL  CTYPE2
+[27]  
+[28]      DurnDate←MigrateDates DurnDate ⍝ Convert the default value
+[29]      SDDIS2D←MigrateDates SDDIS2D ⋄ SDIH2D←MigrateDates SDIH2D
+[30]      WOSSD←MigrateDates WOSSD ⋄ WOSFD←MigrateDates WOSFD
+[31]      GLSSD←MigrateDates GLSSD ⋄ GLSFD←MigrateDates GLSFD
+[32]      SSDIH←MigrateDates SSDIH ⋄ SFDIH←MigrateDates SFDIH
+[33]      STDATE←MigrateDates STDATE ⋄ FNDATE←MigrateDates FNDATE
+[34]      AltSTDATE←MigrateDates AltSTDATE ⋄ AltFNDATE←MigrateDates AltFNDATE
+[35]      IndSTDATE←MigrateDates IndSTDATE ⋄ IndFNDATE←MigrateDates IndFNDATE
+[36]  
+[37]         STDATE←⊃(~(⊂,'0')≡¨m2n    ADDYRS) sel¨m2n    STDATE
+[38]      AltSTDATE←⊃(~(⊂,'0')≡¨m2n AltADDYRS) sel¨m2n AltSTDATE
+[39]      IndSTDATE←⊃(~(⊂,'0')≡¨m2n IndADDYRS) sel¨m2n IndSTDATE
+[40]          DYNIND←⊃(('Main' 'Include in Main' 'Include in Special') ('Main Pension' 'Main Pension' 'Special Pension')) mapp m2n    DYNIND
+[41]       AltDYNIND←⊃(('Main' 'Include in Main' 'Include in Special') ('Main Pension' 'Main Pension' 'Special Pension')) mapp m2n AltDYNIND
+[42]       IndDYNIND←⊃(('Main' 'Include in Main' 'Include in Special') ('Main Pension' 'Main Pension' 'Special Pension')) mapp m2n IndDYNIND
+[43]      IndDYNIND2←⊃(('Main' 'Include in Main' 'Include in Special') ('Main Pension' 'Main Pension' 'Special Pension')) mapp m2n IndDYNIND2
+[44]          DYNIND←LJUSTIFY SStoMAT '/Include Slice in/' TEXTREPL '⍺',   DYNIND
+[45]       AltDYNIND←LJUSTIFY SStoMAT '/Include Slice in/' TEXTREPL '⍺',AltDYNIND
+[46]       IndDYNIND←LJUSTIFY SStoMAT '/Include Slice in/' TEXTREPL '⍺',IndDYNIND
+[47]      IndDYNIND2←LJUSTIFY SStoMAT '/Include Slice in/' TEXTREPL '⍺',IndDYNIND2
+[48]  
+[49]      :if bGAD
+[50]             BARBIND←SStoMAT '⊂For ERF1 or ERF1 (fixed)⊂ERF1/LRF1 (Revaln 1+3) or ERF1/LRF1 (Revaln 2)' TEXTREPL '⊂For ERF1/LRF1 or ERF1/LRF1 (fixed)⊂ERF1/LRF1 (Revaln 1+3) or ERF1/LRF1 (Revaln 2)' TEXTREPL '#',   BARBIND
+[51]             BARBIND←SStoMAT '⊂For ERF2 or ERF2 (fixed)⊂ERF2/LRF2 (Revaln 1+3) or ERF2/LRF2 (Revaln 2)' TEXTREPL '⊂For ERF2/LRF2 or ERF2/LRF2 (fixed)⊂ERF2/LRF2 (Revaln 1+3) or ERF2/LRF2 (Revaln 2)' TEXTREPL '#',   BARBIND
+[52]          AltBARBIND←SStoMAT '⊂For ERF1 or ERF1 (fixed)⊂ERF1/LRF1 (Revaln 1+3) or ERF1/LRF1 (Revaln 2)' TEXTREPL '⊂For ERF1/LRF1 or ERF1/LRF1 (fixed)⊂ERF1/LRF1 (Revaln 1+3) or ERF1/LRF1 (Revaln 2)' TEXTREPL '#',AltBARBIND
+[53]          AltBARBIND←SStoMAT '⊂For ERF2 or ERF2 (fixed)⊂ERF2/LRF2 (Revaln 1+3) or ERF2/LRF2 (Revaln 2)' TEXTREPL '⊂For ERF2/LRF2 or ERF2/LRF2 (fixed)⊂ERF2/LRF2 (Revaln 1+3) or ERF2/LRF2 (Revaln 2)' TEXTREPL '#',AltBARBIND
+[54]          IndBARBIND←SStoMAT '⊂For ERF1 or ERF1 (fixed)⊂ERF1/LRF1 (Revaln 1+3) or ERF1/LRF1 (Revaln 2)' TEXTREPL '⊂For ERF1/LRF1 or ERF1/LRF1 (fixed)⊂ERF1/LRF1 (Revaln 1+3) or ERF1/LRF1 (Revaln 2)' TEXTREPL '#',IndBARBIND
+[55]          IndBARBIND←SStoMAT '⊂For ERF2 or ERF2 (fixed)⊂ERF2/LRF2 (Revaln 1+3) or ERF2/LRF2 (Revaln 2)' TEXTREPL '⊂For ERF2/LRF2 or ERF2/LRF2 (fixed)⊂ERF2/LRF2 (Revaln 1+3) or ERF2/LRF2 (Revaln 2)' TEXTREPL '#',IndBARBIND
+[56]  
+[57]          :if 0≠⎕nc 'CAREProspective'
+[58]              IHCAREProspective←DISCAREProspective←(⎕io+zwb CAREProspective)⊃'Accrued CARE Pension' 'Current Salary'
+[59]              0 0⍴⎕ex 'CAREProspective'
+[60]          :endif
+[61]      :else
+[62]          CapAccrual←,'0' ⍝ Correct Default Value for non-GAD
+[63]             BARBIND←SStoMAT '⊂For ERF1 or ERF1 (fixed)⊂ERF1 (Revaln 1+3) or ERF1 (Revaln 2)' TEXTREPL '#',   BARBIND
+[64]             BARBIND←SStoMAT '⊂For ERF2 or ERF2 (fixed)⊂ERF2 (Revaln 1+3) or ERF2 (Revaln 2)' TEXTREPL '#',   BARBIND
+[65]          AltBARBIND←SStoMAT '⊂For ERF1 or ERF1 (fixed)⊂ERF1 (Revaln 1+3) or ERF1 (Revaln 2)' TEXTREPL '#',AltBARBIND
+[66]          AltBARBIND←SStoMAT '⊂For ERF2 or ERF2 (fixed)⊂ERF2 (Revaln 1+3) or ERF2 (Revaln 2)' TEXTREPL '#',AltBARBIND
+[67]          IndBARBIND←SStoMAT '⊂For ERF1 or ERF1 (fixed)⊂ERF1 (Revaln 1+3) or ERF1 (Revaln 2)' TEXTREPL '#',IndBARBIND
+[68]          IndBARBIND←SStoMAT '⊂For ERF2 or ERF2 (fixed)⊂ERF2 (Revaln 1+3) or ERF2 (Revaln 2)' TEXTREPL '#',IndBARBIND
+[69]          IHCAREProspective←DISCAREProspective←'Current Salary'
+[70]      :endif
+[71]  
+[72]      :if ^/' '= ,m_PPFNRAtab ⋄ m_PPFNRAtab←m_NRA ⋄ :endif
+[73]      :if     2=⍴⍴m_PPFNRAtab ⋄ m_PPFNRAtab←¯1↓,((∨/' '≠m_PPFNRAtab)⌿m_PPFNRAtab←0 Uniquelist m_PPFNRAtab),⎕tcnl ⋄ :endif
+[74]  
+[75]      :if ^/' '= ,f_PPFNRAtab ⋄ f_PPFNRAtab←f_NRA ⋄ :endif
+[76]      :if     2=⍴⍴f_PPFNRAtab ⋄ f_PPFNRAtab←¯1↓,((∨/' '≠f_PPFNRAtab)⌿f_PPFNRAtab←0 Uniquelist f_PPFNRAtab),⎕tcnl ⋄ :endif
+[77]  
+[78]      :if 9.11>saveVersion ⋄ :andif ∨/z←(^/' '=SALdesc)^∨/' '≠SALdata
+[79]          SALdesc←LJUSTIFY SALdesc,z⍀'<Salary >,LI2' ⎕fmt z/(⍳↑⍴SALdesc)+~⎕io ⍝ Default name if Desc blank
+[80]      :endif
+[81]        fAScease←SStoMAT '⊂Exit⊂On Leaving Service' TEXTREPL '#',fAScease
+[82]          SALadj←LJUSTIFY     SALadj,z\(z←^/' '=    SALadj)/'1'
+[83]      SALdednadj←LJUSTIFY SALdednadj,z\(z←^/' '=SALdednadj)/'1'
+[84]       SALmaxadj←LJUSTIFY  SALmaxadj,z\(z←^/' '= SALmaxadj)/'1'
+[85]      :if 9.11>saveVersion ⋄ :andif ∨/z←(^/' '=SliceDesc)^∨/' '≠SALCOD1,FIXPEN1
+[86]          SliceDesc←LJUSTIFY SliceDesc,z⍀'<Slice >,LI2' ⎕fmt z/(⍳↑⍴SliceDesc)+~⎕io ⍝ Default name if Desc blank
+[87]      :endif
+[88]      :if 9.11>saveVersion ⋄ :andif ∨/z←(^/' '=AltSliceDesc)^∨/' '≠AltSALCOD1,AltFIXPEN1
+[89]          AltSliceDesc←LJUSTIFY AltSliceDesc,z⍀'<Alt Slice >,LI2' ⎕fmt z/(⍳↑⍴AltSliceDesc)+~⎕io ⍝ Default name if Desc blank
+[90]      :endif
+[91]      :if 9.11>saveVersion ⋄ :andif ∨/z←(^/' '=IndSliceDesc)^∨/' '≠IndSALCOD1,IndFIXPEN1
+[92]          IndSliceDesc←LJUSTIFY IndSliceDesc,z⍀'<Ind Slice >,LI2' ⎕fmt z/(⍳↑⍴IndSliceDesc)+~⎕io ⍝ Default name if Desc blank
+[93]      :endif
+[94]  
+[95]      :if (↑⍴   SliceDesc)≠↑⍴   Tier2Defined ⋄    Tier2Defined←⊃('Yes' 'No')[1+^/' '=   SALCOD2,   FIXPEN2] ⋄ :endif
+[96]      :if (↑⍴   SliceDesc)≠↑⍴   Tier3Defined ⋄    Tier3Defined←⊃('Yes' 'No')[1+^/' '=   SALCOD3,   FIXPEN3] ⋄ :endif
+[97]      :if (↑⍴AltSliceDesc)≠↑⍴AltTier2Defined ⋄ AltTier2Defined←⊃('Yes' 'No')[1+^/' '=AltSALCOD2,AltFIXPEN2] ⋄ :endif
+[98]      :if (↑⍴AltSliceDesc)≠↑⍴AltTier3Defined ⋄ AltTier3Defined←⊃('Yes' 'No')[1+^/' '=AltSALCOD3,AltFIXPEN3] ⋄ :endif
+[99]      :if (↑⍴IndSliceDesc)≠↑⍴IndTier2Defined ⋄ IndTier2Defined←⊃('Yes' 'No')[1+^/' '=IndSALCOD2,IndFIXPEN2] ⋄ :endif
+[100]     :if (↑⍴IndSliceDesc)≠↑⍴IndTier3Defined ⋄ IndTier3Defined←⊃('Yes' 'No')[1+^/' '=IndSALCOD3,IndFIXPEN3] ⋄ :endif
+[101] 
+[102]     m_DDINDL←'⊂Conts⊂Contributions' TEXTREPL m_DDINDL
+[103]     f_DDINDL←'⊂Conts⊂Contributions' TEXTREPL f_DDINDL
+[104] 
+[105]     ⍝ Empty Future Service Slices
+[106]     :if mt DLTB SALCOD1[1;],FIXPEN1[1;],STDATE[1;]
+[107]         :if mt DLTB ADDYRS[1;]    ⋄ ADDYRS   ←'0'                                    OVER 1↓[1]ADDYRS    ⋄ :endif
+[108]         :if mt DLTB ACCMLT1[1;]   ⋄ ACCMLT1  ←'0'                                    OVER 1↓[1]ACCMLT1   ⋄ :endif
+[109]         :if mt DLTB ACCDIV1[1;]   ⋄ ACCDIV1  ←'1'                                    OVER 1↓[1]ACCDIV1   ⋄ :endif
+[110]         :if mt DLTB REVDEFIND[1;] ⋄ REVDEFIND←'Rate 1'                               OVER 1↓[1]REVDEFIND ⋄ :endif
+[111]         :if mt DLTB DYNIND[1;]    ⋄ DYNIND   ←'Main Pension'                         OVER 1↓[1]DYNIND    ⋄ :endif
+[112]         :if mt DLTB ACCBASIS[1;]  ⋄ ACCBASIS ←'Final Salary'                         OVER 1↓[1]ACCBASIS  ⋄ :endif
+[113]         :if mt DLTB BARBIND[1;]   ⋄ BARBIND  ←'ERF1 (Revaln 1+3) or ERF1 (Revaln 2)' OVER 1↓[1]BARBIND   ⋄ :endif
+[114]         :if mt DLTB SALCOD1[1;]   ⋄ SALCOD1  ←SALdesc[1;]                            OVER 1↓[1]SALCOD1   ⋄ :endif
+[115]     :endif
+[116]     PENADJ1←LJUSTIFY PENADJ1,z\(z←^/' '=PENADJ1)/'1'
+[117]     PENADJ2←LJUSTIFY PENADJ2,z\(z←^/' '=PENADJ2)/'1'
+[118]     PENADJ3←LJUSTIFY PENADJ3,z\(z←^/' '=PENADJ3)/'1'
+[119]     m_PPFADJ1←LJUSTIFY m_PPFADJ1,z\(z←^/' '=m_PPFADJ1)/'1'
+[120]     m_PPFADJ2←LJUSTIFY m_PPFADJ2,z\(z←^/' '=m_PPFADJ2)/'1'
+[121]     m_PPFADJ3←LJUSTIFY m_PPFADJ3,z\(z←^/' '=m_PPFADJ3)/'1'
+[122]     f_PPFADJ1←LJUSTIFY f_PPFADJ1,z\(z←^/' '=f_PPFADJ1)/'1'
+[123]     f_PPFADJ2←LJUSTIFY f_PPFADJ2,z\(z←^/' '=f_PPFADJ2)/'1'
+[124]     f_PPFADJ3←LJUSTIFY f_PPFADJ3,z\(z←^/' '=f_PPFADJ3)/'1'
+[125]     :if ClntCode=3
+[126]         :if ~mt DLTB AltSliceDesc
+[127]             :if mt DLTB AltSALCOD1[1;],AltFIXPEN1[1;],AltSTDATE[1;]
+[128]                 :if mt DLTB AltADDYRS[1;]    ⋄ AltADDYRS   ←'0'                                    OVER 1↓[1]AltADDYRS    ⋄ :endif
+[129]                 :if mt DLTB AltACCMLT1[1;]   ⋄ AltACCMLT1  ←'0'                                    OVER 1↓[1]AltACCMLT1   ⋄ :endif
+[130]                 :if mt DLTB AltACCDIV1[1;]   ⋄ AltACCDIV1  ←'1'                                    OVER 1↓[1]AltACCDIV1   ⋄ :endif
+[131]                 :if mt DLTB AltREVDEFIND[1;] ⋄ AltREVDEFIND←'Rate 1'                               OVER 1↓[1]AltREVDEFIND ⋄ :endif
+[132]                 :if mt DLTB AltDYNIND[1;]    ⋄ AltDYNIND   ←'Main Pension'                         OVER 1↓[1]AltDYNIND    ⋄ :endif
+[133]                 :if mt DLTB AltACCBASIS[1;]  ⋄ AltACCBASIS ←'Final Salary'                         OVER 1↓[1]AltACCBASIS  ⋄ :endif
+[134]                 :if mt DLTB AltBARBIND[1;]   ⋄ AltBARBIND  ←'ERF1 (Revaln 1+3) or ERF1 (Revaln 2)' OVER 1↓[1]AltBARBIND   ⋄ :endif
+[135]                 :if mt DLTB AltSALCOD1[1;]   ⋄ AltSALCOD1  ←SALdesc[1;]                            OVER 1↓[1]AltSALCOD1   ⋄ :endif
+[136]             :endif
+[137]             AltPENADJ1←LJUSTIFY AltPENADJ1,z\(z←^/' '=AltPENADJ1)/'1'
+[138]             AltPENADJ2←LJUSTIFY AltPENADJ2,z\(z←^/' '=AltPENADJ2)/'1'
+[139]             AltPENADJ3←LJUSTIFY AltPENADJ3,z\(z←^/' '=AltPENADJ3)/'1'
+[140]             m_AltPPFADJ1←LJUSTIFY m_AltPPFADJ1,z\(z←^/' '=m_AltPPFADJ1)/'1'
+[141]             m_AltPPFADJ2←LJUSTIFY m_AltPPFADJ2,z\(z←^/' '=m_AltPPFADJ2)/'1'
+[142]             m_AltPPFADJ3←LJUSTIFY m_AltPPFADJ3,z\(z←^/' '=m_AltPPFADJ3)/'1'
+[143]             f_AltPPFADJ1←LJUSTIFY f_AltPPFADJ1,z\(z←^/' '=f_AltPPFADJ1)/'1'
+[144]             f_AltPPFADJ2←LJUSTIFY f_AltPPFADJ2,z\(z←^/' '=f_AltPPFADJ2)/'1'
+[145]             f_AltPPFADJ3←LJUSTIFY f_AltPPFADJ3,z\(z←^/' '=f_AltPPFADJ3)/'1'
+[146]         :endif
+[147]         :if ~mt DLTB IndSliceDesc
+[148]             :if mt DLTB IndSALCOD1[1;],IndFIXPEN1[1;],IndSTDATE[1;]
+[149]                 :if mt DLTB IndADDYRS[1;]    ⋄ IndADDYRS   ←'0'                                    OVER 1↓[1]IndADDYRS    ⋄ :endif
+[150]                 :if mt DLTB IndACCMLT1[1;]   ⋄ IndACCMLT1  ←'0'                                    OVER 1↓[1]IndACCMLT1   ⋄ :endif
+[151]                 :if mt DLTB IndACCDIV1[1;]   ⋄ IndACCDIV1  ←'1'                                    OVER 1↓[1]IndACCDIV1   ⋄ :endif
+[152]                 :if mt DLTB IndREVDEFIND[1;] ⋄ IndREVDEFIND←'Rate 1'                               OVER 1↓[1]IndREVDEFIND ⋄ :endif
+[153]                 :if mt DLTB IndDYNIND[1;]    ⋄ IndDYNIND   ←'Main Pension'                         OVER 1↓[1]IndDYNIND    ⋄ :endif
+[154]                 :if mt DLTB IndDYNIND2[1;]   ⋄ IndDYNIND2  ←'Main Pension'                         OVER 1↓[1]IndDYNIND2   ⋄ :endif
+[155]                 :if mt DLTB IndACCBASIS[1;]  ⋄ IndACCBASIS ←'Final Salary'                         OVER 1↓[1]IndACCBASIS  ⋄ :endif
+[156]                 :if mt DLTB IndBARBIND[1;]   ⋄ IndBARBIND  ←'ERF1 (Revaln 1+3) or ERF1 (Revaln 2)' OVER 1↓[1]IndBARBIND   ⋄ :endif
+[157]                 :if mt DLTB IndSALCOD1[1;]   ⋄ IndSALCOD1  ←SALdesc[1;]                            OVER 1↓[1]IndSALCOD1   ⋄ :endif
+[158]                 :if mt DLTB m_IndPayStart[1;]⋄ m_IndPayStart←'0'                                   OVER 1↓[1]m_IndPayStart⋄ :endif
+[159]                 :if mt DLTB f_IndPayStart[1;]⋄ f_IndPayStart←'0'                                   OVER 1↓[1]f_IndPayStart⋄ :endif
+[160]                 :if mt DLTB m_IndPayEnd[1;]  ⋄ m_IndPayEnd  ←'120'                                 OVER 1↓[1]m_IndPayEnd  ⋄ :endif
+[161]                 :if mt DLTB f_IndPayEnd[1;]  ⋄ f_IndPayEnd  ←'120'                                 OVER 1↓[1]f_IndPayEnd  ⋄ :endif
+[162]             :endif
+[163]             IndPENADJ1←LJUSTIFY IndPENADJ1,z\(z←^/' '=IndPENADJ1)/'1'
+[164]             IndPENADJ2←LJUSTIFY IndPENADJ2,z\(z←^/' '=IndPENADJ2)/'1'
+[165]             IndPENADJ3←LJUSTIFY IndPENADJ3,z\(z←^/' '=IndPENADJ3)/'1'
+[166]             m_IndPPFADJ1←LJUSTIFY m_IndPPFADJ1,z\(z←^/' '=m_IndPPFADJ1)/'1'
+[167]             m_IndPPFADJ2←LJUSTIFY m_IndPPFADJ2,z\(z←^/' '=m_IndPPFADJ2)/'1'
+[168]             m_IndPPFADJ3←LJUSTIFY m_IndPPFADJ3,z\(z←^/' '=m_IndPPFADJ3)/'1'
+[169]             f_IndPPFADJ1←LJUSTIFY f_IndPPFADJ1,z\(z←^/' '=f_IndPPFADJ1)/'1'
+[170]             f_IndPPFADJ2←LJUSTIFY f_IndPPFADJ2,z\(z←^/' '=f_IndPPFADJ2)/'1'
+[171]             f_IndPPFADJ3←LJUSTIFY f_IndPPFADJ3,z\(z←^/' '=f_IndPPFADJ3)/'1'
+[172]         :endif
+[173]     :else
+[174]         IncTiming←'Default' ⋄ AltSw←'Ignore' ⋄ IndSlices←'0' ⋄ WARFRAC2←0/WARFRAC2
+[175]         WARERFind←WARCOMind←'1' ⋄ WOSTYPE←GLSTYPE←'FAS'
+[176]         WIHERFind←'0' ⋄ WIHCOMind←'1' ⋄ STYPEIH←STYPEIHC←'FAS'
+[177]     :endif
+[178] 
+[179]     :if 2=⎕nc 'DSTYPE' ⍝ Consistency of Variable Names for Spreading Date Globals
+[180]         (STYPEIH STYPEIHC WOSTYPE GLSTYPE)←STYPE STYPEC DSTYPE DSTYPEC
+[181]         0 0⍴⎕ex 'STYPE STYPEC DSTYPE DSTYPEC'
+[182]         :if 2=⎕nc 'ICTYPE' ⍝ Consistency of Variable Names for Retirement Cash Globals (embedded for Claybrook bases partially converted)
+[183]             (ILLCTYPE ILLCOMDAT ILLCTYPE2 ILLCOMDAT2)←ICTYPE ILLSERVIND ICTYPE2 ILLSERVIND2
+[184]             0 0⍴⎕ex 'ICTYPE ILLSERVIND ICTYPE2 ILLSERVIND2'
+[185]         :endif
+[186]     :endif
+[187]     :if ~ClntCode=3 ⋄ STYPEIH←STYPEIHC←WOSTYPE←GLSTYPE←'FAS' ⋄ :endif ⍝ Correct Default Value
+[188]     ILLCTYPE ←'⊂3/80ths⊂Accrual x Salary' TEXTREPL ⎕av[⎕io+146 120] REPL ILLCTYPE
+[189]     ILLCTYPE2←'⊂3/80ths⊂Accrual x Salary' TEXTREPL ⎕av[⎕io+146 120] REPL ILLCTYPE2
+[190] 
+[191]     :if ~bGAD
+[192]         PubSect←'0' ⋄ m_LRA←m_NRA ⋄ f_LRA←f_NRA
+[193]     :endif
+[194] 
+[195] :case 'Deferreds'
+[196] 
+[197]     ⍝ FLDOPT MainSpecSplit to PostRetDyn
+[198]     mpreIND   ←'/Increases/Pension' TEXTREPL mpreIND
+[199]     mpostIND  ←'/Increases/Pension' TEXTREPL mpostIND
+[200]        DYNIND ←SStoMAT '/Increases/Pension' TEXTREPL '⍺',DYNIND
+[201]     IndDYNIND ←SStoMAT '/Increases/Pension' TEXTREPL '⍺',IndDYNIND
+[202]     LEAVING←MigrateDates LEAVING
+[203] 
+[204]     ⍝ FLDOPT MainSpec to PostRetDyn
+[205]     :if ∨/z←(m2n IndDYNIND2)∊'Main' 'Special'
+[206]         IndDYNIND2←⊃(m2n IndDYNIND2),¨z\z/⊂' Pension'
+[207]     :endif
+[208]     :if (⊂DLTB DYNDBR1)∊'Main' 'Special' ⋄ DYNDBR1←(DLTB DYNDBR1),' Pension' ⋄ :endif
+[209]     :if (⊂DLTB DYNDBR2)∊'Main' 'Special' ⋄ DYNDBR2←(DLTB DYNDBR2),' Pension' ⋄ :endif
+[210]     :if (⊂DLTB DYNDAR1)∊'Main' 'Special' ⋄ DYNDAR1←(DLTB DYNDAR1),' Pension' ⋄ :endif
+[211]     :if (⊂DLTB DYNDAR2)∊'Main' 'Special' ⋄ DYNDAR2←(DLTB DYNDAR2),' Pension' ⋄ :endif
+[212] 
+[213]     ⍝ Some ancient version of ERF2NDF
+[214]     bpreIND ←'/Split by date, ERF1 followed by ERF2 after BARBER Date/Use Barber Start and End Dates' TEXTREPL bpreIND
+[215]     bpostIND←'/Split by date, ERF1 followed by ERF2 after BARBER Date/Use Barber Start and End Dates' TEXTREPL bpostIND
+[216]     ⍝ FLDOPT ERF2NDF
+[217]     bpreIND ←'/Use ERF2 between ERF2 Start and ERF2 End/Use Barber Start and End Dates' TEXTREPL bpreIND
+[218]     bpostIND←'/Use ERF2 between ERF2 Start and ERF2 End/Use Barber Start and End Dates' TEXTREPL bpostIND
+[219]        BARBIND←SStoMAT '/Use ERF2 between ERF2 Start and ERF2 End/Use Barber Start and End Dates' TEXTREPL '⍺',BARBIND
+[220]     IndBARBIND←SStoMAT '/Use ERF2 between ERF2 Start and ERF2 End/Use Barber Start and End Dates' TEXTREPL '⍺',IndBARBIND
+[221] 
+[222]     :if ClntCode=3 ⋄ :andif 'C'≠↑CASHIND ⋄ CASHIND←'Commuted' ⋄ :endif
+[223]     :if ClntCode=0
+[224]         IncTiming←'Default' ⋄ IndPUPs←'0' ⋄ WARERFind←WARCOMind←'1'
+[225]         :if ~bBuck ⋄ CASHP←'Priority'  ⋄ :endif
+[226]     :endif
+[227]     :if ~bGAD ⋄ PubSect←'0' ⋄ :endif
+[228]     CASHP←'/Pro-rata/Pro Rata' TEXTREPL CASHP ⍝ Consistency
+[229] 
+[230]     :if ^/' '= ,m_PPFNRAtab ⋄ m_PPFNRAtab←m_NRA ⋄ :endif
+[231]     :if     2=⍴⍴m_PPFNRAtab ⋄ m_PPFNRAtab←¯1↓,((∨/' '≠m_PPFNRAtab)⌿m_PPFNRAtab←0 Uniquelist m_PPFNRAtab),⎕tcnl ⋄ :endif
+[232] 
+[233]     :if ^/' '= ,f_PPFNRAtab ⋄ f_PPFNRAtab←f_NRA ⋄ :endif
+[234]     :if     2=⍴⍴f_PPFNRAtab ⋄ f_PPFNRAtab←¯1↓,((∨/' '≠f_PPFNRAtab)⌿f_PPFNRAtab←0 Uniquelist f_PPFNRAtab),⎕tcnl ⋄ :endif
+[235] 
+[236]     :if 9.11>saveVersion ⋄ :andif ∨/z←(^/' '=PUPDesc)^∨/' '≠PUP
+[237]         PUPDesc←LJUSTIFY PUPDesc,z⍀'<PUP >,LI2' ⎕fmt z/(⍳↑⍴PUPDesc)+~⎕io
+[238]     :endif
+[239]     :if 9.11>saveVersion ⋄ :andif ∨/z←(^/' '=IndPUPDesc)^∨/' '≠IndPUP
+[240]         IndPUPDesc←LJUSTIFY IndPUPDesc,z⍀'<Ind PUP >,LI2' ⎕fmt z/(⍳↑⍴IndPUPDesc)+~⎕io
+[241]     :endif
+[242] 
+[243]     :if 9.02>saveVersion ⋄ GMPORIGIN←'01'~GMPORIGIN ⋄ :endif
+[244] 
+[245]     :if 2=⎕nc 'PERPENCASH' ⍝ Consistency of Variable Names for Retirement Cash Globals
+[246]         PERPENCASH←(^/' '=MULTPENCASH)/PERPENCASH ⋄ PERPENCASH2←(^/' '=MULTPENCASH2)/PERPENCASH2
+[247]         (COMMULT COMPER COMMULT2 COMPER2)←MULTPENCASH PERPENCASH MULTPENCASH2 PERPENCASH2
+[248]         CTYPE ←↑(('None'≡4↑CASHIND)/⊂'Neutral or Nil'),((∊(×⍴¨,¨COMMULT  COMPER )^(~(⊂,'0')≡¨,¨COMMULT  COMPER ))/'Multiple of Pension' '% of Pension'),⊂'Neutral or Nil'
+[249]         CTYPE2←↑(      (×⍴,COTDATA)/⊂''              ),((∊(×⍴¨,¨COMMULT2 COMPER2)^(~(⊂,'0')≡¨,¨COMMULT2 COMPER2))/'Multiple of Pension' '% of Pension'),⊂'Neutral or Nil'
+[250]         :if (⊂DLTB CASHIND)∊'None' 'Commutation' ⋄ CASHIND←'Commuted' ⋄ :endif
+[251]         0 0⍴⎕ex 'MULTPENCASH PERPENCASH MULTPENCASH2 PERPENCASH2'
+[252]     :endif
+[253] 
+[254]     ⍝ Default Adjustment Factors to 1 - probably unnecessary but ...
+[255]     preADJ←preADJ,(^/' '=preADJ)/'1' ⋄ postADJ←postADJ,(^/' '=postADJ)/'1'
+[256]     CASHCAPADJ←CASHCAPADJ,(^/' '=CASHCAPADJ)/'1'
+[257]     DBR1ADJ←DBR1ADJ,(^/' '=DBR1ADJ)/'1' ⋄ DBR2ADJ←DBR2ADJ,(^/' '=DBR2ADJ)/'1'
+[258]     DAR1ADJ←DAR1ADJ,(^/' '=DAR1ADJ)/'1' ⋄ DAR2ADJ←DAR2ADJ,(^/' '=DAR2ADJ)/'1'
+[259]     PUPADJ←LJUSTIFY PUPADJ,z\(z←^/' '=PUPADJ)/'1'
+[260]     :if ClntCode=3 ⋄ IndPUPADJ←LJUSTIFY IndPUPADJ,z\(z←^/' '=IndPUPADJ)/'1' ⋄ :endif
+[261] 
+[262] :case 'Pensioners'
+[263] 
+[264]     :if 9.11>saveVersion ⋄ :andif ∨/z←(^/' '=PenDesc)^∨/' '≠PENDATA,SPENDATA
+[265]         PenDesc←LJUSTIFY PenDesc,z⍀'<Pen >,LI2' ⎕fmt z/(⍳↑⍴PenDesc)+~⎕io
+[266]     :endif
+[267] 
+[268]     :if (↑⍴PenDesc)≠↑⍴CapInclude
+[269]         :if 0≠⎕nc 'CashCapFlag'
+[270]             CapInclude←⊃('No' 'Yes')[1+(,'Y'=1↑[2]CashCapFlag)∨(120=MatrixZWB EAGE)^(,'Y'≠1↑[2]SPONLY)^(,'Y'≠1↑[2]PONLY)]
+[271]         :else
+[272]             CapInclude←⊃('No' 'Yes')[1+(120=MatrixZWB EAGE)^(,'C'=1↑[2]CSORP)∨(,'Y'≠1↑[2]SPONLY)^(,'Y'≠1↑[2]PONLY)]
+[273]         :endif
+[274]     :endif
+[275] 
+[276]     :if 0≠⎕nc 'IgnoreSDOB' ⋄ IgnoreSpouse←IgnoreSDOB ⋄ 0 0⍴⎕ex 'IgnoreSDOB' ⋄ :endif
+[277] 
+[278] :endselect
+    ∇

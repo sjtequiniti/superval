@@ -1,1 +1,20 @@
-    ∇ o←⍙_⍙LTIME o1;o;o2;o3;o4;o5;⎕IO;⎕PP;msk[1]   ⍝ MONITOR.sf#2[2]   ⍝∇⍙_⍙LTIMES fnlist -- Display ⎕MF timings for a list of functions[3]    o←0 5⍴⊂''[4]    o4←⍙_⍙MFRESOLUTION[5]    o2←⎕MF o1 ⋄ →(~1∊o2≠0)/0[6]    o2[1;2]←+/o2[;2]       ⍝ sum of time spent here[7]    o2[; 1 2]←o2[; 1 2]×o4 ⍝ convert ⎕MF resolution to seconds[8]    o←(⊂o1),¨(⊂''),'[',¨(⊂[2]⍕((¯1+↑⍴o2),1)⍴⍳¯1+↑⍴o2),¨']'[9]   [10]   msk←.0005<o2[;2] ⍝ Include only non-zero[11]  [12]   o2[;1 2]←3⍕¨o2[;1 2][13]   o2[;3]←⍕¨o2[;3][14]   o3←⎕vr o1[15]   o3←(⊂' '),(¯1+↑⍴o) ↑ (o3=⎕tcnl)  ⎕penclose o3[16]   o3←o3~¨⊂⎕tcnl,⎕tclf[17]   :if ~ecflag ⋄ o3←30↑¨o3 ⋄ :endif[18]   o←msk (o,o2,o3)    ∇
+    ∇ o←⍙_⍙LTIME o1;o;o2;o3;o4;o5;⎕IO;⎕PP;msk
+[1]   ⍝ MONITOR.sf#2
+[2]   ⍝∇⍙_⍙LTIMES fnlist -- Display ⎕MF timings for a list of functions
+[3]    o←0 5⍴⊂''
+[4]    o4←⍙_⍙MFRESOLUTION
+[5]    o2←⎕MF o1 ⋄ →(~1∊o2≠0)/0
+[6]    o2[1;2]←+/o2[;2]       ⍝ sum of time spent here
+[7]    o2[; 1 2]←o2[; 1 2]×o4 ⍝ convert ⎕MF resolution to seconds
+[8]    o←(⊂o1),¨(⊂''),'[',¨(⊂[2]⍕((¯1+↑⍴o2),1)⍴⍳¯1+↑⍴o2),¨']'
+[9]   
+[10]   msk←.0005<o2[;2] ⍝ Include only non-zero
+[11]  
+[12]   o2[;1 2]←3⍕¨o2[;1 2]
+[13]   o2[;3]←⍕¨o2[;3]
+[14]   o3←⎕vr o1
+[15]   o3←(⊂' '),(¯1+↑⍴o) ↑ (o3=⎕tcnl)  ⎕penclose o3
+[16]   o3←o3~¨⊂⎕tcnl,⎕tclf
+[17]   :if ~ecflag ⋄ o3←30↑¨o3 ⋄ :endif
+[18]   o←msk (o,o2,o3)
+    ∇

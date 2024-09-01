@@ -1,0 +1,121 @@
+    ∇ pp∆exit PP∆Pen_Spouse ContingencyID;pp∆size;pp∆LYrev;pp∆lyadj;pp∆FutPV;pp∆PastPV;pp∆TotPV;pp∆FVstart;pp∆PVstart;pp∆FutCF;pp∆PastCF;pp∆TotCF;pp∆Y0;z;pp∆Ages;pp∆drop;pp∆ResPV;pp∆IndCF;pp∆FRev;pp∆VF;pp∆startInc;pp∆AOSRes;tab;rev;∆;pp∆discstart
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Calculate the reversionary pensions emerging from exisitng pension
+[3]   ⍝ Always assumed to commence immediately upon the death of the primary pensioner
+[4]   
+[5]   ⍝⍝⍝:if ~pp∆2Dbens ⋄ :andif ~aosind^(ClassID=4) ⋄ :andif ∨/z←(⊃pp∆SpouseProbs[⎕io])^.=pp∆Xexit,pp∆Xstart,pp∆top ⋄ :andif ~test
+[6]   ⍝⍝⍝    pp∆size←⍴,pp∆TotCF←,⊃(0,z)/pp∆SpouseProbs
+[7]   :if ~pp∆2Dbens ⋄ :andif ~aosind^(ClassID=4) ⋄ :andif ×rowsIn tab←pp∆SpouseProbs for 'Key' (pp∆Xexit,pp∆Xstart,pp∆top) ⋄ :andif ~test
+[8]       pp∆size←⍴pp∆TotCF←↑tab at 'CF'
+[9]   :else
+[10]      pp∆Y0←⌊/pp∆Ages←(0.5+pp∆xexit+⍳⍴,pp∆∆)-pp∆∆ ⍝ Youngest Spouse Age
+[11]  ⍝⍝⍝    pp∆size←⌈/0,(pp∆Y0-pp∆Ages)+⍳⍴pp∆Ages
+[12]      pp∆size←⌈/0,-pp∆∆
+[13]  
+[14]      :if pp∆Yret2D^~pp∆DD ⋄ :orif pp∆Ydis2D^pp∆DD
+[15]          pp∆size←pp∆size+(⍴pp∆QX)⌈(¯1↑⍴pp∆LYpost)-⌊pp∆Y0
+[16]      :else
+[17]          PP∆SpouseMort
+[18]          pp∆size←pp∆size+(⍴pp∆QX)⌈(⍴pp∆LYrev)
+[19]          pp∆LYrev←pp∆size↑pp∆LYrev ⋄ pp∆lyadj←pp∆size↑pp∆lyadj
+[20]          :if ~pp∆DD ⋄ PP∆ProjMarrProp 0 ⋄ :endif
+[21]          ⍝⍝⍝ VF←(pp∆size,pp∆size)↑pp∆SpouseTab
+[22]          ⍝⍝⍝ VF←VF×pp∆lyadj∘.÷pp∆LYrev
+[23]          ⍝⍝⍝ VF←pp∆ppfRatio[(pp∆Texit-term)+⍳pp∆size]×(pp∆size OVERTAKE pp∆LYgpmult)×+/(pp∆size↑pp∆MarrProp×pp∆QX)×[1]VF ⍝⍝⍝ Old way
+[24]          ⍝⍝⍝    VF←(size OVERTAKE LYgpmult)   ×+/(   size↑   postMarr×   QX)×[1]VF
+[25]      :endif
+[26]  
+[27]      pp∆PVstart←pp∆FVstart←pp∆PastPV←pp∆FutPV←pp∆TotPV←pp∆PastCF←pp∆FutCF←pp∆TotCF←0
+[28]  
+[29]      :if pp∆2Dbens ⋄ pp∆QX←(∣×pp∆TotCon)×(⍴pp∆TotCon)↑pp∆QX ⋄ :endif
+[30]  
+[31]      :for z :in ⍳⍴DTZ pp∆QX
+[32]          :if 0=pp∆QX[z] ⋄ :continue ⋄ :endif
+[33]  
+[34]          :if pp∆DD ⋄ :andif pp∆Ydis2D
+[35]              (29+pp∆∆[z]) PP∆SelectMort 'Ydis2D'
+[36]              PP∆SpouseMort
+[37]  ⍝⍝⍝            PP∆ProjMarrProp z
+[38]              pp∆LYrev←pp∆size↑pp∆LYrev ⋄ pp∆lyadj←pp∆size↑pp∆lyadj
+[39]  
+[40]          :elseif ~pp∆DD ⋄ :andif pp∆Yret2D
+[41]              (29+pp∆∆[z]) PP∆SelectMort 'Yret2D'
+[42]              PP∆SpouseMort
+[43]              PP∆ProjMarrProp z
+[44]              pp∆LYrev←pp∆size↑pp∆LYrev ⋄ pp∆lyadj←pp∆size↑pp∆lyadj
+[45]          :endif
+[46]          pp∆drop←pp∆Ages[z]-pp∆Y0
+[47]  
+[48]          ⍝??⍝ Should be (MID pp∆LYrev)[pp∆drop] for Spouse on Death (and possibly Spouse at Retirement?) - see isTOut below!
+[49]          pp∆IndCF←pp∆size↑pp∆MarrProp[z]×pp∆QX[z]×(z/0),((pp∆size-pp∆drop) OVERTAKE 1-pp∆FreqAdj,0)×(pp∆drop↓pp∆lyadj) CDIV pp∆LYrev[pp∆drop]
+[50]          :if pp∆2Dbens
+[51]              :if pp∆midstart ⋄ pp∆startInc←pp∆MidpostInc[pp∆year+z]÷pp∆MidpostInc[pp∆year]
+[52]              :else           ⋄ pp∆startInc←pp∆MidpostInc[pp∆year+z]÷pp∆postInc[pp∆year]
+[53]              :endif
+[54]              pp∆IndCF←pp∆IndCF÷pp∆startInc
+[55]              :if isTOut
+[56]                  pp∆IndCF←pp∆IndCF×pp∆LYrev[pp∆drop] CDIV pp∆size OVERTAKE (MID ∆,pp∆LYrev[pp∆drop]),∆←(MID pp∆LYrev)[pp∆drop] ⍝⍝⍝ Adjustment for Spouse Mortality bug!
+[57]                  rev←pp∆2DTotCons[pp∆year;pp∆year+z] CDIV pp∆2DTotBen[pp∆year;pp∆year+z]
+[58]                  rev SPOSTMEMB PP∆ValuationFactors pp∆IndCF×pp∆size↑pp∆SIncpost
+[59]  
+[60]                  :if ~pp∆discstart←~×z
+[61]                      pp∆discstart←pp∆vMPPost[pp∆Tstart]×pp∆vMPTVPre[pp∆Tstart+z]÷pp∆vMPPost[pp∆Tstart+z+¯1 0]×pp∆vMPTVPre[pp∆Tstart]
+[62]                      pp∆discstart←pp∆size OVERTAKE (z/0),(×/pp∆discstart*0.25 0.75),¯1↑pp∆discstart
+[63]                  :endif
+[64]                  :if neIND
+[65]                      pp∆FVstart←pp∆FVstart+pp∆discstart×pp∆IndCF× pp∆TotCon[z]              ×pp∆size↑pp∆discpost
+[66]                  :else
+[67]                      pp∆FVstart←pp∆FVstart+pp∆discstart×pp∆IndCF×              pp∆FutCon[z] ×pp∆size↑pp∆discpost
+[68]                      pp∆PVstart←pp∆PVstart+pp∆discstart×pp∆IndCF×(pp∆TotCon[z]-pp∆FutCon[z])×pp∆size↑pp∆discpost
+[69]                  :endif
+[70]              :endif
+[71]              pp∆FutCF←neIND×pp∆TotCF←pp∆TotCF+pp∆IndCF×pp∆TotCon[z] ⋄ pp∆FutCF←pp∆FutCF+(~neIND)×pp∆IndCF×pp∆FutCon[z]
+[72]          :else
+[73]              pp∆TotCF←pp∆TotCF+pp∆IndCF
+[74]          :endif
+[75]      :endfor
+[76]  
+[77]  ⍝⍝⍝    :if ~pp∆2Dbens ⋄ pp∆SpouseProbs[⎕io]←⊂(⊃pp∆SpouseProbs[⎕io])⍪pp∆Xexit,pp∆Xstart,pp∆top ⋄ pp∆SpouseProbs←pp∆SpouseProbs,⊂DTZ pp∆TotCF ⋄ :endif
+[78]      :if ~pp∆2Dbens ⋄ pp∆SpouseProbs←pp∆SpouseProbs OVER (pp∆Xexit,pp∆Xstart,pp∆top) (,pp∆TotCF) ⋄ :endif
+[79]  :endif
+[80]  
+[81]  pp∆TotCF←pp∆TotCF×pp∆VF←pp∆defLX×pp∆defInc×(pp∆size↑pp∆SIncpost)×pp∆ppfRatio[(pp∆Texit-term)+⍳pp∆size]×(pp∆size OVERTAKE pp∆LYgpmult)
+[82]  
+[83]  :if isTOut^pp∆2Dbens ⋄ pp∆FutCF ←          pp∆FutCF ×pp∆VF
+[84]                         pp∆PastCF←(pp∆TotCF-pp∆FutCF)×pp∆VF
+[85]                         pp∆FutPV← pp∆defdisc×pp∆FVstart←pp∆FVstart×pp∆VF
+[86]                         pp∆PastPV←pp∆defdisc×pp∆PVstart←pp∆PVstart×pp∆VF
+[87]  :else
+[88]      :if pp∆2Dbens    ⋄ pp∆FutCF←pp∆FutCF×pp∆VF
+[89]      :else            ⋄ 0 SPOSTMEMB PP∆ValuationFactors pp∆TotCF
+[90]          pp∆FutCF←pp∆TotCF×pp∆FutCon ⋄ pp∆TotCF←pp∆TotCF×pp∆TotCon
+[91]      :endif
+[92]      :if neIND
+[93]          pp∆FutPV← pp∆defdisc×pp∆FVstart←(pp∆FutCF← pp∆TotCF         )×pp∆size↑pp∆discpost
+[94]          pp∆PastPV←0 ⋄ pp∆PVstart←0×pp∆FVstart ⋄ pp∆PastCF←0×pp∆FutCF
+[95]      :else
+[96]          pp∆FutPV← pp∆defdisc×pp∆FVstart←                    pp∆FutCF ×pp∆size↑pp∆discpost
+[97]          pp∆PastPV←pp∆defdisc×pp∆PVstart←(pp∆PastCF←pp∆TotCF-pp∆FutCF)×pp∆size↑pp∆discpost
+[98]      :endif
+[99]  :endif
+[100] pp∆ResPV←pp∆PastPV+pp∆FutPV
+[101] pp∆TotPV←(pp∆PastPV←+/pp∆PastPV)+(pp∆FutPV←+/pp∆FutPV)
+[102] 
+[103] ⍝⍀⍝ 'S' PP∆TestUpdate 'pp∆Ages' 'pp∆FreqAdj' 'pp∆TotCon←' 'pp∆FutCon←' 'pp∆TotCF←' 'pp∆FutCF←' 'pp∆TotPV←' 'pp∆FutPV←'
+[104] 
+[105] :if aosind ⋄ :andif ClassID=4
+[106]     pp∆AOSRes←pp∆MarrProp[¯1↑pp∆def]×pp∆lyadj×pp∆defLX×pp∆defInc×(pp∆size↑pp∆SIncpost)×(pp∆size OVERTAKE pp∆LYgpmult)
+[107]     :if ~pp∆2Dbens ⋄ pp∆AOSRes←pp∆TotCon×pp∆AOSRes ⋄ :endif
+[108]     aos∆cf[pp∆bencol;2;]←aos∆cf[pp∆bencol;2;]+20↑pp∆AOSRes
+[109]     aos∆cf[pp∆bencol;3;]←aos∆cf[pp∆bencol;3;]-20↑pp∆AOSRes×pp∆size↑pp∆X0↓pp∆lx÷pp∆LX[pp∆X0]
+[110]     pp∆AOSRes←pp∆AOSRes×pp∆defdisc×(pp∆size↑pp∆discpost)
+[111]     aos∆results[pp∆bencol;2;]←aos∆results[pp∆bencol;2;]+ResSize↑(⌽+\⌽pp∆AOSRes                                 ) CDIV (pp∆size↑(⌊pp∆Y0)↓pp∆LY÷pp∆LY[⌊pp∆Y0])                                   ×pp∆size↑pp∆vPost
+[112]     aos∆results[pp∆bencol;3;]←aos∆results[pp∆bencol;3;]-ResSize↑(⌽+\⌽pp∆AOSRes×pp∆size↑pp∆X0↓pp∆lx÷pp∆LX[pp∆X0]) CDIV (pp∆size↑(⌊pp∆Y0)↓pp∆LY÷pp∆LY[⌊pp∆Y0])×(pp∆size↑pp∆X0↓pp∆LX÷pp∆LX[pp∆X0])×pp∆size↑pp∆vPost
+[113] :endif
+[114] 
+[115] :if test ⋄ :andif ClassID≠4 ⋄ :andif ~comflag ⋄ (↑,pp∆TotCon) PP∆StoreAnn 1 ⋄ :endif ⍝??⍝ FIXME for 2D
+[116] 
+[117] :if comflag ⋄ comfacs[pp∆row;pp∆benyear;1]←pp∆TotPV÷pp∆defdisc
+[118] :else       ⋄ 1 PP∆StoreRes 0
+[119] :endif
+    ∇

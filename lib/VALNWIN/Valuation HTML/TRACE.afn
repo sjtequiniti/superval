@@ -1,0 +1,35 @@
+    ∇ L TRACE R;⎕IO;∆∆val;bdy;hdr;msk;tcpn;thdr;tbdy;tabl;out;full;∆
+[1]   ⍝ VALNWIN.sf#18
+[2]   ⍝ Write to APL trace file. SJT aug2010
+[3]   ⎕IO←1
+[4]   :If 0∊⍴R                                                                        ⍝ do nothing
+[5]   :ElseIf ×⎕NC 'L'
+[6]       :Select ↑⍴⍴R
+[7]       :CaseList 0 1
+[8]           out←'h3'xtag L
+[9]           out←out,⎕TCNL,'pre'xtag ⎕TCNL,(⍕R),⎕TCNL
+[10]      :Case 2
+[11]          :if 0∊1↓full←×↑¨⍴¨R[1;] ⍝ empty hdr cells after first col indicate column groups
+[12]              (hdr bdy)←(R[⍳2;])(2 0↓R)
+[13]              ∆←  ⊂(1,1↓full)/('th' 'th colspan="3"')[1+0,>⌿⊃1 ¯1↓¨⊂full] xtag¨hdr[1;]
+[14]              ∆←∆,⊂(⊂'th')xtag¨,¨⍕¨hdr[2;]
+[15]              thdr←'thead' xtag  (⊂'tr')xtag¨ ↑¨,/¨∆
+[16]          :else
+[17]              (hdr bdy)←(R[1;])(1 0↓R)
+[18]  ⍝            thdr←'thead' xtag ⊂  'tr' xtag  ↑,/(⊂'th')xtag¨,¨⍕      ¨hdr
+[19]              thdr←'thead' xtag ⊂ 'tr'  xtag  ↑,/(⊂'th')xtag¨,¨Dumpfmt¨hdr
+[20]          :endif
+[21]          msk←∨\∨/0≠↑¨0 1↓bdy                                                     ⍝ drop leading all-zero rows
+[22]          msk←msk∨msk^.=0                                                         ⍝ nothing to show?
+[23]          tcpn←⊂'caption' xtag L
+[24]          tbdy← 'tbody'   xtag(⊂'tr')xtag¨,/(⊂'td')xtag¨,¨⍉⊃⊂[2]¨(⊂'¯-') REPL¨⍕¨,[1.5]¨⊂[1]bdy
+[25]          tbdy← (⊂'¯-') REPL ¨tbdy                                                ⍝ Remove APL high minuses
+[26]          tabl← 'table'   xtag tcpn,thdr,tbdy
+[27]          out←↑,/tabl,¨⎕TCNL
+[28]      :EndSelect
+[29]  :Else                                                                           ⍝ R is HTML
+[30]      out←'¯-' REPL R
+[31]  :EndIf
+[32]  
+[33]  (out,⎕TCNL) ⎕NAPPEND vtpr1
+    ∇

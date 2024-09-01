@@ -1,1 +1,54 @@
-    ∇ RF←L RedFactCalc arg;⎕io;adj;years;alpha;beta;BETAYRS;BASE;age;ImpTbl;rows;year;termby;method;term[1]   ⍝ DECRWIN.sf#2[2]   ⍝ Generate a vector of Mortality Improvement Reduction Factors[3]   ⍝[4]   ⍝ L[0] contains Method[5]   ⍝ L[1] contains years from Valuation Date to Calculation Date (New Entrants (+ve) and AOS previous valuation (-ve))[6]   ⍝[7]   ⍝ arg[0] contains the age rating (already allows for RATEIMPR)[8]   ⍝ arg[1] contains alpha for 'C' 'S' or 'A' or Table for '2(D)'[9]   ⍝ arg[2] contains beta for 'C' 'S' or 'A' or Age at Valn Date for '2(D)'[10]  ⍝ arg[3] contains Period for 'C' 'S' or 'A'[11]  ⍝ arg[4] contains BASE for 'S' or 'A' or Period of Improvement for 'C'[12]  ⍝ arg[5] contains Specified Year of Birth for 'S' or Year of Birth for 'A'[13]  ⍝[14]  ⎕io←0 ⍝⍝⍝ Must keep ⎕io here until Deferreds PPF code changed to ⎕io 0[15]  (method term)←L[16]  :if RF←method='N'[17]  :else[18]      :select method[19]      :case 'S'[20]          (adj alpha beta BETAYRS BASE year)←6↑arg[21]          RF←alpha+(1-alpha)×1⌊(1-beta)*0⌈((year-BASE)+⍳⍴alpha) CDIV BETAYRS[22]      :case 'C'[23]          (adj alpha beta BETAYRS termby)←5↑arg[24]          RF←alpha+(1-alpha)×1⌊(1-beta)*0⌈termby CDIV BETAYRS[25]      :case 'A'[26]          (adj alpha beta BETAYRS BASE years)←6↑arg ⋄ year←↑years←term+,⍎years[27]          RF←alpha+(1-alpha)×1⌊(1-beta)*0⌈((year-BASE)+⍳⍴alpha) CDIV BETAYRS[28]          :if 1<⍴years[29]              RF←MATRIX RF[30]              :for year :in 1↓years[31]                  RF←RF⍪alpha+(1-alpha)×1⌊(1-beta)*0⌈((year-BASE)+⍳⍴alpha) CDIV BETAYRS[32]              :endfor[33]          :endif[34]      :case '2'[35]          (adj ImpTbl age)←3↑arg[36]          :if 0≠term ⋄ ImpTbl←(-term)⊖ImpTbl ⋄ :endif[37]          RF←ImpTbl[⎕io+(↑⍴ImpTbl)∣0⌈adj+age;][38]      :endselect[39]  [40]      :if adj≠0[41]          :if 2=⍴⍴RF[42]              rows←↑⍴RF[43]              :if adj>0 ⋄ RF←(adj↓[1]RF),adj/¯1↑[1]RF[44]              :else     ⋄ RF←((rows,-adj)⍴1),adj↓[1]RF[45]              :endif[46]          :else[47]              :if adj>0 ⋄ RF←(⍴RF) OVERTAKE adj↓RF[48]              :else     ⋄ RF←((-adj)⍴1),adj↓RF[49]              :endif[50]          :endif[51]      :endif[52]  :endif    ∇
+    ∇ RF←L RedFactCalc arg;⎕io;adj;years;alpha;beta;BETAYRS;BASE;age;ImpTbl;rows;year;termby;method;term
+[1]   ⍝ DECRWIN.sf#2
+[2]   ⍝ Generate a vector of Mortality Improvement Reduction Factors
+[3]   ⍝
+[4]   ⍝ L[0] contains Method
+[5]   ⍝ L[1] contains years from Valuation Date to Calculation Date (New Entrants (+ve) and AOS previous valuation (-ve))
+[6]   ⍝
+[7]   ⍝ arg[0] contains the age rating (already allows for RATEIMPR)
+[8]   ⍝ arg[1] contains alpha for 'C' 'S' or 'A' or Table for '2(D)'
+[9]   ⍝ arg[2] contains beta for 'C' 'S' or 'A' or Age at Valn Date for '2(D)'
+[10]  ⍝ arg[3] contains Period for 'C' 'S' or 'A'
+[11]  ⍝ arg[4] contains BASE for 'S' or 'A' or Period of Improvement for 'C'
+[12]  ⍝ arg[5] contains Specified Year of Birth for 'S' or Year of Birth for 'A'
+[13]  ⍝
+[14]  ⎕io←0 ⍝⍝⍝ Must keep ⎕io here until Deferreds PPF code changed to ⎕io 0
+[15]  (method term)←L
+[16]  :if RF←method='N'
+[17]  :else
+[18]      :select method
+[19]      :case 'S'
+[20]          (adj alpha beta BETAYRS BASE year)←6↑arg
+[21]          RF←alpha+(1-alpha)×1⌊(1-beta)*0⌈((year-BASE)+⍳⍴alpha) CDIV BETAYRS
+[22]      :case 'C'
+[23]          (adj alpha beta BETAYRS termby)←5↑arg
+[24]          RF←alpha+(1-alpha)×1⌊(1-beta)*0⌈termby CDIV BETAYRS
+[25]      :case 'A'
+[26]          (adj alpha beta BETAYRS BASE years)←6↑arg ⋄ year←↑years←term+,⍎years
+[27]          RF←alpha+(1-alpha)×1⌊(1-beta)*0⌈((year-BASE)+⍳⍴alpha) CDIV BETAYRS
+[28]          :if 1<⍴years
+[29]              RF←MATRIX RF
+[30]              :for year :in 1↓years
+[31]                  RF←RF⍪alpha+(1-alpha)×1⌊(1-beta)*0⌈((year-BASE)+⍳⍴alpha) CDIV BETAYRS
+[32]              :endfor
+[33]          :endif
+[34]      :case '2'
+[35]          (adj ImpTbl age)←3↑arg
+[36]          :if 0≠term ⋄ ImpTbl←(-term)⊖ImpTbl ⋄ :endif
+[37]          RF←ImpTbl[⎕io+(↑⍴ImpTbl)∣0⌈adj+age;]
+[38]      :endselect
+[39]  
+[40]      :if adj≠0
+[41]          :if 2=⍴⍴RF
+[42]              rows←↑⍴RF
+[43]              :if adj>0 ⋄ RF←(adj↓[1]RF),adj/¯1↑[1]RF
+[44]              :else     ⋄ RF←((rows,-adj)⍴1),adj↓[1]RF
+[45]              :endif
+[46]          :else
+[47]              :if adj>0 ⋄ RF←(⍴RF) OVERTAKE adj↓RF
+[48]              :else     ⋄ RF←((-adj)⍴1),adj↓RF
+[49]              :endif
+[50]          :endif
+[51]      :endif
+[52]  :endif
+    ∇

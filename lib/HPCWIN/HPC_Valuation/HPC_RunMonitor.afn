@@ -1,1 +1,48 @@
-    ∇ HPC_RunMonitor;∆;⍙⍙allmsk;⍙⍙ntie;File;⍙⍙msk;InputDir;MembGroup;⍙⍙ctie[1]   ⍝ HPCWIN.sf#5[2]   ⍝ Monitor the Progress of outsourced runs and close down finished runs[3]   [4]   :repeat[5]       ⍙⍙msk←1≠⍙⍙SubProcTab at 'Finished'[6]       ⍙⍙allmsk←nub ⎕split ⍙⍙msk⌿∆∘.=∆←⍙⍙SubProcTab at 'ResCatID'[7]   ⍝⍝⍝    :if ⍙⍙OrderSubProc ⋄ ⍙⍙allmsk←⊂↑⍙⍙allmsk ⋄ :endif                   ⍝ Do them in Batch Order so only check the first unfinished![8]       :select ⍙⍙MethSubProc[9]       :case 'APL'[10]          ⍙⍙msk←HPC_APLMonitor ⍙⍙allmsk[11]      :case 'HTTP'[12]          ⍙⍙msk←HPC_HTTPMonitor ⍙⍙allmsk[13]      :case 'HPC'[14]      :endselect[15]      VALN∆LOG 'Write'[16]  [17]      (InputDir MembGroup ⍙⍙ctie)←(⍙⍙SubProcTab for ⍙⍙msk) at 'InputDir' 'MembGroup' 'HeldTie'[18]      :if ~inerror[19]          (InputDir MembGroup ⍙⍙ctie)←⊂¨,¨↑¨InputDir MembGroup ⍙⍙ctie[20]      :endif[21]  [22]      :for ∆ :in spin InputDir MembGroup ⍙⍙ctie ⋄ (InputDir MembGroup ⍙⍙ctie)←∆[23]          :if Win∆IsDirectory InputDir[24]              0 0⍴(InputDir ⍙⍙ctie) FolderHeld 'End'                              ⍝ Release Directory[25]              ⍙⍙ntie←'Native' TieNumber ''[26]              :for File :in (⊂InputDir),¨(m2n UPPERCASE ⎕xlib InputDir)~⊂'ERROR.LOG'[27]                  :if File NTIE ⍙⍙ntie ⋄ File NERASE ⍙⍙ntie,1 ⋄ :endif              ⍝ Delete all files remaining in InputDir[28]              :endfor[29]              0 0⍴WRemoveDirectory InputDir                                       ⍝ Remove sub-process folder after Database loaded[30]          :endif[31]      :endfor[32]  [33]      ∆←⍙⍙SubProcTab at 'Finished'[34]      (⍙⍙msk/∆)←1[35]      ⍙⍙SubProcTab←⍙⍙SubProcTab amend 'Finished' ∆                        ⍝ Mark finalised run in Table[36]  [37]      :select MembGroup[38]      :case 'Pensioners' ⋄ 0 0⍴( SystemDir,'PENWIN') DeleteModule 'MemberCalcs'[39]      :case 'Deferreds'  ⋄ 0 0⍴(⊂SystemDir,'DEFWIN') DeleteModule¨'MemberCalcs' 'All Benefits' 'Retirement' 'Death'                                      'Accrued' 'PPF' 'Transfers'[40]      :case 'Actives'    ⋄ 0 0⍴(⊂SystemDir,'ACTWIN') DeleteModule¨'MemberCalcs' 'All Benefits' 'Retirement' 'Death' 'Ill-Health',(bGAD/⊂'PHI'),'Leaving' 'Accrued' 'PPF'[41]          0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation ',ValMeth ⍝ Valuation Method Functions[42]      :endselect[43]  [44]      ∆←+/0=⍙⍙SubProcTab at 'Finished'[45]  :until (TotalRuns>BatchRow)^⍙⍙MaxSubProc>∆ ⍝ Next Run if sub-process and run available[46]  :orif  (TotalRuns=BatchRow)^0=∆            ⍝ Finish all sub-processes if no more runs    ∇
+    ∇ HPC_RunMonitor;∆;⍙⍙allmsk;⍙⍙ntie;File;⍙⍙msk;InputDir;MembGroup;⍙⍙ctie
+[1]   ⍝ HPCWIN.sf#5
+[2]   ⍝ Monitor the Progress of outsourced runs and close down finished runs
+[3]   
+[4]   :repeat
+[5]       ⍙⍙msk←1≠⍙⍙SubProcTab at 'Finished'
+[6]       ⍙⍙allmsk←nub ⎕split ⍙⍙msk⌿∆∘.=∆←⍙⍙SubProcTab at 'ResCatID'
+[7]   ⍝⍝⍝    :if ⍙⍙OrderSubProc ⋄ ⍙⍙allmsk←⊂↑⍙⍙allmsk ⋄ :endif                   ⍝ Do them in Batch Order so only check the first unfinished!
+[8]       :select ⍙⍙MethSubProc
+[9]       :case 'APL'
+[10]          ⍙⍙msk←HPC_APLMonitor ⍙⍙allmsk
+[11]      :case 'HTTP'
+[12]          ⍙⍙msk←HPC_HTTPMonitor ⍙⍙allmsk
+[13]      :case 'HPC'
+[14]      :endselect
+[15]      VALN∆LOG 'Write'
+[16]  
+[17]      (InputDir MembGroup ⍙⍙ctie)←(⍙⍙SubProcTab for ⍙⍙msk) at 'InputDir' 'MembGroup' 'HeldTie'
+[18]      :if ~inerror
+[19]          (InputDir MembGroup ⍙⍙ctie)←⊂¨,¨↑¨InputDir MembGroup ⍙⍙ctie
+[20]      :endif
+[21]  
+[22]      :for ∆ :in spin InputDir MembGroup ⍙⍙ctie ⋄ (InputDir MembGroup ⍙⍙ctie)←∆
+[23]          :if Win∆IsDirectory InputDir
+[24]              0 0⍴(InputDir ⍙⍙ctie) FolderHeld 'End'                              ⍝ Release Directory
+[25]              ⍙⍙ntie←'Native' TieNumber ''
+[26]              :for File :in (⊂InputDir),¨(m2n UPPERCASE ⎕xlib InputDir)~⊂'ERROR.LOG'
+[27]                  :if File NTIE ⍙⍙ntie ⋄ File NERASE ⍙⍙ntie,1 ⋄ :endif              ⍝ Delete all files remaining in InputDir
+[28]              :endfor
+[29]              0 0⍴WRemoveDirectory InputDir                                       ⍝ Remove sub-process folder after Database loaded
+[30]          :endif
+[31]      :endfor
+[32]  
+[33]      ∆←⍙⍙SubProcTab at 'Finished'
+[34]      (⍙⍙msk/∆)←1
+[35]      ⍙⍙SubProcTab←⍙⍙SubProcTab amend 'Finished' ∆                        ⍝ Mark finalised run in Table
+[36]  
+[37]      :select MembGroup
+[38]      :case 'Pensioners' ⋄ 0 0⍴( SystemDir,'PENWIN') DeleteModule 'MemberCalcs'
+[39]      :case 'Deferreds'  ⋄ 0 0⍴(⊂SystemDir,'DEFWIN') DeleteModule¨'MemberCalcs' 'All Benefits' 'Retirement' 'Death'                                      'Accrued' 'PPF' 'Transfers'
+[40]      :case 'Actives'    ⋄ 0 0⍴(⊂SystemDir,'ACTWIN') DeleteModule¨'MemberCalcs' 'All Benefits' 'Retirement' 'Death' 'Ill-Health',(bGAD/⊂'PHI'),'Leaving' 'Accrued' 'PPF'
+[41]          0 0⍴(SystemDir,'VALNWIN') DeleteModule 'Valuation ',ValMeth ⍝ Valuation Method Functions
+[42]      :endselect
+[43]  
+[44]      ∆←+/0=⍙⍙SubProcTab at 'Finished'
+[45]  :until (TotalRuns>BatchRow)^⍙⍙MaxSubProc>∆ ⍝ Next Run if sub-process and run available
+[46]  :orif  (TotalRuns=BatchRow)^0=∆            ⍝ Finish all sub-processes if no more runs
+    ∇

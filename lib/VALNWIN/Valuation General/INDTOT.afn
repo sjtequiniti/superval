@@ -1,0 +1,17 @@
+    ∇ INDTOT heading;line
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝ Fn to write out Total Results for Individual for AGG AAN EAN and NEC
+[3]   ⍝ Yearly results and totals at bottom
+[4]   ⍝
+[5]   ⍝ V2.50u RE 1/11/93 Standardised
+[6]   →IsDeferred/L0 ⍝ Skip V1% for New Deferreds
+[7]   SUMMREC←SUMMREC⍪¯132↑((75-9×∨/dab,IsDeferred)/' '),,'<Present Value of a Contribution of 1% of Salary >,CI9' ⎕FMT PVCONTS1pc
+[8]   ⍝ Add to native DOS file, TEMP$$.IND, individual's full details
+[9]   L0:(IPAGE line)←H1 OUTPUT tpI,IPAGE,pAGE
+[10]  →(~(⊂ValMeth)∊'EAN' 'NEC')/L1 ⋄ IND∆COCR ⋄ →(ValMeth≡'NEC')/F1
+[11]  ⍝ Past Service Totals for each of the benefits separately
+[12]  L1:SUMMREC←heading PRINT∆SPLIT MAT ⋄ (IPAGE line)←(¯4 0↓H1) OUTPUT tpI,IPAGE,line
+[13]  →(∨/IsDeferred,dab,~NotPUC)/0
+[14]  F1:SUMMREC←'Future Service Values' PRINT∆SPLIT TOTSPLIT-MAT
+[15]  IPAGE←1↑(¯4 0↓H1) OUTPUT tpI,IPAGE,line
+    ∇

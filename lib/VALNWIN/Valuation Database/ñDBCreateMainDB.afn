@@ -1,0 +1,122 @@
+    ∇ ⍙dbname←⍙dbname ⍙DBCreateMainDB arg;z;err;tie;cursor;lock;found;xxx;list;DBdata;tempDB
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Create/Connect to a Database (SQL Server or Access File)
+[3]   ⍝ arg is a flag to indicate type of database
+[4]   ⍝   1   Valuation Database
+[5]   ⍝   2   Consolidation Database
+[6]   ⍝   3   Scenario Database
+[7]   ⍝ Reads: bGAD cLIENT ClntCode neIND
+[8]   ⍝ Sets: CatID ClassBase ResultsCategoryID ValMeth ⍙dbopt
+[9]   ⍝ Revn: sjt29oct15 * SQL Server
+[10]  
+[11]  top:(⍙dbname DatabaseID found)←⍙dbname ⍙DBOpen arg
+[12]  DBIDwid←⍴DBID←⍕DatabaseID
+[13]  
+[14]  xxx←'ADOrst' ⎕WI 'Create' 'ADODB.Recordset' ⍝ Create Record Set Object
+[15]  cursor←'ADOrst' ⎕wi 'adOpenStatic' ⋄ lock←'ADOrst' ⎕wi 'adLockOptimistic'
+[16]  
+[17]  :if found ⍝⍝⍝ ⋄ :orif sqlDatabase^DatabaseID>0
+[18]      'ADOrst' ⎕wi 'XOpen' 'Version' ('ADOcon' ⎕wi 'obj')  cursor lock
+[19]      DBdata←⌽1 0 1/,'ADOrst' ⎕wi 'XGetRows' ⍝ Compare Client Code and Version - not Build
+[20]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[21]      'ADOrst' ⎕wi 'XOpen' 'Identification' ('ADOcon' ⎕wi 'obj')  cursor lock
+[22]      :if sqlDatabase
+[23]          'ADOrst' ⎕wi 'xFilter' ("DatabaseID=",DBID) ⍝ find Scheme runs only record
+[24]      :endif
+[25]      :if 0='ADOrst' ⎕wi 'xRecordCount' ⋄ DBdata←DBdata,(1+1=∣arg)↑'' ''
+[26]      :else                             ⋄ DBdata←DBdata,(1+1=∣arg)↑(2×sqlDatabase)↓,'ADOrst' ⎕wi 'XGetRows' ⍝ Compare Scheme and Database Type
+[27]      :endif
+[28]      'ADOrst' ⎕wi 'xFilter' ''
+[29]      0 0⍴'ADOrst' ⎕wi 'XClose'
+[30]      :if ∨/z←4↑~DBdata≡¨(⍕ClntCode×1+bGAD) (Win∆Parent version) (100↑cLIENT),(1=∣arg)/⊂(15↑'Client')
+[31]          err←''
+[32]          :if    ↑z  ⋄ err←err,⎕tcnl,'Incorrect Database Client Code.  Please report to Claybrook to resolve the problem.' ⋄ :endif
+[33]          :if ∨/1↓z  ⋄ err←err,⎕tcnl,'Incorrect ',(1↓∊z/'' '/Database Version' '/Database Client Name' '/Database Type'),'.  '
+[34]              :if sqlDatabase
+[35]                       err←err,'Please refer to your SuperVal Administrator to update the SQL Server Database.'
+[36]              :else
+[37]                       err←err,'Please try clearing your Output and Consolidation folders (or designate new ones) and try again.'
+[38]              :endif
+[39]          :endif
+[40]          :if 1=∣arg ⋄ (1↓err) VALN∆LOG 'Error'
+[41]              AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Database File is incompatible'
+[42]          :else     ⋄ MDISPLAY 1↓err
+[43]          :endif
+[44]          ⍙dbopt←0 ⋄ →end
+[45]      :endif
+[46]      :if sepComCot≠↑(,1 ⍙DBadoCONCommand "SELECT SeparateComCot FROM ResultsCategory",sqlDatabase/" WHERE DatabaseID=",⍕DBID),sepComCot
+[47]          err←'Incorrect Database Cash Split flag.  Change "Separate Cash Commutation and Cash on Top" flag in Scheme Details or clear your Output and Consolidation folders (or designate new ones) and try again.'
+[48]          :if 1=∣arg ⋄ err VALN∆LOG 'Error'
+[49]              AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'Incorrect Database Cash Split flag'
+[50]          :else     ⋄ MDISPLAY err
+[51]          :endif
+[52]          ⍙dbopt←0 ⋄ →end
+[53]      :endif
+[54]  :endif
+[55]  :if ~found ⋄ :andif 0≤∣arg
+[56]      :if sqlDatabase ⍝ Main Database is missing
+[57]          'ADOrst' ⎕wi 'XOpen' 'Identification' ('ADOcon' ⎕wi 'obj') cursor lock
+[58]          :if DatabaseID=0
+[59]              err←'SQL Server Database ',ValnResultsDB,' not found. Refer to your Site Administrator to create the Database.'
+[60]              :if 1=∣arg ⋄ err VALN∆LOG 'Error'
+[61]                  AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'SQL Server Database not found'
+[62]              :else     ⋄ MDISPLAY err
+[63]              :endif
+[64]              ⍙dbopt←0 ⋄ →end
+[65]          :elseif DatabaseID=¯1
+[66]              err←'No more Database IDs available in SQL Server Database ',ValnResultsDB,' for Scheme ID ',⍕sqlschemeID
+[67]              :if 1=∣arg ⋄ err VALN∆LOG 'Error'
+[68]                  AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'No Database ID available'
+[69]              :else     ⋄ MDISPLAY err
+[70]              :endif
+[71]              ⍙dbopt←0 ⋄ →end
+[72]          :elseif 1=∣arg ⍝ Add a Valuation Database if it doesn't exist
+[73]              ⍙DBInsertData sqlschemeID DatabaseID (100↑cLIENT) 'Client'       'Valuation Runs' (⍙DBTimeStamp ⎕ts) 10 10 10 uSER
+[74]          :elseif 2=∣arg ⍝ Add a new Consolidation Database
+[75]              ⍙DBInsertData sqlschemeID DatabaseID (100↑cLIENT) 'Consolidation' ConsDBName      (⍙DBTimeStamp ⎕ts)  0  0  0 uSER ParmDesc ParmTS
+[76]          :elseif 3=∣arg ⍝ Add a new Scenario Database
+[77]              ⍙DBInsertData sqlschemeID DatabaseID (100↑cLIENT) 'Scenario'      ScenDBName      (⍙DBTimeStamp ⎕ts)  0  0  0 uSER ParmDesc ParmTS
+[78]          :endif
+[79]          'ADOrst' ⎕wi 'XClose'
+[80]      :else ⍝ Create the Access file and add Tables
+[81]          tempDB←arg∊2 3
+[82]          ⍙dbname ⍙DBInsertMainDB ∣arg
+[83]      :endif
+[84]      ResultsCategoryID←¯1
+[85]  :elseif ~found
+[86]      crash! ⍝⍝⍝ Existing Database not found?
+[87]  :endif
+[88]  
+[89]  :if 1=∣arg
+[90]      :if ⍙dbopt
+[91]          :select ValMeth
+[92]          :caselist 'AAN' 'PUC' 'DAB' 'PPA' ⋄ ClassBase←20000
+[93]          :caselist 'DEF' 'PPD'             ⋄ ClassBase←10000
+[94]          :caselist 'PEN' 'PPP'             ⋄ ClassBase←0
+[95]          :else                             ⋄ crash ⍝ Catch anything else here!!
+[96]          :endselect
+[97]  
+[98]          :if ~neIND ⋄ freqID←⍙DBXL_Data ⋄ :endif ⍝ Excel Fixed data
+[99]          (ResultsCategoryID BasisCategoryID)←⍙DBIndexMainDB neIND×ResultsCategoryID
+[100]         :if sqlDatabase ⋄ :andif 9999<ResultsCategoryID
+[101]             err←'No ResultsCategory ID available in SQL Server Database ',ValnResultsDB,' for Scheme ID ',⍕sqlschemeID
+[102]             :if 1=∣arg ⋄ err VALN∆LOG 'Error'
+[103]                 AbortedRuns←AbortedRuns OVER ClassID SelSex basisDesc ScenarioDesc 'No ResultsCategory ID available'
+[104]             :else     ⋄ MDISPLAY err
+[105]             :endif
+[106]             ⍙dbopt←0 ⋄ →end
+[107]         :endif
+[108]         CatIDwid←⍴CatID←⍕↑(ResultsCategoryID BasisCategoryID)←DatabaseID+ResultsCategoryID BasisCategoryID
+[109]     :else
+[110]         ResultsCategoryID←DatabaseID+9 ⍝ 9 for Test Run or not stored
+[111]     :endif
+[112] :endif
+[113] 
+[114] end:
+[115] :if 0=⍙dbopt
+[116]     0 0⍴'ADOrst' ⎕wi 'Delete'
+[117]     0 0⍴'ADOconcmd' ⎕wi 'Delete'
+[118]     0 0⍴(⊂'ADOcon') ⎕wi¨(found/⊂'XClose'),⊂'Delete'
+[119]     XL_Quit ⍝ Unload the Excel used for preparation
+[120] :endif
+    ∇

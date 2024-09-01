@@ -1,0 +1,115 @@
+    ∇ ⍙DBXL_PenResWrite data;pos;NoMembers;tab;size;z;sql;deleted;NoCashflows
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Write the Valuation Results in to Excel
+[3]   
+[4]   →(0∊⍴data)/0 ⍝ Skip if no members
+[5]   
+[6]   NoMembers←XL_Data 'NoMembers'
+[7]   pos←(14+NoMembers-↑⍴data) 0 (13+NoMembers) 0
+[8]   
+[9]   1 XL_ActivateWorksheet 'StatCalc'
+[10]  deleted←(56×ppf)+54×~bencap ⍝ Columns deleted in setup
+[11]  0 0⍴data[;⍳2] XL_Data RCtoA1 pos+0 1 0 2
+[12]  
+[13]  (3 3) XL_PasteFormulas pos+4⍴0 3
+[14]  :if ppf
+[15]      (3 5 3,120-deleted) XL_PasteFormulas pos+0 5 0,120-deleted
+[16]  :else
+[17]      (3 5 3,115-deleted) XL_PasteFormulas pos+0 5 0,115-deleted
+[18]      0 0⍴("LiabilityTypeID = 7 AND DataItemID = 10" ⍙DBXL_ExtractRes "BenefitTypeID" (14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 2 3)) XL_Data RCtoA1 pos+0 26 0 43
+[19]      :if summopt∨csvind∨aggopt[0] ⍝ Num of Pensioners that need to be calculated at run time
+[20]          0 0⍴("DataItemID = 1" ⍙DBXL_ExtractRes "BenefitTypeID" (14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 2 3)) XL_Data RCtoA1 pos+0 44 0 61
+[21]      :endif
+[22]      :if bencap
+[23]          0 0⍴("LiabilityTypeID = 3 AND DataItemID = 10" ⍙DBXL_ExtractRes "BenefitTypeID" (14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 2 3)) XL_Data RCtoA1 pos+0 80 0 97
+[24]          :if summopt∨csvind∨aggopt[0] ⍝ Num of Pensioners that need to be calculated at run time
+[25]              0 0⍴("DataItemID = 26" ⍙DBXL_ExtractRes "BenefitTypeID" (14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 2 3)) XL_Data RCtoA1 pos+0 98 0 115
+[26]          :endif
+[27]      :endif
+[28]  :endif
+[29]  
+[30]  1 XL_ActivateWorksheet 'IndivRes'
+[31]  deleted←(21×~ppf)+92×ppf+~bencap ⍝ Columns deleted in setup
+[32]  (13 7 13,227-deleted) XL_PasteFormats pos+¯1 7 0,227-deleted
+[33]  0 0⍴data[;⍳2] XL_Data RCtoA1 pos+0 1 0 2
+[34]  
+[35]  (3 3 3 6) XL_PasteFormulas pos+0 3 0 6
+[36]  
+[37]  ⍝ Member data
+[38]  data[;8+⎕io]←data[;8+⎕io]×~×data[;2+⎕io]
+[39]  0 0⍴(0 ¯1↓0 3↓data) XL_Data RCtoA1 pos+0⌈0 7 0 11
+[40]  0 0⍴(data[;,⎕io+8]) XL_Data RCtoA1 pos+4⍴0 15
+[41]  :if 10<¯1↑⍴data ⋄ 0 0⍴(data[;,⎕io+10]) XL_Data RCtoA1 pos+4⍴0 12 ⋄ :endif ⍝ Member or Spouse flag
+[42]  
+[43]  :if ppf
+[44]      (8,203-deleted) XL_PasteFormulas pos+4⍴0,203-deleted
+[45]      (8,207-deleted) XL_PasteFormulas pos+4⍴0,207-deleted
+[46]      (8,211-deleted) XL_PasteFormulas pos+4⍴0,211-deleted
+[47]      (8,215-deleted) XL_PasteFormulas pos+4⍴0,215-deleted
+[48]      (8,(219-deleted),8,(227-deleted)) XL_PasteFormulas pos+4⍴0,(219-deleted),0,(227-deleted)
+[49]  
+[50]      0 0⍴("LiabilityTypeID = 7 AND DataItemID IN (9, 10)" ⍙DBXL_ExtractRes "BenefitTypeID" (12 13 34)) XL_Data RCtoA1 pos+0⌈0 200 0 202-deleted
+[51]      0 0⍴("LiabilityTypeID = 7 AND DataItemID = 41"       ⍙DBXL_ExtractRes "BenefitTypeID" (38 39 40)) XL_Data RCtoA1 pos+0⌈0 204 0 206-deleted
+[52]  
+[53]      tab←-"LiabilityTypeID = 3 AND BenefitTypeID = 12" ⍙DBXL_ExtractRes "ContingencyID" ( 2  6 12)
+[54]      0 0⍴(tab[;,⎕io],+/tab[;⎕io+1 2]) XL_Data RCtoA1 pos+  0⌈0 208 0 209-deleted
+[55]      tab←-"LiabilityTypeID = 3 AND BenefitTypeID = 13" ⍙DBXL_ExtractRes "ContingencyID" ( 2  6 12)
+[56]      0 0⍴(tab[;,⎕io],+/tab[;⎕io+1 2]) XL_Data RCtoA1 pos+  0⌈0 212 0 213-deleted
+[57]      tab←-"LiabilityTypeID = 3 AND BenefitTypeID = 34" ⍙DBXL_ExtractRes "ContingencyID" ( 2  6 12)
+[58]      0 0⍴(tab[;,⎕io],+/tab[;⎕io+1 2]) XL_Data RCtoA1 pos+  0⌈0 216 0 217-deleted
+[59]      tab←-"LiabilityTypeID = 3 AND DataItemID = 14"    ⍙DBXL_ExtractRes "BenefitTypeID" (38 39 40)
+[60]      0 0⍴ tab[;,⎕io  ]                XL_Data RCtoA1 pos+4⍴0⌈0 210      -deleted
+[61]      0 0⍴ tab[;,⎕io+1]                XL_Data RCtoA1 pos+4⍴0⌈0 214      -deleted
+[62]      0 0⍴ tab[;,⎕io+2]                XL_Data RCtoA1 pos+4⍴0⌈0 218      -deleted
+[63]  :else
+[64]      ⍝ Paste Formulas for Totals/Annuities Calculations
+[65]      (7 16) XL_PasteFormulas pos+4⍴0 16
+[66]      (7 35) XL_PasteFormulas pos+4⍴0 35
+[67]      (8 72 8 107) XL_PasteFormulas pos+0 72 0 107
+[68]  
+[69]      ⍝ Pensions (3 lots of 6)
+[70]      0 0⍴("ContingencyID = 2 AND LiabilityTypeID = 7 AND DataItemID IN (9, 10, 41)" ⍙DBXL_ExtractRes "BenefitTypeID" (14 15 16 17 18 19)) XL_Data RCtoA1 pos+0 17 0 22
+[71]      0 0⍴("ContingencyID = 2 AND LiabilityTypeID = 7 AND DataItemID IN (9, 10, 41)" ⍙DBXL_ExtractRes "BenefitTypeID" (20 21 22 23 24 25)) XL_Data RCtoA1 pos+0 23 0 28
+[72]      0 0⍴("ContingencyID = 2 AND LiabilityTypeID = 7 AND DataItemID IN (9, 10, 41)" ⍙DBXL_ExtractRes "BenefitTypeID" (26 27 28 29 2 3)  ) XL_Data RCtoA1 pos+0 29 0 34
+[73]  
+[74]      :for z :in ⍳18 ⍝ Member/Spouse Liabilities
+[75]          tab←-("BenefitTypeID = ",(⍕(14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 2 3)[z])," AND DataItemID = 13") ⍙DBXL_ExtractRes "ContingencyID" (2 6 12)
+[76]          0 0⍴(tab[;,0],+/0 1↓tab) XL_Data RCtoA1 pos+0 (36+2×z) 0 (37+2×z)
+[77]      :endfor
+[78]      :if bencap
+[79]          ⍝ Paste Formulas for Totals/Annuities Accrued Calculations
+[80]          (7 108) XL_PasteFormulas pos+4⍴0 108
+[81]          (7 127) XL_PasteFormulas pos+4⍴0 127
+[82]          (8 164 8 199) XL_PasteFormulas pos+0 164 0 199
+[83]  
+[84]          ⍝ Pensions (3 lots of 6)
+[85]          0 0⍴("ContingencyID = 2 AND LiabilityTypeID = 3 AND DataItemID IN (9, 10, 41)" ⍙DBXL_ExtractRes "BenefitTypeID" (14 15 16 17 18 19)) XL_Data RCtoA1 pos+0 109 0 114
+[86]          0 0⍴("ContingencyID = 2 AND LiabilityTypeID = 3 AND DataItemID IN (9, 10, 41)" ⍙DBXL_ExtractRes "BenefitTypeID" (20 21 22 23 24 25)) XL_Data RCtoA1 pos+0 115 0 120
+[87]          0 0⍴("ContingencyID = 2 AND LiabilityTypeID = 3 AND DataItemID IN (9, 10, 41)" ⍙DBXL_ExtractRes "BenefitTypeID" (26 27 28 29 2 3)  ) XL_Data RCtoA1 pos+0 121 0 126
+[88]  
+[89]          :for z :in ⍳18 ⍝ Member/Spouse Liabilities
+[90]              tab←-("BenefitTypeID = ",(⍕(14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 2 3)[z])," AND DataItemID = 14") ⍙DBXL_ExtractRes "ContingencyID" (2 6 12)
+[91]              0 0⍴(tab[;,0],+/0 1↓tab) XL_Data RCtoA1 pos+0 (128+2×z) 0 (129+2×z)
+[92]          :endfor
+[93]      :endif
+[94]  :endif
+[95]  
+[96]  :if ppf ⋄ :orif bencap
+[97]      0 0⍴(×"LiabilityTypeID = 9 AND ContingencyID = 99" ⍙DBXL_ExtractRes "DataItemID" (24)) XL_Data RCtoA1 pos+4⍴0 5 ⍝ Capped Flag
+[98]      (8,221-deleted) XL_PasteFormulas pos+0⌈0 221 0 221-deleted
+[99]  :endif
+[100] 
+[101] :if ClntCode=3 ⋄ :andif ~ppf
+[102]     (6 9 'Updating Cash Flows') Win∆ProgressBar2 'MemberUpdate'
+[103] 
+[104]     1 XL_ActivateWorksheet 'CFbyCat'
+[105]     NoCashflows←XL_Data 'NoCashflows'
+[106]     z←neIND+(2×SelSex='F')+4×BasisCategoryID
+[107]     size←↑⍴tab←⍉MATRIX DTZ (ResultsCategoryID,8) ⍙DBSQLRead "SELECT SVYear,SUM(SVValue) FROM ResultsData WHERE ResultsCategoryID=%1 AND LiabilityTypeID=%2 GROUP BY SVYear"
+[108]     0 0⍴z XL_Data RCtoA1 (131+NoCashflows) 1 (130+NoCashflows+size) 1
+[109]     0 0⍴(⍉MATRIX ⍳size) XL_Data RCtoA1 (131+NoCashflows) 2 (130+NoCashflows+size) 2
+[110]     0 0⍴(-tab) XL_Data RCtoA1 (131+NoCashflows) 5 (130+NoCashflows+size) 5
+[111]     0 0⍴(NoCashflows←NoCashflows+size) XL_Data 'NoCashflows'
+[112]     'CFbyCat' XL_ProtectSheet ¯1
+[113] :endif
+    ∇

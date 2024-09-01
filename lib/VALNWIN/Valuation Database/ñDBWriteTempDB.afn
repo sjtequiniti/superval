@@ -1,0 +1,33 @@
+    ∇ ⍙DBWriteTempDB arg;ID;∆
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Write Member/Fund records to Temp DB files (optimally!)
+[3]   ⍝ arg of 1 forces a write of the records
+[4]   
+[5]   ⍙DBAddRecords ⍝ Add any remaining records
+[6]   
+[7]   :if ⍙dbopt
+[8]       :if 0≠xl_membrow
+[9]           :if arg ⋄ :orif aosind∨neIND ⋄ :orif xl_membrow>0.95×xl_membmax
+[10]              ∆←⍳xl_membrow
+[11]              :if 0>↑xl_membres ⋄ ID←'<Age >,LI8' ⎕fmt -xl_membres[∆;0]
+[12]              :else             ⋄ ID←'I12'        ⎕fmt  xl_membres[∆;0]
+[13]              :endif
+[14]              xl_membres←(ID,xl_membfmt ⎕fmt xl_membres[∆;1↓⍳xl_membnokeys]) (AgeMult×xl_membres[∆; xl_membnokeys])
+[15]              (xl_membtie 'xl_memb') ⍙DBInsertTempData 'xl_membres'
+[16]              xl_membres←(xl_membmax,xl_membnokeys+1)⍴xl_membrow←0
+[17]          :endif
+[18]      :endif
+[19]  
+[20]      :if 0≠⍙dbfundrow
+[21]          :if arg ⋄ :orif ~aggopt[0]∨csvind∨summopt ⋄ :orif ⍙dbfundrow>0.90×⍙dbfundmax
+[22]              ∆←⍳⍙dbfundrow
+[23]              ⍙dbfundres←(⍙dbfundfmt ⎕fmt ⍙dbfundres[∆;⍳⍙dbfundnokeys]) (AgeMult×⍙dbfundres[∆; ⍙dbfundnokeys])
+[24]              (⍙dbfundtie '⍙dbfund') ⍙DBInsertTempData '⍙dbfundres'
+[25]              ⍙dbfundres←(⍙dbfundmax,⍙dbfundnokeys+1)⍴⍙dbfundrow←0
+[26]          :endif
+[27]      :endif
+[28]  :else
+[29]      xl_membres←(xl_membmax,xl_membnokeys+1)⍴xl_membrow←0
+[30]      ⍙dbfundres←(⍙dbfundmax,⍙dbfundnokeys+1)⍴⍙dbfundrow←0
+[31]  :endif
+    ∇

@@ -1,1 +1,57 @@
-    ∇ SaveRates;desc;ind;NewTable;TABLE;OldValues;NewValues;NewDesc;TimeStamp;tieno;∆_Index;TableRow;cn[1]   ⍝ DECRWIN.sf#18[2]   ⍝ Function to save decrement, annuity, etc rates to the data-bank.[3]   [4]   TABLE←OldTable GetRates SSName[5]   [6]   ⍝ Delete Trailing zeroes to save space (note that trailing zeroes on "T" tables are retained)[7]   :if TwoDTable OldTable ⍝ 2D Tables[8]       TABLE←((-+/^\⌽^/TABLE=0),0)↓TABLE[9]       TABLE←(0,-+/^\⌽^⌿TABLE=0)↓TABLE[10]  :elseif ~OldTable[2]∊'Tt' ⋄ :andif ~(⊂OldTable[⍳2])∊'AD' 'ad'[11]      TABLE←DTZ TABLE[12]  :endif[13]  [14]  ⍝ "ind" indicates if use existing Component (ie replace)[15]  ⍝ Editing a Table with "Replace" enabled & checked[16]  ind←^/(RTselection[2]=3),(~'fmEditRates.ckReplaceTab' ⎕wi 'enabled')∨('fmEditRates.ckReplaceTab' ⎕wi 'value')[17]  [18]  :if ind ⍝ "ind" indicates Replace[19]      OldValues←DECRFile ReadFile OldTable ⍝ Audit Vars[20]      1 DEC∆ASCII OldTable ⍝ Delete ASCII of Old Table[21]  :else[22]      OldValues←⍳0[23]      :if RTselection[2]=3[24]          OldDesc←'Derived from ',DLTB ⊃RTselection[3] ⋄ ChangeType←'Add'[25]      :endif[26]  :endif[27]  [28]  NewTable←¯5↑'fmEditRates.cbTableNo' ⎕wi 'text'[29]  desc←DLTB 'fmEditRates.edTableDesc' ⎕wi 'text'[30]  :if ind ⍝ Delete old table[31]      ∆_Index←DECRFile ReadFile 1[32]      TableRow←(⎕split ∆_Index[;∆_Index[1;]⍳'∆_Name' '∆_Deleted'])⍳⊂OldTable ''[33]      cn←∆_Index[TableRow;∆_Index[1;]⍳⊂'∆_CompNo'][34]      0 0⍴DECRFile SaveToFile cn       desc TABLE[35]      ∆_Index←DECRFile ReadFile 1[36]      ∆_Index[TableRow;∆_Index[1;]⍳⊂'∆_Name']←⊂NewTable[37]      →(0≠DECRFile FSTIE tieno←TieNumber DECRFile)/⎕lc[38]      ∆_Index ⎕FREPLACE tieno,1 ⋄ ⎕funtie tieno[39]  :else[40]      0 0⍴DECRFile SaveToFile NewTable desc TABLE[41]  :endif[42]  DECRIndex←DECRFile ReadFile 'Index' ⋄ Decrupdated←0[43]  TimeStamp←⊃DECRIndex[2;DECRIndex[1;]⍳⊂'∆_TSModified'][44]  0 DEC∆ASCII NewTable ⍝ Update ASCII File of Rates[45]  [46]  :if ind ⋄ :andif ~OldTable≡NewTable[47]      ChangeType←'Delete' ⋄ NewValues←⍳0 ⋄ NewDesc←''[48]      OldTable AuditRates DECRFile[49]  [50]      ChangeType←'Add' ⋄ OldDesc←'' ⋄ OldValues←⍳0[51]  :endif[52]  NewValues←TABLE ⋄ NewDesc←desc[53]  NewTable AuditRates DECRFile[54]  [55]  RTselection3←(OldTable←NewTable),'  ',desc ⍝ Highlight New Table!!    ∇
+    ∇ SaveRates;desc;ind;NewTable;TABLE;OldValues;NewValues;NewDesc;TimeStamp;tieno;∆_Index;TableRow;cn
+[1]   ⍝ DECRWIN.sf#18
+[2]   ⍝ Function to save decrement, annuity, etc rates to the data-bank.
+[3]   
+[4]   TABLE←OldTable GetRates SSName
+[5]   
+[6]   ⍝ Delete Trailing zeroes to save space (note that trailing zeroes on "T" tables are retained)
+[7]   :if TwoDTable OldTable ⍝ 2D Tables
+[8]       TABLE←((-+/^\⌽^/TABLE=0),0)↓TABLE
+[9]       TABLE←(0,-+/^\⌽^⌿TABLE=0)↓TABLE
+[10]  :elseif ~OldTable[2]∊'Tt' ⋄ :andif ~(⊂OldTable[⍳2])∊'AD' 'ad'
+[11]      TABLE←DTZ TABLE
+[12]  :endif
+[13]  
+[14]  ⍝ "ind" indicates if use existing Component (ie replace)
+[15]  ⍝ Editing a Table with "Replace" enabled & checked
+[16]  ind←^/(RTselection[2]=3),(~'fmEditRates.ckReplaceTab' ⎕wi 'enabled')∨('fmEditRates.ckReplaceTab' ⎕wi 'value')
+[17]  
+[18]  :if ind ⍝ "ind" indicates Replace
+[19]      OldValues←DECRFile ReadFile OldTable ⍝ Audit Vars
+[20]      1 DEC∆ASCII OldTable ⍝ Delete ASCII of Old Table
+[21]  :else
+[22]      OldValues←⍳0
+[23]      :if RTselection[2]=3
+[24]          OldDesc←'Derived from ',DLTB ⊃RTselection[3] ⋄ ChangeType←'Add'
+[25]      :endif
+[26]  :endif
+[27]  
+[28]  NewTable←¯5↑'fmEditRates.cbTableNo' ⎕wi 'text'
+[29]  desc←DLTB 'fmEditRates.edTableDesc' ⎕wi 'text'
+[30]  :if ind ⍝ Delete old table
+[31]      ∆_Index←DECRFile ReadFile 1
+[32]      TableRow←(⎕split ∆_Index[;∆_Index[1;]⍳'∆_Name' '∆_Deleted'])⍳⊂OldTable ''
+[33]      cn←∆_Index[TableRow;∆_Index[1;]⍳⊂'∆_CompNo']
+[34]      0 0⍴DECRFile SaveToFile cn       desc TABLE
+[35]      ∆_Index←DECRFile ReadFile 1
+[36]      ∆_Index[TableRow;∆_Index[1;]⍳⊂'∆_Name']←⊂NewTable
+[37]      →(0≠DECRFile FSTIE tieno←TieNumber DECRFile)/⎕lc
+[38]      ∆_Index ⎕FREPLACE tieno,1 ⋄ ⎕funtie tieno
+[39]  :else
+[40]      0 0⍴DECRFile SaveToFile NewTable desc TABLE
+[41]  :endif
+[42]  DECRIndex←DECRFile ReadFile 'Index' ⋄ Decrupdated←0
+[43]  TimeStamp←⊃DECRIndex[2;DECRIndex[1;]⍳⊂'∆_TSModified']
+[44]  0 DEC∆ASCII NewTable ⍝ Update ASCII File of Rates
+[45]  
+[46]  :if ind ⋄ :andif ~OldTable≡NewTable
+[47]      ChangeType←'Delete' ⋄ NewValues←⍳0 ⋄ NewDesc←''
+[48]      OldTable AuditRates DECRFile
+[49]  
+[50]      ChangeType←'Add' ⋄ OldDesc←'' ⋄ OldValues←⍳0
+[51]  :endif
+[52]  NewValues←TABLE ⋄ NewDesc←desc
+[53]  NewTable AuditRates DECRFile
+[54]  
+[55]  RTselection3←(OldTable←NewTable),'  ',desc ⍝ Highlight New Table!!
+    ∇

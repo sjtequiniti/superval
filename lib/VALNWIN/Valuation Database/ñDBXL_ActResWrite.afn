@@ -1,0 +1,69 @@
+    ∇ ClassID ⍙DBXL_ActResWrite data;pos;NoMembers;deleted;tab
+[1]   ⍝ VALNWIN.sf#17
+[2]   ⍝ Write the Actives Valuation Results in to Excel
+[3]   
+[4]   →(0∊⍴data)/0 ⍝ Skip if no members
+[5]   
+[6]   NoMembers←XL_Data 'NoMembers'
+[7]   pos←(14+NoMembers-↑⍴data) 0 (13+NoMembers) 0
+[8]   
+[9]   1 XL_ActivateWorksheet 'StatCalc'
+[10]  0 0⍴data[;⍳2] XL_Data RCtoA1 pos+0 1 0 2
+[11]  
+[12]  ⍝ Columns deleted in setup - 20 PUC Normal Costs and 60 V1%'s
+[13]  deleted←(20×NotPUC)+(60×ppf)
+[14]  
+[15]  ⍝ Copy formulae for these cells
+[16]  (3 3) XL_PasteFormulas pos+4⍴0 3
+[17]  (3 (13+4×ClassID=2) 3 40) XL_PasteFormulas pos+0 (13+4×ClassID=2) 0 40
+[18]  
+[19]  :if ClassID=1
+[20]      ⍝ Demographics
+[21]      tab←"LiabilityTypeID = 7" ⍙DBXL_ExtractRes "DataItemID" (4 19 18 20 21 17)
+[22]      0 0⍴(tab÷[⎕io]data[;⎕io+8]) XL_Data RCtoA1 pos+0 5 0 10 ⍝ Convert into averages
+[23]      0 0⍴("LiabilityTypeID = 7" ⍙DBXL_ExtractRes "DataItemID" (6 7)) XL_Data RCtoA1 pos+0 11 0 12
+[24]  
+[25]      :if summopt∨csvind∨aggopt[0] ⍝ Demographics that need to be calculated at run time
+[26]          0 0⍴("LiabilityTypeID = 7" ⍙DBXL_ExtractRes "DataItemID" (62 63 66 64 65 67 68 61 72 73 76 74 75 77 78 71)) XL_Data RCtoA1 pos+0 25 0 40
+[27]      :endif
+[28]  :endif
+[29]  :select ClassID
+[30]  :case 1 ⋄ ⍙DBXL_IFResWrite 'StatCalc'
+[31]  :case 2 ⋄ ⍙DBXL_NEResWrite 'StatCalc'
+[32]  :endselect
+[33]  
+[34]  1 XL_ActivateWorksheet 'IndivRes'
+[35]  (13 7 13,265-189×ppf) XL_PasteFormats pos+¯1 7 0,(265-189×ppf)
+[36]  
+[37]  0 0⍴data[;⍳2] XL_Data RCtoA1 pos+0 1 0 2
+[38]  0 0⍴(0 3↓data) XL_Data RCtoA1 pos+0 7 0 12
+[39]  
+[40]  ⍝ Copy formulae for these cells
+[41]  (3 3 3 4) XL_PasteFormulas pos+0 3 0 4
+[42]  (3 6) XL_PasteFormulas pos+4⍴0 6
+[43]  
+[44]  :select ClassID
+[45]  :case 1 ⋄              ⍙DBXL_IFResWrite 'IndivRes'
+[46]  :case 2 ⋄ data[;⎕io+1] ⍙DBXL_NEResWrite 'IndivRes'
+[47]  :endselect
+[48]  
+[49]  :if ~ppf ⍝ Paste Formulas for Demographic and Total PS/FS Calculations
+[50]      deleted←1
+[51]      (7  17) XL_PasteFormulas pos+4⍴0  17
+[52]      (7  38) XL_PasteFormulas pos+4⍴0  38
+[53]      (8  89) XL_PasteFormulas pos+4⍴0  89
+[54]      (8 118) XL_PasteFormulas pos+4⍴0 118
+[55]      (7,139-deleted) XL_PasteFormulas pos+4⍴0,139-deleted
+[56]      (7,142-deleted) XL_PasteFormulas pos+4⍴0,142-deleted
+[57]  :endif
+[58]  
+[59]  ⍝⍝⍝ 'XL' ⎕wi 'Range>.Rng' (RCtoA1 4⍴13 ⍬) ⋄ ('XL.Rng' ⎕wi 'xEntireRow') ⎕wi 'xHidden' 0
+[60]  ⍝⍝⍝ ((13 7 13,241-217×ppf) (pos+0 7 0,(241-217×ppf))) XL_ApplyProperty 'XPasteSpecial' (↑⍙XL at '=xlPasteFormats')
+[61]  ⍝⍝⍝ (13 7 13,241-217×ppf) XL_PasteFormats pos+0 7 0,(241-217×ppf)
+[62]  ⍝⍝⍝ :if     ClassID=2 ⋄ (⍬ (pos+0 12 0 12)) XL_ApplyProperty 'xNumberFormat' ('#,##0.00_ ;[Red]-#,##0.00 ') ⍝ Reset Formats
+[63]  ⍝⍝⍝ :elseif AgeInterp ⋄ (⍬ (pos+0 11 0 11)) XL_ApplyProperty 'xNumberFormat' ('#0.00') ⍝ Reset Age Formats to 2dp
+[64]  :if ClassID=2 ⋄ (pos+0 12 0 12) XL_NumberFormat '#,##0.00_ ;[Red]-#,##0.00 ' ⋄ :endif ⍝ Reset Formats
+[65]  ⍝⍝⍝ :elseif AgeInterp ⋄ (pos+0 11 0 11) XL_NumberFormat '#0.00' ⍝ Reset Age Formats to 2dp
+[66]  ⍝⍝⍝ :endif
+[67]  ⍝⍝⍝ ('XL.Rng' ⎕wi 'xEntireRow') ⎕wi 'xHidden' 1 ⍝⍝⍝ ⋄ 'XL.Rng' ⎕wi 'Delete'
+    ∇

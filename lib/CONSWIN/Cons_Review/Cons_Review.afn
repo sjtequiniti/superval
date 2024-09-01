@@ -1,1 +1,50 @@
-    ∇ res←field Cons_Review parm;parent;Z;ppt;bb[1]   ⍝ CONSWIN.sf#10[2]   ⍝ Function to allow user control on Consolidation Review[3]   [4]   parent←'fmConsReview.' ⋄ res←0⍴'' ⍝ Default response[5]   [6]   :select parm[7]   [8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)[9]   [10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)[11]  [12]      (parent,'edProjPer') ⎕wi 'onChange' ((parent,'edProjPer') ⎕wi 'onExit')[13]  [14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)[15]  [16]      :repeat[17]          :select ↑field[18]              :case 'cbGraph'[19]                  (parent,'cbabNO') ⎕wi 'enabled' (PROPT^'A'=1↑(parent,'cbGraph') ⎕wi 'text')[20]                  0 0⍴(⊂'edProjPer') Cons_Review 'Change'[21]              :caselist 'edProjPer' 'cbabNO'[22]                  psWipe parent,'picResults'[23]                  :select 4↑(parent,'cbGraph') ⎕wi 'text'[24]                  :case 'Asse'[25]                       PageView←GRAPHASS∆AC[26]                  :case 'Cash'[27]                       PageView←GRAPHCF[28]                  :caselist 'Comp' 'Empl'[29]                       PageView←GRAPHCR[30]                  :case 'Bene'[31]                       PageView←GRAPHBEN∆CONTS[32]                  :endselect[33]  [34]                  :if ~0∊⍴PageView[35]                      ps_exec PageView (parent,'picResults') ppt ps∆cmap 1[36]                  :endif[37]          :endselect[38]      :until mt field←1↓field[39]  [40]  :case 'Valid' ⍝ Routine specific validation[41]  [42]  :case 'Run'[43]      res←''[44]  [45]  :case 'Quit' ⍝ Deleting "other" variables[46]      0 0⍴⎕ex 'PageView'[47]  [48]  :endselect    ∇
+    ∇ res←field Cons_Review parm;parent;Z;ppt;bb
+[1]   ⍝ CONSWIN.sf#10
+[2]   ⍝ Function to allow user control on Consolidation Review
+[3]   
+[4]   parent←'fmConsReview.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]   
+[10]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[11]  
+[12]      (parent,'edProjPer') ⎕wi 'onChange' ((parent,'edProjPer') ⎕wi 'onExit')
+[13]  
+[14]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[15]  
+[16]      :repeat
+[17]          :select ↑field
+[18]              :case 'cbGraph'
+[19]                  (parent,'cbabNO') ⎕wi 'enabled' (PROPT^'A'=1↑(parent,'cbGraph') ⎕wi 'text')
+[20]                  0 0⍴(⊂'edProjPer') Cons_Review 'Change'
+[21]              :caselist 'edProjPer' 'cbabNO'
+[22]                  psWipe parent,'picResults'
+[23]                  :select 4↑(parent,'cbGraph') ⎕wi 'text'
+[24]                  :case 'Asse'
+[25]                       PageView←GRAPHASS∆AC
+[26]                  :case 'Cash'
+[27]                       PageView←GRAPHCF
+[28]                  :caselist 'Comp' 'Empl'
+[29]                       PageView←GRAPHCR
+[30]                  :case 'Bene'
+[31]                       PageView←GRAPHBEN∆CONTS
+[32]                  :endselect
+[33]  
+[34]                  :if ~0∊⍴PageView
+[35]                      ps_exec PageView (parent,'picResults') ppt ps∆cmap 1
+[36]                  :endif
+[37]          :endselect
+[38]      :until mt field←1↓field
+[39]  
+[40]  :case 'Valid' ⍝ Routine specific validation
+[41]  
+[42]  :case 'Run'
+[43]      res←''
+[44]  
+[45]  :case 'Quit' ⍝ Deleting "other" variables
+[46]      0 0⍴⎕ex 'PageView'
+[47]  
+[48]  :endselect
+    ∇

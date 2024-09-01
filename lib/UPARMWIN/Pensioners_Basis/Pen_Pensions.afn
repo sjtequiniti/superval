@@ -1,0 +1,155 @@
+    ∇ field Pen_Pensions parm;page;no;SSName;PENget;PENput;headings;desc;list;parent;z;∆
+[1]   ⍝ UPARMWIN.sf#9
+[2]   ⍝ Do Initialisation, Changes and Validation of Pensions
+[3]   
+[4]   parent←'fmSV.sPenBasis.' ⋄ page←'pgPensions.' ⋄ SSName←parent,page,'fPensions.ssPensions'
+[5]   headings←⊃(⊂'Pension '),¨⍕¨⍳no←↑⍴PenDesc
+[6]   
+[7]   :select parm
+[8]   :case 'Vars'
+[9]       lrADJFAC   ←((⍴lrADJFAC   )⌈1 0×no)↑lrADJFAC   ←MATRIX lrADJFAC
+[10]      lrDEFINC   ←((⍴lrDEFINC   )⌈1 0×no)↑lrDEFINC   ←MATRIX lrDEFINC
+[11]      lrPAYINC   ←((⍴lrPAYINC   )⌈1 0×no)↑lrPAYINC   ←MATRIX lrPAYINC
+[12]      lrPPFDEFINC←((⍴lrPPFDEFINC)⌈1 0×no)↑lrPPFDEFINC←MATRIX lrPPFDEFINC
+[13]      Pensions_Vars
+[14]      :if no≠0
+[15]          ADJFAC   ←ADJFAC    UpdateGridField lrADJFAC
+[16]          DEFINC   ←DEFINC    UpdateGridField lrDEFINC
+[17]          PAYINC   ←PAYINC    UpdateGridField lrPAYINC
+[18]          PPFDEFINC←PPFDEFINC UpdateGridField lrPPFDEFINC
+[19]      :endif
+[20]  
+[21]      (parent,page,'fButtons.bnPensioners_BasisDelete') ⎕wi 'enabled' ((1 <no)^basAccess[2]≤accesslevel)
+[22]      (parent,page,'fButtons.bnPensioners_BasisInsert') ⎕wi 'enabled' ((16>no)^basAccess[2]≤accesslevel)
+[23]      (parent,page,'fButtons.bnPensioners_BasisAdd')    ⎕wi 'enabled' ((16>no)^basAccess[2]≤accesslevel)
+[24]  
+[25]  :case 'Init'
+[26]      SSName ⎕wi '∆VarsInWS' 1
+[27]      Pen_Pensions 'Vars'
+[28]      0 0⍴(⊂'ssPensions') Pensioners_Basis 'Change'
+[29]  
+[30]  :case 'Change'
+[31]      :select field
+[32]      :case 'ssPensions'
+[33]          :for no :in ⍳no
+[34]              SSName ⎕wi 'ColText' no (PenDesc[no;])
+[35]              SSName Win∆F1SSSetSelection 1 no 7 no
+[36]              z←∨/' '≠PenDesc[no;]
+[37]              :if (¯1↑SSName ⎕wi 'GetPattern')≠∆←1+z×¯1+SSName ⎕wi 'xBackColor'
+[38]                  SSName ⎕wi 'SetPattern' 1 (1+z×¯1+SSName ⎕wi 'xExtraColor') ∆
+[39]              :endif
+[40]          :endfor
+[41]          SSName Win∆F1SSSetSelection 1 1 1 1
+[42]          ⍙CACHE←UpdateCache
+[43]          0 0⍴(lmt qtrim¨m2n SSName ⎕wi '∆name') Pensioners_Basis 'Change'
+[44]      :endselect
+[45]  
+[46]  :case 'Valid'
+[47]  
+[48]  ⍝⍝⍝    :if zwb PUPRDN ⋄ :andif ~∨/(,'Y'=1↑[2]GMPADJ)^(120=MatrixZWB EAGE)^(66>MatrixZWB BAGE)^(,'P'=1↑[2]CSORP)
+[49]  ⍝⍝⍝        res←'No Pensions are included in SPA Adjustment'
+[50]  ⍝⍝⍝        0 Win∆SetFocus SSName ⋄ :return
+[51]  ⍝⍝⍝    :endif
+[52]  
+[53]  :caselist 'Add' 'Edit' 'Insert' ⍝ Add/Edit/Insert a Pension Definition
+[54]  
+[55]      :if    1=SSName ⎕wi 'SelectionCount'
+[56]      :andif =/(∆←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[57]      :andif ~∆≡1 1 1 1
+[58]          PENget←∆[2]
+[59]      :else
+[60]          PENget←0
+[61]      :endif
+[62]  
+[63]      :if parm≡'Insert'
+[64]          :if PENget=0
+[65]              :if 1=↑⍴desc←PenDesc  ⋄ PENput←0.5
+[66]              :else
+[67]                  list←⊃(⊂'Insert Pension before '),¨m2n headings
+[68]                  :if mt PENput←Win∆SelectionBox desc list ⋄ :return ⋄ :endif
+[69]                  PENput←¯0.5+↑list ExactTLU ,PENput
+[70]              :endif
+[71]          :else
+[72]              PENput←PENget-0.5
+[73]          :endif
+[74]          PENget←0
+[75]      :endif
+[76]  
+[77]      :if PENget=0
+[78]          desc←PenDesc ⋄ list←headings
+[79]          :if   parm≡'Edit'                                   ⋄ list←⊃(⊂'Edit '),¨m2n list
+[80]          :else             ⋄ desc←desc OVER 'Default Values' ⋄ list←⊃(⊂'Use '),¨(m2n list OVER 'Default'),¨⊂' Values'
+[81]          :endif
+[82]          :if 1=↑⍴desc ⋄ PENget←list
+[83]          :elseif mt PENget←Win∆SelectionBox desc list ⋄ :return
+[84]          :endif
+[85]          PENget←↑((-~parm≡'Edit')↓[⎕io]list) ExactTLU ,PENget
+[86]      :endif
+[87]      :if ~parm≡'Insert' ⋄ PENput←PENget×parm≡'Edit' ⋄ :endif
+[88]  
+[89]      Win∆AssignVars ControlName ⍝ Trap current field entries
+[90]      Format←HyphenSwap Format
+[91]  
+[92]      'PARMWIN' CallModule 'Edit_UKPension'
+[93]  
+[94]      :if parm≡'Insert'
+[95]          'Pensioners_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Insert' PENput
+[96]      :endif
+[97]      Pen_Pensions 'Vars'
+[98]      openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[99]      0 0⍴(⊂'ssPensions') Pensioners_Basis 'Change'
+[100] 
+[101] :case 'Delete' ⍝ Delete a Pension Definition
+[102] 
+[103]     :if 1=SSName ⎕wi 'SelectionCount'
+[104]     :andif =/(PENget←SSName ⎕wi 'GetSelection' 0 ⍬ ⍬ ⍬ ⍬)[2 4]
+[105]     :andif ~PENget≡1 1 1 1
+[106]         PENget←PENget[2]
+[107]     :else
+[108]         :if mt PENget←Win∆SelectionBox PenDesc (list←⊃(⊂'Delete '),¨m2n headings) ⋄ :return ⋄ :endif
+[109]         PENget←list ExactTLU ,PENget
+[110]     :endif
+[111] 
+[112]     :if 'Y'='YN' ASK 'Delete' (headings[PENget;] ConcatLabel PenDesc[PENget;])
+[113]         Win∆AssignVars ControlName ⍝ Trap current field entries
+[114]         PENput←(⍳no)~PENget
+[115]         PenDesc←    PenDesc[PENput;]
+[116]         PENDATA←    PENDATA[PENput;]
+[117]         CSORP←      CSORP[PENput;]
+[118]         SPENDATA←   SPENDATA[PENput;]
+[119]         WARFRAC←    WARFRAC[PENput;]
+[120]         ADJFAC←     ADJFAC[PENput;]
+[121]         lrADJFAC←   lrADJFAC[PENput;]
+[122]         BAGE←       BAGE[PENput;]
+[123]         EAGE←       EAGE[PENput;]
+[124]         DIDIND←     DIDIND[PENput;]
+[125]         DEFINC←     DEFINC[PENput;]
+[126]         lrDEFINC←   lrDEFINC[PENput;]
+[127]         PAYINC←     PAYINC[PENput;]
+[128]         lrPAYINC←   lrPAYINC[PENput;]
+[129]         PONLY←      PONLY[PENput;]
+[130]         SPONLY←     SPONLY[PENput;]
+[131]         GMPADJ←     GMPADJ[PENput;]
+[132]         RETPUP←     RETPUP[PENput;]
+[133]         PreRET←     PreRET[PENput;]
+[134]         PostRET←    PostRET[PENput;]
+[135]         PreVD←      PreVD[PENput;]
+[136]         PostVD←     PostVD[PENput;]
+[137]         m_PPFNRA←   m_PPFNRA[PENput;]
+[138]         f_PPFNRA←   f_PPFNRA[PENput;]
+[139]         PPFPAYINC←  PPFPAYINC[PENput;]
+[140]         PPFDEFINC←  PPFDEFINC[PENput;]
+[141]         lrPPFDEFINC←lrPPFDEFINC[PENput;]
+[142]         CapInclude← CapInclude[PENput;]
+[143] 
+[144]         SSName ⎕wi 'MaxCol' (¯1+SSName ⎕wi 'MaxCol')
+[145]         SSName ⎕wi 'xSetSelection' 1 1 1 1
+[146] 
+[147]         'Pensioners_Basis' (SSName ⎕wi '∆name') ParmCommAdjust 'Delete' PENget
+[148]         Pen_Pensions 'Vars'
+[149]         openParameters←1 ⋄ Assign_Inputs 1 ⋄ openParameters←0
+[150]         0 0⍴(⊂'ssPensions') Pensioners_Basis 'Change'
+[151]     :endif
+[152] 
+[153] :endselect
+    ∇

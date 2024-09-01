@@ -1,1 +1,26 @@
-    ∇ arg PrintFile parm;fILENAME;text;CurrPage[1]   ⍝ OVERWIN.sf#15[2]   ⍝ Print a file (or part thereof)[3]   [4]   :if tieno=0 ⋄ :return ⋄ :endif ⍝ Nothing to Print![5]   [6]   fILENAME←DLTB 'fmBrowser.edfILENAME' ⎕wi 'text'[7]   [8]   :select parm[9]   :case 'All'[10]      text←⎕nread tieno,82,(⎕nsize tieno),0[11]  [12]  :case 'Page'[13]      CurrPage←MaxPage⌊1⌈zwb 'fmBrowser.edPageNo' ⎕wi 'text'[14]      text←⎕nread tieno,82,No∆recs[CurrPage],+/(CurrPage-1)↑No∆recs[15]  [16]  :case 'Some'[17]      text←⎕nread tieno,82,(+/No∆recs[arg[1]+¯1+⍳1+arg[2]-arg[1]]),+/(arg[1]-1)↑No∆recs[18]  [19]  :case 'Selection'[20]      text←arg[21]  [22]  :endselect[23]  [24]  fILENAME PrintText text    ∇
+    ∇ arg PrintFile parm;fILENAME;text;CurrPage
+[1]   ⍝ OVERWIN.sf#15
+[2]   ⍝ Print a file (or part thereof)
+[3]   
+[4]   :if tieno=0 ⋄ :return ⋄ :endif ⍝ Nothing to Print!
+[5]   
+[6]   fILENAME←DLTB 'fmBrowser.edfILENAME' ⎕wi 'text'
+[7]   
+[8]   :select parm
+[9]   :case 'All'
+[10]      text←⎕nread tieno,82,(⎕nsize tieno),0
+[11]  
+[12]  :case 'Page'
+[13]      CurrPage←MaxPage⌊1⌈zwb 'fmBrowser.edPageNo' ⎕wi 'text'
+[14]      text←⎕nread tieno,82,No∆recs[CurrPage],+/(CurrPage-1)↑No∆recs
+[15]  
+[16]  :case 'Some'
+[17]      text←⎕nread tieno,82,(+/No∆recs[arg[1]+¯1+⍳1+arg[2]-arg[1]]),+/(arg[1]-1)↑No∆recs
+[18]  
+[19]  :case 'Selection'
+[20]      text←arg
+[21]  
+[22]  :endselect
+[23]  
+[24]  fILENAME PrintText text
+    ∇

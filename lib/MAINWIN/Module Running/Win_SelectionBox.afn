@@ -1,1 +1,25 @@
-    ∇ SelectionText←field Win∆SelectionBox Selections;SelectionsDesc;SelectionsList;SelectionValue;DecrParm[1]   ⍝ MAINWIN.sf#3[2]   ⍝ Present a "standard" field selection box[3]   ⍝ field defines the field and Selections contains list and descriptions[4]   [5]   (SelectionsDesc SelectionsList DecrParm)←3↑Selections,0[6]   [7]   :if ~0∊⍴SelectionsDesc[8]       Win∆SelectionRun DecrParm[9]       :if 0≠⎕nc 'SelectionText'[10]          :if 0≠⎕nc 'field'[11]              field ⎕wi 'text' SelectionText[12]          :endif[13]      :else[14]          SelectionText←0⍴''[15]      :endif[16]      ⎕wres←¯1 ⍝ Bypass Windows handling of Right/Double Click[17]  :else[18]      SelectionText←0⍴''[19]  :endif[20]  [21]  :if 0≠⎕nc 'field'[22]      0 Win∆SetFocus field ⍝ Field takes the Focus Back[23]  :endif    ∇
+    ∇ SelectionText←field Win∆SelectionBox Selections;SelectionsDesc;SelectionsList;SelectionValue;DecrParm
+[1]   ⍝ MAINWIN.sf#3
+[2]   ⍝ Present a "standard" field selection box
+[3]   ⍝ field defines the field and Selections contains list and descriptions
+[4]   
+[5]   (SelectionsDesc SelectionsList DecrParm)←3↑Selections,0
+[6]   
+[7]   :if ~0∊⍴SelectionsDesc
+[8]       Win∆SelectionRun DecrParm
+[9]       :if 0≠⎕nc 'SelectionText'
+[10]          :if 0≠⎕nc 'field'
+[11]              field ⎕wi 'text' SelectionText
+[12]          :endif
+[13]      :else
+[14]          SelectionText←0⍴''
+[15]      :endif
+[16]      ⎕wres←¯1 ⍝ Bypass Windows handling of Right/Double Click
+[17]  :else
+[18]      SelectionText←0⍴''
+[19]  :endif
+[20]  
+[21]  :if 0≠⎕nc 'field'
+[22]      0 Win∆SetFocus field ⍝ Field takes the Focus Back
+[23]  :endif
+    ∇

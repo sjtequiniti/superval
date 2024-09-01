@@ -1,0 +1,44 @@
+    ∇ res←field DatabaseSize parm;parent;testfile;button;tab
+[1]   ⍝ UTILSWIN.sf#16
+[2]   ⍝ Function to allow user control on Database Size
+[3]   
+[4]   parent←'fmDBSize.' ⋄ res←0⍴'' ⍝ Default response
+[5]   
+[6]   :select parm
+[7]   
+[8]   :case 'Vars' ⍝ Adjustments to screen variables (particularly dynamic Dictionaries)
+[9]       progid←⍙DBAccessProvider 0
+[10]      SSName←parent,'ssSizeTable'
+[11]  
+[12]  :case 'Init'  ⍝ Initialising Routines (eg dynamic labels, country specific enabling/disabling etc)
+[13]      (parent,'lEstimate') ⎕wi 'caption' ''
+[14]      (parent,'lActual') ⎕wi 'caption' ''
+[15]      SSName Win∆F1SSSetSelection 1 2 20 10
+[16]      SSName ⎕wi 'xSetAlignment' 4 0 2 0 ⍝ Align Input Right
+[17]  
+[18]  :case 'Change' ⍝ The onChange events (disabling fields according to value of others)
+[19]  
+[20]      :repeat
+[21]          :select ↑field
+[22]          :case ' '
+[23]          :endselect
+[24]      :until mt field←1↓field
+[25]  
+[26]  :case 'Valid' ⍝ Routine specific validation
+[27]  
+[28]  :case 'Run'
+[29]  
+[30]      button←(FormName,'.bntemp') ⎕wi 'Create' 'Button' ('visible' 0) ('onClick' 'testfile←OpenTestDB')
+[31]      button ⎕wi 'Click'
+[32]      0 0⍴button ⎕wi 'Delete'
+[33]      tab←testfile TestDBSize mdbFile
+[34]      SSName ShowResults tab
+[35]  
+[36]      crash
+[37]  
+[38]  
+[39]  :case 'Quit' ⍝ Deleting "other" variables
+[40]      0 0⍴⎕ex 'progid SSName'
+[41]  
+[42]  :endselect
+    ∇

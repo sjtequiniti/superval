@@ -1,0 +1,29 @@
+    ∇ tab←data XL_Pivot arg;sql;size;pos;default;z
+[1]   ⍝ VALNWIN.sf#16
+[2]   ⍝ Return a cleaned up Pivot Table from a SQL command
+[3]   
+[4]   (sql default)←arg
+[5]   sql←eis sql
+[6]   
+[7]   tab←1 ⍙DBadoCONCommand ↑sql ⋄ sql←1↓sql
+[8]   :for sql :in sql
+[9]       tab←tab,0 1↓1 ⍙DBadoCONCommand sql
+[10]  :endfor
+[11]  size←⍴tab
+[12]  
+[13]  ⍝⍝⍝ Could use "default ⍙DBRemoveNulls tab" but would create another copy of large data item
+[14]  pos←,tab∊'#' ⎕wi ¨'empty' 'null' 'missing' ⍝ Clean up missing etc
+[15]  :if ∨/pos ⋄ tab←,tab ⋄ tab[pos/⍳⍴pos]←default ⋄ tab←size⍴tab ⋄ :endif
+[16]  
+[17]  :if 0≠⎕nc 'data' ⍝ Expand to data for all members
+[18]      :if 0=↑size
+[19]          tab←data,((↑⍴data),¯1+¯1↑size)⍴default
+[20]      :elseif 82=⎕dr data
+[21]          :if ∨/~z←,(DLTMB¨tab[;⎕io])∊(DLTMB¨data) ⋄ tab←z⌿tab          ⋄ :endif
+[22]          :if ∨/~z←,(DLTMB¨data)∊(DLTMB¨tab[;⎕io]) ⋄ tab←data,z⍀0 1↓tab ⋄ :endif
+[23]      :else
+[24]          :if ∨/~z←,tab[;⎕io]∊data ⋄ tab←z⌿tab          ⋄ :endif
+[25]          :if ∨/~z←,data∊tab[;⎕io] ⋄ tab←data,z⍀0 1↓tab ⋄ :endif
+[26]      :endif
+[27]  :endif
+    ∇

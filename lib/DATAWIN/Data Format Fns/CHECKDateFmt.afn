@@ -1,1 +1,16 @@
-    ∇ res←res CHECKDateFmt df;pos;Z;X[1]   ⍝ DATAWIN.sf#2[2]   ⍝ Function to check whether the specified date format is valid[3]   ⍝ res is the error number to display[4]   ⍝ df is the date format[5]   ⍝[6]   ⍝ V2.50u RE 3/00 Windowised[7]   df←DLTB df[8]   →(^/(4,(uk=0)/2)≠X←+/pos←df='Y')/ERR ⋄ →(∨/1≠DIFF pos/⍳⍴df)/ERR ⍝ 2 (in Aust) or 4 Y's[9]   →(^/ 0 2 ≠Z←+/pos←df='M')/ERR ⋄ →(∨/1≠DIFF pos/⍳⍴df)/ERR ⍝ 0 or 2 M's[10]  →((X=2)^Z=0)/ERR ⍝ Insist on 4 Y's if only Year specified[11]  ⍝ 0 or 2 D's depending on number of M's[12]  →(^/((1⌈Z)↑ 0 2)≠+/pos←df='D')/ERR ⋄ →(1≠DIFF pos/⍳⍴df)/ERR[13]  :return[14]  ERR:res←'InvDateFormat'    ∇
+    ∇ res←res CHECKDateFmt df;pos;Z;X
+[1]   ⍝ DATAWIN.sf#2
+[2]   ⍝ Function to check whether the specified date format is valid
+[3]   ⍝ res is the error number to display
+[4]   ⍝ df is the date format
+[5]   ⍝
+[6]   ⍝ V2.50u RE 3/00 Windowised
+[7]   df←DLTB df
+[8]   →(^/(4,(uk=0)/2)≠X←+/pos←df='Y')/ERR ⋄ →(∨/1≠DIFF pos/⍳⍴df)/ERR ⍝ 2 (in Aust) or 4 Y's
+[9]   →(^/ 0 2 ≠Z←+/pos←df='M')/ERR ⋄ →(∨/1≠DIFF pos/⍳⍴df)/ERR ⍝ 0 or 2 M's
+[10]  →((X=2)^Z=0)/ERR ⍝ Insist on 4 Y's if only Year specified
+[11]  ⍝ 0 or 2 D's depending on number of M's
+[12]  →(^/((1⌈Z)↑ 0 2)≠+/pos←df='D')/ERR ⋄ →(1≠DIFF pos/⍳⍴df)/ERR
+[13]  :return
+[14]  ERR:res←'InvDateFormat'
+    ∇

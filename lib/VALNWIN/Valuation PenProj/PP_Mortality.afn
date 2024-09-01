@@ -1,0 +1,50 @@
+    ∇ PP∆Mortality;pp∆∆;pp∆len;list
+[1]   ⍝ VALNWIN.sf#15
+[2]   ⍝ Make some lx's from Mortality Tables
+[3]   ⍝ pp∆L???? are "Survival" factors at the start of the year
+[4]   ⍝ pp∆l???? are "Survival" factors at the middle of the year
+[5]   
+[6]   pp∆∆←⌊/(pp∆X0-pp∆SpAge),pp∆AGEDIF
+[7]   pp∆AGEDIF←120 OVERTAKE ,pp∆AGEDIF ⍝ Ultimately allow for age difference variable by age
+[8]   pp∆MS←1↑,pp∆MS ⍝ Marital Status
+[9]   
+[10]  ⍝ Pass Mortality rates without trailing 1's or 0.99999's
+[11]  pp∆len←¯1+⍴pp∆LXpre←pp∆X0 PP∆CreateLX pp∆QXdef
+[12]  pp∆lxpre←MID pp∆LXpre,0
+[13]  
+[14]  pp∆LYpre←(pp∆len-pp∆∆) PP∆CreateLX pp∆QYdef
+[15]  pp∆lypre←MID pp∆LYpre,0
+[16]  
+[17]  :if 0=⎕nc 'pp∆QYdis'
+[18]      pp∆QYdis←pp∆QYret ⋄ pp∆Ydis2D←pp∆Yret2D ⋄ pp∆LYdis←pp∆LYpost ⋄ pp∆lydis←pp∆lypost
+[19]  :elseif pp∆Ydis2D←2=⍴⍴pp∆QYdis ⍝ Spouse rates passed as rows!
+[20]      pp∆LYdis←pp∆lydis←(59 121⌈⍴pp∆QYdis)⍴0 ⍝ Make receptacle for LY's
+[21]  :else
+[22]      pp∆LYdis←(pp∆len-pp∆∆) PP∆CreateLX pp∆QYdis
+[23]      pp∆lydis←MID pp∆LYdis,0
+[24]  :endif
+[25]  
+[26]  pp∆len←¯1+⍴pp∆LXpost←pp∆X0 PP∆CreateLX pp∆QXret
+[27]  pp∆lxpost←MID pp∆LXpost,0
+[28]  
+[29]  :if 0=pp∆Xill2D←⎕nc 'pp∆QXill'
+[30]      pp∆LXill←pp∆LXpost ⋄ pp∆lxill←pp∆lxpost
+[31]  :elseif pp∆Xill2D←2=⍴⍴pp∆QXill ⍝ 2D Ill-Health rates passed as rows
+[32]      pp∆LXill←pp∆lxill←(0 121⌈⍴pp∆QXill)⍴0 ⍝ Make receptacle for LX's
+[33]  :else ⍝ Vector of Rates
+[34]      pp∆len←pp∆len⌈¯1+⍴pp∆LXill←pp∆X0 PP∆CreateLX pp∆QXill
+[35]      pp∆lxill←MID pp∆LXill,0
+[36]  :endif
+[37]  
+[38]  :if pp∆Yret2D←2=⍴⍴pp∆QYret ⍝ Spouse rates passed as rows
+[39]      pp∆LYpost←pp∆lypost←(59 121⌈⍴pp∆QYret)⍴0 ⍝ Make receptacle for LY's
+[40]  :else ⍝ Vector of Rates
+[41]      pp∆LYpost←(pp∆len-pp∆∆) PP∆CreateLX pp∆QYret
+[42]      pp∆lypost←MID pp∆LYpost,0
+[43]  :endif
+[44]  
+[45]  ⍝⍀⍝ Age←⍳pp∆len←⌈/∊⍴¨pp∆LXpost pp∆LYpost,((ClassID≠4)/pp∆LXpre pp∆LYpre),(ClassID∊1 2)/pp∆LYdis pp∆LXill
+[46]  ⍝⍀⍝ list←((ClassID≠4)/'pp∆QXdef pp∆LXpre← pp∆lxpre← pp∆QYdef pp∆LYpre← pp∆lypre← '),'pp∆QXret pp∆LXpost← pp∆lxpost← pp∆QYret ',((~pp∆Yret2D)/'pp∆LYpost← pp∆lypost← '),(ClassID∊1 2)/((~pp∆Xill2D)/'pp∆QXill pp∆LXill← pp∆lxill← '),(~pp∆Ydis2D)/'pp∆QYdis pp∆LYdis← pp∆lydis←'
+[47]  ⍝⍀⍝ ⍎'(',(list~'←'),')←pp∆len↑¨',list~'←'
+[48]  ⍝⍀⍝ 'Valuation' 'Mortality' FOURDIT 'Age ',list
+    ∇

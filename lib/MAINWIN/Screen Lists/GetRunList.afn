@@ -1,0 +1,39 @@
+    ∇ res←GetRunList RunTable;PickList;NameList;sortorder;z;∆
+[1]   ⍝ MAINWIN.sf#14
+[2]   ⍝ Create variables for a Listview of Valuation Runs
+[3]   
+[4]   PickList←0 20⍴'' ⋄ z←⍳0
+[5]   
+[6]   :if ×rowsIn RunTable
+[7]       RunTable←RunTable[1;] OVER RunTable[1+⍋(RunTable at 'timestamp')+.0000001×RunTable at 'neActID';] ⍝ Chronological Order then
+[8]       z←1,~(¯1↓∆)=1↓∆←RunTable at 'timestamp'
+[9]       z←⌽z ⎕penclose RunTable at 'ID' ⍝ "parent" and New Entrant Runs Grouped
+[10]  
+[11]      PickList←(20 OVERTAKE 1 0 1)\⊃spin RunTable at 'ID' 'scenario' 'method' 'desc' 'outfile' 'outime' 'version' 'user' 'capped' 'contper' 'insinc' 'targetAB' 'vdate' 'exact age' 'fscopt' 's143' 'newent' 'aosind' 'prev vdate'
+[12]      PickList[;2]←⊂1 0 ¯2
+[13]  :endif
+[14]  
+[15]  NameList←         MATRIX 'Scenario Description' (¯1↑Win∆TextSize ⊃PickList[;3] ) 'left'   1  1 0 1
+[16]  NameList←NameList⍪MATRIX 'Valuation Method'     (¯1↑Win∆TextSize ⊃PickList[;4] ) 'left'   2  2 0 1
+[17]  NameList←NameList⍪MATRIX 'Run Description'      (¯1↑Win∆TextSize ⊃PickList[;5] ) 'left'   3  3 0 1
+[18]  NameList←NameList⍪MATRIX 'Output Filename'      (¯1↑Win∆TextSize ⊃PickList[;6] ) 'left'   4  4 0 1
+[19]  NameList←NameList⍪MATRIX 'Valuation Run Time'   (¯1↑Win∆TextSize ⊃PickList[;7] ) 'right'  5  5 0 1
+[20]  NameList←NameList⍪MATRIX 'Version'              (¯1↑Win∆TextSize ⊃PickList[;8] ) 'left'   6  6 0 1
+[21]  NameList←NameList⍪MATRIX 'User'                 (¯1↑Win∆TextSize ⊃PickList[;9] ) 'left'   7  7 0 1
+[22]  NameList←NameList⍪MATRIX 'Capped Run'           (¯1↑Win∆TextSize ⊃PickList[;10]) 'left'   8  8 0 1
+[23]  NameList←NameList⍪MATRIX 'Control Period'       (¯1↑Win∆TextSize ⊃PickList[;11]) 'right'  9  9 0 1
+[24]  NameList←NameList⍪MATRIX 'Insured in Norm Cost' (¯1↑Win∆TextSize ⊃PickList[;12]) 'left'  10 10 0 1
+[25]  NameList←NameList⍪MATRIX 'Target Accrued Ben'   (¯1↑Win∆TextSize ⊃PickList[;13]) 'left'  11 11 0 1
+[26]  NameList←NameList⍪MATRIX 'Valuation Date'       (¯1↑Win∆TextSize ⊃PickList[;14]) 'left'  12 12 0 1
+[27]  NameList←NameList⍪MATRIX 'Interpolated Exact Age'(¯1↑Win∆TextSize ⊃PickList[;15])'left'  13 13 0 1
+[28]  NameList←NameList⍪MATRIX 'ALM/LDI Interface'    (¯1↑Win∆TextSize ⊃PickList[;16]) 'left'  14 14 0 1
+[29]  NameList←NameList⍪MATRIX 'Section 143'          (¯1↑Win∆TextSize ⊃PickList[;17]) 'left'  15 15 0 1
+[30]  NameList←NameList⍪MATRIX 'New Entrant Run'      (¯1↑Win∆TextSize ⊃PickList[;18]) 'left'  16 16 0 1
+[31]  NameList←NameList⍪MATRIX 'AOS Calculations'     (¯1↑Win∆TextSize ⊃PickList[;19]) 'left'  17 17 0 1
+[32]  NameList←NameList⍪MATRIX 'Prev Valn Date'       (¯1↑Win∆TextSize ⊃PickList[;20]) 'left'  18 18 0 1
+[33]  
+[34]  ⍝ How columns are sorted
+[35]  sortorder←'⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺SortList⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha⍺Alpha'
+[36]  
+[37]  res←PickList NameList sortorder z
+    ∇

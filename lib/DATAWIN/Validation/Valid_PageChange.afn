@@ -1,1 +1,25 @@
-    ∇ Valid_PageChange field;SSName;standard;∆[1]   ⍝ DATAWIN.sf#10[2]   ⍝ Page Change Control for Validation[3]   [4]   :if field≡'pgParameters'[5]       Win∆AssignVars ControlName,'.pgParameters'[6]       ((⊂parent,'pgRanges.f'),¨'ActValidation' 'DefValidation' 'PenValidation') MultiWI 'visible' 0[7]   [8]       (SSName←parent,'pgRanges.f',∆←FormatType,'Validation') ⎕wi 'visible' 1[9]       SSName←SSName,'.ss',∆[10]      (parent,'pgRanges') ⎕wi '∆fieldcontrol' (MATRIX 'F1SS')[11]      (parent,'pgRanges') ⎕wi '∆fieldlist' (MATRIX SSName)[12]  [13]      :select FormatType[14]      :case 'Act' ⋄ standard←(3+2 0 0)[1+uk][15]      :case 'Def' ⋄ standard←(2+7 0 19)[1+uk][16]      :case 'Pen' ⋄ standard←(2+6 0 18)[1+uk][17]      :endselect[18]  [19]      ⍝ Save Current Validation Ranges[20]      standard SSName Format∆ValidParms'SetUp'[21]      Assign_Inputs 1[22]      standard SSName Format∆ValidParms 'Write'[23]  :endif    ∇
+    ∇ Valid_PageChange field;SSName;standard;∆
+[1]   ⍝ DATAWIN.sf#10
+[2]   ⍝ Page Change Control for Validation
+[3]   
+[4]   :if field≡'pgParameters'
+[5]       Win∆AssignVars ControlName,'.pgParameters'
+[6]       ((⊂parent,'pgRanges.f'),¨'ActValidation' 'DefValidation' 'PenValidation') MultiWI 'visible' 0
+[7]   
+[8]       (SSName←parent,'pgRanges.f',∆←FormatType,'Validation') ⎕wi 'visible' 1
+[9]       SSName←SSName,'.ss',∆
+[10]      (parent,'pgRanges') ⎕wi '∆fieldcontrol' (MATRIX 'F1SS')
+[11]      (parent,'pgRanges') ⎕wi '∆fieldlist' (MATRIX SSName)
+[12]  
+[13]      :select FormatType
+[14]      :case 'Act' ⋄ standard←(3+2 0 0)[1+uk]
+[15]      :case 'Def' ⋄ standard←(2+7 0 19)[1+uk]
+[16]      :case 'Pen' ⋄ standard←(2+6 0 18)[1+uk]
+[17]      :endselect
+[18]  
+[19]      ⍝ Save Current Validation Ranges
+[20]      standard SSName Format∆ValidParms'SetUp'
+[21]      Assign_Inputs 1
+[22]      standard SSName Format∆ValidParms 'Write'
+[23]  :endif
+    ∇

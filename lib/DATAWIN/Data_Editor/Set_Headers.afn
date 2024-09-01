@@ -1,1 +1,38 @@
-    ∇ Set_Headers;∆Names;lines;col;limit;Type;valid;helpword[1]   ⍝ DATAWIN.sf#14[2]   ⍝ Set up the spreadsheet for chosen Format[3]   [4]   limit←⍳0 ⋄ Type←valid←helpword←''[5]   ⍝ Set of TLC[6]   hSS ⎕wi 'TopLeftText' ('Rec.',⎕tclf,'No.')[7]   [8]   Maxcol←↑⍴∆Names←MultiLine ¨⎕split NAMES[9]   hSS ⎕wi 'MaxCol' Maxcol[10]  ⍝ Set up Column headings[11]  :for col :in ⍳Maxcol[12]      hSS ⎕wi 'ColText' col (col⊃∆Names)[13]      hSS ⎕wi 'SetSelection' ¯1,col,¯1,col[14]      0 0⍴hSS ⎕wi 'ColWidth' 1[15]      hSS ⎕wi 'xHAlign' (4-2×fieldtype[col]=2)[16]      limit←limit,colnos[col;2][17]      Type←Type,'⍺',⊃('Num' 'Date' 'Char')[1+fieldtype[col]][18]      valid←valid,"⍺",⊃("'Scalar'" ("'",(DLTB fmt[col;]),"'") "''")[1+fieldtype[col]][19]  :endfor[20]  [21]  ⍝ How tall should the header row be?[22]  lines←1+⌈/+/¨⎕tclf=∆Names ⍝ Max number of lines[23]  hSS ⎕wi 'HdrHeight' (lines×255) ⍝ 255 is one standard line height[24]  ⍝ How many records can I display in the Grid?[25]  CanDisplayRows←⌊¯1+((1↑3↓hSS ⎕wi 'scale')-hSS ⎕wi 'xHdrHeight')÷225[26]  ⍝⍝⍝ ⍝ Optimise Row Height for Display purposes[27]  ⍝⍝⍝ hSS ⎕wi 'XSetRowHeight' 1 1 (255⌊200⌈.1×¯645+1↑hSS ⎕wi 'size') 1[28]  [29]  hSS ⎕wi '∆range' (Maxcol/'⍺')[30]  hSS ⎕wi '∆limit' limit[31]  hSS ⎕wi '∆mandatory' (Maxcol/0)[32]  hSS ⎕wi '∆type' Type[33]  hSS ⎕wi '∆valid' valid[34]  :if uk=1 ⋄ hSS ⎕wi '∆helpid' (Maxcol⍴hSS ⎕wi '∆helpid')[35]  :else    ⋄ hSS ⎕wi '∆helpword' (Maxcol/'⍺') ⍝⍝⍝ helpword???[36]  :endif    ∇
+    ∇ Set_Headers;∆Names;lines;col;limit;Type;valid;helpword
+[1]   ⍝ DATAWIN.sf#14
+[2]   ⍝ Set up the spreadsheet for chosen Format
+[3]   
+[4]   limit←⍳0 ⋄ Type←valid←helpword←''
+[5]   ⍝ Set of TLC
+[6]   hSS ⎕wi 'TopLeftText' ('Rec.',⎕tclf,'No.')
+[7]   
+[8]   Maxcol←↑⍴∆Names←MultiLine ¨⎕split NAMES
+[9]   hSS ⎕wi 'MaxCol' Maxcol
+[10]  ⍝ Set up Column headings
+[11]  :for col :in ⍳Maxcol
+[12]      hSS ⎕wi 'ColText' col (col⊃∆Names)
+[13]      hSS ⎕wi 'SetSelection' ¯1,col,¯1,col
+[14]      0 0⍴hSS ⎕wi 'ColWidth' 1
+[15]      hSS ⎕wi 'xHAlign' (4-2×fieldtype[col]=2)
+[16]      limit←limit,colnos[col;2]
+[17]      Type←Type,'⍺',⊃('Num' 'Date' 'Char')[1+fieldtype[col]]
+[18]      valid←valid,"⍺",⊃("'Scalar'" ("'",(DLTB fmt[col;]),"'") "''")[1+fieldtype[col]]
+[19]  :endfor
+[20]  
+[21]  ⍝ How tall should the header row be?
+[22]  lines←1+⌈/+/¨⎕tclf=∆Names ⍝ Max number of lines
+[23]  hSS ⎕wi 'HdrHeight' (lines×255) ⍝ 255 is one standard line height
+[24]  ⍝ How many records can I display in the Grid?
+[25]  CanDisplayRows←⌊¯1+((1↑3↓hSS ⎕wi 'scale')-hSS ⎕wi 'xHdrHeight')÷225
+[26]  ⍝⍝⍝ ⍝ Optimise Row Height for Display purposes
+[27]  ⍝⍝⍝ hSS ⎕wi 'XSetRowHeight' 1 1 (255⌊200⌈.1×¯645+1↑hSS ⎕wi 'size') 1
+[28]  
+[29]  hSS ⎕wi '∆range' (Maxcol/'⍺')
+[30]  hSS ⎕wi '∆limit' limit
+[31]  hSS ⎕wi '∆mandatory' (Maxcol/0)
+[32]  hSS ⎕wi '∆type' Type
+[33]  hSS ⎕wi '∆valid' valid
+[34]  :if uk=1 ⋄ hSS ⎕wi '∆helpid' (Maxcol⍴hSS ⎕wi '∆helpid')
+[35]  :else    ⋄ hSS ⎕wi '∆helpword' (Maxcol/'⍺') ⍝⍝⍝ helpword???
+[36]  :endif
+    ∇

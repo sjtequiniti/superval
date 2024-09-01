@@ -1,1 +1,25 @@
-    ∇ res←FormatType DescToVariable desc;Names;Vars;N;I;z;value[1]   ⍝ DATAWIN.sf#2[2]   ⍝ Convert Data Field Descriptions into the Format Variables[3]   [4]   :if 0=⎕nc 'CharStandNames' ⍝ Read Format Variables (if not already)[5]       0 0⍴⍙VALUESdict ReadDictFile (FormatType,'Format') '' (SStoMAT '⍺CharStandNames⍺DateStandNames⍺FixNumStandNames⍺VarNumStandNames⍺CharStandVars⍺DateStandVars⍺FixNumStandVars⍺VarNumStandVars')[6]   :endif[7]   [8]   Names←m2n SStoMAT CharStandNames,DateStandNames,FixNumStandNames,VarNumStandNames[9]   Vars←     SStoMAT CharStandVars, DateStandVars, FixNumStandVars, VarNumStandVars[10]  N←⍳1↑⍴res←desc←MATRIX desc[11]  [12]  :for I :in N[13]      :if ∨/' '≠desc[I;][14]          :if ∨/z←Names∊⊂DLTB desc[I;][15]              value←z⌿Vars[16]          :else[17]              value←'f',StripText desc[I;][18]          :endif[19]      :else[20]          value←'⍳0'[21]      :endif[22]      value ASSIGN∆Dict ('res[',(⍕I),';]')[23]  :endfor    ∇
+    ∇ res←FormatType DescToVariable desc;Names;Vars;N;I;z;value
+[1]   ⍝ DATAWIN.sf#2
+[2]   ⍝ Convert Data Field Descriptions into the Format Variables
+[3]   
+[4]   :if 0=⎕nc 'CharStandNames' ⍝ Read Format Variables (if not already)
+[5]       0 0⍴⍙VALUESdict ReadDictFile (FormatType,'Format') '' (SStoMAT '⍺CharStandNames⍺DateStandNames⍺FixNumStandNames⍺VarNumStandNames⍺CharStandVars⍺DateStandVars⍺FixNumStandVars⍺VarNumStandVars')
+[6]   :endif
+[7]   
+[8]   Names←m2n SStoMAT CharStandNames,DateStandNames,FixNumStandNames,VarNumStandNames
+[9]   Vars←     SStoMAT CharStandVars, DateStandVars, FixNumStandVars, VarNumStandVars
+[10]  N←⍳1↑⍴res←desc←MATRIX desc
+[11]  
+[12]  :for I :in N
+[13]      :if ∨/' '≠desc[I;]
+[14]          :if ∨/z←Names∊⊂DLTB desc[I;]
+[15]              value←z⌿Vars
+[16]          :else
+[17]              value←'f',StripText desc[I;]
+[18]          :endif
+[19]      :else
+[20]          value←'⍳0'
+[21]      :endif
+[22]      value ASSIGN∆Dict ('res[',(⍕I),';]')
+[23]  :endfor
+    ∇

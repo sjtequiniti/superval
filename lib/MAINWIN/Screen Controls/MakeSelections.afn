@@ -1,0 +1,27 @@
+    ∇ field MakeSelections parm;newlist;values;list;index;modified;where;∆
+[1]   ⍝ MAINWIN.sf#5
+[2]   ⍝ Module to handle all events related to Selections
+[3]   
+[4]   (newlist values)←2↑parm
+[5]   
+[6]   modified←ControlName ⎕wi 'modified' ⍝ Get modified status
+[7]   list←field ⎕wi 'list'
+[8]   :if ~list≡newlist ⍝ Is it really a new list?
+[9]       :if ≠/∆←(¯1↑Win∆TextSize newlist),¯1↑Win∆TextSize list ⍝ Different width
+[10]          ∆←((¯1↑where)+-/∆) ZDIV ¯1↑where←field ⎕wi 'where'
+[11]          field ⎕wi 'where' (where×1 1 1,∆)
+[12]          field ⎕wi '∆where' ((field ⎕wi '∆where' )×4 2⍴6 1 1/1,∆,1)
+[13]      :endif
+[14]      field ⎕wi 'list' (list←newlist)
+[15]  :endif
+[16]  
+[17]  :if (1↑⍴values)=⍴index←list ExactTLU values ⍝ All Selections exist
+[18]  :andif ~index≡field ⎕wi 'value' ⍝ and not same as currently selected
+[19]      field ⎕wi 'visible' ¯1 ⍝ Windows Bug??
+[20]      field ⎕wi 'value' index
+[21]      field ⎕wi 'visible' 1
+[22]  :endif
+[23]  :if 0=modified ⍝ Nothing had changed
+[24]      ControlName ⎕wi 'modified' 0 ⍝ Reset modified flag
+[25]  :endif
+    ∇

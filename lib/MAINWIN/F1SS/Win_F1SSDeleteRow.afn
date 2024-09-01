@@ -1,0 +1,20 @@
+    ∇ Module Win∆F1SSDeleteRow parms;SSName;row;col;MaxRow
+[1]   ⍝ MAINWIN.sf#9
+[2]   ⍝ Delete a Row from the Spreadsheet
+[3]   
+[4]   (SSName row)←parms
+[5]   
+[6]   0 0⍴⍎'(⊂"',SSName,'") ',Module,' "Unlock"'
+[7]   
+[8]   SSName ⎕wi 'xDeleteRange' row ¯1 row ¯1 2
+[9]   SSName ⎕wi 'MaxRow' (MaxRow←¯1+SSName ⎕wi 'MaxRow')
+[10]  (row col)←SSName ⎕wi 'xGetActiveCell' 0 0
+[11]  SSName ⎕wi 'xSetActiveCell' (MaxRow⌊row) (9999⌊col)
+[12]  SSName ⎕wi 'modified' 1
+[13]  
+[14]  :if 0≠⎕nc 'Comment_',Module
+[15]      Module (SSName ⎕wi '∆name') ParmCommAdjust 'Delete' row
+[16]  :endif
+[17]  
+[18]  0 0⍴⍎'(⊂"',SSName,'") ',Module,' "Lock"'
+    ∇

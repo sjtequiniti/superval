@@ -1,0 +1,33 @@
+    ∇ Output AddKey type;⎕io;Output;col;Key;ben;head
+[1]   ⍝ VALNWIN.sf#3
+[2]   ⍝
+[3]   ⍝ Append an "key" to the Interface Records to allow for Grouping
+[4]   ⍝ Key is made up of:
+[5]   ⍝       Age at Valuation Date × 100,000,000; plus
+[6]   ⍝       Decrement (index)     ×   1,000,000; plus
+[7]   ⍝       Benefit/Increase Type ×      10,000; plus
+[8]   ⍝       Sum of Start/End Ages ×           1
+[9]   ⎕io←1
+[10]  head←Output[1;]
+[11]  :if 0∊⍴Output←1↓[1]Output ⋄ :return ⋄ :endif ⍝ No records to Group
+[12]  
+[13]  Output[;head⍳⊂'Upin']←0 ⍝ No Underpins allowed
+[14]  
+[15]  Key←(↑⍴Output)⍴100000000×⍬⍴X0
+[16]  Key←Key+(+/¨Output[;head⍳⊂'Start'])+¨+/¨Output[;head⍳⊂'End']
+[17]  
+[18]  ben←,(⎕split SStoMAT '/P/L/I/U/DD/DG/F/UF')∘.,⎕split SStoMAT '/L/DD/G1/G2/M/S/P3/P4/U/P5/P/C/F'
+[19]  Key←Key+10000×ben⍳⎕split (⊃2↑¨Output[;head⍳⊂'BenType']),⊃2↑¨Output[;head⍳⊂'IncType']
+[20]  
+[21]  :if type='A'
+[22]      Key←Key+1000000×('1' '2' '3' '4' '5' '6' '7')⍳Output[;head⍳⊂'Dec']
+[23]      :if 30000<↑⍴Sum∆Accrued←Sum∆Accrued⍪Key,Output
+[24]          Sum∆Accrued←Sum∆Accrued[1;]⍪head Compind 1 0↓Sum∆Accrued
+[25]      :endif
+[26]  :else
+[27]      Key←Key+1000000×(↑,/pp∆ExitCodestab at 'Codes')⍳Output[;head⍳⊂'Dec']
+[28]      :if 30000<↑⍴Sum∆Ongoing←Sum∆Ongoing⍪Key,Output
+[29]          Sum∆Ongoing←Sum∆Ongoing[1;]⍪head Compind 1 0↓Sum∆Ongoing
+[30]      :endif
+[31]  :endif
+    ∇

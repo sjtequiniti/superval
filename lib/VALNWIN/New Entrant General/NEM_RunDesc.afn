@@ -1,0 +1,27 @@
+    ∇ res←NEM_RunDesc;⎕io;row;CHeader;GHeader
+[1]   ⍝ VALNWIN.sf#13
+[2]   ⎕io←1
+[3]   res←0 2⍴""
+[4]   
+[5]   CHeader← ClientFile ReadFile "Index"
+[6]   ⍝⍝⍝ GHeader←GlobalsFile ReadFile "Index"
+[7]   res←res OVER ("New Entrant Model Parameters Description") NEparms
+[8]   res←res OVER ParametersSaved 'NE_Model' NEparms
+[9]   res←res OVER "" ""
+[10]  
+[11]  res←res OVER "New Entrant Membership Profile" ""
+[12]  res←res OVER ("    ","New Entrant Proportions Table") (DecrDescription nOM)
+[13]  res←res OVER ("    ","Immediate New Entrants") (DLTB ImmedNE)
+[14]  res←res OVER "Replacement Parameters" ""
+[15]  res←res OVER ("    ","Replacement Method") (DLTB RepMeth)
+[16]  res←res OVER ("    ","Membership Growth Vector") (DLTB FUNDTOT)
+[17]  res←res OVER ("    ","Indicator of Growth/Decline") (DLTB GrowthInd)
+[18]  res←res OVER ("    ","Allow Negative New Entrants") (CheckTranslate AllowNegNE)
+[19]  res←res OVER ("    ","Projection Term") (ProjTerm," years")
+[20]  :if uk≠1
+[21]      res←res OVER ("    ","Maximum (Accuracy) Term") (DLTB MaxTerm," years")
+[22]  :endif
+[23]  
+[24]  CHeader←(CHeader," "),(∨/" "≠(CHeader←⊃res[;1]),⊃res[;2])\":"
+[25]  res←CHeader," ",⊃res[;2]
+    ∇

@@ -1,1 +1,28 @@
-    ∇ SUMMARY∆VPT;A;B;C;D;E;F;res[1]   ⍝ ACTWIN.sf#12[2]   ⍝ Summary Output[3]   varline←0 ⍝ New Page[4]   [5]   :if ~IsAccrued[6]       A←NDYNPEN+DYNPEN ⋄ B←ERACCPNPT ⋄ C←ERACCPN[7]       D←C-COMPENNDYN+COMPENDYN ⋄ E←PENSPA ⋄ AUDIT '2700'[8]       :if ILLIND≠0[9]           A←ILLACCPNN+ILLACCPND ⋄ B←ILLERACCPNN+ILLERACCPND[10]          D←B-ILLCOMNDYN+ILLCOMDYN ⋄ E←ILLSPA ⋄ AUDIT '2710'[11]      :endif[12]      res←0.01×SALMP[13]      A←DYNPEN CDIV res ⋄ B←NDYNPEN CDIV res ⋄ C←GMP CDIV res[14]      F←A+B ⋄ AUDIT '2800'[15]  [16]      A←PENNRAD CDIV res ⋄ B←PENNRAN CDIV res[17]      C←CASH CDIV CASHFAC×res ⋄ F←A+B+C ⋄ AUDIT '2810'[18]  [19]      A←PENSPAD CDIV res←res×(1+f)*FSMP+0⌈SPA-NRA ⋄ B←PENSPAN CDIV res[20]      C←CASH CDIV CASHFAC×res ⋄ D←RGMPR CDIV res ⋄ F←A+B+C+D ⋄ AUDIT '2820'[21]  :endif[22]  A←PUPNRAD CDIV res←0.01×SALMP×(1+f)*FSMP ⋄ B←PUPNRAN CDIV res[23]  F←A+B ⋄ AUDIT '2830'[24]  ⍝[25]  A←PUPSPAD CDIV res←0.01×SALMP×(1+f)*FSMP+0⌈SPA-NRA[26]  B←PUPSPAN CDIV res ⋄ D←RGMPR CDIV res ⋄ F←A+B+D ⋄ AUDIT '2840'    ∇
+    ∇ SUMMARY∆VPT;A;B;C;D;E;F;res
+[1]   ⍝ ACTWIN.sf#12
+[2]   ⍝ Summary Output
+[3]   varline←0 ⍝ New Page
+[4]   
+[5]   :if ~IsAccrued
+[6]       A←NDYNPEN+DYNPEN ⋄ B←ERACCPNPT ⋄ C←ERACCPN
+[7]       D←C-COMPENNDYN+COMPENDYN ⋄ E←PENSPA ⋄ AUDIT '2700'
+[8]       :if ILLIND≠0
+[9]           A←ILLACCPNN+ILLACCPND ⋄ B←ILLERACCPNN+ILLERACCPND
+[10]          D←B-ILLCOMNDYN+ILLCOMDYN ⋄ E←ILLSPA ⋄ AUDIT '2710'
+[11]      :endif
+[12]      res←0.01×SALMP
+[13]      A←DYNPEN CDIV res ⋄ B←NDYNPEN CDIV res ⋄ C←GMP CDIV res
+[14]      F←A+B ⋄ AUDIT '2800'
+[15]  
+[16]      A←PENNRAD CDIV res ⋄ B←PENNRAN CDIV res
+[17]      C←CASH CDIV CASHFAC×res ⋄ F←A+B+C ⋄ AUDIT '2810'
+[18]  
+[19]      A←PENSPAD CDIV res←res×(1+f)*FSMP+0⌈SPA-NRA ⋄ B←PENSPAN CDIV res
+[20]      C←CASH CDIV CASHFAC×res ⋄ D←RGMPR CDIV res ⋄ F←A+B+C+D ⋄ AUDIT '2820'
+[21]  :endif
+[22]  A←PUPNRAD CDIV res←0.01×SALMP×(1+f)*FSMP ⋄ B←PUPNRAN CDIV res
+[23]  F←A+B ⋄ AUDIT '2830'
+[24]  ⍝
+[25]  A←PUPSPAD CDIV res←0.01×SALMP×(1+f)*FSMP+0⌈SPA-NRA
+[26]  B←PUPSPAN CDIV res ⋄ D←RGMPR CDIV res ⋄ F←A+B+D ⋄ AUDIT '2840'
+    ∇

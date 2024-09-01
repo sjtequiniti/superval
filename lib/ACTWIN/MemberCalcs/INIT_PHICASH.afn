@@ -1,1 +1,59 @@
-    ∇ INIT∆PHICASH;CTYPE∆L;COMACC∆L;COMSAL∆L;COMDAT∆L;COMMULT∆L;GCALCCASH;PHICALCCASH;PHIIRCASH;PHIGCALCCASH;COMPER∆L;cc3;cfs;COMADaySep∆L;COMADayPER∆L[1]   ⍝ ACTWIN.sf#3[2]   ⍝[3]   ⍝ Initialise Full Matrices[4]   PHICOMPEN←(⍴PHIERACCPEN)⍴PHICOMPENNDYN←PHICOMPENDYN←PHICOMPENLDYN←PHICOMPENDYN4←PHIFCOMPENNDYN←PHIFCOMPENDYN←PHIFCOMPENLDYN←PHIFCOMPENDYN4←(NX,NX)⍴0[5]   PHICASHONTOP←(4,NX,NX)⍴PHICASH←comPHICASH←cotPHICASH←PHIFCASH←comPHIFCASH←cotPHIFCASH←PHIUCASH∆N←PHIUCASH∆D←PHIUCASH∆L←PHIUCASH∆4←(NX,NX)⍴0[6]   ⍝[7]   PHIIRCASH←(NX,NX)⍴IRCash[8]   →(IRMAXIND∊0 1)/L2[9]   ⍎(IRMAXIND≠4)/'→(~DJF DONAFTER IRD2)/L2'[10]  PHIIRCASH←PHIIRCASH⌈2.25×(+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIERACCPEN)×~CONTOP[11]  L2:[12]  PHIGCASH←comPHIGCASH←cotPHIGCASH←(NX,NX)⍴0[13]  [14]  cc3←bBuck∨ClntCode=3[15]  cfs←(4,NX,NX)⍴NX⌿NX/(CASHFAC1⍪CASHFAC2⍪CASHFAC3⍪MATRIX CASHFAC4)[;ENX_1][16]  :if cc3∨CONTOP ⋄ :andif ~(CTYPE∆L←cc3⊃CTYPE CTYPE2)∊0 1 ⍝ Cash on Top[17]      COMACC∆L← cc3⊃COMACC  COMACC2[18]      COMSAL∆L← cc3⊃COMSAL  COMSAL2[19]      COMDAT∆L← cc3⊃COMDAT  COMDAT2[20]      COMMULT∆L←cc3⊃COMMULT COMMULT2[21]      COMPER∆L← cc3⊃COMPER  COMPER2[22]  [23]      PHICALC∆CASH 1[24]  [25]      PHICASH∆ONTOP[26]  [27]      :if mpuflag ⍝ Cash on Top for Underpin Comparison[28]          :select CTYPE∆L[29]          :caselist 2 4 6 7 ⍝ Cash based on Pension[30]              cotPHIGCASH←PHIGCASH←PHIGCALCCASH×PHICASH CDIV PHICALCCASH[31]          :else[32]              cotPHIGCASH←PHIGCASH←PHICASH×((+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHITPEN)[⎕io;;])CDIV +/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHITPEN[33]          :endselect[34]      :endif[35]  :endif[36]  [37]  :if cc3∨~CONTOP ⋄ :andif ~CTYPE∊0 1 ⍝ Commuted Pension[38]      CTYPE∆L←  CTYPE[39]      COMACC∆L← COMACC[40]      COMSAL∆L← COMSAL[41]      COMDAT∆L← COMDAT[42]      COMMULT∆L←COMMULT[43]      COMPER∆L← COMPER[44]      COMADaySep∆L←COMADaySep[45]      COMADayPER∆L←COMADayPER[46]  [47]      PHICALC∆CASH 0[48]  [49]      PHICASH∆COMMUTE ⍝ Commute Pension[50]  [51]      PHICOMT←+/[⎕io+1]+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHICOMPEN  ⍝ Sum over all but Dyn Underpin and Term[52]      PHIUCASH∆N←PHICOMT[⎕io  ;⎕io;;] MultiDimMult (NX,NX)⍴CASHFAC1[53]      PHIUCASH∆D←PHICOMT[⎕io+1;⎕io;;] MultiDimMult (NX,NX)⍴CASHFAC2[54]      PHIUCASH∆L←PHICOMT[⎕io+2;⎕io;;] MultiDimMult (NX,NX)⍴CASHFAC3[55]      PHIUCASH∆4←PHICOMT[⎕io+3;⎕io;;] MultiDimMult (NX,NX)⍴CASHFAC4[56]      PHIGCASH←PHIGCASH+comPHIGCASH←PHIUCASH∆N+PHIUCASH∆D+PHIUCASH∆L+PHIUCASH∆4[57]  :endif    ∇
+    ∇ INIT∆PHICASH;CTYPE∆L;COMACC∆L;COMSAL∆L;COMDAT∆L;COMMULT∆L;GCALCCASH;PHICALCCASH;PHIIRCASH;PHIGCALCCASH;COMPER∆L;cc3;cfs;COMADaySep∆L;COMADayPER∆L
+[1]   ⍝ ACTWIN.sf#3
+[2]   ⍝
+[3]   ⍝ Initialise Full Matrices
+[4]   PHICOMPEN←(⍴PHIERACCPEN)⍴PHICOMPENNDYN←PHICOMPENDYN←PHICOMPENLDYN←PHICOMPENDYN4←PHIFCOMPENNDYN←PHIFCOMPENDYN←PHIFCOMPENLDYN←PHIFCOMPENDYN4←(NX,NX)⍴0
+[5]   PHICASHONTOP←(4,NX,NX)⍴PHICASH←comPHICASH←cotPHICASH←PHIFCASH←comPHIFCASH←cotPHIFCASH←PHIUCASH∆N←PHIUCASH∆D←PHIUCASH∆L←PHIUCASH∆4←(NX,NX)⍴0
+[6]   ⍝
+[7]   PHIIRCASH←(NX,NX)⍴IRCash
+[8]   →(IRMAXIND∊0 1)/L2
+[9]   ⍎(IRMAXIND≠4)/'→(~DJF DONAFTER IRD2)/L2'
+[10]  PHIIRCASH←PHIIRCASH⌈2.25×(+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHIERACCPEN)×~CONTOP
+[11]  L2:
+[12]  PHIGCASH←comPHIGCASH←cotPHIGCASH←(NX,NX)⍴0
+[13]  
+[14]  cc3←bBuck∨ClntCode=3
+[15]  cfs←(4,NX,NX)⍴NX⌿NX/(CASHFAC1⍪CASHFAC2⍪CASHFAC3⍪MATRIX CASHFAC4)[;ENX_1]
+[16]  :if cc3∨CONTOP ⋄ :andif ~(CTYPE∆L←cc3⊃CTYPE CTYPE2)∊0 1 ⍝ Cash on Top
+[17]      COMACC∆L← cc3⊃COMACC  COMACC2
+[18]      COMSAL∆L← cc3⊃COMSAL  COMSAL2
+[19]      COMDAT∆L← cc3⊃COMDAT  COMDAT2
+[20]      COMMULT∆L←cc3⊃COMMULT COMMULT2
+[21]      COMPER∆L← cc3⊃COMPER  COMPER2
+[22]  
+[23]      PHICALC∆CASH 1
+[24]  
+[25]      PHICASH∆ONTOP
+[26]  
+[27]      :if mpuflag ⍝ Cash on Top for Underpin Comparison
+[28]          :select CTYPE∆L
+[29]          :caselist 2 4 6 7 ⍝ Cash based on Pension
+[30]              cotPHIGCASH←PHIGCASH←PHIGCALCCASH×PHICASH CDIV PHICALCCASH
+[31]          :else
+[32]              cotPHIGCASH←PHIGCASH←PHICASH×((+/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHITPEN)[⎕io;;])CDIV +/[⎕io]+/[⎕io+1]+/[⎕io+2]+/[⎕io+3]+/[⎕io+4]+/[⎕io+5]PHITPEN
+[33]          :endselect
+[34]      :endif
+[35]  :endif
+[36]  
+[37]  :if cc3∨~CONTOP ⋄ :andif ~CTYPE∊0 1 ⍝ Commuted Pension
+[38]      CTYPE∆L←  CTYPE
+[39]      COMACC∆L← COMACC
+[40]      COMSAL∆L← COMSAL
+[41]      COMDAT∆L← COMDAT
+[42]      COMMULT∆L←COMMULT
+[43]      COMPER∆L← COMPER
+[44]      COMADaySep∆L←COMADaySep
+[45]      COMADayPER∆L←COMADayPER
+[46]  
+[47]      PHICALC∆CASH 0
+[48]  
+[49]      PHICASH∆COMMUTE ⍝ Commute Pension
+[50]  
+[51]      PHICOMT←+/[⎕io+1]+/[⎕io+2]+/[⎕io+4]+/[⎕io+5]PHICOMPEN  ⍝ Sum over all but Dyn Underpin and Term
+[52]      PHIUCASH∆N←PHICOMT[⎕io  ;⎕io;;] MultiDimMult (NX,NX)⍴CASHFAC1
+[53]      PHIUCASH∆D←PHICOMT[⎕io+1;⎕io;;] MultiDimMult (NX,NX)⍴CASHFAC2
+[54]      PHIUCASH∆L←PHICOMT[⎕io+2;⎕io;;] MultiDimMult (NX,NX)⍴CASHFAC3
+[55]      PHIUCASH∆4←PHICOMT[⎕io+3;⎕io;;] MultiDimMult (NX,NX)⍴CASHFAC4
+[56]      PHIGCASH←PHIGCASH+comPHIGCASH←PHIUCASH∆N+PHIUCASH∆D+PHIUCASH∆L+PHIUCASH∆4
+[57]  :endif
+    ∇

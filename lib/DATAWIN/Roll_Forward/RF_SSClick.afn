@@ -1,1 +1,84 @@
-    ∇ RF_SSClick field;SSName;row;col;Parmlist;z;∆decrdesc;∆decrlist;page;PageNO;Formula;∆;incfreq[1]   ⍝ DATAWIN.sf#23[2]   ⍝ Handle Right Click on the Adjustment Grid[3]   [4]   (SSName row col)←field[5]   Win∆AssignVars page←Win∆Parent Win∆Parent SSName[6]   PageNO←¯1↑page[7]   [8]   :if ∨/SSName ⎕wi 'XGetProtection' ⍬ ⍬ ⍝ Return if cell is protected[9]       :return[10]  :endif[11]  [12]  :select Win∆Child SSName[13]  :case 'ssExits'[14]      :select col[15]      :case 4 ⍝ Modes of Exit[16]          Parmlist←'Exit Type' OVER ExitTypes[17]      :else[18]          :return[19]      :endselect[20]  [21]  :case 'ssGMP'[22]      :select col[23]      :case 2 ⍝ Select the Revaluation[24]          Parmlist←GetFinList 'Rev'[25]          :if 'D'=↑datatype ⋄ Parmlist←Parmlist OVER 'None' ⋄ :endif[26]  [27]      :case 3 ⍝ Select the Increase[28]          Parmlist←GetFinList 'Inc'[29]      :else[30]          :return[31]      :endselect[32]  :case 'ssAdjust'[33]      :select col[34]      :case 2 ⍝ Select the Type of Increase[35]          Parmlist←⊃'Increase Type' 'None' 'Interest' 'Inflation' 'Revaluation' 'Increases' 'Age Dependent' 'Excess over GMP' 'If Not Fixed'[36]  [37]      :caselist 3 4 ⍝ Select a Salary Scale[38]          :if 'Inflation'≡DLTB ⍎'IncType_',PageNO,'[row;]'[39]              ∆decrdesc←FormName ⎕wi '∆decrdesc' ⋄ ∆decrlist←FormName ⎕wi '∆decrlist'[40]  [41]              z←∆decrlist[;⍳2] TLU 4 2⍴' S sSTst' ⍝ Select particular Table Type(s)[42]              z←z[⎕av⍋∆decrlist[z;]] ⍝ Sort into order[43]              Parmlist←⊃((m2n ∆decrlist[z;]),¨⊂' - '),¨m2n ∆decrdesc[z;][44]          :else[45]              MDISPLAY 'Only available with Inflation Increases' ⋄ :return[46]          :endif[47]  [48]      :case 5 ⍝ Select a Frequency[49]          Parmlist←⍙POPUPSdict ReadDictFile 'SalRevBasis'[50]  [51]      :case 9 ⍝ Select the Revaluation[52]          Parmlist←GetFinList 'Rev'[53]          :if 'D'=↑datatype ⋄ Parmlist←Parmlist OVER 'None' ⋄ :endif[54]  [55]      :case 10 ⍝ Select the Increase[56]          Parmlist←'0' GetFinList 'Inc'[57]  [58]      :case 11 ⍝ Select an Increase Pointer[59]          :if mt z←DLTB ⍎'IncType_',PageNO,'[row;]'[60]              MDISPLAY 'Specify Type of Increase first' ⋄ :return[61]          :else[62]              :if ~mt DLTB Formula←⍎'IncFormula_',PageNO,'[row;]'[63]              :andif (∨/'[{#'∊Formula)∨^/⎕vi '+ ' REPL '- ' REPL '* ' REPL '/ ' REPL '^ ' REPL Formula[64]              :andif 'N'='YN' ASK 'Do you want to replace the Formula with a single Esclation Rate?'[65]                  :return[66]              :else[67]                  Parmlist←GetFinList 3↑z[68]              :endif[69]          :endif[70]      :else[71]          :return[72]      :endselect[73]  :endselect[74]  [75]  Parmlist SelClientParms field[76]  Win∆AssignVars page[77]  :if col=2 ⋄ :andif 'ssAdjust'≡Win∆Child SSName ⋄ :andif ∨/∆←(m2n ⍎'IncType_',PageNO)∊'Interest' 'Revaluation'[78]      incfreq←m2n ⍎'IncFreq_',PageNO[79]      (∆/incfreq)←⊂'Continuous'[80]      SSName ⎕wi 'TextRC[]' (⎕mix (⍳↑⍴numfields)∘.,5) incfreq[81]  :endif[82]  0 0⍴Roll_Forward 'Lock'    ∇
+    ∇ RF_SSClick field;SSName;row;col;Parmlist;z;∆decrdesc;∆decrlist;page;PageNO;Formula;∆;incfreq
+[1]   ⍝ DATAWIN.sf#23
+[2]   ⍝ Handle Right Click on the Adjustment Grid
+[3]   
+[4]   (SSName row col)←field
+[5]   Win∆AssignVars page←Win∆Parent Win∆Parent SSName
+[6]   PageNO←¯1↑page
+[7]   
+[8]   :if ∨/SSName ⎕wi 'XGetProtection' ⍬ ⍬ ⍝ Return if cell is protected
+[9]       :return
+[10]  :endif
+[11]  
+[12]  :select Win∆Child SSName
+[13]  :case 'ssExits'
+[14]      :select col
+[15]      :case 4 ⍝ Modes of Exit
+[16]          Parmlist←'Exit Type' OVER ExitTypes
+[17]      :else
+[18]          :return
+[19]      :endselect
+[20]  
+[21]  :case 'ssGMP'
+[22]      :select col
+[23]      :case 2 ⍝ Select the Revaluation
+[24]          Parmlist←GetFinList 'Rev'
+[25]          :if 'D'=↑datatype ⋄ Parmlist←Parmlist OVER 'None' ⋄ :endif
+[26]  
+[27]      :case 3 ⍝ Select the Increase
+[28]          Parmlist←GetFinList 'Inc'
+[29]      :else
+[30]          :return
+[31]      :endselect
+[32]  :case 'ssAdjust'
+[33]      :select col
+[34]      :case 2 ⍝ Select the Type of Increase
+[35]          Parmlist←⊃'Increase Type' 'None' 'Interest' 'Inflation' 'Revaluation' 'Increases' 'Age Dependent' 'Excess over GMP' 'If Not Fixed'
+[36]  
+[37]      :caselist 3 4 ⍝ Select a Salary Scale
+[38]          :if 'Inflation'≡DLTB ⍎'IncType_',PageNO,'[row;]'
+[39]              ∆decrdesc←FormName ⎕wi '∆decrdesc' ⋄ ∆decrlist←FormName ⎕wi '∆decrlist'
+[40]  
+[41]              z←∆decrlist[;⍳2] TLU 4 2⍴' S sSTst' ⍝ Select particular Table Type(s)
+[42]              z←z[⎕av⍋∆decrlist[z;]] ⍝ Sort into order
+[43]              Parmlist←⊃((m2n ∆decrlist[z;]),¨⊂' - '),¨m2n ∆decrdesc[z;]
+[44]          :else
+[45]              MDISPLAY 'Only available with Inflation Increases' ⋄ :return
+[46]          :endif
+[47]  
+[48]      :case 5 ⍝ Select a Frequency
+[49]          Parmlist←⍙POPUPSdict ReadDictFile 'SalRevBasis'
+[50]  
+[51]      :case 9 ⍝ Select the Revaluation
+[52]          Parmlist←GetFinList 'Rev'
+[53]          :if 'D'=↑datatype ⋄ Parmlist←Parmlist OVER 'None' ⋄ :endif
+[54]  
+[55]      :case 10 ⍝ Select the Increase
+[56]          Parmlist←'0' GetFinList 'Inc'
+[57]  
+[58]      :case 11 ⍝ Select an Increase Pointer
+[59]          :if mt z←DLTB ⍎'IncType_',PageNO,'[row;]'
+[60]              MDISPLAY 'Specify Type of Increase first' ⋄ :return
+[61]          :else
+[62]              :if ~mt DLTB Formula←⍎'IncFormula_',PageNO,'[row;]'
+[63]              :andif (∨/'[{#'∊Formula)∨^/⎕vi '+ ' REPL '- ' REPL '* ' REPL '/ ' REPL '^ ' REPL Formula
+[64]              :andif 'N'='YN' ASK 'Do you want to replace the Formula with a single Esclation Rate?'
+[65]                  :return
+[66]              :else
+[67]                  Parmlist←GetFinList 3↑z
+[68]              :endif
+[69]          :endif
+[70]      :else
+[71]          :return
+[72]      :endselect
+[73]  :endselect
+[74]  
+[75]  Parmlist SelClientParms field
+[76]  Win∆AssignVars page
+[77]  :if col=2 ⋄ :andif 'ssAdjust'≡Win∆Child SSName ⋄ :andif ∨/∆←(m2n ⍎'IncType_',PageNO)∊'Interest' 'Revaluation'
+[78]      incfreq←m2n ⍎'IncFreq_',PageNO
+[79]      (∆/incfreq)←⊂'Continuous'
+[80]      SSName ⎕wi 'TextRC[]' (⎕mix (⍳↑⍴numfields)∘.,5) incfreq
+[81]  :endif
+[82]  0 0⍴Roll_Forward 'Lock'
+    ∇

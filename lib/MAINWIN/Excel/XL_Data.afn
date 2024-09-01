@@ -1,0 +1,46 @@
+    ∇ r←array XL_Data location;rng;no;cols;size;range;max;text;⎕elx;n;elx;⍙array
+[1]   ⍝ MAINWIN.sf#10
+[2]   ⍝ Set or Get data from active workbook
+[3]   ⍝ location ←→ [sheet] range (eg. ['Sheet1'] 'A1:B2')
+[4]   ⍝ creates <XL.Rng> & if sheet is present makes it active
+[5]   ⍝ Copyright APL2000 Inc. 2003
+[6]   r←0 0⍴0
+[7]   :if ~1=≡location      ⍝ nested array includes sheet
+[8]      ('XL' ⎕wi 'Worksheets' (1⊃location)) ⎕wi 'Activate'
+[9]      rng←2⊃location
+[10]  :else
+[11]     rng←location
+[12]  :endif
+[13]  'XL' ⎕wi 'Range>.Rng' rng
+[14]  
+[15]  n←10×ecflag ⋄ elx←⎕elx ⋄ ⎕elx←'"XL_Data ",(⍕n)," failed - ",⎕dm ⋄ 0 0⍴⎕dl 0.5×2*1.38×n ⋄ →retry' ⍝ Exponential delays (2 hours for the last delay)
+[16]  
+[17]  retry:
+[18]  :if 11=n←n+1 ⋄ ⎕elx←elx ⋄ :endif ⍝ Retry 10 times then fail
+[19]  
+[20]  :if 0=⎕NC 'array'                   ⍝ Get Data
+[21]     r←⍉'XL.Rng' ⎕wi 'Value'          ⍝ Can always use Value
+[22]  :elseif ∨/0 1=⍴⍴array               ⍝ Set Data with Value2 for Excel XP & beyond
+[23]    'XL.Rng' ⎕wi 'Value2' array
+[24]  :else                               ⍝ Set Data with Formula
+[25]    :if 1=no←1⌈⌈(×/size←⍴array)÷500000  ⍝ Set a limit of 500,000 cells per write
+[26]        'XL.Rng' ⎕wi 'xFormula' (⍉array)
+[27]    :else
+[28]        ⍙array←array                  ⍝ reset in case of retry!
+[29]        cols←1⌈⌊(↑1↓size)÷no
+[30]        max←¯1↑range←A1toRC location
+[31]        range[⎕io+1 3]←range[⎕io+1 3]-cols (↑1↓size)
+[32]        :repeat
+[33]            range←range+4⍴0 cols ⋄ range[⎕io+3]←max⌊range[⎕io+3]
+[34]            rng←RCtoA1 range
+[35]            'XL' ⎕wi 'Range>.Rng' rng
+[36]            :if mt DLTB ∊text←cols↑[⎕io+1]⍙array ⍝ All Blanks becomes simple array and crashes 'xFormula'
+[37]                'XL.Rng' ⎕wi 'xFormula' ' '
+[38]            :else
+[39]                'XL.Rng' ⎕wi 'xFormula' (⍉text)
+[40]            :endif
+[41]        :until mt ⍙array←cols↓[⎕io+1]⍙array
+[42]    :endif
+[43]  :endif
+[44]  ⎕elx←elx
+    ∇

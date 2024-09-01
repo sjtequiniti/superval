@@ -1,0 +1,12 @@
+    ∇ TRACE_CLOSE;nms;cps
+[1]   ⍝ VALNWIN.sf#18
+[2]   ⍝ close off XHTML NDFPRINT file
+[3]   ⍝ V8.50 [EnhDef] DT/SJT summer 2010
+[4]   ⍝ Reads ext var: trc_on
+[5]   ⍝ Sets ext var: TOC_SOURCE
+[6]   
+[7]   (nms cps)←⊂[⎕IO]⊃TOC_SOURCE ⍝ bookmark names and captions of bookmarks
+[8]   TRACE ↑,/('div id="TOC"' xtag (1⌽¨(⊂'"a href="#'),¨nms) xtag¨cps),¨⎕TCNL⍝ append table of contents
+[9]   ('</body>',⎕TCNL,'</html>',⎕TCNL)⎕NAPPEND vtpr1
+[10]  ⎕NUNTIE vtpr1 ⍝ else untied with everything else at end of START
+    ∇

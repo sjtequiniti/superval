@@ -1,1 +1,48 @@
-    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row[1]   warnings←0 0⍴""[2]   package←pack ⍙VALUESdict ReadDictFile "NE_Model" "" "Names"[3]   [4]   :if 1=ControlName ⎕wi "∆relrules"[5]       :for control :in nub FormFields at "control"[6]           "NE_Model" ParmColor control "" ⍬ 0[7]       :endfor[8]   :endif[9]   0 0⍴GetDecrList "List"[10]  warnings←warnings OVER "New Entrant Proportions Table" Win∆CheckDecr (nOM[1;]) (lrnOM1)[11]  "fmNEModel.fProfile.ednOM1" ⎕wi "text" (DLTB nOM[1;])[12]  "fmNEModel.fProfile.ednOM2" ⎕wi "text" (DLTB nOM[2;])[13]  "fmNEModel.fProfile.edImmedNE" ⎕wi "text" (DLTB ImmedNE)[14]  PickList←"fmNEModel.fReplace.cbRepMeth" ⎕wi "list"[15]  selection←PickList ExactTLU DLTB RepMeth[16]  :if mt selection[17]      :if ~mt DLTB RepMeth[18]          warnings←warnings OVER "Previous Selection for 'Replacement Method' is no longer available"[19]      :endif[20]      modified←⌈/modified,1[21]  :endif[22]  "fmNEModel.fReplace.cbRepMeth" ⎕wi "value" (¯1↑1,selection)[23]  "fmNEModel.fReplace.edFUNDTOT" ⎕wi "text" (DLTB FUNDTOT)[24]  PickList←"fmNEModel.fReplace.cbGrowthInd" ⎕wi "list"[25]  selection←PickList ExactTLU DLTB GrowthInd[26]  :if mt selection[27]      :if ~mt DLTB GrowthInd[28]          warnings←warnings OVER "Previous Selection for 'Indicator of Growth/Decline' is no longer available"[29]      :endif[30]      modified←⌈/modified,1[31]  :endif[32]  "fmNEModel.fReplace.cbGrowthInd" ⎕wi "value" (¯1↑1,selection)[33]  "fmNEModel.fReplace.ckAllowNegNE" ⎕wi "value" (zwb AllowNegNE)[34]  "fmNEModel.fReplace.edProjTerm" ⎕wi "text" (DLTB ProjTerm)[35]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_NE_Model[36]      :for var :in spin Comment_NE_Model at "variable" "row" ⋄ (var row)←var[37]          "NE_Model" ParmColor ((FormFields for "variable" var) at "control"),var row 1[38]      :endfor[39]  :endif[40]  :if ~0∊⍴,warnings[41]      MDISPLAY DLTMB warnings,⎕tcnl[42]      Win∆AssignVars "fmNEModel"[43]  :endif[44]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "NE_Model" "" "Names"[45]      "fmNEModel" ⎕wi "modified" 0[46]  :endif    ∇
+    ∇ Assign_Inputs modified;PickList;list;n;NameList;value;MaxRow;MaxCol;selection;nn;no;package;warnings;var;control;row
+[1]   warnings←0 0⍴""
+[2]   package←pack ⍙VALUESdict ReadDictFile "NE_Model" "" "Names"
+[3]   
+[4]   :if 1=ControlName ⎕wi "∆relrules"
+[5]       :for control :in nub FormFields at "control"
+[6]           "NE_Model" ParmColor control "" ⍬ 0
+[7]       :endfor
+[8]   :endif
+[9]   0 0⍴GetDecrList "List"
+[10]  warnings←warnings OVER "New Entrant Proportions Table" Win∆CheckDecr (nOM[1;]) (lrnOM1)
+[11]  "fmNEModel.fProfile.ednOM1" ⎕wi "text" (DLTB nOM[1;])
+[12]  "fmNEModel.fProfile.ednOM2" ⎕wi "text" (DLTB nOM[2;])
+[13]  "fmNEModel.fProfile.edImmedNE" ⎕wi "text" (DLTB ImmedNE)
+[14]  PickList←"fmNEModel.fReplace.cbRepMeth" ⎕wi "list"
+[15]  selection←PickList ExactTLU DLTB RepMeth
+[16]  :if mt selection
+[17]      :if ~mt DLTB RepMeth
+[18]          warnings←warnings OVER "Previous Selection for 'Replacement Method' is no longer available"
+[19]      :endif
+[20]      modified←⌈/modified,1
+[21]  :endif
+[22]  "fmNEModel.fReplace.cbRepMeth" ⎕wi "value" (¯1↑1,selection)
+[23]  "fmNEModel.fReplace.edFUNDTOT" ⎕wi "text" (DLTB FUNDTOT)
+[24]  PickList←"fmNEModel.fReplace.cbGrowthInd" ⎕wi "list"
+[25]  selection←PickList ExactTLU DLTB GrowthInd
+[26]  :if mt selection
+[27]      :if ~mt DLTB GrowthInd
+[28]          warnings←warnings OVER "Previous Selection for 'Indicator of Growth/Decline' is no longer available"
+[29]      :endif
+[30]      modified←⌈/modified,1
+[31]  :endif
+[32]  "fmNEModel.fReplace.cbGrowthInd" ⎕wi "value" (¯1↑1,selection)
+[33]  "fmNEModel.fReplace.ckAllowNegNE" ⎕wi "value" (zwb AllowNegNE)
+[34]  "fmNEModel.fReplace.edProjTerm" ⎕wi "text" (DLTB ProjTerm)
+[35]  :if 1=ControlName ⎕wi "∆relrules" ⋄ :andif ×rowsIn Comment_NE_Model
+[36]      :for var :in spin Comment_NE_Model at "variable" "row" ⋄ (var row)←var
+[37]          "NE_Model" ParmColor ((FormFields for "variable" var) at "control"),var row 1
+[38]      :endfor
+[39]  :endif
+[40]  :if ~0∊⍴,warnings
+[41]      MDISPLAY DLTMB warnings,⎕tcnl
+[42]      Win∆AssignVars "fmNEModel"
+[43]  :endif
+[44]  :if 0=modified←modified⌈~package≡pack ⍙VALUESdict ReadDictFile "NE_Model" "" "Names"
+[45]      "fmNEModel" ⎕wi "modified" 0
+[46]  :endif
+    ∇

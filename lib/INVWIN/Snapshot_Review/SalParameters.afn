@@ -1,1 +1,25 @@
-    ∇ res←SalParameters;⎕io;cn;list[1]   ⍝ INVWIN.sf#9[2]   ⍝ Create the variables from the screen parameters as well as[3]   ⍝  AGES (Ages covered by Groups)[4]   ⍝  NN - Number of Groups[5]   ⍝  TABLE - the values of Rate Table TABXX[6]   ⍝  TOTS - the results matrix[7]   ⎕io←1[8]   [9]   :if 0=⎕nc 'ControlName' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif[10]  :if 0∊⍴cn←'fmSnapshotReview.lvRUNDESC' ⎕wi 'value' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif[11]  :if ~0∊⍴,res←1 Win∆ValidForm ControlName ⋄ :return ⋄ :endif[12]  Win∆AssignVars ControlName[13]  :if ~0∊⍴,res←(⊂'All') Snapshot_Review 'Valid' ⍝ Specific (Cross) Validation Module[14]      MDISPLAY res ⋄ :return[15]  :endif[16]  Convert_Vars[17]  [18]  list←'fmSnapshotReview.lvRUNDESC' ⎕wi 'list'[19]  RUNDESC←(DLTB ⊃list[(list[;1])⍳cn;3])~'#%'[20]  0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' 'TOTS'[21]  [22]  EAGE←BAGE+AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP[23]  TABLE←(EAGE+1) OVERTAKE ×\1+DEC∆CHECK TABXX    ∇
+    ∇ res←SalParameters;⎕io;cn;list
+[1]   ⍝ INVWIN.sf#9
+[2]   ⍝ Create the variables from the screen parameters as well as
+[3]   ⍝  AGES (Ages covered by Groups)
+[4]   ⍝  NN - Number of Groups
+[5]   ⍝  TABLE - the values of Rate Table TABXX
+[6]   ⍝  TOTS - the results matrix
+[7]   ⎕io←1
+[8]   
+[9]   :if 0=⎕nc 'ControlName' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif
+[10]  :if 0∊⍴cn←'fmSnapshotReview.lvRUNDESC' ⎕wi 'value' ⋄ res←'Not Yet' ⋄ :return ⋄ :endif
+[11]  :if ~0∊⍴,res←1 Win∆ValidForm ControlName ⋄ :return ⋄ :endif
+[12]  Win∆AssignVars ControlName
+[13]  :if ~0∊⍴,res←(⊂'All') Snapshot_Review 'Valid' ⍝ Specific (Cross) Validation Module
+[14]      MDISPLAY res ⋄ :return
+[15]  :endif
+[16]  Convert_Vars
+[17]  
+[18]  list←'fmSnapshotReview.lvRUNDESC' ⎕wi 'list'
+[19]  RUNDESC←(DLTB ⊃list[(list[;1])⍳cn;3])~'#%'
+[20]  0 0⍴(OutputDir,'SVINVRES') ReadFile cn '' 'TOTS'
+[21]  
+[22]  EAGE←BAGE+AGES←GROUP×NN←⌈(1+EAGE-BAGE)÷GROUP
+[23]  TABLE←(EAGE+1) OVERTAKE ×\1+DEC∆CHECK TABXX
+    ∇
